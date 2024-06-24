@@ -35,7 +35,7 @@ void run_core_configuration_test(void) {
       expected.emplace_back(nlohmann::json::object({{"key_code", "escape"}}).dump(),
                             nlohmann::json::array({nlohmann::json::object({{"key_code", "spacebar"}})}).dump());
 
-      expect(expected == configuration.get_selected_profile().get_simple_modifications().get_pairs()) << UT_SHOW_LINE;
+      expect(expected == configuration.get_selected_profile().get_simple_modifications()->get_pairs()) << UT_SHOW_LINE;
     }
     {
       auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
@@ -81,7 +81,7 @@ void run_core_configuration_test(void) {
       expected.emplace_back(nlohmann::json::object({{"key_code", "f12"}}).dump(),
                             nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "volume_increment"}})}).dump());
 
-      expect(expected == configuration.get_selected_profile().get_fn_function_keys().get_pairs()) << UT_SHOW_LINE;
+      expect(expected == configuration.get_selected_profile().get_fn_function_keys()->get_pairs()) << UT_SHOW_LINE;
     }
     {
       auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
@@ -149,7 +149,7 @@ void run_core_configuration_test(void) {
                                                                  geteuid(),
                                                                  krbn::core_configuration::error_handling::strict);
 
-      expect(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
+      expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
       expect(configuration.is_loaded() == false);
 
       expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
@@ -160,7 +160,7 @@ void run_core_configuration_test(void) {
       expect(configuration.get_profiles().size() == 1);
       expect((configuration.get_profiles())[0]->get_name() == "Default profile");
       expect((configuration.get_profiles())[0]->get_selected() == true);
-      expect((configuration.get_profiles())[0]->get_fn_function_keys().get_pairs().size() == 12);
+      expect((configuration.get_profiles())[0]->get_fn_function_keys()->get_pairs().size() == 12);
 
       {
         // to_json result is default json if is_loaded == false
@@ -174,7 +174,7 @@ void run_core_configuration_test(void) {
                                                                  geteuid(),
                                                                  krbn::core_configuration::error_handling::strict);
 
-      expect(configuration.get_selected_profile().get_simple_modifications().get_pairs().empty());
+      expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
       expect(configuration.is_loaded() == false);
     }
   };
@@ -192,7 +192,7 @@ void run_core_configuration_test(void) {
     expected.emplace_back(nlohmann::json::object({{"key_code", "escape"}}).dump(),
                           nlohmann::json::array({nlohmann::json::object({{"key_code", "spacebar"}})}).dump());
 
-    expect(configuration.get_selected_profile().get_simple_modifications().get_pairs() == expected);
+    expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs() == expected);
     expect(configuration.is_loaded() == true);
   };
 
@@ -289,8 +289,8 @@ void run_core_configuration_test(void) {
                                                          krbn::core_configuration::error_handling::strict);
       expect(profile.get_name() == std::string(""));
       expect(profile.get_selected() == false);
-      expect(profile.get_simple_modifications().get_pairs().empty());
-      expect(profile.get_fn_function_keys().get_pairs().size() == 12);
+      expect(profile.get_simple_modifications()->get_pairs().empty());
+      expect(profile.get_fn_function_keys()->get_pairs().size() == 12);
       expect(profile.get_devices().size() == 0);
 
       expect(profile.get_device(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
@@ -443,7 +443,7 @@ void run_core_configuration_test(void) {
         expected.emplace_back(nlohmann::json::object({{"key_code", "from 10"}}).dump(),
                               nlohmann::json::array({nlohmann::json::object({{"key_code", "to 10"}})}).dump());
 
-        expect(profile.get_simple_modifications().get_pairs() == expected) << UT_SHOW_LINE;
+        expect(profile.get_simple_modifications()->get_pairs() == expected) << UT_SHOW_LINE;
       }
       {
         std::vector<std::pair<std::string, std::string>> expected;
@@ -486,7 +486,7 @@ void run_core_configuration_test(void) {
         expected.emplace_back(nlohmann::json::object({{"key_code", "f13"}}).dump(),
                               nlohmann::json::array({nlohmann::json::object({{"key_code", "to f13"}})}).dump());
 
-        expect(expected == profile.get_fn_function_keys().get_pairs()) << UT_SHOW_LINE;
+        expect(expected == profile.get_fn_function_keys()->get_pairs()) << UT_SHOW_LINE;
       }
       {
         expect(profile.get_devices().size() == 3);
@@ -662,7 +662,7 @@ void run_core_configuration_test(void) {
         expected.emplace_back(nlohmann::json::object({{"key_code", "key"}}).dump(),
                               nlohmann::json::array({nlohmann::json::object({{"key_code", "value"}})}).dump());
 
-        expect(expected == profile.get_simple_modifications().get_pairs()) << UT_SHOW_LINE;
+        expect(expected == profile.get_simple_modifications()->get_pairs()) << UT_SHOW_LINE;
       }
     }
   };
@@ -732,34 +732,34 @@ void run_core_configuration_test(void) {
 
       profile.get_parameters().set_delay_milliseconds_before_open_device(std::chrono::milliseconds(500));
 
-      profile.get_simple_modifications().push_back_pair();
+      profile.get_simple_modifications()->push_back_pair();
       // {
       //   "": ""
       // }
 
-      profile.get_simple_modifications().push_back_pair();
-      profile.get_simple_modifications().replace_pair(1,
-                                                      nlohmann::json{{"key_code", "from 1"}}.dump(),
-                                                      nlohmann::json{{"key_code", "to 1"}}.dump());
+      profile.get_simple_modifications()->push_back_pair();
+      profile.get_simple_modifications()->replace_pair(1,
+                                                       nlohmann::json{{"key_code", "from 1"}}.dump(),
+                                                       nlohmann::json{{"key_code", "to 1"}}.dump());
       // {
       //   "": "",
       //   "from 1": "to 1"
       // }
 
-      profile.get_simple_modifications().push_back_pair();
-      profile.get_simple_modifications().replace_pair(2,
-                                                      nlohmann::json{{"key_code", "from 3"}}.dump(),
-                                                      nlohmann::json{{"key_code", "to 3"}}.dump());
+      profile.get_simple_modifications()->push_back_pair();
+      profile.get_simple_modifications()->replace_pair(2,
+                                                       nlohmann::json{{"key_code", "from 3"}}.dump(),
+                                                       nlohmann::json{{"key_code", "to 3"}}.dump());
       // {
       //   "": "",
       //   "from 1": "to 1",
       //   "from 3": "to 3"
       // }
 
-      profile.get_simple_modifications().push_back_pair();
-      profile.get_simple_modifications().replace_pair(3,
-                                                      nlohmann::json{{"key_code", "from 4"}}.dump(),
-                                                      nlohmann::json{{"key_code", "to 4"}}.dump());
+      profile.get_simple_modifications()->push_back_pair();
+      profile.get_simple_modifications()->replace_pair(3,
+                                                       nlohmann::json{{"key_code", "from 4"}}.dump(),
+                                                       nlohmann::json{{"key_code", "to 4"}}.dump());
       // {
       //   "": "",
       //   "from 1": "to 1",
@@ -767,10 +767,10 @@ void run_core_configuration_test(void) {
       //   "from 4": "to 4"
       // }
 
-      profile.get_simple_modifications().push_back_pair();
-      profile.get_simple_modifications().replace_pair(4,
-                                                      nlohmann::json{{"key_code", "from 2"}}.dump(),
-                                                      nlohmann::json{{"key_code", "to 2"}}.dump());
+      profile.get_simple_modifications()->push_back_pair();
+      profile.get_simple_modifications()->replace_pair(4,
+                                                       nlohmann::json{{"key_code", "from 2"}}.dump(),
+                                                       nlohmann::json{{"key_code", "to 2"}}.dump());
       // {
       //   "": "",
       //   "from 1": "to 1",
@@ -779,10 +779,10 @@ void run_core_configuration_test(void) {
       //   "from 2": "to 2"
       // }
 
-      profile.get_simple_modifications().push_back_pair();
-      profile.get_simple_modifications().replace_pair(5,
-                                                      nlohmann::json{{"key_code", "from 2"}}.dump(),
-                                                      nlohmann::json{{"key_code", "to 2.0"}}.dump());
+      profile.get_simple_modifications()->push_back_pair();
+      profile.get_simple_modifications()->replace_pair(5,
+                                                       nlohmann::json{{"key_code", "from 2"}}.dump(),
+                                                       nlohmann::json{{"key_code", "to 2.0"}}.dump());
       // {
       //   "": "",
       //   "from 1": "to 1",
@@ -792,7 +792,7 @@ void run_core_configuration_test(void) {
       //   "from 2": "to 2.0"
       // }
 
-      profile.get_simple_modifications().erase_pair(2);
+      profile.get_simple_modifications()->erase_pair(2);
       // {
       //   "": "",
       //   "from 1": "to 1",
@@ -801,10 +801,10 @@ void run_core_configuration_test(void) {
       //   "from 2": "to 2.0"
       // }
 
-      profile.get_simple_modifications().push_back_pair();
-      profile.get_simple_modifications().replace_pair(5,
-                                                      nlohmann::json::object().dump(),
-                                                      nlohmann::json{{"key_code", "to 0"}}.dump());
+      profile.get_simple_modifications()->push_back_pair();
+      profile.get_simple_modifications()->replace_pair(5,
+                                                       nlohmann::json::object().dump(),
+                                                       nlohmann::json{{"key_code", "to 0"}}.dump());
       // {
       //   "": "",
       //   "from 1": "to 1",
@@ -814,10 +814,10 @@ void run_core_configuration_test(void) {
       //   "": "to 0"
       // }
 
-      profile.get_simple_modifications().push_back_pair();
-      profile.get_simple_modifications().replace_pair(6,
-                                                      nlohmann::json{{"key_code", "from 0"}}.dump(),
-                                                      nlohmann::json::object().dump());
+      profile.get_simple_modifications()->push_back_pair();
+      profile.get_simple_modifications()->replace_pair(6,
+                                                       nlohmann::json{{"key_code", "from 0"}}.dump(),
+                                                       nlohmann::json::object().dump());
       // {
       //   "": "",
       //   "from 1": "to 1",
@@ -828,10 +828,10 @@ void run_core_configuration_test(void) {
       //   "from 0": ""
       // }
 
-      profile.get_simple_modifications().push_back_pair();
-      profile.get_simple_modifications().replace_pair(7,
-                                                      nlohmann::json{{"key_code", "from 5"}}.dump(),
-                                                      nlohmann::json{{"key_code", "to 5"}}.dump());
+      profile.get_simple_modifications()->push_back_pair();
+      profile.get_simple_modifications()->replace_pair(7,
+                                                       nlohmann::json{{"key_code", "from 5"}}.dump(),
+                                                       nlohmann::json{{"key_code", "to 5"}}.dump());
       // {
       //   "": "",
       //   "from 1": "to 1",
@@ -843,10 +843,10 @@ void run_core_configuration_test(void) {
       //   "from 5": "to 5"
       // }
 
-      profile.get_fn_function_keys().replace_second(nlohmann::json{{"key_code", "f3"}}.dump(),
-                                                    nlohmann::json{{"key_code", "to f3"}}.dump());
-      profile.get_fn_function_keys().replace_second(nlohmann::json{{"key_code", "not found"}}.dump(),
-                                                    nlohmann::json{{"key_code", "do nothing"}}.dump());
+      profile.get_fn_function_keys()->replace_second(nlohmann::json{{"key_code", "f3"}}.dump(),
+                                                     nlohmann::json{{"key_code", "to f3"}}.dump());
+      profile.get_fn_function_keys()->replace_second(nlohmann::json{{"key_code", "not found"}}.dump(),
+                                                     nlohmann::json{{"key_code", "do nothing"}}.dump());
 
       profile.get_virtual_hid_keyboard().set_country_code(pqrs::hid::country_code::value_t(20));
       profile.get_virtual_hid_keyboard().set_mouse_key_xy_scale(250);

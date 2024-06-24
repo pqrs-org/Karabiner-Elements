@@ -21,7 +21,9 @@ public:
 
   device(const nlohmann::json& json,
          error_handling error_handling)
-      : json_(json) {
+      : json_(json),
+        simple_modifications_(std::make_shared<simple_modifications>()),
+        fn_function_keys_(std::make_shared<simple_modifications>()) {
     helper_values_.push_back_value<bool>("ignore",
                                          ignore_,
                                          false);
@@ -162,15 +164,15 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
 
 )");
 
-    // ----------------------------------------
+    //
     // Set default value
+    //
 
-    // fn_function_keys_
+    fn_function_keys_->update(make_default_fn_function_keys_json());
 
-    fn_function_keys_.update(make_default_fn_function_keys_json());
-
-    // ----------------------------------------
+    //
     // Load from json
+    //
 
     pqrs::json::requires_object(json, "json");
 
@@ -185,14 +187,14 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
         }
       } else if (key == "simple_modifications") {
         try {
-          simple_modifications_.update(value);
+          simple_modifications_->update(value);
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
 
       } else if (key == "fn_function_keys") {
         try {
-          fn_function_keys_.update(value);
+          fn_function_keys_->update(value);
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
@@ -248,7 +250,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     j["identifiers"] = identifiers_;
 
     {
-      auto jj = simple_modifications_.to_json(nlohmann::json::array());
+      auto jj = simple_modifications_->to_json(nlohmann::json::array());
       if (!jj.empty()) {
         j["simple_modifications"] = jj;
       } else {
@@ -257,7 +259,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     }
 
     {
-      auto jj = fn_function_keys_.to_json(make_default_fn_function_keys_json());
+      auto jj = fn_function_keys_->to_json(make_default_fn_function_keys_json());
       if (!jj.empty()) {
         j["fn_function_keys"] = jj;
       } else {
@@ -505,17 +507,11 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  const simple_modifications& get_simple_modifications(void) const {
-    return simple_modifications_;
-  }
-  simple_modifications& get_simple_modifications(void) {
+  gsl::not_null<std::shared_ptr<simple_modifications>> get_simple_modifications(void) const {
     return simple_modifications_;
   }
 
-  const simple_modifications& get_fn_function_keys(void) const {
-    return fn_function_keys_;
-  }
-  simple_modifications& get_fn_function_keys(void) {
+  gsl::not_null<std::shared_ptr<simple_modifications>> get_fn_function_keys(void) const {
     return fn_function_keys_;
   }
 
@@ -571,8 +567,8 @@ private:
   std::string game_pad_stick_y_formula_;
   std::string game_pad_stick_vertical_wheel_formula_;
   std::string game_pad_stick_horizontal_wheel_formula_;
-  simple_modifications simple_modifications_;
-  simple_modifications fn_function_keys_;
+  gsl::not_null<std::shared_ptr<simple_modifications>> simple_modifications_;
+  gsl::not_null<std::shared_ptr<simple_modifications>> fn_function_keys_;
   configuration_json_helper::helper_values helper_values_;
 };
 

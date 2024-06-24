@@ -19,7 +19,9 @@ public:
           error_handling error_handling)
       : json_(json),
         error_handling_(error_handling),
-        selected_(false) {
+        selected_(false),
+        simple_modifications_(std::make_shared<simple_modifications>()),
+        fn_function_keys_(std::make_shared<simple_modifications>()) {
     helper_values_.push_back_array<details::device>("devices",
                                                     devices_);
 
@@ -27,7 +29,7 @@ public:
     // Set default value
     //
 
-    fn_function_keys_.update(make_default_fn_function_keys_json());
+    fn_function_keys_->update(make_default_fn_function_keys_json());
 
     //
     // Load from json
@@ -57,14 +59,14 @@ public:
 
       } else if (key == "simple_modifications") {
         try {
-          simple_modifications_.update(value);
+          simple_modifications_->update(value);
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
 
       } else if (key == "fn_function_keys") {
         try {
-          fn_function_keys_.update(value);
+          fn_function_keys_->update(value);
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
@@ -148,8 +150,8 @@ public:
     j["name"] = name_;
     j["selected"] = selected_;
     j["parameters"] = parameters_;
-    j["simple_modifications"] = simple_modifications_.to_json(nlohmann::json::array());
-    j["fn_function_keys"] = fn_function_keys_.to_json(make_default_fn_function_keys_json());
+    j["simple_modifications"] = simple_modifications_->to_json(nlohmann::json::array());
+    j["fn_function_keys"] = fn_function_keys_->to_json(make_default_fn_function_keys_json());
     j["complex_modifications"] = complex_modifications_.to_json();
     j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
 
@@ -180,50 +182,12 @@ public:
     return const_cast<details::parameters&>(static_cast<const profile&>(*this).get_parameters());
   }
 
-  const details::simple_modifications& get_simple_modifications(void) const {
+  gsl::not_null<std::shared_ptr<simple_modifications>> get_simple_modifications(void) const {
     return simple_modifications_;
   }
 
-  details::simple_modifications& get_simple_modifications(void) {
-    return const_cast<details::simple_modifications&>(static_cast<const profile&>(*this).get_simple_modifications());
-  }
-
-  const details::simple_modifications* find_simple_modifications(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        return &(d->get_simple_modifications());
-      }
-    }
-    return nullptr;
-  }
-
-  details::simple_modifications* find_simple_modifications(const device_identifiers& identifiers) {
-    add_device(identifiers);
-
-    return const_cast<details::simple_modifications*>(static_cast<const profile&>(*this).find_simple_modifications(identifiers));
-  }
-
-  const details::simple_modifications& get_fn_function_keys(void) const {
+  gsl::not_null<std::shared_ptr<simple_modifications>> get_fn_function_keys(void) const {
     return fn_function_keys_;
-  }
-
-  details::simple_modifications& get_fn_function_keys(void) {
-    return const_cast<details::simple_modifications&>(static_cast<const profile&>(*this).get_fn_function_keys());
-  }
-
-  const details::simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) const {
-    for (const auto& d : devices_) {
-      if (d->get_identifiers() == identifiers) {
-        return &(d->get_fn_function_keys());
-      }
-    }
-    return nullptr;
-  }
-
-  details::simple_modifications* find_fn_function_keys(const device_identifiers& identifiers) {
-    add_device(identifiers);
-
-    return const_cast<details::simple_modifications*>(static_cast<const profile&>(*this).find_fn_function_keys(identifiers));
   }
 
   const details::complex_modifications& get_complex_modifications(void) const {
@@ -288,37 +252,13 @@ public:
   }
 
 private:
-  std::shared_ptr<details::device> find_device(const device_identifiers& identifiers) const {
-    auto it = std::find_if(std::begin(devices_),
-                           std::end(devices_),
-                           [&](auto&& d) {
-                             return d->get_identifiers() == identifiers;
-                           });
-    if (it != std::end(devices_)) {
-      return *it;
-    }
-    return nullptr;
-  }
-
-  gsl::not_null<std::shared_ptr<details::device>> add_device(const device_identifiers& identifiers) const {
-    if (auto d = find_device(identifiers)) {
-      return d;
-    }
-
-    devices_.push_back(std::make_shared<details::device>(nlohmann::json({
-                                                             {"identifiers", identifiers},
-                                                         }),
-                                                         error_handling_));
-    return devices_.back();
-  }
-
   nlohmann::json json_;
   error_handling error_handling_;
   std::string name_;
   bool selected_;
   details::parameters parameters_;
-  details::simple_modifications simple_modifications_;
-  details::simple_modifications fn_function_keys_;
+  gsl::not_null<std::shared_ptr<simple_modifications>> simple_modifications_;
+  gsl::not_null<std::shared_ptr<simple_modifications>> fn_function_keys_;
   details::complex_modifications complex_modifications_;
   details::virtual_hid_keyboard virtual_hid_keyboard_;
   mutable std::vector<gsl::not_null<std::shared_ptr<details::device>>> devices_;
