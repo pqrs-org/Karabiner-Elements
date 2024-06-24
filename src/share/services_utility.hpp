@@ -136,7 +136,7 @@ inline bool core_daemons_enabled(void) {
 
 inline bool core_agents_enabled(void) {
   auto exit_code = system(fmt::format("'{0}' core-agents-enabled",
-                                      daemons_path)
+                                      agents_path)
                               .c_str());
   return exit_code == 0;
 }
