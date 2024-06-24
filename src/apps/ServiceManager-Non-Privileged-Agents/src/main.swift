@@ -4,6 +4,7 @@ import ServiceManagement
 enum Subcommand: String {
   case registerCoreAgents = "register-core-agents"
   case unregisterCoreAgents = "unregister-core-agents"
+  case coreAgentsEnabled = "core-agents-enabled"
 
   case registerMenuAgent = "register-menu-agent"
   case unregisterMenuAgent = "unregister-menu-agent"
@@ -14,8 +15,8 @@ enum Subcommand: String {
   case registerNotificationWindowAgent = "register-notification-window-agent"
   case unregisterNotificationWindowAgent = "unregister-notification-window-agent"
 
-  case status = "status"
-  case running = "running"
+  case status
+  case running
 }
 
 RunLoop.main.perform {
@@ -57,6 +58,15 @@ RunLoop.main.perform {
     case .unregisterCoreAgents:
       ServiceManagementHelper.unregister(services: coreAgents)
       exit(0)
+
+    case .coreAgentsEnabled:
+      if ServiceManagementHelper.enabled(services: coreAgents) {
+        print("enabled")
+        exit(0)
+      } else {
+        print("There are services that are not enabled")
+        exit(1)
+      }
 
     case .registerMenuAgent:
       ServiceManagementHelper.register(services: [menuAgentService])
@@ -117,6 +127,7 @@ RunLoop.main.perform {
   print("Subcommands:")
   print("    \(Subcommand.registerCoreAgents.rawValue)")
   print("    \(Subcommand.unregisterCoreAgents.rawValue)")
+  print("    \(Subcommand.coreAgentsEnabled.rawValue)")
 
   print("    \(Subcommand.registerMenuAgent.rawValue)")
   print("    \(Subcommand.unregisterMenuAgent.rawValue)")

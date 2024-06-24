@@ -4,9 +4,10 @@ import ServiceManagement
 enum Subcommand: String {
   case registerCoreDaemons = "register-core-daemons"
   case unregisterCoreDaemons = "unregister-core-daemons"
+  case coreDaemonsEnabled = "core-daemons-enabled"
 
-  case status = "status"
-  case running = "running"
+  case status
+  case running
 }
 
 RunLoop.main.perform {
@@ -35,6 +36,15 @@ RunLoop.main.perform {
     case .unregisterCoreDaemons:
       ServiceManagementHelper.unregister(services: coreDaemons)
       exit(0)
+
+    case .coreDaemonsEnabled:
+      if ServiceManagementHelper.enabled(services: coreDaemons) {
+        print("enabled")
+        exit(0)
+      } else {
+        print("There are services that are not enabled")
+        exit(1)
+      }
 
     case .status:
       ServiceManagementHelper.printStatuses(services: allServices)
@@ -66,6 +76,7 @@ RunLoop.main.perform {
   print("Subcommands:")
   print("    \(Subcommand.registerCoreDaemons.rawValue)")
   print("    \(Subcommand.unregisterCoreDaemons.rawValue)")
+  print("    \(Subcommand.coreDaemonsEnabled.rawValue)")
 
   print("    \(Subcommand.status.rawValue)")
   print("    \(Subcommand.running.rawValue)")

@@ -45,6 +45,10 @@ struct ServiceManagementHelper {
     }
   }
 
+  static func enabled(services: [SMAppService]) -> Bool {
+    return services.allSatisfy { $0.status == .enabled }
+  }
+
   static func printStatuses(services: [SMAppService]) {
     for s in services {
       switch s.status {
