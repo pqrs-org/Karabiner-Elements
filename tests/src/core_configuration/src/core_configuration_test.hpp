@@ -688,8 +688,6 @@ void run_core_configuration_test(void) {
           {"parameters", nlohmann::json::object({
                              {"delay_milliseconds_before_open_device", 1000},
                          })},
-          {"simple_modifications", nlohmann::json::array()},
-          {"fn_function_keys", nlohmann::json::array()},
           {"virtual_hid_keyboard", get_default_virtual_hid_keyboard_json()},
       });
       expect(empty_profile.to_json() == expected) << UT_SHOW_LINE;

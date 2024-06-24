@@ -260,13 +260,11 @@
                 },
                 "rules": []
             },
-            "fn_function_keys": [],
             "name": "Empty",
             "parameters": {
                 "delay_milliseconds_before_open_device": 1000
             },
             "selected": false,
-            "simple_modifications": [],
             "virtual_hid_keyboard": {
                 "country_code": 0,
                 "indicate_sticky_modifier_keys_state": true,
@@ -301,7 +299,6 @@
                 "delay_milliseconds_before_open_device": 1000
             },
             "selected": false,
-            "simple_modifications": [],
             "virtual_hid_keyboard": {
                 "country_code": 0,
                 "indicate_sticky_modifier_keys_state": true,
@@ -319,7 +316,6 @@
                 },
                 "rules": []
             },
-            "fn_function_keys": [],
             "name": "simple_modifications v2",
             "parameters": {
                 "delay_milliseconds_before_open_device": 1000

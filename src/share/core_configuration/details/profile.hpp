@@ -150,8 +150,25 @@ public:
     j["name"] = name_;
     j["selected"] = selected_;
     j["parameters"] = parameters_;
-    j["simple_modifications"] = simple_modifications_->to_json(nlohmann::json::array());
-    j["fn_function_keys"] = fn_function_keys_->to_json(make_default_fn_function_keys_json());
+
+    {
+      auto jj = simple_modifications_->to_json(nlohmann::json::array());
+      if (!jj.empty()) {
+        j["simple_modifications"] = jj;
+      } else {
+        j.erase("simple_modifications");
+      }
+    }
+
+    {
+      auto jj = fn_function_keys_->to_json(make_default_fn_function_keys_json());
+      if (!jj.empty()) {
+        j["fn_function_keys"] = jj;
+      } else {
+        j.erase("fn_function_keys");
+      }
+    }
+
     j["complex_modifications"] = complex_modifications_.to_json();
     j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
 

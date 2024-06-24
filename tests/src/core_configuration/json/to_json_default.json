@@ -11,13 +11,11 @@
                     "mouse_motion_to_scroll.speed": 100
                 }
             },
-            "fn_function_keys": [],
             "name": "Default profile",
             "parameters": {
                 "delay_milliseconds_before_open_device": 1000
             },
             "selected": true,
-            "simple_modifications": [],
             "virtual_hid_keyboard": {
                 "country_code": 0,
                 "indicate_sticky_modifier_keys_state": true,
