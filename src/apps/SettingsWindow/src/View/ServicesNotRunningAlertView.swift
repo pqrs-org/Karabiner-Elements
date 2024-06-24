@@ -57,7 +57,6 @@ struct ServicesNotRunningAlertView: View {
             Image(decorative: "login-items")
               .resizable()
               .aspectRatio(contentMode: .fit)
-              //.frame(height: 250)
               .border(Color.gray, width: 1)
 
           }
