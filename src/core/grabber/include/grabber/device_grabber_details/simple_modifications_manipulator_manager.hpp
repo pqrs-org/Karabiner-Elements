@@ -27,7 +27,7 @@ public:
       // Add profile.device.simple_modifications
       //
 
-      for (const auto& pair : device->get_simple_modifications().get_pairs()) {
+      for (const auto& pair : device->get_simple_modifications()->get_pairs()) {
         try {
           if (auto m = make_manipulator(pair)) {
             auto c = manipulator::manipulator_factory::make_device_if_condition(*device);
@@ -105,7 +105,7 @@ public:
       }
     }
 
-    for (const auto& pair : profile.get_simple_modifications().get_pairs()) {
+    for (const auto& pair : profile.get_simple_modifications()->get_pairs()) {
       if (auto m = make_manipulator(pair)) {
         manipulator_manager_->push_back_manipulator(m);
       }

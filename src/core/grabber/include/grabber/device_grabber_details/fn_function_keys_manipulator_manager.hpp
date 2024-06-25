@@ -80,7 +80,7 @@ public:
     // from_modifiers+f1 -> display_brightness_decrement ...
 
     for (const auto& device : profile.get_devices()) {
-      for (const auto& pair : device->get_fn_function_keys().get_pairs()) {
+      for (const auto& pair : device->get_fn_function_keys()->get_pairs()) {
         try {
           if (auto m = make_manipulator(pair,
                                         from_mandatory_modifiers,
@@ -104,7 +104,7 @@ public:
       }
     }
 
-    for (const auto& pair : profile.get_fn_function_keys().get_pairs()) {
+    for (const auto& pair : profile.get_fn_function_keys()->get_pairs()) {
       if (auto m = make_manipulator(pair,
                                     from_mandatory_modifiers,
                                     from_optional_modifiers,
