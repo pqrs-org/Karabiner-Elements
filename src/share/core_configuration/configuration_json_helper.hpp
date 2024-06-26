@@ -108,7 +108,8 @@ public:
         if constexpr (std::is_same<T, bool>::value) {
           pqrs::json::requires_boolean(*it, "`" + key_ + "`");
         } else if constexpr (std::is_same<T, int>::value ||
-                             std::is_same<T, double>::value) {
+                             std::is_same<T, double>::value ||
+                             std::is_same<T, pqrs::hid::country_code::value_t>::value) {
           pqrs::json::requires_number(*it, "`" + key_ + "`");
         }
 
@@ -334,6 +335,10 @@ public:
 
   int find_default_value(const int& value) const {
     return find_default_value(value, 0);
+  }
+
+  pqrs::hid::country_code::value_t find_default_value(const pqrs::hid::country_code::value_t& value) const {
+    return find_default_value(value, pqrs::hid::country_code::value_t(0));
   }
 
   std::chrono::milliseconds find_default_value(const std::chrono::milliseconds& value) const {

@@ -33,6 +33,7 @@ public:
     helper_values.push_back_value<bool>("bool", b, true);
     helper_values.push_back_value<double>("double", d, 1042.0);
     helper_values.push_back_value<int>("int", i, 2042);
+    helper_values.push_back_value<pqrs::hid::country_code::value_t>("country_code", cc, pqrs::hid::country_code::value_t(2));
     helper_values.push_back_value<std::chrono::milliseconds>("milliseconds", ms, std::chrono::milliseconds(3042));
     helper_values.push_back_value<std::string>("string", s, "42");
     helper_values.push_back_object<test_object>("object", o);
@@ -52,6 +53,7 @@ public:
   bool b;
   double d;
   int i;
+  pqrs::hid::country_code::value_t cc;
   std::chrono::milliseconds ms;
   std::string s;
   gsl::not_null<std::shared_ptr<test_object>> o;
@@ -70,6 +72,7 @@ void run_configuration_json_helper_test(void) {
     expect(true == actual.b);
     expect(1042.0_d == actual.d);
     expect(2042_i == actual.i);
+    expect(pqrs::hid::country_code::value_t(2) == actual.cc);
     expect(std::chrono::milliseconds(3042) == actual.ms);
     expect(std::string("42") == actual.s);
     expect(42_i == actual.o->i);
@@ -88,6 +91,7 @@ void run_configuration_json_helper_test(void) {
   "bool": false,
   "double": 1.0,
   "int": 2,
+  "country_code": 42,
   "milliseconds": 5,
   "string": "4242",
   "object": {
@@ -106,6 +110,7 @@ void run_configuration_json_helper_test(void) {
     expect(false == actual.b);
     expect(1.0_d == actual.d);
     expect(2_i == actual.i);
+    expect(pqrs::hid::country_code::value_t(42) == actual.cc);
     expect(std::chrono::milliseconds(5) == actual.ms);
     expect(std::string("4242") == actual.s);
     expect(3_i == actual.o->i);
@@ -121,6 +126,7 @@ void run_configuration_json_helper_test(void) {
     actual.b = true;
     actual.d = 1042.0;
     actual.i = 2042;
+    actual.cc = pqrs::hid::country_code::value_t(2);
     actual.ms = std::chrono::milliseconds(3042);
     actual.s = "42";
     actual.o->i = 42;
@@ -273,6 +279,12 @@ void run_configuration_json_helper_test(void) {
   }
   {
     expect(throws([] {
+      auto json = nlohmann::json::parse(R"( { "country_code": null } )");
+      test_class(json, krbn::core_configuration::error_handling::strict);
+    }));
+  }
+  {
+    expect(throws([] {
       auto json = nlohmann::json::parse(R"( { "milliseconds": null } )");
       test_class(json, krbn::core_configuration::error_handling::strict);
     }));
@@ -299,6 +311,11 @@ void run_configuration_json_helper_test(void) {
     auto json = nlohmann::json::parse(R"( { "int": null } )");
     auto actual = test_class(json, krbn::core_configuration::error_handling::loose);
     expect(2042_i == actual.i);
+  }
+  {
+    auto json = nlohmann::json::parse(R"( { "country_code": null } )");
+    auto actual = test_class(json, krbn::core_configuration::error_handling::loose);
+    expect(pqrs::hid::country_code::value_t(2) == actual.cc);
   }
   {
     auto json = nlohmann::json::parse(R"( { "milliseconds": null } )");
