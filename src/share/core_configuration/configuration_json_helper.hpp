@@ -3,6 +3,7 @@
 #include "logger.hpp"
 #include "memory_utility.hpp"
 #include "types.hpp"
+#include <chrono>
 #include <gsl/gsl>
 #include <pqrs/json.hpp>
 
@@ -98,10 +99,16 @@ public:
                                                         pqrs::json::dump_for_error_message(*it)));
         }
 
+      } else if constexpr (std::is_same<T, std::chrono::milliseconds>::value) {
+        pqrs::json::requires_number(*it, "`" + key_ + "`");
+
+        value_ = std::chrono::milliseconds(it->template get<int>());
+
       } else {
         if constexpr (std::is_same<T, bool>::value) {
           pqrs::json::requires_boolean(*it, "`" + key_ + "`");
-        } else if constexpr (std::is_same<T, int>::value || std::is_same<T, double>::value) {
+        } else if constexpr (std::is_same<T, int>::value ||
+                             std::is_same<T, double>::value) {
           pqrs::json::requires_number(*it, "`" + key_ + "`");
         }
 
@@ -136,8 +143,11 @@ public:
           json[key_] = lines;
         }
 
+      } else if constexpr (std::is_same<T, std::chrono::milliseconds>::value) {
+        json[key_] = value_.count();
+
       } else {
-        // For non-string values, save them as they are.
+        // For generic values, save them as they are.
         json[key_] = value_;
       }
 
@@ -317,6 +327,10 @@ public:
 
   int find_default_value(const int& value) const {
     return find_default_value(value, 0);
+  }
+
+  std::chrono::milliseconds find_default_value(const std::chrono::milliseconds& value) const {
+    return find_default_value(value, std::chrono::milliseconds(0));
   }
 
   std::string find_default_value(const std::string& value) const {
