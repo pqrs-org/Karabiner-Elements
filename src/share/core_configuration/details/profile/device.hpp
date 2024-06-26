@@ -282,7 +282,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     return identifiers_;
   }
 
-  bool get_ignore(void) const {
+  const bool& get_ignore(void) const {
     return ignore_;
   }
   void set_ignore(bool value) {
@@ -291,7 +291,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_manipulate_caps_lock_led(void) const {
+  const bool& get_manipulate_caps_lock_led(void) const {
     return manipulate_caps_lock_led_;
   }
   void set_manipulate_caps_lock_led(bool value) {
@@ -300,7 +300,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_treat_as_built_in_keyboard(void) const {
+  const bool& get_treat_as_built_in_keyboard(void) const {
     return treat_as_built_in_keyboard_;
   }
   void set_treat_as_built_in_keyboard(bool value) {
@@ -309,7 +309,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_disable_built_in_keyboard_if_exists(void) const {
+  const bool& get_disable_built_in_keyboard_if_exists(void) const {
     return disable_built_in_keyboard_if_exists_;
   }
   void set_disable_built_in_keyboard_if_exists(bool value) {
@@ -318,7 +318,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_flip_x(void) const {
+  const bool& get_mouse_flip_x(void) const {
     return mouse_flip_x_;
   }
   void set_mouse_flip_x(bool value) {
@@ -327,7 +327,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_flip_y(void) const {
+  const bool& get_mouse_flip_y(void) const {
     return mouse_flip_y_;
   }
   void set_mouse_flip_y(bool value) {
@@ -336,7 +336,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_flip_vertical_wheel(void) const {
+  const bool& get_mouse_flip_vertical_wheel(void) const {
     return mouse_flip_vertical_wheel_;
   }
   void set_mouse_flip_vertical_wheel(bool value) {
@@ -345,7 +345,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_flip_horizontal_wheel(void) const {
+  const bool& get_mouse_flip_horizontal_wheel(void) const {
     return mouse_flip_horizontal_wheel_;
   }
   void set_mouse_flip_horizontal_wheel(bool value) {
@@ -354,7 +354,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_swap_xy(void) const {
+  const bool& get_mouse_swap_xy(void) const {
     return mouse_swap_xy_;
   }
   void set_mouse_swap_xy(bool value) {
@@ -363,7 +363,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_swap_wheels(void) const {
+  const bool& get_mouse_swap_wheels(void) const {
     return mouse_swap_wheels_;
   }
   void set_mouse_swap_wheels(bool value) {
@@ -372,7 +372,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_discard_x(void) const {
+  const bool& get_mouse_discard_x(void) const {
     return mouse_discard_x_;
   }
   void set_mouse_discard_x(bool value) {
@@ -381,7 +381,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_discard_y(void) const {
+  const bool& get_mouse_discard_y(void) const {
     return mouse_discard_y_;
   }
   void set_mouse_discard_y(bool value) {
@@ -390,7 +390,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_discard_vertical_wheel(void) const {
+  const bool& get_mouse_discard_vertical_wheel(void) const {
     return mouse_discard_vertical_wheel_;
   }
   void set_mouse_discard_vertical_wheel(bool value) {
@@ -399,7 +399,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_mouse_discard_horizontal_wheel(void) const {
+  const bool& get_mouse_discard_horizontal_wheel(void) const {
     return mouse_discard_horizontal_wheel_;
   }
   void set_mouse_discard_horizontal_wheel(bool value) {
@@ -408,7 +408,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  bool get_game_pad_swap_sticks(void) const {
+  const bool& get_game_pad_swap_sticks(void) const {
     return game_pad_swap_sticks_;
   }
   void set_game_pad_swap_sticks(bool value) {

@@ -470,7 +470,7 @@ public:
 
           if (hid_manager_) {
             hid_manager_->async_set_device_matched_delay(
-                profile.get_parameters().get_delay_milliseconds_before_open_device());
+                profile.get_parameters()->get_delay_milliseconds_before_open_device());
             hid_manager_->async_start();
           }
 

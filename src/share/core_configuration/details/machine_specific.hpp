@@ -33,7 +33,7 @@ public:
       return j;
     }
 
-    bool get_enable_multitouch_extension(void) const {
+    const bool& get_enable_multitouch_extension(void) const {
       return enable_multitouch_extension_;
     }
     void set_enable_multitouch_extension(bool value) {

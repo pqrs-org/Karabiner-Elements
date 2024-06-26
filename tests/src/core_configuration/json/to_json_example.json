@@ -261,9 +261,6 @@
                 "rules": []
             },
             "name": "Empty",
-            "parameters": {
-                "delay_milliseconds_before_open_device": 1000
-            },
             "selected": false,
             "virtual_hid_keyboard": {
                 "country_code": 0,
@@ -295,9 +292,6 @@
                 }
             ],
             "name": "fn_function_keys v1",
-            "parameters": {
-                "delay_milliseconds_before_open_device": 1000
-            },
             "selected": false,
             "virtual_hid_keyboard": {
                 "country_code": 0,
@@ -317,9 +311,6 @@
                 "rules": []
             },
             "name": "simple_modifications v2",
-            "parameters": {
-                "delay_milliseconds_before_open_device": 1000
-            },
             "selected": false,
             "simple_modifications": [
                 {

@@ -213,13 +213,13 @@ void libkrbn_core_configuration_erase_profile(size_t index) {
 
 int libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(void) {
   auto c = get_current_core_configuration();
-  auto count = c->get_selected_profile().get_parameters().get_delay_milliseconds_before_open_device().count();
+  auto count = c->get_selected_profile().get_parameters()->get_delay_milliseconds_before_open_device().count();
   return static_cast<int>(count);
 }
 
 void libkrbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(int value) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().get_parameters().set_delay_milliseconds_before_open_device(
+  c->get_selected_profile().get_parameters()->set_delay_milliseconds_before_open_device(
       std::chrono::milliseconds(value));
 }
 

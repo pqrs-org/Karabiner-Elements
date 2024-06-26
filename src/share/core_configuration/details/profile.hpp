@@ -20,8 +20,12 @@ public:
       : json_(json),
         error_handling_(error_handling),
         selected_(false),
+        parameters_(std::make_shared<details::parameters>()),
         simple_modifications_(std::make_shared<simple_modifications>()),
         fn_function_keys_(std::make_shared<simple_modifications>()) {
+    helper_values_.push_back_object<details::parameters>("parameters",
+                                                         parameters_);
+
     helper_values_.push_back_array<details::device>("devices",
                                                     devices_);
 
@@ -49,13 +53,6 @@ public:
         pqrs::json::requires_boolean(value, "`" + key + "`");
 
         selected_ = value.get<bool>();
-
-      } else if (key == "parameters") {
-        try {
-          parameters_ = value.get<parameters>();
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
 
       } else if (key == "simple_modifications") {
         try {
@@ -149,7 +146,6 @@ public:
 
     j["name"] = name_;
     j["selected"] = selected_;
-    j["parameters"] = parameters_;
 
     {
       auto jj = simple_modifications_->to_json(nlohmann::json::array());
@@ -191,12 +187,8 @@ public:
     selected_ = value;
   }
 
-  const details::parameters& get_parameters(void) const {
+  gsl::not_null<std::shared_ptr<details::parameters>> get_parameters(void) const {
     return parameters_;
-  }
-
-  details::parameters& get_parameters(void) {
-    return const_cast<details::parameters&>(static_cast<const profile&>(*this).get_parameters());
   }
 
   gsl::not_null<std::shared_ptr<simple_modifications>> get_simple_modifications(void) const {
@@ -273,7 +265,7 @@ private:
   error_handling error_handling_;
   std::string name_;
   bool selected_;
-  details::parameters parameters_;
+  gsl::not_null<std::shared_ptr<details::parameters>> parameters_;
   gsl::not_null<std::shared_ptr<simple_modifications>> simple_modifications_;
   gsl::not_null<std::shared_ptr<simple_modifications>> fn_function_keys_;
   details::complex_modifications complex_modifications_;

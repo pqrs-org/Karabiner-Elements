@@ -50,42 +50,42 @@ public:
     return j;
   }
 
-  bool get_check_for_updates_on_startup(void) const {
+  const bool& get_check_for_updates_on_startup(void) const {
     return check_for_updates_on_startup_;
   }
   void set_check_for_updates_on_startup(bool value) {
     check_for_updates_on_startup_ = value;
   }
 
-  bool get_show_in_menu_bar(void) const {
+  const bool& get_show_in_menu_bar(void) const {
     return show_in_menu_bar_;
   }
   void set_show_in_menu_bar(bool value) {
     show_in_menu_bar_ = value;
   }
 
-  bool get_show_profile_name_in_menu_bar(void) const {
+  const bool& get_show_profile_name_in_menu_bar(void) const {
     return show_profile_name_in_menu_bar_;
   }
   void set_show_profile_name_in_menu_bar(bool value) {
     show_profile_name_in_menu_bar_ = value;
   }
 
-  bool get_enable_notification_window(void) const {
+  const bool& get_enable_notification_window(void) const {
     return enable_notification_window_;
   }
   void set_enable_notification_window(bool value) {
     enable_notification_window_ = value;
   }
 
-  bool get_ask_for_confirmation_before_quitting(void) const {
+  const bool& get_ask_for_confirmation_before_quitting(void) const {
     return ask_for_confirmation_before_quitting_;
   }
   void set_ask_for_confirmation_before_quitting(bool value) {
     ask_for_confirmation_before_quitting_ = value;
   }
 
-  bool get_unsafe_ui(void) const {
+  const bool& get_unsafe_ui(void) const {
     return unsafe_ui_;
   }
   void set_unsafe_ui(bool value) {

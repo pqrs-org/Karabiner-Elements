@@ -14,7 +14,8 @@ void handle_json(const nlohmann::json& json) {
     krbn::core_configuration::details::device(json.at("input"),
                                               krbn::core_configuration::error_handling::strict);
   } else if (c == "parameters") {
-    json.at("input").get<krbn::core_configuration::details::parameters>();
+    krbn::core_configuration::details::parameters(json.at("input"),
+                                                  krbn::core_configuration::error_handling::strict);
   } else if (c == "profile") {
     krbn::core_configuration::details::profile(json.at("input"),
                                                krbn::core_configuration::error_handling::strict);

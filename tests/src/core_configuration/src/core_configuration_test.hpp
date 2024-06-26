@@ -685,9 +685,6 @@ void run_core_configuration_test(void) {
                                     })},
           {"name", ""},
           {"selected", false},
-          {"parameters", nlohmann::json::object({
-                             {"delay_milliseconds_before_open_device", 1000},
-                         })},
           {"virtual_hid_keyboard", get_default_virtual_hid_keyboard_json()},
       });
       expect(empty_profile.to_json() == expected) << UT_SHOW_LINE;
@@ -728,7 +725,7 @@ void run_core_configuration_test(void) {
       profile.set_name("profile 1");
       profile.set_selected(true);
 
-      profile.get_parameters().set_delay_milliseconds_before_open_device(std::chrono::milliseconds(500));
+      profile.get_parameters()->set_delay_milliseconds_before_open_device(std::chrono::milliseconds(500));
 
       profile.get_simple_modifications()->push_back_pair();
       // {

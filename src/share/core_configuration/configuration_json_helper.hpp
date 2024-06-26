@@ -179,9 +179,16 @@ public:
 
   void update_value(const nlohmann::json& json,
                     error_handling error_handling) override {
-    if (auto v = pqrs::json::find_object(json, key_)) {
-      value_ = std::make_shared<T>(v->value(),
+    auto it = json.find(key_);
+    if (it == std::end(json)) {
+      return;
+    }
+
+    try {
+      value_ = std::make_shared<T>(*it,
                                    error_handling);
+    } catch (pqrs::json::unmarshal_error& e) {
+      throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key_, e.what()));
     }
   }
 
