@@ -890,7 +890,7 @@ private:
 
   void update_virtual_hid_keyboard(void) {
     virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(
-        core_configuration_->get_selected_profile().get_virtual_hid_keyboard().get_country_code());
+        core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_country_code());
   }
 
   void update_virtual_hid_pointing(void) {

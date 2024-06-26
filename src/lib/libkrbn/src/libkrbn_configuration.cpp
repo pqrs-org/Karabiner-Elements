@@ -492,42 +492,42 @@ uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_cou
   auto c = get_current_core_configuration();
   return static_cast<uint8_t>(type_safe::get(c->get_selected_profile()
                                                  .get_virtual_hid_keyboard()
-                                                 .get_country_code()));
+                                                 ->get_country_code()));
 }
 
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(uint8_t value) {
   auto c = get_current_core_configuration();
   c->get_selected_profile()
       .get_virtual_hid_keyboard()
-      .set_country_code(pqrs::hid::country_code::value_t(value));
+      ->set_country_code(pqrs::hid::country_code::value_t(value));
 }
 
 int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(void) {
   auto c = get_current_core_configuration();
   return c->get_selected_profile()
       .get_virtual_hid_keyboard()
-      .get_mouse_key_xy_scale();
+      ->get_mouse_key_xy_scale();
 }
 
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(int value) {
   auto c = get_current_core_configuration();
   c->get_selected_profile()
       .get_virtual_hid_keyboard()
-      .set_mouse_key_xy_scale(value);
+      ->set_mouse_key_xy_scale(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(void) {
   auto c = get_current_core_configuration();
   return c->get_selected_profile()
       .get_virtual_hid_keyboard()
-      .get_indicate_sticky_modifier_keys_state();
+      ->get_indicate_sticky_modifier_keys_state();
 }
 
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(bool value) {
   auto c = get_current_core_configuration();
   c->get_selected_profile()
       .get_virtual_hid_keyboard()
-      .set_indicate_sticky_modifier_keys_state(value);
+      ->set_indicate_sticky_modifier_keys_state(value);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers) {

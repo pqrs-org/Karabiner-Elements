@@ -8,21 +8,42 @@ namespace core_configuration {
 namespace details {
 class virtual_hid_keyboard final {
 public:
-  virtual_hid_keyboard(void) : json_(nlohmann::json::object()),
-                               country_code_(0),
-                               mouse_key_xy_scale_(100),
-                               indicate_sticky_modifier_keys_state_(true) {
+  virtual_hid_keyboard(const virtual_hid_keyboard&) = delete;
+
+  virtual_hid_keyboard(void)
+      : virtual_hid_keyboard(nlohmann::json::object(),
+                             krbn::core_configuration::error_handling::loose) {
   }
 
-  const nlohmann::json& get_json(void) const {
-    return json_;
+  virtual_hid_keyboard(const nlohmann::json& json,
+                       error_handling error_handling)
+      : json_(json) {
+    helper_values_.push_back_value<pqrs::hid::country_code::value_t>("country_code",
+                                                                     country_code_,
+                                                                     pqrs::hid::country_code::value_t(0));
+
+    helper_values_.push_back_value<int>("mouse_key_xy_scale",
+                                        mouse_key_xy_scale_,
+                                        100);
+
+    helper_values_.push_back_value<bool>("indicate_sticky_modifier_keys_state",
+                                         indicate_sticky_modifier_keys_state_,
+                                         true);
+
+    pqrs::json::requires_object(json, "json");
+
+    helper_values_.update_value(json, error_handling);
   }
 
-  void set_json(const nlohmann::json& value) {
-    json_ = value;
+  nlohmann::json to_json(void) const {
+    auto j = json_;
+
+    helper_values_.update_json(j);
+
+    return j;
   }
 
-  pqrs::hid::country_code::value_t get_country_code(void) const {
+  const pqrs::hid::country_code::value_t& get_country_code(void) const {
     return country_code_;
   }
 
@@ -30,7 +51,7 @@ public:
     country_code_ = value;
   }
 
-  int get_mouse_key_xy_scale(void) const {
+  const int& get_mouse_key_xy_scale(void) const {
     return mouse_key_xy_scale_;
   }
 
@@ -41,7 +62,7 @@ public:
     mouse_key_xy_scale_ = value;
   }
 
-  bool get_indicate_sticky_modifier_keys_state(void) const {
+  const bool& get_indicate_sticky_modifier_keys_state(void) const {
     return indicate_sticky_modifier_keys_state_;
   }
 
@@ -61,40 +82,8 @@ private:
   pqrs::hid::country_code::value_t country_code_;
   int mouse_key_xy_scale_;
   bool indicate_sticky_modifier_keys_state_;
+  configuration_json_helper::helper_values helper_values_;
 };
-
-inline void to_json(nlohmann::json& json, const virtual_hid_keyboard& value) {
-  json = value.get_json();
-  json["country_code"] = value.get_country_code();
-  json["mouse_key_xy_scale"] = value.get_mouse_key_xy_scale();
-  json["indicate_sticky_modifier_keys_state"] = value.get_indicate_sticky_modifier_keys_state();
-}
-
-inline void from_json(const nlohmann::json& json, virtual_hid_keyboard& value) {
-  pqrs::json::requires_object(json, "json");
-
-  for (const auto& [k, v] : json.items()) {
-    if (k == "country_code") {
-      value.set_country_code(v.get<pqrs::hid::country_code::value_t>());
-
-    } else if (k == "mouse_key_xy_scale") {
-      pqrs::json::requires_number(v, "`" + k + "`");
-
-      value.set_mouse_key_xy_scale(v.get<int>());
-
-    } else if (k == "indicate_sticky_modifier_keys_state") {
-      pqrs::json::requires_boolean(v, "`" + k + "`");
-
-      value.set_indicate_sticky_modifier_keys_state(v.get<int>());
-
-    } else {
-      // Allow unknown keys in order to be able to load
-      // newer version of karabiner.json with older Karabiner-Elements.
-    }
-  }
-
-  value.set_json(json);
-}
 } // namespace details
 } // namespace core_configuration
 } // namespace krbn

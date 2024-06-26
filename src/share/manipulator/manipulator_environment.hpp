@@ -159,7 +159,7 @@ private:
   void update_virtual_hid_keyboard_keyboard_type(void) {
     pqrs::hid::country_code::value_t country_code(0);
     if (auto c = core_configuration_.lock()) {
-      country_code = c->get_selected_profile().get_virtual_hid_keyboard().get_country_code();
+      country_code = c->get_selected_profile().get_virtual_hid_keyboard()->get_country_code();
     }
 
     pqrs::osx::system_preferences::keyboard_type_key key(

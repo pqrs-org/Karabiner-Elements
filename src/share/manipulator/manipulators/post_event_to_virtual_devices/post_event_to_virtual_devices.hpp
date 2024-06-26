@@ -433,7 +433,7 @@ private:
   void update_sticky_modifiers_notification_message(const event_queue::queue& output_event_queue) {
     if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
       if (auto c = output_event_queue.get_manipulator_environment().get_core_configuration().lock()) {
-        if (c->get_selected_profile().get_virtual_hid_keyboard().get_indicate_sticky_modifier_keys_state()) {
+        if (c->get_selected_profile().get_virtual_hid_keyboard()->get_indicate_sticky_modifier_keys_state()) {
           notification_message_manager->async_update_sticky_modifiers_message(output_event_queue.get_modifier_flag_manager());
         } else {
           notification_message_manager->async_clear_sticky_modifiers_message();

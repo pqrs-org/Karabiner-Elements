@@ -359,13 +359,13 @@ void run_manipulator_conditions_test(void) {
       actual_examples_helper helper("keyboard_type_if.json");
 
       // iso
-      core_configuration->get_selected_profile().get_virtual_hid_keyboard().set_country_code(pqrs::hid::country_code::value_t(1));
+      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(1));
       manipulator_environment.set_core_configuration(core_configuration);
       expect(helper.get_condition_manager().is_fulfilled(entry,
                                                          manipulator_environment) == true);
 
       // ansi
-      core_configuration->get_selected_profile().get_virtual_hid_keyboard().set_country_code(pqrs::hid::country_code::value_t(0));
+      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(0));
       manipulator_environment.set_core_configuration(core_configuration);
       expect(helper.get_condition_manager().is_fulfilled(entry,
                                                          manipulator_environment) == false);
@@ -374,13 +374,13 @@ void run_manipulator_conditions_test(void) {
       actual_examples_helper helper("keyboard_type_unless.json");
 
       // iso
-      core_configuration->get_selected_profile().get_virtual_hid_keyboard().set_country_code(pqrs::hid::country_code::value_t(1));
+      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(1));
       manipulator_environment.set_core_configuration(core_configuration);
       expect(helper.get_condition_manager().is_fulfilled(entry,
                                                          manipulator_environment) == false);
 
       // ansi
-      core_configuration->get_selected_profile().get_virtual_hid_keyboard().set_country_code(pqrs::hid::country_code::value_t(0));
+      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(0));
       manipulator_environment.set_core_configuration(core_configuration);
       expect(helper.get_condition_manager().is_fulfilled(entry,
                                                          manipulator_environment) == true);

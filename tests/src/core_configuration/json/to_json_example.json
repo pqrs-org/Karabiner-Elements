@@ -261,12 +261,7 @@
                 "rules": []
             },
             "name": "Empty",
-            "selected": false,
-            "virtual_hid_keyboard": {
-                "country_code": 0,
-                "indicate_sticky_modifier_keys_state": true,
-                "mouse_key_xy_scale": 100
-            }
+            "selected": false
         },
         {
             "complex_modifications": {
@@ -292,12 +287,7 @@
                 }
             ],
             "name": "fn_function_keys v1",
-            "selected": false,
-            "virtual_hid_keyboard": {
-                "country_code": 0,
-                "indicate_sticky_modifier_keys_state": true,
-                "mouse_key_xy_scale": 100
-            }
+            "selected": false
         },
         {
             "complex_modifications": {
@@ -323,12 +313,7 @@
                         }
                     ]
                 }
-            ],
-            "virtual_hid_keyboard": {
-                "country_code": 0,
-                "indicate_sticky_modifier_keys_state": true,
-                "mouse_key_xy_scale": 100
-            }
+            ]
         }
     ]
 }

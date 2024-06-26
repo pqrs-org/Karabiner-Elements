@@ -22,9 +22,13 @@ public:
         selected_(false),
         parameters_(std::make_shared<details::parameters>()),
         simple_modifications_(std::make_shared<simple_modifications>()),
-        fn_function_keys_(std::make_shared<simple_modifications>()) {
+        fn_function_keys_(std::make_shared<simple_modifications>()),
+        virtual_hid_keyboard_(std::make_shared<details::virtual_hid_keyboard>()) {
     helper_values_.push_back_object<details::parameters>("parameters",
                                                          parameters_);
+
+    helper_values_.push_back_object<details::virtual_hid_keyboard>("virtual_hid_keyboard",
+                                                                   virtual_hid_keyboard_);
 
     helper_values_.push_back_array<details::device>("devices",
                                                     devices_);
@@ -71,13 +75,6 @@ public:
       } else if (key == "complex_modifications") {
         try {
           complex_modifications_ = complex_modifications(value);
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
-
-      } else if (key == "virtual_hid_keyboard") {
-        try {
-          virtual_hid_keyboard_ = value.get<virtual_hid_keyboard>();
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
@@ -166,7 +163,6 @@ public:
     }
 
     j["complex_modifications"] = complex_modifications_.to_json();
-    j["virtual_hid_keyboard"] = virtual_hid_keyboard_;
 
     return j;
   }
@@ -223,11 +219,7 @@ public:
     complex_modifications_.set_parameter_value(name, value);
   }
 
-  const details::virtual_hid_keyboard& get_virtual_hid_keyboard(void) const {
-    return virtual_hid_keyboard_;
-  }
-
-  details::virtual_hid_keyboard& get_virtual_hid_keyboard(void) {
+  gsl::not_null<std::shared_ptr<details::virtual_hid_keyboard>> get_virtual_hid_keyboard(void) const {
     return virtual_hid_keyboard_;
   }
 
@@ -269,7 +261,7 @@ private:
   gsl::not_null<std::shared_ptr<simple_modifications>> simple_modifications_;
   gsl::not_null<std::shared_ptr<simple_modifications>> fn_function_keys_;
   details::complex_modifications complex_modifications_;
-  details::virtual_hid_keyboard virtual_hid_keyboard_;
+  gsl::not_null<std::shared_ptr<details::virtual_hid_keyboard>> virtual_hid_keyboard_;
   mutable std::vector<gsl::not_null<std::shared_ptr<details::device>>> devices_;
   configuration_json_helper::helper_values helper_values_;
 };

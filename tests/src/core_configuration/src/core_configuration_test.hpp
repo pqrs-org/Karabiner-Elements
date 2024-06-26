@@ -6,16 +6,6 @@
 #include <boost/ut.hpp>
 #include <iostream>
 
-namespace {
-nlohmann::json get_default_virtual_hid_keyboard_json(void) {
-  return nlohmann::json{
-      {"country_code", 0},
-      {"indicate_sticky_modifier_keys_state", true},
-      {"mouse_key_xy_scale", 100},
-  };
-}
-} // namespace
-
 void run_core_configuration_test(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
@@ -97,7 +87,7 @@ void run_core_configuration_test(void) {
       expect(configuration
                  .get_selected_profile()
                  .get_virtual_hid_keyboard()
-                 .get_country_code() == pqrs::hid::country_code::value_t(99));
+                 ->get_country_code() == pqrs::hid::country_code::value_t(99));
     }
     {
       auto& actual = configuration.get_selected_profile().get_devices();
@@ -685,7 +675,6 @@ void run_core_configuration_test(void) {
                                     })},
           {"name", ""},
           {"selected", false},
-          {"virtual_hid_keyboard", get_default_virtual_hid_keyboard_json()},
       });
       expect(empty_profile.to_json() == expected) << UT_SHOW_LINE;
     }
@@ -843,12 +832,9 @@ void run_core_configuration_test(void) {
       profile.get_fn_function_keys()->replace_second(nlohmann::json{{"key_code", "not found"}}.dump(),
                                                      nlohmann::json{{"key_code", "do nothing"}}.dump());
 
-      profile.get_virtual_hid_keyboard().set_country_code(pqrs::hid::country_code::value_t(20));
-      profile.get_virtual_hid_keyboard().set_mouse_key_xy_scale(250);
+      profile.get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(20));
+      profile.get_virtual_hid_keyboard()->set_mouse_key_xy_scale(250);
 
-      auto expected_virtual_hid_keyboard = get_default_virtual_hid_keyboard_json();
-      expected_virtual_hid_keyboard["country_code"] = 20;
-      expected_virtual_hid_keyboard["mouse_key_xy_scale"] = 250;
       nlohmann::json expected({
           {"complex_modifications", nlohmann::json::object({
                                         {"rules", nlohmann::json::array()},
@@ -908,7 +894,7 @@ void run_core_configuration_test(void) {
                                               })},
                                    }),
                                })},
-          {"virtual_hid_keyboard", expected_virtual_hid_keyboard},
+          {"virtual_hid_keyboard", R"( {"country_code": 20, "mouse_key_xy_scale": 250} )"_json},
       });
 
       expected["simple_modifications"].push_back(nlohmann::json::object());
@@ -1555,7 +1541,8 @@ void run_core_configuration_test(void) {
     // empty json
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
+      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
       expect(virtual_hid_keyboard.get_country_code() == pqrs::hid::country_code::value_t(0));
     }
 
@@ -1564,7 +1551,8 @@ void run_core_configuration_test(void) {
       nlohmann::json json({
           {"country_code", 10},
       });
-      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
+      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
       expect(virtual_hid_keyboard.get_country_code() == pqrs::hid::country_code::value_t(10));
     }
 
@@ -1573,10 +1561,11 @@ void run_core_configuration_test(void) {
       nlohmann::json json({
           {"country_code", nlohmann::json::object()},
       });
-      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
+      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
       expect(false);
     } catch (pqrs::json::unmarshal_error& ex) {
-      expect(std::string_view("json must be number, but is `{}`") == ex.what());
+      expect(std::string_view("`country_code` must be number, but is `{}`") == ex.what());
     } catch (...) {
       expect(false);
     }
@@ -1585,24 +1574,31 @@ void run_core_configuration_test(void) {
   "virtual_hid_keyboard.to_json"_test = [] {
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
-      expect(nlohmann::json(virtual_hid_keyboard) == get_default_virtual_hid_keyboard_json());
+      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
+      expect(json == virtual_hid_keyboard.to_json()) << UT_SHOW_LINE;
     }
     {
       nlohmann::json json({
           {"dummy", {{"keep_me", true}}},
       });
-      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json);
+      krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
       virtual_hid_keyboard.set_country_code(pqrs::hid::country_code::value_t(10));
       virtual_hid_keyboard.set_mouse_key_xy_scale(50);
 
-      nlohmann::json expected({
-          {"country_code", 10},
-          {"indicate_sticky_modifier_keys_state", true},
-          {"mouse_key_xy_scale", 50},
-          {"dummy", {{"keep_me", true}}},
-      });
-      expect(nlohmann::json(virtual_hid_keyboard) == expected);
+      auto expected = R"(
+
+{
+  "country_code": 10,
+  "dummy": {
+    "keep_me": true
+  },
+  "mouse_key_xy_scale": 50
+}
+
+      )"_json;
+      expect(expected == virtual_hid_keyboard.to_json()) << UT_SHOW_LINE;
     }
   };
 }
