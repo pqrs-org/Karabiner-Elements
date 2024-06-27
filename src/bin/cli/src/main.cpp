@@ -290,7 +290,7 @@ int main(int argc, char** argv) {
             std::ifstream input(file_path);
             if (input) {
               try {
-                auto json = krbn::json_utility::parse_jsonc(input);
+                auto json = krbn::json_utility::parse_ordered_jsonc(input);
 
                 auto status = std::filesystem::status(file_path);
                 auto directory_status = std::filesystem::status(file_path.parent_path());

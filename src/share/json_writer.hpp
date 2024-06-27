@@ -11,7 +11,8 @@
 namespace krbn {
 class json_writer final {
 public:
-  static void async_save_to_file(const nlohmann::json& json,
+  template <typename T>
+  static void async_save_to_file(const T& json,
                                  const std::string& file_path,
                                  mode_t parent_directory_mode,
                                  mode_t file_mode) {
@@ -21,7 +22,8 @@ public:
                                file_mode);
   }
 
-  static void sync_save_to_file(const nlohmann::json& json,
+  template <typename T>
+  static void sync_save_to_file(const T& json,
                                 const std::string& file_path,
                                 mode_t parent_directory_mode,
                                 mode_t file_mode) {
