@@ -673,8 +673,6 @@ void run_core_configuration_test(void) {
                                                            {"mouse_motion_to_scroll.speed", 100},
                                                        })},
                                     })},
-          {"name", ""},
-          {"selected", false},
       });
       expect(empty_profile.to_json() == expected) << UT_SHOW_LINE;
     }

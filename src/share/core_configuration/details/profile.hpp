@@ -19,11 +19,18 @@ public:
           error_handling error_handling)
       : json_(json),
         error_handling_(error_handling),
-        selected_(false),
         parameters_(std::make_shared<details::parameters>()),
         simple_modifications_(std::make_shared<simple_modifications>()),
         fn_function_keys_(std::make_shared<simple_modifications>()),
         virtual_hid_keyboard_(std::make_shared<details::virtual_hid_keyboard>()) {
+    helper_values_.push_back_value<std::string>("name",
+                                                name_,
+                                                std::string(""));
+
+    helper_values_.push_back_value<bool>("selected",
+                                         selected_,
+                                         false);
+
     helper_values_.push_back_object<details::parameters>("parameters",
                                                          parameters_);
 
@@ -48,17 +55,7 @@ public:
     helper_values_.update_value(json, error_handling);
 
     for (const auto& [key, value] : json.items()) {
-      if (key == "name") {
-        pqrs::json::requires_string(value, "`" + key + "`");
-
-        name_ = value.get<std::string>();
-
-      } else if (key == "selected") {
-        pqrs::json::requires_boolean(value, "`" + key + "`");
-
-        selected_ = value.get<bool>();
-
-      } else if (key == "simple_modifications") {
+      if (key == "simple_modifications") {
         try {
           simple_modifications_->update(value);
         } catch (const pqrs::json::unmarshal_error& e) {
@@ -141,9 +138,6 @@ public:
 
     helper_values_.update_json(j);
 
-    j["name"] = name_;
-    j["selected"] = selected_;
-
     {
       auto jj = simple_modifications_->to_json(nlohmann::json::array());
       if (!jj.empty()) {
@@ -175,7 +169,7 @@ public:
     name_ = value;
   }
 
-  bool get_selected(void) const {
+  const bool& get_selected(void) const {
     return selected_;
   }
 

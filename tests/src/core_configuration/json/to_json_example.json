@@ -260,8 +260,7 @@
                 },
                 "rules": []
             },
-            "name": "Empty",
-            "selected": false
+            "name": "Empty"
         },
         {
             "complex_modifications": {
@@ -286,8 +285,7 @@
                     ]
                 }
             ],
-            "name": "fn_function_keys v1",
-            "selected": false
+            "name": "fn_function_keys v1"
         },
         {
             "complex_modifications": {
@@ -301,7 +299,6 @@
                 "rules": []
             },
             "name": "simple_modifications v2",
-            "selected": false,
             "simple_modifications": [
                 {
                     "from": {
