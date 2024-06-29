@@ -22,6 +22,7 @@ public:
         parameters_(std::make_shared<details::parameters>()),
         simple_modifications_(std::make_shared<simple_modifications>()),
         fn_function_keys_(std::make_shared<simple_modifications>()),
+        complex_modifications_(std::make_shared<complex_modifications>()),
         virtual_hid_keyboard_(std::make_shared<details::virtual_hid_keyboard>()) {
     helper_values_.push_back_value<std::string>("name",
                                                 name_,
@@ -71,7 +72,8 @@ public:
 
       } else if (key == "complex_modifications") {
         try {
-          complex_modifications_ = complex_modifications(value);
+          complex_modifications_ = std::make_shared<complex_modifications>(value,
+                                                                           error_handling);
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
@@ -139,24 +141,34 @@ public:
     helper_values_.update_json(j);
 
     {
+      auto key = "simple_modifications";
       auto jj = simple_modifications_->to_json(nlohmann::json::array());
       if (!jj.empty()) {
-        j["simple_modifications"] = jj;
+        j[key] = jj;
       } else {
-        j.erase("simple_modifications");
+        j.erase(key);
       }
     }
 
     {
+      auto key = "fn_function_keys";
       auto jj = fn_function_keys_->to_json(make_default_fn_function_keys_json());
       if (!jj.empty()) {
-        j["fn_function_keys"] = jj;
+        j[key] = jj;
       } else {
-        j.erase("fn_function_keys");
+        j.erase(key);
       }
     }
 
-    j["complex_modifications"] = complex_modifications_.to_json();
+    {
+      auto key = "complex_modifications";
+      auto jj = complex_modifications_->to_json();
+      if (!jj.empty()) {
+        j[key] = jj;
+      } else {
+        j.erase(key);
+      }
+    }
 
     return j;
   }
@@ -189,28 +201,8 @@ public:
     return fn_function_keys_;
   }
 
-  const details::complex_modifications& get_complex_modifications(void) const {
+  gsl::not_null<std::shared_ptr<details::complex_modifications>> get_complex_modifications(void) const {
     return complex_modifications_;
-  }
-
-  details::complex_modifications& get_complex_modifications(void) {
-    return const_cast<details::complex_modifications&>(static_cast<const details::profile&>(*this).get_complex_modifications());
-  }
-
-  void push_front_complex_modifications_rule(const details::complex_modifications_rule& rule) {
-    complex_modifications_.push_front_rule(rule);
-  }
-
-  void erase_complex_modifications_rule(size_t index) {
-    complex_modifications_.erase_rule(index);
-  }
-
-  void move_complex_modifications_rule(size_t source_index, size_t destination_index) {
-    complex_modifications_.move_rule(source_index, destination_index);
-  }
-
-  void set_complex_modifications_parameter(const std::string& name, int value) {
-    complex_modifications_.set_parameter_value(name, value);
   }
 
   gsl::not_null<std::shared_ptr<details::virtual_hid_keyboard>> get_virtual_hid_keyboard(void) const {
@@ -254,7 +246,7 @@ private:
   gsl::not_null<std::shared_ptr<details::parameters>> parameters_;
   gsl::not_null<std::shared_ptr<simple_modifications>> simple_modifications_;
   gsl::not_null<std::shared_ptr<simple_modifications>> fn_function_keys_;
-  details::complex_modifications complex_modifications_;
+  gsl::not_null<std::shared_ptr<details::complex_modifications>> complex_modifications_;
   gsl::not_null<std::shared_ptr<details::virtual_hid_keyboard>> virtual_hid_keyboard_;
   mutable std::vector<gsl::not_null<std::shared_ptr<details::device>>> devices_;
   configuration_json_helper::helper_values helper_values_;

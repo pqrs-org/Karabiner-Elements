@@ -10,7 +10,7 @@ using namespace boost::ut::literals;
 void handle_json(const nlohmann::json& json) {
   auto c = json.at("class").get<std::string>();
   if (c == "basic") {
-    krbn::core_configuration::details::complex_modifications_parameters parameters;
+    auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
     krbn::manipulator::manipulators::basic::basic(json.at("input"), parameters);
   } else if (c == "from_event_definition") {
     json.at("input").get<krbn::manipulator::manipulators::basic::from_event_definition>();

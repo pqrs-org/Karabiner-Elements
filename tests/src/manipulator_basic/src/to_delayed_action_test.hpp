@@ -24,8 +24,9 @@ void run_to_delayed_action_test(void) {
                                 })},
       });
 
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       basic::basic b(json,
-                     krbn::core_configuration::details::complex_modifications_parameters());
+                     parameters);
       expect(b.get_to_delayed_action().get() != nullptr);
 
       // to_if_invoked
@@ -65,8 +66,9 @@ void run_to_delayed_action_test(void) {
                                 })},
       });
 
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       basic::basic b(json,
-                     krbn::core_configuration::details::complex_modifications_parameters());
+                     parameters);
       expect(b.get_to_delayed_action().get() != nullptr);
 
       // to_if_invoked

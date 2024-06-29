@@ -249,7 +249,8 @@ int main(int argc, char** argv) {
             }
 
             try {
-              auto assets_file = krbn::complex_modifications_assets_file(file_path.string());
+              auto assets_file = krbn::complex_modifications_assets_file(file_path.string(),
+                                                                         krbn::core_configuration::error_handling::strict);
               auto error_messages = assets_file.lint();
               if (error_messages.empty()) {
                 if (!silent) {

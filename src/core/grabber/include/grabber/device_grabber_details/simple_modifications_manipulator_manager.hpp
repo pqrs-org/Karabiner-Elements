@@ -92,7 +92,7 @@ public:
                 {"swap", swap},
                 {"discard", discard},
             });
-            auto parameters = krbn::core_configuration::details::complex_modifications_parameters();
+            auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
             auto m = std::make_shared<manipulator::manipulators::mouse_basic::mouse_basic>(json,
                                                                                            parameters);
             auto c = manipulator::manipulator_factory::make_device_if_condition(*device);

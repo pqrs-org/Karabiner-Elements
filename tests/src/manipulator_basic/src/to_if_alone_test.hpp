@@ -19,8 +19,9 @@ void run_to_if_alone_test(void) {
                           })},
       });
 
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       basic::basic b(json,
-                     krbn::core_configuration::details::complex_modifications_parameters());
+                     parameters);
       expect(b.get_to_if_alone().size() == 1);
       {
         auto& d = b.get_to_if_alone()[0].get_event_definition();
@@ -40,8 +41,9 @@ void run_to_if_alone_test(void) {
                           })},
       });
 
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       basic::basic b(json,
-                     krbn::core_configuration::details::complex_modifications_parameters());
+                     parameters);
       expect(b.get_to_if_alone().size() == 2);
       {
         auto& d = b.get_to_if_alone()[0].get_event_definition();

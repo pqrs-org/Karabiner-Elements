@@ -952,8 +952,8 @@ private:
   void update_complex_modifications_manipulators(void) {
     complex_modifications_manipulator_manager_->invalidate_manipulators();
 
-    for (const auto& rule : core_configuration_->get_selected_profile().get_complex_modifications().get_rules()) {
-      for (const auto& manipulator : rule.get_manipulators()) {
+    for (const auto& rule : core_configuration_->get_selected_profile().get_complex_modifications()->get_rules()) {
+      for (const auto& manipulator : rule->get_manipulators()) {
         try {
           auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
                                                                       manipulator.get_parameters());

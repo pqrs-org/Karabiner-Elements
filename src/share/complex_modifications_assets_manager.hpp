@@ -7,14 +7,19 @@
 namespace krbn {
 class complex_modifications_assets_manager final {
 public:
-  void reload(const std::string& directory, bool load_system_example_file = true) {
+  void reload(const std::string& directory,
+              core_configuration::error_handling error_handling,
+              bool load_system_example_file = true) {
     files_.clear();
 
     // Load system example file.
     if (load_system_example_file) {
       const std::string file_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/complex_modifications_rules_example.json";
       try {
-        files_.emplace_back(file_path);
+        auto f = std::make_shared<complex_modifications_assets_file>(file_path,
+                                                                     error_handling);
+        files_.push_back(f);
+
       } catch (std::exception& e) {
         logger::get_logger()->error("Error in {0}: {1}", file_path, e.what());
       }
@@ -29,7 +34,9 @@ public:
           auto file_path = directory + "/" + entry->d_name;
 
           try {
-            files_.emplace_back(file_path);
+            auto f = std::make_shared<complex_modifications_assets_file>(file_path,
+                                                                         error_handling);
+            files_.push_back(f);
 
           } catch (std::exception& e) {
             logger::get_logger()->error("Error in {0}: {1}", file_path, e.what());
@@ -43,15 +50,15 @@ public:
     std::sort(std::begin(files_),
               std::end(files_),
               [](auto& a, auto& b) {
-                return a.get_title() < b.get_title();
+                return a->get_title() < b->get_title();
               });
   }
 
-  const std::vector<complex_modifications_assets_file>& get_files(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<complex_modifications_assets_file>>>& get_files(void) const {
     return files_;
   }
 
 private:
-  std::vector<complex_modifications_assets_file> files_;
+  std::vector<gsl::not_null<std::shared_ptr<complex_modifications_assets_file>>> files_;
 };
 } // namespace krbn

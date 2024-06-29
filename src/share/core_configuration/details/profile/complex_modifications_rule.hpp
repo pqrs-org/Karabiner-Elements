@@ -24,8 +24,10 @@ public:
     };
 
     manipulator(const nlohmann::json& json,
-                const complex_modifications_parameters& parameters) : json_(json),
-                                                                      parameters_(parameters) {
+                gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters,
+                error_handling error_handling)
+        : json_(json),
+          parameters_(std::make_shared<complex_modifications_parameters>(parameters->to_json(), error_handling)) {
       pqrs::json::requires_object(json, "json");
 
       for (const auto& [key, value] : json.items()) {
@@ -37,9 +39,8 @@ public:
           }
 
         } else if (key == "parameters") {
-          pqrs::json::requires_object(value, "`" + key + "`");
-
-          parameters_.update(value);
+          parameters_->update(value,
+                              error_handling);
 
         } else if (key == "description") {
           pqrs::json::requires_string(value, "`" + key + "`");
@@ -60,7 +61,7 @@ public:
       return conditions_;
     }
 
-    const complex_modifications_parameters& get_parameters(void) const {
+    gsl::not_null<std::shared_ptr<complex_modifications_parameters>> get_parameters(void) const {
       return parameters_;
     }
 
@@ -71,12 +72,16 @@ public:
   private:
     nlohmann::json json_;
     std::vector<condition> conditions_;
-    complex_modifications_parameters parameters_;
+    gsl::not_null<std::shared_ptr<complex_modifications_parameters>> parameters_;
     std::string description_;
   };
 
+  complex_modifications_rule(const complex_modifications_rule&) = delete;
+
   complex_modifications_rule(const nlohmann::json& json,
-                             const complex_modifications_parameters& parameters) : json_(json) {
+                             gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters,
+                             error_handling error_handling)
+      : json_(json) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -85,7 +90,9 @@ public:
 
         for (const auto& j : value) {
           try {
-            manipulators_.emplace_back(j, parameters);
+            manipulators_.emplace_back(j,
+                                       parameters,
+                                       error_handling);
           } catch (const pqrs::json::unmarshal_error& e) {
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
           }

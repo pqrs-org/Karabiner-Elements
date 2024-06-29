@@ -47,7 +47,7 @@ void run_manipulator_factory_test(void) {
               },
           },
       });
-      krbn::core_configuration::details::complex_modifications_parameters parameters;
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                   parameters);
       expect(dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get()) != nullptr);
@@ -179,7 +179,7 @@ void run_manipulator_factory_test(void) {
     {
       try {
         nlohmann::json json;
-        krbn::core_configuration::details::complex_modifications_parameters parameters;
+        auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
         krbn::manipulator::manipulator_factory::make_manipulator(json, parameters);
         expect(false);
       } catch (pqrs::json::unmarshal_error& ex) {
