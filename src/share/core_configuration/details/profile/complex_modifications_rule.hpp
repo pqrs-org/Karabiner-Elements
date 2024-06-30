@@ -55,7 +55,7 @@ public:
       }
     }
 
-    const nlohmann::json& get_json(void) const {
+    nlohmann::json to_json(void) const {
       return json_;
     }
 
@@ -130,7 +130,7 @@ public:
     }
   }
 
-  const nlohmann::json& get_json(void) const {
+  nlohmann::json to_json(void) const {
     return json_;
   }
 
@@ -147,10 +147,6 @@ private:
   std::vector<gsl::not_null<std::shared_ptr<manipulator>>> manipulators_;
   std::string description_;
 };
-
-inline void to_json(nlohmann::json& json, const complex_modifications_rule& rule) {
-  json = rule.get_json();
-}
 } // namespace details
 } // namespace core_configuration
 } // namespace krbn

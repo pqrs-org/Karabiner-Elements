@@ -44,14 +44,21 @@ public:
 
     helper_values_.update_json(j);
 
-    // Note: Use the given value for `rules`.
-
     {
-      auto it = j.find("rules");
-      if (it != std::end(j)) {
-        if (it->empty()) {
-          j.erase("rules");
+      auto key = "rules";
+
+      auto rules_json = nlohmann::json::array();
+      for (const auto& r : rules_) {
+        auto jj = r->to_json();
+        if (!jj.empty()) {
+          rules_json.push_back(jj);
         }
+      }
+
+      if (rules_json.empty()) {
+        j.erase(key);
+      } else {
+        j[key] = rules_json;
       }
     }
 

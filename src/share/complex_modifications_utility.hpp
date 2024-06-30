@@ -11,7 +11,7 @@ inline std::vector<std::string> lint_rule(const core_configuration::details::com
 
   for (const auto& m : rule.get_manipulators()) {
     try {
-      manipulator::manipulator_factory::make_manipulator(m->get_json(),
+      manipulator::manipulator_factory::make_manipulator(m->to_json(),
                                                          m->get_parameters());
       for (const auto& c : m->get_conditions()) {
         manipulator::manipulator_factory::make_condition(c.get_json());

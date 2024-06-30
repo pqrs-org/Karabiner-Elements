@@ -28,7 +28,7 @@ void run_core_configuration_test(void) {
       expect(expected == configuration.get_selected_profile().get_simple_modifications()->get_pairs()) << UT_SHOW_LINE;
     }
     {
-      auto manipulator = configuration.get_selected_profile().get_complex_modifications()->get_rules()[0]->get_manipulators()[0]->get_json();
+      auto manipulator = configuration.get_selected_profile().get_complex_modifications()->get_rules()[0]->get_manipulators()[0]->to_json();
       expect("basic" == manipulator["type"]);
       expect("open_bracket" == manipulator["from"]["key_code"]);
     }
@@ -1133,6 +1133,8 @@ void run_core_configuration_test(void) {
                                                                                      krbn::core_configuration::error_handling::strict);
       expect(complex_modifications.get_rules().empty());
       expect(complex_modifications.get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 1000);
+
+      expect(json == complex_modifications.to_json()) << UT_SHOW_LINE;
     }
 
     // load values from json
@@ -1166,6 +1168,8 @@ void run_core_configuration_test(void) {
       krbn::core_configuration::details::complex_modifications complex_modifications(json,
                                                                                      krbn::core_configuration::error_handling::strict);
       expect(complex_modifications.get_rules().size() == 3);
+
+      expect(json == complex_modifications.to_json()) << UT_SHOW_LINE;
     }
   };
 
@@ -1219,6 +1223,32 @@ void run_core_configuration_test(void) {
       expect(rules[1]->get_description() == "rule 1");
       expect(rules[2]->get_description() == "rule 2");
       expect(rules[3]->get_description() == "rule 3");
+
+      nlohmann::json expected_json({
+          {
+              "rules",
+              {
+                  {
+                      {"description", "rule 4"},
+                      {"manipulators", manipulators},
+                  },
+                  {
+                      {"description", "rule 1"},
+                      {"manipulators", manipulators},
+                  },
+                  {
+                      {"description", "rule 2"},
+                      {"manipulators", manipulators},
+                  },
+                  {
+                      {"description", "rule 3"},
+                      {"manipulators", manipulators},
+                  },
+              },
+          },
+      });
+
+      expect(expected_json == complex_modifications.to_json()) << UT_SHOW_LINE;
     }
   };
 
@@ -1287,6 +1317,28 @@ void run_core_configuration_test(void) {
         expect("replaced 2"sv == rules[1]->get_description());
         expect("rule 3"sv == rules[2]->get_description());
       }
+
+      nlohmann::json expected_json({
+          {
+              "rules",
+              {
+                  {
+                      {"description", "rule 1"},
+                      {"manipulators", manipulators},
+                  },
+                  {
+                      {"description", "replaced 2"},
+                      {"manipulators", manipulators},
+                  },
+                  {
+                      {"description", "rule 3"},
+                      {"manipulators", manipulators},
+                  },
+              },
+          },
+      });
+
+      expect(expected_json == complex_modifications.to_json()) << UT_SHOW_LINE;
     }
   };
 
@@ -1337,6 +1389,29 @@ void run_core_configuration_test(void) {
 
       complex_modifications.erase_rule(1);
       expect(rules.size() == 1);
+
+      {
+        nlohmann::json expected_json({
+            {
+                "rules",
+                {
+                    {
+                        {"description", "rule 2"},
+                        {"manipulators", manipulators},
+                    },
+                },
+            },
+        });
+        expect(expected_json == complex_modifications.to_json()) << UT_SHOW_LINE;
+      }
+
+      complex_modifications.erase_rule(0);
+      expect(rules.size() == 0);
+
+      {
+        auto expected_json = "{}"_json;
+        expect(expected_json == complex_modifications.to_json()) << UT_SHOW_LINE;
+      }
     }
   };
 

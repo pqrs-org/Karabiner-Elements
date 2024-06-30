@@ -379,7 +379,7 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
   auto c = get_current_core_configuration();
   const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
   if (index < rules.size()) {
-    auto json_string = krbn::json_utility::dump(rules[index]->get_json());
+    auto json_string = krbn::json_utility::dump(rules[index]->to_json());
     // Return false if no enough space.
     if (json_string.length() < length) {
       strlcpy(buffer, json_string.c_str(), length);
