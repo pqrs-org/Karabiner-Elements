@@ -9,6 +9,8 @@ namespace core_configuration {
 namespace details {
 class complex_modifications final {
 public:
+  complex_modifications(const complex_modifications&) = delete;
+
   complex_modifications(void)
       : complex_modifications(nlohmann::json::object(),
                               krbn::core_configuration::error_handling::loose) {

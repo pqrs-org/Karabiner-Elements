@@ -9,11 +9,11 @@ namespace complex_modifications_utility {
 inline std::vector<std::string> lint_rule(const core_configuration::details::complex_modifications_rule& rule) {
   std::vector<std::string> error_messages;
 
-  for (const auto& manipulator : rule.get_manipulators()) {
+  for (const auto& m : rule.get_manipulators()) {
     try {
-      manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
-                                                         manipulator.get_parameters());
-      for (const auto& c : manipulator.get_conditions()) {
+      manipulator::manipulator_factory::make_manipulator(m->get_json(),
+                                                         m->get_parameters());
+      for (const auto& c : m->get_conditions()) {
         manipulator::manipulator_factory::make_condition(c.get_json());
       }
 

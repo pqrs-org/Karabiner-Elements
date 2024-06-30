@@ -28,7 +28,7 @@ void run_core_configuration_test(void) {
       expect(expected == configuration.get_selected_profile().get_simple_modifications()->get_pairs()) << UT_SHOW_LINE;
     }
     {
-      auto manipulator = configuration.get_selected_profile().get_complex_modifications()->get_rules()[0]->get_manipulators()[0].get_json();
+      auto manipulator = configuration.get_selected_profile().get_complex_modifications()->get_rules()[0]->get_manipulators()[0]->get_json();
       expect("basic" == manipulator["type"]);
       expect("open_bracket" == manipulator["from"]["key_code"]);
     }
@@ -77,8 +77,8 @@ void run_core_configuration_test(void) {
       auto complex_modifications = configuration.get_selected_profile().get_complex_modifications();
       auto& rules = complex_modifications->get_rules();
       expect(complex_modifications->get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 800);
-      expect(rules[0]->get_manipulators()[0].get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 800);
-      expect(rules[0]->get_manipulators()[2].get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 400);
+      expect(rules[0]->get_manipulators()[0]->get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 800);
+      expect(rules[0]->get_manipulators()[2]->get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 400);
       expect(rules[0]->get_description() == "Emacs bindings, etc.");
       expect(rules[1]->get_description() == "description test");
       expect(rules[2]->get_description() == "");
