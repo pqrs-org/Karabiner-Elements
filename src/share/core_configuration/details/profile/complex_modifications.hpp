@@ -46,6 +46,15 @@ public:
 
     // Note: Use the given value for `rules`.
 
+    {
+      auto it = j.find("rules");
+      if (it != std::end(j)) {
+        if (it->empty()) {
+          j.erase("rules");
+        }
+      }
+    }
+
     return j;
   }
 
@@ -83,10 +92,6 @@ private:
   std::vector<gsl::not_null<std::shared_ptr<complex_modifications_rule>>> rules_;
   configuration_json_helper::helper_values helper_values_;
 };
-
-inline void to_json(nlohmann::json& json, const complex_modifications& complex_modifications) {
-  json = complex_modifications.to_json();
-}
 } // namespace details
 } // namespace core_configuration
 } // namespace krbn
