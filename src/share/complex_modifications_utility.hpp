@@ -3,7 +3,6 @@
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
-#include "memory_utility.hpp"
 
 namespace krbn {
 namespace complex_modifications_utility {
