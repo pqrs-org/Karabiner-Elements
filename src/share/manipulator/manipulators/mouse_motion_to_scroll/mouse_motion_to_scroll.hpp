@@ -14,8 +14,9 @@ namespace mouse_motion_to_scroll {
 class mouse_motion_to_scroll final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   mouse_motion_to_scroll(const nlohmann::json& json,
-                         const core_configuration::details::complex_modifications_parameters& parameters) : base(),
-                                                                                                            dispatcher_client() {
+                         gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters)
+      : base(),
+        dispatcher_client() {
     try {
       pqrs::json::requires_object(json, "json");
 

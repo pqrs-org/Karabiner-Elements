@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../configuration_json_helper.hpp"
 #include "types.hpp"
 #include <pqrs/hid.hpp>
 

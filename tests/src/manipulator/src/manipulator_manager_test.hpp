@@ -99,7 +99,7 @@ void run_manipulator_manager_test(void) {
       auto json = krbn::unit_testing::json_helper::load_jsonc(file_name);
       auto manager = std::make_shared<krbn::manipulator::manipulator_manager>();
       for (const auto& j : json) {
-        krbn::core_configuration::details::complex_modifications_parameters parameters;
+        auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
         auto m = krbn::manipulator::manipulator_factory::make_manipulator(j,
                                                                           parameters);
         manager->push_back_manipulator(m);

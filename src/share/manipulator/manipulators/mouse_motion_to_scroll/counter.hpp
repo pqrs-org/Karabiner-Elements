@@ -33,18 +33,19 @@ public:
   // Methods
 
   counter(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-          const core_configuration::details::complex_modifications_parameters& parameters,
-          const options& options) : dispatcher_client(weak_dispatcher),
-                                    parameters_(parameters),
-                                    options_(options),
-                                    counter_direction_(counter_direction::none),
-                                    total_x_(0),
-                                    total_y_(0),
-                                    momentum_x_(0),
-                                    momentum_y_(0),
-                                    momentum_count_(0),
-                                    momentum_wait_(0),
-                                    timer_(*this) {
+          gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters,
+          const options& options)
+      : dispatcher_client(weak_dispatcher),
+        parameters_(parameters),
+        options_(options),
+        counter_direction_(counter_direction::none),
+        total_x_(0),
+        total_y_(0),
+        momentum_x_(0),
+        momentum_y_(0),
+        momentum_count_(0),
+        momentum_wait_(0),
+        timer_(*this) {
   }
 
   ~counter(void) {
@@ -207,7 +208,7 @@ private:
 
     // Multiply x,y
 
-    double multiplier = parameters_.make_mouse_motion_to_scroll_speed_rate() *
+    double multiplier = parameters_->make_mouse_motion_to_scroll_speed_rate() *
                         options_.get_speed_multiplier();
     x *= multiplier;
     y *= multiplier;
@@ -409,7 +410,7 @@ private:
     }
   }
 
-  const core_configuration::details::complex_modifications_parameters parameters_;
+  gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters_;
   const options options_;
 
   std::deque<counter_entry> entries_;

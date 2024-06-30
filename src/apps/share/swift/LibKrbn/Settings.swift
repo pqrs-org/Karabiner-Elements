@@ -79,25 +79,20 @@ extension LibKrbn {
       updateComplexModificationsRules()
 
       complexModificationsParameterToIfAloneTimeoutMilliseconds = Int(
-        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          "basic.to_if_alone_timeout_milliseconds"
-        ))
+        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds()
+      )
       complexModificationsParameterToIfHeldDownThresholdMilliseconds = Int(
-        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          "basic.to_if_held_down_threshold_milliseconds"
-        ))
+        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds()
+      )
       complexModificationsParameterToDelayedActionDelayMilliseconds = Int(
-        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          "basic.to_delayed_action_delay_milliseconds"
-        ))
+        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds()
+      )
       complexModificationsParameterSimultaneousThresholdMilliseconds = Int(
-        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          "basic.simultaneous_threshold_milliseconds"
-        ))
+        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds()
+      )
       complexModificationsParameterMouseMotionToScrollSpeed = Int(
-        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(
-          "mouse_motion_to_scroll.speed"
-        ))
+        libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed()
+      )
 
       updateConnectedDeviceSettings()
 
@@ -467,8 +462,7 @@ extension LibKrbn {
     @Published var complexModificationsParameterToIfAloneTimeoutMilliseconds: Int = 0 {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            "basic.to_if_alone_timeout_milliseconds",
+          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds(
             Int32(complexModificationsParameterToIfAloneTimeoutMilliseconds)
           )
           save()
@@ -479,8 +473,7 @@ extension LibKrbn {
     @Published var complexModificationsParameterToIfHeldDownThresholdMilliseconds: Int = 0 {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            "basic.to_if_held_down_threshold_milliseconds",
+          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds(
             Int32(complexModificationsParameterToIfHeldDownThresholdMilliseconds)
           )
           save()
@@ -491,8 +484,7 @@ extension LibKrbn {
     @Published var complexModificationsParameterToDelayedActionDelayMilliseconds: Int = 0 {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            "basic.to_delayed_action_delay_milliseconds",
+          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds(
             Int32(complexModificationsParameterToDelayedActionDelayMilliseconds)
           )
           save()
@@ -503,8 +495,7 @@ extension LibKrbn {
     @Published var complexModificationsParameterSimultaneousThresholdMilliseconds: Int = 0 {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            "basic.simultaneous_threshold_milliseconds",
+          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds(
             Int32(complexModificationsParameterSimultaneousThresholdMilliseconds)
           )
           save()
@@ -515,8 +506,7 @@ extension LibKrbn {
     @Published var complexModificationsParameterMouseMotionToScrollSpeed: Int = 0 {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(
-            "mouse_motion_to_scroll.speed",
+          libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(
             Int32(complexModificationsParameterMouseMotionToScrollSpeed)
           )
           save()

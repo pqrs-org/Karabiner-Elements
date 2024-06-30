@@ -9,7 +9,7 @@ class counter_test final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   counter_test(std::shared_ptr<pqrs::dispatcher::pseudo_time_source> time_source,
                std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-               const krbn::core_configuration::details::complex_modifications_parameters& parameters,
+               gsl::not_null<std::shared_ptr<const krbn::core_configuration::details::complex_modifications_parameters>> parameters,
                const mouse_motion_to_scroll::options& options) : dispatcher_client(weak_dispatcher),
                                                                  time_source_(time_source),
                                                                  counter_(weak_dispatcher,
@@ -97,7 +97,8 @@ void run_counter_test(void) {
         auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
 
         {
-          krbn::core_configuration::details::complex_modifications_parameters parameters(input_json.at("parameters"));
+          auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>(input_json.at("parameters"),
+                                                                                                                  krbn::core_configuration::error_handling::strict);
           mouse_motion_to_scroll::options options;
           options.update(input_json.at("options"));
           counter_test counter_test(time_source,

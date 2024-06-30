@@ -12,7 +12,7 @@
         "input": {
             "name": null
         },
-        "error": "`name` must be string, but is `null`"
+        "error": "`name` must be array of string, or string, but is `null`"
     },
 
     // selected

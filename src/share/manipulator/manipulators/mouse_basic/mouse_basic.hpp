@@ -10,7 +10,7 @@ namespace mouse_basic {
 class mouse_basic final : public base {
 public:
   mouse_basic(const nlohmann::json& json,
-              const core_configuration::details::complex_modifications_parameters& parameters)
+              gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters)
       : base(),
         flip_x_(false),
         flip_y_(false),

@@ -60,7 +60,7 @@ public:
           std::ifstream ifs(rule.get<std::string>());
           expect(static_cast<bool>(ifs));
           for (const auto& j : json_utility::parse_jsonc(ifs)) {
-            core_configuration::details::complex_modifications_parameters parameters;
+            auto parameters = std::make_shared<core_configuration::details::complex_modifications_parameters>();
             auto m = manipulator::manipulator_factory::make_manipulator(j,
                                                                         parameters);
 

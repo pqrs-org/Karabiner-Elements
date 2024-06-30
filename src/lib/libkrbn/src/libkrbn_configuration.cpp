@@ -339,22 +339,17 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(const c
 
 size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(void) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_complex_modifications().get_rules().size();
-}
-
-void libkrbn_core_configuration_push_front_complex_modifications_rule_to_selected_profile(const krbn::core_configuration::details::complex_modifications_rule& rule) {
-  auto c = get_current_core_configuration();
-  c->get_selected_profile().push_front_complex_modifications_rule(rule);
+  return c->get_selected_profile().get_complex_modifications()->get_rules().size();
 }
 
 void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(size_t index) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().erase_complex_modifications_rule(index);
+  c->get_selected_profile().get_complex_modifications()->erase_rule(index);
 }
 
 void libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(size_t source_index, size_t destination_index) {
   auto c = get_current_core_configuration();
-  c->get_selected_profile().move_complex_modifications_rule(source_index, destination_index);
+  c->get_selected_profile().get_complex_modifications()->move_rule(source_index, destination_index);
 }
 
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(size_t index,
@@ -365,9 +360,9 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
   }
 
   auto c = get_current_core_configuration();
-  const auto& rules = c->get_selected_profile().get_complex_modifications().get_rules();
+  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
   if (index < rules.size()) {
-    strlcpy(buffer, rules[index].get_description().c_str(), length);
+    strlcpy(buffer, rules[index]->get_description().c_str(), length);
     return true;
   }
 
@@ -382,9 +377,9 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
   }
 
   auto c = get_current_core_configuration();
-  const auto& rules = c->get_selected_profile().get_complex_modifications().get_rules();
+  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
   if (index < rules.size()) {
-    auto json_string = krbn::json_utility::dump(rules[index].get_json());
+    auto json_string = krbn::json_utility::dump(rules[index]->get_json());
     // Return false if no enough space.
     if (json_string.length() < length) {
       strlcpy(buffer, json_string.c_str(), length);
@@ -405,12 +400,13 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
 
   try {
     auto c = get_current_core_configuration();
-    auto&& complex_modifications = c->get_selected_profile().get_complex_modifications();
-    krbn::core_configuration::details::complex_modifications_rule rule(
+    auto m = c->get_selected_profile().get_complex_modifications();
+    auto r = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
         krbn::json_utility::parse_jsonc(std::string(json_string)),
-        complex_modifications.get_parameters());
+        m->get_parameters(),
+        krbn::core_configuration::error_handling::strict);
 
-    auto error_messages = krbn::complex_modifications_utility::lint_rule(rule);
+    auto error_messages = krbn::complex_modifications_utility::lint_rule(*r);
     if (error_messages.size() > 0) {
       std::ostringstream os;
       std::copy(std::begin(error_messages),
@@ -422,7 +418,7 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
       return;
     }
 
-    complex_modifications.replace_rule(index, rule);
+    m->replace_rule(index, r);
 
   } catch (const std::exception& e) {
     auto message = fmt::format("error: {0}", e.what());
@@ -439,12 +435,13 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
 
   try {
     auto c = get_current_core_configuration();
-    auto&& complex_modifications = c->get_selected_profile().get_complex_modifications();
-    krbn::core_configuration::details::complex_modifications_rule rule(
+    auto m = c->get_selected_profile().get_complex_modifications();
+    auto r = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
         krbn::json_utility::parse_jsonc(std::string(json_string)),
-        complex_modifications.get_parameters());
+        m->get_parameters(),
+        krbn::core_configuration::error_handling::strict);
 
-    auto error_messages = krbn::complex_modifications_utility::lint_rule(rule);
+    auto error_messages = krbn::complex_modifications_utility::lint_rule(*r);
     if (error_messages.size() > 0) {
       std::ostringstream os;
       std::copy(std::begin(error_messages),
@@ -456,7 +453,7 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
       return;
     }
 
-    complex_modifications.push_front_rule(rule);
+    m->push_front_rule(r);
 
   } catch (const std::exception& e) {
     auto message = fmt::format("error: {0}", e.what());
@@ -464,22 +461,84 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
   }
 }
 
-int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter(const char* name) {
-  if (name) {
-    auto c = get_current_core_configuration();
-    if (auto value = c->get_selected_profile().get_complex_modifications().get_parameters().get_value(name)) {
-      return *value;
-    }
-  }
-  return 0;
+//
+// basic_simultaneous_threshold_milliseconds
+//
+
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds(void) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  return p->get_basic_simultaneous_threshold_milliseconds();
 }
 
-void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter(const char* name,
-                                                                                     int value) {
-  if (name) {
-    auto c = get_current_core_configuration();
-    c->get_selected_profile().set_complex_modifications_parameter(name, value);
-  }
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds(int value) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  p->set_basic_simultaneous_threshold_milliseconds(value);
+}
+
+//
+// basic_to_if_alone_timeout_milliseconds
+//
+
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds(void) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  return p->get_basic_to_if_alone_timeout_milliseconds();
+}
+
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds(int value) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  p->set_basic_to_if_alone_timeout_milliseconds(value);
+}
+
+//
+// basic_to_if_held_down_threshold_milliseconds
+//
+
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds(void) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  return p->get_basic_to_if_held_down_threshold_milliseconds();
+}
+
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds(int value) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  p->set_basic_to_if_held_down_threshold_milliseconds(value);
+}
+
+//
+// basic_to_delayed_action_delay_milliseconds
+//
+
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds(void) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  return p->get_basic_to_delayed_action_delay_milliseconds();
+}
+
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds(int value) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  p->set_basic_to_delayed_action_delay_milliseconds(value);
+}
+
+//
+// mouse_motion_to_scroll_speed
+//
+
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(void) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  return p->get_mouse_motion_to_scroll_speed();
+}
+
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(int value) {
+  auto c = get_current_core_configuration();
+  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
+  p->set_mouse_motion_to_scroll_speed(value);
 }
 
 void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(char* buffer,

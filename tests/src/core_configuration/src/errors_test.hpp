@@ -9,7 +9,8 @@ using namespace boost::ut::literals;
 void handle_json(const nlohmann::json& json) {
   auto c = json.at("class").get<std::string>();
   if (c == "complex_modifications") {
-    krbn::core_configuration::details::complex_modifications(json.at("input"));
+    krbn::core_configuration::details::complex_modifications(json.at("input"),
+                                                             krbn::core_configuration::error_handling::strict);
   } else if (c == "devices") {
     krbn::core_configuration::details::device(json.at("input"),
                                               krbn::core_configuration::error_handling::strict);

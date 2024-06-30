@@ -18,7 +18,8 @@ public:
   }
 
   void reload(void) const {
-    manager_->reload(krbn::constants::get_user_complex_modifications_assets_directory());
+    manager_->reload(krbn::constants::get_user_complex_modifications_assets_directory(),
+                     krbn::core_configuration::error_handling::loose);
   }
 
   size_t get_files_size(void) const {
@@ -73,25 +74,25 @@ public:
                                                        size_t index,
                                                        krbn::core_configuration::core_configuration& core_configuration) const {
     if (auto r = find_rule(file_index, index)) {
-      core_configuration.get_selected_profile().push_front_complex_modifications_rule(*r);
+      core_configuration.get_selected_profile().get_complex_modifications()->push_front_rule(r);
     }
   }
 
 private:
-  const krbn::complex_modifications_assets_file* find_file(size_t index) const {
+  std::shared_ptr<krbn::complex_modifications_assets_file> find_file(size_t index) const {
     auto& files = manager_->get_files();
     if (index < files.size()) {
-      return &(files[index]);
+      return files[index];
     }
     return nullptr;
   }
 
-  const krbn::core_configuration::details::complex_modifications_rule* find_rule(size_t file_index,
-                                                                                 size_t index) const {
+  std::shared_ptr<krbn::core_configuration::details::complex_modifications_rule> find_rule(size_t file_index,
+                                                                                           size_t index) const {
     if (auto f = find_file(file_index)) {
       auto& rules = f->get_rules();
       if (index < rules.size()) {
-        return &(rules[index]);
+        return rules[index];
       }
     }
     return nullptr;

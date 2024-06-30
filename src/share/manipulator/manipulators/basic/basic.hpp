@@ -21,9 +21,10 @@ namespace basic {
 class basic final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   basic(const nlohmann::json& json,
-        const core_configuration::details::complex_modifications_parameters& parameters) : base(),
-                                                                                           dispatcher_client(),
-                                                                                           parameters_(parameters) {
+        gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters)
+      : base(),
+        dispatcher_client(),
+        parameters_(parameters) {
     try {
       pqrs::json::requires_object(json, "json");
 
@@ -129,11 +130,14 @@ public:
     }
   }
 
+  // For simple_modifications
   basic(const from_event_definition& from,
-        const std::vector<to_event_definition>& to) : base(),
-                                                      dispatcher_client(),
-                                                      from_(from),
-                                                      to_(to) {
+        const std::vector<to_event_definition>& to)
+      : base(),
+        dispatcher_client(),
+        parameters_(std::make_shared<core_configuration::details::complex_modifications_parameters>()),
+        from_(from),
+        to_(to) {
   }
 
   virtual ~basic(void) {
@@ -234,7 +238,7 @@ public:
               {
                 std::vector<event_queue::event> ordered_key_down_events;
                 std::vector<event_queue::event> ordered_key_up_events;
-                std::chrono::milliseconds simultaneous_threshold_milliseconds(parameters_.get_basic_simultaneous_threshold_milliseconds());
+                std::chrono::milliseconds simultaneous_threshold_milliseconds(parameters_->get_basic_simultaneous_threshold_milliseconds());
                 auto end_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() +
                                       pqrs::osx::chrono::make_absolute_time_duration(simultaneous_threshold_milliseconds);
 
@@ -503,7 +507,7 @@ public:
                   if (!to_if_alone_.empty()) {
                     auto duration = pqrs::osx::chrono::make_milliseconds(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                     if (current_manipulated_original_event->get_alone() &&
-                        duration < std::chrono::milliseconds(parameters_.get_basic_to_if_alone_timeout_milliseconds())) {
+                        duration < std::chrono::milliseconds(parameters_->get_basic_to_if_alone_timeout_milliseconds())) {
                       //
                       // Before sending to_if_alone events, we should restore the modifier flags to the state they were in when the from-key was pressed.
                       //
@@ -613,7 +617,7 @@ public:
             to_if_held_down_->setup(front_input_event,
                                     current_manipulated_original_event,
                                     output_event_queue,
-                                    std::chrono::milliseconds(parameters_.get_basic_to_if_held_down_threshold_milliseconds()));
+                                    std::chrono::milliseconds(parameters_->get_basic_to_if_held_down_threshold_milliseconds()));
           }
 
           // to_delayed_action_
@@ -622,7 +626,7 @@ public:
             to_delayed_action_->setup(front_input_event,
                                       current_manipulated_original_event,
                                       output_event_queue,
-                                      std::chrono::milliseconds(parameters_.get_basic_to_delayed_action_delay_milliseconds()));
+                                      std::chrono::milliseconds(parameters_->get_basic_to_delayed_action_delay_milliseconds()));
           }
 
           // increase_time_stamp_delay
@@ -758,7 +762,7 @@ private:
     }
   }
 
-  core_configuration::details::complex_modifications_parameters parameters_;
+  gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters_;
 
   from_event_definition from_;
   std::vector<to_event_definition> to_;

@@ -13,7 +13,9 @@ void run_complex_modifications_assets_file_test(void) {
       std::vector<std::string> error_messages;
       try {
         auto file_path = "json/lint/" + assets_json_entry.at("input").get<std::string>();
-        error_messages = krbn::complex_modifications_assets_file(file_path).lint();
+        error_messages = krbn::complex_modifications_assets_file(file_path,
+                                                                 krbn::core_configuration::error_handling::loose)
+                             .lint();
       } catch (std::exception& e) {
         error_messages.push_back(e.what());
       }

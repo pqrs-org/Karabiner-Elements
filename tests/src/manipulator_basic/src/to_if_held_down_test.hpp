@@ -19,8 +19,9 @@ void run_to_if_held_down_test(void) {
                               })},
       });
 
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       basic::basic b(json,
-                     krbn::core_configuration::details::complex_modifications_parameters());
+                     parameters);
       expect(b.get_to_if_held_down().get() != nullptr);
       expect(b.get_to_if_held_down()->get_to().size() == 1);
       {
@@ -41,8 +42,9 @@ void run_to_if_held_down_test(void) {
                               })},
       });
 
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       basic::basic b(json,
-                     krbn::core_configuration::details::complex_modifications_parameters());
+                     parameters);
       expect(b.get_to_if_held_down().get() != nullptr);
       expect(b.get_to_if_held_down()->get_to().size() == 2);
       {

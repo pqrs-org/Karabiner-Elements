@@ -952,12 +952,12 @@ private:
   void update_complex_modifications_manipulators(void) {
     complex_modifications_manipulator_manager_->invalidate_manipulators();
 
-    for (const auto& rule : core_configuration_->get_selected_profile().get_complex_modifications().get_rules()) {
-      for (const auto& manipulator : rule.get_manipulators()) {
+    for (const auto& rule : core_configuration_->get_selected_profile().get_complex_modifications()->get_rules()) {
+      for (const auto& manipulator : rule->get_manipulators()) {
         try {
-          auto m = manipulator::manipulator_factory::make_manipulator(manipulator.get_json(),
-                                                                      manipulator.get_parameters());
-          for (const auto& c : manipulator.get_conditions()) {
+          auto m = manipulator::manipulator_factory::make_manipulator(manipulator->get_json(),
+                                                                      manipulator->get_parameters());
+          for (const auto& c : manipulator->get_conditions()) {
             m->push_back_condition(manipulator::manipulator_factory::make_condition(c.get_json()));
           }
           complex_modifications_manipulator_manager_->push_back_manipulator(m);

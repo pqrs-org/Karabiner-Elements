@@ -9,55 +9,59 @@ namespace core_configuration {
 namespace details {
 class complex_modifications final {
 public:
-  complex_modifications(void) : complex_modifications(nlohmann::json::object()) {
+  complex_modifications(const complex_modifications&) = delete;
+
+  complex_modifications(void)
+      : complex_modifications(nlohmann::json::object(),
+                              krbn::core_configuration::error_handling::loose) {
   }
 
-  complex_modifications(const nlohmann::json& json) : json_(json) {
+  complex_modifications(const nlohmann::json& json,
+                        error_handling error_handling)
+      : json_(json),
+        parameters_(std::make_shared<complex_modifications_parameters>(nlohmann::json::object(),
+                                                                       error_handling)) {
+    helper_values_.push_back_object<complex_modifications_parameters>("parameters",
+                                                                      parameters_);
+
     pqrs::json::requires_object(json, "json");
 
-    // Load parameters_
-
-    if (auto v = pqrs::json::find_json(json, "parameters")) {
-      parameters_ = complex_modifications_parameters(v->value());
-    }
+    helper_values_.update_value(json, error_handling);
 
     // Load rules_
 
     if (auto v = pqrs::json::find_array(json, "rules")) {
       for (const auto& j : v->value()) {
-        rules_.emplace_back(j, parameters_);
+        rules_.push_back(std::make_shared<complex_modifications_rule>(j,
+                                                                      parameters_,
+                                                                      error_handling));
       }
     }
   }
 
   nlohmann::json to_json(void) const {
     auto j = json_;
-    j["rules"] = rules_;
-    j["parameters"] = parameters_.to_json();
+
+    helper_values_.update_json(j);
+
+    // Note: Use the given value for `rules`.
+
     return j;
   }
 
-  const complex_modifications_parameters& get_parameters(void) const {
+  gsl::not_null<std::shared_ptr<complex_modifications_parameters>> get_parameters(void) const {
     return parameters_;
   }
 
-  void set_parameter_value(const std::string& name, int value) {
-    parameters_.set_value(name, value);
-  }
-
-  const std::vector<complex_modifications_rule>& get_rules(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<complex_modifications_rule>>>& get_rules(void) const {
     return rules_;
   }
 
-  void push_back_rule(const complex_modifications_rule& rule) {
-    rules_.push_back(rule);
-  }
-
-  void push_front_rule(const complex_modifications_rule& rule) {
+  void push_front_rule(gsl::not_null<std::shared_ptr<complex_modifications_rule>> rule) {
     rules_.insert(std::begin(rules_), rule);
   }
 
-  void replace_rule(size_t index, const complex_modifications_rule& rule) {
+  void replace_rule(size_t index, gsl::not_null<std::shared_ptr<complex_modifications_rule>> rule) {
     if (index < rules_.size()) {
       rules_[index] = rule;
     }
@@ -73,40 +77,11 @@ public:
     vector_utility::move_element(rules_, source_index, destination_index);
   }
 
-  std::optional<std::pair<int, int>> minmax_parameter_value(const std::string& name) const {
-    std::optional<std::pair<int, int>> result;
-
-    if (auto value = parameters_.get_value(name)) {
-      if (!result) {
-        result = std::make_pair(*value, *value);
-      } else if (*value < result->first) {
-        result->first = *value;
-      } else if (*value > result->second) {
-        result->second = *value;
-      }
-    }
-
-    for (const auto& r : rules_) {
-      for (const auto& m : r.get_manipulators()) {
-        if (auto value = m.get_parameters().get_value(name)) {
-          if (!result) {
-            result = std::make_pair(*value, *value);
-          } else if (*value < result->first) {
-            result->first = *value;
-          } else if (*value > result->second) {
-            result->second = *value;
-          }
-        }
-      }
-    }
-
-    return result;
-  }
-
 private:
   nlohmann::json json_;
-  complex_modifications_parameters parameters_;
-  std::vector<complex_modifications_rule> rules_;
+  gsl::not_null<std::shared_ptr<complex_modifications_parameters>> parameters_;
+  std::vector<gsl::not_null<std::shared_ptr<complex_modifications_rule>>> rules_;
+  configuration_json_helper::helper_values helper_values_;
 };
 
 inline void to_json(nlohmann::json& json, const complex_modifications& complex_modifications) {

@@ -28,7 +28,7 @@ void run_core_configuration_test(void) {
       expect(expected == configuration.get_selected_profile().get_simple_modifications()->get_pairs()) << UT_SHOW_LINE;
     }
     {
-      auto manipulator = configuration.get_selected_profile().get_complex_modifications().get_rules()[0].get_manipulators()[0].get_json();
+      auto manipulator = configuration.get_selected_profile().get_complex_modifications()->get_rules()[0]->get_manipulators()[0]->get_json();
       expect("basic" == manipulator["type"]);
       expect("open_bracket" == manipulator["from"]["key_code"]);
     }
@@ -74,14 +74,14 @@ void run_core_configuration_test(void) {
       expect(expected == configuration.get_selected_profile().get_fn_function_keys()->get_pairs()) << UT_SHOW_LINE;
     }
     {
-      auto& complex_modifications = configuration.get_selected_profile().get_complex_modifications();
-      auto& rules = complex_modifications.get_rules();
-      expect(complex_modifications.get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 800);
-      expect(rules[0].get_manipulators()[0].get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 800);
-      expect(rules[0].get_manipulators()[2].get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 400);
-      expect(rules[0].get_description() == "Emacs bindings, etc.");
-      expect(rules[1].get_description() == "description test");
-      expect(rules[2].get_description() == "");
+      auto complex_modifications = configuration.get_selected_profile().get_complex_modifications();
+      auto& rules = complex_modifications->get_rules();
+      expect(complex_modifications->get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 800);
+      expect(rules[0]->get_manipulators()[0]->get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 800);
+      expect(rules[0]->get_manipulators()[2]->get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 400);
+      expect(rules[0]->get_description() == "Emacs bindings, etc.");
+      expect(rules[1]->get_description() == "description test");
+      expect(rules[2]->get_description() == "");
     }
     {
       expect(configuration
@@ -662,21 +662,7 @@ void run_core_configuration_test(void) {
       auto json = nlohmann::json::object();
       krbn::core_configuration::details::profile empty_profile(json,
                                                                krbn::core_configuration::error_handling::strict);
-      nlohmann::json expected({
-          {"complex_modifications", nlohmann::json::object({
-                                        {"rules", nlohmann::json::array()},
-                                        {"parameters", nlohmann::json::object({
-                                                           {"basic.simultaneous_threshold_milliseconds", 50},
-                                                           {"basic.to_if_alone_timeout_milliseconds", 1000},
-                                                           {"basic.to_if_held_down_threshold_milliseconds", 500},
-                                                           {"basic.to_delayed_action_delay_milliseconds", 500},
-                                                           {"mouse_motion_to_scroll.speed", 100},
-                                                       })},
-                                    })},
-          {"name", ""},
-          {"selected", false},
-      });
-      expect(empty_profile.to_json() == expected) << UT_SHOW_LINE;
+      expect(json == empty_profile.to_json()) << UT_SHOW_LINE;
     }
     {
       nlohmann::json json({
@@ -836,16 +822,6 @@ void run_core_configuration_test(void) {
       profile.get_virtual_hid_keyboard()->set_mouse_key_xy_scale(250);
 
       nlohmann::json expected({
-          {"complex_modifications", nlohmann::json::object({
-                                        {"rules", nlohmann::json::array()},
-                                        {"parameters", nlohmann::json::object({
-                                                           {"basic.simultaneous_threshold_milliseconds", 50},
-                                                           {"basic.to_if_alone_timeout_milliseconds", 1000},
-                                                           {"basic.to_if_held_down_threshold_milliseconds", 500},
-                                                           {"basic.to_delayed_action_delay_milliseconds", 500},
-                                                           {"mouse_motion_to_scroll.speed", 100},
-                                                       })},
-                                    })},
           {"devices", {
                           {
                               {"identifiers", {
@@ -1153,9 +1129,10 @@ void run_core_configuration_test(void) {
     // empty json
     {
       auto json = nlohmann::json::object();
-      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      krbn::core_configuration::details::complex_modifications complex_modifications(json,
+                                                                                     krbn::core_configuration::error_handling::strict);
       expect(complex_modifications.get_rules().empty());
-      expect(complex_modifications.get_parameters().get_basic_to_if_alone_timeout_milliseconds() == 1000);
+      expect(complex_modifications.get_parameters()->get_basic_to_if_alone_timeout_milliseconds() == 1000);
     }
 
     // load values from json
@@ -1186,12 +1163,13 @@ void run_core_configuration_test(void) {
               },
           },
       });
-      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      krbn::core_configuration::details::complex_modifications complex_modifications(json,
+                                                                                     krbn::core_configuration::error_handling::strict);
       expect(complex_modifications.get_rules().size() == 3);
     }
   };
 
-  "complex_modifications.push_back_rule"_test = [] {
+  "complex_modifications.push_front_rule"_test = [] {
     {
       auto manipulators = nlohmann::json::array({
           nlohmann::json::object({
@@ -1219,25 +1197,28 @@ void run_core_configuration_test(void) {
               },
           },
       });
-      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      krbn::core_configuration::details::complex_modifications complex_modifications(json,
+                                                                                     krbn::core_configuration::error_handling::strict);
       auto& rules = complex_modifications.get_rules();
       expect(rules.size() == 3);
-      expect(rules[0].get_description() == "rule 1");
-      expect(rules[1].get_description() == "rule 2");
-      expect(rules[2].get_description() == "rule 3");
+      expect(rules[0]->get_description() == "rule 1");
+      expect(rules[1]->get_description() == "rule 2");
+      expect(rules[2]->get_description() == "rule 3");
 
-      krbn::core_configuration::details::complex_modifications_parameters parameters;
       nlohmann::json rule_json;
       rule_json["description"] = "rule 4";
       rule_json["manipulators"] = manipulators;
-      krbn::core_configuration::details::complex_modifications_rule rule(rule_json, parameters);
+      auto rule = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
+          rule_json,
+          complex_modifications.get_parameters(),
+          krbn::core_configuration::error_handling::strict);
 
-      complex_modifications.push_back_rule(rule);
+      complex_modifications.push_front_rule(rule);
       expect(rules.size() == 4);
-      expect(rules[0].get_description() == "rule 1");
-      expect(rules[1].get_description() == "rule 2");
-      expect(rules[2].get_description() == "rule 3");
-      expect(rules[3].get_description() == "rule 4");
+      expect(rules[0]->get_description() == "rule 4");
+      expect(rules[1]->get_description() == "rule 1");
+      expect(rules[2]->get_description() == "rule 2");
+      expect(rules[3]->get_description() == "rule 3");
     }
   };
 
@@ -1269,36 +1250,43 @@ void run_core_configuration_test(void) {
               },
           },
       });
-      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      krbn::core_configuration::details::complex_modifications complex_modifications(json,
+                                                                                     krbn::core_configuration::error_handling::strict);
       auto& rules = complex_modifications.get_rules();
       expect(3 == rules.size());
-      expect("rule 1"sv == rules[0].get_description());
-      expect("rule 2"sv == rules[1].get_description());
-      expect("rule 3"sv == rules[2].get_description());
+      expect("rule 1"sv == rules[0]->get_description());
+      expect("rule 2"sv == rules[1]->get_description());
+      expect("rule 3"sv == rules[2]->get_description());
 
-      complex_modifications.replace_rule(1,
-                                         krbn::core_configuration::details::complex_modifications_rule(
-                                             nlohmann::json({
-                                                 {"description", "replaced 2"},
-                                                 {"manipulators", manipulators},
-                                             }),
-                                             krbn::core_configuration::details::complex_modifications_parameters()));
-      expect(3 == rules.size());
-      expect("rule 1"sv == rules[0].get_description());
-      expect("replaced 2"sv == rules[1].get_description());
-      expect("rule 3"sv == rules[2].get_description());
+      {
+        auto rule = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
+            nlohmann::json({
+                {"description", "replaced 2"},
+                {"manipulators", manipulators},
+            }),
+            complex_modifications.get_parameters(),
+            krbn::core_configuration::error_handling::strict);
+        complex_modifications.replace_rule(1, rule);
+        expect(3 == rules.size());
+        expect("rule 1"sv == rules[0]->get_description());
+        expect("replaced 2"sv == rules[1]->get_description());
+        expect("rule 3"sv == rules[2]->get_description());
+      }
 
-      complex_modifications.replace_rule(3,
-                                         krbn::core_configuration::details::complex_modifications_rule(
-                                             nlohmann::json({
-                                                 {"description", "ignored"},
-                                                 {"manipulators", manipulators},
-                                             }),
-                                             krbn::core_configuration::details::complex_modifications_parameters()));
-      expect(3 == rules.size());
-      expect("rule 1"sv == rules[0].get_description());
-      expect("replaced 2"sv == rules[1].get_description());
-      expect("rule 3"sv == rules[2].get_description());
+      {
+        auto rule = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
+            nlohmann::json({
+                {"description", "ignored"},
+                {"manipulators", manipulators},
+            }),
+            complex_modifications.get_parameters(),
+            krbn::core_configuration::error_handling::strict);
+        complex_modifications.replace_rule(3, rule);
+        expect(3 == rules.size());
+        expect("rule 1"sv == rules[0]->get_description());
+        expect("replaced 2"sv == rules[1]->get_description());
+        expect("rule 3"sv == rules[2]->get_description());
+      }
     }
   };
 
@@ -1330,21 +1318,22 @@ void run_core_configuration_test(void) {
               },
           },
       });
-      krbn::core_configuration::details::complex_modifications complex_modifications(json);
+      krbn::core_configuration::details::complex_modifications complex_modifications(json,
+                                                                                     krbn::core_configuration::error_handling::strict);
       auto& rules = complex_modifications.get_rules();
       expect(rules.size() == 3);
-      expect(rules[0].get_description() == "rule 1");
-      expect(rules[1].get_description() == "rule 2");
-      expect(rules[2].get_description() == "rule 3");
+      expect(rules[0]->get_description() == "rule 1");
+      expect(rules[1]->get_description() == "rule 2");
+      expect(rules[2]->get_description() == "rule 3");
 
       complex_modifications.erase_rule(0);
       expect(rules.size() == 2);
-      expect(rules[0].get_description() == "rule 2");
-      expect(rules[1].get_description() == "rule 3");
+      expect(rules[0]->get_description() == "rule 2");
+      expect(rules[1]->get_description() == "rule 3");
 
       complex_modifications.erase_rule(1);
       expect(rules.size() == 1);
-      expect(rules[0].get_description() == "rule 2");
+      expect(rules[0]->get_description() == "rule 2");
 
       complex_modifications.erase_rule(1);
       expect(rules.size() == 1);
@@ -1389,40 +1378,43 @@ void run_core_configuration_test(void) {
       });
 
       {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
+        krbn::core_configuration::details::complex_modifications complex_modifications(json,
+                                                                                       krbn::core_configuration::error_handling::strict);
         auto& rules = complex_modifications.get_rules();
         expect(5_ul == rules.size());
-        expect("rule 1" == rules[0].get_description());
-        expect("rule 2" == rules[1].get_description());
-        expect("rule 3" == rules[2].get_description());
-        expect("rule 4" == rules[3].get_description());
-        expect("rule 5" == rules[4].get_description());
+        expect("rule 1" == rules[0]->get_description());
+        expect("rule 2" == rules[1]->get_description());
+        expect("rule 3" == rules[2]->get_description());
+        expect("rule 4" == rules[3]->get_description());
+        expect("rule 5" == rules[4]->get_description());
       }
 
       // 0 -> 2
       {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
+        krbn::core_configuration::details::complex_modifications complex_modifications(json,
+                                                                                       krbn::core_configuration::error_handling::strict);
         auto& rules = complex_modifications.get_rules();
         complex_modifications.move_rule(0, 2);
         expect(5_ul == rules.size());
-        expect("rule 2"sv == rules[0].get_description());
-        expect("rule 1"sv == rules[1].get_description());
-        expect("rule 3"sv == rules[2].get_description());
-        expect("rule 4"sv == rules[3].get_description());
-        expect("rule 5"sv == rules[4].get_description());
+        expect("rule 2"sv == rules[0]->get_description());
+        expect("rule 1"sv == rules[1]->get_description());
+        expect("rule 3"sv == rules[2]->get_description());
+        expect("rule 4"sv == rules[3]->get_description());
+        expect("rule 5"sv == rules[4]->get_description());
       }
 
       // 2 -> 0
       {
-        krbn::core_configuration::details::complex_modifications complex_modifications(json);
+        krbn::core_configuration::details::complex_modifications complex_modifications(json,
+                                                                                       krbn::core_configuration::error_handling::strict);
         auto& rules = complex_modifications.get_rules();
         complex_modifications.move_rule(2, 0);
         expect(5_ul == rules.size());
-        expect("rule 3" == rules[0].get_description());
-        expect("rule 1" == rules[1].get_description());
-        expect("rule 2" == rules[2].get_description());
-        expect("rule 4" == rules[3].get_description());
-        expect("rule 5" == rules[4].get_description());
+        expect("rule 3" == rules[0]->get_description());
+        expect("rule 1" == rules[1]->get_description());
+        expect("rule 2" == rules[2]->get_description());
+        expect("rule 4" == rules[3]->get_description());
+        expect("rule 5" == rules[4]->get_description());
       }
     }
   };
@@ -1430,8 +1422,9 @@ void run_core_configuration_test(void) {
   "complex_modifications.parameters"_test = [] {
     // empty json
     {
-      nlohmann::json json;
-      krbn::core_configuration::details::complex_modifications_parameters parameters(json);
+      auto json = "{}"_json;
+      krbn::core_configuration::details::complex_modifications_parameters parameters(json,
+                                                                                     krbn::core_configuration::error_handling::strict);
       expect(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
     }
 
@@ -1439,7 +1432,8 @@ void run_core_configuration_test(void) {
     {
       nlohmann::json json;
       json["basic.to_if_alone_timeout_milliseconds"] = 1234;
-      krbn::core_configuration::details::complex_modifications_parameters parameters(json);
+      krbn::core_configuration::details::complex_modifications_parameters parameters(json,
+                                                                                     krbn::core_configuration::error_handling::strict);
       expect(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1234);
     }
 
@@ -1447,18 +1441,21 @@ void run_core_configuration_test(void) {
     {
       nlohmann::json json;
       json["basic.to_if_alone_timeout_milliseconds"] = "1234";
-      krbn::core_configuration::details::complex_modifications_parameters parameters(json);
+      krbn::core_configuration::details::complex_modifications_parameters parameters(json,
+                                                                                     krbn::core_configuration::error_handling::loose);
       expect(parameters.get_basic_to_if_alone_timeout_milliseconds() == 1000);
     }
 
     // normalize
     {
-      krbn::core_configuration::details::complex_modifications_parameters parameters(nlohmann::json::object({
-          {"basic.simultaneous_threshold_milliseconds", -1000},
-          {"basic.to_if_alone_timeout_milliseconds", -1000},
-          {"basic.to_if_held_down_threshold_milliseconds", -1000},
-          {"basic.to_delayed_action_delay_milliseconds", -1000},
-      }));
+      krbn::core_configuration::details::complex_modifications_parameters parameters(
+          nlohmann::json::object({
+              {"basic.simultaneous_threshold_milliseconds", -1000},
+              {"basic.to_if_alone_timeout_milliseconds", -1000},
+              {"basic.to_if_held_down_threshold_milliseconds", -1000},
+              {"basic.to_delayed_action_delay_milliseconds", -1000},
+          }),
+          krbn::core_configuration::error_handling::strict);
 
       expect(parameters.get_basic_simultaneous_threshold_milliseconds() == 0);
       expect(parameters.get_basic_to_if_alone_timeout_milliseconds() == 0);
@@ -1466,12 +1463,14 @@ void run_core_configuration_test(void) {
       expect(parameters.get_basic_to_delayed_action_delay_milliseconds() == 0);
     }
     {
-      krbn::core_configuration::details::complex_modifications_parameters parameters(nlohmann::json::object({
-          {"basic.simultaneous_threshold_milliseconds", 100000},
-          {"basic.to_if_alone_timeout_milliseconds", 100000},
-          {"basic.to_if_held_down_threshold_milliseconds", 100000},
-          {"basic.to_delayed_action_delay_milliseconds", 100000},
-      }));
+      krbn::core_configuration::details::complex_modifications_parameters parameters(
+          nlohmann::json::object({
+              {"basic.simultaneous_threshold_milliseconds", 100000},
+              {"basic.to_if_alone_timeout_milliseconds", 100000},
+              {"basic.to_if_held_down_threshold_milliseconds", 100000},
+              {"basic.to_delayed_action_delay_milliseconds", 100000},
+          }),
+          krbn::core_configuration::error_handling::strict);
 
       expect(parameters.get_basic_simultaneous_threshold_milliseconds() == 1000);
       expect(parameters.get_basic_to_if_alone_timeout_milliseconds() == 100000);
@@ -1479,61 +1478,29 @@ void run_core_configuration_test(void) {
       expect(parameters.get_basic_to_delayed_action_delay_milliseconds() == 100000);
     }
     {
-      krbn::core_configuration::details::complex_modifications_parameters parameters(nlohmann::json::object({}));
+      krbn::core_configuration::details::complex_modifications_parameters parameters(
+          nlohmann::json::object({}),
+          krbn::core_configuration::error_handling::strict);
 
-      parameters.set_value("basic.simultaneous_threshold_milliseconds", -1000);
-      parameters.set_value("basic.to_if_alone_timeout_milliseconds", -1000);
-      parameters.set_value("basic.to_if_held_down_threshold_milliseconds", -1000);
-      parameters.set_value("basic.to_delayed_action_delay_milliseconds", -1000);
+      parameters.set_basic_simultaneous_threshold_milliseconds(-1000);
+      parameters.set_basic_to_if_alone_timeout_milliseconds(-1000);
+      parameters.set_basic_to_if_held_down_threshold_milliseconds(-1000);
+      parameters.set_basic_to_delayed_action_delay_milliseconds(-1000);
 
       expect(parameters.get_basic_simultaneous_threshold_milliseconds() == 0);
       expect(parameters.get_basic_to_if_alone_timeout_milliseconds() == 0);
       expect(parameters.get_basic_to_if_held_down_threshold_milliseconds() == 0);
       expect(parameters.get_basic_to_delayed_action_delay_milliseconds() == 0);
 
-      parameters.set_value("basic.simultaneous_threshold_milliseconds", 100000);
-      parameters.set_value("basic.to_if_alone_timeout_milliseconds", 100000);
-      parameters.set_value("basic.to_if_held_down_threshold_milliseconds", 100000);
-      parameters.set_value("basic.to_delayed_action_delay_milliseconds", 100000);
+      parameters.set_basic_simultaneous_threshold_milliseconds(100000);
+      parameters.set_basic_to_if_alone_timeout_milliseconds(100000);
+      parameters.set_basic_to_if_held_down_threshold_milliseconds(100000);
+      parameters.set_basic_to_delayed_action_delay_milliseconds(100000);
 
       expect(parameters.get_basic_simultaneous_threshold_milliseconds() == 1000);
       expect(parameters.get_basic_to_if_alone_timeout_milliseconds() == 100000);
       expect(parameters.get_basic_to_if_held_down_threshold_milliseconds() == 100000);
       expect(parameters.get_basic_to_delayed_action_delay_milliseconds() == 100000);
-    }
-  };
-
-  "complex_modifications.minmax_parameter_value"_test = [] {
-    {
-      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json",
-                                                                 geteuid(),
-                                                                 krbn::core_configuration::error_handling::strict);
-      auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
-      expect(actual->first == 101);
-      expect(actual->second == 401);
-    }
-    {
-      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test2.json",
-                                                                 geteuid(),
-                                                                 krbn::core_configuration::error_handling::strict);
-      auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
-      expect(actual->first == 102);
-      expect(actual->second == 402);
-    }
-    {
-      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test3.json",
-                                                                 geteuid(),
-                                                                 krbn::core_configuration::error_handling::strict);
-      auto actual = configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("basic.simultaneous_threshold_milliseconds");
-      expect(actual->first == 103);
-      expect(actual->second == 403);
-    }
-
-    {
-      krbn::core_configuration::core_configuration configuration("json/minmax_parameter_value_test1.json",
-                                                                 geteuid(),
-                                                                 krbn::core_configuration::error_handling::strict);
-      expect(!configuration.get_selected_profile().get_complex_modifications().minmax_parameter_value("unknown"));
     }
   };
 

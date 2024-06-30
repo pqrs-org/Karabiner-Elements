@@ -15,7 +15,7 @@ public:
   }
 
   void push_back_manipulator(const nlohmann::json& json,
-                             const core_configuration::details::complex_modifications_parameters& parameters) {
+                             gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters) {
     try {
       auto m = manipulator_factory::make_manipulator(json,
                                                      parameters);
@@ -34,7 +34,7 @@ public:
     }
   }
 
-  void push_back_manipulator(std::shared_ptr<manipulators::base> ptr) {
+  void push_back_manipulator(gsl::not_null<std::shared_ptr<manipulators::base>> ptr) {
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
     manipulators_.push_back(ptr);
@@ -208,7 +208,7 @@ private:
                         std::end(manipulators_));
   }
 
-  std::vector<std::shared_ptr<manipulators::base>> manipulators_;
+  std::vector<gsl::not_null<std::shared_ptr<manipulators::base>>> manipulators_;
   mutable std::mutex manipulators_mutex_;
 };
 } // namespace manipulator
