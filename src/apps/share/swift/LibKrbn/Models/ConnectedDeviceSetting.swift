@@ -10,71 +10,77 @@ extension LibKrbn {
     init(_ connectedDevice: ConnectedDevice) {
       self.connectedDevice = connectedDevice
 
+      updateProperties()
+    }
+
+    public func updateProperties() {
+      didSetEnabled = false
+
       let ignore = libkrbn_core_configuration_get_selected_profile_device_ignore(
         connectedDevice.libkrbnDeviceIdentifiers)
       modifyEvents = !ignore
 
-      self.manipulateCapsLockLed =
+      manipulateCapsLockLed =
         libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.treatAsBuiltInKeyboard =
+      treatAsBuiltInKeyboard =
         libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.disableBuiltInKeyboardIfExists =
+      disableBuiltInKeyboardIfExists =
         libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.mouseFlipX =
+      mouseFlipX =
         libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.mouseFlipY =
+      mouseFlipY =
         libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.mouseFlipVerticalWheel =
+      mouseFlipVerticalWheel =
         libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.mouseFlipHorizontalWheel =
+      mouseFlipHorizontalWheel =
         libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.mouseSwapXY =
+      mouseSwapXY =
         libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.mouseSwapWheels =
+      mouseSwapWheels =
         libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.gamePadSwapSticks =
+      gamePadSwapSticks =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold =
+      gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.gamePadXYStickContinuedMovementIntervalMilliseconds = Int(
+      gamePadXYStickContinuedMovementIntervalMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
 
-      self.gamePadXYStickFlickingInputWindowMilliseconds = Int(
+      gamePadXYStickFlickingInputWindowMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
 
-      self.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold =
+      gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
           connectedDevice.libkrbnDeviceIdentifiers)
 
-      self.gamePadWheelsStickContinuedMovementIntervalMilliseconds = Int(
+      gamePadWheelsStickContinuedMovementIntervalMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
 
-      self.gamePadWheelsStickFlickingInputWindowMilliseconds = Int(
+      gamePadWheelsStickFlickingInputWindowMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
 
@@ -83,28 +89,28 @@ extension LibKrbn {
       if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(
         connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
       {
-        self.gamePadStickXFormula = String(cString: buffer).trimmingCharacters(
+        gamePadStickXFormula = String(cString: buffer).trimmingCharacters(
           in: .whitespacesAndNewlines)
       }
 
       if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(
         connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
       {
-        self.gamePadStickYFormula = String(cString: buffer).trimmingCharacters(
+        gamePadStickYFormula = String(cString: buffer).trimmingCharacters(
           in: .whitespacesAndNewlines)
       }
 
       if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(
         connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
       {
-        self.gamePadStickVerticalWheelFormula = String(cString: buffer).trimmingCharacters(
+        gamePadStickVerticalWheelFormula = String(cString: buffer).trimmingCharacters(
           in: .whitespacesAndNewlines)
       }
 
       if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
         connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
       {
-        self.gamePadStickHorizontalWheelFormula = String(cString: buffer).trimmingCharacters(
+        gamePadStickHorizontalWheelFormula = String(cString: buffer).trimmingCharacters(
           in: .whitespacesAndNewlines)
       }
 
@@ -319,6 +325,15 @@ extension LibKrbn {
       }
     }
 
+    public func resetGamePadStickXFormula() {
+      libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_x_formula(
+        connectedDevice.libkrbnDeviceIdentifiers)
+
+      Settings.shared.save()
+
+      updateProperties()
+    }
+
     @Published var gamePadStickYFormula = "" {
       didSet {
         if didSetEnabled {
@@ -330,6 +345,15 @@ extension LibKrbn {
           }
         }
       }
+    }
+
+    public func resetGamePadStickYFormula() {
+      libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_y_formula(
+        connectedDevice.libkrbnDeviceIdentifiers)
+
+      Settings.shared.save()
+
+      updateProperties()
     }
 
     @Published var gamePadStickVerticalWheelFormula = "" {
@@ -345,6 +369,15 @@ extension LibKrbn {
       }
     }
 
+    public func resetGamePadStickVerticalWheelFormula() {
+      libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+        connectedDevice.libkrbnDeviceIdentifiers)
+
+      Settings.shared.save()
+
+      updateProperties()
+    }
+
     @Published var gamePadStickHorizontalWheelFormula = "" {
       didSet {
         if didSetEnabled {
@@ -356,6 +389,15 @@ extension LibKrbn {
           }
         }
       }
+    }
+
+    public func resetGamePadStickHorizontalWheelFormula() {
+      libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
+        connectedDevice.libkrbnDeviceIdentifiers)
+
+      Settings.shared.save()
+
+      updateProperties()
     }
 
     @Published var simpleModifications: [SimpleModification] = []

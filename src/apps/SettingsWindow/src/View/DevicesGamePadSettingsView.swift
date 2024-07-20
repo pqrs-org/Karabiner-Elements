@@ -88,12 +88,18 @@ struct DevicesGamePadSettingsView: View {
         HStack(spacing: 20.0) {
           FormulaView(
             name: "X formula",
-            value: $connectedDeviceSetting.gamePadStickXFormula
+            value: $connectedDeviceSetting.gamePadStickXFormula,
+            resetFunction: {
+              connectedDeviceSetting.resetGamePadStickXFormula()
+            }
           )
 
           FormulaView(
             name: "Y formula",
-            value: $connectedDeviceSetting.gamePadStickYFormula
+            value: $connectedDeviceSetting.gamePadStickYFormula,
+            resetFunction: {
+              connectedDeviceSetting.resetGamePadStickYFormula()
+            }
           )
         }
         .padding(.top, 20.0)
@@ -130,12 +136,18 @@ struct DevicesGamePadSettingsView: View {
         HStack(spacing: 20.0) {
           FormulaView(
             name: "vertical wheel formula",
-            value: $connectedDeviceSetting.gamePadStickVerticalWheelFormula
+            value: $connectedDeviceSetting.gamePadStickVerticalWheelFormula,
+            resetFunction: {
+              connectedDeviceSetting.resetGamePadStickVerticalWheelFormula()
+            }
           )
 
           FormulaView(
             name: "horizontal wheel formula",
-            value: $connectedDeviceSetting.gamePadStickHorizontalWheelFormula
+            value: $connectedDeviceSetting.gamePadStickHorizontalWheelFormula,
+            resetFunction: {
+              connectedDeviceSetting.resetGamePadStickHorizontalWheelFormula()
+            }
           )
         }
         .padding(.top, 20.0)
@@ -222,6 +234,7 @@ struct DevicesGamePadSettingsView: View {
   struct FormulaView: View {
     let name: String
     @Binding var value: String
+    let resetFunction: () -> Void
     @State private var error = false
 
     var body: some View {
@@ -236,6 +249,18 @@ struct DevicesGamePadSettingsView: View {
           }
 
           Spacer()
+
+          Button(
+            role: .destructive,
+            action: {
+              resetFunction()
+            },
+            label: {
+              Label("Reset to the default formula", systemImage: "trash")
+                .buttonLabelStyle()
+            }
+          )
+          .deleteButtonStyle()
         }
 
         TextEditor(text: $value)
