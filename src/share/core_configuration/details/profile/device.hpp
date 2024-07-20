@@ -121,7 +121,7 @@ public:
     helper_values_.push_back_value<std::string>("game_pad_stick_vertical_wheel_formula",
                                                 game_pad_stick_vertical_wheel_formula_,
                                                 // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                                                R"(
+                                                pqrs::string::trim_copy(R"(
 
 if (abs(cos(radian)) >= abs(sin(radian))) {
   0;
@@ -139,12 +139,12 @@ if (abs(cos(radian)) >= abs(sin(radian))) {
   sin(radian) * m;
 }
 
-)");
+)"));
 
     helper_values_.push_back_value<std::string>("game_pad_stick_horizontal_wheel_formula",
                                                 game_pad_stick_horizontal_wheel_formula_,
                                                 // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                                                R"(
+                                                pqrs::string::trim_copy(R"(
 
 if (abs(cos(radian)) <= abs(sin(radian))) {
   0;
@@ -162,7 +162,7 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
   cos(radian) * m;
 }
 
-)");
+)"));
 
     //
     // Set default value
