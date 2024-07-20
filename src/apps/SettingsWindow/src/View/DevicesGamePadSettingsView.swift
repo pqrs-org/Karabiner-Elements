@@ -175,43 +175,46 @@ struct DevicesGamePadSettingsView: View {
     let flickingInputWindowMillisecondsDefaultValue: Int
 
     var body: some View {
-      HStack(alignment: .center, spacing: 8.0) {
-        Text("Continued movement absolute magnitude threshold:")
+      Grid(alignment: .leadingFirstTextBaseline) {
+        GridRow {
+          Text("Continued movement absolute magnitude threshold:")
+            .gridColumnAlignment(.trailing)
 
-        DoubleTextField(
-          value: $continuedMovementAbsoluteMagnitudeThreshold,
-          range: 0...1,
-          step: 0.1,
-          maximumFractionDigits: 2,
-          width: 60)
+          DoubleTextField(
+            value: $continuedMovementAbsoluteMagnitudeThreshold,
+            range: 0...1,
+            step: 0.1,
+            maximumFractionDigits: 2,
+            width: 60)
 
-        Text(
-          "(Default: \(String(format: "%.2f", continuedMovementAbsoluteMagnitudeThresholdDefaultValue)))"
-        )
-      }
+          Text(
+            "(Default: \(String(format: "%.2f", continuedMovementAbsoluteMagnitudeThresholdDefaultValue)))"
+          )
+        }
 
-      HStack(alignment: .center, spacing: 8.0) {
-        Text("Continued movement interval milliseconds:")
+        GridRow {
+          Text("Continued movement interval milliseconds:")
 
-        IntTextField(
-          value: $continuedMovementIntervalMilliseconds,
-          range: 0...1000,
-          step: 1,
-          width: 60)
+          IntTextField(
+            value: $continuedMovementIntervalMilliseconds,
+            range: 0...1000,
+            step: 1,
+            width: 60)
 
-        Text("(Default: \(continuedMovementIntervalMillisecondsDefaultValue))")
-      }
+          Text("(Default: \(continuedMovementIntervalMillisecondsDefaultValue))")
+        }
 
-      HStack(alignment: .center, spacing: 8.0) {
-        Text("Flicking input window milliseconds:")
+        GridRow {
+          Text("Flicking input window milliseconds:")
 
-        IntTextField(
-          value: $flickingInputWindowMilliseconds,
-          range: 0...1000,
-          step: 1,
-          width: 60)
+          IntTextField(
+            value: $flickingInputWindowMilliseconds,
+            range: 0...1000,
+            step: 1,
+            width: 60)
 
-        Text("(Default: \(flickingInputWindowMillisecondsDefaultValue))")
+          Text("(Default: \(flickingInputWindowMillisecondsDefaultValue))")
+        }
       }
     }
   }
