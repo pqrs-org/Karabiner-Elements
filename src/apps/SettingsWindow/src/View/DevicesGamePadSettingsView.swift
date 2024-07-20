@@ -66,50 +66,24 @@ struct DevicesGamePadSettingsView: View {
 
     var body: some View {
       VStack(alignment: .leading) {
-        HStack(alignment: .center, spacing: 8.0) {
-          Text("Continued movement absolute magnitude threshold:")
+        StickParametersView(
+          continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
+            .gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold,
+          continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
+            libkrbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value(),
 
-          DoubleTextField(
-            value: $connectedDeviceSetting
-              .gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold,
-            range: 0...1,
-            step: 0.1,
-            maximumFractionDigits: 2,
-            width: 60)
-
-          let defaultValue =
-            libkrbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value()
-          Text("(Default: \(String(format: "%.2f", defaultValue)))")
-        }
-
-        HStack(alignment: .center, spacing: 8.0) {
-          Text("Continued movement interval milliseconds:")
-
-          IntTextField(
-            value: $connectedDeviceSetting.gamePadXYStickContinuedMovementIntervalMilliseconds,
-            range: 0...1000,
-            step: 1,
-            width: 60)
-
-          let defaultValue =
+          continuedMovementIntervalMilliseconds: $connectedDeviceSetting
+            .gamePadXYStickContinuedMovementIntervalMilliseconds,
+          continuedMovementIntervalMillisecondsDefaultValue: Int(
             libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
-          Text("(Default: \(defaultValue))")
-        }
+          ),
 
-        HStack(alignment: .center, spacing: 8.0) {
-          Text("Flicking input window milliseconds:")
-
-          IntTextField(
-            value: $connectedDeviceSetting.gamePadXYStickFlickingInputWindowMilliseconds,
-            range: 0...1000,
-            step: 1,
-            width: 60)
-
-          let defaultValue =
+          flickingInputWindowMilliseconds: $connectedDeviceSetting
+            .gamePadXYStickFlickingInputWindowMilliseconds,
+          flickingInputWindowMillisecondsDefaultValue: Int(
             libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseconds_default_value()
-
-          Text("(Default: \(defaultValue))")
-        }
+          )
+        )
 
         HStack(spacing: 20.0) {
           FormulaView(
@@ -134,50 +108,24 @@ struct DevicesGamePadSettingsView: View {
 
     var body: some View {
       VStack(alignment: .leading) {
-        HStack(alignment: .center, spacing: 8.0) {
-          Text("Continued movement absolute magnitude threshold:")
+        StickParametersView(
+          continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
+            .gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold,
+          continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
+            libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value(),
 
-          DoubleTextField(
-            value: $connectedDeviceSetting
-              .gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold,
-            range: 0...1,
-            step: 0.1,
-            maximumFractionDigits: 2,
-            width: 60)
-
-          let defaultValue =
-            libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value()
-          Text("(Default: \(defaultValue))")
-        }
-
-        HStack(alignment: .center, spacing: 8.0) {
-          Text("Continued movement interval milliseconds:")
-
-          IntTextField(
-            value: $connectedDeviceSetting
-              .gamePadWheelsStickContinuedMovementIntervalMilliseconds,
-            range: 0...1000,
-            step: 1,
-            width: 60)
-
-          let defaultValue =
+          continuedMovementIntervalMilliseconds: $connectedDeviceSetting
+            .gamePadWheelsStickContinuedMovementIntervalMilliseconds,
+          continuedMovementIntervalMillisecondsDefaultValue: Int(
             libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
-          Text("(Default: \(defaultValue))")
-        }
+          ),
 
-        HStack(alignment: .center, spacing: 8.0) {
-          Text("Flicking input window milliseconds:")
-
-          IntTextField(
-            value: $connectedDeviceSetting.gamePadWheelsStickFlickingInputWindowMilliseconds,
-            range: 0...1000,
-            step: 1,
-            width: 60)
-
-          let defaultValue =
+          flickingInputWindowMilliseconds: $connectedDeviceSetting
+            .gamePadWheelsStickFlickingInputWindowMilliseconds,
+          flickingInputWindowMillisecondsDefaultValue: Int(
             libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value()
-          Text("(Default: \(defaultValue))")
-        }
+          )
+        )
 
         HStack(spacing: 20.0) {
           FormulaView(
@@ -216,6 +164,58 @@ struct DevicesGamePadSettingsView: View {
     }
   }
 
+  struct StickParametersView: View {
+    @Binding var continuedMovementAbsoluteMagnitudeThreshold: Double
+    let continuedMovementAbsoluteMagnitudeThresholdDefaultValue: Double
+
+    @Binding var continuedMovementIntervalMilliseconds: Int
+    let continuedMovementIntervalMillisecondsDefaultValue: Int
+
+    @Binding var flickingInputWindowMilliseconds: Int
+    let flickingInputWindowMillisecondsDefaultValue: Int
+
+    var body: some View {
+      HStack(alignment: .center, spacing: 8.0) {
+        Text("Continued movement absolute magnitude threshold:")
+
+        DoubleTextField(
+          value: $continuedMovementAbsoluteMagnitudeThreshold,
+          range: 0...1,
+          step: 0.1,
+          maximumFractionDigits: 2,
+          width: 60)
+
+        Text(
+          "(Default: \(String(format: "%.2f", continuedMovementAbsoluteMagnitudeThresholdDefaultValue)))"
+        )
+      }
+
+      HStack(alignment: .center, spacing: 8.0) {
+        Text("Continued movement interval milliseconds:")
+
+        IntTextField(
+          value: $continuedMovementIntervalMilliseconds,
+          range: 0...1000,
+          step: 1,
+          width: 60)
+
+        Text("(Default: \(continuedMovementIntervalMillisecondsDefaultValue))")
+      }
+
+      HStack(alignment: .center, spacing: 8.0) {
+        Text("Flicking input window milliseconds:")
+
+        IntTextField(
+          value: $flickingInputWindowMilliseconds,
+          range: 0...1000,
+          step: 1,
+          width: 60)
+
+        Text("(Default: \(flickingInputWindowMillisecondsDefaultValue))")
+      }
+    }
+  }
+
   struct FormulaView: View {
     let name: String
     @Binding var value: String
@@ -227,7 +227,7 @@ struct DevicesGamePadSettingsView: View {
           Text(name)
 
           if error {
-            Text("invalid formula")
+            Text("Invalid formula")
               .foregroundColor(Color.errorForeground)
               .background(Color.errorBackground)
           }
