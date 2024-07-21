@@ -24,7 +24,7 @@ struct DriverNotActivatedAlertView: View {
               }
 
               Button(
-                action: { openSystemSettingsSecurity() },
+                action: { openSystemSettingsDriverExtensions() },
                 label: {
                   Label(
                     "Open Privacy & Security System Settings...",
@@ -109,7 +109,7 @@ struct DriverNotActivatedAlertView: View {
     }
   }
 
-  private func openSystemSettingsSecurity() {
+  private func openSystemSettingsDriverExtensions() {
     if #available(macOS 15.0, *) {
       let url = URL(string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension")!
       NSWorkspace.shared.open(url)
