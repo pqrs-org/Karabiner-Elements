@@ -1,7 +1,7 @@
 import Foundation
 
 extension LibKrbn {
-  final class ConnectedDeviceSetting: Identifiable, Equatable, ObservableObject {
+  final class ConnectedDeviceSetting: Identifiable, Equatable {
     private var didSetEnabled = false
 
     var id = UUID()
