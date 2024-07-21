@@ -142,15 +142,13 @@ inline bool core_agents_enabled(void) {
 }
 
 inline bool daemon_running(const std::string& service_name) {
-  auto pid = pqrs::osx::launchctl::find_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
-                                            pqrs::osx::launchctl::make_system_domain_target(),
+  auto pid = pqrs::osx::launchctl::find_pid(pqrs::osx::launchctl::make_system_domain_target(),
                                             pqrs::osx::launchctl::service_name(service_name));
   return pid != std::nullopt;
 }
 
 inline bool agent_running(const std::string& service_name) {
-  auto pid = pqrs::osx::launchctl::find_pid(pqrs::dispatcher::extra::get_shared_dispatcher(),
-                                            pqrs::osx::launchctl::make_gui_domain_target(),
+  auto pid = pqrs::osx::launchctl::find_pid(pqrs::osx::launchctl::make_gui_domain_target(),
                                             pqrs::osx::launchctl::service_name(service_name));
   return pid != std::nullopt;
 }

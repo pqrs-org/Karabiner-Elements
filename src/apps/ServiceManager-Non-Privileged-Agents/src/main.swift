@@ -98,7 +98,6 @@ RunLoop.main.perform {
 
     case .running:
       var exitCode: Int32 = 0
-      libkrbn_initialize()
       for n in coreAgentServiceNames {
         // A non-resident agent that runs only once
         if n == "org.pqrs.service.agent.karabiner_grabber" {
@@ -112,7 +111,6 @@ RunLoop.main.perform {
           }
         }
       }
-      libkrbn_terminate()
       exit(exitCode)
 
     default:

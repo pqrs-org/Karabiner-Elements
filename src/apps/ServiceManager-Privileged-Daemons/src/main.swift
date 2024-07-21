@@ -52,7 +52,6 @@ RunLoop.main.perform {
 
     case .running:
       var exitCode: Int32 = 0
-      libkrbn_initialize()
       for n in coreDaemonServiceNames {
         n.withCString {
           if !libkrbn_services_daemon_running($0) {
@@ -61,7 +60,6 @@ RunLoop.main.perform {
           }
         }
       }
-      libkrbn_terminate()
       exit(exitCode)
 
     default:
