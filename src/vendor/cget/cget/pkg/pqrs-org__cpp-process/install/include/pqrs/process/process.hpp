@@ -2,7 +2,7 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include "file_actions.hpp"
 #include "pipe.hpp"
@@ -24,6 +24,7 @@ extern char** environ;
 
 namespace pqrs {
 namespace process {
+// Capture the data using a signal for commands like top -l that produce output at regular intervals.
 class process final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)

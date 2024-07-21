@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::launchctl v4.0
+// pqrs::osx::launchctl v5.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -82,37 +82,17 @@ inline void kickstart(const domain_target& domain_target,
   system(command.c_str());
 }
 
-inline std::optional<pid_t> find_pid(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                                     const domain_target& domain_target,
+inline std::optional<pid_t> find_pid(const domain_target& domain_target,
                                      const service_name& service_name) {
   auto service_target = make_service_target(domain_target, service_name);
 
-  auto wait = pqrs::make_thread_wait();
-
-  std::stringstream ss;
-  pqrs::process::process p(weak_dispatcher,
-                           std::vector<std::string>{
-                               "/bin/launchctl",
-                               "print",
-                               type_safe::get(service_target),
-                           });
-  p.run_failed.connect([wait] {
-    wait->notify();
-  });
-  p.exited.connect([wait](auto&& status) {
-    wait->notify();
+  pqrs::process::execute e(std::vector<std::string>{
+      "/bin/launchctl",
+      "print",
+      type_safe::get(service_target),
   });
 
-  p.stdout_received.connect([&ss](auto&& buffer) {
-    for (const auto& c : *buffer) {
-      ss << c;
-    }
-  });
-  p.run();
-  p.wait();
-
-  wait->wait_notice();
-
+  std::istringstream ss(e.get_stdout());
   std::string line;
   while (std::getline(ss, line)) {
     pqrs::string::trim(line);
