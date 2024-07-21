@@ -6,7 +6,7 @@ struct MainView: View {
 
   var body: some View {
     HStack(alignment: .top) {
-      Image(decorative: "app")
+      Image(nsImage: NSWorkspace.shared.icon(forFile: Bundle.main.bundlePath))
         .resizable()
         .frame(width: 48.0, height: 48.0)
         .padding(.leading, 2.0)
