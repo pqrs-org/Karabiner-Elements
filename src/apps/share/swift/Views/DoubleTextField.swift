@@ -7,6 +7,8 @@ struct DoubleTextField: View {
   // To avoid this, do not specify the formatter directly in the TextField, but use onChange to format the value.
   @State private var text = ""
   @State private var error = false
+  @State private var ignoreNextUpdateByText: String?
+  @State private var ignoreNextUpdateByValue: Double?
 
   private let step: Double
   private let range: ClosedRange<Double>
@@ -76,37 +78,53 @@ struct DoubleTextField: View {
   }
 
   private func update(byValue newValue: Double) {
-    if let newText = formatter.string(for: newValue) {
-      error = false
-
-      Task { @MainActor in
-        if value != newValue {
-          value = newValue
-        }
-        if text != newText {
-          text = newText
-        }
-      }
-    } else {
-      error = true
+    let ignore = ignoreNextUpdateByValue == newValue
+    ignoreNextUpdateByValue = nil
+    if ignore {
+      return
     }
+
+    var newText = text
+    var newError = true
+
+    if let t = formatter.string(for: newValue) {
+      newError = false
+      newText = t
+    }
+
+    updateProperties(newValue: newValue, newText: newText, newError: newError)
   }
 
   private func update(byText newText: String) {
-    if let number = formatter.number(from: newText) {
-      error = false
+    let ignore = ignoreNextUpdateByText == newText
+    ignoreNextUpdateByText = nil
+    if ignore {
+      return
+    }
 
-      let newValue = number.doubleValue
-      Task { @MainActor in
-        if value != newValue {
-          value = newValue
-        }
-        if text != newText {
-          text = newText
-        }
-      }
-    } else {
-      error = true
+    var newValue = value
+    var newError = true
+
+    if let number = formatter.number(from: newText) {
+      newError = false
+      newValue = number.doubleValue
+    }
+
+    updateProperties(newValue: newValue, newText: newText, newError: newError)
+  }
+
+  private func updateProperties(newValue: Double, newText: String, newError: Bool) {
+    if value != newValue {
+      ignoreNextUpdateByValue = newValue
+      value = newValue
+    }
+    if text != newText {
+      ignoreNextUpdateByText = newText
+      text = newText
+    }
+
+    if error != newError {
+      error = newError
     }
   }
 }
