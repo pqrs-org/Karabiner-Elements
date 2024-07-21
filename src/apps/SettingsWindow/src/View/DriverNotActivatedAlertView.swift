@@ -110,8 +110,13 @@ struct DriverNotActivatedAlertView: View {
   }
 
   private func openSystemSettingsSecurity() {
-    let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?General")!
-    NSWorkspace.shared.open(url)
+    if #available(macOS 15.0, *) {
+      let url = URL(string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension")!
+      NSWorkspace.shared.open(url)
+    } else {
+      let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?General")!
+      NSWorkspace.shared.open(url)
+    }
 
     NSApp.miniaturizeAll(nil)
   }
