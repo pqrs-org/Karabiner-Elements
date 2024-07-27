@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../configuration_json_helper.hpp"
+#include "connected_devices/connected_devices.hpp"
 #include "profile/complex_modifications.hpp"
 #include "profile/device.hpp"
 #include "profile/parameters.hpp"
@@ -236,6 +237,15 @@ public:
                                                          }),
                                                          error_handling_));
     return devices_.back();
+  }
+
+  void erase_not_connected_devices(const connected_devices::connected_devices& connected_devices) {
+    devices_.erase(std::remove_if(std::begin(devices_),
+                                  std::end(devices_),
+                                  [&](auto& d) {
+                                    return !connected_devices.find_device(d->get_identifiers());
+                                  }),
+                   std::end(devices_));
   }
 
 private:

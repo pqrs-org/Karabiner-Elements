@@ -890,6 +890,65 @@ void run_core_configuration_test(void) {
     }
   };
 
+  "profile.erase_not_connected_devices"_test = [] {
+    auto json = R"(
+
+{
+  "devices": [
+    {
+      "identifiers": {
+        "vendor_id": 1234,
+        "product_id": 1000,
+        "is_keyboard": true
+      }
+    },
+    {
+      "identifiers": {
+        "vendor_id": 1234,
+        "product_id": 1001,
+        "is_keyboard": true
+      }
+    },
+    {
+      "identifiers": {
+        "vendor_id": 1234,
+        "product_id": 1002,
+        "is_keyboard": true
+      }
+    },
+    {
+      "identifiers": {
+        "vendor_id": 1234,
+        "product_id": 1003,
+        "is_keyboard": true
+      }
+    }
+  ]
+}
+
+)"_json;
+
+    krbn::core_configuration::details::profile profile(json,
+                                                       krbn::core_configuration::error_handling::strict);
+
+    expect(4 == profile.get_devices().size());
+
+    krbn::connected_devices::connected_devices connected_devices;
+
+    connected_devices.push_back_device(std::make_shared<krbn::connected_devices::details::device>(
+        krbn::connected_devices::details::descriptions(),
+        profile.get_devices()[1]->get_identifiers(),
+        false, // is_built_in_keyboard
+        false, // is_built_in_pointing_device
+        false  // is_built_in_touch_bar
+        ));
+
+    profile.erase_not_connected_devices(connected_devices);
+
+    expect(1 == profile.get_devices().size());
+    expect(connected_devices.get_devices()[0]->get_identifiers() == profile.get_devices()[0]->get_identifiers());
+  };
+
   "simple_modifications"_test = [] {
     // load values from json (v2)
     {

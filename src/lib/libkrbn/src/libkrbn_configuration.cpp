@@ -732,6 +732,15 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks
   d->set_game_pad_swap_sticks(value);
 }
 
+void libkrbn_core_configuration_erase_selected_profile_not_connected_devices(void) {
+  if (auto manager = libkrbn_cpp::get_components_manager()) {
+    if (auto connected_devices = manager->get_current_connected_devices()) {
+      auto c = get_current_core_configuration();
+      c->get_selected_profile().erase_not_connected_devices(*connected_devices);
+    }
+  }
+}
+
 // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
 
 double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers) {

@@ -9,6 +9,8 @@ namespace connected_devices {
 namespace details {
 class device final {
 public:
+  device(const device&) = delete;
+
   device(const descriptions& descriptions,
          const device_identifiers& identifiers,
          bool is_built_in_keyboard,
@@ -32,22 +34,20 @@ public:
     is_built_in_touch_bar_ = device_properties.get_is_built_in_touch_bar().value_or(false);
   }
 
-  static device make_from_json(const nlohmann::json& json) {
-    descriptions d;
-    device_identifiers i;
-
+  device(const nlohmann::json& json) {
     if (auto j = pqrs::json::find_json(json, "descriptions")) {
-      d = descriptions::make_from_json(j->value());
-    }
-    if (auto j = pqrs::json::find_json(json, "identifiers")) {
-      i = j->value().get<device_identifiers>();
+      descriptions_ = descriptions::make_from_json(j->value());
     }
 
-    return device(d,
-                  i,
-                  pqrs::json::find<bool>(json, "is_built_in_keyboard").value_or(false),
-                  pqrs::json::find<bool>(json, "is_built_in_trackpad").value_or(false),
-                  pqrs::json::find<bool>(json, "is_built_in_touch_bar").value_or(false));
+    if (auto j = pqrs::json::find_json(json, "identifiers")) {
+      identifiers_ = j->value().get<device_identifiers>();
+    }
+
+    is_built_in_keyboard_ = pqrs::json::find<bool>(json, "is_built_in_keyboard").value_or(false);
+
+    is_built_in_trackpad_ = pqrs::json::find<bool>(json, "is_built_in_trackpad").value_or(false);
+
+    is_built_in_touch_bar_ = pqrs::json::find<bool>(json, "is_built_in_touch_bar").value_or(false);
   }
 
   nlohmann::json to_json(void) const {
@@ -89,10 +89,6 @@ public:
   bool is_karabiner_virtual_hid_device(void) const {
     return iokit_utility::is_karabiner_virtual_hid_device(descriptions_.get_manufacturer(),
                                                           descriptions_.get_product());
-  }
-
-  bool operator==(const device& other) const {
-    return identifiers_ == other.identifiers_;
   }
 
 private:

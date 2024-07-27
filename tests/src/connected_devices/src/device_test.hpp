@@ -84,8 +84,8 @@ void run_device_test(void) {
                                       }}));
     }
     {
-      auto device1 = krbn::connected_devices::details::device::make_from_json(nlohmann::json(nullptr));
-      auto device2 = krbn::connected_devices::details::device::make_from_json(nlohmann::json(
+      auto device1 = krbn::connected_devices::details::device(nlohmann::json(nullptr));
+      auto device2 = krbn::connected_devices::details::device(nlohmann::json(
           {{
                "descriptions",
                {

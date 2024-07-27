@@ -25,11 +25,11 @@ void run_connected_devices_test(void) {
                                              false, // is_game_pad
                                              ""     // device_address
         );
-        krbn::connected_devices::details::device device(descriptions,
-                                                        identifiers,
-                                                        true,  // is_built_in_keyboard
-                                                        false, // is_built_in_pointing_device
-                                                        false  // is_built_in_touch_bar
+        auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
+                                                                                 identifiers,
+                                                                                 true,  // is_built_in_keyboard
+                                                                                 false, // is_built_in_pointing_device
+                                                                                 false  // is_built_in_touch_bar
         );
         connected_devices.push_back_device(device);
       }
@@ -44,11 +44,11 @@ void run_connected_devices_test(void) {
                                              false, // is_game_pad
                                              ""     // device_address
         );
-        krbn::connected_devices::details::device device(descriptions,
-                                                        identifiers,
-                                                        true,  // is_built_in_keyboard
-                                                        false, // is_built_in_pointing_device
-                                                        false  // is_built_in_touch_bar
+        auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
+                                                                                 identifiers,
+                                                                                 true,  // is_built_in_keyboard
+                                                                                 false, // is_built_in_pointing_device
+                                                                                 false  // is_built_in_touch_bar
         );
         connected_devices.push_back_device(device);
       }
@@ -63,11 +63,11 @@ void run_connected_devices_test(void) {
                                              false, // is_game_pad
                                              ""     // device_address
         );
-        krbn::connected_devices::details::device device(descriptions,
-                                                        identifiers,
-                                                        false, // is_built_in_keyboard
-                                                        false, // is_built_in_pointing_device
-                                                        false  // is_built_in_touch_bar
+        auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
+                                                                                 identifiers,
+                                                                                 false, // is_built_in_keyboard
+                                                                                 false, // is_built_in_pointing_device
+                                                                                 false  // is_built_in_touch_bar
         );
         connected_devices.push_back_device(device);
       }
@@ -82,11 +82,11 @@ void run_connected_devices_test(void) {
                                              false, // is_game_pad
                                              ""     // device_address
         );
-        krbn::connected_devices::details::device device(descriptions,
-                                                        identifiers,
-                                                        false, // is_built_in_keyboard
-                                                        true,  // is_built_in_pointing_device
-                                                        false  // is_built_in_touch_bar
+        auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
+                                                                                 identifiers,
+                                                                                 false, // is_built_in_keyboard
+                                                                                 true,  // is_built_in_pointing_device
+                                                                                 false  // is_built_in_touch_bar
         );
         connected_devices.push_back_device(device);
       }
@@ -102,11 +102,11 @@ void run_connected_devices_test(void) {
                                              false,              // is_game_pad
                                              "ec-ba-73-21-e6-f4" // device_address (ignored)
         );
-        krbn::connected_devices::details::device device(descriptions,
-                                                        identifiers,
-                                                        false, // is_built_in_keyboard
-                                                        true,  // is_built_in_pointing_device
-                                                        false  // is_built_in_touch_bar
+        auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
+                                                                                 identifiers,
+                                                                                 false, // is_built_in_keyboard
+                                                                                 true,  // is_built_in_pointing_device
+                                                                                 false  // is_built_in_touch_bar
         );
         connected_devices.push_back_device(device);
       }
@@ -121,11 +121,11 @@ void run_connected_devices_test(void) {
                                              false,              // is_game_pad
                                              "ec-ba-73-21-e6-f4" // device_address (ignored)
         );
-        krbn::connected_devices::details::device device(descriptions,
-                                                        identifiers,
-                                                        true,  // is_built_in_keyboard
-                                                        false, // is_built_in_pointing_device
-                                                        false  // is_built_in_touch_bar
+        auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
+                                                                                 identifiers,
+                                                                                 true,  // is_built_in_keyboard
+                                                                                 false, // is_built_in_pointing_device
+                                                                                 false  // is_built_in_touch_bar
         );
         connected_devices.push_back_device(device);
       }
@@ -141,28 +141,28 @@ void run_connected_devices_test(void) {
                                              false,              // is_game_pad
                                              "ec-ba-73-21-e6-f5" // device_address
         );
-        krbn::connected_devices::details::device device(descriptions,
-                                                        identifiers,
-                                                        false, // is_built_in_keyboard
-                                                        false, // is_built_in_pointing_device
-                                                        true   // is_built_in_touch_bar
+        auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
+                                                                                 identifiers,
+                                                                                 false, // is_built_in_keyboard
+                                                                                 false, // is_built_in_pointing_device
+                                                                                 true   // is_built_in_touch_bar
         );
         connected_devices.push_back_device(device);
       }
 
       expect(connected_devices.is_loaded() == false);
       expect(connected_devices.get_devices().size() == 6);
-      expect(connected_devices.get_devices()[0].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-      expect(connected_devices.get_devices()[0].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-      expect(connected_devices.get_devices()[0].get_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[1].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-      expect(connected_devices.get_devices()[1].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5679));
-      expect(connected_devices.get_devices()[0].get_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[2].get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(2345));
-      expect(connected_devices.get_devices()[2].get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(6789));
-      expect(connected_devices.get_devices()[0].get_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[4].get_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[5].get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
+      expect(connected_devices.get_devices()[0]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      expect(connected_devices.get_devices()[0]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+      expect(connected_devices.get_devices()[0]->get_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[1]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      expect(connected_devices.get_devices()[1]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5679));
+      expect(connected_devices.get_devices()[0]->get_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[2]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(2345));
+      expect(connected_devices.get_devices()[2]->get_identifiers().get_product_id() == pqrs::hid::product_id::value_t(6789));
+      expect(connected_devices.get_devices()[0]->get_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[4]->get_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[5]->get_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
 
       std::ifstream ifs("json/connected_devices.json");
 
@@ -174,10 +174,10 @@ void run_connected_devices_test(void) {
 
       expect(connected_devices.is_loaded() == true);
       expect(connected_devices.get_devices().size() == 6);
-      expect(connected_devices.get_devices()[0].get_is_built_in_keyboard() == true);
-      expect(connected_devices.get_devices()[0].get_is_built_in_trackpad() == false);
-      expect(connected_devices.get_devices()[1].get_is_built_in_keyboard() == false);
-      expect(connected_devices.get_devices()[1].get_is_built_in_trackpad() == true);
+      expect(connected_devices.get_devices()[0]->get_is_built_in_keyboard() == true);
+      expect(connected_devices.get_devices()[0]->get_is_built_in_trackpad() == false);
+      expect(connected_devices.get_devices()[1]->get_is_built_in_keyboard() == false);
+      expect(connected_devices.get_devices()[1]->get_is_built_in_trackpad() == true);
     }
 
     {
@@ -220,11 +220,11 @@ void run_connected_devices_test(void) {
                                            false, // is_game_pad
                                            ""     // device_address
       );
-      krbn::connected_devices::details::device device(descriptions,
-                                                      identifiers,
-                                                      true,  // is_built_in_keyboard
-                                                      false, // is_built_in_pointing_device
-                                                      false  // is_built_in_touch_bar
+      auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
+                                                                               identifiers,
+                                                                               true,  // is_built_in_keyboard
+                                                                               false, // is_built_in_pointing_device
+                                                                               false  // is_built_in_touch_bar
       );
       connected_devices.push_back_device(device);
 

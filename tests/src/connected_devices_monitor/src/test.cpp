@@ -67,7 +67,7 @@ int main(void) {
 
       expect(monitor.get_count() == 2);
       expect(monitor.get_last_connected_devices()->get_devices().size() == 1);
-      expect(monitor.get_last_connected_devices()->get_devices()[0].get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test1"));
+      expect(monitor.get_last_connected_devices()->get_devices()[0]->get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test1"));
 
       // ============================================================
       // Remove devices.json (ignored file removal)
@@ -79,7 +79,7 @@ int main(void) {
 
       expect(monitor.get_count() == 2);
       expect(monitor.get_last_connected_devices()->get_devices().size() == 1);
-      expect(monitor.get_last_connected_devices()->get_devices()[0].get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test1"));
+      expect(monitor.get_last_connected_devices()->get_devices()[0]->get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test1"));
 
       // ============================================================
       // Update devices.json
@@ -91,7 +91,7 @@ int main(void) {
 
       expect(monitor.get_count() == 3);
       expect(monitor.get_last_connected_devices()->get_devices().size() == 1);
-      expect(monitor.get_last_connected_devices()->get_devices()[0].get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test2"));
+      expect(monitor.get_last_connected_devices()->get_devices()[0]->get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test2"));
     }
 
     // ============================================================
@@ -117,7 +117,7 @@ int main(void) {
 
       expect(monitor.get_count() == 2);
       expect(monitor.get_last_connected_devices()->get_devices().size() == 1);
-      expect(monitor.get_last_connected_devices()->get_devices()[0].get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test2"));
+      expect(monitor.get_last_connected_devices()->get_devices()[0]->get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test2"));
     }
 
     // ============================================================
@@ -144,7 +144,7 @@ int main(void) {
 
       expect(monitor.get_count() == 2);
       expect(monitor.get_last_connected_devices()->get_devices().size() == 1);
-      expect(monitor.get_last_connected_devices()->get_devices()[0].get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test1"));
+      expect(monitor.get_last_connected_devices()->get_devices()[0]->get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test1"));
 
       // ============================================================
       // Break user.json (ignored)
@@ -156,7 +156,7 @@ int main(void) {
 
       expect(monitor.get_count() == 2);
       expect(monitor.get_last_connected_devices()->get_devices().size() == 1);
-      expect(monitor.get_last_connected_devices()->get_devices()[0].get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test1"));
+      expect(monitor.get_last_connected_devices()->get_devices()[0]->get_descriptions().get_manufacturer() == pqrs::hid::manufacturer_string::value_t("test1"));
     }
   };
 
