@@ -943,6 +943,8 @@ void run_core_configuration_test(void) {
         false  // is_built_in_touch_bar
         ));
 
+    expect(3 == profile.not_connected_devices_count(connected_devices));
+
     profile.erase_not_connected_devices(connected_devices);
 
     expect(1 == profile.get_devices().size());

@@ -239,6 +239,14 @@ public:
     return devices_.back();
   }
 
+  size_t not_connected_devices_count(const connected_devices::connected_devices& connected_devices) const {
+    return std::count_if(std::begin(devices_),
+                         std::end(devices_),
+                         [&](auto& d) {
+                           return !connected_devices.find_device(d->get_identifiers());
+                         });
+  }
+
   void erase_not_connected_devices(const connected_devices::connected_devices& connected_devices) {
     devices_.erase(std::remove_if(std::begin(devices_),
                                   std::end(devices_),
