@@ -3,6 +3,7 @@ import SwiftUI
 struct DevicesView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
+  @State private var showEraseNotConnectedDeviceSettingsButton = false
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -53,6 +54,46 @@ struct DevicesView: View {
         }
       }
       .background(Color(NSColor.textBackgroundColor))
+
+      if settings.notConnectedDeviceSettingsCount > 0 {
+        HStack {
+          Text(
+            "There are \(settings.notConnectedDeviceSettingsCount) other settings for devices that are not currently connected"
+          )
+
+          Spacer()
+
+          if !showEraseNotConnectedDeviceSettingsButton {
+            Button(
+              action: {
+                showEraseNotConnectedDeviceSettingsButton = true
+              },
+              label: {
+                Image(systemName: "trash")
+                  .buttonLabelStyle()
+              }
+            )
+          } else {
+            Button(
+              role: .destructive,
+              action: {
+                settings.eraseNotConnectedDeviceSettings()
+              },
+              label: {
+                Label(
+                  "Remove settings for \(settings.notConnectedDeviceSettingsCount) devices",
+                  systemImage: "trash"
+                )
+                .buttonLabelStyle()
+              }
+            )
+            .deleteButtonStyle()
+          }
+        }
+        .padding()
+        .foregroundColor(Color.infoForeground)
+        .background(Color.infoBackground)
+      }
     }
     .padding()
   }

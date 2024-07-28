@@ -732,6 +732,17 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks
   d->set_game_pad_swap_sticks(value);
 }
 
+size_t libkrbn_core_configuration_get_selected_profile_not_connected_devices_count(void) {
+  if (auto manager = libkrbn_cpp::get_components_manager()) {
+    if (auto connected_devices = manager->get_current_connected_devices()) {
+      auto c = get_current_core_configuration();
+      return c->get_selected_profile().not_connected_devices_count(*connected_devices);
+    }
+  }
+
+  return 0;
+}
+
 void libkrbn_core_configuration_erase_selected_profile_not_connected_devices(void) {
   if (auto manager = libkrbn_cpp::get_components_manager()) {
     if (auto connected_devices = manager->get_current_connected_devices()) {
