@@ -24,8 +24,6 @@ void run_device_identifiers_test(void) {
           {"product_id", 5678},
           {"device_address", "aa-bb-cc-dd-ee-ff"},
           {"is_keyboard", true},
-          {"is_pointing_device", false},
-          {"is_game_pad", false},
           {"dummy key", "dummy value"},
       });
 

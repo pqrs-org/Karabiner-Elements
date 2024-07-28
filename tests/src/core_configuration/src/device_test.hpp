@@ -84,14 +84,7 @@ void run_device_test(void) {
     {
       auto json = nlohmann::json::object();
       auto identifiers = json.get<krbn::device_identifiers>();
-      nlohmann::json expected({
-          {"vendor_id", 0},
-          {"product_id", 0},
-          {"is_keyboard", false},
-          {"is_pointing_device", false},
-          {"is_game_pad", false},
-      });
-      expect(nlohmann::json(identifiers) == expected);
+      expect(json == nlohmann::json(identifiers)) << UT_SHOW_LINE;
     }
     {
       nlohmann::json json({
@@ -101,13 +94,9 @@ void run_device_test(void) {
       auto identifiers = json.get<krbn::device_identifiers>();
       nlohmann::json expected({
           {"dummy", {{"keep_me", true}}},
-          {"vendor_id", 0},
-          {"product_id", 0},
-          {"is_keyboard", false},
           {"is_pointing_device", true},
-          {"is_game_pad", false},
       });
-      expect(nlohmann::json(identifiers) == expected);
+      expect(nlohmann::json(identifiers) == expected) << UT_SHOW_LINE;
     }
   };
 
@@ -242,7 +231,6 @@ void run_device_test(void) {
           {"identifiers", {
                               {"vendor_id", 1234},
                               {"product_id", 5678},
-                              {"is_keyboard", false},
                               {"is_pointing_device", true},
                           }},
       });
@@ -266,7 +254,6 @@ void run_device_test(void) {
                               {"vendor_id", 0x1050},
                               {"product_id", 0x407},
                               {"is_keyboard", true},
-                              {"is_pointing_device", false},
                           }},
       });
       {
@@ -289,7 +276,6 @@ void run_device_test(void) {
                               {"vendor_id", 0x5ac},
                               {"product_id", 0x262},
                               {"is_keyboard", true},
-                              {"is_pointing_device", false},
                           }},
       });
       {
@@ -310,7 +296,6 @@ void run_device_test(void) {
           {"identifiers", {
                               {"vendor_id", 1234},
                               {"product_id", 5678},
-                              {"is_keyboard", false},
                               {"is_pointing_device", true},
                           }},
           {"treat_as_built_in_keyboard", true},
@@ -406,24 +391,8 @@ void run_device_test(void) {
                                   {{"keep_me", true}},
                               },
                               {
-                                  "vendor_id",
-                                  0,
-                              },
-                              {
-                                  "product_id",
-                                  0,
-                              },
-                              {
                                   "is_keyboard",
                                   true,
-                              },
-                              {
-                                  "is_pointing_device",
-                                  false,
-                              },
-                              {
-                                  "is_game_pad",
-                                  false,
                               },
                           }},
           {"ignore", true},

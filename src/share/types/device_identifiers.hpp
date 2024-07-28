@@ -9,7 +9,8 @@ namespace krbn {
 class device_identifiers final {
 public:
   device_identifiers(void)
-      : vendor_id_(pqrs::hid::vendor_id::value_t(0)),
+      : json_(nlohmann::json::object()),
+        vendor_id_(pqrs::hid::vendor_id::value_t(0)),
         product_id_(pqrs::hid::product_id::value_t(0)),
         is_keyboard_(false),
         is_pointing_device_(false),
@@ -23,7 +24,8 @@ public:
                      bool is_pointing_device,
                      bool is_game_pad,
                      std::string device_address)
-      : vendor_id_(vendor_id),
+      : json_(nlohmann::json::object()),
+        vendor_id_(vendor_id),
         product_id_(product_id),
         is_keyboard_(is_keyboard),
         is_pointing_device_(is_pointing_device),
@@ -38,60 +40,75 @@ public:
     }
   }
 
-  const nlohmann::json& get_json(void) const {
-    return json_;
+  device_identifiers(const nlohmann::json& json)
+      : device_identifiers() {
+    json_ = json;
+
+    pqrs::json::requires_object(json, "json");
+
+    for (const auto& [k, v] : json.items()) {
+      if (k == "vendor_id") {
+        pqrs::json::requires_number(v, "`" + k + "`");
+
+        vendor_id_ = v.get<pqrs::hid::vendor_id::value_t>();
+
+      } else if (k == "product_id") {
+        pqrs::json::requires_number(v, "`" + k + "`");
+
+        product_id_ = v.get<pqrs::hid::product_id::value_t>();
+
+      } else if (k == "device_address") {
+        pqrs::json::requires_string(v, "`" + k + "`");
+
+        device_address_ = v.get<std::string>();
+
+      } else if (k == "is_keyboard") {
+        pqrs::json::requires_boolean(v, "`" + k + "`");
+
+        is_keyboard_ = v.get<bool>();
+
+      } else if (k == "is_pointing_device") {
+        pqrs::json::requires_boolean(v, "`" + k + "`");
+
+        is_pointing_device_ = v.get<bool>();
+
+      } else if (k == "is_game_pad") {
+        pqrs::json::requires_boolean(v, "`" + k + "`");
+
+        is_game_pad_ = v.get<bool>();
+
+      } else {
+        // Allow unknown key
+      }
+    }
   }
 
-  void set_json(const nlohmann::json& value) {
-    json_ = value;
+  const nlohmann::json& get_json(void) const {
+    return json_;
   }
 
   pqrs::hid::vendor_id::value_t get_vendor_id(void) const {
     return vendor_id_;
   }
 
-  void set_vendor_id(pqrs::hid::vendor_id::value_t value) {
-    vendor_id_ = value;
-  }
-
   pqrs::hid::product_id::value_t get_product_id(void) const {
     return product_id_;
-  }
-
-  void set_product_id(pqrs::hid::product_id::value_t value) {
-    product_id_ = value;
   }
 
   bool get_is_keyboard(void) const {
     return is_keyboard_;
   }
 
-  void set_is_keyboard(bool value) {
-    is_keyboard_ = value;
-  }
-
   bool get_is_pointing_device(void) const {
     return is_pointing_device_;
-  }
-
-  void set_is_pointing_device(bool value) {
-    is_pointing_device_ = value;
   }
 
   bool get_is_game_pad(void) const {
     return is_game_pad_;
   }
 
-  void set_is_game_pad(bool value) {
-    is_game_pad_ = value;
-  }
-
   const std::string& get_device_address(void) const {
     return device_address_;
-  }
-
-  void set_device_address(std::string value) {
-    device_address_ = value;
   }
 
   bool empty(void) const {
@@ -125,56 +142,69 @@ private:
 
 inline void to_json(nlohmann::json& json, const device_identifiers& value) {
   json = value.get_json();
-  json["vendor_id"] = type_safe::get(value.get_vendor_id());
-  json["product_id"] = type_safe::get(value.get_product_id());
-  json["is_keyboard"] = value.get_is_keyboard();
-  json["is_pointing_device"] = value.get_is_pointing_device();
-  json["is_game_pad"] = value.get_is_game_pad();
 
-  if (value.get_device_address() != "") {
-    json["device_address"] = value.get_device_address();
+  {
+    auto key = "vendor_id";
+    auto v = type_safe::get(value.get_vendor_id());
+    if (v != 0) {
+      json[key] = v;
+    } else {
+      json.erase(key);
+    }
+  }
+
+  {
+    auto key = "product_id";
+    auto v = type_safe::get(value.get_product_id());
+    if (v != 0) {
+      json[key] = v;
+    } else {
+      json.erase(key);
+    }
+  }
+
+  {
+    auto key = "is_keyboard";
+    auto v = value.get_is_keyboard();
+    if (v != false) {
+      json[key] = v;
+    } else {
+      json.erase(key);
+    }
+  }
+
+  {
+    auto key = "is_pointing_device";
+    auto v = value.get_is_pointing_device();
+    if (v != false) {
+      json[key] = v;
+    } else {
+      json.erase(key);
+    }
+  }
+
+  {
+    auto key = "is_game_pad";
+    auto v = value.get_is_game_pad();
+    if (v != false) {
+      json[key] = v;
+    } else {
+      json.erase(key);
+    }
+  }
+
+  {
+    auto key = "device_address";
+    auto v = value.get_device_address();
+    if (v != "") {
+      json[key] = v;
+    } else {
+      json.erase(key);
+    }
   }
 }
 
 inline void from_json(const nlohmann::json& json, device_identifiers& value) {
-  pqrs::json::requires_object(json, "json");
-
-  for (const auto& [k, v] : json.items()) {
-    if (k == "vendor_id") {
-      pqrs::json::requires_number(v, "`" + k + "`");
-
-      value.set_vendor_id(v.get<pqrs::hid::vendor_id::value_t>());
-
-    } else if (k == "product_id") {
-      pqrs::json::requires_number(v, "`" + k + "`");
-
-      value.set_product_id(v.get<pqrs::hid::product_id::value_t>());
-
-    } else if (k == "device_address") {
-      pqrs::json::requires_string(v, "`" + k + "`");
-
-      value.set_device_address(v.get<std::string>());
-
-    } else if (k == "is_keyboard") {
-      pqrs::json::requires_boolean(v, "`" + k + "`");
-
-      value.set_is_keyboard(v.get<bool>());
-
-    } else if (k == "is_pointing_device") {
-      pqrs::json::requires_boolean(v, "`" + k + "`");
-
-      value.set_is_pointing_device(v.get<bool>());
-
-    } else if (k == "is_game_pad") {
-      pqrs::json::requires_boolean(v, "`" + k + "`");
-
-      value.set_is_game_pad(v.get<bool>());
-
-    } else {
-      // Allow unknown key
-    }
-  }
-
-  value.set_json(json);
+  value = device_identifiers(json);
 }
 } // namespace krbn

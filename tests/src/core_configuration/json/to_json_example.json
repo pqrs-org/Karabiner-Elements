@@ -124,9 +124,7 @@
                         }
                     ],
                     "identifiers": {
-                        "is_game_pad": false,
                         "is_keyboard": true,
-                        "is_pointing_device": false,
                         "product_id": 50475,
                         "vendor_id": 1133
                     },
@@ -147,9 +145,7 @@
                 {
                     "disable_built_in_keyboard_if_exists": true,
                     "identifiers": {
-                        "is_game_pad": false,
                         "is_keyboard": true,
-                        "is_pointing_device": false,
                         "product_id": 610,
                         "vendor_id": 1452
                     },
@@ -179,9 +175,7 @@
                         }
                     ],
                     "identifiers": {
-                        "is_game_pad": false,
                         "is_keyboard": true,
-                        "is_pointing_device": false,
                         "product_id": 50475,
                         "vendor_id": 1234
                     },

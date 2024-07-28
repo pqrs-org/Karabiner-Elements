@@ -821,57 +821,46 @@ void run_core_configuration_test(void) {
       profile.get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(20));
       profile.get_virtual_hid_keyboard()->set_mouse_key_xy_scale(250);
 
-      nlohmann::json expected({
-          {"devices", {
-                          {
-                              {"identifiers", {
-                                                  {
-                                                      "vendor_id",
-                                                      1234,
-                                                  },
-                                                  {
-                                                      "product_id",
-                                                      5678,
-                                                  },
-                                                  {"device_address", "ec-ba-73-21-e6-f5"},
-                                                  {
-                                                      "is_keyboard",
-                                                      true,
-                                                  },
-                                                  {
-                                                      "is_pointing_device",
-                                                      true,
-                                                  },
-                                                  {
-                                                      "is_game_pad",
-                                                      false,
-                                                  },
-                                              }},
-                              {"disable_built_in_keyboard_if_exists", true},
-                              {"manipulate_caps_lock_led", false},
-                          },
-                      }},
-          {"dummy", {{"keep_me", true}}},
-          {"name", "profile 1"},
-          {"selected", true},
-          {"parameters", nlohmann::json::object({
-                             {"delay_milliseconds_before_open_device", 500},
-                         })},
-          {"simple_modifications", nlohmann::json::array()},
-          {"fn_function_keys", nlohmann::json::array({
-                                   nlohmann::json::object({
-                                       {"from", nlohmann::json::object({
-                                                    {"key_code", "f3"},
-                                                })},
-                                       {"to", nlohmann::json::array({
-                                                  nlohmann::json::object({
-                                                      {"key_code", "to f3"},
-                                                  }),
-                                              })},
-                                   }),
-                               })},
-          {"virtual_hid_keyboard", R"( {"country_code": 20, "mouse_key_xy_scale": 250} )"_json},
-      });
+      auto expected = R"(
+
+{
+  "devices": [
+    {
+      "identifiers": {
+        "vendor_id": 1234,
+        "product_id": 5678,
+        "device_address": "ec-ba-73-21-e6-f5",
+        "is_keyboard": true,
+        "is_pointing_device": true
+      },
+      "disable_built_in_keyboard_if_exists": true,
+      "manipulate_caps_lock_led": false
+    }
+  ],
+  "dummy": {
+    "keep_me": true
+  },
+  "name": "profile 1",
+  "selected": true,
+  "parameters": {
+    "delay_milliseconds_before_open_device": 500
+  },
+  "simple_modifications": [],
+  "fn_function_keys": [
+    {
+      "from": {"key_code": "f3"},
+      "to": [
+        {"key_code": "to f3"}
+      ]
+    }
+  ],
+  "virtual_hid_keyboard": {
+    "country_code": 20,
+    "mouse_key_xy_scale": 250
+  }
+}
+
+)"_json;
 
       expected["simple_modifications"].push_back(nlohmann::json::object());
       expected["simple_modifications"].back()["from"]["key_code"] = "from 1";
