@@ -31,6 +31,7 @@
 -   ✨ New Features
     -   Added the ability to duplicate and reorder profiles.
     -   Added the ability to restart Karabiner-Elements from the menu.
+    -   Added the ability to reset device settings that are not currently connected.
 -   ⚡️ Improvements
     -   Improved "{device} is ignored temporarily until {key_code} is pressed again" message for to make it more understandable. (Thanks to @adamnovak)
     -   Added "Enable Karabiner Notification Window" configuration, which allows you to hide the notification window by turning off this setting. (Thanks to @jwodnicki)
