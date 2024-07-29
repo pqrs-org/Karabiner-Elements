@@ -54,8 +54,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     // Start components
     //
 
-    _ = Doctor.shared
-
+    Doctor.shared.start()
     LibKrbn.ConnectedDevices.shared.watch()
     LibKrbn.GrabberClient.shared.start("")
     LibKrbn.Settings.shared.watch()
