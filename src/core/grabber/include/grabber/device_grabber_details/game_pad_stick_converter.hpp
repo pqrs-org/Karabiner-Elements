@@ -38,6 +38,12 @@ public:
   // Classes
   //
 
+  enum class continued_movement_mode {
+    none,
+    xy,
+    wheels,
+  };
+
   class stick_sensor {
   public:
     stick_sensor(void)
@@ -401,85 +407,29 @@ public:
         device_properties_(device_properties),
         xy_(stick::stick_type::xy),
         wheels_(stick::stick_type::wheels),
-        xy_timer_(*this),
-        xy_timer_count_(0),
-        wheels_timer_(*this),
-        wheels_timer_count_(0) {
+        continued_movement_timer_(*this),
+        continued_movement_timer_count_(0),
+        continued_movement_mode_(continued_movement_mode::none) {
     set_weak_core_configuration(weak_core_configuration);
 
     xy_.hid_values_updated.connect([this](auto&& x, auto&& y, auto&& interval) {
       x_value_.set_value(x);
       y_value_.set_value(y);
 
-      if (interval == std::chrono::milliseconds(0)) {
-        xy_timer_.stop();
-        post_xy_event();
-
-      } else {
-        if (!xy_timer_.enabled()) {
-          xy_timer_count_ = 0;
-
-          xy_timer_.start(
-              [this, interval] {
-                ++xy_timer_count_;
-                switch (xy_timer_count_) {
-                  case 1:
-                    // Ignore immediately fire after start.
-                    return;
-                  case 2:
-                    post_xy_event();
-                    xy_timer_.set_interval(interval);
-                    break;
-                  default:
-                    post_xy_event();
-                    break;
-                }
-              },
-              // TODO: Replace hard-coded interval
-              std::chrono::milliseconds(300));
-        }
-      }
+      update_continued_movement_timer(continued_movement_mode::xy, interval);
     });
 
     wheels_.hid_values_updated.connect([this](auto&& h, auto&& v, auto&& interval) {
       horizontal_wheel_value_.set_value(h);
       vertical_wheel_value_.set_value(v);
 
-      if (interval == std::chrono::milliseconds(0)) {
-        wheels_timer_.stop();
-        post_wheels_event();
-
-      } else {
-        if (!wheels_timer_.enabled()) {
-          wheels_timer_count_ = 0;
-
-          wheels_timer_.start(
-              [this, interval] {
-                ++wheels_timer_count_;
-                switch (wheels_timer_count_) {
-                  case 1:
-                    // Ignore immediately fire after start.
-                    return;
-                  case 2:
-                    post_wheels_event();
-                    wheels_timer_.set_interval(interval);
-                    break;
-                  default:
-                    post_wheels_event();
-                    break;
-                }
-              },
-              // TODO: Replace hard-coded interval
-              std::chrono::milliseconds(300));
-        }
-      }
+      update_continued_movement_timer(continued_movement_mode::wheels, interval);
     });
   }
 
   ~game_pad_stick_converter(void) {
     detach_from_dispatcher([this] {
-      xy_timer_.stop();
-      wheels_timer_.stop();
+      continued_movement_timer_.stop();
     });
   }
 
@@ -611,6 +561,58 @@ private:
                                   device_properties_.get_device_identifiers());
   }
 
+  void update_continued_movement_timer(continued_movement_mode mode,
+                                       std::chrono::milliseconds interval) {
+    if (interval == std::chrono::milliseconds(0)) {
+      if (continued_movement_mode_ == mode) {
+        continued_movement_mode_ = continued_movement_mode::none;
+        continued_movement_timer_.stop();
+      }
+
+      post_event(mode);
+
+    } else {
+      if (!continued_movement_timer_.enabled()) {
+        continued_movement_mode_ = mode;
+        continued_movement_timer_count_ = 0;
+
+        continued_movement_timer_.start(
+            [this, interval] {
+              ++continued_movement_timer_count_;
+              switch (continued_movement_timer_count_) {
+                case 1:
+                  // Ignore immediately fire after start.
+                  return;
+                case 2:
+                  post_event(continued_movement_mode_);
+                  continued_movement_timer_.set_interval(interval);
+                  break;
+                default:
+                  post_event(continued_movement_mode_);
+                  break;
+              }
+            },
+            // TODO: Replace hard-coded interval
+            std::chrono::milliseconds(300));
+      }
+    }
+  }
+
+  void post_event(continued_movement_mode mode) {
+    switch (mode) {
+      case continued_movement_mode::none:
+        break;
+
+      case continued_movement_mode::xy:
+        post_xy_event();
+        break;
+
+      case continued_movement_mode::wheels:
+        post_wheels_event();
+        break;
+    }
+  }
+
   void post_xy_event(void) {
     pointing_motion m(x_value_.truncated_value(),
                       y_value_.truncated_value(),
@@ -671,11 +673,9 @@ private:
   event_value horizontal_wheel_value_;
   event_value vertical_wheel_value_;
 
-  pqrs::dispatcher::extra::timer xy_timer_;
-  int xy_timer_count_;
-
-  pqrs::dispatcher::extra::timer wheels_timer_;
-  int wheels_timer_count_;
+  pqrs::dispatcher::extra::timer continued_movement_timer_;
+  int continued_movement_timer_count_;
+  continued_movement_mode continued_movement_mode_;
 };
 } // namespace device_grabber_details
 } // namespace grabber
