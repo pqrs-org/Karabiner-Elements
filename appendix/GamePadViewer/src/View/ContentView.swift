@@ -28,6 +28,7 @@ struct ContentView: View {
 struct InformationView: View {
   @ObservedObject private var eventObserver = EventObserver.shared
   @ObservedObject private var rightStick = StickManager.shared.rightStick
+  @ObservedObject private var converter = StickManager.shared.converter
 
   var body: some View {
     VStack(alignment: .leading) {
@@ -48,13 +49,13 @@ struct InformationView: View {
       }
       Divider()
       Group {
-        Text("continuedMovementMagnitude: \(rightStick.continuedMovementMagnitude)")
+        Text("continuedMovementMagnitude: \(converter.continuedMovementMagnitude)")
       }
 
       Divider()
       Group {
-        Text("pointerX \(rightStick.pointerX)")
-        Text("pointerY \(rightStick.pointerY)")
+        Text("pointerX \(converter.pointerX)")
+        Text("pointerY \(converter.pointerY)")
       }
     }
     .frame(width: 350)
@@ -95,6 +96,7 @@ struct StickView: View {
 
 struct PointerView: View {
   @ObservedObject private var rightStick = StickManager.shared.rightStick
+  @ObservedObject private var converter = StickManager.shared.converter
 
   private let boxWidth = 400.0
   private let boxHeight = 225.0
@@ -139,8 +141,8 @@ struct PointerView: View {
       Circle()
         .fill(.blue)
         .frame(width: indicatorSize, height: indicatorSize)
-        .padding(.leading, rightStick.pointerX * boxWidth - indicatorSize / 2)
-        .padding(.top, rightStick.pointerY * boxHeight - indicatorSize / 2)
+        .padding(.leading, converter.pointerX * boxWidth - indicatorSize / 2)
+        .padding(.top, converter.pointerY * boxHeight - indicatorSize / 2)
     }
     .frame(
       width: boxWidth + indicatorSize * 2,

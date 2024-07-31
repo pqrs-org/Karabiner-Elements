@@ -44,6 +44,32 @@ public class EventObserver: ObservableObject {
     _ integerValue: Int64
   ) {
     //
+    // Left Stick
+    //
+
+    // usage::generic_desktop::x
+    if usagePage == 0x1, usage == 0x30 {
+      counter += 1
+      Task { @MainActor in
+        stickManager.leftStick.horizontal.add(logicalMax, logicalMin, integerValue)
+        stickManager.leftStick.update()
+
+        stickManager.converter.convert()
+      }
+    }
+
+    // usage::generic_desktop::y
+    if usagePage == 0x1, usage == 0x31 {
+      counter += 1
+      Task { @MainActor in
+        stickManager.leftStick.vertical.add(logicalMax, logicalMin, integerValue)
+        stickManager.leftStick.update()
+
+        stickManager.converter.convert()
+      }
+    }
+
+    //
     // Right Stick
     //
 
@@ -53,6 +79,8 @@ public class EventObserver: ObservableObject {
       Task { @MainActor in
         stickManager.rightStick.horizontal.add(logicalMax, logicalMin, integerValue)
         stickManager.rightStick.update()
+
+        stickManager.converter.convert()
       }
     }
 
@@ -62,6 +90,8 @@ public class EventObserver: ObservableObject {
       Task { @MainActor in
         stickManager.rightStick.vertical.add(logicalMax, logicalMin, integerValue)
         stickManager.rightStick.update()
+
+        stickManager.converter.convert()
       }
     }
   }
