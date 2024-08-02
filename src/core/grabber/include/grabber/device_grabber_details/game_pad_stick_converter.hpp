@@ -75,10 +75,7 @@ public:
     // Signals (invoked from the dispatcher thread)
     //
 
-    nod::signal<void(double horizontal_hid_value,
-                     double vertical_hid_value,
-                     std::chrono::milliseconds interval)>
-        hid_values_updated;
+    nod::signal<void(void)> values_updated;
 
     //
     // Classes
@@ -137,6 +134,18 @@ public:
       detach_from_dispatcher();
     }
 
+    double get_radian(void) const {
+      return radian_;
+    }
+
+    double get_absolute_magnitude(void) const {
+      return absolute_magnitude_;
+    }
+
+    double get_delta_magnitude(void) const {
+      return delta_magnitude_;
+    }
+
     // This method should be called in the shared dispatcher thread.
     void update_horizontal_stick_sensor_value(CFIndex logical_max,
                                               CFIndex logical_min,
@@ -159,10 +168,7 @@ public:
       update_values();
     }
 
-    void update_configurations(const core_configuration::core_configuration& core_configuration,
-                               const device_identifiers& device_identifiers) {
-      auto d = core_configuration.get_selected_profile().get_device(device_identifiers);
-
+    void update_configurations(gsl::not_null<std::shared_ptr<const core_configuration::details::device>> d) {
       switch (stick_type_) {
         case stick_type::xy:
           continued_movement_absolute_magnitude_threshold_ = d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold();
@@ -175,16 +181,14 @@ public:
           flicking_input_window_milliseconds_ = d->get_game_pad_wheels_stick_flicking_input_window_milliseconds();
           break;
       }
+    }
 
-      x_formula_string_ = d->get_game_pad_stick_x_formula();
-      y_formula_string_ = d->get_game_pad_stick_y_formula();
-      vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula();
-      horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula();
+    std::chrono::milliseconds get_continued_movement_interval_milliseconds(void) const {
+      if (continued_movement_magnitude_ == 0.0) {
+        return std::chrono::milliseconds(0);
+      }
 
-      x_formula_ = make_formula_expression(x_formula_string_);
-      y_formula_ = make_formula_expression(y_formula_string_);
-      vertical_wheel_formula_ = make_formula_expression(vertical_wheel_formula_string_);
-      horizontal_wheel_formula_ = make_formula_expression(horizontal_wheel_formula_string_);
+      return std::chrono::milliseconds(continued_movement_interval_milliseconds_);
     }
 
   private:
@@ -233,111 +237,28 @@ public:
               }
             }
           }
-          continued_movement_magnitude_ = max;
+          continued_movement_magnitude_ = std::min(max, 1.0);
         }
 
         delta_magnitude_ = continued_movement_magnitude_;
       } else {
         continued_movement_magnitude_ = 0.0;
-        delta_magnitude_ = dm;
+
+        // Ignore minor magnitude changes until a sufficient amount of change accumulates.
+        auto delta_magnitude_threshold = 0.01;
+        if (0 < delta_magnitude_ && delta_magnitude_ < delta_magnitude_threshold) {
+          delta_magnitude_ = 0.0;
+        } else {
+          delta_magnitude_ = dm;
+          previous_absolute_magnitude_ = absolute_magnitude_;
+        }
       }
 
       //
       // Signal
       //
 
-      if (delta_magnitude_ > 0) {
-        auto delta_magnitude_threshold = 0.01;
-        if (delta_magnitude_ < delta_magnitude_threshold) {
-          // Return in here to prevent previous_absolute_magnitude_ from being updated.
-          return;
-        }
-
-        switch (stick_type_) {
-          case stick_type::xy: {
-            auto [x, y] = xy_hid_values();
-            auto interval = continued_movement_interval_milliseconds();
-            hid_values_updated(x, y, interval);
-            break;
-          }
-          case stick_type::wheels: {
-            auto [h, v] = wheels_hid_values();
-            auto interval = continued_movement_interval_milliseconds();
-            hid_values_updated(h, -v, interval);
-            break;
-          }
-        }
-      } else {
-        hid_values_updated(0, 0, std::chrono::milliseconds(0));
-      }
-
-      //
-      // Update previous values
-      //
-
-      previous_absolute_magnitude_ = absolute_magnitude_;
-    }
-
-    std::pair<double, double> xy_hid_values(void) const {
-      auto x = x_formula_.value();
-      if (std::isnan(x)) {
-        logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0} (radian: {1}, magnitude: {2})",
-                                    x_formula_string_,
-                                    radian_,
-                                    delta_magnitude_);
-        x = 0.0;
-      }
-
-      auto y = y_formula_.value();
-      if (std::isnan(y)) {
-        logger::get_logger()->error("game_pad_stick_converter y_formula returns nan: {0} (radian: {1}, magnitude: {2})",
-                                    y_formula_string_,
-                                    radian_,
-                                    delta_magnitude_);
-        y = 0.0;
-      }
-
-      return std::make_pair(x, y);
-    }
-
-    std::pair<double, double> wheels_hid_values(void) const {
-      auto h = horizontal_wheel_formula_.value();
-      if (std::isnan(h)) {
-        logger::get_logger()->error("game_pad_stick_converter horizontal_wheel_formula returns nan: {0} (radian: {1}, magnitude: {2})",
-                                    horizontal_wheel_formula_string_,
-                                    radian_,
-                                    delta_magnitude_);
-        h = 0.0;
-      }
-
-      auto v = vertical_wheel_formula_.value();
-      if (std::isnan(v)) {
-        logger::get_logger()->error("game_pad_stick_converter vertical_wheel_formula returns nan: {0} (radian: {1}, magnitude: {2})",
-                                    vertical_wheel_formula_string_,
-                                    radian_,
-                                    delta_magnitude_);
-        v = 0.0;
-      }
-
-      return std::make_pair(h, v);
-    }
-
-    std::chrono::milliseconds continued_movement_interval_milliseconds(void) const {
-      if (continued_movement_magnitude_ == 0.0) {
-        return std::chrono::milliseconds(0);
-      }
-
-      return std::chrono::milliseconds(continued_movement_interval_milliseconds_);
-    }
-
-    exprtk_utility::expression_t make_formula_expression(const std::string& formula) {
-      return exprtk_utility::compile(formula,
-                                     {},
-                                     {
-                                         {"radian", radian_},
-                                         {"delta_magnitude", delta_magnitude_},
-                                         {"absolute_magnitude", absolute_magnitude_},
-                                     });
+      values_updated();
     }
 
     stick_type stick_type_;
@@ -359,14 +280,6 @@ public:
     double continued_movement_absolute_magnitude_threshold_;
     int continued_movement_interval_milliseconds_;
     int flicking_input_window_milliseconds_;
-    std::string x_formula_string_;
-    std::string y_formula_string_;
-    std::string vertical_wheel_formula_string_;
-    std::string horizontal_wheel_formula_string_;
-    exprtk_utility::expression_t x_formula_;
-    exprtk_utility::expression_t y_formula_;
-    exprtk_utility::expression_t vertical_wheel_formula_;
-    exprtk_utility::expression_t horizontal_wheel_formula_;
   };
 
   class event_value final {
@@ -409,20 +322,22 @@ public:
         wheels_(stick::stick_type::wheels),
         continued_movement_timer_(*this),
         continued_movement_timer_count_(0),
-        continued_movement_mode_(continued_movement_mode::none) {
+        continued_movement_mode_(continued_movement_mode::none),
+        xy_radian_(0.0),
+        xy_delta_magnitude_(0.0),
+        xy_absolute_magnitude_(0.0),
+        wheels_radian_(0.0),
+        wheels_delta_magnitude_(0.0),
+        wheels_absolute_magnitude_(0.0) {
     set_weak_core_configuration(weak_core_configuration);
 
-    xy_.hid_values_updated.connect([this](auto&& x, auto&& y, auto&& interval) {
-      x_value_.set_value(x);
-      y_value_.set_value(y);
-
+    xy_.values_updated.connect([this](void) {
+      auto interval = xy_.get_continued_movement_interval_milliseconds();
       update_continued_movement_timer(continued_movement_mode::xy, interval);
     });
 
-    wheels_.hid_values_updated.connect([this](auto&& h, auto&& v, auto&& interval) {
-      horizontal_wheel_value_.set_value(h);
-      vertical_wheel_value_.set_value(v);
-
+    wheels_.values_updated.connect([this](void) {
+      auto interval = wheels_.get_continued_movement_interval_milliseconds();
       update_continued_movement_timer(continued_movement_mode::wheels, interval);
     });
   }
@@ -555,21 +470,115 @@ public:
 
 private:
   void update_configurations(const core_configuration::core_configuration& core_configuration) {
-    xy_.update_configurations(core_configuration,
-                              device_properties_.get_device_identifiers());
-    wheels_.update_configurations(core_configuration,
-                                  device_properties_.get_device_identifiers());
+    auto d = core_configuration.get_selected_profile().get_device(device_properties_.get_device_identifiers());
+
+    xy_.update_configurations(d);
+    wheels_.update_configurations(d);
+
+    x_formula_string_ = d->get_game_pad_stick_x_formula();
+    y_formula_string_ = d->get_game_pad_stick_y_formula();
+    vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula();
+    horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula();
+
+    x_formula_ = make_xy_formula_expression(x_formula_string_);
+    y_formula_ = make_xy_formula_expression(y_formula_string_);
+    vertical_wheel_formula_ = make_wheels_formula_expression(vertical_wheel_formula_string_);
+    horizontal_wheel_formula_ = make_wheels_formula_expression(horizontal_wheel_formula_string_);
+  }
+
+  exprtk_utility::expression_t make_xy_formula_expression(const std::string& formula) {
+    return exprtk_utility::compile(formula,
+                                   {},
+                                   {
+                                       {"radian", xy_radian_},
+                                       {"delta_magnitude", xy_delta_magnitude_},
+                                       {"absolute_magnitude", xy_absolute_magnitude_},
+                                   });
+  }
+
+  exprtk_utility::expression_t make_wheels_formula_expression(const std::string& formula) {
+    return exprtk_utility::compile(formula,
+                                   {},
+                                   {
+                                       {"radian", wheels_radian_},
+                                       {"delta_magnitude", wheels_delta_magnitude_},
+                                       {"absolute_magnitude", wheels_absolute_magnitude_},
+                                   });
+  }
+
+  std::pair<double, double> xy_hid_values(void) const {
+    auto x = x_formula_.value();
+    if (std::isnan(x)) {
+      logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0}",
+                                  x_formula_string_);
+      x = 0.0;
+    }
+
+    auto y = y_formula_.value();
+    if (std::isnan(y)) {
+      logger::get_logger()->error("game_pad_stick_converter y_formula returns nan: {0}",
+                                  y_formula_string_);
+      y = 0.0;
+    }
+
+    return std::make_pair(x, y);
+  }
+
+  std::pair<double, double> wheels_hid_values(void) const {
+    auto h = horizontal_wheel_formula_.value();
+    if (std::isnan(h)) {
+      logger::get_logger()->error("game_pad_stick_converter horizontal_wheel_formula returns nan: {0}",
+                                  horizontal_wheel_formula_string_);
+      h = 0.0;
+    }
+
+    auto v = vertical_wheel_formula_.value();
+    if (std::isnan(v)) {
+      logger::get_logger()->error("game_pad_stick_converter vertical_wheel_formula returns nan: {0}",
+                                  vertical_wheel_formula_string_);
+      v = 0.0;
+    }
+
+    return std::make_pair(h, -v);
   }
 
   void update_continued_movement_timer(continued_movement_mode mode,
                                        std::chrono::milliseconds interval) {
+    xy_radian_ = xy_.get_radian();
+    if (wheels_.get_delta_magnitude() == 0.0) {
+      xy_delta_magnitude_ = xy_.get_delta_magnitude();
+      xy_absolute_magnitude_ = xy_.get_absolute_magnitude();
+    } else {
+      xy_delta_magnitude_ = xy_.get_delta_magnitude() + wheels_.get_delta_magnitude();
+      xy_absolute_magnitude_ = xy_.get_absolute_magnitude() + wheels_.get_absolute_magnitude();
+    }
+
+    wheels_radian_ = wheels_.get_radian();
+    if (xy_.get_delta_magnitude() == 0.0) {
+      wheels_delta_magnitude_ = wheels_.get_delta_magnitude();
+      wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude();
+    } else {
+      wheels_delta_magnitude_ = wheels_.get_delta_magnitude() + xy_.get_delta_magnitude();
+      wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude() + xy_.get_absolute_magnitude();
+    }
+
+    auto [x, y] = xy_hid_values();
+    x_value_.set_value(x);
+    y_value_.set_value(y);
+
+    auto [h, v] = wheels_hid_values();
+
+    horizontal_wheel_value_.set_value(h);
+    vertical_wheel_value_.set_value(v);
+
     if (interval == std::chrono::milliseconds(0)) {
-      if (continued_movement_mode_ == mode) {
+      if (continued_movement_mode_ == continued_movement_mode::none) {
+        post_event(mode);
+
+      } else if (continued_movement_mode_ == mode) {
         continued_movement_mode_ = continued_movement_mode::none;
         continued_movement_timer_.stop();
       }
-
-      post_event(mode);
 
     } else {
       if (!continued_movement_timer_.enabled()) {
@@ -676,6 +685,22 @@ private:
   pqrs::dispatcher::extra::timer continued_movement_timer_;
   int continued_movement_timer_count_;
   continued_movement_mode continued_movement_mode_;
+
+  std::string x_formula_string_;
+  std::string y_formula_string_;
+  std::string vertical_wheel_formula_string_;
+  std::string horizontal_wheel_formula_string_;
+  exprtk_utility::expression_t x_formula_;
+  exprtk_utility::expression_t y_formula_;
+  exprtk_utility::expression_t vertical_wheel_formula_;
+  exprtk_utility::expression_t horizontal_wheel_formula_;
+
+  double xy_radian_;
+  double xy_delta_magnitude_;
+  double xy_absolute_magnitude_;
+  double wheels_radian_;
+  double wheels_delta_magnitude_;
+  double wheels_absolute_magnitude_;
 };
 } // namespace device_grabber_details
 } // namespace grabber
