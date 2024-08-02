@@ -81,11 +81,6 @@ public:
     // Classes
     //
 
-    enum class stick_type {
-      xy,
-      wheels,
-    };
-
     class stick_history_entry final {
     public:
       stick_history_entry(absolute_time_point time,
@@ -118,9 +113,8 @@ public:
     // Methods
     //
 
-    stick(stick_type stick_type)
+    stick(void)
         : dispatcher_client(),
-          stick_type_(stick_type),
           radian_(0.0),
           absolute_magnitude_(0.0),
           delta_magnitude_(0.0),
@@ -146,6 +140,18 @@ public:
       return delta_magnitude_;
     }
 
+    void set_continued_movement_absolute_magnitude_threshold(double value) {
+      continued_movement_absolute_magnitude_threshold_ = value;
+    }
+
+    void set_continued_movement_interval_milliseconds(int value) {
+      continued_movement_interval_milliseconds_ = value;
+    }
+
+    void set_flicking_input_window_milliseconds(int value) {
+      flicking_input_window_milliseconds_ = value;
+    }
+
     // This method should be called in the shared dispatcher thread.
     void update_horizontal_stick_sensor_value(CFIndex logical_max,
                                               CFIndex logical_min,
@@ -166,21 +172,6 @@ public:
                                                        integer_value);
 
       update_values();
-    }
-
-    void update_configurations(gsl::not_null<std::shared_ptr<const core_configuration::details::device>> d) {
-      switch (stick_type_) {
-        case stick_type::xy:
-          continued_movement_absolute_magnitude_threshold_ = d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold();
-          continued_movement_interval_milliseconds_ = d->get_game_pad_xy_stick_continued_movement_interval_milliseconds();
-          flicking_input_window_milliseconds_ = d->get_game_pad_xy_stick_flicking_input_window_milliseconds();
-          break;
-        case stick_type::wheels:
-          continued_movement_absolute_magnitude_threshold_ = d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold();
-          continued_movement_interval_milliseconds_ = d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds();
-          flicking_input_window_milliseconds_ = d->get_game_pad_wheels_stick_flicking_input_window_milliseconds();
-          break;
-      }
     }
 
     std::chrono::milliseconds get_continued_movement_interval_milliseconds(void) const {
@@ -261,8 +252,6 @@ public:
       values_updated();
     }
 
-    stick_type stick_type_;
-
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
 
@@ -318,8 +307,6 @@ public:
                            std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration)
       : dispatcher_client(),
         device_properties_(device_properties),
-        xy_(stick::stick_type::xy),
-        wheels_(stick::stick_type::wheels),
         continued_movement_timer_(*this),
         continued_movement_timer_count_(0),
         continued_movement_mode_(continued_movement_mode::none),
@@ -472,8 +459,13 @@ private:
   void update_configurations(const core_configuration::core_configuration& core_configuration) {
     auto d = core_configuration.get_selected_profile().get_device(device_properties_.get_device_identifiers());
 
-    xy_.update_configurations(d);
-    wheels_.update_configurations(d);
+    xy_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold());
+    xy_.set_continued_movement_interval_milliseconds(d->get_game_pad_xy_stick_continued_movement_interval_milliseconds());
+    xy_.set_flicking_input_window_milliseconds(d->get_game_pad_xy_stick_flicking_input_window_milliseconds());
+
+    wheels_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold());
+    wheels_.set_continued_movement_interval_milliseconds(d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds());
+    wheels_.set_flicking_input_window_milliseconds(d->get_game_pad_wheels_stick_flicking_input_window_milliseconds());
 
     x_formula_string_ = d->get_game_pad_stick_x_formula();
     y_formula_string_ = d->get_game_pad_stick_y_formula();
