@@ -76,12 +76,6 @@ struct DevicesGamePadSettingsView: View {
             .gamePadXYStickContinuedMovementIntervalMilliseconds,
           continuedMovementIntervalMillisecondsDefaultValue: Int(
             libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
-          ),
-
-          flickingInputWindowMilliseconds: $connectedDeviceSetting
-            .gamePadXYStickFlickingInputWindowMilliseconds,
-          flickingInputWindowMillisecondsDefaultValue: Int(
-            libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseconds_default_value()
           )
         )
 
@@ -124,12 +118,6 @@ struct DevicesGamePadSettingsView: View {
             .gamePadWheelsStickContinuedMovementIntervalMilliseconds,
           continuedMovementIntervalMillisecondsDefaultValue: Int(
             libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
-          ),
-
-          flickingInputWindowMilliseconds: $connectedDeviceSetting
-            .gamePadWheelsStickFlickingInputWindowMilliseconds,
-          flickingInputWindowMillisecondsDefaultValue: Int(
-            libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value()
           )
         )
 
@@ -183,9 +171,6 @@ struct DevicesGamePadSettingsView: View {
     @Binding var continuedMovementIntervalMilliseconds: Int
     let continuedMovementIntervalMillisecondsDefaultValue: Int
 
-    @Binding var flickingInputWindowMilliseconds: Int
-    let flickingInputWindowMillisecondsDefaultValue: Int
-
     var body: some View {
       Grid(alignment: .leadingFirstTextBaseline) {
         GridRow {
@@ -214,18 +199,6 @@ struct DevicesGamePadSettingsView: View {
             width: 60)
 
           Text("(Default: \(continuedMovementIntervalMillisecondsDefaultValue))")
-        }
-
-        GridRow {
-          Text("Flicking input window milliseconds:")
-
-          IntTextField(
-            value: $flickingInputWindowMilliseconds,
-            range: 0...1000,
-            step: 1,
-            width: 60)
-
-          Text("(Default: \(flickingInputWindowMillisecondsDefaultValue))")
         }
       }
     }

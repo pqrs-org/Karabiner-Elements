@@ -185,16 +185,6 @@
         "error": "`game_pad_xy_stick_continued_movement_interval_milliseconds` must be number, but is `null`"
     },
 
-    // game_pad_xy_stick_flicking_input_window_milliseconds
-
-    {
-        "class": "devices",
-        "input": {
-            "game_pad_xy_stick_flicking_input_window_milliseconds": null
-        },
-        "error": "`game_pad_xy_stick_flicking_input_window_milliseconds` must be number, but is `null`"
-    },
-
     // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
 
     {
@@ -213,16 +203,6 @@
             "game_pad_wheels_stick_continued_movement_interval_milliseconds": null
         },
         "error": "`game_pad_wheels_stick_continued_movement_interval_milliseconds` must be number, but is `null`"
-    },
-
-    // game_pad_wheels_stick_flicking_input_window_milliseconds
-
-    {
-        "class": "devices",
-        "input": {
-            "game_pad_wheels_stick_flicking_input_window_milliseconds": null
-        },
-        "error": "`game_pad_wheels_stick_flicking_input_window_milliseconds` must be number, but is `null`"
     },
 
     // game_pad_stick_x_formula

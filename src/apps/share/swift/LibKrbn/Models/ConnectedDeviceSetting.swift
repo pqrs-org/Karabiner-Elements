@@ -68,20 +68,12 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
 
-      gamePadXYStickFlickingInputWindowMilliseconds = Int(
-        libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
-          connectedDevice.libkrbnDeviceIdentifiers))
-
       gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
           connectedDevice.libkrbnDeviceIdentifiers)
 
       gamePadWheelsStickContinuedMovementIntervalMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
-          connectedDevice.libkrbnDeviceIdentifiers))
-
-      gamePadWheelsStickFlickingInputWindowMilliseconds = Int(
-        libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
 
       var buffer = [Int8](repeating: 0, count: 16384)
@@ -264,18 +256,6 @@ extension LibKrbn {
       }
     }
 
-    @Published var gamePadXYStickFlickingInputWindowMilliseconds: Int = 0 {
-      didSet {
-        if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers,
-            Int32(gamePadXYStickFlickingInputWindowMilliseconds))
-
-          Settings.shared.save()
-        }
-      }
-    }
-
     @Published var gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: Double = 0.0 {
       didSet {
         if didSetEnabled {
@@ -294,18 +274,6 @@ extension LibKrbn {
           libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
             connectedDevice.libkrbnDeviceIdentifiers,
             Int32(gamePadWheelsStickContinuedMovementIntervalMilliseconds))
-
-          Settings.shared.save()
-        }
-      }
-    }
-
-    @Published var gamePadWheelsStickFlickingInputWindowMilliseconds: Int = 0 {
-      didSet {
-        if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(
-            connectedDevice.libkrbnDeviceIdentifiers,
-            Int32(gamePadWheelsStickFlickingInputWindowMilliseconds))
 
           Settings.shared.save()
         }

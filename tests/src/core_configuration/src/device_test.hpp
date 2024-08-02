@@ -108,14 +108,10 @@ void run_device_test(void) {
                         device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold()));
     expect(20_i == device.find_default_value(
                        device.get_game_pad_xy_stick_continued_movement_interval_milliseconds()));
-    expect(50_i == device.find_default_value(
-                       device.get_game_pad_xy_stick_flicking_input_window_milliseconds()));
     expect(1.0_d == device.find_default_value(
                         device.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold()));
     expect(10_i == device.find_default_value(
                        device.get_game_pad_wheels_stick_continued_movement_interval_milliseconds()));
-    expect(50_i == device.find_default_value(
-                       device.get_game_pad_wheels_stick_flicking_input_window_milliseconds()));
   };
 
   "device"_test = [] {
@@ -142,19 +138,11 @@ void run_device_test(void) {
         expect(device.find_default_value(v) == v);
       }
       {
-        auto& v = device.get_game_pad_xy_stick_flicking_input_window_milliseconds();
-        expect(device.find_default_value(v) == v);
-      }
-      {
         auto& v = device.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold();
         expect(device.find_default_value(v) == v);
       }
       {
         auto& v = device.get_game_pad_wheels_stick_continued_movement_interval_milliseconds();
-        expect(device.find_default_value(v) == v);
-      }
-      {
-        auto& v = device.get_game_pad_wheels_stick_flicking_input_window_milliseconds();
         expect(device.find_default_value(v) == v);
       }
       {
@@ -191,7 +179,6 @@ void run_device_test(void) {
           {"treat_as_built_in_keyboard", false},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
           {"game_pad_xy_stick_continued_movement_interval_milliseconds", 15},
-          {"game_pad_xy_stick_flicking_input_window_milliseconds", 123},
           // string
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
           // array of string
@@ -215,7 +202,6 @@ void run_device_test(void) {
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
       expect(device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold() == 0.5);
       expect(device.get_game_pad_xy_stick_continued_movement_interval_milliseconds() == 15);
-      expect(device.get_game_pad_xy_stick_flicking_input_window_milliseconds() == 123);
       expect(device.get_game_pad_stick_x_formula() == "cos(radian) * acceleration * 127");
       expect(device.get_game_pad_stick_y_formula() == "if (acceleration < 0.5,\n"
                                                       "  cos(radian) * acceleration * 127 * 0.5,\n"
@@ -369,10 +355,8 @@ void run_device_test(void) {
           {"game_pad_swap_sticks", true},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
           {"game_pad_xy_stick_continued_movement_interval_milliseconds", 10},
-          {"game_pad_xy_stick_flicking_input_window_milliseconds", 123},
           {"game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold", 0.08},
           {"game_pad_wheels_stick_continued_movement_interval_milliseconds", 40},
-          {"game_pad_wheels_stick_flicking_input_window_milliseconds", 124},
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
           {"game_pad_stick_y_formula", nlohmann::json::array({
                                            "var a := acceleration ^ 2;",
@@ -399,10 +383,8 @@ void run_device_test(void) {
           {"game_pad_swap_sticks", true},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
           {"game_pad_xy_stick_continued_movement_interval_milliseconds", 10},
-          {"game_pad_xy_stick_flicking_input_window_milliseconds", 123},
           {"game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold", 0.08},
           {"game_pad_wheels_stick_continued_movement_interval_milliseconds", 40},
-          {"game_pad_wheels_stick_flicking_input_window_milliseconds", 124},
           {"game_pad_stick_x_formula", "cos(radian) * acceleration * 127"},
           {"game_pad_stick_y_formula", nlohmann::json::array({
                                            "var a := acceleration ^ 2;",

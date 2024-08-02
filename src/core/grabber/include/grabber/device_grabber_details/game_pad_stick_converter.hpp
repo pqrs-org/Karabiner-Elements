@@ -78,38 +78,6 @@ public:
     nod::signal<void(void)> values_updated;
 
     //
-    // Classes
-    //
-
-    class stick_history_entry final {
-    public:
-      stick_history_entry(absolute_time_point time,
-                          double horizontal_stick_sensor_value,
-                          double vertical_stick_sensor_value)
-          : time_(time),
-            horizontal_stick_sensor_value_(horizontal_stick_sensor_value),
-            vertical_stick_sensor_value_(vertical_stick_sensor_value) {
-      }
-
-      absolute_time_point get_time(void) const {
-        return time_;
-      }
-
-      double get_horizontal_stick_sensor_value(void) const {
-        return horizontal_stick_sensor_value_;
-      }
-
-      double get_vertical_stick_sensor_value(void) const {
-        return vertical_stick_sensor_value_;
-      }
-
-    private:
-      absolute_time_point time_;
-      double horizontal_stick_sensor_value_;
-      double vertical_stick_sensor_value_;
-    };
-
-    //
     // Methods
     //
 
@@ -118,10 +86,9 @@ public:
           radian_(0.0),
           absolute_magnitude_(0.0),
           delta_magnitude_(0.0),
-          continued_movement_magnitude_(0.0),
           previous_absolute_magnitude_(0.0),
           continued_movement_absolute_magnitude_threshold_(1.0),
-          flicking_input_window_milliseconds_(0) {
+          continued_movement_interval_milliseconds_(0) {
     }
 
     ~stick(void) {
@@ -148,10 +115,6 @@ public:
       continued_movement_interval_milliseconds_ = value;
     }
 
-    void set_flicking_input_window_milliseconds(int value) {
-      flicking_input_window_milliseconds_ = value;
-    }
-
     // This method should be called in the shared dispatcher thread.
     void update_horizontal_stick_sensor_value(CFIndex logical_max,
                                               CFIndex logical_min,
@@ -175,18 +138,16 @@ public:
     }
 
     std::chrono::milliseconds get_continued_movement_interval_milliseconds(void) const {
-      if (continued_movement_magnitude_ == 0.0) {
-        return std::chrono::milliseconds(0);
+      if (continued_movement()) {
+        return std::chrono::milliseconds(continued_movement_interval_milliseconds_);
       }
 
-      return std::chrono::milliseconds(continued_movement_interval_milliseconds_);
+      return std::chrono::milliseconds(0);
     }
 
   private:
     // This method is executed in the shared dispatcher thread.
     void update_values(void) {
-      auto now = pqrs::osx::chrono::mach_absolute_time_point();
-
       radian_ = std::atan2(vertical_stick_sensor_.get_value(),
                            horizontal_stick_sensor_.get_value());
       // When the stick is tilted diagonally, the distance from the centre may exceed 1.0 (e.g. 1.2).
@@ -198,43 +159,13 @@ public:
       auto dm = std::max(0.0, absolute_magnitude_ - previous_absolute_magnitude_);
 
       //
-      // Update stick_history_
-      //
-
-      stick_history_.push_back(stick_history_entry(now,
-                                                   horizontal_stick_sensor_.get_value(),
-                                                   vertical_stick_sensor_.get_value()));
-      stick_history_.erase(std::remove_if(std::begin(stick_history_),
-                                          std::end(stick_history_),
-                                          [this, now](auto&& e) {
-                                            return pqrs::osx::chrono::make_milliseconds(now - e.get_time()) > std::chrono::milliseconds(flicking_input_window_milliseconds_);
-                                          }),
-                           std::end(stick_history_));
-
-      //
       // Update delta_magnitude_
       //
 
-      if (absolute_magnitude_ >= continued_movement_absolute_magnitude_threshold_) {
-        if (continued_movement_magnitude_ == 0.0) {
-          double max = 0;
-          for (int i = 0; i < stick_history_.size(); ++i) {
-            for (int j = i + 1; j < stick_history_.size(); ++j) {
-              auto h = stick_history_[i].get_horizontal_stick_sensor_value() - stick_history_[j].get_horizontal_stick_sensor_value();
-              auto v = stick_history_[i].get_vertical_stick_sensor_value() - stick_history_[j].get_vertical_stick_sensor_value();
-              auto d = std::sqrt(h * h + v * v);
-              if (max < d) {
-                max = d;
-              }
-            }
-          }
-          continued_movement_magnitude_ = std::min(max, 1.0);
-        }
+      if (continued_movement()) {
+        delta_magnitude_ = absolute_magnitude_;
 
-        delta_magnitude_ = continued_movement_magnitude_;
       } else {
-        continued_movement_magnitude_ = 0.0;
-
         // Ignore minor magnitude changes until a sufficient amount of change accumulates.
         auto delta_magnitude_threshold = 0.01;
         if (0 < delta_magnitude_ && delta_magnitude_ < delta_magnitude_threshold) {
@@ -252,15 +183,17 @@ public:
       values_updated();
     }
 
+    bool continued_movement(void) const {
+      return absolute_magnitude_ >= continued_movement_absolute_magnitude_threshold_;
+    }
+
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
 
     double radian_;
     double absolute_magnitude_;
     double delta_magnitude_;
-    double continued_movement_magnitude_;
     double previous_absolute_magnitude_;
-    std::deque<stick_history_entry> stick_history_;
 
     //
     // configurations
@@ -268,7 +201,6 @@ public:
 
     double continued_movement_absolute_magnitude_threshold_;
     int continued_movement_interval_milliseconds_;
-    int flicking_input_window_milliseconds_;
   };
 
   class event_value final {
@@ -461,11 +393,9 @@ private:
 
     xy_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold());
     xy_.set_continued_movement_interval_milliseconds(d->get_game_pad_xy_stick_continued_movement_interval_milliseconds());
-    xy_.set_flicking_input_window_milliseconds(d->get_game_pad_xy_stick_flicking_input_window_milliseconds());
 
     wheels_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold());
     wheels_.set_continued_movement_interval_milliseconds(d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds());
-    wheels_.set_flicking_input_window_milliseconds(d->get_game_pad_wheels_stick_flicking_input_window_milliseconds());
 
     x_formula_string_ = d->get_game_pad_stick_x_formula();
     y_formula_string_ = d->get_game_pad_stick_y_formula();
@@ -537,21 +467,22 @@ private:
   void update_continued_movement_timer(continued_movement_mode mode,
                                        std::chrono::milliseconds interval) {
     xy_radian_ = xy_.get_radian();
-    if (wheels_.get_delta_magnitude() == 0.0) {
-      xy_delta_magnitude_ = xy_.get_delta_magnitude();
-      xy_absolute_magnitude_ = xy_.get_absolute_magnitude();
-    } else {
-      xy_delta_magnitude_ = xy_.get_delta_magnitude() + wheels_.get_delta_magnitude();
-      xy_absolute_magnitude_ = xy_.get_absolute_magnitude() + wheels_.get_absolute_magnitude();
+    xy_delta_magnitude_ = xy_.get_delta_magnitude();
+    xy_absolute_magnitude_ = xy_.get_absolute_magnitude();
+    if (continued_movement_mode_ == continued_movement_mode::xy) {
+      // Add secondary stick absolute magnitude to magnitudes;
+      auto m = wheels_.get_absolute_magnitude();
+      xy_delta_magnitude_ += m;
+      xy_absolute_magnitude_ += m;
     }
 
     wheels_radian_ = wheels_.get_radian();
-    if (xy_.get_delta_magnitude() == 0.0) {
-      wheels_delta_magnitude_ = wheels_.get_delta_magnitude();
-      wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude();
-    } else {
-      wheels_delta_magnitude_ = wheels_.get_delta_magnitude() + xy_.get_delta_magnitude();
-      wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude() + xy_.get_absolute_magnitude();
+    wheels_delta_magnitude_ = wheels_.get_delta_magnitude();
+    wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude();
+    if (continued_movement_mode_ == continued_movement_mode::wheels) {
+      auto m = xy_.get_absolute_magnitude();
+      wheels_delta_magnitude_ += m;
+      wheels_absolute_magnitude_ += m;
     }
 
     auto [x, y] = xy_hid_values();
@@ -559,7 +490,6 @@ private:
     y_value_.set_value(y);
 
     auto [h, v] = wheels_hid_values();
-
     horizontal_wheel_value_.set_value(h);
     vertical_wheel_value_.set_value(v);
 

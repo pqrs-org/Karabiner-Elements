@@ -253,13 +253,6 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_co
                                                                                                                        int value);
 int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value(void);
 
-// game_pad_xy_stick_flicking_input_window_milliseconds
-
-int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers,
-                                                                                                                 int value);
-int libkrbn_core_configuration_game_pad_xy_stick_flicking_input_window_milliseconds_default_value(void);
-
 // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
 
 double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
@@ -273,13 +266,6 @@ int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                            int value);
 int libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value(void);
-
-// game_pad_wheels_stick_flicking_input_window_milliseconds
-
-int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_flicking_input_window_milliseconds(const libkrbn_device_identifiers* device_identifiers,
-                                                                                                                     int value);
-int libkrbn_core_configuration_game_pad_wheels_stick_flicking_input_window_milliseconds_default_value(void);
 
 // game_pad_stick_x_formula
 

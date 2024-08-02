@@ -92,10 +92,6 @@ public:
                                         game_pad_xy_stick_continued_movement_interval_milliseconds_,
                                         20);
 
-    helper_values_.push_back_value<int>("game_pad_xy_stick_flicking_input_window_milliseconds",
-                                        game_pad_xy_stick_flicking_input_window_milliseconds_,
-                                        50);
-
     helper_values_.push_back_value<double>("game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold",
                                            game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_,
                                            1.0);
@@ -103,10 +99,6 @@ public:
     helper_values_.push_back_value<int>("game_pad_wheels_stick_continued_movement_interval_milliseconds",
                                         game_pad_wheels_stick_continued_movement_interval_milliseconds_,
                                         10);
-
-    helper_values_.push_back_value<int>("game_pad_wheels_stick_flicking_input_window_milliseconds",
-                                        game_pad_wheels_stick_flicking_input_window_milliseconds_,
-                                        50);
 
     helper_values_.push_back_value<std::string>("game_pad_stick_x_formula",
                                                 game_pad_stick_x_formula_,
@@ -435,15 +427,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
     coordinate_between_properties();
   }
 
-  const int& get_game_pad_xy_stick_flicking_input_window_milliseconds(void) const {
-    return game_pad_xy_stick_flicking_input_window_milliseconds_;
-  }
-  void set_game_pad_xy_stick_flicking_input_window_milliseconds(int value) {
-    game_pad_xy_stick_flicking_input_window_milliseconds_ = value;
-
-    coordinate_between_properties();
-  }
-
   const double& get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(void) const {
     return game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   }
@@ -458,15 +441,6 @@ if (abs(cos(radian)) <= abs(sin(radian))) {
   }
   void set_game_pad_wheels_stick_continued_movement_interval_milliseconds(int value) {
     game_pad_wheels_stick_continued_movement_interval_milliseconds_ = value;
-
-    coordinate_between_properties();
-  }
-
-  const int& get_game_pad_wheels_stick_flicking_input_window_milliseconds(void) const {
-    return game_pad_wheels_stick_flicking_input_window_milliseconds_;
-  }
-  void set_game_pad_wheels_stick_flicking_input_window_milliseconds(int value) {
-    game_pad_wheels_stick_flicking_input_window_milliseconds_ = value;
 
     coordinate_between_properties();
   }
@@ -559,10 +533,8 @@ private:
   bool game_pad_swap_sticks_;
   double game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   int game_pad_xy_stick_continued_movement_interval_milliseconds_;
-  int game_pad_xy_stick_flicking_input_window_milliseconds_;
   double game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   int game_pad_wheels_stick_continued_movement_interval_milliseconds_;
-  int game_pad_wheels_stick_flicking_input_window_milliseconds_;
   std::string game_pad_stick_x_formula_;
   std::string game_pad_stick_y_formula_;
   std::string game_pad_stick_vertical_wheel_formula_;
