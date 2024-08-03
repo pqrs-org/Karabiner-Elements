@@ -1,7 +1,7 @@
 import Foundation
 
 extension LibKrbn {
-  final class ConnectedDeviceSetting: Identifiable, Equatable {
+  final class ConnectedDeviceSetting: Identifiable, Equatable, ObservableObject {
     private var didSetEnabled = false
 
     var id = UUID()
@@ -280,6 +280,8 @@ extension LibKrbn {
       }
     }
 
+    @Published var gamePadStickXFormulaError = false
+
     @Published var gamePadStickXFormula = "" {
       didSet {
         if didSetEnabled {
@@ -287,7 +289,10 @@ extension LibKrbn {
             connectedDevice.libkrbnDeviceIdentifiers,
             gamePadStickXFormula.cString(using: .utf8))
           {
+            gamePadStickXFormulaError = false
             Settings.shared.save()
+          } else {
+            gamePadStickXFormulaError = true
           }
         }
       }
@@ -302,6 +307,8 @@ extension LibKrbn {
       updateProperties()
     }
 
+    @Published var gamePadStickYFormulaError = false
+
     @Published var gamePadStickYFormula = "" {
       didSet {
         if didSetEnabled {
@@ -309,7 +316,10 @@ extension LibKrbn {
             connectedDevice.libkrbnDeviceIdentifiers,
             gamePadStickYFormula.cString(using: .utf8))
           {
+            gamePadStickYFormulaError = false
             Settings.shared.save()
+          } else {
+            gamePadStickYFormulaError = true
           }
         }
       }
@@ -324,6 +334,8 @@ extension LibKrbn {
       updateProperties()
     }
 
+    @Published var gamePadStickVerticalWheelFormulaError = false
+
     @Published var gamePadStickVerticalWheelFormula = "" {
       didSet {
         if didSetEnabled {
@@ -331,7 +343,10 @@ extension LibKrbn {
             connectedDevice.libkrbnDeviceIdentifiers,
             gamePadStickVerticalWheelFormula.cString(using: .utf8))
           {
+            gamePadStickVerticalWheelFormulaError = false
             Settings.shared.save()
+          } else {
+            gamePadStickVerticalWheelFormulaError = true
           }
         }
       }
@@ -346,6 +361,8 @@ extension LibKrbn {
       updateProperties()
     }
 
+    @Published var gamePadStickHorizontalWheelFormulaError = false
+
     @Published var gamePadStickHorizontalWheelFormula = "" {
       didSet {
         if didSetEnabled {
@@ -353,7 +370,10 @@ extension LibKrbn {
             connectedDevice.libkrbnDeviceIdentifiers,
             gamePadStickHorizontalWheelFormula.cString(using: .utf8))
           {
+            gamePadStickHorizontalWheelFormulaError = false
             Settings.shared.save()
+          } else {
+            gamePadStickHorizontalWheelFormulaError = true
           }
         }
       }
