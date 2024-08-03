@@ -1,43 +1,38 @@
 import SwiftUI
 
 struct DevicesGamePadSettingsView: View {
-  let connectedDevice: LibKrbn.ConnectedDevice
+  @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
   @Binding var showing: Bool
+
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  @State var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting?
 
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 12.0) {
-        if let s = connectedDeviceSetting {
-          let binding = Binding {
-            s
-          } set: {
-            connectedDeviceSetting = $0
-          }
-          Text("\(connectedDevice.productName) (\(connectedDevice.manufacturerName))")
-            .padding(.leading, 40)
-            .padding(.top, 20)
+        Text(
+          "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))"
+        )
+        .padding(.leading, 40)
+        .padding(.top, 20)
 
-          TabView {
-            XYStickTabView(connectedDeviceSetting: binding)
-              .padding()
-              .tabItem {
-                Text("XY stick")
-              }
+        TabView {
+          XYStickTabView(connectedDeviceSetting: connectedDeviceSetting)
+            .padding()
+            .tabItem {
+              Text("XY stick")
+            }
 
-            WheelsStickTabView(connectedDeviceSetting: binding)
-              .padding()
-              .tabItem {
-                Text("Wheels stick")
-              }
+          WheelsStickTabView(connectedDeviceSetting: connectedDeviceSetting)
+            .padding()
+            .tabItem {
+              Text("Wheels stick")
+            }
 
-            OthersTabView(connectedDeviceSetting: binding)
-              .padding()
-              .tabItem {
-                Text("Others")
-              }
-          }
+          OthersTabView(connectedDeviceSetting: connectedDeviceSetting)
+            .padding()
+            .tabItem {
+              Text("Others")
+            }
         }
 
         Spacer()
@@ -49,20 +44,10 @@ struct DevicesGamePadSettingsView: View {
     }
     .padding()
     .frame(width: 1000, height: 600)
-    .onAppear {
-      setConnectedDeviceSetting()
-    }
-    .onChange(of: settings.connectedDeviceSettings) { _ in
-      setConnectedDeviceSetting()
-    }
-  }
-
-  private func setConnectedDeviceSetting() {
-    connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice)
   }
 
   struct XYStickTabView: View {
-    @Binding var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
 
     var body: some View {
       VStack(alignment: .leading) {
@@ -83,6 +68,7 @@ struct DevicesGamePadSettingsView: View {
           FormulaView(
             name: "X formula",
             value: $connectedDeviceSetting.gamePadStickXFormula,
+            error: $connectedDeviceSetting.gamePadStickXFormulaError,
             resetFunction: {
               connectedDeviceSetting.resetGamePadStickXFormula()
             }
@@ -91,6 +77,7 @@ struct DevicesGamePadSettingsView: View {
           FormulaView(
             name: "Y formula",
             value: $connectedDeviceSetting.gamePadStickYFormula,
+            error: $connectedDeviceSetting.gamePadStickYFormulaError,
             resetFunction: {
               connectedDeviceSetting.resetGamePadStickYFormula()
             }
@@ -104,7 +91,7 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct WheelsStickTabView: View {
-    @Binding var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
 
     var body: some View {
       VStack(alignment: .leading) {
@@ -125,6 +112,7 @@ struct DevicesGamePadSettingsView: View {
           FormulaView(
             name: "vertical wheel formula",
             value: $connectedDeviceSetting.gamePadStickVerticalWheelFormula,
+            error: $connectedDeviceSetting.gamePadStickVerticalWheelFormulaError,
             resetFunction: {
               connectedDeviceSetting.resetGamePadStickVerticalWheelFormula()
             }
@@ -133,6 +121,7 @@ struct DevicesGamePadSettingsView: View {
           FormulaView(
             name: "horizontal wheel formula",
             value: $connectedDeviceSetting.gamePadStickHorizontalWheelFormula,
+            error: $connectedDeviceSetting.gamePadStickHorizontalWheelFormulaError,
             resetFunction: {
               connectedDeviceSetting.resetGamePadStickHorizontalWheelFormula()
             }
@@ -146,7 +135,7 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct OthersTabView: View {
-    @Binding var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
 
     var body: some View {
       VStack(alignment: .leading) {
@@ -207,8 +196,8 @@ struct DevicesGamePadSettingsView: View {
   struct FormulaView: View {
     let name: String
     @Binding var value: String
+    @Binding var error: Bool
     let resetFunction: () -> Void
-    @State private var error = false
 
     var body: some View {
       VStack {
@@ -239,18 +228,6 @@ struct DevicesGamePadSettingsView: View {
         TextEditor(text: $value)
           .frame(height: 250.0)
       }
-      .onChange(of: value) { newValue in
-        update(newValue)
-      }
-    }
-
-    private func update(_ newValue: String) {
-      if libkrbn_core_configuration_game_pad_validate_stick_formula(newValue.cString(using: .utf8))
-      {
-        error = false
-      } else {
-        error = true
-      }
     }
   }
 }
@@ -273,11 +250,12 @@ struct DevicesGamePadSettingsView_Previews: PreviewProvider {
     isAppleDevice: false,
     isKarabinerVirtualHidDevice: false
   )
+  @State static var connectedDeviceSetting = LibKrbn.ConnectedDeviceSetting(connectedDevice)
   @State static var showing = true
 
   static var previews: some View {
     DevicesGamePadSettingsView(
-      connectedDevice: connectedDevice,
+      connectedDeviceSetting: connectedDeviceSetting,
       showing: $showing)
   }
 }
