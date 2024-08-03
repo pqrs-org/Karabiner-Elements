@@ -7,8 +7,6 @@ struct IntTextField: View {
   // To avoid this, do not apply the formatter directly to the TextField; instead, apply the formatting in the onChange event.
   @State private var text = ""
   @State private var error = false
-  @State private var ignoreNextUpdateByText: String?
-  @State private var ignoreNextUpdateByValue: Int?
 
   private let step: Int
   private let range: ClosedRange<Int>
@@ -69,53 +67,37 @@ struct IntTextField: View {
   }
 
   private func update(byValue newValue: Int) {
-    let ignore = ignoreNextUpdateByValue == newValue
-    ignoreNextUpdateByValue = nil
-    if ignore {
-      return
+    if let newText = formatter.string(for: newValue) {
+      error = false
+
+      Task { @MainActor in
+        if value != newValue {
+          value = newValue
+        }
+        if text != newText {
+          text = newText
+        }
+      }
+    } else {
+      error = true
     }
-
-    var newText = text
-    var newError = true
-
-    if let t = formatter.string(for: newValue) {
-      newError = false
-      newText = t
-    }
-
-    updateProperties(newValue: newValue, newText: newText, newError: newError)
   }
 
   private func update(byText newText: String) {
-    let ignore = ignoreNextUpdateByText == newText
-    ignoreNextUpdateByText = nil
-    if ignore {
-      return
-    }
-
-    var newValue = value
-    var newError = true
-
     if let number = formatter.number(from: newText) {
-      newError = false
-      newValue = number.intValue
-    }
+      error = false
 
-    updateProperties(newValue: newValue, newText: newText, newError: newError)
-  }
-
-  private func updateProperties(newValue: Int, newText: String, newError: Bool) {
-    if value != newValue {
-      ignoreNextUpdateByValue = newValue
-      value = newValue
-    }
-    if text != newText {
-      ignoreNextUpdateByText = newText
-      text = newText
-    }
-
-    if error != newError {
-      error = newError
+      let newValue = number.intValue
+      Task { @MainActor in
+        if value != newValue {
+          value = newValue
+        }
+        if text != newText {
+          text = newText
+        }
+      }
+    } else {
+      error = true
     }
   }
 }
