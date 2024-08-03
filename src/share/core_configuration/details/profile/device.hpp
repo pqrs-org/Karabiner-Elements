@@ -103,33 +103,57 @@ public:
     helper_values_.push_back_value<std::string>("game_pad_stick_x_formula",
                                                 game_pad_stick_x_formula_,
                                                 // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                                                "cos(radian) * delta_magnitude * 32;");
+                                                pqrs::string::trim_copy(R"(
+
+var m:= 0;
+
+if (absolute_magnitude < 1.0) {
+   m := delta_magnitude * 8;
+} else if (absolute_magnitude < 1.5) {
+   m := absolute_magnitude * 16;
+} else {
+   m := absolute_magnitude * 32;
+};
+
+cos(radian) * m;
+
+)"));
 
     helper_values_.push_back_value<std::string>("game_pad_stick_y_formula",
                                                 game_pad_stick_y_formula_,
                                                 // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
-                                                "sin(radian) * delta_magnitude * 32;");
+                                                pqrs::string::trim_copy(R"(
+
+var m:= 0;
+
+if (absolute_magnitude < 1.0) {
+   m := delta_magnitude * 8;
+} else if (absolute_magnitude < 1.5) {
+   m := absolute_magnitude * 16;
+} else {
+   m := absolute_magnitude * 32;
+};
+
+sin(radian) * m;
+
+)"));
 
     helper_values_.push_back_value<std::string>("game_pad_stick_vertical_wheel_formula",
                                                 game_pad_stick_vertical_wheel_formula_,
                                                 // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
                                                 pqrs::string::trim_copy(R"(
 
-if (abs(cos(radian)) >= abs(sin(radian))) {
-  0;
-} else {
-  var m := 0;
+var m := 0;
+
+if (abs(cos(radian)) < abs(sin(radian))) {
   if (absolute_magnitude < 1.0) {
-    m := max(0.05, delta_magnitude * 5);
+    m := delta_magnitude;
   } else {
-    if (delta_magnitude > 0.3) {
-      m := 0.5;
-    } else {
-      m := 0.3;
-    }
-  }
-  sin(radian) * m;
-}
+    m := absolute_magnitude * 0.1;
+  };
+};
+
+sin(radian) * m;
 
 )"));
 
@@ -138,21 +162,17 @@ if (abs(cos(radian)) >= abs(sin(radian))) {
                                                 // The logical value range of Karabiner-DriverKit-VirtualHIDPointing is -127 ... 127.
                                                 pqrs::string::trim_copy(R"(
 
-if (abs(cos(radian)) <= abs(sin(radian))) {
-  0;
-} else {
-  var m := 0;
+var m := 0;
+
+if (abs(cos(radian)) > abs(sin(radian))) {
   if (absolute_magnitude < 1.0) {
-    m := max(0.05, delta_magnitude * 5);
+    m := delta_magnitude;
   } else {
-    if (delta_magnitude > 0.3) {
-      m := 0.5;
-    } else {
-      m := 0.3;
-    }
-  }
-  cos(radian) * m;
-}
+    m := absolute_magnitude * 0.1;
+  };
+};
+
+cos(radian) * m;
 
 )"));
 
