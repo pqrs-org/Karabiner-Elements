@@ -137,6 +137,10 @@ public:
       update_values();
     }
 
+    bool continued_movement(void) const {
+      return absolute_magnitude_ >= continued_movement_absolute_magnitude_threshold_;
+    }
+
     std::chrono::milliseconds get_continued_movement_interval_milliseconds(void) const {
       if (continued_movement()) {
         return std::chrono::milliseconds(continued_movement_interval_milliseconds_);
@@ -181,10 +185,6 @@ public:
       //
 
       values_updated();
-    }
-
-    bool continued_movement(void) const {
-      return absolute_magnitude_ >= continued_movement_absolute_magnitude_threshold_;
     }
 
     stick_sensor horizontal_stick_sensor_;
@@ -469,7 +469,8 @@ private:
     xy_radian_ = xy_.get_radian();
     xy_delta_magnitude_ = xy_.get_delta_magnitude();
     xy_absolute_magnitude_ = xy_.get_absolute_magnitude();
-    if (continued_movement_mode_ == continued_movement_mode::xy) {
+    if (continued_movement_mode_ == continued_movement_mode::xy &&
+        xy_.continued_movement()) {
       // Add secondary stick absolute magnitude to magnitudes;
       auto m = wheels_.get_absolute_magnitude();
       xy_delta_magnitude_ += m;
@@ -479,7 +480,8 @@ private:
     wheels_radian_ = wheels_.get_radian();
     wheels_delta_magnitude_ = wheels_.get_delta_magnitude();
     wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude();
-    if (continued_movement_mode_ == continued_movement_mode::wheels) {
+    if (continued_movement_mode_ == continued_movement_mode::wheels &&
+        wheels_.continued_movement()) {
       auto m = xy_.get_absolute_magnitude();
       wheels_delta_magnitude_ += m;
       wheels_absolute_magnitude_ += m;
@@ -497,7 +499,10 @@ private:
       if (continued_movement_mode_ == continued_movement_mode::none) {
         post_event(mode);
 
-      } else if (continued_movement_mode_ == mode) {
+      } else if (continued_movement_mode_ == mode &&
+                 !xy_.continued_movement() &&
+                 !wheels_.continued_movement()) {
+        // Stop continued_movement when both the xy stick and wheels stick are not in the continued movement position.​
         continued_movement_mode_ = continued_movement_mode::none;
         continued_movement_timer_.stop();
       }
