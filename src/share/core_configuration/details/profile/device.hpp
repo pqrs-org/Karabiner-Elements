@@ -129,11 +129,13 @@ cos(radian) * m;
 var m:= 0;
 
 if (absolute_magnitude < 1.0) {
-   m := delta_magnitude * 8;
+  m := delta_magnitude * 16;
 } else if (absolute_magnitude < 1.5) {
-   m := absolute_magnitude * 16;
+  m := absolute_magnitude * 8;
+} else if (absolute_magnitude < 2) {
+  m := absolute_magnitude * 12;
 } else {
-   m := absolute_magnitude * 32;
+  m := absolute_magnitude * 24;
 };
 
 sin(radian) * m;
