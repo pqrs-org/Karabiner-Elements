@@ -107,7 +107,7 @@ public:
 
 var m:= 0;
 
-if (absolute_magnitude < 1.0) {
+if (continued_movement == false) {
   m := delta_magnitude * 16;
 } else if (absolute_magnitude < 1.5) {
   m := absolute_magnitude * 8;
@@ -128,7 +128,7 @@ cos(radian) * m;
 
 var m:= 0;
 
-if (absolute_magnitude < 1.0) {
+if (continued_movement == false) {
   m := delta_magnitude * 16;
 } else if (absolute_magnitude < 1.5) {
   m := absolute_magnitude * 8;
@@ -150,7 +150,7 @@ sin(radian) * m;
 var m := 0;
 
 if (abs(cos(radian)) < abs(sin(radian))) {
-  if (absolute_magnitude < 1.0) {
+  if (continued_movement == false) {
     m := delta_magnitude;
   } else {
     m := absolute_magnitude * 0.1;
@@ -169,7 +169,7 @@ sin(radian) * m;
 var m := 0;
 
 if (abs(cos(radian)) > abs(sin(radian))) {
-  if (absolute_magnitude < 1.0) {
+  if (continued_movement == false) {
     m := delta_magnitude;
   } else {
     m := absolute_magnitude * 0.1;
@@ -519,6 +519,7 @@ cos(radian) * m;
                                                 {"radian", 0.0},
                                                 {"delta_magnitude", 0.1},
                                                 {"absolute_magnitude", 0.5},
+                                                {"continued_movement", 1.0},
                                             });
     return !std::isnan(value);
   }

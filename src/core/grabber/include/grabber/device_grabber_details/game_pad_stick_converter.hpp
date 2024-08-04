@@ -167,7 +167,7 @@ public:
       //
 
       if (continued_movement()) {
-        delta_magnitude_ = absolute_magnitude_;
+        delta_magnitude_ = dm;
         previous_absolute_magnitude_ = absolute_magnitude_;
       } else {
         // Ignore minor magnitude changes until a sufficient amount of change accumulates.
@@ -245,9 +245,11 @@ public:
         xy_radian_(0.0),
         xy_delta_magnitude_(0.0),
         xy_absolute_magnitude_(0.0),
+        xy_continued_movement_(false),
         wheels_radian_(0.0),
         wheels_delta_magnitude_(0.0),
-        wheels_absolute_magnitude_(0.0) {
+        wheels_absolute_magnitude_(0.0),
+        wheels_continued_movement_(false) {
     set_weak_core_configuration(weak_core_configuration);
 
     xy_.values_updated.connect([this](void) {
@@ -415,6 +417,7 @@ private:
                                        {"radian", xy_radian_},
                                        {"delta_magnitude", xy_delta_magnitude_},
                                        {"absolute_magnitude", xy_absolute_magnitude_},
+                                       {"continued_movement", xy_continued_movement_},
                                    });
   }
 
@@ -425,6 +428,7 @@ private:
                                        {"radian", wheels_radian_},
                                        {"delta_magnitude", wheels_delta_magnitude_},
                                        {"absolute_magnitude", wheels_absolute_magnitude_},
+                                       {"continued_movement", wheels_continued_movement_},
                                    });
   }
 
@@ -466,36 +470,6 @@ private:
 
   void update_continued_movement_timer(continued_movement_mode mode,
                                        std::chrono::milliseconds interval) {
-    xy_radian_ = xy_.get_radian();
-    xy_delta_magnitude_ = xy_.get_delta_magnitude();
-    xy_absolute_magnitude_ = xy_.get_absolute_magnitude();
-    if (continued_movement_mode_ == continued_movement_mode::xy &&
-        xy_.continued_movement()) {
-      // Add secondary stick absolute magnitude to magnitudes;
-      auto m = wheels_.get_absolute_magnitude();
-      xy_delta_magnitude_ += m;
-      xy_absolute_magnitude_ += m;
-    }
-
-    wheels_radian_ = wheels_.get_radian();
-    wheels_delta_magnitude_ = wheels_.get_delta_magnitude();
-    wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude();
-    if (continued_movement_mode_ == continued_movement_mode::wheels &&
-        wheels_.continued_movement()) {
-      // Add secondary stick absolute magnitude to magnitudes;
-      auto m = xy_.get_absolute_magnitude();
-      wheels_delta_magnitude_ += m;
-      wheels_absolute_magnitude_ += m;
-    }
-
-    auto [x, y] = xy_hid_values();
-    x_value_.set_value(x);
-    y_value_.set_value(y);
-
-    auto [h, v] = wheels_hid_values();
-    horizontal_wheel_value_.set_value(h);
-    vertical_wheel_value_.set_value(v);
-
     if (interval == std::chrono::milliseconds(0)) {
       if (continued_movement_mode_ == continued_movement_mode::none) {
         post_event(mode);
@@ -535,6 +509,38 @@ private:
   }
 
   void post_event(continued_movement_mode mode) {
+    xy_radian_ = xy_.get_radian();
+    xy_delta_magnitude_ = xy_.get_delta_magnitude();
+    xy_absolute_magnitude_ = xy_.get_absolute_magnitude();
+    xy_continued_movement_ = (continued_movement_mode_ == continued_movement_mode::xy);
+    if (continued_movement_mode_ == continued_movement_mode::xy &&
+        xy_.continued_movement()) {
+      // Add secondary stick absolute magnitude to magnitudes;
+      auto m = wheels_.get_absolute_magnitude();
+      xy_delta_magnitude_ += m;
+      xy_absolute_magnitude_ += m;
+    }
+
+    wheels_radian_ = wheels_.get_radian();
+    wheels_delta_magnitude_ = wheels_.get_delta_magnitude();
+    wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude();
+    wheels_continued_movement_ = (continued_movement_mode_ == continued_movement_mode::wheels);
+    if (continued_movement_mode_ == continued_movement_mode::wheels &&
+        wheels_.continued_movement()) {
+      // Add secondary stick absolute magnitude to magnitudes;
+      auto m = xy_.get_absolute_magnitude();
+      wheels_delta_magnitude_ += m;
+      wheels_absolute_magnitude_ += m;
+    }
+
+    auto [x, y] = xy_hid_values();
+    x_value_.set_value(x);
+    y_value_.set_value(y);
+
+    auto [h, v] = wheels_hid_values();
+    horizontal_wheel_value_.set_value(h);
+    vertical_wheel_value_.set_value(v);
+
     switch (mode) {
       case continued_movement_mode::none:
         break;
@@ -625,9 +631,11 @@ private:
   double xy_radian_;
   double xy_delta_magnitude_;
   double xy_absolute_magnitude_;
+  double xy_continued_movement_;
   double wheels_radian_;
   double wheels_delta_magnitude_;
   double wheels_absolute_magnitude_;
+  double wheels_continued_movement_;
 };
 } // namespace device_grabber_details
 } // namespace grabber
