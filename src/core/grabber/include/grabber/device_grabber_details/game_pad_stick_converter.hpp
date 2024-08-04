@@ -168,11 +168,11 @@ public:
 
       if (continued_movement()) {
         delta_magnitude_ = absolute_magnitude_;
-
+        previous_absolute_magnitude_ = absolute_magnitude_;
       } else {
         // Ignore minor magnitude changes until a sufficient amount of change accumulates.
         auto delta_magnitude_threshold = 0.01;
-        if (0 < delta_magnitude_ && delta_magnitude_ < delta_magnitude_threshold) {
+        if (0 < dm && dm < delta_magnitude_threshold) {
           delta_magnitude_ = 0.0;
         } else {
           delta_magnitude_ = dm;
@@ -482,6 +482,7 @@ private:
     wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude();
     if (continued_movement_mode_ == continued_movement_mode::wheels &&
         wheels_.continued_movement()) {
+      // Add secondary stick absolute magnitude to magnitudes;
       auto m = xy_.get_absolute_magnitude();
       wheels_delta_magnitude_ += m;
       wheels_absolute_magnitude_ += m;
@@ -499,8 +500,7 @@ private:
       if (continued_movement_mode_ == continued_movement_mode::none) {
         post_event(mode);
 
-      } else if (continued_movement_mode_ == mode &&
-                 !xy_.continued_movement() &&
+      } else if (!xy_.continued_movement() &&
                  !wheels_.continued_movement()) {
         // Stop continued_movement when both the xy stick and wheels stick are not in the continued movement position.​
         continued_movement_mode_ = continued_movement_mode::none;
