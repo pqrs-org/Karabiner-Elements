@@ -953,6 +953,10 @@ private:
     complex_modifications_manipulator_manager_->invalidate_manipulators();
 
     for (const auto& rule : core_configuration_->get_selected_profile().get_complex_modifications()->get_rules()) {
+      if (!rule.get_enabled()) {
+        continue;
+      }
+
       for (const auto& manipulator : rule->get_manipulators()) {
         try {
           auto m = manipulator::manipulator_factory::make_manipulator(manipulator->to_json(),

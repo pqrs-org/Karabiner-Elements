@@ -84,7 +84,13 @@ public:
                              gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters,
                              error_handling error_handling)
       : json_(json) {
+    helper_values_.push_back_value<bool>("enabled",
+                                         enabled_,
+                                         true);
+
     pqrs::json::requires_object(json, "json");
+
+    helper_values_.update_value(json, error_handling);
 
     for (const auto& [key, value] : json.items()) {
       if (key == "manipulators") {
@@ -131,11 +137,23 @@ public:
   }
 
   nlohmann::json to_json(void) const {
-    return json_;
+    auto j = json_;
+
+    helper_values_.update_json(j);
+
+    return j;
   }
 
   const std::vector<gsl::not_null<std::shared_ptr<manipulator>>>& get_manipulators(void) const {
     return manipulators_;
+  }
+
+  const bool& get_enabled(void) const {
+    return enabled_;
+  }
+
+  void set_enabled(bool value) {
+    enabled_ = value;
   }
 
   const std::string& get_description(void) const {
@@ -145,7 +163,9 @@ public:
 private:
   nlohmann::json json_;
   std::vector<gsl::not_null<std::shared_ptr<manipulator>>> manipulators_;
+  bool enabled_;
   std::string description_;
+  configuration_json_helper::helper_values helper_values_;
 };
 } // namespace details
 } // namespace core_configuration
