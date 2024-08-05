@@ -35,8 +35,12 @@ final class KarabinerAppHelper {
         quitKarabiner(askForConfirmation: false)
       }
     } else {
+      ProcessInfo.processInfo.disableSuddenTermination()
+
       libkrbn_services_unregister_all_agents()
       libkrbn_killall_settings()
+
+      ProcessInfo.processInfo.enableSuddenTermination()
     }
   }
 }
