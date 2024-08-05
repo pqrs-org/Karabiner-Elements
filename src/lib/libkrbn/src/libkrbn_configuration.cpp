@@ -369,6 +369,24 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
   return false;
 }
 
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(size_t index) {
+  auto c = get_current_core_configuration();
+  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
+  if (index < rules.size()) {
+    return rules[index]->get_enabled();
+  }
+
+  return false;
+}
+
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(size_t index, bool value) {
+  auto c = get_current_core_configuration();
+  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
+  if (index < rules.size()) {
+    rules[index]->set_enabled(value);
+  }
+}
+
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(size_t index,
                                                                                             char* buffer,
                                                                                             size_t length) {

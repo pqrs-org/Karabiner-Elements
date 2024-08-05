@@ -10,7 +10,7 @@ struct ComplexModificationsView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @State private var moveDisabled: Bool = true
   @State private var showingEditSheet = false
-  @State private var hoverRule: LibKrbn.ComplexModificationsRule?
+  @State private var hoverRuleIndex: Int?
   @State private var editingRule: LibKrbn.ComplexModificationsRule?
 
   var body: some View {
@@ -33,9 +33,10 @@ struct ComplexModificationsView: View {
               &buffer, buffer.count)
 
             editingRule = LibKrbn.ComplexModificationsRule(
-              -1,
-              "Edit the following setting and press the Save button.",
-              String(cString: buffer)
+              index: -1,
+              description: "Edit the following setting and press the Save button.",
+              enabled: true,
+              jsonString: String(cString: buffer)
             )
             showingEditSheet = true
           },
@@ -58,10 +59,6 @@ struct ComplexModificationsView: View {
 
       List {
         ForEach($settings.complexModificationsRules) { $complexModificationRule in
-          // Make a copy to use it in onHover.
-          // (Without copy, the program crashes with an incorrect reference when the complexModificationRule is deleted.)
-          let complexModificationRuleCopy = complexModificationRule
-
           HStack(alignment: .center, spacing: 0) {
             if settings.complexModificationsRules.count > 1 {
               Image(systemName: "arrow.up.arrow.down.square.fill")
@@ -70,66 +67,77 @@ struct ComplexModificationsView: View {
                 .onHover { hovering in
                   moveDisabled = !hovering
                 }
+                .contextMenu {
+                  Section(header: Text("Position")) {
+                    Button {
+                      settings.moveComplexModificationsRule(complexModificationRule.index, 0)
+                    } label: {
+                      Label("Move item to top", systemImage: "arrow.up.to.line")
+                    }
+
+                    Button {
+                      settings.moveComplexModificationsRule(
+                        complexModificationRule.index, settings.complexModificationsRules.count)
+                    } label: {
+                      Label("Move item to bottom", systemImage: "arrow.down.to.line")
+                    }
+                  }
+                }
             }
 
             Text(complexModificationRule.description)
               .padding(.leading, 6.0)
-              .if(hoverRule == complexModificationRule) {
+              .if(hoverRuleIndex == complexModificationRule.index) {
                 $0.font(.body.weight(.bold))
+              }
+              .if(!complexModificationRule.enabled) {
+                $0.foregroundColor(.gray)
               }
 
             Spacer()
 
-            Button(
-              action: {
-                editingRule = complexModificationRule
-                showingEditSheet = true
-              },
-              label: {
-                Label("Edit", systemImage: "pencil.circle.fill")
-                  .padding(.horizontal, 10.0)
-              })
-
-            Button(
-              role: .destructive,
-              action: {
-                settings.removeComplexModificationsRule(complexModificationRule)
-              },
-              label: {
-                Image(systemName: "trash")
-                  .buttonLabelStyle()
+            HStack(alignment: .center, spacing: 10) {
+              Toggle(isOn: $complexModificationRule.enabled) {
+                Text(complexModificationRule.enabled ? "" : "disabled")
               }
-            )
-            .deleteButtonStyle()
-            .frame(width: 60)
-          }
-          .contextMenu {
-            Section(header: Text("Position")) {
-              Button {
-                settings.moveComplexModificationsRule(complexModificationRule.index, 0)
-              } label: {
-                Label("Move item to top", systemImage: "arrow.up.to.line")
-              }
+              .switchToggleStyle()
+              .padding(.horizontal, 10.0)
+              .scaledToFit()
 
-              Button {
-                settings.moveComplexModificationsRule(
-                  complexModificationRule.index, settings.complexModificationsRules.count)
-              } label: {
-                Label("Move item to bottom", systemImage: "arrow.down.to.line")
+              Button(
+                action: {
+                  editingRule = complexModificationRule
+                  showingEditSheet = true
+                },
+                label: {
+                  Label("Edit", systemImage: "pencil.circle.fill")
+                })
+
+              Button(
+                role: .destructive,
+                action: {
+                  settings.removeComplexModificationsRule(complexModificationRule)
+                },
+                label: {
+                  Image(systemName: "trash")
+                    .buttonLabelStyle()
+                }
+              )
+              .deleteButtonStyle()
+              .frame(width: 60)
+            }
+            .onHover { hovering in
+              if hovering {
+                hoverRuleIndex = complexModificationRule.index
+              } else {
+                if hoverRuleIndex == complexModificationRule.index {
+                  hoverRuleIndex = nil
+                }
               }
             }
           }
           .padding(.vertical, 5.0)
           .moveDisabled(moveDisabled)
-          .onHover { hovering in
-            if hovering {
-              hoverRule = complexModificationRuleCopy
-            } else {
-              if hoverRule == complexModificationRuleCopy {
-                hoverRule = nil
-              }
-            }
-          }
         }
         .onMove { indices, destination in
           if let first = indices.first {

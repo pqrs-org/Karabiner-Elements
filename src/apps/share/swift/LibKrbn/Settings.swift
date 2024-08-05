@@ -355,9 +355,11 @@ extension LibKrbn {
         }
 
         let complexModificationsRule = ComplexModificationsRule(
-          i,
-          ruleDescription,
-          jsonString
+          index: i,
+          description: ruleDescription,
+          enabled:
+            libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(i),
+          jsonString: jsonString
         )
         newComplexModificationsRules.append(complexModificationsRule)
       }

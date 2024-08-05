@@ -158,6 +158,8 @@ size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rul
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(size_t index,
                                                                                             char* buffer,
                                                                                             size_t length);
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(size_t index);
+void libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(size_t index, bool value);
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(size_t index,
                                                                                             char* buffer,
                                                                                             size_t length);

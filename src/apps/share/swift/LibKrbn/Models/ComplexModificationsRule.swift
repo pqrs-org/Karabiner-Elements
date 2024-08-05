@@ -1,24 +1,34 @@
 import Foundation
 
 extension LibKrbn {
-  struct ComplexModificationsRule: Identifiable, Equatable {
+  class ComplexModificationsRule: Identifiable, Equatable, ObservableObject {
     var id = UUID()
     var index: Int
     var description: String
     var jsonString: String?
 
     init(
-      _ index: Int,
-      _ description: String,
-      _ jsonString: String?
+      index: Int,
+      description: String,
+      enabled: Bool,
+      jsonString: String?
     ) {
       self.index = index
       self.description = description
+      self.enabled = enabled
       self.jsonString = jsonString
     }
 
     public static func == (lhs: ComplexModificationsRule, rhs: ComplexModificationsRule) -> Bool {
       lhs.id == rhs.id
+    }
+
+    @Published var enabled: Bool {
+      didSet {
+        libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(
+          index, enabled)
+        Settings.shared.save()
+      }
     }
   }
 }

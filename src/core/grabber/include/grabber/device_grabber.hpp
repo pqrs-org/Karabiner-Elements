@@ -953,7 +953,7 @@ private:
     complex_modifications_manipulator_manager_->invalidate_manipulators();
 
     for (const auto& rule : core_configuration_->get_selected_profile().get_complex_modifications()->get_rules()) {
-      if (!rule.get_enabled()) {
+      if (!rule->get_enabled()) {
         continue;
       }
 
