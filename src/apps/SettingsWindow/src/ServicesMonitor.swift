@@ -47,6 +47,11 @@ public class ServicesMonitor: ObservableObject {
       }
     }
 
+    // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.
+    // So we should enable them once before checking the status.
+    libkrbn_services_register_core_daemons()
+    libkrbn_services_register_core_agents()
+
     // When updating Karabiner-Elements, after the new version is installed, the daemons, agents, and Settings will restart.
     // To prevent alerts from appearing at that time, if the daemons or agents are enabled, wait for the timer to fire for the process startup check.
     // If either the daemons or agents are not enabled, usually when the daemons are not approved, trigger the timer immediately after startup to show the alert right away.

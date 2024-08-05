@@ -113,12 +113,10 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     NSApp.activate(ignoringOtherApps: true)
 
     //
-    // Register services
+    // Unregister old agents
     //
 
     libkrbn_services_bootout_old_agents()
-    libkrbn_services_register_core_daemons()
-    libkrbn_services_register_core_agents()
   }
 
   public func applicationWillTerminate(_: Notification) {
