@@ -96,9 +96,14 @@ struct ComplexModificationsView: View {
 
             Spacer()
 
+            if !complexModificationRule.enabled {
+              Text("disabled")
+                .foregroundColor(.gray)
+            }
+
             HStack(alignment: .center, spacing: 10) {
               Toggle(isOn: $complexModificationRule.enabled) {
-                Text(complexModificationRule.enabled ? "" : "disabled")
+                Text("")
               }
               .switchToggleStyle()
               .padding(.horizontal, 10.0)
