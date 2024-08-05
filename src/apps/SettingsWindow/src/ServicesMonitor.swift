@@ -5,9 +5,13 @@ public class ServicesMonitor: ObservableObject {
 
   private var timer: Timer?
   private var previousServicesRunning: Bool?
+  private var servicesWaitingSecondsUpdateTimer: Timer?
+  private var servicesWaitingStartedAt = Date()
 
+  @Published var servicesEnabled = true
   @Published var coreDaemonsRunning = true
   @Published var coreAgentsRunning = true
+  @Published var servicesWaitingSeconds = 0
 
   public func start() {
     timer = Timer.scheduledTimer(
@@ -16,6 +20,8 @@ public class ServicesMonitor: ObservableObject {
     ) { [weak self] (_: Timer) in
       guard let self = self else { return }
 
+      self.servicesEnabled =
+        libkrbn_services_core_daemons_enabled() && libkrbn_services_core_agents_enabled()
       self.coreDaemonsRunning = libkrbn_services_core_daemons_running()
       self.coreAgentsRunning = libkrbn_services_core_agents_running()
 
@@ -26,6 +32,10 @@ public class ServicesMonitor: ObservableObject {
         previousServicesRunning = servicesRunning
 
         ContentViewStates.shared.showServicesNotRunningAlert = !servicesRunning
+
+        if !servicesRunning {
+          servicesWaitingStartedAt = Date()
+        }
       }
 
       if !servicesRunning {
@@ -45,9 +55,26 @@ public class ServicesMonitor: ObservableObject {
     } else {
       timer?.fire()
     }
+
+    servicesWaitingSecondsUpdateTimer = Timer.scheduledTimer(
+      withTimeInterval: 1.0,
+      repeats: true
+    ) { [weak self] (_: Timer) in
+      guard let self = self else { return }
+
+      if self.coreDaemonsRunning && self.coreAgentsRunning {
+        self.servicesWaitingSeconds = 0
+      } else {
+        self.servicesWaitingSeconds = Int(
+          (Date().timeIntervalSince(self.servicesWaitingStartedAt)).rounded())
+      }
+    }
   }
 
   public func stop() {
+    servicesWaitingSecondsUpdateTimer?.invalidate()
+    servicesWaitingSecondsUpdateTimer = nil
+
     timer?.invalidate()
     timer = nil
   }

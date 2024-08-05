@@ -9,18 +9,30 @@ struct ServicesNotRunningAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
         Label(
-          "The background services are not running. Please enable them.",
+          servicesMonitor.servicesEnabled
+            ? "The background services are not running. Please wait a few seconds."
+            : "The background services are not enabled. Please enable them.",
           systemImage: "exclamationmark.triangle"
         )
         .font(.system(size: 24))
 
         GroupBox {
           VStack(alignment: .center, spacing: 20.0) {
-            VStack(alignment: .center, spacing: 0.0) {
-              Text("You need to permit the background services to use Karabiner-Elements.")
-              Text(
-                "Please enable the following items from System Settings > General > Login Items."
-              )
+            if servicesMonitor.servicesEnabled {
+              VStack(alignment: .center, spacing: 0.0) {
+                Text(
+                  "Waiting for the background services to start for \(servicesMonitor.servicesWaitingSeconds) seconds."
+                )
+                Text(
+                  "If the services do not start within 20 seconds, please disable the services and then enable them again."
+                )
+              }
+            } else {
+              VStack(alignment: .center, spacing: 0.0) {
+                Text("You need to permit the background services to use Karabiner-Elements.")
+                Text(
+                  "Please enable the following items from System Settings > General > Login Items.")
+              }
             }
 
             VStack(alignment: .leading, spacing: 0.0) {
