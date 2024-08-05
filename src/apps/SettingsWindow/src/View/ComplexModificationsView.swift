@@ -59,6 +59,9 @@ struct ComplexModificationsView: View {
 
       List {
         ForEach($settings.complexModificationsRules) { $complexModificationRule in
+          // Store the ruleIndex here to prevent referencing a deleted complexModificationRule in onHover when a rule is removed.
+          let ruleIndex = complexModificationRule.index
+
           HStack(alignment: .center, spacing: 0) {
             if settings.complexModificationsRules.count > 1 {
               Image(systemName: "arrow.up.arrow.down.square.fill")
@@ -133,9 +136,9 @@ struct ComplexModificationsView: View {
             }
             .onHover { hovering in
               if hovering {
-                hoverRuleIndex = complexModificationRule.index
+                hoverRuleIndex = ruleIndex
               } else {
-                if hoverRuleIndex == complexModificationRule.index {
+                if hoverRuleIndex == ruleIndex {
                   hoverRuleIndex = nil
                 }
               }
