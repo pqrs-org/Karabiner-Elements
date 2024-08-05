@@ -29,6 +29,7 @@
         <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.0.0/karabiner-machine-identifier@2x.png" alt="karabiner_machine_identifier" />
         </td></tr></tbody></table>
 -   ✨ New Features
+    -   Added the ability to disable Complex Modifications rules.
     -   Added the ability to duplicate and reorder profiles.
     -   Added the ability to restart Karabiner-Elements from the menu.
     -   Added the ability to reset device settings that are not currently connected.
