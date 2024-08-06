@@ -24,7 +24,8 @@ struct ActionView: View {
             Button(
               action: {
                 KarabinerAppHelper.shared.quitKarabiner(
-                  askForConfirmation: settings.askForConfirmationBeforeQuitting)
+                  askForConfirmation: settings.askForConfirmationBeforeQuitting,
+                  quitFrom: .settings)
               },
               label: {
                 Label("Quit Karabiner-Elements", systemImage: "xmark.circle.fill")

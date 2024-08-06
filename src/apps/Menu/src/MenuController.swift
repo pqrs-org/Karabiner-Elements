@@ -236,6 +236,7 @@ public class MenuController: NSObject, NSMenuDelegate {
   @objc
   func quitKarabiner(_: Any) {
     KarabinerAppHelper.shared.quitKarabiner(
-      askForConfirmation: LibKrbn.Settings.shared.askForConfirmationBeforeQuitting)
+      askForConfirmation: LibKrbn.Settings.shared.askForConfirmationBeforeQuitting,
+      quitFrom: .menu)
   }
 }

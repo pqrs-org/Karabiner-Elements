@@ -122,9 +122,13 @@ inline void bootout_old_agents(void) {
 
 inline void unregister_all_agents(void) {
   unregister_core_agents();
-  unregister_menu_agent();
   unregister_multitouch_extension_agent();
   unregister_notification_window_agent();
+
+  // `unregister_all_agents` might be called within Karabiner-Menu.app.
+  // In that case, `unregister_menu_agent` will terminate itself,
+  // so it needs to be called after unregistering other services.
+  unregister_menu_agent();
 }
 
 inline bool core_daemons_enabled(void) {

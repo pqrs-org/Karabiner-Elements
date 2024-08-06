@@ -20,7 +20,12 @@ final class KarabinerAppHelper {
     }
   }
 
-  func quitKarabiner(askForConfirmation: Bool) {
+  enum QuitFrom {
+    case menu
+    case settings
+  }
+
+  func quitKarabiner(askForConfirmation: Bool, quitFrom: QuitFrom) {
     if askForConfirmation {
       let alert = NSAlert()
       alert.messageText = "Are you sure you want to quit Karabiner-Elements?"
@@ -32,15 +37,19 @@ final class KarabinerAppHelper {
 
       let result = alert.runModal()
       if result == .OK {
-        quitKarabiner(askForConfirmation: false)
+        quitKarabiner(
+          askForConfirmation: false,
+          quitFrom: quitFrom)
       }
     } else {
-      ProcessInfo.processInfo.disableSuddenTermination()
-
-      libkrbn_services_unregister_all_agents()
-      libkrbn_killall_settings()
-
-      ProcessInfo.processInfo.enableSuddenTermination()
+      switch quitFrom {
+      case .menu:
+        libkrbn_killall_settings()
+        libkrbn_services_unregister_all_agents()
+      case .settings:
+        libkrbn_services_unregister_all_agents()
+        libkrbn_killall_settings()
+      }
     }
   }
 }
