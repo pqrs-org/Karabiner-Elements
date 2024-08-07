@@ -20,11 +20,12 @@ struct SimpleModificationsView: View {
       }
     }
     .padding()
+    .onAppear {
+      settings.appendSimpleModificationIfEmpty(
+        device: contentViewStates.simpleModificationsViewSelectedDevice)
+    }
     .onChange(of: contentViewStates.simpleModificationsViewSelectedDevice) { newDevice in
-      // Add an entry if empty.
-      if settings.simpleModifications(connectedDevice: newDevice).count == 0 {
-        settings.appendSimpleModification(device: newDevice)
-      }
+      settings.appendSimpleModificationIfEmpty(device: newDevice)
     }
   }
 

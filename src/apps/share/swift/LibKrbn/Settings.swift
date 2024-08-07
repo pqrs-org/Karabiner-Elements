@@ -214,6 +214,14 @@ extension LibKrbn {
       // Do not to call `save()` here because partial settings will be erased at save.
     }
 
+    public func appendSimpleModificationIfEmpty(device: ConnectedDevice?) {
+      let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size(
+        device?.libkrbnDeviceIdentifiers)
+      if size == 0 {
+        appendSimpleModification(device: device)
+      }
+    }
+
     public func removeSimpleModification(
       index: Int,
       device: ConnectedDevice?
