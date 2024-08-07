@@ -214,38 +214,6 @@ extension LibKrbn {
       // Do not to call `save()` here because partial settings will be erased at save.
     }
 
-    public func appendSimpleModification(
-      jsonString: String,
-      device: ConnectedDevice?
-    ) {
-      if let jsonData = jsonString.data(using: .utf8) {
-        if let jsonDict = try? JSONSerialization.jsonObject(with: jsonData, options: [])
-          as? [String: Any]
-        {
-          let fromJsonString =
-            SimpleModification.formatCompactJsonString(jsonObject: jsonDict["from"] ?? "") ?? "{}"
-          let toJsonString =
-            SimpleModification.formatCompactJsonString(jsonObject: jsonDict["to"] ?? "") ?? "[]"
-
-          libkrbn_core_configuration_push_back_selected_profile_simple_modification(
-            device?.libkrbnDeviceIdentifiers)
-
-          let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size(
-            device?.libkrbnDeviceIdentifiers)
-
-          libkrbn_core_configuration_replace_selected_profile_simple_modification(
-            size - 1,
-            fromJsonString.cString(using: .utf8),
-            toJsonString.cString(using: .utf8),
-            device?.libkrbnDeviceIdentifiers)
-
-          reflectSimpleModificationChanges(device)
-
-          // Do not to call `save()` here because partial settings will be erased at save.
-        }
-      }
-    }
-
     public func removeSimpleModification(
       index: Int,
       device: ConnectedDevice?
