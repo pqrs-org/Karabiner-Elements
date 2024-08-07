@@ -243,7 +243,8 @@ public:
     return std::count_if(std::begin(devices_),
                          std::end(devices_),
                          [&](auto& d) {
-                           return !connected_devices.find_device(d->get_identifiers());
+                           return !connected_devices.find_device(d->get_identifiers()) &&
+                                  !d->to_json().empty();
                          });
   }
 
@@ -251,7 +252,8 @@ public:
     devices_.erase(std::remove_if(std::begin(devices_),
                                   std::end(devices_),
                                   [&](auto& d) {
-                                    return !connected_devices.find_device(d->get_identifiers());
+                                    return !connected_devices.find_device(d->get_identifiers()) &&
+                                           !d->to_json().empty();
                                   }),
                    std::end(devices_));
   }

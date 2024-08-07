@@ -889,21 +889,24 @@ void run_core_configuration_test(void) {
         "vendor_id": 1234,
         "product_id": 1000,
         "is_keyboard": true
-      }
+      },
+      "ignore": true
     },
     {
       "identifiers": {
         "vendor_id": 1234,
         "product_id": 1001,
         "is_keyboard": true
-      }
+      },
+      "ignore": true
     },
     {
       "identifiers": {
         "vendor_id": 1234,
         "product_id": 1002,
         "is_keyboard": true
-      }
+      },
+      "ignore": true
     },
     {
       "identifiers": {
@@ -932,12 +935,14 @@ void run_core_configuration_test(void) {
         false  // is_built_in_touch_bar
         ));
 
-    expect(3 == profile.not_connected_devices_count(connected_devices));
+    // Note: product_id:1003 is not counted because it remains in its default settings.
+    expect(2 == profile.not_connected_devices_count(connected_devices));
 
     profile.erase_not_connected_devices(connected_devices);
 
-    expect(1 == profile.get_devices().size());
-    expect(connected_devices.get_devices()[0]->get_identifiers() == profile.get_devices()[0]->get_identifiers());
+    expect(2 == profile.get_devices().size());
+    expect(pqrs::hid::product_id::value_t(1001) == profile.get_devices()[0]->get_identifiers().get_product_id());
+    expect(pqrs::hid::product_id::value_t(1003) == profile.get_devices()[1]->get_identifiers().get_product_id());
   };
 
   "simple_modifications"_test = [] {
