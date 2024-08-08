@@ -2,7 +2,7 @@
 
 ## Karabiner-Elements 15.0.0
 
--   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.13.0/Karabiner-Elements-14.13.0.dmg)
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v14.13.0/Karabiner-Elements-15.0.0.dmg)
 -   📅 Release date
     -   Aug 8, 2024
 -   💥 Breaking changes
