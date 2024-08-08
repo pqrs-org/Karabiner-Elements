@@ -35,6 +35,10 @@ struct ServicesNotRunningAlertView: View {
               }
             }
 
+            if servicesMonitor.servicesEnabled {
+              ProgressView()
+            }
+
             VStack(alignment: .leading, spacing: 0.0) {
               Label(
                 "Karabiner-Elements Non-Privileged Agents",
@@ -46,17 +50,19 @@ struct ServicesNotRunningAlertView: View {
                   servicesMonitor.coreDaemonsRunning ? "checkmark.circle.fill" : "circle")
             }
 
-            Button(
-              action: {
-                SMAppService.openSystemSettingsLoginItems()
-              },
-              label: {
-                Label(
-                  "Open System Settings > General > Login Items",
-                  systemImage: "arrow.forward.circle.fill")
-              }
-            )
-            .focused($focus)
+            if !servicesMonitor.servicesEnabled || servicesMonitor.servicesWaitingSeconds > 15 {
+              Button(
+                action: {
+                  SMAppService.openSystemSettingsLoginItems()
+                },
+                label: {
+                  Label(
+                    "Open System Settings > General > Login Items",
+                    systemImage: "arrow.forward.circle.fill")
+                }
+              )
+              .focused($focus)
+            }
 
             Label(
               "If these are already enabled, the settings might not be properly reflected on the macOS side. Please disable them once and then enable them again.",
@@ -66,10 +72,12 @@ struct ServicesNotRunningAlertView: View {
             .foregroundColor(Color.warningForeground)
             .background(Color.warningBackground)
 
-            Image(decorative: "login-items")
-              .resizable()
-              .aspectRatio(contentMode: .fit)
-              .border(Color.gray, width: 1)
+            if !servicesMonitor.servicesEnabled {
+              Image(decorative: "login-items")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .border(Color.gray, width: 1)
+            }
 
           }
           .padding()
