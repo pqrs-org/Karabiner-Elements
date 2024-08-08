@@ -54,6 +54,8 @@ struct ServicesNotRunningAlertView: View {
               Button(
                 action: {
                   SMAppService.openSystemSettingsLoginItems()
+
+                  NSApp.miniaturizeAll(nil)
                 },
                 label: {
                   Label(
