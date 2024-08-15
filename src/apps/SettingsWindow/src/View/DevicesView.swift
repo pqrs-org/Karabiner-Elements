@@ -254,7 +254,7 @@ struct DevicesView: View {
           || connectedDeviceSetting.connectedDevice.isGamePad
         {
           if connectedDeviceSetting.modifyEvents {
-            HStack(alignment: .top, spacing: 100.0) {
+            HStack(alignment: .top, spacing: 20.0) {
               VStack(alignment: .leading, spacing: 2.0) {
                 Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
                   Text("Flip mouse X")
@@ -282,6 +282,8 @@ struct DevicesView: View {
               }
               .frame(width: 200.0)
 
+              Divider()
+
               VStack(alignment: .leading, spacing: 2.0) {
                 Toggle(isOn: $connectedDeviceSetting.mouseSwapXY) {
                   Text("Swap mouse X and Y")
@@ -295,7 +297,11 @@ struct DevicesView: View {
                 }
                 .switchToggleStyle(controlSize: .mini, font: .callout)
               }
-              .frame(width: 200.0)
+              .frame(width: 160.0)
+
+              Divider()
+
+              Spacer()
             }
           }
         }
