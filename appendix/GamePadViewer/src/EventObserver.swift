@@ -16,7 +16,6 @@ private func callback(
 public class EventObserver: ObservableObject {
   public static let shared = EventObserver()
 
-  @ObservedObject var stickManager = StickManager.shared
   @Published var counter = 0
 
   // We register the callback in the `start` method rather than in `init`.
@@ -51,10 +50,8 @@ public class EventObserver: ObservableObject {
     if usagePage == 0x1, usage == 0x30 {
       counter += 1
       Task { @MainActor in
-        stickManager.leftStick.horizontal.add(logicalMax, logicalMin, integerValue)
-        stickManager.leftStick.update()
-
-        stickManager.converter.convert()
+        StickManager.shared.leftStick.horizontal.add(logicalMax, logicalMin, integerValue)
+        StickManager.shared.leftStick.update()
       }
     }
 
@@ -62,10 +59,8 @@ public class EventObserver: ObservableObject {
     if usagePage == 0x1, usage == 0x31 {
       counter += 1
       Task { @MainActor in
-        stickManager.leftStick.vertical.add(logicalMax, logicalMin, integerValue)
-        stickManager.leftStick.update()
-
-        stickManager.converter.convert()
+        StickManager.shared.leftStick.vertical.add(logicalMax, logicalMin, integerValue)
+        StickManager.shared.leftStick.update()
       }
     }
 
@@ -77,10 +72,8 @@ public class EventObserver: ObservableObject {
     if usagePage == 0x1, usage == 0x32 {
       counter += 1
       Task { @MainActor in
-        stickManager.rightStick.horizontal.add(logicalMax, logicalMin, integerValue)
-        stickManager.rightStick.update()
-
-        stickManager.converter.convert()
+        StickManager.shared.rightStick.horizontal.add(logicalMax, logicalMin, integerValue)
+        StickManager.shared.rightStick.update()
       }
     }
 
@@ -88,10 +81,8 @@ public class EventObserver: ObservableObject {
     if usagePage == 0x1, usage == 0x35 {
       counter += 1
       Task { @MainActor in
-        stickManager.rightStick.vertical.add(logicalMax, logicalMin, integerValue)
-        stickManager.rightStick.update()
-
-        stickManager.converter.convert()
+        StickManager.shared.rightStick.vertical.add(logicalMax, logicalMin, integerValue)
+        StickManager.shared.rightStick.update()
       }
     }
   }
