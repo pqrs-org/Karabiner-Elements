@@ -610,7 +610,7 @@ extension LibKrbn {
     public func selectProfile(_ profile: Profile) {
       libkrbn_core_configuration_select_profile(profile.index)
 
-      // To update all settings to the new profile’s contents, it is necessary to call `updateProperties`.
+      // To update all settings to the new profile's contents, it is necessary to call `updateProperties`.
       updateProperties()
 
       save()
