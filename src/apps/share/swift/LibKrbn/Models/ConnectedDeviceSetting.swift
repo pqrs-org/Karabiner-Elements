@@ -32,6 +32,10 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      //
+      // mouseFlipXXX
+      //
+
       mouseFlipX =
         libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(
           connectedDevice.libkrbnDeviceIdentifiers)
@@ -48,6 +52,30 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      //
+      // mouseDiscardXXX
+      //
+
+      mouseDiscardX =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_discard_x(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      mouseDiscardY =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_discard_y(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      mouseDiscardVerticalWheel =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_discard_vertical_wheel(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      mouseDiscardHorizontalWheel =
+        libkrbn_core_configuration_get_selected_profile_device_mouse_discard_horizontal_wheel(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      //
+      // mouseSwapXXX
+      //
+
       mouseSwapXY =
         libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(
           connectedDevice.libkrbnDeviceIdentifiers)
@@ -55,6 +83,10 @@ extension LibKrbn {
       mouseSwapWheels =
         libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(
           connectedDevice.libkrbnDeviceIdentifiers)
+
+      //
+      // gamePadXXX
+      //
 
       gamePadSwapSticks =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(
@@ -193,6 +225,49 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(
             connectedDevice.libkrbnDeviceIdentifiers, mouseFlipHorizontalWheel)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var mouseDiscardX: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_mouse_discard_x(
+            connectedDevice.libkrbnDeviceIdentifiers, mouseDiscardX)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var mouseDiscardY: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_mouse_discard_y(
+            connectedDevice.libkrbnDeviceIdentifiers, mouseDiscardY)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var mouseDiscardVerticalWheel: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_mouse_discard_vertical_wheel(
+            connectedDevice.libkrbnDeviceIdentifiers, mouseDiscardVerticalWheel)
+
+          Settings.shared.save()
+        }
+      }
+    }
+    @Published var mouseDiscardHorizontalWheel: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_mouse_discard_horizontal_wheel(
+            connectedDevice.libkrbnDeviceIdentifiers, mouseDiscardHorizontalWheel)
 
           Settings.shared.save()
         }

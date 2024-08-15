@@ -254,7 +254,7 @@ struct DevicesView: View {
           || connectedDeviceSetting.connectedDevice.isGamePad
         {
           if connectedDeviceSetting.modifyEvents {
-            HStack(alignment: .top, spacing: 20.0) {
+            HStack(alignment: .top, spacing: 15.0) {
               VStack(alignment: .leading, spacing: 2.0) {
                 Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
                   Text("Flip mouse X")
@@ -285,6 +285,35 @@ struct DevicesView: View {
               Divider()
 
               VStack(alignment: .leading, spacing: 2.0) {
+                Toggle(isOn: $connectedDeviceSetting.mouseDiscardX) {
+                  Text("Discard mouse X")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                Toggle(isOn: $connectedDeviceSetting.mouseDiscardY) {
+                  Text("Discard mouse Y")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                Toggle(isOn: $connectedDeviceSetting.mouseDiscardVerticalWheel) {
+                  Text("Discard mouse vertical wheel")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .switchToggleStyle(controlSize: .mini, font: .callout)
+
+                Toggle(isOn: $connectedDeviceSetting.mouseDiscardHorizontalWheel) {
+                  Text("Discard mouse horizontal wheel")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .switchToggleStyle(controlSize: .mini, font: .callout)
+              }
+              .frame(width: 220.0)
+
+              Divider()
+
+              VStack(alignment: .leading, spacing: 2.0) {
                 Toggle(isOn: $connectedDeviceSetting.mouseSwapXY) {
                   Text("Swap mouse X and Y")
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -298,8 +327,6 @@ struct DevicesView: View {
                 .switchToggleStyle(controlSize: .mini, font: .callout)
               }
               .frame(width: 160.0)
-
-              Divider()
 
               Spacer()
             }
