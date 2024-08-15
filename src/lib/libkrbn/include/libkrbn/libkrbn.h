@@ -228,6 +228,20 @@ void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers,
                                                                                         bool value);
+
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_x(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_x(const libkrbn_device_identifiers* device_identifiers,
+                                                                            bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_y(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_y(const libkrbn_device_identifiers* device_identifiers,
+                                                                            bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_vertical_wheel(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_vertical_wheel(const libkrbn_device_identifiers* device_identifiers,
+                                                                                         bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers,
+                                                                                           bool value);
+
 bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers,
                                                                           bool value);
