@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ✨ New Features
+    -   A setting has been added to disable mouse cursor movement and scrolling for both the mouse and gamepad.
+
 ## Karabiner-Elements 15.0.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.0.0/Karabiner-Elements-15.0.0.dmg)
