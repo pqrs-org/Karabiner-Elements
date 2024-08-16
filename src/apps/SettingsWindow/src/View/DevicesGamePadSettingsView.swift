@@ -52,6 +52,11 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
+          deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
+            .gamePadXYStickDeltaMagnitudeDetectionThreshold,
+          deltaMagnitudeDetectionThresholdDefaultValue:
+            libkrbn_core_configuration_game_pad_xy_stick_delta_magnitude_detection_threshold_default_value(),
+
           continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
             .gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold,
           continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
@@ -96,6 +101,11 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
+          deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
+            .gamePadWheelsStickDeltaMagnitudeDetectionThreshold,
+          deltaMagnitudeDetectionThresholdDefaultValue:
+            libkrbn_core_configuration_game_pad_wheels_stick_delta_magnitude_detection_threshold_default_value(),
+
           continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
             .gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold,
           continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
@@ -154,6 +164,9 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct StickParametersView: View {
+    @Binding var deltaMagnitudeDetectionThreshold: Double
+    let deltaMagnitudeDetectionThresholdDefaultValue: Double
+
     @Binding var continuedMovementAbsoluteMagnitudeThreshold: Double
     let continuedMovementAbsoluteMagnitudeThresholdDefaultValue: Double
 
@@ -163,8 +176,23 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       Grid(alignment: .leadingFirstTextBaseline) {
         GridRow {
-          Text("Continued movement absolute magnitude threshold:")
+          Text("Delta magnitude detection threshold:")
             .gridColumnAlignment(.trailing)
+
+          DoubleTextField(
+            value: $deltaMagnitudeDetectionThreshold,
+            range: 0...1,
+            step: 0.01,
+            maximumFractionDigits: 2,
+            width: 60)
+
+          Text(
+            "(Default: \(String(format: "%.2f", deltaMagnitudeDetectionThresholdDefaultValue)))"
+          )
+        }
+
+        GridRow {
+          Text("Continued movement absolute magnitude threshold:")
 
           DoubleTextField(
             value: $continuedMovementAbsoluteMagnitudeThreshold,

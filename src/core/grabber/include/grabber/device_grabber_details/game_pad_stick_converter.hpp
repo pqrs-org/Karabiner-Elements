@@ -87,6 +87,7 @@ public:
           absolute_magnitude_(0.0),
           delta_magnitude_(0.0),
           previous_absolute_magnitude_(0.0),
+          delta_magnitude_detection_threshold_(0.0),
           continued_movement_absolute_magnitude_threshold_(1.0),
           continued_movement_interval_milliseconds_(0) {
     }
@@ -105,6 +106,10 @@ public:
 
     double get_delta_magnitude(void) const {
       return delta_magnitude_;
+    }
+
+    void set_delta_magnitude_detection_threshold(double value) {
+      delta_magnitude_detection_threshold_ = value;
     }
 
     void set_continued_movement_absolute_magnitude_threshold(double value) {
@@ -171,8 +176,7 @@ public:
         previous_absolute_magnitude_ = absolute_magnitude_;
       } else {
         // Ignore minor magnitude changes until a sufficient amount of change accumulates.
-        auto delta_magnitude_threshold = 0.01;
-        if (0 < dm && dm < delta_magnitude_threshold) {
+        if (0 < dm && dm < delta_magnitude_detection_threshold_) {
           delta_magnitude_ = 0.0;
         } else {
           delta_magnitude_ = dm;
@@ -199,6 +203,7 @@ public:
     // configurations
     //
 
+    double delta_magnitude_detection_threshold_;
     double continued_movement_absolute_magnitude_threshold_;
     int continued_movement_interval_milliseconds_;
   };
@@ -393,9 +398,11 @@ private:
   void update_configurations(const core_configuration::core_configuration& core_configuration) {
     auto d = core_configuration.get_selected_profile().get_device(device_properties_.get_device_identifiers());
 
+    xy_.set_delta_magnitude_detection_threshold(d->get_game_pad_xy_stick_delta_magnitude_detection_threshold());
     xy_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold());
     xy_.set_continued_movement_interval_milliseconds(d->get_game_pad_xy_stick_continued_movement_interval_milliseconds());
 
+    wheels_.set_delta_magnitude_detection_threshold(d->get_game_pad_wheels_stick_delta_magnitude_detection_threshold());
     wheels_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold());
     wheels_.set_continued_movement_interval_milliseconds(d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds());
 

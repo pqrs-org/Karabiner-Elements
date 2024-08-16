@@ -92,6 +92,10 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      gamePadXYStickDeltaMagnitudeDetectionThreshold =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
       gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(
           connectedDevice.libkrbnDeviceIdentifiers)
@@ -99,6 +103,10 @@ extension LibKrbn {
       gamePadXYStickContinuedMovementIntervalMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
+
+      gamePadWheelsStickDeltaMagnitudeDetectionThreshold =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_delta_magnitude_detection_threshold(
+          connectedDevice.libkrbnDeviceIdentifiers)
 
       gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(
@@ -307,6 +315,18 @@ extension LibKrbn {
       }
     }
 
+    @Published var gamePadXYStickDeltaMagnitudeDetectionThreshold: Double = 0.0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadXYStickDeltaMagnitudeDetectionThreshold)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
     @Published var gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold: Double = 0.0 {
       didSet {
         if didSetEnabled {
@@ -325,6 +345,18 @@ extension LibKrbn {
           libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
             connectedDevice.libkrbnDeviceIdentifiers,
             Int32(gamePadXYStickContinuedMovementIntervalMilliseconds))
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var gamePadWheelsStickDeltaMagnitudeDetectionThreshold: Double = 0.0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_delta_magnitude_detection_threshold(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadWheelsStickDeltaMagnitudeDetectionThreshold)
 
           Settings.shared.save()
         }

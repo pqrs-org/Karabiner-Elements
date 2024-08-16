@@ -84,6 +84,10 @@ public:
                                          game_pad_swap_sticks_,
                                          false);
 
+    helper_values_.push_back_value<double>("game_pad_xy_stick_delta_magnitude_detection_threshold",
+                                           game_pad_xy_stick_delta_magnitude_detection_threshold_,
+                                           0.01);
+
     helper_values_.push_back_value<double>("game_pad_xy_stick_continued_movement_absolute_magnitude_threshold",
                                            game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_,
                                            1.0);
@@ -91,6 +95,10 @@ public:
     helper_values_.push_back_value<int>("game_pad_xy_stick_continued_movement_interval_milliseconds",
                                         game_pad_xy_stick_continued_movement_interval_milliseconds_,
                                         20);
+
+    helper_values_.push_back_value<double>("game_pad_wheels_stick_delta_magnitude_detection_threshold",
+                                           game_pad_wheels_stick_delta_magnitude_detection_threshold_,
+                                           0.01);
 
     helper_values_.push_back_value<double>("game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold",
                                            game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_,
@@ -433,6 +441,19 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
+  //
+  // game_pad_xy_stick_XXX
+  //
+
+  const double& get_game_pad_xy_stick_delta_magnitude_detection_threshold(void) const {
+    return game_pad_xy_stick_delta_magnitude_detection_threshold_;
+  }
+  void set_game_pad_xy_stick_delta_magnitude_detection_threshold(double value) {
+    game_pad_xy_stick_delta_magnitude_detection_threshold_ = value;
+
+    coordinate_between_properties();
+  }
+
   const double& get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(void) const {
     return game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   }
@@ -447,6 +468,19 @@ cos(radian) * m;
   }
   void set_game_pad_xy_stick_continued_movement_interval_milliseconds(int value) {
     game_pad_xy_stick_continued_movement_interval_milliseconds_ = value;
+
+    coordinate_between_properties();
+  }
+
+  //
+  // game_pad_wheels_stick_XXX
+  //
+
+  const double& get_game_pad_wheels_stick_delta_magnitude_detection_threshold(void) const {
+    return game_pad_wheels_stick_delta_magnitude_detection_threshold_;
+  }
+  void set_game_pad_wheels_stick_delta_magnitude_detection_threshold(double value) {
+    game_pad_wheels_stick_delta_magnitude_detection_threshold_ = value;
 
     coordinate_between_properties();
   }
@@ -556,8 +590,10 @@ private:
   bool mouse_discard_vertical_wheel_;
   bool mouse_discard_horizontal_wheel_;
   bool game_pad_swap_sticks_;
+  double game_pad_xy_stick_delta_magnitude_detection_threshold_;
   double game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   int game_pad_xy_stick_continued_movement_interval_milliseconds_;
+  double game_pad_wheels_stick_delta_magnitude_detection_threshold_;
   double game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   int game_pad_wheels_stick_continued_movement_interval_milliseconds_;
   std::string game_pad_stick_x_formula_;

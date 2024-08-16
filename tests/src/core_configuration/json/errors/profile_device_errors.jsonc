@@ -165,6 +165,16 @@
         "error": "`game_pad_swap_sticks` must be boolean, but is `null`"
     },
 
+    // game_pad_xy_stick_delta_magnitude_detection_threshold
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_xy_stick_delta_magnitude_detection_threshold": null
+        },
+        "error": "`game_pad_xy_stick_delta_magnitude_detection_threshold` must be number, but is `null`"
+    },
+
     // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
 
     {
@@ -183,6 +193,16 @@
             "game_pad_xy_stick_continued_movement_interval_milliseconds": null
         },
         "error": "`game_pad_xy_stick_continued_movement_interval_milliseconds` must be number, but is `null`"
+    },
+
+    // game_pad_wheels_stick_delta_magnitude_detection_threshold
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_wheels_stick_delta_magnitude_detection_threshold": null
+        },
+        "error": "`game_pad_wheels_stick_delta_magnitude_detection_threshold` must be number, but is `null`"
     },
 
     // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
