@@ -44,14 +44,14 @@ struct StickView: View {
           Text("\(stick.vertical.lastDoubleValue)")
         }
         GridRow {
-          Text("radian:")
-
-          Text("\(stick.radian)")
-        }
-        GridRow {
           Text("magnitude:")
 
           Text("\(stick.magnitude)")
+        }
+        GridRow {
+          Text("radian:")
+
+          Text("\(stick.radian)")
         }
       }
       .frame(width: 200)
