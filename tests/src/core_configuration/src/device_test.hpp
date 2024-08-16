@@ -104,12 +104,16 @@ void run_device_test(void) {
     auto json = nlohmann::json::object();
     krbn::core_configuration::details::device device(json,
                                                      krbn::core_configuration::error_handling::strict);
+    expect(0.1_d == device.find_default_value(
+                        device.get_game_pad_xy_stick_deadzone()));
     expect(0.02_d == device.find_default_value(
                          device.get_game_pad_xy_stick_delta_magnitude_detection_threshold()));
     expect(1.0_d == device.find_default_value(
                         device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold()));
     expect(20_i == device.find_default_value(
                        device.get_game_pad_xy_stick_continued_movement_interval_milliseconds()));
+    expect(0.1_d == device.find_default_value(
+                        device.get_game_pad_wheels_stick_deadzone()));
     expect(0.02_d == device.find_default_value(
                          device.get_game_pad_wheels_stick_delta_magnitude_detection_threshold()));
     expect(1.0_d == device.find_default_value(
@@ -134,6 +138,10 @@ void run_device_test(void) {
       expect(false == device.get_treat_as_built_in_keyboard());
       expect(false == device.get_disable_built_in_keyboard_if_exists());
       {
+        auto& v = device.get_game_pad_xy_stick_deadzone();
+        expect(device.find_default_value(v) == v);
+      }
+      {
         auto& v = device.get_game_pad_xy_stick_delta_magnitude_detection_threshold();
         expect(device.find_default_value(v) == v);
       }
@@ -143,6 +151,10 @@ void run_device_test(void) {
       }
       {
         auto& v = device.get_game_pad_xy_stick_continued_movement_interval_milliseconds();
+        expect(device.find_default_value(v) == v);
+      }
+      {
+        auto& v = device.get_game_pad_wheels_stick_deadzone();
         expect(device.find_default_value(v) == v);
       }
       {
@@ -189,6 +201,7 @@ void run_device_test(void) {
           {"ignore", true},
           {"manipulate_caps_lock_led", false},
           {"treat_as_built_in_keyboard", false},
+          {"game_pad_xy_stick_deadzone", 0.2},
           {"game_pad_xy_stick_delta_magnitude_detection_threshold", 0.1},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
           {"game_pad_xy_stick_continued_movement_interval_milliseconds", 15},
@@ -213,6 +226,7 @@ void run_device_test(void) {
       expect(device.get_manipulate_caps_lock_led() == false);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
+      expect(device.get_game_pad_xy_stick_deadzone() == 0.2);
       expect(device.get_game_pad_xy_stick_delta_magnitude_detection_threshold() == 0.1);
       expect(device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold() == 0.5);
       expect(device.get_game_pad_xy_stick_continued_movement_interval_milliseconds() == 15);
@@ -367,6 +381,7 @@ void run_device_test(void) {
           {"mouse_swap_wheels", true},
           {"mouse_swap_xy", true},
           {"game_pad_swap_sticks", true},
+          {"game_pad_xy_stick_deadzone", 0.2},
           {"game_pad_xy_stick_delta_magnitude_detection_threshold", 0.1},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
           {"game_pad_xy_stick_continued_movement_interval_milliseconds", 10},
@@ -396,6 +411,7 @@ void run_device_test(void) {
                           }},
           {"ignore", true},
           {"game_pad_swap_sticks", true},
+          {"game_pad_xy_stick_deadzone", 0.2},
           {"game_pad_xy_stick_delta_magnitude_detection_threshold", 0.1},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
           {"game_pad_xy_stick_continued_movement_interval_milliseconds", 10},

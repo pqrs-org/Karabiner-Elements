@@ -834,6 +834,26 @@ void libkrbn_core_configuration_erase_selected_profile_not_connected_devices(voi
   }
 }
 
+// game_pad_xy_stick_deadzone
+
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* device_identifiers) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_game_pad_xy_stick_deadzone();
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* device_identifiers,
+                                                                                       double value) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_xy_stick_deadzone(value);
+}
+
+double libkrbn_core_configuration_game_pad_xy_stick_deadzone_default_value(void) {
+  return empty_device->find_default_value(
+      empty_device->get_game_pad_xy_stick_deadzone());
+}
+
 // game_pad_xy_stick_delta_magnitude_detection_threshold
 
 double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* device_identifiers) {
@@ -892,6 +912,26 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_co
 int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value(void) {
   return empty_device->find_default_value(
       empty_device->get_game_pad_xy_stick_continued_movement_interval_milliseconds());
+}
+
+// game_pad_wheels_stick_deadzone
+
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_deadzone(const libkrbn_device_identifiers* device_identifiers) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_game_pad_wheels_stick_deadzone();
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_deadzone(const libkrbn_device_identifiers* device_identifiers,
+                                                                                           double value) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_game_pad_wheels_stick_deadzone(value);
+}
+
+double libkrbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(void) {
+  return empty_device->find_default_value(
+      empty_device->get_game_pad_wheels_stick_deadzone());
 }
 
 // game_pad_wheels_stick_delta_magnitude_detection_threshold

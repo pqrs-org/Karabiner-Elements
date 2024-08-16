@@ -87,6 +87,7 @@ public:
           absolute_magnitude_(0.0),
           delta_magnitude_(0.0),
           previous_absolute_magnitude_(0.0),
+          deadzone_(0.0),
           delta_magnitude_detection_threshold_(0.0),
           continued_movement_absolute_magnitude_threshold_(1.0),
           continued_movement_interval_milliseconds_(0) {
@@ -106,6 +107,10 @@ public:
 
     double get_delta_magnitude(void) const {
       return delta_magnitude_;
+    }
+
+    void set_deadzone(double value) {
+      deadzone_ = value;
     }
 
     void set_delta_magnitude_detection_threshold(double value) {
@@ -184,6 +189,11 @@ public:
         }
       }
 
+      if (absolute_magnitude_ <= deadzone_) {
+        delta_magnitude_ = 0.0;
+        absolute_magnitude_ = 0.0;
+      }
+
       //
       // Signal
       //
@@ -203,6 +213,7 @@ public:
     // configurations
     //
 
+    double deadzone_;
     double delta_magnitude_detection_threshold_;
     double continued_movement_absolute_magnitude_threshold_;
     int continued_movement_interval_milliseconds_;
@@ -398,10 +409,12 @@ private:
   void update_configurations(const core_configuration::core_configuration& core_configuration) {
     auto d = core_configuration.get_selected_profile().get_device(device_properties_.get_device_identifiers());
 
+    xy_.set_deadzone(d->get_game_pad_xy_stick_deadzone());
     xy_.set_delta_magnitude_detection_threshold(d->get_game_pad_xy_stick_delta_magnitude_detection_threshold());
     xy_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold());
     xy_.set_continued_movement_interval_milliseconds(d->get_game_pad_xy_stick_continued_movement_interval_milliseconds());
 
+    wheels_.set_deadzone(d->get_game_pad_wheels_stick_deadzone());
     wheels_.set_delta_magnitude_detection_threshold(d->get_game_pad_wheels_stick_delta_magnitude_detection_threshold());
     wheels_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold());
     wheels_.set_continued_movement_interval_milliseconds(d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds());

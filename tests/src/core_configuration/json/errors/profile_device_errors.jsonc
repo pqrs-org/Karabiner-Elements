@@ -165,6 +165,16 @@
         "error": "`game_pad_swap_sticks` must be boolean, but is `null`"
     },
 
+    // game_pad_xy_stick_deadzone
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_xy_stick_deadzone": null
+        },
+        "error": "`game_pad_xy_stick_deadzone` must be number, but is `null`"
+    },
+
     // game_pad_xy_stick_delta_magnitude_detection_threshold
 
     {
@@ -193,6 +203,16 @@
             "game_pad_xy_stick_continued_movement_interval_milliseconds": null
         },
         "error": "`game_pad_xy_stick_continued_movement_interval_milliseconds` must be number, but is `null`"
+    },
+
+    // game_pad_wheels_stick_deadzone
+
+    {
+        "class": "devices",
+        "input": {
+            "game_pad_wheels_stick_deadzone": null
+        },
+        "error": "`game_pad_wheels_stick_deadzone` must be number, but is `null`"
     },
 
     // game_pad_wheels_stick_delta_magnitude_detection_threshold

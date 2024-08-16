@@ -92,6 +92,10 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      gamePadXYStickDeadzone =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_deadzone(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
       gamePadXYStickDeltaMagnitudeDetectionThreshold =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(
           connectedDevice.libkrbnDeviceIdentifiers)
@@ -103,6 +107,10 @@ extension LibKrbn {
       gamePadXYStickContinuedMovementIntervalMilliseconds = Int(
         libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
+
+      gamePadWheelsStickDeadzone =
+        libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_deadzone(
+          connectedDevice.libkrbnDeviceIdentifiers)
 
       gamePadWheelsStickDeltaMagnitudeDetectionThreshold =
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_delta_magnitude_detection_threshold(
@@ -315,6 +323,18 @@ extension LibKrbn {
       }
     }
 
+    @Published var gamePadXYStickDeadzone: Double = 0.0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_deadzone(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadXYStickDeadzone)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
     @Published var gamePadXYStickDeltaMagnitudeDetectionThreshold: Double = 0.0 {
       didSet {
         if didSetEnabled {
@@ -345,6 +365,18 @@ extension LibKrbn {
           libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(
             connectedDevice.libkrbnDeviceIdentifiers,
             Int32(gamePadXYStickContinuedMovementIntervalMilliseconds))
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var gamePadWheelsStickDeadzone: Double = 0.0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_deadzone(
+            connectedDevice.libkrbnDeviceIdentifiers,
+            gamePadWheelsStickDeadzone)
 
           Settings.shared.save()
         }

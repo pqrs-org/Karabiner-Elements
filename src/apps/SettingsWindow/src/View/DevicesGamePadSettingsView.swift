@@ -52,6 +52,10 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
+          deadzone: $connectedDeviceSetting.gamePadXYStickDeadzone,
+          deadzoneDefaultValue:
+            libkrbn_core_configuration_game_pad_xy_stick_deadzone_default_value(),
+
           deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
             .gamePadXYStickDeltaMagnitudeDetectionThreshold,
           deltaMagnitudeDetectionThresholdDefaultValue:
@@ -101,6 +105,10 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
+          deadzone: $connectedDeviceSetting.gamePadWheelsStickDeadzone,
+          deadzoneDefaultValue:
+            libkrbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(),
+
           deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
             .gamePadWheelsStickDeltaMagnitudeDetectionThreshold,
           deltaMagnitudeDetectionThresholdDefaultValue:
@@ -164,6 +172,9 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct StickParametersView: View {
+    @Binding var deadzone: Double
+    let deadzoneDefaultValue: Double
+
     @Binding var deltaMagnitudeDetectionThreshold: Double
     let deltaMagnitudeDetectionThresholdDefaultValue: Double
 
@@ -176,8 +187,23 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       Grid(alignment: .leadingFirstTextBaseline) {
         GridRow {
-          Text("Delta magnitude detection threshold:")
+          Text("deadzone:")
             .gridColumnAlignment(.trailing)
+
+          DoubleTextField(
+            value: $deadzone,
+            range: 0...1,
+            step: 0.01,
+            maximumFractionDigits: 2,
+            width: 60)
+
+          Text(
+            "(Default: \(String(format: "%.2f", deadzoneDefaultValue)))"
+          )
+        }
+
+        GridRow {
+          Text("Delta magnitude detection threshold:")
 
           DoubleTextField(
             value: $deltaMagnitudeDetectionThreshold,

@@ -255,6 +255,13 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks
 size_t libkrbn_core_configuration_get_selected_profile_not_connected_devices_count(void);
 void libkrbn_core_configuration_erase_selected_profile_not_connected_devices(void);
 
+// game_pad_xy_stick_deadzone
+
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* device_identifiers,
+                                                                                       double value);
+double libkrbn_core_configuration_game_pad_xy_stick_deadzone_default_value(void);
+
 // game_pad_xy_stick_delta_magnitude_detection_threshold
 
 double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* device_identifiers);
@@ -275,6 +282,13 @@ int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_con
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers,
                                                                                                                        int value);
 int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value(void);
+
+// game_pad_wheels_stick_deadzone
+
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_deadzone(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_deadzone(const libkrbn_device_identifiers* device_identifiers,
+                                                                                           double value);
+double libkrbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(void);
 
 // game_pad_wheels_stick_delta_magnitude_detection_threshold
 
