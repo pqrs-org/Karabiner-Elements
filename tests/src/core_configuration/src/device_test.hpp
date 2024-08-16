@@ -104,13 +104,13 @@ void run_device_test(void) {
     auto json = nlohmann::json::object();
     krbn::core_configuration::details::device device(json,
                                                      krbn::core_configuration::error_handling::strict);
-    expect(0.01_d == device.find_default_value(
+    expect(0.02_d == device.find_default_value(
                          device.get_game_pad_xy_stick_delta_magnitude_detection_threshold()));
     expect(1.0_d == device.find_default_value(
                         device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold()));
     expect(20_i == device.find_default_value(
                        device.get_game_pad_xy_stick_continued_movement_interval_milliseconds()));
-    expect(0.01_d == device.find_default_value(
+    expect(0.02_d == device.find_default_value(
                          device.get_game_pad_wheels_stick_delta_magnitude_detection_threshold()));
     expect(1.0_d == device.find_default_value(
                         device.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold()));

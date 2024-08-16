@@ -86,7 +86,7 @@ public:
 
     helper_values_.push_back_value<double>("game_pad_xy_stick_delta_magnitude_detection_threshold",
                                            game_pad_xy_stick_delta_magnitude_detection_threshold_,
-                                           0.01);
+                                           0.02);
 
     helper_values_.push_back_value<double>("game_pad_xy_stick_continued_movement_absolute_magnitude_threshold",
                                            game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_,
@@ -98,7 +98,7 @@ public:
 
     helper_values_.push_back_value<double>("game_pad_wheels_stick_delta_magnitude_detection_threshold",
                                            game_pad_wheels_stick_delta_magnitude_detection_threshold_,
-                                           0.01);
+                                           0.02);
 
     helper_values_.push_back_value<double>("game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold",
                                            game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_,
