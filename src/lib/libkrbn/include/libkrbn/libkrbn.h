@@ -486,6 +486,9 @@ void libkrbn_enable_hid_value_monitor(void);
 void libkrbn_disable_hid_value_monitor(void);
 
 typedef void (*libkrbn_hid_value_arrived)(uint64_t device_id,
+                                          bool is_keyboard,
+                                          bool is_pointing_device,
+                                          bool is_game_pad,
                                           int32_t usage_page,
                                           int32_t usage,
                                           int64_t logical_max,

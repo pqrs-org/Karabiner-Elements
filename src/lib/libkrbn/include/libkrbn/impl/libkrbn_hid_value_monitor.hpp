@@ -55,8 +55,10 @@ public:
           observed_ = true;
         });
 
-        hid_queue_value_monitor->values_arrived.connect([this, device_id](auto&& values_ptr) {
-          values_arrived(device_id, values_ptr);
+        hid_queue_value_monitor->values_arrived.connect([this, device_id, device_properties](auto&& values_ptr) {
+          values_arrived(device_id,
+                         device_properties,
+                         values_ptr);
         });
 
         hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
@@ -104,6 +106,7 @@ public:
 
 private:
   void values_arrived(krbn::device_id device_id,
+                      gsl::not_null<std::shared_ptr<krbn::device_properties>> device_properties,
                       std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
     for (const auto& value : *values) {
       auto v = pqrs::osx::iokit_hid_value(*value);
@@ -114,6 +117,9 @@ private:
             if (auto logical_min = v.get_logical_min()) {
               for (const auto& c : callback_manager_.get_callbacks()) {
                 c(type_safe::get(device_id),
+                  device_properties->get_is_keyboard().value_or(false),
+                  device_properties->get_is_pointing_device().value_or(false),
+                  device_properties->get_is_game_pad().value_or(false),
                   type_safe::get(*usage_page),
                   type_safe::get(*usage),
                   *logical_max,

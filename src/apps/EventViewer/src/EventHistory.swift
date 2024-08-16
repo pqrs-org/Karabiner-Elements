@@ -2,6 +2,9 @@ import SwiftUI
 
 private func callback(
   _ deviceId: UInt64,
+  _ isKeyboard: Bool,
+  _ isPointingDevice: Bool,
+  _ isGamePad: Bool,
   _ usagePage: Int32,
   _ usage: Int32,
   _ logicalMax: Int64,
