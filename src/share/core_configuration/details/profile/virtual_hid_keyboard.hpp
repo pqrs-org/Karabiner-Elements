@@ -23,6 +23,10 @@ public:
                                                                      country_code_,
                                                                      pqrs::hid::country_code::value_t(0));
 
+    helper_values_.push_back_value<bool>("strict_fn_arrows",
+                                         strict_fn_arrows_,
+                                         true);
+
     helper_values_.push_back_value<int>("mouse_key_xy_scale",
                                         mouse_key_xy_scale_,
                                         100);
@@ -50,6 +54,14 @@ public:
 
   void set_country_code(pqrs::hid::country_code::value_t value) {
     country_code_ = value;
+  }
+
+  const bool& get_strict_fn_arrows(void) const {
+    return strict_fn_arrows_;
+  }
+
+  void set_strict_fn_arrows(bool value) {
+    strict_fn_arrows_ = value;
   }
 
   const int& get_mouse_key_xy_scale(void) const {
@@ -81,6 +93,7 @@ public:
 private:
   nlohmann::json json_;
   pqrs::hid::country_code::value_t country_code_;
+  bool strict_fn_arrows_;
   int mouse_key_xy_scale_;
   bool indicate_sticky_modifier_keys_state_;
   configuration_json_helper::helper_values helper_values_;
