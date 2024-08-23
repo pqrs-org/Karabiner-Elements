@@ -153,7 +153,16 @@ public:
       for (const auto& d : data) {
         auto from_json = d["from"];
         from_json["modifiers"]["mandatory"] = nlohmann::json::array({"fn"});
-        from_json["modifiers"]["optional"] = nlohmann::json::array({"any"});
+
+        if (profile.get_virtual_hid_keyboard()->get_strict_fn_arrows() &&
+            (d["from"]["key_code"] == "right_arrow" ||
+             d["from"]["key_code"] == "left_arrow" ||
+             d["from"]["key_code"] == "down_arrow" ||
+             d["from"]["key_code"] == "up_arrow")) {
+          // Do not set optional modifiers
+        } else {
+          from_json["modifiers"]["optional"] = nlohmann::json::array({"any"});
+        }
 
         auto to_json = d["to"];
         to_json["modifiers"] = nlohmann::json::array({"fn"});
