@@ -29,4 +29,11 @@ final class UserSettings: ObservableObject {
       )
     }
   }
+
+  @UserDefault("quitUsingKeyboardShortcut", defaultValue: false)
+  var quitUsingKeyboardShortcut: Bool {
+    willSet {
+      objectWillChange.send()
+    }
+  }
 }

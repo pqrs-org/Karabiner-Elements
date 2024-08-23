@@ -24,6 +24,15 @@ struct SettingsView: View {
 
             Spacer()
           }
+
+          HStack {
+            Toggle(isOn: $userSettings.quitUsingKeyboardShortcut) {
+              Text("Enable Command+Q and Command+W shortcut (Default: off)")
+            }
+            .switchToggleStyle()
+
+            Spacer()
+          }
         }
         .padding(6.0)
       }

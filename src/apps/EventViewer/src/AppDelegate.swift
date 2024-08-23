@@ -43,6 +43,17 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       self.setWindowProperty()
     }
 
+    NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event -> NSEvent? in
+      if event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command {
+        if event.charactersIgnoringModifiers == "q" || event.charactersIgnoringModifiers == "w" {
+          if UserSettings.shared.quitUsingKeyboardShortcut {
+            NSApplication.shared.terminate(nil)
+          }
+        }
+      }
+      return event
+    }
+
     DevicesJsonString.shared.start()
     EventHistory.shared.start()
     FrontmostApplicationHistory.shared.start()
