@@ -94,6 +94,19 @@ struct VirtualKeyboardView: View {
         .background(Color(NSColor.textBackgroundColor))
       }
 
+      GroupBox(label: Text("Flags")) {
+        VStack(alignment: .leading, spacing: 12.0) {
+          Toggle(isOn: $settings.virtualHIDKeyboardStrictFnArrows) {
+            Text(
+              "Change fn+arrows to home, end, page up, page down only when no other modifiers are pressed (Default: on)"
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+          }
+          .switchToggleStyle()
+        }
+        .padding(6.0)
+      }
+
       GroupBox(label: Text("Mouse key")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {

@@ -579,6 +579,20 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_countr
       ->set_country_code(pqrs::hid::country_code::value_t(value));
 }
 
+bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_strict_fn_arrows(void) {
+  auto c = get_current_core_configuration();
+  return c->get_selected_profile()
+      .get_virtual_hid_keyboard()
+      ->get_strict_fn_arrows();
+}
+
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_strict_fn_arrows(bool value) {
+  auto c = get_current_core_configuration();
+  c->get_selected_profile()
+      .get_virtual_hid_keyboard()
+      ->set_strict_fn_arrows(value);
+}
+
 int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(void) {
   auto c = get_current_core_configuration();
   return c->get_selected_profile()
