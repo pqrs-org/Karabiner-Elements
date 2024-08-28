@@ -889,8 +889,12 @@ private:
   }
 
   void update_virtual_hid_keyboard(void) {
-    virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(
+    pqrs::karabiner::driverkit::virtual_hid_device_service::virtual_hid_keyboard_parameters parameters(
+        core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_vendor_id(),
+        core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_product_id(),
         core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_country_code());
+
+    virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(parameters);
   }
 
   void update_virtual_hid_pointing(void) {
