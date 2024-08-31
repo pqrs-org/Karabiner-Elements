@@ -889,10 +889,24 @@ private:
   }
 
   void update_virtual_hid_keyboard(void) {
-    pqrs::karabiner::driverkit::virtual_hid_device_service::virtual_hid_keyboard_parameters parameters(
-        core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_vendor_id(),
-        core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_product_id(),
-        core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_country_code());
+    pqrs::karabiner::driverkit::virtual_hid_device_service::virtual_hid_keyboard_parameters parameters;
+
+    auto t = core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_iokit_keyboard_type();
+    if (t == pqrs::osx::iokit_keyboard_type::ansi) {
+      // Apple Aluminum USB Keyboard (A1243) (ANSI)
+      parameters.set_vendor_id(pqrs::hid::vendor_id::value_t(0x05ac));
+      parameters.set_product_id(pqrs::hid::product_id::value_t(0x024f));
+    } else if (t == pqrs::osx::iokit_keyboard_type::iso) {
+      // Apple Aluminum USB Keyboard (A1243) (ISO)
+      parameters.set_vendor_id(pqrs::hid::vendor_id::value_t(0x05ac));
+      parameters.set_product_id(pqrs::hid::product_id::value_t(0x0250));
+    } else if (t == pqrs::osx::iokit_keyboard_type::jis) {
+      // Apple Aluminum USB Keyboard (A1243) (JIS)
+      parameters.set_vendor_id(pqrs::hid::vendor_id::value_t(0x05ac));
+      parameters.set_product_id(pqrs::hid::product_id::value_t(0x0251));
+    } else {
+      logger::get_logger()->warn("unknown virtual_hid_keyboard keyboard_type: {0}", type_safe::get(t));
+    }
 
     virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(parameters);
   }
