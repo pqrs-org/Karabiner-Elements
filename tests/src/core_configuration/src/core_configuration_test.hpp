@@ -84,10 +84,7 @@ void run_core_configuration_test(void) {
       expect(rules[2]->get_description() == "");
     }
     {
-      expect(configuration
-                 .get_selected_profile()
-                 .get_virtual_hid_keyboard()
-                 ->get_country_code() == pqrs::hid::country_code::value_t(99));
+      expect("jis"s == configuration.get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2());
     }
     {
       auto& actual = configuration.get_selected_profile().get_devices();
@@ -818,7 +815,7 @@ void run_core_configuration_test(void) {
       profile.get_fn_function_keys()->replace_second(nlohmann::json{{"key_code", "not found"}}.dump(),
                                                      nlohmann::json{{"key_code", "do nothing"}}.dump());
 
-      profile.get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(20));
+      profile.get_virtual_hid_keyboard()->set_keyboard_type_v2("ansi");
       profile.get_virtual_hid_keyboard()->set_mouse_key_xy_scale(250);
 
       auto expected = R"(
@@ -855,7 +852,7 @@ void run_core_configuration_test(void) {
     }
   ],
   "virtual_hid_keyboard": {
-    "country_code": 20,
+    "keyboard_type_v2": "ansi",
     "mouse_key_xy_scale": 250
   }
 }
@@ -1640,32 +1637,29 @@ void run_core_configuration_test(void) {
       auto json = nlohmann::json::object();
       krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      expect(pqrs::hid::country_code::value_t(0) == virtual_hid_keyboard.get_country_code());
-      expect(true == virtual_hid_keyboard.get_strict_fn_arrows());
+      expect(""s == virtual_hid_keyboard.get_keyboard_type_v2());
     }
 
     // load values from json
     {
       nlohmann::json json({
-          {"country_code", 10},
-          {"strict_fn_arrows", false},
+          {"keyboard_type_v2", "ansi"},
       });
       krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      expect(pqrs::hid::country_code::value_t(10) == virtual_hid_keyboard.get_country_code());
-      expect(false == virtual_hid_keyboard.get_strict_fn_arrows());
+      expect("ansi"s == virtual_hid_keyboard.get_keyboard_type_v2());
     }
 
     // invalid values in json
     try {
       nlohmann::json json({
-          {"country_code", nlohmann::json::object()},
+          {"keyboard_type_v2", nlohmann::json::object()},
       });
       krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
                                                                                    krbn::core_configuration::error_handling::strict);
       expect(false);
     } catch (pqrs::json::unmarshal_error& ex) {
-      expect(std::string_view("`country_code` must be number, but is `{}`") == ex.what());
+      expect(std::string_view("`keyboard_type_v2` must be array of string, or string, but is `{}`") == ex.what());
     } catch (...) {
       expect(false);
     }
@@ -1684,19 +1678,17 @@ void run_core_configuration_test(void) {
       });
       krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      virtual_hid_keyboard.set_country_code(pqrs::hid::country_code::value_t(10));
-      virtual_hid_keyboard.set_strict_fn_arrows(false);
+      virtual_hid_keyboard.set_keyboard_type_v2("iso");
       virtual_hid_keyboard.set_mouse_key_xy_scale(50);
 
       auto expected = R"(
 
 {
-  "country_code": 10,
   "dummy": {
     "keep_me": true
   },
-  "mouse_key_xy_scale": 50,
-  "strict_fn_arrows": false
+  "keyboard_type_v2": "iso",
+  "mouse_key_xy_scale": 50
 }
 
       )"_json;
