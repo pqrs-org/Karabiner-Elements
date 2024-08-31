@@ -163,9 +163,6 @@ public:
           break;
       }
     }
-    if (auto properties = event.get_if<pqrs::osx::system_preferences::properties>()) {
-      manipulator_environment_.set_system_preferences_properties(*properties);
-    }
     if (auto state = event.get_if<virtual_hid_devices_state>()) {
       manipulator_environment_.set_virtual_hid_devices_state(*state);
     }

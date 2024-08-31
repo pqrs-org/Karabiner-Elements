@@ -57,8 +57,11 @@ public:
 
   virtual bool is_fulfilled(const event_queue::entry& entry,
                             const manipulator_environment& manipulator_environment) const {
+    auto c = manipulator_environment.get_core_configuration();
+    auto&& current_keyboard_type = c->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2();
+
     for (const auto& t : keyboard_types_) {
-      if (t == manipulator_environment.get_virtual_hid_keyboard_keyboard_type()) {
+      if (t == current_keyboard_type) {
         switch (type_) {
           case type::keyboard_type_if:
             return true;

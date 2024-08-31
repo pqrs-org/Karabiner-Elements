@@ -5,6 +5,7 @@
 #include "json_writer.hpp"
 #include "logger.hpp"
 #include <fstream>
+#include <gsl/gsl>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <pqrs/filesystem.hpp>
@@ -12,8 +13,6 @@
 #include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>
 #include <pqrs/osx/input_source.hpp>
 #include <pqrs/osx/input_source/extra/nlohmann_json.hpp>
-#include <pqrs/osx/system_preferences.hpp>
-#include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 #include <string>
 
 namespace krbn {
@@ -22,7 +21,8 @@ class manipulator_environment final {
 public:
   manipulator_environment(const manipulator_environment&) = delete;
 
-  manipulator_environment(void) {
+  manipulator_environment(void)
+      : core_configuration_(std::make_shared<core_configuration::core_configuration>()) {
     karabiner_machine_identifier_ = constants::get_karabiner_machine_identifier();
   }
 
@@ -43,9 +43,7 @@ public:
         {"input_source", input_source_json},
         {"karabiner_machine_identifier", type_safe::get(karabiner_machine_identifier_)},
         {"variables", variables_},
-        {"system_preferences_properties", system_preferences_properties_},
         {"virtual_hid_devices_state", virtual_hid_devices_state_},
-        {"virtual_hid_keyboard_keyboard_type", virtual_hid_keyboard_keyboard_type_},
     });
   }
 
@@ -120,33 +118,18 @@ public:
     async_save_to_file();
   }
 
-  std::weak_ptr<const core_configuration::core_configuration> get_core_configuration(void) const {
+  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> get_core_configuration(void) const {
     return core_configuration_;
   }
 
-  void set_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
+  void set_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
     core_configuration_ = core_configuration;
-    update_virtual_hid_keyboard_keyboard_type();
-    async_save_to_file();
-  }
-
-  const pqrs::osx::system_preferences::properties& get_system_preferences_properties(void) const {
-    return system_preferences_properties_;
-  }
-
-  void set_system_preferences_properties(const pqrs::osx::system_preferences::properties& value) {
-    system_preferences_properties_ = value;
-    update_virtual_hid_keyboard_keyboard_type();
     async_save_to_file();
   }
 
   void set_virtual_hid_devices_state(const virtual_hid_devices_state& value) {
     virtual_hid_devices_state_ = value;
     async_save_to_file();
-  }
-
-  const std::string& get_virtual_hid_keyboard_keyboard_type(void) const {
-    return virtual_hid_keyboard_keyboard_type_;
   }
 
 private:
@@ -156,34 +139,13 @@ private:
     }
   }
 
-  void update_virtual_hid_keyboard_keyboard_type(void) {
-    pqrs::hid::country_code::value_t country_code(0);
-    if (auto c = core_configuration_.lock()) {
-      country_code = c->get_selected_profile().get_virtual_hid_keyboard()->get_country_code();
-    }
-
-    pqrs::osx::system_preferences::keyboard_type_key key(
-        hid::vendor_id::karabiner_virtual_hid_device,
-        hid::product_id::karabiner_virtual_hid_keyboard,
-        country_code);
-    auto& keyboard_types = system_preferences_properties_.get_keyboard_types();
-    auto it = keyboard_types.find(key);
-    if (it != std::end(keyboard_types)) {
-      virtual_hid_keyboard_keyboard_type_ = pqrs::osx::iokit_keyboard_type::make_string(it->second);
-    } else {
-      virtual_hid_keyboard_keyboard_type_.clear();
-    }
-  }
-
   std::string output_json_file_path_;
   karabiner_machine_identifier karabiner_machine_identifier_;
   device_properties_manager device_properties_manager_;
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, manipulator_environment_variable_value> variables_;
-  std::weak_ptr<const core_configuration::core_configuration> core_configuration_;
-  pqrs::osx::system_preferences::properties system_preferences_properties_;
-  std::string virtual_hid_keyboard_keyboard_type_; // cache value
+  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
   virtual_hid_devices_state virtual_hid_devices_state_;
 };
 } // namespace manipulator

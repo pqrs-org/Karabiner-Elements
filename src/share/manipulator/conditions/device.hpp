@@ -174,10 +174,9 @@ private:
         return false;
       }
       if (is_built_in_keyboard) {
-        if (auto c = manipulator_environment.get_core_configuration().lock()) {
-          if (is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*c, device_properties)) {
-            return false;
-          }
+        auto c = manipulator_environment.get_core_configuration();
+        if (is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*c, device_properties)) {
+          return false;
         }
       }
 

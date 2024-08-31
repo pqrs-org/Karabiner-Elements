@@ -5,6 +5,7 @@
 #include "event_queue.hpp"
 #include "logger.hpp"
 #include "manipulator/manipulator_manager.hpp"
+#include <gsl/gsl>
 #include <mutex>
 
 namespace krbn {
@@ -46,7 +47,7 @@ public:
       }
     }
 
-    void set_manipulator_environment_core_configuration(std::weak_ptr<const core_configuration::core_configuration>& core_configuration) {
+    void set_manipulator_environment_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
       if (auto queue = weak_input_event_queue_.lock()) {
         queue->get_manipulator_environment().set_core_configuration(core_configuration);
       }
@@ -128,7 +129,7 @@ public:
     }
   }
 
-  void set_manipulator_environment_core_configuration(std::weak_ptr<const core_configuration::core_configuration> core_configuration) {
+  void set_manipulator_environment_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     for (auto&& c : connections_) {
