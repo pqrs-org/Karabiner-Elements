@@ -3,6 +3,7 @@
 #include "../../configuration_json_helper.hpp"
 #include "types.hpp"
 #include <pqrs/hid.hpp>
+#include <pqrs/osx/iokit_types.hpp>
 
 namespace krbn {
 namespace core_configuration {
@@ -19,21 +20,9 @@ public:
   virtual_hid_keyboard(const nlohmann::json& json,
                        error_handling error_handling)
       : json_(json) {
-    helper_values_.push_back_value<pqrs::hid::vendor_id::value_t>("vendor_id",
-                                                                  vendor_id_,
-                                                                  pqrs::hid::vendor_id::value_t(0x16c0));
-
-    helper_values_.push_back_value<pqrs::hid::product_id::value_t>("product_id",
-                                                                   product_id_,
-                                                                   pqrs::hid::product_id::value_t(0x27db));
-
-    helper_values_.push_back_value<pqrs::hid::country_code::value_t>("country_code",
-                                                                     country_code_,
-                                                                     pqrs::hid::country_code::value_t(0));
-
-    helper_values_.push_back_value<bool>("strict_fn_arrows",
-                                         strict_fn_arrows_,
-                                         true);
+    helper_values_.push_back_value<std::string>("keyboard_type_v2",
+                                                keyboard_type_v2_,
+                                                "");
 
     helper_values_.push_back_value<int>("mouse_key_xy_scale",
                                         mouse_key_xy_scale_,
@@ -56,36 +45,22 @@ public:
     return j;
   }
 
-  const pqrs::hid::vendor_id::value_t& get_vendor_id(void) const {
-    return vendor_id_;
+  const std::string& get_keyboard_type_v2(void) const {
+    return keyboard_type_v2_;
   }
 
-  void set_vendor_id(pqrs::hid::vendor_id::value_t value) {
-    vendor_id_ = value;
+  void set_keyboard_type_v2(const std::string& value) {
+    keyboard_type_v2_ = value;
   }
 
-  const pqrs::hid::product_id::value_t& get_product_id(void) const {
-    return product_id_;
-  }
-
-  void set_product_id(pqrs::hid::product_id::value_t value) {
-    product_id_ = value;
-  }
-
-  const pqrs::hid::country_code::value_t& get_country_code(void) const {
-    return country_code_;
-  }
-
-  void set_country_code(pqrs::hid::country_code::value_t value) {
-    country_code_ = value;
-  }
-
-  const bool& get_strict_fn_arrows(void) const {
-    return strict_fn_arrows_;
-  }
-
-  void set_strict_fn_arrows(bool value) {
-    strict_fn_arrows_ = value;
+  pqrs::osx::iokit_keyboard_type::value_t get_iokit_keyboard_type(void) const {
+    if (keyboard_type_v2_ == "iso") {
+      return pqrs::osx::iokit_keyboard_type::iso;
+    } else if (keyboard_type_v2_ == "jis") {
+      return pqrs::osx::iokit_keyboard_type::jis;
+    } else {
+      return pqrs::osx::iokit_keyboard_type::ansi;
+    }
   }
 
   const int& get_mouse_key_xy_scale(void) const {
@@ -109,19 +84,14 @@ public:
 
   bool operator==(const virtual_hid_keyboard& other) const {
     // Skip `json_`.
-    return vendor_id_ == other.vendor_id_ &&
-           product_id_ == other.product_id_ &&
-           country_code_ == other.country_code_ &&
+    return keyboard_type_v2_ == other.keyboard_type_v2_ &&
            mouse_key_xy_scale_ == other.mouse_key_xy_scale_ &&
            indicate_sticky_modifier_keys_state_ == other.indicate_sticky_modifier_keys_state_;
   }
 
 private:
   nlohmann::json json_;
-  pqrs::hid::vendor_id::value_t vendor_id_;
-  pqrs::hid::product_id::value_t product_id_;
-  pqrs::hid::country_code::value_t country_code_;
-  bool strict_fn_arrows_;
+  std::string keyboard_type_v2_;
   int mouse_key_xy_scale_;
   bool indicate_sticky_modifier_keys_state_;
   configuration_json_helper::helper_values helper_values_;
@@ -136,7 +106,7 @@ struct hash<krbn::core_configuration::details::virtual_hid_keyboard> final {
   std::size_t operator()(const krbn::core_configuration::details::virtual_hid_keyboard& value) const {
     std::size_t h = 0;
 
-    pqrs::hash::combine(h, value.get_country_code());
+    pqrs::hash::combine(h, value.get_keyboard_type_v2());
     pqrs::hash::combine(h, value.get_mouse_key_xy_scale());
     pqrs::hash::combine(h, value.get_indicate_sticky_modifier_keys_state());
 
