@@ -193,11 +193,9 @@ void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(c
 
 // profile::virtual_hid_device
 
-uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(void);
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(uint8_t value);
-
-bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_strict_fn_arrows(void);
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_strict_fn_arrows(bool value);
+void libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(char* buffer,
+                                                                                           size_t length);
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(const char* value);
 
 int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(void);
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(int value);
