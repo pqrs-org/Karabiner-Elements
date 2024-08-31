@@ -9,70 +9,17 @@ struct VirtualKeyboardView: View {
     VStack(alignment: .leading, spacing: 24.0) {
       GroupBox(label: Text("Keyboard type")) {
         VStack(alignment: .leading, spacing: 6.0) {
-          HStack {
-            Spacer()
-
-            if !systemPreferences.keyboardTypeChanged {
-              VStack {
-                Label(
-                  "Log out will be required when you changed keyboard type (ANSI, ISO or JIS) from the drop-down list",
-                  systemImage: "lightbulb"
-                )
-              }
-              .padding()
-              .foregroundColor(Color.warningForeground)
-              .background(Color.warningBackground)
-            } else {
-              VStack {
-                Label(
-                  "Log out is required to apply keyboard type changes",
-                  systemImage: "lightbulb"
-                )
-              }
-              .padding()
-              .foregroundColor(Color.errorForeground)
-              .background(Color.errorBackground)
-            }
+          Picker(
+            selection: $settings.virtualHIDKeyboardKeyboardTypeV2, label: Text("Keyboard type:")
+          ) {
+            Text("ANSI (North America, most of Asia and others)").tag("ansi")
+            Text("ISO (Europe, Latin America, Middle-East and others)").tag("iso")
+            Text("JIS (Japanese)").tag("jis")
           }
-
-          // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
-          ForEach($systemPreferences.keyboardTypes) { $keyboardType in
-            HStack {
-              Text("Country code: \(keyboardType.countryCode)")
-
-              Picker("", selection: $keyboardType.keyboardType) {
-                if keyboardType.keyboardType < 0 {
-                  Text("---").tag(-1)
-                }
-                Text("ANSI (North America, most of Asia and others)").tag(
-                  LibKrbn.KeyboardType.NamedType.ansi.rawValue)
-                Text("ISO (Europe, Latin America, Middle-East and others)").tag(
-                  LibKrbn.KeyboardType.NamedType.iso.rawValue)
-                Text("JIS (Japanese)").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
-              }.disabled(!grabberClient.connected)
-
-              Spacer()
-            }
-            .padding(.vertical, 2.0)
-          }
-
-          HStack {
-            VStack(alignment: .leading, spacing: 0.0) {
-              Text("Note:")
-              Text(
-                "The keyboard type configurations (ANSI, ISO, JIS) are shared by all of this Mac users."
-              )
-              Text("The country code selection is saved for each user.")
-            }
-
-            Spacer()
-          }
-          .padding()
-          .foregroundColor(Color.warningForeground)
-          .background(Color.warningBackground)
+          .pickerStyle(RadioGroupPickerStyle())
+          .disabled(!grabberClient.connected)
         }
         .padding(6.0)
-        .background(Color(NSColor.textBackgroundColor))
       }
 
       GroupBox(label: Text("Mouse key")) {

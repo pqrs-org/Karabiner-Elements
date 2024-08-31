@@ -11,9 +11,6 @@ private func callback() {
 final class SystemPreferences: ObservableObject {
   static let shared = SystemPreferences()
 
-  // This variable will be used in VirtualKeyboardView in order to show "log out required" message.
-  @Published var keyboardTypeChanged = false
-
   private var didSetEnabled = false
 
   private init() {
@@ -36,16 +33,6 @@ final class SystemPreferences: ObservableObject {
     useFkeysAsStandardFunctionKeys =
       libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys()
 
-    let countryCodesCount = 8
-    var newKeyboardTypes: [LibKrbn.KeyboardType] = []
-    for i in 0..<countryCodesCount {
-      newKeyboardTypes.append(
-        LibKrbn.KeyboardType(
-          i,
-          Int(libkrbn_system_preferences_properties_get_keyboard_type(UInt64(i)))))
-    }
-    keyboardTypes = newKeyboardTypes
-
     didSetEnabled = true
   }
 
@@ -56,18 +43,6 @@ final class SystemPreferences: ObservableObject {
           UserDefaults.standard.persistentDomain(forName: UserDefaults.globalDomain) ?? [:]
         domain["com.apple.keyboard.fnState"] = useFkeysAsStandardFunctionKeys
         UserDefaults.standard.setPersistentDomain(domain, forName: UserDefaults.globalDomain)
-      }
-    }
-  }
-
-  @Published var keyboardTypes: [LibKrbn.KeyboardType] = [] {
-    didSet {
-      if didSetEnabled {
-        keyboardTypes.forEach { keyboardType in
-          LibKrbn.GrabberClient.shared.setKeyboardType(keyboardType)
-        }
-
-        keyboardTypeChanged = true
       }
     }
   }

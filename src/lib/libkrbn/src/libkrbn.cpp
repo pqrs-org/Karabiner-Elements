@@ -821,16 +821,6 @@ void libkrbn_grabber_client_async_set_app_icon(int number) {
   }
 }
 
-void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_grabber_client()) {
-      c->async_set_keyboard_type(
-          pqrs::hid::country_code::value_t(country_code),
-          pqrs::osx::iokit_keyboard_type::value_t(keyboard_type));
-    }
-  }
-}
-
 void libkrbn_grabber_client_async_set_variable(const char* name, int value) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_grabber_client()) {

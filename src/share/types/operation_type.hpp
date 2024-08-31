@@ -16,7 +16,6 @@ enum class operation_type : uint8_t {
   connect_multitouch_extension,
   // any -> grabber
   set_app_icon,
-  set_keyboard_type,
   set_variables,
   // grabber -> console_user_server
   shell_command_execution,
@@ -36,7 +35,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::input_source_changed, "input_source_changed"},
         {operation_type::connect_multitouch_extension, "connect_multitouch_extension"},
         {operation_type::set_app_icon, "set_app_icon"},
-        {operation_type::set_keyboard_type, "set_keyboard_type"},
         {operation_type::set_variables, "set_variables"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::select_input_source, "select_input_source"},
