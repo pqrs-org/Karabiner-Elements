@@ -38,26 +38,7 @@ struct VirtualKeyboardView: View {
           // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
           ForEach($systemPreferences.keyboardTypes) { $keyboardType in
             HStack {
-              Button(
-                action: {
-                  settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
-                },
-                label: {
-                  HStack {
-                    HStack {
-                      if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
-                        Image(systemName: "circle.circle.fill")
-                      } else {
-                        Image(systemName: "circle")
-                      }
-                    }
-                    .foregroundColor(.accentColor)
-
-                    Text("Country code: \(keyboardType.countryCode)")
-                  }
-                }
-              )
-              .buttonStyle(.plain)
+              Text("Country code: \(keyboardType.countryCode)")
 
               Picker("", selection: $keyboardType.keyboardType) {
                 if keyboardType.keyboardType < 0 {
@@ -92,19 +73,6 @@ struct VirtualKeyboardView: View {
         }
         .padding(6.0)
         .background(Color(NSColor.textBackgroundColor))
-      }
-
-      GroupBox(label: Text("Flags")) {
-        VStack(alignment: .leading, spacing: 12.0) {
-          Toggle(isOn: $settings.virtualHIDKeyboardStrictFnArrows) {
-            Text(
-              "Change fn+arrows to home, end, page up, page down only when no other modifiers are pressed (Default: on)"
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-          }
-          .switchToggleStyle()
-        }
-        .padding(6.0)
       }
 
       GroupBox(label: Text("Mouse key")) {

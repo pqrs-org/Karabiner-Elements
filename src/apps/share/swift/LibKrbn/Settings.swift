@@ -100,10 +100,14 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device()
       )
 
-      virtualHIDKeyboardCountryCode = Int(
-        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code())
-      virtualHIDKeyboardStrictFnArrows =
-        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_strict_fn_arrows()
+      do {
+        var buffer = [Int8](repeating: 0, count: 32)
+        libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(
+          &buffer, buffer.count
+        )
+        virtualHIDKeyboardKeyboardTypeV2 = String(cString: buffer)
+      }
+
       virtualHIDKeyboardMouseKeyXYScale = Int(
         libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale())
       virtualHIDKeyboardIndicateStickyModifierKeysState =
@@ -548,22 +552,11 @@ extension LibKrbn {
     // Virtual Keybaord
     //
 
-    @Published var virtualHIDKeyboardCountryCode: Int = 0 {
+    @Published var virtualHIDKeyboardKeyboardTypeV2 = "" {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(
-            UInt8(virtualHIDKeyboardCountryCode)
-          )
-          save()
-        }
-      }
-    }
-
-    @Published var virtualHIDKeyboardStrictFnArrows = true {
-      didSet {
-        if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_strict_fn_arrows(
-            virtualHIDKeyboardStrictFnArrows
+          libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(
+            virtualHIDKeyboardKeyboardTypeV2.cString(using: .utf8)
           )
           save()
         }
