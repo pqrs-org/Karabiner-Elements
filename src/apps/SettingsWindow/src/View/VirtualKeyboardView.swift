@@ -7,7 +7,7 @@ struct VirtualKeyboardView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
-      GroupBox(label: Text("Keyboard type")) {
+      GroupBox(label: Text("Keyboard")) {
         VStack(alignment: .leading, spacing: 6.0) {
           Picker(
             selection: $settings.virtualHIDKeyboardKeyboardTypeV2, label: Text("Keyboard type:")
@@ -25,7 +25,7 @@ struct VirtualKeyboardView: View {
       GroupBox(label: Text("Mouse key")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Text("Tracking speed:")
+            Text("Cursor speed:")
 
             IntTextField(
               value: $settings.virtualHIDKeyboardMouseKeyXYScale,
