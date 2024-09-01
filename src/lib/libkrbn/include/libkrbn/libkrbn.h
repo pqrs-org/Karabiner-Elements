@@ -401,7 +401,6 @@ void libkrbn_register_system_preferences_updated_callback(libkrbn_system_prefere
 void libkrbn_unregister_system_preferences_updated_callback(libkrbn_system_preferences_updated callback);
 
 bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys(void);
-int32_t libkrbn_system_preferences_properties_get_keyboard_type(uint64_t country_code);
 
 //
 // libkrbn_connected_devices

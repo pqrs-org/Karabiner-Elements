@@ -20,12 +20,6 @@ void system_preferences_updated_callback(void) {
   std::cout << "  use_fkeys_as_standard_function_keys: "
             << libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys()
             << std::endl;
-
-  for (int country_code = 0; country_code < 8; ++country_code) {
-    std::cout << "  keyboard_type (country_code: " << country_code << "): "
-              << libkrbn_system_preferences_properties_get_keyboard_type(country_code)
-              << std::endl;
-  }
 }
 
 void manipulator_environment_json_file_updated_callback(void) {
