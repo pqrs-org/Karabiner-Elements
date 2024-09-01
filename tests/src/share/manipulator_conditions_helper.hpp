@@ -4,8 +4,6 @@
 #include "event_queue.hpp"
 #include "manipulator/manipulator_environment.hpp"
 #include "types/device_id.hpp"
-#include "types/product_id.hpp"
-#include "types/vendor_id.hpp"
 
 namespace krbn {
 namespace unit_testing {
