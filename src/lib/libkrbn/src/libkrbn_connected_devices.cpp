@@ -84,6 +84,7 @@ bool libkrbn_connected_devices_get_device_identifiers(size_t index, libkrbn_devi
         device_identifiers->is_keyboard = identifiers.get_is_keyboard();
         device_identifiers->is_pointing_device = identifiers.get_is_pointing_device();
         device_identifiers->is_game_pad = identifiers.get_is_game_pad();
+        device_identifiers->is_virtual_device = identifiers.get_is_virtual_device();
         return true;
       }
     }

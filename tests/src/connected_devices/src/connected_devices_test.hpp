@@ -23,6 +23,7 @@ void run_connected_devices_test(void) {
                                              true,  // is_keyboard
                                              false, // is_pointing_device
                                              false, // is_game_pad
+                                             false, // is_virtual_device
                                              ""     // device_address
         );
         auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
@@ -42,6 +43,7 @@ void run_connected_devices_test(void) {
                                              true,  // is_keyboard
                                              false, // is_pointing_device
                                              false, // is_game_pad
+                                             false, // is_virtual_device
                                              ""     // device_address
         );
         auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
@@ -61,6 +63,7 @@ void run_connected_devices_test(void) {
                                              false, // is_keyboard
                                              true,  // is_pointing_device
                                              false, // is_game_pad
+                                             false, // is_virtual_device
                                              ""     // device_address
         );
         auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
@@ -80,6 +83,7 @@ void run_connected_devices_test(void) {
                                              false, // is_keyboard
                                              true,  // is_pointing_device
                                              false, // is_game_pad
+                                             false, // is_virtual_device
                                              ""     // device_address
         );
         auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
@@ -100,6 +104,7 @@ void run_connected_devices_test(void) {
                                              false,              // is_keyboard
                                              true,               // is_pointing_device
                                              false,              // is_game_pad
+                                             false,              // is_virtual_device
                                              "ec-ba-73-21-e6-f4" // device_address (ignored)
         );
         auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
@@ -119,6 +124,7 @@ void run_connected_devices_test(void) {
                                              true,               // is_keyboard
                                              false,              // is_pointing_device
                                              false,              // is_game_pad
+                                             false,              // is_virtual_device
                                              "ec-ba-73-21-e6-f4" // device_address (ignored)
         );
         auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
@@ -139,6 +145,7 @@ void run_connected_devices_test(void) {
                                              true,               // is_keyboard
                                              false,              // is_pointing_device
                                              false,              // is_game_pad
+                                             false,              // is_virtual_device
                                              "ec-ba-73-21-e6-f5" // device_address
         );
         auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,
@@ -218,6 +225,7 @@ void run_connected_devices_test(void) {
                                            true,  // is_keyboard
                                            false, // is_pointing_device
                                            false, // is_game_pad
+                                           false, // is_virtual_device
                                            ""     // device_address
       );
       auto device = std::make_shared<krbn::connected_devices::details::device>(descriptions,

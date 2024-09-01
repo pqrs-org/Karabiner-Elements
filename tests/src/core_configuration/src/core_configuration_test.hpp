@@ -285,6 +285,7 @@ void run_core_configuration_test(void) {
                                                          true,  // is_keyboard
                                                          false, // is_pointing_device
                                                          false, // is_game_pad
+                                                         false, // is_virtual_device
                                                          ""     // device_address
                                                          ))
                  ->get_ignore() == true);
@@ -293,6 +294,7 @@ void run_core_configuration_test(void) {
                                                          true,  // is_keyboard
                                                          false, // is_pointing_device
                                                          false, // is_game_pad
+                                                         false, // is_virtual_device
                                                          ""     // device_address
                                                          ))
                  ->get_ignore() == false);
@@ -586,6 +588,7 @@ void run_core_configuration_test(void) {
                                                false,              // is_keyboard
                                                true,               // is_pointing_device
                                                false,              // is_game_pad
+                                               false,              // is_virtual_device
                                                "ec-ba-73-21-e6-f5" // device_address (ignored)
           );
           profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
@@ -605,6 +608,7 @@ void run_core_configuration_test(void) {
                                                false,              // is_keyboard
                                                true,               // is_pointing_device
                                                false,              // is_game_pad
+                                               false,              // is_virtual_device
                                                "ec-ba-73-21-e6-f5" // device_address
           );
           profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);

@@ -16,6 +16,7 @@ typedef struct {
   bool is_keyboard;
   bool is_pointing_device;
   bool is_game_pad;
+  bool is_virtual_device;
 } libkrbn_device_identifiers;
 
 void libkrbn_set_logging_level_off(void);

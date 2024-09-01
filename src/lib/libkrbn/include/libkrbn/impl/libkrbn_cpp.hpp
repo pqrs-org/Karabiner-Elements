@@ -20,6 +20,7 @@ public:
                                       device_identifiers->is_keyboard,
                                       device_identifiers->is_pointing_device,
                                       device_identifiers->is_game_pad,
+                                      device_identifiers->is_virtual_device,
                                       device_identifiers->device_address);
     }
 

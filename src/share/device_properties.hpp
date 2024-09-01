@@ -385,6 +385,7 @@ private:
         is_keyboard_.value_or(false),
         is_pointing_device_.value_or(false),
         is_game_pad_.value_or(false),
+        is_karabiner_virtual_hid_device_.value_or(false),
         device_address_.value_or(""));
   }
 

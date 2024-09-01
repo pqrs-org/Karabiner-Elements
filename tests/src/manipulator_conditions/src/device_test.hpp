@@ -328,6 +328,7 @@ void run_device_test(void) {
                                      true,  // is_keyboard
                                      false, // is_pointing_device
                                      false, // is_game_pad
+                                     false, // is_virtual_device
                                      ""     // device_address
                                      ));
         d->set_treat_as_built_in_keyboard(true);
@@ -341,6 +342,7 @@ void run_device_test(void) {
                                      true,  // is_keyboard
                                      false, // is_pointing_device
                                      false, // is_game_pad
+                                     false, // is_virtual_device
                                      ""     // device_address
                                      ));
         d->set_treat_as_built_in_keyboard(false);

@@ -16,6 +16,7 @@ void run_device_test(void) {
                                            true,  // is_keyboard
                                            false, // is_pointing_device
                                            false, // is_game_pad
+                                           false, // is_virtual_device
                                            ""     // device_address
       );
       krbn::connected_devices::details::device device(descriptions,
