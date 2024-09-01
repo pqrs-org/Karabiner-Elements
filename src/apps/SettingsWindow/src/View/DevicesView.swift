@@ -13,11 +13,11 @@ struct DevicesView: View {
             if let connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice) {
               VStack(alignment: .leading, spacing: 0.0) {
                 DeviceName(connectedDevice: connectedDevice)
-                  .if(connectedDevice.isKarabinerVirtualHidDevice) {
+                  .if(connectedDevice.isVirtualDevice) {
                     $0.foregroundColor(Color(NSColor.placeholderTextColor))
                   }
 
-                if !connectedDevice.isKarabinerVirtualHidDevice {
+                if !connectedDevice.isVirtualDevice {
                   VStack(alignment: .leading, spacing: 0.0) {
                     ModifyEventsSetting(connectedDeviceSetting: connectedDeviceSetting)
 
@@ -42,7 +42,7 @@ struct DevicesView: View {
                   .stroke(
                     Color(NSColor.selectedControlColor),
                     lineWidth: settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents
-                      ?? false && !connectedDevice.isKarabinerVirtualHidDevice
+                      ?? false && !connectedDevice.isVirtualDevice
                       ? 3 : 0
                   )
                   .padding(2)

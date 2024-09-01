@@ -81,11 +81,11 @@ extension LibKrbn {
           isKeyboard: libkrbn_connected_devices_get_is_keyboard(i),
           isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(i),
           isGamePad: libkrbn_connected_devices_get_is_game_pad(i),
+          isVirtualDevice: libkrbn_connected_devices_get_is_virtual_device(i),
           isBuiltInKeyboard: libkrbn_connected_devices_get_is_built_in_keyboard(i),
           isBuiltInTrackpad: libkrbn_connected_devices_get_is_built_in_trackpad(i),
           isBuiltInTouchBar: libkrbn_connected_devices_get_is_built_in_touch_bar(i),
-          isAppleDevice: libkrbn_connected_devices_is_apple(i),
-          isKarabinerVirtualHidDevice: libkrbn_connected_devices_is_karabiner_virtual_hid_device(i)
+          isAppleDevice: libkrbn_connected_devices_is_apple(i)
         )
 
         newConnectedDevices.append(connectedDevice)

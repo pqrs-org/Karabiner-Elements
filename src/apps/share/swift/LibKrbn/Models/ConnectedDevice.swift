@@ -13,11 +13,11 @@ extension LibKrbn {
     let isKeyboard: Bool
     let isPointingDevice: Bool
     let isGamePad: Bool
+    let isVirtualDevice: Bool
     let isBuiltInKeyboard: Bool
     let isBuiltInTrackpad: Bool
     let isBuiltInTouchBar: Bool
     let isAppleDevice: Bool
-    let isKarabinerVirtualHidDevice: Bool
 
     let libkrbnDeviceIdentifiers: UnsafeMutablePointer<libkrbn_device_identifiers>
 
@@ -32,11 +32,11 @@ extension LibKrbn {
       isKeyboard: Bool,
       isPointingDevice: Bool,
       isGamePad: Bool,
+      isVirtualDevice: Bool,
       isBuiltInKeyboard: Bool,
       isBuiltInTrackpad: Bool,
       isBuiltInTouchBar: Bool,
-      isAppleDevice: Bool,
-      isKarabinerVirtualHidDevice: Bool
+      isAppleDevice: Bool
     ) {
       self.index = index
       self.manufacturerName = manufacturerName
@@ -48,11 +48,11 @@ extension LibKrbn {
       self.isKeyboard = isKeyboard
       self.isPointingDevice = isPointingDevice
       self.isGamePad = isGamePad
+      self.isVirtualDevice = isVirtualDevice
       self.isBuiltInKeyboard = isBuiltInKeyboard
       self.isBuiltInTrackpad = isBuiltInTrackpad
       self.isBuiltInTouchBar = isBuiltInTouchBar
       self.isAppleDevice = isAppleDevice
-      self.isKarabinerVirtualHidDevice = isKarabinerVirtualHidDevice
 
       libkrbnDeviceIdentifiers = UnsafeMutablePointer<libkrbn_device_identifiers>.allocate(
         capacity: 1)
@@ -70,6 +70,7 @@ extension LibKrbn {
       libkrbnDeviceIdentifiers.pointee.is_keyboard = isKeyboard
       libkrbnDeviceIdentifiers.pointee.is_pointing_device = isPointingDevice
       libkrbnDeviceIdentifiers.pointee.is_game_pad = isGamePad
+      libkrbnDeviceIdentifiers.pointee.is_virtual_device = isVirtualDevice
     }
 
     deinit {

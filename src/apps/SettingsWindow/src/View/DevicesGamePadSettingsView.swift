@@ -298,11 +298,11 @@ struct DevicesGamePadSettingsView_Previews: PreviewProvider {
     isKeyboard: false,
     isPointingDevice: false,
     isGamePad: true,
+    isVirtualDevice: false,
     isBuiltInKeyboard: false,
     isBuiltInTrackpad: false,
     isBuiltInTouchBar: false,
-    isAppleDevice: false,
-    isKarabinerVirtualHidDevice: false
+    isAppleDevice: false
   )
   @State static var connectedDeviceSetting = LibKrbn.ConnectedDeviceSetting(connectedDevice)
   @State static var showing = true

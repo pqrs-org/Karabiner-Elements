@@ -160,6 +160,16 @@ bool libkrbn_connected_devices_get_is_game_pad(size_t index) {
   return false;
 }
 
+bool libkrbn_connected_devices_get_is_virtual_device(size_t index) {
+  if (auto c = get_current_connected_devices()) {
+    const auto& devices = c->get_devices();
+    if (index < devices.size()) {
+      return devices[index]->get_identifiers().get_is_virtual_device();
+    }
+  }
+  return false;
+}
+
 bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
@@ -195,16 +205,6 @@ bool libkrbn_connected_devices_is_apple(size_t index) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
       return devices[index]->is_apple();
-    }
-  }
-  return 0;
-}
-
-bool libkrbn_connected_devices_is_karabiner_virtual_hid_device(size_t index) {
-  if (auto c = get_current_connected_devices()) {
-    const auto& devices = c->get_devices();
-    if (index < devices.size()) {
-      return devices[index]->is_karabiner_virtual_hid_device();
     }
   }
   return 0;
