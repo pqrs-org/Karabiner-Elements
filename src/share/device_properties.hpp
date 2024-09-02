@@ -76,7 +76,6 @@ public:
       //
       // {
       //     "device_id": 4294969283,
-      //     "is_karabiner_virtual_hid_device": false,
       //     "is_keyboard": true,
       //     "is_pointing_device": false,
       //     "location_id": 161,
@@ -85,7 +84,6 @@ public:
       // },
       // {
       //     "device_id": 4294969354,
-      //     "is_karabiner_virtual_hid_device": false,
       //     "is_keyboard": false,
       //     "is_pointing_device": true,
       //     "location_id": 161,
@@ -104,14 +102,6 @@ public:
         }
       }
     }
-
-    //
-    // Set is_karabiner_virtual_hid_device_
-    //
-
-    is_karabiner_virtual_hid_device_ = (manufacturer_ && product_)
-                                           ? iokit_utility::is_karabiner_virtual_hid_device(*manufacturer_, *product_)
-                                           : false;
 
     update_device_identifiers();
   }
@@ -162,9 +152,6 @@ public:
     }
     if (is_built_in_touch_bar_) {
       json["is_built_in_touch_bar"] = *is_built_in_touch_bar_;
-    }
-    if (is_karabiner_virtual_hid_device_) {
-      json["is_karabiner_virtual_hid_device"] = *is_karabiner_virtual_hid_device_;
     }
 
     return json;
@@ -296,10 +283,6 @@ public:
     return is_built_in_touch_bar_;
   }
 
-  std::optional<bool> get_is_karabiner_virtual_hid_device(void) const {
-    return is_karabiner_virtual_hid_device_;
-  }
-
   const device_identifiers& get_device_identifiers(void) const {
     return device_identifiers_;
   }
@@ -379,13 +362,17 @@ public:
 
 private:
   void update_device_identifiers(void) {
+    bool is_virtual_device = (manufacturer_ && product_)
+                                 ? iokit_utility::is_karabiner_virtual_hid_device(*manufacturer_, *product_)
+                                 : false;
+
     device_identifiers_ = device_identifiers(
         vendor_id_.value_or(pqrs::hid::vendor_id::value_t(0)),
         product_id_.value_or(pqrs::hid::product_id::value_t(0)),
         is_keyboard_.value_or(false),
         is_pointing_device_.value_or(false),
         is_game_pad_.value_or(false),
-        is_karabiner_virtual_hid_device_.value_or(false),
+        is_virtual_device,
         device_address_.value_or(""));
   }
 
@@ -404,7 +391,6 @@ private:
   std::optional<bool> is_built_in_keyboard_;
   std::optional<bool> is_built_in_pointing_device_;
   std::optional<bool> is_built_in_touch_bar_;
-  std::optional<bool> is_karabiner_virtual_hid_device_;
   device_identifiers device_identifiers_;
 };
 

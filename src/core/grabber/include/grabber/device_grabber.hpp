@@ -295,7 +295,7 @@ public:
 
           auto device_properties = it->second->get_device_properties();
           if (device_properties.get_is_keyboard().value_or(false) &&
-              device_properties.get_is_karabiner_virtual_hid_device().value_or(false)) {
+              device_properties.get_device_identifiers().get_is_virtual_device()) {
             virtual_hid_device_service_client_->async_stop();
             async_ungrab_devices();
 
@@ -646,7 +646,7 @@ private:
   // This method is executed in the shared dispatcher thread.
   void values_arrived(device_grabber_details::entry& entry,
                       std::shared_ptr<event_queue::queue> event_queue) {
-    if (entry.is_karabiner_virtual_hid_device()) {
+    if (entry.get_device_properties().get_device_identifiers().get_is_virtual_device()) {
       // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
       for (const auto& e : event_queue->get_entries()) {
         if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {

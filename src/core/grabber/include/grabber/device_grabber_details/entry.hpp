@@ -152,7 +152,7 @@ public:
   }
 
   void set_disabled(bool value) {
-    if (is_karabiner_virtual_hid_device()) {
+    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
       return;
     }
 
@@ -160,7 +160,7 @@ public:
   }
 
   bool is_disable_built_in_keyboard_if_exists(void) const {
-    if (is_karabiner_virtual_hid_device()) {
+    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
       return false;
     }
 
@@ -189,7 +189,7 @@ public:
   void async_start_queue_value_monitor(grabbable_state::state state) {
     auto options = kIOHIDOptionsTypeNone;
 
-    if (is_karabiner_virtual_hid_device()) {
+    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
       options = kIOHIDOptionsTypeNone;
     } else {
       switch (state) {
@@ -227,17 +227,9 @@ public:
     return hid_queue_value_monitor_->seized();
   }
 
-  bool is_karabiner_virtual_hid_device(void) const {
-    if (auto v = device_properties_.get_is_karabiner_virtual_hid_device()) {
-      return *v;
-    }
-
-    return false;
-  }
-
   bool needs_to_observe_device(void) const {
     // We must monitor the {pqrs::hid::usage_page::leds, pqrs::hid::usage::led::caps_lock} event from the virtual HID keyboard to manage the caps lock LED on physical keyboards.
-    if (is_karabiner_virtual_hid_device()) {
+    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
       return true;
     }
 
@@ -246,7 +238,7 @@ public:
 
   // Return whether the device is a target for modifying input events.
   bool needs_to_seize_device(void) const {
-    if (is_karabiner_virtual_hid_device()) {
+    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
       return false;
     }
 
@@ -265,7 +257,7 @@ public:
 
 private:
   void control_caps_lock_led_state_manager(void) {
-    if (is_karabiner_virtual_hid_device()) {
+    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
       return;
     }
 
