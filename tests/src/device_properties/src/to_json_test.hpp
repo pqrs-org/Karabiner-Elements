@@ -1,3 +1,4 @@
+#include "../../share/ut_helper.hpp"
 #include "device_properties.hpp"
 #include <boost/ut.hpp>
 
@@ -9,43 +10,55 @@ void run_to_json_test(void) {
     using namespace std::string_literals;
 
     {
-      auto device_properties = krbn::device_properties()
-                                   .set(krbn::device_id(0))
-                                   .set_is_keyboard(true)
-                                   .set_is_pointing_device(false);
+      auto device_properties = krbn::device_properties(krbn::device_properties::initialization_parameters{
+          .is_keyboard = true,
+      });
 
-      nlohmann::json json;
-      json["device_id"] = 0;
-      json["is_keyboard"] = true;
-      json["is_pointing_device"] = false;
-      expect(device_properties.to_json() == json);
+      auto json = R"(
+
+{
+  "device_id": 0,
+  "device_identifiers": {
+    "is_keyboard": true
+  }
+}
+
+)"_json;
+
+      expect(device_properties.to_json() == json) << UT_SHOW_LINE;
     }
     {
-      auto device_properties = krbn::device_properties()
-                                   .set(krbn::device_id(98765))
-                                   .set(pqrs::hid::vendor_id::value_t(123))
-                                   .set(pqrs::hid::product_id::value_t(234))
-                                   .set(krbn::location_id(345))
-                                   .set_manufacturer(pqrs::hid::manufacturer_string::value_t("m"))
-                                   .set_product(pqrs::hid::product_string::value_t("p"))
-                                   .set_serial_number("s"s)
-                                   .set_transport("t"s)
-                                   .set_is_keyboard(false)
-                                   .set_is_pointing_device(true);
+      auto device_properties = krbn::device_properties(krbn::device_properties::initialization_parameters{
+          .device_id = krbn::device_id(98765),
+          .vendor_id = pqrs::hid::vendor_id::value_t(123),
+          .product_id = pqrs::hid::product_id::value_t(234),
+          .location_id = krbn::location_id(345),
+          .manufacturer = pqrs::hid::manufacturer_string::value_t("m"),
+          .product = pqrs::hid::product_string::value_t("p"),
+          .serial_number = "s"s,
+          .transport = "t"s,
+          .is_pointing_device = true,
+      });
 
-      nlohmann::json json;
-      json["device_id"] = 98765;
-      json["vendor_id"] = 123;
-      json["product_id"] = 234;
-      json["location_id"] = 345;
-      json["manufacturer"] = "m";
-      json["product"] = "p";
-      json["serial_number"] = "s";
-      json["transport"] = "t";
-      json["is_keyboard"] = false;
-      json["is_pointing_device"] = true;
+      auto json = R"(
 
-      expect(device_properties.to_json() == json);
+{
+  "device_id": 98765,
+  "device_identifiers": {
+    "vendor_id": 123,
+    "product_id": 234,
+    "is_pointing_device": true
+  },
+  "location_id": 345,
+  "manufacturer": "m",
+  "product": "p",
+  "serial_number": "s",
+  "transport": "t"
+}
+
+)"_json;
+
+      expect(device_properties.to_json() == json) << UT_SHOW_LINE;
     }
   };
 }

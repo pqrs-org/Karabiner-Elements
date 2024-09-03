@@ -9,58 +9,54 @@ void run_compare_test(void) {
     using namespace std::string_literals;
 
     krbn::device_properties device_properties0;
-    device_properties0
-        .set(krbn::device_id(0))
-        .set_is_keyboard(false)
-        .set_is_pointing_device(false);
 
-    auto device_properties1 = krbn::device_properties()
-                                  .set(krbn::device_id(98765))
-                                  .set(pqrs::hid::vendor_id::value_t(123))
-                                  .set(pqrs::hid::product_id::value_t(234))
-                                  .set(krbn::location_id(345))
-                                  .set_manufacturer(pqrs::hid::manufacturer_string::value_t("m1"))
-                                  .set_product(pqrs::hid::product_string::value_t("p1"))
-                                  .set_serial_number("s1"s)
-                                  .set_transport("t1"s)
-                                  .set_is_keyboard(true)
-                                  .set_is_pointing_device(true);
+    krbn::device_properties device_properties1(krbn::device_properties::initialization_parameters{
+        .device_id = krbn::device_id(98765),
+        .vendor_id = pqrs::hid::vendor_id::value_t(123),
+        .product_id = pqrs::hid::product_id::value_t(234),
+        .location_id = krbn::location_id(345),
+        .manufacturer = pqrs::hid::manufacturer_string::value_t("m1"),
+        .product = pqrs::hid::product_string::value_t("p1"),
+        .serial_number = "s1"s,
+        .transport = "t1"s,
+        .is_keyboard = true,
+        .is_pointing_device = true,
+    });
 
-    auto device_properties2 = krbn::device_properties()
-                                  .set(krbn::device_id(98765))
-                                  .set(pqrs::hid::vendor_id::value_t(123))
-                                  .set(pqrs::hid::product_id::value_t(234))
-                                  .set(krbn::location_id(345))
-                                  .set_manufacturer(pqrs::hid::manufacturer_string::value_t("m2"))
-                                  .set_product(pqrs::hid::product_string::value_t("p1"))
-                                  .set_serial_number("s1"s)
-                                  .set_transport("t1"s)
-                                  .set_is_keyboard(true)
-                                  .set_is_pointing_device(false);
+    krbn::device_properties device_properties2(krbn::device_properties::initialization_parameters{
+        .device_id = krbn::device_id(98765),
+        .vendor_id = pqrs::hid::vendor_id::value_t(123),
+        .product_id = pqrs::hid::product_id::value_t(234),
+        .location_id = krbn::location_id(345),
+        .manufacturer = pqrs::hid::manufacturer_string::value_t("m2"),
+        .product = pqrs::hid::product_string::value_t("p1"),
+        .serial_number = "s1"s,
+        .transport = "t1"s,
+        .is_keyboard = true,
+    });
 
-    auto device_properties3 = krbn::device_properties()
-                                  .set(krbn::device_id(98765))
-                                  .set(pqrs::hid::vendor_id::value_t(123))
-                                  .set(pqrs::hid::product_id::value_t(234))
-                                  .set(krbn::location_id(345))
-                                  .set_manufacturer(pqrs::hid::manufacturer_string::value_t("m1"))
-                                  .set_product(pqrs::hid::product_string::value_t("p2"))
-                                  .set_serial_number("s1"s)
-                                  .set_transport("t1"s)
-                                  .set_is_keyboard(false)
-                                  .set_is_pointing_device(true);
+    krbn::device_properties device_properties3(krbn::device_properties::initialization_parameters{
+        .device_id = krbn::device_id(98765),
+        .vendor_id = pqrs::hid::vendor_id::value_t(123),
+        .product_id = pqrs::hid::product_id::value_t(234),
+        .location_id = krbn::location_id(345),
+        .manufacturer = pqrs::hid::manufacturer_string::value_t("m1"),
+        .product = pqrs::hid::product_string::value_t("p2"),
+        .serial_number = "s1"s,
+        .transport = "t1"s,
+        .is_pointing_device = true,
+    });
 
-    auto device_properties4 = krbn::device_properties()
-                                  .set(krbn::device_id(98765))
-                                  .set(pqrs::hid::vendor_id::value_t(123))
-                                  .set(pqrs::hid::product_id::value_t(234))
-                                  .set(krbn::location_id(345))
-                                  .set_manufacturer(pqrs::hid::manufacturer_string::value_t("m2"))
-                                  .set_product(pqrs::hid::product_string::value_t("p2"))
-                                  .set_serial_number("s1"s)
-                                  .set_transport("t1"s)
-                                  .set_is_keyboard(false)
-                                  .set_is_pointing_device(false);
+    krbn::device_properties device_properties4(krbn::device_properties::initialization_parameters{
+        .device_id = krbn::device_id(98765),
+        .vendor_id = pqrs::hid::vendor_id::value_t(123),
+        .product_id = pqrs::hid::product_id::value_t(234),
+        .location_id = krbn::location_id(345),
+        .manufacturer = pqrs::hid::manufacturer_string::value_t("m2"),
+        .product = pqrs::hid::product_string::value_t("p2"),
+        .serial_number = "s1"s,
+        .transport = "t1"s,
+    });
 
     expect(device_properties0.compare(device_properties0) == false);
     expect(device_properties1.compare(device_properties1) == false);
