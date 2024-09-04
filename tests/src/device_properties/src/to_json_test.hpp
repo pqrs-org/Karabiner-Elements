@@ -11,14 +11,15 @@ void run_to_json_test(void) {
 
     {
       auto device_properties = krbn::device_properties(krbn::device_properties::initialization_parameters{
-          .is_keyboard = true,
-      });
+          .device_address = "ec-ba-73-21-e6-f4",
+          .is_keyboard = true});
 
       auto json = R"(
 
 {
   "device_id": 0,
   "device_identifiers": {
+    "device_address": "ec-ba-73-21-e6-f4",
     "is_keyboard": true
   }
 }

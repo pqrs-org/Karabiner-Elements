@@ -32,7 +32,9 @@ public:
         product_(parameters.product),
         serial_number_(parameters.serial_number),
         transport_(parameters.transport),
-        device_address_(parameters.device_address) {
+        is_built_in_keyboard_(false),
+        is_built_in_pointing_device_(false),
+        is_built_in_touch_bar_(false) {
     bool is_virtual_device = (manufacturer_ && product_)
                                  ? iokit_utility::is_karabiner_virtual_hid_device(*manufacturer_, *product_)
                                  : false;
@@ -44,7 +46,7 @@ public:
         parameters.is_pointing_device,
         parameters.is_game_pad,
         is_virtual_device,
-        device_address_.value_or(""));
+        parameters.device_address.value_or(""));
 
     //
     // Override manufacturer_ and product_
@@ -161,17 +163,15 @@ public:
     if (transport_) {
       json["transport"] = *transport_;
     }
-    if (device_address_) {
-      json["device_address"] = *device_address_;
-    }
+
     if (is_built_in_keyboard_) {
-      json["is_built_in_keyboard"] = *is_built_in_keyboard_;
+      json["is_built_in_keyboard"] = is_built_in_keyboard_;
     }
     if (is_built_in_pointing_device_) {
-      json["is_built_in_pointing_device"] = *is_built_in_pointing_device_;
+      json["is_built_in_pointing_device"] = is_built_in_pointing_device_;
     }
     if (is_built_in_touch_bar_) {
-      json["is_built_in_touch_bar"] = *is_built_in_touch_bar_;
+      json["is_built_in_touch_bar"] = is_built_in_touch_bar_;
     }
 
     return json;
@@ -205,19 +205,15 @@ public:
     return transport_;
   }
 
-  std::optional<std::string> get_device_address(void) const {
-    return device_address_;
-  }
-
-  std::optional<bool> get_is_built_in_keyboard(void) const {
+  bool get_is_built_in_keyboard(void) const {
     return is_built_in_keyboard_;
   }
 
-  std::optional<bool> get_is_built_in_pointing_device(void) const {
+  bool get_is_built_in_pointing_device(void) const {
     return is_built_in_pointing_device_;
   }
 
-  std::optional<bool> get_is_built_in_touch_bar(void) const {
+  bool get_is_built_in_touch_bar(void) const {
     return is_built_in_touch_bar_;
   }
 
@@ -286,8 +282,7 @@ public:
            manufacturer_ == other.manufacturer_ &&
            product_ == other.product_ &&
            serial_number_ == other.serial_number_ &&
-           transport_ == other.transport_ &&
-           device_address_ == other.device_address_;
+           transport_ == other.transport_;
   }
 
 private:
@@ -298,10 +293,9 @@ private:
   std::optional<pqrs::hid::product_string::value_t> product_;
   std::optional<std::string> serial_number_;
   std::optional<std::string> transport_;
-  std::optional<std::string> device_address_;
-  std::optional<bool> is_built_in_keyboard_;
-  std::optional<bool> is_built_in_pointing_device_;
-  std::optional<bool> is_built_in_touch_bar_;
+  bool is_built_in_keyboard_;
+  bool is_built_in_pointing_device_;
+  bool is_built_in_touch_bar_;
 };
 
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {
