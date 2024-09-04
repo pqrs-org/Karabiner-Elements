@@ -9,11 +9,11 @@ int main(void) {
     krbn::device_properties_manager manager;
 
     manager.insert(krbn::device_id(1),
-                   krbn::device_properties(krbn::device_id(1), nullptr));
+                   krbn::device_properties::make_device_properties(krbn::device_id(1), nullptr));
     manager.insert(krbn::device_id(2),
-                   krbn::device_properties(krbn::device_id(2), nullptr));
+                   krbn::device_properties::make_device_properties(krbn::device_id(2), nullptr));
     manager.insert(krbn::device_id(3),
-                   std::make_shared<krbn::device_properties>(krbn::device_id(3), nullptr));
+                   krbn::device_properties::make_device_properties(krbn::device_id(3), nullptr));
 
     // iokit_device_id(1)
 
