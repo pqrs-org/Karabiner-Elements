@@ -26,7 +26,7 @@ You can download previous versions of Karabiner-Elements from [here](https://kar
 
 ## Usage
 
-<https://karabiner-elements.pqrs.org/docs/>
+Documentation can be found here: <https://karabiner-elements.pqrs.org/docs/>
 
 ## Donations
 
