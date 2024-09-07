@@ -73,7 +73,7 @@ public:
   }
 
   void insert_device_properties(device_id device_id,
-                                const device_properties& device_properties) {
+                                gsl::not_null<std::shared_ptr<device_properties>> device_properties) {
     device_properties_manager_.insert(device_id, device_properties);
   }
 

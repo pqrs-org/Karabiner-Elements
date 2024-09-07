@@ -27,11 +27,11 @@ public:
 
     identifiers_ = device_properties.get_device_identifiers();
 
-    is_built_in_keyboard_ = device_properties.get_is_built_in_keyboard().value_or(false);
+    is_built_in_keyboard_ = device_properties.get_is_built_in_keyboard();
 
-    is_built_in_trackpad_ = device_properties.get_is_built_in_pointing_device().value_or(false);
+    is_built_in_trackpad_ = device_properties.get_is_built_in_pointing_device();
 
-    is_built_in_touch_bar_ = device_properties.get_is_built_in_touch_bar().value_or(false);
+    is_built_in_touch_bar_ = device_properties.get_is_built_in_touch_bar();
   }
 
   device(const nlohmann::json& json) {

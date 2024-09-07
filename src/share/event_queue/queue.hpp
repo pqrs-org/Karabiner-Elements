@@ -114,7 +114,7 @@ public:
     //
 
     if (event.get_type() == event::type::device_grabbed) {
-      if (auto v = event.get_if<device_properties>()) {
+      if (auto v = event.get_if<gsl::not_null<std::shared_ptr<device_properties>>>()) {
         manipulator_environment_.insert_device_properties(device_id, *v);
       }
     }
