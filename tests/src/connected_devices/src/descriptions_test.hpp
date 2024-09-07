@@ -61,11 +61,11 @@ void run_descriptions_test(void) {
       expect(descriptions.get_transport() == ""sv);
     }
     {
-      krbn::device_properties device_properties;
-      device_properties
-          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
-          .set_product(pqrs::hid::product_string::value_t("product"))
-          .set_transport("FIFO");
+      krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+          .manufacturer = pqrs::hid::manufacturer_string::value_t("manufacturer"),
+          .product = pqrs::hid::product_string::value_t("product"),
+          .transport = "FIFO",
+      });
       krbn::connected_devices::details::descriptions descriptions(device_properties);
 
       expect(descriptions.get_manufacturer() == pqrs::hid::manufacturer_string::value_t("manufacturer"));

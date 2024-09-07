@@ -115,14 +115,14 @@ void run_device_test(void) {
       expect(device.get_is_built_in_touch_bar() == false);
     }
     {
-      krbn::device_properties device_properties;
-      device_properties
-          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
-          .set_product(pqrs::hid::product_string::value_t("product"))
-          .set(pqrs::hid::vendor_id::value_t(1234))
-          .set(pqrs::hid::product_id::value_t(5678))
-          .set_device_address("ec-ba-73-21-e6-f4") // ignored
-          .set_is_keyboard(true);
+      krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+          .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+          .product_id = pqrs::hid::product_id::value_t(5678),
+          .manufacturer = pqrs::hid::manufacturer_string::value_t("manufacturer"),
+          .product = pqrs::hid::product_string::value_t("product"),
+          .device_address = "ec-ba-73-21-e6-f4", // ignored
+          .is_keyboard = true,
+      });
 
       {
         krbn::connected_devices::details::device device(device_properties);
@@ -140,14 +140,14 @@ void run_device_test(void) {
       }
     }
     {
-      krbn::device_properties device_properties;
-      device_properties
-          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
-          .set_product(pqrs::hid::product_string::value_t("product"))
-          .set(pqrs::hid::vendor_id::value_t(0))
-          .set(pqrs::hid::product_id::value_t(0))
-          .set_device_address("ec-ba-73-21-e6-f5")
-          .set_is_keyboard(true);
+      krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+          .vendor_id = pqrs::hid::vendor_id::value_t(0),
+          .product_id = pqrs::hid::product_id::value_t(0),
+          .manufacturer = pqrs::hid::manufacturer_string::value_t("manufacturer"),
+          .product = pqrs::hid::product_string::value_t("product"),
+          .device_address = "ec-ba-73-21-e6-f5",
+          .is_keyboard = true,
+      });
 
       {
         krbn::connected_devices::details::device device(device_properties);
@@ -167,33 +167,33 @@ void run_device_test(void) {
 
     // is_apple
     {
-      krbn::device_properties device_properties;
-      device_properties
-          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
-          .set_product(pqrs::hid::product_string::value_t("product"))
-          .set(pqrs::hid::vendor_id::value_t(1234))
-          .set(pqrs::hid::product_id::value_t(5678))
-          .set_is_keyboard(true);
+      krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+          .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+          .product_id = pqrs::hid::product_id::value_t(5678),
+          .manufacturer = pqrs::hid::manufacturer_string::value_t("manufacturer"),
+          .product = pqrs::hid::product_string::value_t("product"),
+          .is_keyboard = true,
+      });
       expect(false == krbn::connected_devices::details::device(device_properties).is_apple());
     }
     {
-      krbn::device_properties device_properties;
-      device_properties
-          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("manufacturer"))
-          .set_product(pqrs::hid::product_string::value_t("product"))
-          .set(pqrs::hid::vendor_id::value_t(1452))
-          .set(pqrs::hid::product_id::value_t(610))
-          .set_is_keyboard(true);
+      krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+          .vendor_id = pqrs::hid::vendor_id::value_t(1452),
+          .product_id = pqrs::hid::product_id::value_t(610),
+          .manufacturer = pqrs::hid::manufacturer_string::value_t("manufacturer"),
+          .product = pqrs::hid::product_string::value_t("product"),
+          .is_keyboard = true,
+      });
       expect(true == krbn::connected_devices::details::device(device_properties).is_apple());
     }
     {
-      krbn::device_properties device_properties;
-      device_properties
-          .set_manufacturer(pqrs::hid::manufacturer_string::value_t("Apple"))
-          .set_product(pqrs::hid::product_string::value_t("Apple Internal Keyboard / Trackpad"))
-          .set(pqrs::hid::vendor_id::value_t(0))
-          .set(pqrs::hid::product_id::value_t(0))
-          .set_is_keyboard(true);
+      krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+          .vendor_id = pqrs::hid::vendor_id::value_t(0),
+          .product_id = pqrs::hid::product_id::value_t(0),
+          .manufacturer = pqrs::hid::manufacturer_string::value_t("Apple"),
+          .product = pqrs::hid::product_string::value_t("Apple Internal Keyboard / Trackpad"),
+          .is_keyboard = true,
+      });
       expect(true == krbn::connected_devices::details::device(device_properties).is_apple());
     }
   };

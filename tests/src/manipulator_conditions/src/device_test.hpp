@@ -11,155 +11,89 @@ void run_device_test(void) {
     krbn::unit_testing::manipulator_conditions_helper manipulator_conditions_helper;
     auto& environment = manipulator_conditions_helper.get_manipulator_environment();
 
-    auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(8888),  // vendor_id
-        pqrs::hid::product_id::value_t(9999), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(8888),
+        .product_id = pqrs::hid::product_id::value_t(9999),
+        .is_keyboard = true,
+    });
 
-    auto device_id_1000_2000 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1000_2000 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .is_keyboard = true,
+    });
 
-    auto device_id_1000_2001 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2001), // product_id,
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1000_2001 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2001),
+        .is_keyboard = true,
+    });
 
-    auto device_id_1001_2000 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1001),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1001_2000 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1001),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .is_keyboard = true,
+    });
 
-    auto device_id_1001_2001 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1001),  // vendor_id
-        pqrs::hid::product_id::value_t(2001), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1001_2001 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1001),
+        .product_id = pqrs::hid::product_id::value_t(2001),
+        .is_keyboard = true,
+    });
 
-    auto device_id_1099_9999 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1099),  // vendor_id
-        pqrs::hid::product_id::value_t(9999), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1099_9999 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1099),
+        .product_id = pqrs::hid::product_id::value_t(9999),
+        .is_keyboard = true,
+    });
 
-    auto device_id_0000_0000 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(0),  // vendor_id
-        pqrs::hid::product_id::value_t(0), // product_id
-        std::nullopt,                      // location_id
-        true,                              // is_keyboard,
-        false,                             // is_pointing_device
-        false,                             // is_game_pad
-        "aa-bb-cc-dd-ee-ff"                // device_address
-    );
+    auto device_id_0000_0000 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(0),   // vendor_id
+        .product_id = pqrs::hid::product_id::value_t(0), // product_id
+        .is_keyboard = true,
+        .device_address = "aa-bb-cc-dd-ee-ff",
+    });
 
-    auto device_id_nullopt_nullopt = manipulator_conditions_helper.prepare_device(
-        std::nullopt, // vendor_id
-        std::nullopt, // product_id
-        std::nullopt, // location_id
-        true,         // is_keyboard,
-        false,        // is_pointing_device
-        false,        // is_game_pad
-        std::nullopt  // device_address
-    );
+    auto device_id_1000_2000_tt = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .is_keyboard = true,
+        .is_pointing_device = true,
+    });
 
-    auto device_id_1000_2000_tt = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        true,                                 // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1000_2000_tf = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .is_keyboard = true,
+    });
 
-    auto device_id_1000_2000_tf = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1000_2000_ft = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .is_pointing_device = true,
+    });
 
-    auto device_id_1000_2000_ft = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        false,                                // is_keyboard,
-        true,                                 // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1000_2000_ff = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+    });
 
-    auto device_id_1000_2000_ff = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        false,                                // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1000_2000_3000 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .location_id = krbn::location_id(3000),
+    });
 
-    auto device_id_1000_2000_3000 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        krbn::location_id(3000),              // location_id
-        std::nullopt,                         // is_keyboard,
-        std::nullopt,                         // is_pointing_device
-        std::nullopt,                         // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1000_2000_none = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+    });
 
-    auto device_id_1000_2000_none = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        std::nullopt,                         // is_keyboard,
-        std::nullopt,                         // is_pointing_device
-        std::nullopt,                         // is_game_pad
-        std::nullopt                          // device_address
-    );
-
-    auto device_id_1000_2000_4000 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        krbn::location_id(4000),              // location_id
-        std::nullopt,                         // is_keyboard,
-        std::nullopt,                         // is_pointing_device
-        std::nullopt,                         // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1000_2000_4000 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .location_id = krbn::location_id(4000),
+    });
 
     {
       actual_examples_helper helper("device_if.jsonc");
@@ -299,10 +233,6 @@ void run_device_test(void) {
         expect(condition.is_fulfilled(e, environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_nullopt_nullopt);
-        expect(condition.is_fulfilled(e, environment) == true);
-      }
-      {
         auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
         expect(condition.is_fulfilled(e, environment) == false);
       }
@@ -365,15 +295,11 @@ void run_device_test(void) {
         expect(condition.is_fulfilled(e, environment) == false);
       }
       {
-        auto d = manipulator_conditions_helper.prepare_device(
-            pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-            pqrs::hid::product_id::value_t(2000), // product_id,
-            std::nullopt,                         // location_id
-            false,                                // is_keyboard,
-            false,                                // is_pointing_device
-            true,                                 // is_game_pad
-            ""                                    // device_address
-        );
+        auto d = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+            .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+            .product_id = pqrs::hid::product_id::value_t(2000),
+            .is_game_pad = true,
+        });
 
         auto e = manipulator_conditions_helper.make_event_queue_entry(d);
         expect(condition.is_fulfilled(e, environment) == true);

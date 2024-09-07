@@ -112,8 +112,8 @@ void run_event_queue_utility_test(void) {
                                                        std::nullopt  // logical_min
                                                        ));
 
-    auto device_properties = krbn::device_properties(krbn::device_id(1),
-                                                     nullptr);
+    auto device_properties = krbn::device_properties::make_device_properties(krbn::device_id(1),
+                                                                             nullptr);
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
                                                         hid_values);
     assert(queue->get_entries().size() == 8);
@@ -218,8 +218,8 @@ void run_event_queue_utility_test(void) {
                                                        std::nullopt  // logical_min
                                                        ));
 
-    auto device_properties = krbn::device_properties(krbn::device_id(1),
-                                                     nullptr);
+    auto device_properties = krbn::device_properties::make_device_properties(krbn::device_id(1),
+                                                                             nullptr);
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
                                                         hid_values);
     assert(0_ul == queue->get_entries().size());
@@ -259,9 +259,10 @@ void run_event_queue_utility_test(void) {
                                                        std::nullopt  // logical_min
                                                        ));
 
-    auto device_properties = krbn::device_properties(krbn::device_id(1),
-                                                     nullptr);
-    device_properties.set_is_game_pad(true);
+    auto device_properties = std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+        .device_id = krbn::device_id(1),
+        .is_game_pad = true,
+    });
 
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
                                                         hid_values);

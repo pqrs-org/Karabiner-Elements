@@ -26,43 +26,16 @@ public:
     return core_configuration_;
   }
 
-  krbn::device_id prepare_device(std::optional<pqrs::hid::vendor_id::value_t> vendor_id,
-                                 std::optional<pqrs::hid::product_id::value_t> product_id,
-                                 std::optional<krbn::location_id> location_id,
-                                 std::optional<bool> is_keyboard,
-                                 std::optional<bool> is_pointing_device,
-                                 std::optional<bool> is_game_pad,
-                                 std::optional<std::string> device_address) {
+  krbn::device_id prepare_device(const krbn::device_properties::initialization_parameters& parameters) {
     ++last_device_id_;
-    krbn::device_id device_id(last_device_id_);
 
-    auto properties = krbn::device_properties().set(device_id);
-    if (vendor_id) {
-      properties.set(*vendor_id);
-    }
-    if (product_id) {
-      properties.set(*product_id);
-    }
-    if (location_id) {
-      properties.set(*location_id);
-    }
-    if (is_keyboard) {
-      properties.set_is_keyboard(*is_keyboard);
-    }
-    if (is_pointing_device) {
-      properties.set_is_pointing_device(*is_pointing_device);
-    }
-    if (is_game_pad) {
-      properties.set_is_game_pad(*is_game_pad);
-    }
-    if (device_address) {
-      properties.set_device_address(*device_address);
-    }
+    auto p = parameters;
+    p.device_id = device_id(last_device_id_);
 
-    manipulator_environment_.insert_device_properties(device_id,
-                                                      properties);
+    manipulator_environment_.insert_device_properties(p.device_id,
+                                                      std::make_shared<krbn::device_properties>(p));
 
-    return device_id;
+    return p.device_id;
   }
 
   krbn::event_queue::entry make_event_queue_entry(krbn::device_id device_id) const {
