@@ -38,10 +38,9 @@ public:
         std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration) : dispatcher_client(),
                                                                                                device_id_(device_id),
                                                                                                weak_core_configuration_(weak_core_configuration),
+                                                                                               device_properties_(device_properties::make_device_properties(device_id,
+                                                                                                                                                            device)),
                                                                                                disabled_(false) {
-    device_properties_ = device_properties(device_id,
-                                           device);
-
     probable_stuck_events_manager_ = std::make_shared<probable_stuck_events_manager>();
 
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
@@ -119,7 +118,7 @@ public:
     game_pad_stick_converter_->set_weak_core_configuration(weak_core_configuration);
   }
 
-  const device_properties& get_device_properties(void) const {
+  gsl::not_null<std::shared_ptr<device_properties>> get_device_properties(void) const {
     return device_properties_;
   }
 
@@ -152,7 +151,7 @@ public:
   }
 
   void set_disabled(bool value) {
-    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
+    if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return;
     }
 
@@ -160,18 +159,18 @@ public:
   }
 
   bool is_disable_built_in_keyboard_if_exists(void) const {
-    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
+    if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return false;
     }
 
-    if (device_properties_.get_is_built_in_keyboard() ||
-        device_properties_.get_is_built_in_pointing_device() ||
-        device_properties_.get_is_built_in_touch_bar()) {
+    if (device_properties_->get_is_built_in_keyboard() ||
+        device_properties_->get_is_built_in_pointing_device() ||
+        device_properties_->get_is_built_in_touch_bar()) {
       return false;
     }
 
     if (auto c = weak_core_configuration_.lock()) {
-      auto d = c->get_selected_profile().get_device(device_properties_.get_device_identifiers());
+      auto d = c->get_selected_profile().get_device(device_properties_->get_device_identifiers());
       return d->get_disable_built_in_keyboard_if_exists();
     }
 
@@ -180,7 +179,7 @@ public:
 
   bool determine_is_built_in_keyboard(void) const {
     if (auto c = weak_core_configuration_.lock()) {
-      return device_utility::determine_is_built_in_keyboard(*c, device_properties_);
+      return device_utility::determine_is_built_in_keyboard(*c, *device_properties_);
     }
 
     return false;
@@ -189,7 +188,7 @@ public:
   void async_start_queue_value_monitor(grabbable_state::state state) {
     auto options = kIOHIDOptionsTypeNone;
 
-    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
+    if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       options = kIOHIDOptionsTypeNone;
     } else {
       switch (state) {
@@ -229,7 +228,7 @@ public:
 
   bool needs_to_observe_device(void) const {
     // We must monitor the {pqrs::hid::usage_page::leds, pqrs::hid::usage::led::caps_lock} event from the virtual HID keyboard to manage the caps lock LED on physical keyboards.
-    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
+    if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return true;
     }
 
@@ -238,7 +237,7 @@ public:
 
   // Return whether the device is a target for modifying input events.
   bool needs_to_seize_device(void) const {
-    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
+    if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return false;
     }
 
@@ -248,7 +247,7 @@ public:
     }
 
     if (auto c = weak_core_configuration_.lock()) {
-      auto d = c->get_selected_profile().get_device(device_properties_.get_device_identifiers());
+      auto d = c->get_selected_profile().get_device(device_properties_->get_device_identifiers());
       return !(d->get_ignore());
     }
 
@@ -257,13 +256,13 @@ public:
 
 private:
   void control_caps_lock_led_state_manager(void) {
-    if (device_properties_.get_device_identifiers().get_is_virtual_device()) {
+    if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return;
     }
 
     if (caps_lock_led_state_manager_) {
       if (auto c = weak_core_configuration_.lock()) {
-        auto d = c->get_selected_profile().get_device(device_properties_.get_device_identifiers());
+        auto d = c->get_selected_profile().get_device(device_properties_->get_device_identifiers());
         if (d->get_manipulate_caps_lock_led()) {
           if (seized()) {
             caps_lock_led_state_manager_->async_start();
@@ -278,7 +277,7 @@ private:
 
   device_id device_id_;
   std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration_;
-  device_properties device_properties_;
+  gsl::not_null<std::shared_ptr<device_properties>> device_properties_;
   std::shared_ptr<probable_stuck_events_manager> probable_stuck_events_manager_;
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;

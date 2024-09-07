@@ -43,8 +43,8 @@ public:
     hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
       if (device_ptr) {
         auto device_id = krbn::make_device_id(registry_entry_id);
-        auto device_properties = std::make_shared<krbn::device_properties>(device_id,
-                                                                           *device_ptr);
+        auto device_properties = krbn::device_properties::make_device_properties(device_id,
+                                                                                 *device_ptr);
 
         auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                                                                                   pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
@@ -117,9 +117,9 @@ private:
             if (auto logical_min = v.get_logical_min()) {
               for (const auto& c : callback_manager_.get_callbacks()) {
                 c(type_safe::get(device_id),
-                  device_properties->get_is_keyboard().value_or(false),
-                  device_properties->get_is_pointing_device().value_or(false),
-                  device_properties->get_is_game_pad().value_or(false),
+                  device_properties->get_device_identifiers().get_is_keyboard(),
+                  device_properties->get_device_identifiers().get_is_pointing_device(),
+                  device_properties->get_device_identifiers().get_is_game_pad(),
                   type_safe::get(*usage_page),
                   type_safe::get(*usage),
                   *logical_max,
