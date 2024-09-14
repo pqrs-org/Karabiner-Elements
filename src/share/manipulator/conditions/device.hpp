@@ -155,7 +155,7 @@ private:
       if (product_id && product_id != device_properties.get_device_identifiers().get_product_id()) {
         return false;
       }
-      if (location_id && location_id != device_properties.get_location_id().value_or(krbn::location_id(0))) {
+      if (location_id && location_id != device_properties.get_location_id()) {
         return false;
       }
       if (device_address && device_address != device_properties.get_device_identifiers().get_device_address()) {

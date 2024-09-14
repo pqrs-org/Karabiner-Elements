@@ -22,9 +22,9 @@ public:
   }
 
   descriptions(const device_properties& device_properties)
-      : descriptions(device_properties.get_manufacturer().value_or(pqrs::hid::manufacturer_string::value_t("")),
-                     device_properties.get_product().value_or(pqrs::hid::product_string::value_t("")),
-                     device_properties.get_transport().value_or("")) {
+      : descriptions(device_properties.get_manufacturer(),
+                     device_properties.get_product(),
+                     device_properties.get_transport()) {
   }
 
   static descriptions make_from_json(const nlohmann::json& json) {

@@ -3,7 +3,6 @@
 #include "iokit_utility.hpp"
 #include "types.hpp"
 #include <gsl/gsl>
-#include <optional>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
@@ -12,14 +11,14 @@ class device_properties final {
 public:
   struct initialization_parameters final {
     device_id device_id = krbn::device_id(0);
-    std::optional<pqrs::hid::vendor_id::value_t> vendor_id;
-    std::optional<pqrs::hid::product_id::value_t> product_id;
-    std::optional<location_id> location_id;
-    std::optional<pqrs::hid::manufacturer_string::value_t> manufacturer;
-    std::optional<pqrs::hid::product_string::value_t> product;
-    std::optional<std::string> serial_number;
-    std::optional<std::string> transport;
-    std::optional<std::string> device_address;
+    pqrs::hid::vendor_id::value_t vendor_id = pqrs::hid::vendor_id::value_t(0);
+    pqrs::hid::product_id::value_t product_id = pqrs::hid::product_id::value_t(0);
+    location_id location_id = krbn::location_id(0);
+    pqrs::hid::manufacturer_string::value_t manufacturer = pqrs::hid::manufacturer_string::value_t("");
+    pqrs::hid::product_string::value_t product = pqrs::hid::product_string::value_t("");
+    std::string serial_number = "";
+    std::string transport = "";
+    std::string device_address = "";
     bool is_keyboard = false;
     bool is_pointing_device = false;
     bool is_game_pad = false;
@@ -34,31 +33,28 @@ public:
         transport_(parameters.transport),
         is_built_in_keyboard_(false),
         is_built_in_pointing_device_(false),
-        is_built_in_touch_bar_(false) {
-    bool is_virtual_device = (manufacturer_ && product_)
-                                 ? iokit_utility::is_karabiner_virtual_hid_device(*manufacturer_, *product_)
-                                 : false;
-
+        is_built_in_touch_bar_(false),
+        is_apple_(false) {
     device_identifiers_ = device_identifiers(
-        parameters.vendor_id.value_or(pqrs::hid::vendor_id::value_t(0)),
-        parameters.product_id.value_or(pqrs::hid::product_id::value_t(0)),
+        parameters.vendor_id,
+        parameters.product_id,
         parameters.is_keyboard,
         parameters.is_pointing_device,
         parameters.is_game_pad,
-        is_virtual_device,
-        parameters.device_address.value_or(""));
+        iokit_utility::is_karabiner_virtual_hid_device(manufacturer_, product_),
+        parameters.device_address);
 
     //
     // Override manufacturer_ and product_
     //
 
     // Touch Bar
-    if (parameters.vendor_id == pqrs::hid::vendor_id::value_t(1452) &&
-        parameters.product_id == pqrs::hid::product_id::value_t(34304)) {
-      if (!manufacturer_) {
+    if (parameters.vendor_id == pqrs::hid::vendor_id::value_t(0x05ac) &&
+        parameters.product_id == pqrs::hid::product_id::value_t(0x8600)) {
+      if (type_safe::get(manufacturer_).empty()) {
         manufacturer_ = pqrs::hid::manufacturer_string::value_t("Apple Inc.");
       }
-      if (!product_) {
+      if (type_safe::get(product_).empty()) {
         product_ = pqrs::hid::product_string::value_t("Apple Internal Touch Bar");
       }
     }
@@ -67,55 +63,61 @@ public:
     // Set is_built_in_keyboard_, is_built_in_pointing_device_, is_built_in_touch_bar_
     //
 
-    if (product_) {
-      if (*product_ == pqrs::hid::product_string::value_t("Apple Internal Touch Bar")) {
-        is_built_in_touch_bar_ = true;
-      } else if (*product_ == pqrs::hid::product_string::value_t("TouchBarUserDevice")) {
-        is_built_in_touch_bar_ = true;
-      } else {
-        if (type_safe::get(*product_).find("Apple Internal ") != std::string::npos) {
-          if (parameters.is_keyboard && !parameters.is_pointing_device) {
-            is_built_in_keyboard_ = true;
-          }
-          if (!parameters.is_keyboard && parameters.is_pointing_device) {
-            is_built_in_pointing_device_ = true;
-          }
+    if (product_ == pqrs::hid::product_string::value_t("Apple Internal Touch Bar")) {
+      is_built_in_touch_bar_ = true;
+    } else if (product_ == pqrs::hid::product_string::value_t("TouchBarUserDevice")) {
+      is_built_in_touch_bar_ = true;
+    } else {
+      if (type_safe::get(product_).find("Apple Internal ") != std::string::npos) {
+        if (parameters.is_keyboard && !parameters.is_pointing_device) {
+          is_built_in_keyboard_ = true;
+        }
+        if (!parameters.is_keyboard && parameters.is_pointing_device) {
+          is_built_in_pointing_device_ = true;
         }
       }
     }
 
-    if (transport_) {
-      // FIFO means the device connected via SPI (Serial Peripheral Interface)
-      //
-      // Note:
-      // SPI devices does not have vendor_id, product_id, product_name as follows.
-      // So, we have to use `transport` to determine whether the device is built-in.
-      //
-      // {
-      //     "device_id": 4294969283,
-      //     "is_keyboard": true,
-      //     "is_pointing_device": false,
-      //     "location_id": 161,
-      //     "manufacturer": "Apple",
-      //     "transport": "FIFO"
-      // },
-      // {
-      //     "device_id": 4294969354,
-      //     "is_keyboard": false,
-      //     "is_pointing_device": true,
-      //     "location_id": 161,
-      //     "manufacturer": "Apple",
-      //     "transport": "FIFO"
-      // },
+    // FIFO means the device connected via SPI (Serial Peripheral Interface)
+    //
+    // Note:
+    // SPI devices does not have vendor_id, product_id, product_name as follows.
+    // So, we have to use `transport` to determine whether the device is built-in.
+    //
+    // {
+    //     "device_id": 4294969283,
+    //     "is_keyboard": true,
+    //     "is_pointing_device": false,
+    //     "location_id": 161,
+    //     "manufacturer": "Apple",
+    //     "transport": "FIFO"
+    // },
+    // {
+    //     "device_id": 4294969354,
+    //     "is_keyboard": false,
+    //     "is_pointing_device": true,
+    //     "location_id": 161,
+    //     "manufacturer": "Apple",
+    //     "transport": "FIFO"
+    // },
 
-      if (*transport_ == "FIFO") {
-        if (parameters.is_keyboard) {
-          is_built_in_keyboard_ = true;
-        }
-        if (parameters.is_pointing_device) {
-          is_built_in_pointing_device_ = true;
-        }
+    if (transport_ == "FIFO") {
+      if (parameters.is_keyboard) {
+        is_built_in_keyboard_ = true;
       }
+      if (parameters.is_pointing_device) {
+        is_built_in_pointing_device_ = true;
+      }
+    }
+
+    //
+    // Set is_apple
+    //
+
+    if (!device_identifiers_.get_is_virtual_device()) {
+      is_apple_ = parameters.vendor_id == pqrs::hid::vendor_id::value_t(0x05ac) ||
+                  parameters.vendor_id == pqrs::hid::vendor_id::value_t(0x004c) ||
+                  type_safe::get(product_).find("Apple Internal ") != std::string::npos;
     }
   }
 
@@ -128,14 +130,14 @@ public:
 
     return std::make_shared<device_properties>(initialization_parameters{
         .device_id = device_id,
-        .vendor_id = hid_device.find_vendor_id(),
-        .product_id = hid_device.find_product_id(),
-        .location_id = hid_device.find_location_id(),
-        .manufacturer = hid_device.find_manufacturer(),
-        .product = hid_device.find_product(),
-        .serial_number = hid_device.find_serial_number(),
-        .transport = hid_device.find_transport(),
-        .device_address = hid_device.find_device_address(),
+        .vendor_id = hid_device.find_vendor_id().value_or(pqrs::hid::vendor_id::value_t(0)),
+        .product_id = hid_device.find_product_id().value_or(pqrs::hid::product_id::value_t(0)),
+        .location_id = hid_device.find_location_id().value_or(location_id(0)),
+        .manufacturer = hid_device.find_manufacturer().value_or(pqrs::hid::manufacturer_string::value_t("")),
+        .product = hid_device.find_product().value_or(pqrs::hid::product_string::value_t("")),
+        .serial_number = hid_device.find_serial_number().value_or(""),
+        .transport = hid_device.find_transport().value_or(""),
+        .device_address = hid_device.find_device_address().value_or(""),
         .is_keyboard = iokit_utility::is_keyboard(hid_device),
         .is_pointing_device = iokit_utility::is_pointing_device(hid_device),
         .is_game_pad = iokit_utility::is_game_pad(hid_device),
@@ -148,20 +150,20 @@ public:
     json["device_id"] = type_safe::get(device_id_);
     json["device_identifiers"] = device_identifiers_;
 
-    if (location_id_) {
-      json["location_id"] = type_safe::get(*location_id_);
+    if (location_id_ != location_id(0)) {
+      json["location_id"] = type_safe::get(location_id_);
     }
-    if (manufacturer_) {
-      json["manufacturer"] = *manufacturer_;
+    if (!type_safe::get(manufacturer_).empty()) {
+      json["manufacturer"] = manufacturer_;
     }
-    if (product_) {
-      json["product"] = *product_;
+    if (!type_safe::get(product_).empty()) {
+      json["product"] = product_;
     }
-    if (serial_number_) {
-      json["serial_number"] = *serial_number_;
+    if (!serial_number_.empty()) {
+      json["serial_number"] = serial_number_;
     }
-    if (transport_) {
-      json["transport"] = *transport_;
+    if (!transport_.empty()) {
+      json["transport"] = transport_;
     }
 
     if (is_built_in_keyboard_) {
@@ -172,6 +174,9 @@ public:
     }
     if (is_built_in_touch_bar_) {
       json["is_built_in_touch_bar"] = is_built_in_touch_bar_;
+    }
+    if (is_apple_) {
+      json["is_apple"] = is_apple_;
     }
 
     return json;
@@ -185,23 +190,23 @@ public:
     return device_identifiers_;
   }
 
-  std::optional<location_id> get_location_id(void) const {
+  location_id get_location_id(void) const {
     return location_id_;
   }
 
-  std::optional<pqrs::hid::manufacturer_string::value_t> get_manufacturer(void) const {
+  const pqrs::hid::manufacturer_string::value_t& get_manufacturer(void) const {
     return manufacturer_;
   }
 
-  std::optional<pqrs::hid::product_string::value_t> get_product(void) const {
+  const pqrs::hid::product_string::value_t& get_product(void) const {
     return product_;
   }
 
-  std::optional<std::string> get_serial_number(void) const {
+  const std::string& get_serial_number(void) const {
     return serial_number_;
   }
 
-  std::optional<std::string> get_transport(void) const {
+  const std::string& get_transport(void) const {
     return transport_;
   }
 
@@ -217,11 +222,15 @@ public:
     return is_built_in_touch_bar_;
   }
 
+  bool get_is_apple(void) const {
+    return is_apple_;
+  }
+
   bool compare(const device_properties& other) const {
     // product
     {
-      auto p1 = product_.value_or(pqrs::hid::product_string::value_t(""));
-      auto p2 = other.product_.value_or(pqrs::hid::product_string::value_t(""));
+      const auto& p1 = product_;
+      const auto& p2 = other.product_;
       if (p1 != p2) {
         return type_safe::get(p1).compare(type_safe::get(p2)) < 0;
       }
@@ -229,8 +238,8 @@ public:
 
     // manufacturer
     {
-      auto m1 = manufacturer_.value_or(pqrs::hid::manufacturer_string::value_t(""));
-      auto m2 = other.manufacturer_.value_or(pqrs::hid::manufacturer_string::value_t(""));
+      const auto& m1 = manufacturer_;
+      const auto& m2 = other.manufacturer_;
       if (m1 != m2) {
         return type_safe::get(m1).compare(type_safe::get(m2)) < 0;
       }
@@ -288,14 +297,15 @@ public:
 private:
   device_id device_id_;
   device_identifiers device_identifiers_;
-  std::optional<location_id> location_id_;
-  std::optional<pqrs::hid::manufacturer_string::value_t> manufacturer_;
-  std::optional<pqrs::hid::product_string::value_t> product_;
-  std::optional<std::string> serial_number_;
-  std::optional<std::string> transport_;
+  location_id location_id_;
+  pqrs::hid::manufacturer_string::value_t manufacturer_;
+  pqrs::hid::product_string::value_t product_;
+  std::string serial_number_;
+  std::string transport_;
   bool is_built_in_keyboard_;
   bool is_built_in_pointing_device_;
   bool is_built_in_touch_bar_;
+  bool is_apple_;
 };
 
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {
