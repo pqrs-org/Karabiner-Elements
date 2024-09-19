@@ -144,6 +144,68 @@ public:
     });
   }
 
+  static gsl::not_null<std::shared_ptr<device_properties>> make_device_properties(const nlohmann::json& json) {
+    initialization_parameters parameters;
+
+    pqrs::json::requires_object(json, "json");
+
+    for (const auto& [k, v] : json.items()) {
+      if (k == "device_id") {
+        pqrs::json::requires_number(v, "`" + k + "`");
+        parameters.device_id = v.get<device_id>();
+
+      } else if (k == "vendor_id") {
+        pqrs::json::requires_number(v, "`" + k + "`");
+        parameters.vendor_id = v.get<pqrs::hid::vendor_id::value_t>();
+
+      } else if (k == "product_id") {
+        pqrs::json::requires_number(v, "`" + k + "`");
+        parameters.product_id = v.get<pqrs::hid::product_id::value_t>();
+
+      } else if (k == "location_id") {
+        pqrs::json::requires_number(v, "`" + k + "`");
+        parameters.location_id = v.get<location_id>();
+
+      } else if (k == "manufacturer") {
+        pqrs::json::requires_string(v, "`" + k + "`");
+        parameters.manufacturer = v.get<pqrs::hid::manufacturer_string::value_t>();
+
+      } else if (k == "product") {
+        pqrs::json::requires_string(v, "`" + k + "`");
+        parameters.product = v.get<pqrs::hid::product_string::value_t>();
+
+      } else if (k == "serial_number") {
+        pqrs::json::requires_string(v, "`" + k + "`");
+        parameters.serial_number = v.get<std::string>();
+
+      } else if (k == "transport") {
+        pqrs::json::requires_string(v, "`" + k + "`");
+        parameters.transport = v.get<std::string>();
+
+      } else if (k == "device_address") {
+        pqrs::json::requires_string(v, "`" + k + "`");
+        parameters.device_address = v.get<std::string>();
+
+      } else if (k == "is_keyboard") {
+        pqrs::json::requires_boolean(v, "`" + k + "`");
+        parameters.is_keyboard = v.get<bool>();
+
+      } else if (k == "is_pointing_device") {
+        pqrs::json::requires_boolean(v, "`" + k + "`");
+        parameters.is_pointing_device = v.get<bool>();
+
+      } else if (k == "is_game_pad") {
+        pqrs::json::requires_boolean(v, "`" + k + "`");
+        parameters.is_game_pad = v.get<bool>();
+
+      } else {
+        // Allow unknown key
+      }
+    }
+
+    return std::make_shared<device_properties>(parameters);
+  }
+
   nlohmann::json to_json(void) const {
     nlohmann::json json;
 
