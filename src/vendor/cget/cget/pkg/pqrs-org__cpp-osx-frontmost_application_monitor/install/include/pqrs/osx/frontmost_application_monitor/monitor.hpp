@@ -8,7 +8,6 @@
 
 #include "application.hpp"
 #include "impl/impl.h"
-#include "monitor_manager.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -23,58 +22,51 @@ public:
 
   // Methods
 
+private:
   monitor(const monitor&) = delete;
 
   monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
-    std::lock_guard<std::mutex> guard(global_monitor_manager_mutex_);
-
-    monitor_manager::get_global_monitor_manager()->insert(this);
+    pqrs_osx_frontmost_application_monitor_set_callback(static_cpp_callback);
   }
 
+public:
   virtual ~monitor(void) {
-    std::lock_guard<std::mutex> guard(global_monitor_manager_mutex_);
+    pqrs_osx_frontmost_application_monitor_unset_callback();
 
-    detach_from_dispatcher([this] {
-      stop();
-    });
-
-    monitor_manager::get_global_monitor_manager()->erase(this);
+    detach_from_dispatcher();
   }
 
-  void async_start(void) {
-    enqueue_to_dispatcher([this] {
-      pqrs_osx_frontmost_application_monitor_register(static_cpp_callback,
-                                                      this);
-    });
+  static void initialize_shared_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) {
+    std::lock_guard<std::mutex> guard(mutex_);
+
+    shared_monitor_ = std::shared_ptr<monitor>(new monitor(weak_dispatcher));
   }
 
-  void async_stop(void) {
-    enqueue_to_dispatcher([this] {
-      stop();
-    });
+  static void terminate_shared_monitor(void) {
+    std::lock_guard<std::mutex> guard(mutex_);
+
+    shared_monitor_ = nullptr;
+  }
+
+  // Return a weak_ptr instead of a shared_ptr to keep the use_count of shared_monitor_ as close to 1 as possible,
+  // ensuring that terminate_shared_monitor will properly release shared_monitor_.
+  static std::weak_ptr<monitor> get_shared_monitor(void) {
+    std::lock_guard<std::mutex> guard(mutex_);
+
+    return shared_monitor_;
+  }
+
+  void trigger(void) {
+    pqrs_osx_frontmost_application_monitor_trigger();
   }
 
 private:
-  void stop(void) {
-    enqueue_to_dispatcher([this] {
-      pqrs_osx_frontmost_application_monitor_unregister(static_cpp_callback,
-                                                        this);
-    });
-  }
-
   static void static_cpp_callback(const char* bundle_identifier,
-                                  const char* file_path,
-                                  void* context) {
-    std::lock_guard<std::mutex> guard(global_monitor_manager_mutex_);
-
-    auto m = reinterpret_cast<monitor*>(context);
+                                  const char* file_path) {
+    auto m = shared_monitor_;
     if (m) {
-      // `static_cpp_callback` may be called even after the monitor instance has been deleted,
-      // so we need to check whether monitor is still alive.
-      if (monitor_manager::get_global_monitor_manager()->contains(m)) {
-        m->cpp_callback(bundle_identifier,
-                        file_path);
-      }
+      m->cpp_callback(bundle_identifier,
+                      file_path);
     }
   }
 
@@ -93,7 +85,8 @@ private:
     });
   }
 
-  static inline std::mutex global_monitor_manager_mutex_;
+  static inline std::shared_ptr<monitor> shared_monitor_;
+  static inline std::mutex mutex_;
 };
 } // namespace frontmost_application_monitor
 } // namespace osx
