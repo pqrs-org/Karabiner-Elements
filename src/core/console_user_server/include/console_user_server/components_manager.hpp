@@ -236,24 +236,29 @@ private:
 
     system_preferences_monitor_->async_start(std::chrono::milliseconds(3000));
 
-    // frontmost_application_monitor_
+    // frontmost_application_monitor
+    //
+    // `frontmost_application_monitor` does not work properly in karabiner_grabber after fast user switching.
+    // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
 
-    frontmost_application_monitor_ = std::make_unique<pqrs::osx::frontmost_application_monitor::monitor>(weak_dispatcher_);
+    pqrs::osx::frontmost_application_monitor::monitor::initialize_shared_monitor(weak_dispatcher_);
 
-    frontmost_application_monitor_->frontmost_application_changed.connect([this](auto&& application_ptr) {
-      if (application_ptr) {
-        if (application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner.EventViewer" ||
-            application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner-EventViewer") {
-          return;
+    if (auto m = pqrs::osx::frontmost_application_monitor::monitor::get_shared_monitor().lock()) {
+      m->frontmost_application_changed.connect([this](auto&& application_ptr) {
+        if (application_ptr) {
+          if (application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner.EventViewer" ||
+              application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner-EventViewer") {
+            return;
+          }
+
+          if (grabber_client_) {
+            grabber_client_->async_frontmost_application_changed(application_ptr);
+          }
         }
+      });
 
-        if (grabber_client_) {
-          grabber_client_->async_frontmost_application_changed(application_ptr);
-        }
-      }
-    });
-
-    frontmost_application_monitor_->async_start();
+      m->trigger();
+    }
 
     // input_source_monitor_
 
@@ -289,7 +294,7 @@ private:
   void stop_child_components(void) {
     updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
-    frontmost_application_monitor_ = nullptr;
+    pqrs::osx::frontmost_application_monitor::monitor::terminate_shared_monitor();
     input_source_monitor_ = nullptr;
     input_source_selector_ = nullptr;
     software_function_handler_ = nullptr;
@@ -311,9 +316,6 @@ private:
   std::shared_ptr<configuration_monitor> configuration_monitor_;
   std::unique_ptr<updater_process_manager> updater_process_manager_;
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
-  // `frontmost_application_monitor` does not work properly in karabiner_grabber after fast user switching.
-  // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
-  std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> frontmost_application_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::unique_ptr<software_function_handler> software_function_handler_;
