@@ -1,6 +1,6 @@
 #pragma once
 
-#include "details/device.hpp"
+#include "device_properties.hpp"
 #include "json_utility.hpp"
 #include "json_writer.hpp"
 #include "logger.hpp"
@@ -61,7 +61,7 @@ public:
 
         if (json.is_array()) {
           for (const auto& j : json) {
-            devices_.push_back(std::make_shared<details::device>(j));
+            devices_.push_back(device_properties::make_device_properties(j));
           }
         }
 
@@ -85,15 +85,15 @@ public:
 
   bool is_loaded(void) const { return loaded_; }
 
-  const std::vector<gsl::not_null<std::shared_ptr<details::device>>>& get_devices(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<device_properties>>>& get_devices(void) const {
     return devices_;
   }
 
-  std::shared_ptr<details::device> find_device(const device_identifiers& identifiers) const {
+  std::shared_ptr<device_properties> find_device(const device_identifiers& identifiers) const {
     auto it = std::find_if(std::begin(devices_),
                            std::end(devices_),
                            [&](const auto& d) {
-                             return d->get_identifiers() == identifiers;
+                             return d->get_device_identifiers() == identifiers;
                            });
     if (it != std::end(devices_)) {
       return *it;
@@ -102,8 +102,8 @@ public:
     return nullptr;
   }
 
-  void push_back_device(gsl::not_null<std::shared_ptr<details::device>> device) {
-    if (find_device(device->get_identifiers())) {
+  void push_back_device(gsl::not_null<std::shared_ptr<device_properties>> device) {
+    if (find_device(device->get_device_identifiers())) {
       return;
     }
 
@@ -113,18 +113,18 @@ public:
               devices_.end(),
               [](const auto& a, const auto& b) {
                 auto a_name = fmt::format("{0} {1} {2}",
-                                          type_safe::get(a->get_descriptions().get_product()),
-                                          type_safe::get(a->get_descriptions().get_manufacturer()),
-                                          a->get_descriptions().get_transport());
-                auto a_kb = a->get_identifiers().get_is_keyboard();
-                auto a_pd = a->get_identifiers().get_is_pointing_device();
+                                          type_safe::get(a->get_product()),
+                                          type_safe::get(a->get_manufacturer()),
+                                          a->get_transport());
+                auto a_kb = a->get_device_identifiers().get_is_keyboard();
+                auto a_pd = a->get_device_identifiers().get_is_pointing_device();
 
                 auto b_name = fmt::format("{0} {1} {2}",
-                                          type_safe::get(b->get_descriptions().get_product()),
-                                          type_safe::get(b->get_descriptions().get_manufacturer()),
-                                          b->get_descriptions().get_transport());
-                auto b_kb = b->get_identifiers().get_is_keyboard();
-                auto b_pd = b->get_identifiers().get_is_pointing_device();
+                                          type_safe::get(b->get_product()),
+                                          type_safe::get(b->get_manufacturer()),
+                                          b->get_transport());
+                auto b_kb = b->get_device_identifiers().get_is_keyboard();
+                auto b_pd = b->get_device_identifiers().get_is_pointing_device();
 
                 if (a_name == b_name) {
                   if (a_kb == b_kb) {
@@ -154,7 +154,7 @@ public:
 private:
   bool loaded_;
 
-  std::vector<gsl::not_null<std::shared_ptr<details::device>>> devices_;
+  std::vector<gsl::not_null<std::shared_ptr<device_properties>>> devices_;
 };
 } // namespace connected_devices
 } // namespace krbn

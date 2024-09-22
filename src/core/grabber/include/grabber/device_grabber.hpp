@@ -943,8 +943,7 @@ private:
   void output_devices_json(void) const {
     connected_devices::connected_devices connected_devices;
     for (const auto& e : entries_) {
-      auto d = std::make_shared<connected_devices::details::device>(*(e.second->get_device_properties()));
-      connected_devices.push_back_device(d);
+      connected_devices.push_back_device(e.second->get_device_properties());
     }
 
     auto file_path = constants::get_devices_json_file_path();

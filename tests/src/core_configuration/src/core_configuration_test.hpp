@@ -928,13 +928,11 @@ void run_core_configuration_test(void) {
 
     krbn::connected_devices::connected_devices connected_devices;
 
-    connected_devices.push_back_device(std::make_shared<krbn::connected_devices::details::device>(
-        krbn::connected_devices::details::descriptions(),
-        profile.get_devices()[1]->get_identifiers(),
-        false, // is_built_in_keyboard
-        false, // is_built_in_pointing_device
-        false  // is_built_in_touch_bar
-        ));
+    connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+        .product_id = pqrs::hid::product_id::value_t(1001),
+        .is_keyboard = true,
+    }));
 
     // Note: product_id:1003 is not counted because it remains in its default settings.
     expect(2 == profile.not_connected_devices_count(connected_devices));

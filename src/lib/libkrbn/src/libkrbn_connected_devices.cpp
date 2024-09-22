@@ -19,9 +19,9 @@ size_t libkrbn_connected_devices_get_size(void) {
   return 0;
 }
 
-bool libkrbn_connected_devices_get_descriptions_manufacturer(size_t index,
-                                                             char* buffer,
-                                                             size_t length) {
+bool libkrbn_connected_devices_get_manufacturer(size_t index,
+                                                char* buffer,
+                                                size_t length) {
   if (buffer && length > 0) {
     buffer[0] = '\0';
   }
@@ -29,7 +29,7 @@ bool libkrbn_connected_devices_get_descriptions_manufacturer(size_t index,
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      strlcpy(buffer, type_safe::get(devices[index]->get_descriptions().get_manufacturer()).c_str(), length);
+      strlcpy(buffer, type_safe::get(devices[index]->get_manufacturer()).c_str(), length);
       return true;
     }
   }
@@ -37,9 +37,9 @@ bool libkrbn_connected_devices_get_descriptions_manufacturer(size_t index,
   return false;
 }
 
-bool libkrbn_connected_devices_get_descriptions_product(size_t index,
-                                                        char* buffer,
-                                                        size_t length) {
+bool libkrbn_connected_devices_get_product(size_t index,
+                                           char* buffer,
+                                           size_t length) {
   if (buffer && length > 0) {
     buffer[0] = '\0';
   }
@@ -47,7 +47,7 @@ bool libkrbn_connected_devices_get_descriptions_product(size_t index,
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      strlcpy(buffer, type_safe::get(devices[index]->get_descriptions().get_product()).c_str(), length);
+      strlcpy(buffer, type_safe::get(devices[index]->get_product()).c_str(), length);
       return true;
     }
   }
@@ -55,9 +55,9 @@ bool libkrbn_connected_devices_get_descriptions_product(size_t index,
   return false;
 }
 
-bool libkrbn_connected_devices_get_descriptions_transport(size_t index,
-                                                          char* buffer,
-                                                          size_t length) {
+bool libkrbn_connected_devices_get_transport(size_t index,
+                                             char* buffer,
+                                             size_t length) {
   if (buffer && length > 0) {
     buffer[0] = '\0';
   }
@@ -65,7 +65,7 @@ bool libkrbn_connected_devices_get_descriptions_transport(size_t index,
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      strlcpy(buffer, devices[index]->get_descriptions().get_transport().c_str(), length);
+      strlcpy(buffer, devices[index]->get_transport().c_str(), length);
       return true;
     }
   }
@@ -78,7 +78,7 @@ bool libkrbn_connected_devices_get_device_identifiers(size_t index, libkrbn_devi
     if (device_identifiers) {
       const auto& devices = c->get_devices();
       if (index < devices.size()) {
-        auto identifiers = devices[index]->get_identifiers();
+        auto& identifiers = devices[index]->get_device_identifiers();
         device_identifiers->vendor_id = type_safe::get(identifiers.get_vendor_id());
         device_identifiers->product_id = type_safe::get(identifiers.get_product_id());
         device_identifiers->is_keyboard = identifiers.get_is_keyboard();
@@ -96,7 +96,7 @@ uint64_t libkrbn_connected_devices_get_vendor_id(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      return type_safe::get(devices[index]->get_identifiers().get_vendor_id());
+      return type_safe::get(devices[index]->get_device_identifiers().get_vendor_id());
     }
   }
   return 0;
@@ -106,7 +106,7 @@ uint64_t libkrbn_connected_devices_get_product_id(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      return type_safe::get(devices[index]->get_identifiers().get_product_id());
+      return type_safe::get(devices[index]->get_device_identifiers().get_product_id());
     }
   }
   return 0;
@@ -122,7 +122,7 @@ bool libkrbn_connected_devices_get_device_address(size_t index,
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      strlcpy(buffer, devices[index]->get_identifiers().get_device_address().c_str(), length);
+      strlcpy(buffer, devices[index]->get_device_identifiers().get_device_address().c_str(), length);
       return true;
     }
   }
@@ -134,7 +134,7 @@ bool libkrbn_connected_devices_get_is_keyboard(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      return devices[index]->get_identifiers().get_is_keyboard();
+      return devices[index]->get_device_identifiers().get_is_keyboard();
     }
   }
   return false;
@@ -144,7 +144,7 @@ bool libkrbn_connected_devices_get_is_pointing_device(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      return devices[index]->get_identifiers().get_is_pointing_device();
+      return devices[index]->get_device_identifiers().get_is_pointing_device();
     }
   }
   return false;
@@ -154,7 +154,7 @@ bool libkrbn_connected_devices_get_is_game_pad(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      return devices[index]->get_identifiers().get_is_game_pad();
+      return devices[index]->get_device_identifiers().get_is_game_pad();
     }
   }
   return false;
@@ -164,7 +164,7 @@ bool libkrbn_connected_devices_get_is_virtual_device(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      return devices[index]->get_identifiers().get_is_virtual_device();
+      return devices[index]->get_device_identifiers().get_is_virtual_device();
     }
   }
   return false;
@@ -180,31 +180,11 @@ bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index) {
   return 0;
 }
 
-bool libkrbn_connected_devices_get_is_built_in_trackpad(size_t index) {
-  if (auto c = get_current_connected_devices()) {
-    const auto& devices = c->get_devices();
-    if (index < devices.size()) {
-      return devices[index]->get_is_built_in_trackpad();
-    }
-  }
-  return 0;
-}
-
-bool libkrbn_connected_devices_get_is_built_in_touch_bar(size_t index) {
-  if (auto c = get_current_connected_devices()) {
-    const auto& devices = c->get_devices();
-    if (index < devices.size()) {
-      return devices[index]->get_is_built_in_touch_bar();
-    }
-  }
-  return 0;
-}
-
 bool libkrbn_connected_devices_is_apple(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
-      return devices[index]->is_apple();
+      return devices[index]->get_is_apple();
     }
   }
   return 0;

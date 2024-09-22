@@ -148,7 +148,7 @@ public:
 
       // Run manipulators
 
-      auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([=] {
+      auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([this, connector] {
         connector->manipulate(now_);
       });
 
@@ -157,7 +157,7 @@ public:
       std::ifstream ifs(test["input_event_queue"].get<std::string>());
       expect(static_cast<bool>(ifs));
       for (const auto& j : json_utility::parse_jsonc(ifs)) {
-        enqueue_to_dispatcher([=, &pause_manipulation] {
+        enqueue_to_dispatcher([this, connector, event_queues, j, &pause_manipulation] {
           if (auto s = pqrs::json::find<std::string>(j, "action")) {
             if (*s == "invalidate_manipulators") {
               connector->invalidate_manipulators();

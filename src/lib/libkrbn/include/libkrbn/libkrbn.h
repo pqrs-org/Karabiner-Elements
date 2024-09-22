@@ -408,15 +408,15 @@ bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_ke
 //
 
 size_t libkrbn_connected_devices_get_size(void);
-bool libkrbn_connected_devices_get_descriptions_manufacturer(size_t index,
-                                                             char* buffer,
-                                                             size_t length);
-bool libkrbn_connected_devices_get_descriptions_product(size_t index,
-                                                        char* buffer,
-                                                        size_t length);
-bool libkrbn_connected_devices_get_descriptions_transport(size_t index,
-                                                          char* buffer,
-                                                          size_t length);
+bool libkrbn_connected_devices_get_manufacturer(size_t index,
+                                                char* buffer,
+                                                size_t length);
+bool libkrbn_connected_devices_get_product(size_t index,
+                                           char* buffer,
+                                           size_t length);
+bool libkrbn_connected_devices_get_transport(size_t index,
+                                             char* buffer,
+                                             size_t length);
 bool libkrbn_connected_devices_get_device_identifiers(size_t index,
                                                       libkrbn_device_identifiers* device_identifiers);
 uint64_t libkrbn_connected_devices_get_vendor_id(size_t index);
@@ -429,8 +429,6 @@ bool libkrbn_connected_devices_get_is_pointing_device(size_t index);
 bool libkrbn_connected_devices_get_is_game_pad(size_t index);
 bool libkrbn_connected_devices_get_is_virtual_device(size_t index);
 bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index);
-bool libkrbn_connected_devices_get_is_built_in_trackpad(size_t index);
-bool libkrbn_connected_devices_get_is_built_in_touch_bar(size_t index);
 bool libkrbn_connected_devices_is_apple(size_t index);
 
 // connected_devices_monitor
