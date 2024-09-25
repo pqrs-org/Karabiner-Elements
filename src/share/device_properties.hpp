@@ -154,13 +154,14 @@ public:
         pqrs::json::requires_number(v, "`" + k + "`");
         parameters.device_id = v.get<device_id>();
 
-      } else if (k == "vendor_id") {
-        pqrs::json::requires_number(v, "`" + k + "`");
-        parameters.vendor_id = v.get<pqrs::hid::vendor_id::value_t>();
-
-      } else if (k == "product_id") {
-        pqrs::json::requires_number(v, "`" + k + "`");
-        parameters.product_id = v.get<pqrs::hid::product_id::value_t>();
+      } else if (k == "device_identifiers") {
+        auto identifiers = v.get<krbn::device_identifiers>();
+        parameters.vendor_id = identifiers.get_vendor_id();
+        parameters.product_id = identifiers.get_product_id();
+        parameters.device_address = identifiers.get_device_address();
+        parameters.is_keyboard = identifiers.get_is_keyboard();
+        parameters.is_pointing_device = identifiers.get_is_pointing_device();
+        parameters.is_game_pad = identifiers.get_is_game_pad();
 
       } else if (k == "location_id") {
         pqrs::json::requires_number(v, "`" + k + "`");
@@ -181,22 +182,6 @@ public:
       } else if (k == "transport") {
         pqrs::json::requires_string(v, "`" + k + "`");
         parameters.transport = v.get<std::string>();
-
-      } else if (k == "device_address") {
-        pqrs::json::requires_string(v, "`" + k + "`");
-        parameters.device_address = v.get<std::string>();
-
-      } else if (k == "is_keyboard") {
-        pqrs::json::requires_boolean(v, "`" + k + "`");
-        parameters.is_keyboard = v.get<bool>();
-
-      } else if (k == "is_pointing_device") {
-        pqrs::json::requires_boolean(v, "`" + k + "`");
-        parameters.is_pointing_device = v.get<bool>();
-
-      } else if (k == "is_game_pad") {
-        pqrs::json::requires_boolean(v, "`" + k + "`");
-        parameters.is_game_pad = v.get<bool>();
 
       } else {
         // Allow unknown key
