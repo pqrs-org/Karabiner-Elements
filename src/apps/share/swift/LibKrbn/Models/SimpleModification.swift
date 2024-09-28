@@ -43,7 +43,7 @@ extension LibKrbn {
         withJSONObject: jsonObject,
         options: [.fragmentsAllowed, .sortedKeys, .withoutEscapingSlashes]
       ) {
-        return String(decoding: compactJsonData, as: UTF8.self)
+        return String(data: compactJsonData, encoding: .utf8)
       }
 
       return nil

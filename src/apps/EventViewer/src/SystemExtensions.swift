@@ -23,7 +23,7 @@ public class SystemExtensions: ObservableObject {
     command.waitUntilExit()
 
     if let data = try? pipe.fileHandleForReading.readToEnd() {
-      list = String(decoding: data, as: UTF8.self)
+      list = String(data: data, encoding: .utf8) ?? ""
     }
   }
 }
