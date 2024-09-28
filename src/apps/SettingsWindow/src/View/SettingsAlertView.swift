@@ -15,12 +15,17 @@ struct SettingsAlertView: View {
             )
             .font(.system(size: 24))
 
-            KeyboardTypeSelectorView()
+            GroupBox(label: Text("")) {
+              VStack(alignment: .leading, spacing: 6.0) {
+                KeyboardTypeSelectorView()
+              }
+              .padding(20.0)
+            }
           }
         }
       }
       .padding()
-      .frame(width: 850)
+      .frame(width: 650)
 
       SheetCloseButton {
         ContentViewStates.shared.showSettingsAlert = false
