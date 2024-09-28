@@ -48,11 +48,6 @@ public:
     grabber_client_->async_set_app_icon(number);
   }
 
-  void async_set_keyboard_type(pqrs::hid::country_code::value_t country_code,
-                               pqrs::osx::iokit_keyboard_type::value_t keyboard_type) const {
-    grabber_client_->async_set_keyboard_type(country_code, keyboard_type);
-  }
-
   void async_set_variable(const std::string& name, int value) const {
     auto json = nlohmann::json::object({
         {name, value},

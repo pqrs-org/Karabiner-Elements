@@ -8,7 +8,7 @@
 namespace krbn {
 namespace event_queue {
 namespace utility {
-static inline std::shared_ptr<queue> make_queue(const device_properties& device_properties,
+static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
                                                 const std::vector<pqrs::osx::iokit_hid_value>& hid_values) {
   auto result = std::make_shared<queue>();
 
@@ -31,7 +31,7 @@ static inline std::shared_ptr<queue> make_queue(const device_properties& device_
 
       event_queue::event event(pointing_motion);
 
-      result->emplace_back_entry(device_properties.get_device_id(),
+      result->emplace_back_entry(device_properties->get_device_id(),
                                  event_time_stamp(*pointing_motion_time_stamp),
                                  event,
                                  event_type::single,
@@ -54,17 +54,14 @@ static inline std::shared_ptr<queue> make_queue(const device_properties& device_
   // - generic_desktop::z
   // - generic_desktop::rz
   //
-  bool is_game_pad = false;
-  if (auto v = device_properties.get_is_game_pad()) {
-    is_game_pad = *v;
-  }
+  bool is_game_pad = device_properties->get_device_identifiers().get_is_game_pad();
 
   for (const auto& v : hid_values) {
     if (auto usage_page = v.get_usage_page()) {
       if (auto usage = v.get_usage()) {
         if (momentary_switch_event::target(*usage_page, *usage)) {
           event_queue::event event(momentary_switch_event(*usage_page, *usage));
-          result->emplace_back_entry(device_properties.get_device_id(),
+          result->emplace_back_entry(device_properties->get_device_id(),
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
                                      v.get_integer_value() ? event_type::key_down : event_type::key_up,
@@ -108,7 +105,7 @@ static inline std::shared_ptr<queue> make_queue(const device_properties& device_
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {
           auto event = event_queue::event::make_caps_lock_state_changed_event(v.get_integer_value());
-          result->emplace_back_entry(device_properties.get_device_id(),
+          result->emplace_back_entry(device_properties->get_device_id(),
                                      event_time_stamp(v.get_time_stamp()),
                                      event,
                                      event_type::single,
@@ -119,11 +116,11 @@ static inline std::shared_ptr<queue> make_queue(const device_properties& device_
           if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                             pqrs::hid::usage::generic_desktop::hat_switch)) {
             // Convert hat switch to dpad.
-            auto pairs = hat_switch_converter::get_global_hat_switch_converter()->to_dpad_events(device_properties.get_device_id(),
+            auto pairs = hat_switch_converter::get_global_hat_switch_converter()->to_dpad_events(device_properties->get_device_id(),
                                                                                                  v.get_integer_value());
             for (const auto& pair : pairs) {
               event_queue::event event(pair.first);
-              result->emplace_back_entry(device_properties.get_device_id(),
+              result->emplace_back_entry(device_properties->get_device_id(),
                                          event_time_stamp(v.get_time_stamp()),
                                          event,
                                          pair.second,

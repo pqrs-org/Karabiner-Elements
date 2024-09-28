@@ -157,9 +157,8 @@ private:
         }
 
         double xy_scale = 1.0;
-        if (auto c = oeq->get_manipulator_environment().get_core_configuration().lock()) {
-          xy_scale = static_cast<double>(c->get_selected_profile().get_virtual_hid_keyboard()->get_mouse_key_xy_scale()) / 100.0;
-        }
+        auto c = oeq->get_manipulator_environment().get_core_configuration();
+        xy_scale = static_cast<double>(c->get_selected_profile().get_virtual_hid_keyboard()->get_mouse_key_xy_scale()) / 100.0;
 
         pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
         report.buttons = oeq->get_pointing_button_manager().make_hid_report_buttons();

@@ -14,30 +14,22 @@ void run_device_exists_test(void) {
     krbn::unit_testing::manipulator_conditions_helper manipulator_conditions_helper;
     auto& environment = manipulator_conditions_helper.get_manipulator_environment();
 
-    auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(8888),  // vendor_id
-        pqrs::hid::product_id::value_t(9999), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(8888),
+        .product_id = pqrs::hid::product_id::value_t(9999),
+        .is_keyboard = true,
+    });
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
       expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
     }
 
-    manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .is_keyboard = true,
+    });
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
@@ -52,30 +44,22 @@ void run_device_exists_test(void) {
     krbn::unit_testing::manipulator_conditions_helper manipulator_conditions_helper;
     auto& environment = manipulator_conditions_helper.get_manipulator_environment();
 
-    auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(8888),  // vendor_id
-        pqrs::hid::product_id::value_t(9999), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_8888_9999 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(8888),
+        .product_id = pqrs::hid::product_id::value_t(9999),
+        .is_keyboard = true,
+    });
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
       expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
     }
 
-    manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1000),  // vendor_id
-        pqrs::hid::product_id::value_t(2000), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+        .product_id = pqrs::hid::product_id::value_t(2000),
+        .is_keyboard = true,
+    });
 
     {
       auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);

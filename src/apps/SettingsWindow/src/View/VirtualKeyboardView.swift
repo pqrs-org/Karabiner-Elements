@@ -2,107 +2,13 @@ import SwiftUI
 
 struct VirtualKeyboardView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var systemPreferences = SystemPreferences.shared
   @ObservedObject private var grabberClient = LibKrbn.GrabberClient.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
-      GroupBox(label: Text("Keyboard type")) {
+      GroupBox(label: Text("Keyboard")) {
         VStack(alignment: .leading, spacing: 6.0) {
-          HStack {
-            Spacer()
-
-            if !systemPreferences.keyboardTypeChanged {
-              VStack {
-                Label(
-                  "Log out will be required when you changed keyboard type (ANSI, ISO or JIS) from the drop-down list",
-                  systemImage: "lightbulb"
-                )
-              }
-              .padding()
-              .foregroundColor(Color.warningForeground)
-              .background(Color.warningBackground)
-            } else {
-              VStack {
-                Label(
-                  "Log out is required to apply keyboard type changes",
-                  systemImage: "lightbulb"
-                )
-              }
-              .padding()
-              .foregroundColor(Color.errorForeground)
-              .background(Color.errorBackground)
-            }
-          }
-
-          // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
-          ForEach($systemPreferences.keyboardTypes) { $keyboardType in
-            HStack {
-              Button(
-                action: {
-                  settings.virtualHIDKeyboardCountryCode = keyboardType.countryCode
-                },
-                label: {
-                  HStack {
-                    HStack {
-                      if settings.virtualHIDKeyboardCountryCode == keyboardType.countryCode {
-                        Image(systemName: "circle.circle.fill")
-                      } else {
-                        Image(systemName: "circle")
-                      }
-                    }
-                    .foregroundColor(.accentColor)
-
-                    Text("Country code: \(keyboardType.countryCode)")
-                  }
-                }
-              )
-              .buttonStyle(.plain)
-
-              Picker("", selection: $keyboardType.keyboardType) {
-                if keyboardType.keyboardType < 0 {
-                  Text("---").tag(-1)
-                }
-                Text("ANSI (North America, most of Asia and others)").tag(
-                  LibKrbn.KeyboardType.NamedType.ansi.rawValue)
-                Text("ISO (Europe, Latin America, Middle-East and others)").tag(
-                  LibKrbn.KeyboardType.NamedType.iso.rawValue)
-                Text("JIS (Japanese)").tag(LibKrbn.KeyboardType.NamedType.jis.rawValue)
-              }.disabled(!grabberClient.connected)
-
-              Spacer()
-            }
-            .padding(.vertical, 2.0)
-          }
-
-          HStack {
-            VStack(alignment: .leading, spacing: 0.0) {
-              Text("Note:")
-              Text(
-                "The keyboard type configurations (ANSI, ISO, JIS) are shared by all of this Mac users."
-              )
-              Text("The country code selection is saved for each user.")
-            }
-
-            Spacer()
-          }
-          .padding()
-          .foregroundColor(Color.warningForeground)
-          .background(Color.warningBackground)
-        }
-        .padding(6.0)
-        .background(Color(NSColor.textBackgroundColor))
-      }
-
-      GroupBox(label: Text("Flags")) {
-        VStack(alignment: .leading, spacing: 12.0) {
-          Toggle(isOn: $settings.virtualHIDKeyboardStrictFnArrows) {
-            Text(
-              "Change fn+arrows to home, end, page up, page down only when no other modifiers are pressed (Default: on)"
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-          }
-          .switchToggleStyle()
+          KeyboardTypeSelectorView()
         }
         .padding(6.0)
       }
@@ -110,7 +16,7 @@ struct VirtualKeyboardView: View {
       GroupBox(label: Text("Mouse key")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Text("Tracking speed:")
+            Text("Cursor speed:")
 
             IntTextField(
               value: $settings.virtualHIDKeyboardMouseKeyXYScale,

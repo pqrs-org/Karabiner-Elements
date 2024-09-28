@@ -7,29 +7,46 @@ void run_device_identifiers_test(void) {
 
   "device_identifiers"_test = [] {
     {
-      krbn::device_properties device_properties;
+      {
+        krbn::device_properties device_properties;
+        auto di = device_properties.get_device_identifiers();
+        expect(di.get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
+        expect(di.get_product_id() == pqrs::hid::product_id::value_t(0));
+        expect(di.get_is_keyboard() == false);
+        expect(di.get_is_pointing_device() == false);
+      }
 
-      auto di = device_properties.get_device_identifiers();
-      expect(di.get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
-      expect(di.get_product_id() == pqrs::hid::product_id::value_t(0));
-      expect(di.get_is_keyboard() == false);
-      expect(di.get_is_pointing_device() == false);
+      {
+        krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+            .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+        });
+        auto di = device_properties.get_device_identifiers();
+        expect(di.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      }
 
-      device_properties.set(pqrs::hid::vendor_id::value_t(1234));
-      di = device_properties.get_device_identifiers();
-      expect(di.get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      {
+        krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+            .product_id = pqrs::hid::product_id::value_t(5678),
+        });
+        auto di = device_properties.get_device_identifiers();
+        expect(di.get_product_id() == pqrs::hid::product_id::value_t(5678));
+      }
 
-      device_properties.set(pqrs::hid::product_id::value_t(5678));
-      di = device_properties.get_device_identifiers();
-      expect(di.get_product_id() == pqrs::hid::product_id::value_t(5678));
+      {
+        krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+            .is_keyboard = true,
+        });
+        auto di = device_properties.get_device_identifiers();
+        expect(di.get_is_keyboard() == true);
+      }
 
-      device_properties.set_is_keyboard(true);
-      di = device_properties.get_device_identifiers();
-      expect(di.get_is_keyboard() == true);
-
-      device_properties.set_is_pointing_device(true);
-      di = device_properties.get_device_identifiers();
-      expect(di.get_is_pointing_device() == true);
+      {
+        krbn::device_properties device_properties(krbn::device_properties::initialization_parameters{
+            .is_pointing_device = true,
+        });
+        auto di = device_properties.get_device_identifiers();
+        expect(di.get_is_pointing_device() == true);
+      }
     }
   };
 }

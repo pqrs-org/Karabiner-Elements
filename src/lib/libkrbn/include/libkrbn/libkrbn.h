@@ -16,6 +16,7 @@ typedef struct {
   bool is_keyboard;
   bool is_pointing_device;
   bool is_game_pad;
+  bool is_virtual_device;
 } libkrbn_device_identifiers;
 
 void libkrbn_set_logging_level_off(void);
@@ -193,11 +194,9 @@ void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(c
 
 // profile::virtual_hid_device
 
-uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code(void);
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(uint8_t value);
-
-bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_strict_fn_arrows(void);
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_strict_fn_arrows(bool value);
+void libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(char* buffer,
+                                                                                           size_t length);
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(const char* value);
 
 int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(void);
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(int value);
@@ -403,22 +402,21 @@ void libkrbn_register_system_preferences_updated_callback(libkrbn_system_prefere
 void libkrbn_unregister_system_preferences_updated_callback(libkrbn_system_preferences_updated callback);
 
 bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys(void);
-int32_t libkrbn_system_preferences_properties_get_keyboard_type(uint64_t country_code);
 
 //
 // libkrbn_connected_devices
 //
 
 size_t libkrbn_connected_devices_get_size(void);
-bool libkrbn_connected_devices_get_descriptions_manufacturer(size_t index,
-                                                             char* buffer,
-                                                             size_t length);
-bool libkrbn_connected_devices_get_descriptions_product(size_t index,
-                                                        char* buffer,
-                                                        size_t length);
-bool libkrbn_connected_devices_get_descriptions_transport(size_t index,
-                                                          char* buffer,
-                                                          size_t length);
+bool libkrbn_connected_devices_get_manufacturer(size_t index,
+                                                char* buffer,
+                                                size_t length);
+bool libkrbn_connected_devices_get_product(size_t index,
+                                           char* buffer,
+                                           size_t length);
+bool libkrbn_connected_devices_get_transport(size_t index,
+                                             char* buffer,
+                                             size_t length);
 bool libkrbn_connected_devices_get_device_identifiers(size_t index,
                                                       libkrbn_device_identifiers* device_identifiers);
 uint64_t libkrbn_connected_devices_get_vendor_id(size_t index);
@@ -429,11 +427,9 @@ bool libkrbn_connected_devices_get_device_address(size_t index,
 bool libkrbn_connected_devices_get_is_keyboard(size_t index);
 bool libkrbn_connected_devices_get_is_pointing_device(size_t index);
 bool libkrbn_connected_devices_get_is_game_pad(size_t index);
+bool libkrbn_connected_devices_get_is_virtual_device(size_t index);
 bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index);
-bool libkrbn_connected_devices_get_is_built_in_trackpad(size_t index);
-bool libkrbn_connected_devices_get_is_built_in_touch_bar(size_t index);
 bool libkrbn_connected_devices_is_apple(size_t index);
-bool libkrbn_connected_devices_is_karabiner_virtual_hid_device(size_t index);
 
 // connected_devices_monitor
 
@@ -554,7 +550,6 @@ libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void);
 
 void libkrbn_grabber_client_async_connect_multitouch_extension(void);
 void libkrbn_grabber_client_async_set_app_icon(int number);
-void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type);
 void libkrbn_grabber_client_async_set_variable(const char* name, int value);
 
 #ifdef __cplusplus

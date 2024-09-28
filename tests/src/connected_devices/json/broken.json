@@ -1,13 +1,12 @@
 [
     {
-        "descriptions": {
-            "manufacturer": "manufacturer1",
-            "product": "product1"
-        },
-        "identifiers": {
-            "vendor_id": 1234,
-            "product_id": 5678,
+        "device_id": 1,
+        "device_identifiers": {
             "is_keyboard": true,
-            "is_pointing_device": false
+            "product_id": 5678,
+            "vendor_id": 1234
         },
+        "manufacturer": "manufacturer1",
+        "product": "product1",
+        "transport": "USB"
 ]

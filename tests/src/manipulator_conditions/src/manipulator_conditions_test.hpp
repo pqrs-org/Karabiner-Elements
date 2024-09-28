@@ -111,24 +111,7 @@ void run_manipulator_conditions_test(void) {
     manipulator_environment.set_variable("value1", krbn::manipulator_environment_variable_value(100));
     manipulator_environment.set_variable("value2", krbn::manipulator_environment_variable_value(200));
 
-    pqrs::osx::system_preferences::properties system_preferences_properties;
-    system_preferences_properties.set_use_fkeys_as_standard_function_keys(true);
-    system_preferences_properties.set_scroll_direction_is_natural(false);
-    system_preferences_properties.set_keyboard_types(
-        std::map<pqrs::osx::system_preferences::keyboard_type_key,
-                 pqrs::osx::iokit_keyboard_type::value_t>({
-            {
-                pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
-                                                                 krbn::hid::product_id::karabiner_virtual_hid_keyboard,
-                                                                 pqrs::hid::country_code::value_t(0)),
-                pqrs::osx::iokit_keyboard_type::iso,
-            },
-        }));
-    manipulator_environment.set_system_preferences_properties(system_preferences_properties);
-
-    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>("json/core_configuration.json",
-                                                                                             geteuid(),
-                                                                                             krbn::core_configuration::error_handling::loose);
+    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
     manipulator_environment.set_core_configuration(core_configuration);
 
     krbn::async_file_writer::wait();
@@ -329,43 +312,19 @@ void run_manipulator_conditions_test(void) {
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_queue::state::original);
 
-    pqrs::osx::system_preferences::properties system_preferences_properties;
-    system_preferences_properties.set_use_fkeys_as_standard_function_keys(true);
-    system_preferences_properties.set_scroll_direction_is_natural(false);
-    system_preferences_properties.set_keyboard_types(
-        std::map<pqrs::osx::system_preferences::keyboard_type_key,
-                 pqrs::osx::iokit_keyboard_type::value_t>({
-            {
-                pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
-                                                                 krbn::hid::product_id::karabiner_virtual_hid_keyboard,
-                                                                 pqrs::hid::country_code::value_t(0)),
-                pqrs::osx::iokit_keyboard_type::ansi,
-            },
-            {
-                pqrs::osx::system_preferences::keyboard_type_key(krbn::hid::vendor_id::karabiner_virtual_hid_device,
-                                                                 krbn::hid::product_id::karabiner_virtual_hid_keyboard,
-                                                                 pqrs::hid::country_code::value_t(1)),
-                pqrs::osx::iokit_keyboard_type::iso,
-            },
-        }));
-    manipulator_environment.set_system_preferences_properties(system_preferences_properties);
-
-    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>("json/core_configuration.json",
-                                                                                             geteuid(),
-                                                                                             krbn::core_configuration::error_handling::loose);
+    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
     manipulator_environment.set_core_configuration(core_configuration);
 
     {
       actual_examples_helper helper("keyboard_type_if.json");
 
       // iso
-      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(1));
-      manipulator_environment.set_core_configuration(core_configuration);
+      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("iso");
       expect(helper.get_condition_manager().is_fulfilled(entry,
                                                          manipulator_environment) == true);
 
       // ansi
-      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(0));
+      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("ansi");
       manipulator_environment.set_core_configuration(core_configuration);
       expect(helper.get_condition_manager().is_fulfilled(entry,
                                                          manipulator_environment) == false);
@@ -374,13 +333,13 @@ void run_manipulator_conditions_test(void) {
       actual_examples_helper helper("keyboard_type_unless.json");
 
       // iso
-      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(1));
+      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("iso");
       manipulator_environment.set_core_configuration(core_configuration);
       expect(helper.get_condition_manager().is_fulfilled(entry,
                                                          manipulator_environment) == false);
 
       // ansi
-      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(0));
+      core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("ansi");
       manipulator_environment.set_core_configuration(core_configuration);
       expect(helper.get_condition_manager().is_fulfilled(entry,
                                                          manipulator_environment) == true);

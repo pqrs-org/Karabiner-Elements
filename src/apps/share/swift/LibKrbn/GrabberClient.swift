@@ -32,13 +32,5 @@ extension LibKrbn {
     public func setAppIcon(_ number: Int32) {
       libkrbn_grabber_client_async_set_app_icon(number)
     }
-
-    public func setKeyboardType(_ keyboardType: LibKrbn.KeyboardType) {
-      if keyboardType.keyboardType > 0 {
-        libkrbn_grabber_client_async_set_keyboard_type(
-          UInt64(keyboardType.countryCode),
-          UInt64(keyboardType.keyboardType))
-      }
-    }
   }
 }

@@ -10,26 +10,28 @@ public:
 
   libkrbn_frontmost_application_monitor(void)
       : dispatcher_client() {
-    monitor_ = std::make_unique<pqrs::osx::frontmost_application_monitor::monitor>(
+    pqrs::osx::frontmost_application_monitor::monitor::initialize_shared_monitor(
         pqrs::dispatcher::extra::get_shared_dispatcher());
 
-    monitor_->frontmost_application_changed.connect([this](auto&& application_ptr) {
-      application_ = application_ptr;
+    if (auto m = pqrs::osx::frontmost_application_monitor::monitor::get_shared_monitor().lock()) {
+      m->frontmost_application_changed.connect([this](auto&& application_ptr) {
+        application_ = application_ptr;
 
-      for (const auto& c : callback_manager_.get_callbacks()) {
-        c();
-      }
-    });
+        for (const auto& c : callback_manager_.get_callbacks()) {
+          c();
+        }
+      });
 
-    monitor_->async_start();
+      m->trigger();
+    }
 
     // Do not wait `changed` callback here.
   }
 
   ~libkrbn_frontmost_application_monitor(void) {
-    detach_from_dispatcher([this] {
-      monitor_ = nullptr;
-    });
+    pqrs::osx::frontmost_application_monitor::monitor::terminate_shared_monitor();
+
+    detach_from_dispatcher();
   }
 
   std::shared_ptr<pqrs::osx::frontmost_application_monitor::application> get_application(void) const {

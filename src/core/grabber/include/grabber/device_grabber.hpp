@@ -294,8 +294,8 @@ public:
           logger_unique_filter_.reset();
 
           auto device_properties = it->second->get_device_properties();
-          if (device_properties.get_is_keyboard().value_or(false) &&
-              device_properties.get_is_karabiner_virtual_hid_device().value_or(false)) {
+          if (device_properties->get_device_identifiers().get_is_keyboard() &&
+              device_properties->get_device_identifiers().get_is_virtual_device()) {
             virtual_hid_device_service_client_->async_stop();
             async_ungrab_devices();
 
@@ -646,7 +646,7 @@ private:
   // This method is executed in the shared dispatcher thread.
   void values_arrived(device_grabber_details::entry& entry,
                       std::shared_ptr<event_queue::queue> event_queue) {
-    if (entry.is_karabiner_virtual_hid_device()) {
+    if (entry.get_device_properties()->get_device_identifiers().get_is_virtual_device()) {
       // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
       for (const auto& e : event_queue->get_entries()) {
         if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
@@ -696,9 +696,9 @@ private:
     }
   }
 
-  void post_device_grabbed_event(const device_properties& device_properties) {
+  void post_device_grabbed_event(gsl::not_null<std::shared_ptr<device_properties>> device_properties) {
     auto event = event_queue::event::make_device_grabbed_event(device_properties);
-    event_queue::entry entry(device_properties.get_device_id(),
+    event_queue::entry entry(device_properties->get_device_id(),
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
@@ -870,8 +870,8 @@ private:
     for (const auto& e : entries_) {
       if (e.second->needs_to_seize_device()) {
         auto device_properties = e.second->get_device_properties();
-        if (device_properties.get_is_pointing_device().value_or(false) ||
-            device_properties.get_is_game_pad().value_or(false)) {
+        if (device_properties->get_device_identifiers().get_is_pointing_device() ||
+            device_properties->get_device_identifiers().get_is_game_pad()) {
           return true;
         }
       }
@@ -889,8 +889,26 @@ private:
   }
 
   void update_virtual_hid_keyboard(void) {
-    virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(
-        core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_country_code());
+    pqrs::karabiner::driverkit::virtual_hid_device_service::virtual_hid_keyboard_parameters parameters;
+
+    auto t = core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_iokit_keyboard_type();
+    if (t == pqrs::osx::iokit_keyboard_type::ansi) {
+      // Apple Aluminum USB Keyboard (A1243) (ANSI)
+      parameters.set_vendor_id(pqrs::hid::vendor_id::value_t(0x05ac));
+      parameters.set_product_id(pqrs::hid::product_id::value_t(0x024f));
+    } else if (t == pqrs::osx::iokit_keyboard_type::iso) {
+      // Apple Aluminum USB Keyboard (A1243) (ISO)
+      parameters.set_vendor_id(pqrs::hid::vendor_id::value_t(0x05ac));
+      parameters.set_product_id(pqrs::hid::product_id::value_t(0x0250));
+    } else if (t == pqrs::osx::iokit_keyboard_type::jis) {
+      // Apple Aluminum USB Keyboard (A1243) (JIS)
+      parameters.set_vendor_id(pqrs::hid::vendor_id::value_t(0x05ac));
+      parameters.set_product_id(pqrs::hid::product_id::value_t(0x0251));
+    } else {
+      logger::get_logger()->warn("unknown virtual_hid_keyboard keyboard_type: {0}", type_safe::get(t));
+    }
+
+    virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(parameters);
   }
 
   void update_virtual_hid_pointing(void) {
@@ -925,8 +943,7 @@ private:
   void output_devices_json(void) const {
     connected_devices::connected_devices connected_devices;
     for (const auto& e : entries_) {
-      auto d = std::make_shared<connected_devices::details::device>(e.second->get_device_properties());
-      connected_devices.push_back_device(d);
+      connected_devices.push_back_device(e.second->get_device_properties());
     }
 
     auto file_path = constants::get_devices_json_file_path();
@@ -936,7 +953,7 @@ private:
   void output_device_details_json(void) const {
     std::vector<device_properties> device_details;
     for (const auto& e : entries_) {
-      device_details.push_back(e.second->get_device_properties());
+      device_details.push_back(*(e.second->get_device_properties()));
     }
 
     std::sort(std::begin(device_details),

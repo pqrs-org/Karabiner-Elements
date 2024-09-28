@@ -84,10 +84,7 @@ void run_core_configuration_test(void) {
       expect(rules[2]->get_description() == "");
     }
     {
-      expect(configuration
-                 .get_selected_profile()
-                 .get_virtual_hid_keyboard()
-                 ->get_country_code() == pqrs::hid::country_code::value_t(99));
+      expect("jis"s == configuration.get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2());
     }
     {
       auto& actual = configuration.get_selected_profile().get_devices();
@@ -288,6 +285,7 @@ void run_core_configuration_test(void) {
                                                          true,  // is_keyboard
                                                          false, // is_pointing_device
                                                          false, // is_game_pad
+                                                         false, // is_virtual_device
                                                          ""     // device_address
                                                          ))
                  ->get_ignore() == true);
@@ -296,6 +294,7 @@ void run_core_configuration_test(void) {
                                                          true,  // is_keyboard
                                                          false, // is_pointing_device
                                                          false, // is_game_pad
+                                                         false, // is_virtual_device
                                                          ""     // device_address
                                                          ))
                  ->get_ignore() == false);
@@ -589,6 +588,7 @@ void run_core_configuration_test(void) {
                                                false,              // is_keyboard
                                                true,               // is_pointing_device
                                                false,              // is_game_pad
+                                               false,              // is_virtual_device
                                                "ec-ba-73-21-e6-f5" // device_address (ignored)
           );
           profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
@@ -608,6 +608,7 @@ void run_core_configuration_test(void) {
                                                false,              // is_keyboard
                                                true,               // is_pointing_device
                                                false,              // is_game_pad
+                                               false,              // is_virtual_device
                                                "ec-ba-73-21-e6-f5" // device_address
           );
           profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
@@ -818,7 +819,7 @@ void run_core_configuration_test(void) {
       profile.get_fn_function_keys()->replace_second(nlohmann::json{{"key_code", "not found"}}.dump(),
                                                      nlohmann::json{{"key_code", "do nothing"}}.dump());
 
-      profile.get_virtual_hid_keyboard()->set_country_code(pqrs::hid::country_code::value_t(20));
+      profile.get_virtual_hid_keyboard()->set_keyboard_type_v2("ansi");
       profile.get_virtual_hid_keyboard()->set_mouse_key_xy_scale(250);
 
       auto expected = R"(
@@ -855,7 +856,7 @@ void run_core_configuration_test(void) {
     }
   ],
   "virtual_hid_keyboard": {
-    "country_code": 20,
+    "keyboard_type_v2": "ansi",
     "mouse_key_xy_scale": 250
   }
 }
@@ -927,13 +928,11 @@ void run_core_configuration_test(void) {
 
     krbn::connected_devices::connected_devices connected_devices;
 
-    connected_devices.push_back_device(std::make_shared<krbn::connected_devices::details::device>(
-        krbn::connected_devices::details::descriptions(),
-        profile.get_devices()[1]->get_identifiers(),
-        false, // is_built_in_keyboard
-        false, // is_built_in_pointing_device
-        false  // is_built_in_touch_bar
-        ));
+    connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+        .product_id = pqrs::hid::product_id::value_t(1001),
+        .is_keyboard = true,
+    }));
 
     // Note: product_id:1003 is not counted because it remains in its default settings.
     expect(2 == profile.not_connected_devices_count(connected_devices));
@@ -1640,32 +1639,29 @@ void run_core_configuration_test(void) {
       auto json = nlohmann::json::object();
       krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      expect(pqrs::hid::country_code::value_t(0) == virtual_hid_keyboard.get_country_code());
-      expect(true == virtual_hid_keyboard.get_strict_fn_arrows());
+      expect(""s == virtual_hid_keyboard.get_keyboard_type_v2());
     }
 
     // load values from json
     {
       nlohmann::json json({
-          {"country_code", 10},
-          {"strict_fn_arrows", false},
+          {"keyboard_type_v2", "ansi"},
       });
       krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      expect(pqrs::hid::country_code::value_t(10) == virtual_hid_keyboard.get_country_code());
-      expect(false == virtual_hid_keyboard.get_strict_fn_arrows());
+      expect("ansi"s == virtual_hid_keyboard.get_keyboard_type_v2());
     }
 
     // invalid values in json
     try {
       nlohmann::json json({
-          {"country_code", nlohmann::json::object()},
+          {"keyboard_type_v2", nlohmann::json::object()},
       });
       krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
                                                                                    krbn::core_configuration::error_handling::strict);
       expect(false);
     } catch (pqrs::json::unmarshal_error& ex) {
-      expect(std::string_view("`country_code` must be number, but is `{}`") == ex.what());
+      expect(std::string_view("`keyboard_type_v2` must be array of string, or string, but is `{}`") == ex.what());
     } catch (...) {
       expect(false);
     }
@@ -1684,19 +1680,17 @@ void run_core_configuration_test(void) {
       });
       krbn::core_configuration::details::virtual_hid_keyboard virtual_hid_keyboard(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      virtual_hid_keyboard.set_country_code(pqrs::hid::country_code::value_t(10));
-      virtual_hid_keyboard.set_strict_fn_arrows(false);
+      virtual_hid_keyboard.set_keyboard_type_v2("iso");
       virtual_hid_keyboard.set_mouse_key_xy_scale(50);
 
       auto expected = R"(
 
 {
-  "country_code": 10,
   "dummy": {
     "keep_me": true
   },
-  "mouse_key_xy_scale": 50,
-  "strict_fn_arrows": false
+  "keyboard_type_v2": "iso",
+  "mouse_key_xy_scale": 50
 }
 
       )"_json;

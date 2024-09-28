@@ -15,6 +15,7 @@ public:
         is_keyboard_(false),
         is_pointing_device_(false),
         is_game_pad_(false),
+        is_virtual_device_(false),
         device_address_("") {
   }
 
@@ -23,13 +24,15 @@ public:
                      bool is_keyboard,
                      bool is_pointing_device,
                      bool is_game_pad,
+                     bool is_virtual_device,
                      std::string device_address)
       : json_(nlohmann::json::object()),
         vendor_id_(vendor_id),
         product_id_(product_id),
         is_keyboard_(is_keyboard),
         is_pointing_device_(is_pointing_device),
-        is_game_pad_(is_game_pad) {
+        is_game_pad_(is_game_pad),
+        is_virtual_device_(is_virtual_device) {
     // Some bluetooth devices do not have a vendor_id or product_id.
     // Such devices use device_address to distinguish between devices.
     // The device_address will be changed when the hardware is replaced,
@@ -77,6 +80,11 @@ public:
 
         is_game_pad_ = v.get<bool>();
 
+      } else if (k == "is_virtual_device") {
+        pqrs::json::requires_boolean(v, "`" + k + "`");
+
+        is_virtual_device_ = v.get<bool>();
+
       } else {
         // Allow unknown key
       }
@@ -107,6 +115,10 @@ public:
     return is_game_pad_;
   }
 
+  bool get_is_virtual_device(void) const {
+    return is_virtual_device_;
+  }
+
   const std::string& get_device_address(void) const {
     return device_address_;
   }
@@ -117,16 +129,18 @@ public:
            !is_keyboard_ &&
            !is_pointing_device_ &&
            !is_game_pad_ &&
+           !is_virtual_device_ &&
            device_address_.empty();
   }
 
   bool operator==(const device_identifiers& other) const {
     return vendor_id_ == other.vendor_id_ &&
            product_id_ == other.product_id_ &&
-           device_address_ == other.device_address_ &&
            is_keyboard_ == other.is_keyboard_ &&
            is_pointing_device_ == other.is_pointing_device_ &&
-           is_game_pad_ == other.is_game_pad_;
+           is_game_pad_ == other.is_game_pad_ &&
+           is_virtual_device_ == other.is_virtual_device_ &&
+           device_address_ == other.device_address_;
   }
 
 private:
@@ -136,6 +150,7 @@ private:
   bool is_keyboard_;
   bool is_pointing_device_;
   bool is_game_pad_;
+  bool is_virtual_device_;
   // optional identifier
   std::string device_address_;
 };
@@ -186,6 +201,16 @@ inline void to_json(nlohmann::json& json, const device_identifiers& value) {
   {
     auto key = "is_game_pad";
     auto v = value.get_is_game_pad();
+    if (v != false) {
+      json[key] = v;
+    } else {
+      json.erase(key);
+    }
+  }
+
+  {
+    auto key = "is_virtual_device";
+    auto v = value.get_is_virtual_device();
     if (v != false) {
       json[key] = v;
     } else {

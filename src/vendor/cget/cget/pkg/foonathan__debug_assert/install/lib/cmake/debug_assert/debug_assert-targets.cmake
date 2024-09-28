@@ -7,7 +7,7 @@ if(CMAKE_VERSION VERSION_LESS "3.1.0")
    message(FATAL_ERROR "CMake >= 3.1.0 required")
 endif()
 cmake_policy(PUSH)
-cmake_policy(VERSION 3.1.0...3.27)
+cmake_policy(VERSION 3.1.0...3.28)
 #----------------------------------------------------------------
 # Generated CMake target import file.
 #----------------------------------------------------------------

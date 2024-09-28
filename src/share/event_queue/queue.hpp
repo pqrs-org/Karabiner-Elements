@@ -114,7 +114,7 @@ public:
     //
 
     if (event.get_type() == event::type::device_grabbed) {
-      if (auto v = event.get_if<device_properties>()) {
+      if (auto v = event.get_if<gsl::not_null<std::shared_ptr<device_properties>>>()) {
         manipulator_environment_.insert_device_properties(device_id, *v);
       }
     }
@@ -162,9 +162,6 @@ public:
           // Do nothing
           break;
       }
-    }
-    if (auto properties = event.get_if<pqrs::osx::system_preferences::properties>()) {
-      manipulator_environment_.set_system_preferences_properties(*properties);
     }
     if (auto state = event.get_if<virtual_hid_devices_state>()) {
       manipulator_environment_.set_virtual_hid_devices_state(*state);

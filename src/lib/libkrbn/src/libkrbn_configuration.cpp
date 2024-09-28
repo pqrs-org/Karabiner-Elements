@@ -565,32 +565,22 @@ void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(c
   strlcpy(buffer, json_string.c_str(), length);
 }
 
-uint8_t libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_country_code() {
+void libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(char* buffer,
+                                                                                           size_t length) {
   auto c = get_current_core_configuration();
-  return static_cast<uint8_t>(type_safe::get(c->get_selected_profile()
-                                                 .get_virtual_hid_keyboard()
-                                                 ->get_country_code()));
+  strlcpy(buffer,
+          c->get_selected_profile()
+              .get_virtual_hid_keyboard()
+              ->get_keyboard_type_v2()
+              .c_str(),
+          length);
 }
 
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_country_code(uint8_t value) {
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(const char* value) {
   auto c = get_current_core_configuration();
   c->get_selected_profile()
       .get_virtual_hid_keyboard()
-      ->set_country_code(pqrs::hid::country_code::value_t(value));
-}
-
-bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_strict_fn_arrows(void) {
-  auto c = get_current_core_configuration();
-  return c->get_selected_profile()
-      .get_virtual_hid_keyboard()
-      ->get_strict_fn_arrows();
-}
-
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_strict_fn_arrows(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_selected_profile()
-      .get_virtual_hid_keyboard()
-      ->set_strict_fn_arrows(value);
+      ->set_keyboard_type_v2(value);
 }
 
 int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(void) {

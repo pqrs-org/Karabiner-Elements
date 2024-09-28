@@ -16,14 +16,8 @@ public:
   }
 
   void insert(device_id key,
-              std::shared_ptr<device_properties> value) {
+              gsl::not_null<std::shared_ptr<device_properties>> value) {
     map_[key] = value;
-  }
-
-  void insert(device_id key,
-              const device_properties& value) {
-    insert(key,
-           std::make_shared<device_properties>(value));
   }
 
   void erase(device_id key) {
@@ -43,6 +37,7 @@ public:
   }
 
 private:
+  // std::unordered_map<T1, gsl::not_null<T2>> results in a build error because gsl::not_null<T2> is not hashable. Therefore, we will not use gsl::not_null here.
   std::unordered_map<device_id, std::shared_ptr<device_properties>> map_;
 };
 } // namespace krbn

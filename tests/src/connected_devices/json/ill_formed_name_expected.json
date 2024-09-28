@@ -1,17 +1,13 @@
 [
     {
-        "descriptions": {
-            "manufacturer": "test !",
-            "product": "test !",
-            "transport": "USB"
-        },
-        "identifiers": {
+        "device_id": 1,
+        "device_identifiers": {
             "is_keyboard": true,
             "product_id": 5678,
             "vendor_id": 1234
         },
-        "is_built_in_keyboard": true,
-        "is_built_in_touch_bar": false,
-        "is_built_in_trackpad": false
+        "manufacturer": "test !",
+        "product": "test !",
+        "transport": "USB"
     }
 ]

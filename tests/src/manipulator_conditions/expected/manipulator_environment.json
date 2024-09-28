@@ -8,20 +8,6 @@
         "language": "en"
     },
     "karabiner_machine_identifier": "krbn-identifier1",
-    "system_preferences_properties": {
-        "keyboard_types": [
-            [
-                {
-                    "country_code": 0,
-                    "product_id": 10203,
-                    "vendor_id": 5824
-                },
-                41
-            ]
-        ],
-        "scroll_direction_is_natural": false,
-        "use_fkeys_as_standard_function_keys": true
-    },
     "variables": {
         "value1": 100,
         "value2": 200
@@ -29,6 +15,5 @@
     "virtual_hid_devices_state": {
         "virtual_hid_keyboard_ready": false,
         "virtual_hid_pointing_ready": false
-    },
-    "virtual_hid_keyboard_keyboard_type": "iso"
+    }
 }

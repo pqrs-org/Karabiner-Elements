@@ -149,35 +149,34 @@ private:
       // Other properties are treated in the same way.
       //
 
-      if (vendor_id && vendor_id != device_properties.get_vendor_id().value_or(pqrs::hid::vendor_id::value_t(0))) {
+      if (vendor_id && vendor_id != device_properties.get_device_identifiers().get_vendor_id()) {
         return false;
       }
-      if (product_id && product_id != device_properties.get_product_id().value_or(pqrs::hid::product_id::value_t(0))) {
+      if (product_id && product_id != device_properties.get_device_identifiers().get_product_id()) {
         return false;
       }
-      if (location_id && location_id != device_properties.get_location_id().value_or(krbn::location_id(0))) {
+      if (location_id && location_id != device_properties.get_location_id()) {
         return false;
       }
-      if (device_address && device_address != device_properties.get_device_address().value_or("")) {
+      if (device_address && device_address != device_properties.get_device_identifiers().get_device_address()) {
         return false;
       }
-      if (is_keyboard && is_keyboard != device_properties.get_is_keyboard().value_or(false)) {
+      if (is_keyboard && is_keyboard != device_properties.get_device_identifiers().get_is_keyboard()) {
         return false;
       }
-      if (is_pointing_device && is_pointing_device != device_properties.get_is_pointing_device().value_or(false)) {
+      if (is_pointing_device && is_pointing_device != device_properties.get_device_identifiers().get_is_pointing_device()) {
         return false;
       }
-      if (is_game_pad && is_game_pad != device_properties.get_is_game_pad().value_or(false)) {
+      if (is_game_pad && is_game_pad != device_properties.get_device_identifiers().get_is_game_pad()) {
         return false;
       }
-      if (is_touch_bar && is_touch_bar != device_properties.get_is_built_in_touch_bar().value_or(false)) {
+      if (is_touch_bar && is_touch_bar != device_properties.get_is_built_in_touch_bar()) {
         return false;
       }
       if (is_built_in_keyboard) {
-        if (auto c = manipulator_environment.get_core_configuration().lock()) {
-          if (is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*c, device_properties)) {
-            return false;
-          }
+        auto c = manipulator_environment.get_core_configuration();
+        if (is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*c, device_properties)) {
+          return false;
         }
       }
 

@@ -251,7 +251,7 @@ public:
   // Methods
   //
 
-  game_pad_stick_converter(const device_properties& device_properties,
+  game_pad_stick_converter(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
                            std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration)
       : dispatcher_client(),
         device_properties_(device_properties),
@@ -343,7 +343,7 @@ public:
       return;
     }
 
-    auto device = c->get_selected_profile().get_device(device_properties_.get_device_identifiers());
+    auto device = c->get_selected_profile().get_device(device_properties_->get_device_identifiers());
     bool swap_sticks = device->get_game_pad_swap_sticks();
 
     for (const auto& v : hid_values) {
@@ -407,7 +407,7 @@ public:
 
 private:
   void update_configurations(const core_configuration::core_configuration& core_configuration) {
-    auto d = core_configuration.get_selected_profile().get_device(device_properties_.get_device_identifiers());
+    auto d = core_configuration.get_selected_profile().get_device(device_properties_->get_device_identifiers());
 
     xy_.set_deadzone(d->get_game_pad_xy_stick_deadzone());
     xy_.set_delta_magnitude_detection_threshold(d->get_game_pad_xy_stick_delta_magnitude_detection_threshold());
@@ -587,7 +587,7 @@ private:
 
     event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
     event_queue::event event(m);
-    event_queue::entry entry(device_properties_.get_device_id(),
+    event_queue::entry entry(device_properties_->get_device_id(),
                              event_time_stamp,
                              event,
                              event_type::single,
@@ -611,7 +611,7 @@ private:
 
     event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
     event_queue::event event(m);
-    event_queue::entry entry(device_properties_.get_device_id(),
+    event_queue::entry entry(device_properties_->get_device_id(),
                              event_time_stamp,
                              event,
                              event_type::single,
@@ -623,7 +623,7 @@ private:
     });
   }
 
-  device_properties device_properties_;
+  gsl::not_null<std::shared_ptr<device_properties>> device_properties_;
   std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration_;
 
   stick xy_;

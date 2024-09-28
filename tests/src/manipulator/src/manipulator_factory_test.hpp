@@ -102,35 +102,23 @@ void run_manipulator_factory_test(void) {
     krbn::core_configuration::details::device device(json,
                                                      krbn::core_configuration::error_handling::loose);
 
-    auto device_id_1234_5678_keyboard = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1234),  // vendor_id
-        pqrs::hid::product_id::value_t(5678), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1234_5678_keyboard = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+        .product_id = pqrs::hid::product_id::value_t(5678),
+        .is_keyboard = true, // is_keyboard,
+    });
 
-    auto device_id_1234_5678_mouse = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1234),  // vendor_id
-        pqrs::hid::product_id::value_t(5678), // product_id
-        std::nullopt,                         // location_id
-        false,                                // is_keyboard,
-        true,                                 // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1234_5678_mouse = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+        .product_id = pqrs::hid::product_id::value_t(5678),
+        .is_pointing_device = true,
+    });
 
-    auto device_id_1234_5000_keyboard = manipulator_conditions_helper.prepare_device(
-        pqrs::hid::vendor_id::value_t(1234),  // vendor_id
-        pqrs::hid::product_id::value_t(5000), // product_id
-        std::nullopt,                         // location_id
-        true,                                 // is_keyboard,
-        false,                                // is_pointing_device
-        false,                                // is_game_pad
-        ""                                    // device_address
-    );
+    auto device_id_1234_5000_keyboard = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+        .vendor_id = pqrs::hid::vendor_id::value_t(1234),
+        .product_id = pqrs::hid::product_id::value_t(5000),
+        .is_keyboard = true,
+    });
 
     auto c = krbn::manipulator::manipulator_factory::make_device_if_condition(device);
 

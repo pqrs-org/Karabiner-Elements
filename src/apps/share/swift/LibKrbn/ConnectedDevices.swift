@@ -42,11 +42,11 @@ extension LibKrbn {
         var productName = ""
         var deviceAddress = ""
 
-        if libkrbn_connected_devices_get_descriptions_transport(i, &buffer, buffer.count) {
+        if libkrbn_connected_devices_get_transport(i, &buffer, buffer.count) {
           transport = String(cString: buffer)
         }
 
-        if libkrbn_connected_devices_get_descriptions_manufacturer(i, &buffer, buffer.count) {
+        if libkrbn_connected_devices_get_manufacturer(i, &buffer, buffer.count) {
           manufacturerName = String(cString: buffer)
             .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
         }
@@ -54,7 +54,7 @@ extension LibKrbn {
           manufacturerName = "No manufacturer name"
         }
 
-        if libkrbn_connected_devices_get_descriptions_product(i, &buffer, buffer.count) {
+        if libkrbn_connected_devices_get_product(i, &buffer, buffer.count) {
           productName = String(cString: buffer)
             .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
         }
@@ -81,11 +81,9 @@ extension LibKrbn {
           isKeyboard: libkrbn_connected_devices_get_is_keyboard(i),
           isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(i),
           isGamePad: libkrbn_connected_devices_get_is_game_pad(i),
+          isVirtualDevice: libkrbn_connected_devices_get_is_virtual_device(i),
           isBuiltInKeyboard: libkrbn_connected_devices_get_is_built_in_keyboard(i),
-          isBuiltInTrackpad: libkrbn_connected_devices_get_is_built_in_trackpad(i),
-          isBuiltInTouchBar: libkrbn_connected_devices_get_is_built_in_touch_bar(i),
-          isAppleDevice: libkrbn_connected_devices_is_apple(i),
-          isKarabinerVirtualHidDevice: libkrbn_connected_devices_is_karabiner_virtual_hid_device(i)
+          isAppleDevice: libkrbn_connected_devices_is_apple(i)
         )
 
         newConnectedDevices.append(connectedDevice)

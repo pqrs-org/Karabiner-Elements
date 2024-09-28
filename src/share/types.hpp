@@ -18,11 +18,9 @@
 #include "types/notification_message.hpp"
 #include "types/operation_type.hpp"
 #include "types/pointing_motion.hpp"
-#include "types/product_id.hpp"
 #include "types/software_function.hpp"
 #include "types/sticky_modifier_type.hpp"
 #include "types/validity.hpp"
-#include "types/vendor_id.hpp"
 #include "types/virtual_hid_devices_state.hpp"
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>

@@ -29,6 +29,10 @@ struct ContentView: View {
         OverlayAlertView {
           DriverNotActivatedAlertView()
         }
+      } else if contentViewStates.showSettingsAlert {
+        OverlayAlertView {
+          SettingsAlertView()
+        }
       }
     }
     .frame(

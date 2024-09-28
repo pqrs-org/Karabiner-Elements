@@ -1,91 +1,67 @@
 [
     {
-        "descriptions": {
-            "manufacturer": "manufacturer1",
-            "product": "product1",
-            "transport": "USB"
-        },
-        "identifiers": {
+        "device_id": 1,
+        "device_identifiers": {
             "is_keyboard": true,
             "product_id": 5678,
             "vendor_id": 1234
         },
-        "is_built_in_keyboard": true,
-        "is_built_in_touch_bar": false,
-        "is_built_in_trackpad": false
+        "manufacturer": "manufacturer1",
+        "product": "product1",
+        "transport": "USB"
     },
     {
-        "descriptions": {
-            "manufacturer": "manufacturer2",
-            "product": "product2",
-            "transport": "USB"
-        },
-        "identifiers": {
+        "device_id": 4,
+        "device_identifiers": {
             "is_pointing_device": true,
             "product_id": 5679,
             "vendor_id": 1234
         },
-        "is_built_in_keyboard": false,
-        "is_built_in_touch_bar": false,
-        "is_built_in_trackpad": true
+        "manufacturer": "manufacturer2",
+        "product": "product2",
+        "transport": "USB"
     },
     {
-        "descriptions": {
-            "manufacturer": "manufacturer3",
-            "product": "product3",
-            "transport": "USB"
-        },
-        "identifiers": {
+        "device_id": 3,
+        "device_identifiers": {
             "is_pointing_device": true,
             "product_id": 6789,
             "vendor_id": 2345
         },
-        "is_built_in_keyboard": false,
-        "is_built_in_touch_bar": false,
-        "is_built_in_trackpad": false
+        "manufacturer": "manufacturer3",
+        "product": "product3",
+        "transport": "USB"
     },
     {
-        "descriptions": {
-            "manufacturer": "manufacturer1",
-            "product": "product4",
-            "transport": "Bluetooth"
-        },
-        "identifiers": {
+        "device_id": 6,
+        "device_identifiers": {
             "is_keyboard": true,
             "product_id": 678,
             "vendor_id": 123
         },
-        "is_built_in_keyboard": true,
-        "is_built_in_touch_bar": false,
-        "is_built_in_trackpad": false
+        "manufacturer": "manufacturer1",
+        "product": "product4",
+        "transport": "Bluetooth"
     },
     {
-        "descriptions": {
-            "manufacturer": "manufacturer1",
-            "product": "product4",
-            "transport": "Bluetooth"
-        },
-        "identifiers": {
+        "device_id": 5,
+        "device_identifiers": {
             "is_pointing_device": true,
             "product_id": 678,
             "vendor_id": 123
         },
-        "is_built_in_keyboard": false,
-        "is_built_in_touch_bar": false,
-        "is_built_in_trackpad": true
+        "manufacturer": "manufacturer1",
+        "product": "product4",
+        "transport": "Bluetooth"
     },
     {
-        "descriptions": {
-            "manufacturer": "manufacturer1",
-            "product": "product5",
-            "transport": "Bluetooth"
-        },
-        "identifiers": {
+        "device_id": 7,
+        "device_identifiers": {
             "device_address": "ec-ba-73-21-e6-f5",
             "is_keyboard": true
         },
-        "is_built_in_keyboard": false,
-        "is_built_in_touch_bar": true,
-        "is_built_in_trackpad": false
+        "manufacturer": "manufacturer1",
+        "product": "product5",
+        "transport": "Bluetooth"
     }
 ]

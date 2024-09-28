@@ -522,25 +522,6 @@ bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_ke
   return false;
 }
 
-int32_t libkrbn_system_preferences_properties_get_keyboard_type(uint64_t country_code) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto p = manager->get_current_system_preferences_properties()) {
-      auto&& keyboard_types = p->get_keyboard_types();
-
-      auto it = keyboard_types.find(
-          pqrs::osx::system_preferences::keyboard_type_key(
-              krbn::hid::vendor_id::karabiner_virtual_hid_device,
-              krbn::hid::product_id::karabiner_virtual_hid_keyboard,
-              pqrs::hid::country_code::value_t(country_code)));
-      if (it != std::end(keyboard_types)) {
-        return static_cast<int32_t>(type_safe::get(it->second));
-      }
-    }
-  }
-
-  return -1;
-}
-
 //
 // connected_devices_monitor
 //
@@ -817,16 +798,6 @@ void libkrbn_grabber_client_async_set_app_icon(int number) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_grabber_client()) {
       c->async_set_app_icon(number);
-    }
-  }
-}
-
-void libkrbn_grabber_client_async_set_keyboard_type(uint64_t country_code, uint64_t keyboard_type) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_grabber_client()) {
-      c->async_set_keyboard_type(
-          pqrs::hid::country_code::value_t(country_code),
-          pqrs::osx::iokit_keyboard_type::value_t(keyboard_type));
     }
   }
 }
