@@ -12,6 +12,7 @@ final class ContentViewStates: ObservableObject {
   @Published public var showDriverVersionMismatchedAlert = false
   @Published public var showInputMonitoringPermissionsAlert = false
   @Published public var showDoctorAlert = false
+  @Published public var showSettingsAlert = false
 
   //
   // ContentMainView

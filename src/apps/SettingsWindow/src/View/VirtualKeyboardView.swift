@@ -2,22 +2,13 @@ import SwiftUI
 
 struct VirtualKeyboardView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var systemPreferences = SystemPreferences.shared
   @ObservedObject private var grabberClient = LibKrbn.GrabberClient.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
       GroupBox(label: Text("Keyboard")) {
         VStack(alignment: .leading, spacing: 6.0) {
-          Picker(
-            selection: $settings.virtualHIDKeyboardKeyboardTypeV2, label: Text("Keyboard type:")
-          ) {
-            Text("ANSI (North America, most of Asia and others)").tag("ansi")
-            Text("ISO (Europe, Latin America, Middle-East and others)").tag("iso")
-            Text("JIS (Japanese)").tag("jis")
-          }
-          .pickerStyle(RadioGroupPickerStyle())
-          .disabled(!grabberClient.connected)
+          KeyboardTypeSelectorView()
         }
         .padding(6.0)
       }
