@@ -10,13 +10,22 @@ final class SettingsChecker: ObservableObject {
   private var subscribers: Set<AnyCancellable> = []
 
   public func start() {
-    settings.$virtualHIDKeyboardKeyboardTypeV2.sink { [weak self] newValue in
-      self?.checkVirtualHIDKeyboardKeyboardTypeV2(newValue)
+    settings.$virtualHIDKeyboardKeyboardTypeV2.sink { [weak self] _ in
+      Task { @MainActor in
+        // Add a delay to prevent the alert from briefly appearing at startup.
+        do {
+          try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
+        } catch {
+          print(error.localizedDescription)
+        }
+
+        self?.check()
+      }
     }.store(in: &subscribers)
   }
 
-  private func checkVirtualHIDKeyboardKeyboardTypeV2(_ virtualHIDKeyboardKeyboardTypeV2: String) {
-    keyboardTypeEmpty = (virtualHIDKeyboardKeyboardTypeV2 == "")
+  private func check() {
+    keyboardTypeEmpty = (settings.virtualHIDKeyboardKeyboardTypeV2 == "")
     updateShowSettingsAlert()
   }
 
