@@ -6,7 +6,7 @@ struct VirtualKeyboardView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
-      GroupBox(label: Text("Keyboard")) {
+      GroupBox(label: Text("Keyboard Type")) {
         VStack(alignment: .leading, spacing: 6.0) {
           KeyboardTypeSelectorView()
         }
