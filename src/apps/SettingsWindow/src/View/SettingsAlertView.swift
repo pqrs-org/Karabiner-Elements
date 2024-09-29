@@ -23,9 +23,13 @@ struct SettingsAlertView: View {
               KeyboardTypeSelectorView()
             }
             .padding(20.0)
-            .foregroundColor(Color.infoForeground)
-            .background(Color.infoBackground)
-            .cornerRadius(8)
+            .overlay(
+              RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                  Color(NSColor(Color.accentColor)),
+                  lineWidth: 3
+                )
+                .padding(2))
 
             Text(
               "Note: You can change it later from the Virtual Keyboard settings."
