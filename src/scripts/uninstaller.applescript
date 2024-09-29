@@ -7,7 +7,7 @@ try
                 do shell script "bash '/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/scripts/uninstall/deactivate_driver.sh'"
                 display dialog "Removing Karabiner-Elements files.\nosascript will ask the administrator password to complete." buttons {"OK"}
                 do shell script "bash '/Library/Application Support/org.pqrs/Karabiner-Elements/uninstall.sh'" with administrator privileges
-                display dialog "Karabiner-Elements has been uninstalled.\nPlease restart your system." buttons {"OK"}
+                display dialog "Karabiner-Elements has been uninstalled.\nPlease restart macOS." buttons {"OK"}
             on error
                 display alert "Failed to uninstall Karabiner-Elements."
             end try
