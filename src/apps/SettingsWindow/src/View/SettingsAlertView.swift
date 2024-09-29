@@ -10,17 +10,26 @@ struct SettingsAlertView: View {
         if settingsChecker.keyboardTypeEmpty {
           VStack(alignment: .leading, spacing: 20.0) {
             Label(
-              "Please select the keyboard type",
+              "Please select the keyboard type you'd like to use",
               systemImage: "gearshape"
             )
             .font(.system(size: 24))
 
-            GroupBox(label: Text("")) {
-              VStack(alignment: .leading, spacing: 6.0) {
-                KeyboardTypeSelectorView()
-              }
-              .padding(20.0)
+            Text(
+              "The keyboard type selected here will be used in Karabiner-Elements, regardless of the physical keyboard you're using."
+            )
+
+            VStack {
+              KeyboardTypeSelectorView()
             }
+            .padding(20.0)
+            .foregroundColor(Color.infoForeground)
+            .background(Color.infoBackground)
+            .cornerRadius(8)
+
+            Text(
+              "Note: You can change it later from the Virtual Keyboard settings."
+            )
           }
         }
       }
