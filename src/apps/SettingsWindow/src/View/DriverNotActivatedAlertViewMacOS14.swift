@@ -1,6 +1,7 @@
 import SwiftUI
 
-struct DriverNotActivatedAlertView: View {
+// For macOS 13, macOS 14
+struct DriverNotActivatedAlertViewMacOS14: View {
   @State private var showingAdvanced = false
   @FocusState var focus: Bool
 
@@ -26,7 +27,7 @@ struct DriverNotActivatedAlertView: View {
               Button(
                 action: {
                   let url = URL(
-                    string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension")!
+                    string: "x-apple.systempreferences:com.apple.preference.security?General")!
                   NSWorkspace.shared.open(url)
 
                   NSApp.miniaturizeAll(nil)
@@ -39,7 +40,7 @@ struct DriverNotActivatedAlertView: View {
               )
               .focused($focus)
 
-              Image(decorative: "driver-extensions")
+              Image(decorative: "dext-allow-macos14")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 300)
@@ -116,10 +117,10 @@ struct DriverNotActivatedAlertView: View {
   }
 }
 
-struct DriverNotActivatedAlertView_Previews: PreviewProvider {
+struct DriverNotActivatedAlertViewMacOS14_Previews: PreviewProvider {
   static var previews: some View {
     Group {
-      DriverNotActivatedAlertView()
+      DriverNotActivatedAlertViewMacOS14()
         .previewLayout(.sizeThatFits)
     }
   }
