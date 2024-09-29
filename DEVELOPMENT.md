@@ -367,7 +367,7 @@ There are two types of background processes: `daemon` and `agent`. Their charact
 -   `daemon`:
     -   Runs with root privileges.
     -   Executes with the startup of macOS, even before the user logs in.
-    -   After the plist is registered by `SMAppService`, it is executed only after being approved by the user from `System Settings > General > Login Items`.
+    -   After the plist is registered by `SMAppService`, it is executed only after being approved by the user from `System Settings > General > Login Items & Extensions`.
 -   `agent`:
     -   Runs with user privileges.
     -   Executes when the user logs in.
@@ -380,7 +380,7 @@ Specifically, the following issues occur on macOS 13:
 -   The daemon does not automatically start after user approval if the following steps are taken:
     -   Reproduction steps:
         1.  Register a daemon using `SMAppService.register`.
-        2.  Approve the daemon in System Settings > General > Login Items.
+        2.  Approve the daemon in System Settings > General > Login Items & Extensions.
         3.  Revoke the approval.
         4.  Restart macOS.
         5.  Re-approve the daemon.
@@ -390,11 +390,11 @@ Specifically, the following issues occur on macOS 13:
 -   The following steps can lead to various issues:
     -   Reproduction steps:
         1.  Register a daemon using `SMAppService.register`.
-        2.  Approve the daemon in System Settings > General > Login Items.
+        2.  Approve the daemon in System Settings > General > Login Items & Extensions.
         3.  Reset the Login Items settings with `sfltool resetbtm`.
         4.  Restart macOS.
         5.  Register the daemon with SMAppService.register.
-            -   Problem #1: Although the user has not approved the daemon, it appears as if it is approved in System Settings > General > Login Items.
+            -   Problem #1: Although the user has not approved the daemon, it appears as if it is approved in System Settings > General > Login Items & Extensions.
                 The status of SMAppService correctly shows requiresApproval.
                 This is a problem with the System Settings UI.
             -   Problem #2: In this state, even if the user re-approves the daemon, it will not start.
@@ -412,7 +412,7 @@ To avoid these issues, the application should adhere to the following:
 ### Separate the applications that manage daemons and agents
 
 As mentioned above, daemons and agents have different approval statuses when registered.
-In the macOS System Settings > General > Login Items UI, a display issue occurs if these two services are managed by a single application.
+In the macOS System Settings > General > Login Items & Extensions UI, a display issue occurs if these two services are managed by a single application.
 Specifically, if either daemons or agents are in the `requiresApproval` state, the checkbox in Login Items should be off.
 However, in reality, if either one is in the `enabled` state, the checkbox appears on.
 This results in the checkbox being on even though either daemons or agents are not actually enabled.
