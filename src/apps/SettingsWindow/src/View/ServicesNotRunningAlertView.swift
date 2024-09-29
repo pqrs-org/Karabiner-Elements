@@ -31,7 +31,7 @@ struct ServicesNotRunningAlertView: View {
               VStack(alignment: .center, spacing: 0.0) {
                 Text("You need to permit the background services to use Karabiner-Elements.")
                 Text(
-                  "Please enable the following items from System Settings > General > Login Items.")
+                  "Please enable the following items from System Settings > General > Login Items & Extensions.")
               }
             }
 
@@ -59,7 +59,7 @@ struct ServicesNotRunningAlertView: View {
                 },
                 label: {
                   Label(
-                    "Open System Settings > General > Login Items",
+                    "Open System Settings > General > Login Items & Extensions",
                     systemImage: "arrow.forward.circle.fill")
                 }
               )

@@ -39,7 +39,7 @@ public class ServicesMonitor: ObservableObject {
       }
 
       if !servicesRunning {
-        // For approved services, once they are disabled from System Settings > General > Login Items,
+        // For approved services, once they are disabled from System Settings > General > Login Items & Extensions,
         // re-enabling them will not automatically start the service, and it is necessary to call SMAppService.register again.
         // Therefore, if the service is not running, periodically register daemons and agents to restart them after enabled.
         libkrbn_services_register_core_daemons()

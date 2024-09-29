@@ -4,7 +4,7 @@ import AppKit
 // The built application is automatically registered in the Launch Services database.
 // This means that unwanted entries such as */build/Release/*.app will be registered.
 //
-// Then, the names displayed in Background items of Login Items System Settings refer to the launch services database.
+// Then, the names displayed in Background items of Login Items & Extensions System Settings refer to the launch services database.
 // If the path of the built application is referenced, the application name may not be taken properly and the developer name may appear in Login Items.
 //
 // To avoid this problem, unintended application entries should be removed from the database.
