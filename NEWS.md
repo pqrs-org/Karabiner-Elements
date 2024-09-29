@@ -16,6 +16,7 @@
 -   💥 Breaking changes
     -   The implicit conversion feature for fn+arrow keys, fn+return, and fn+delete has been removed.
         For example, fn+up arrow used to be automatically changed to page up, but it will now be treated as fn+up arrow without modification.
+    -   To improve the behavior around the fn key, the Vendor ID and Product ID of the virtual keyboard used by Karabiner-Elements have been changed to the same values as those of a real Apple external keyboard.
 -   ✨ New Features
     -   A setting has been added to disable mouse cursor movement and scrolling for both the mouse and gamepad.
     -   Settings of the gamepad stick have been added; deadzone and delta magnitude detection threshold.
