@@ -217,6 +217,14 @@ private:
         } else {
           services_utility::unregister_notification_window_agent();
         }
+
+        //
+        // settings alert
+        //
+
+        if (c->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2() == "") {
+          application_launcher::launch_settings();
+        }
       }
     });
 
