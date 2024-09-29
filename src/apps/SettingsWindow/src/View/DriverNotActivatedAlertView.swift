@@ -8,7 +8,7 @@ struct DriverNotActivatedAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center) {
         Label(
-          "Please allow Karabiner-VirtualHIDDevice-Manager system software",
+          "Please grant permission for a Driver Extension",
           systemImage: "lightbulb"
         )
         .font(.system(size: 24))
@@ -19,7 +19,7 @@ struct DriverNotActivatedAlertView: View {
               VStack(alignment: .center, spacing: 0) {
                 Text("The virtual keyboard and mouse driver is not loaded.")
                 Text(
-                  "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Privacy & Security System Settings."
+                  "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Driver Extensions."
                 )
               }
 
@@ -33,13 +33,13 @@ struct DriverNotActivatedAlertView: View {
                 },
                 label: {
                   Label(
-                    "Open Privacy & Security System Settings...",
+                    "Open Login Items & Extensions Settings...",
                     systemImage: "arrow.forward.circle.fill")
                 }
               )
               .focused($focus)
 
-              Image(decorative: "driver-extensions")
+              Image(decorative: "driver-extensions-1")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 300)
@@ -50,7 +50,7 @@ struct DriverNotActivatedAlertView: View {
                   action: { showingAdvanced = true },
                   label: {
                     Label(
-                      "If the Allow button is not displayed on Privacy & Security.",
+                      "If the Driver Extensions is not displayed on Extensions.",
                       systemImage: "questionmark.circle")
                   })
               }
@@ -62,14 +62,14 @@ struct DriverNotActivatedAlertView: View {
               VStack(alignment: .leading, spacing: 20.0) {
                 VStack(alignment: .leading, spacing: 0) {
                   Text(
-                    "If macOS failed to load the driver in the early stage, the allow button might be not shown on Privacy & Security System Settings."
+                    "If macOS failed to load the driver in the early stage, the Driver Extensions might be not shown on Login Items & Extensions System Settings."
                   )
                   Text(
-                    "In this case, you need to reinstall the driver in order for the button to appear."
+                    "In such cases, reactivating the driver may increase the chances of it loading successfully."
                   )
                 }
 
-                Text("How to reinstall driver:")
+                Text("How to reactivate driver:")
 
                 VStack(alignment: .leading, spacing: 10.0) {
                   Text(
@@ -85,18 +85,10 @@ struct DriverNotActivatedAlertView: View {
                     .fontWeight(.bold)
                     .fixedSize(horizontal: false, vertical: true)
 
-                  Text("3. Press the following button to activate driver.")
-                    .fixedSize(horizontal: false, vertical: true)
-
-                  ActivateDriverButton()
-                    .padding(.vertical, 10)
-                    .padding(.leading, 20)
-
-                  Text("4. \"System Extension Blocked\" alert is shown.")
-                    .fixedSize(horizontal: false, vertical: true)
-
-                  Text("5. Open Privacy & Security System Settings and press the allow button.")
-                    .fixedSize(horizontal: false, vertical: true)
+                  Text(
+                    "3. After restarting, the driver will be automatically loaded, and the Driver Extensions settings will appear."
+                  )
+                  .fixedSize(horizontal: false, vertical: true)
                 }
               }.padding()
             }.frame(width: 400)
