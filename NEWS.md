@@ -11,7 +11,7 @@
     -   After restarting, please open the Karabiner-Elements settings and configure the keyboard type.
         <br/><br/>
         <table><tbody><tr><td><!-- border hack -->
-        <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.1.0/keyboard-type-selector@2x.png" alt="macOS restart required" />
+        <img src="https://karabiner-elements.pqrs.org/docs/releasenotes/images/v15.1.0/keyboard-type-selector@2x.png?v=2" alt="keyboard type selector" />
         </td></tr></tbody></table>
 -   💥 Breaking changes
     -   The implicit conversion feature for fn+arrow keys, fn+return, and fn+delete has been removed.
