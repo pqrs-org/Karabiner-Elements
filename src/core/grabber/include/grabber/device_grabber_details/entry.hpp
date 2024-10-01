@@ -47,16 +47,6 @@ public:
 
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
 
-    game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
-                                                                           weak_core_configuration_);
-    game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& event_queue_entry) {
-      auto event_queue = std::make_shared<event_queue::queue>();
-      event_queue->push_back_entry(event_queue_entry);
-
-      hid_queue_values_arrived(*this,
-                               event_queue);
-    });
-
     hid_queue_value_monitor_ = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
                                                                                           pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                                           device);
@@ -68,10 +58,24 @@ public:
                                    device_name_);
 
         probable_stuck_events_manager_->clear();
+
+        if (device_properties_->get_device_identifiers().get_is_game_pad()) {
+          game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
+                                                                                 weak_core_configuration_);
+          game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& event_queue_entry) {
+            auto event_queue = std::make_shared<event_queue::queue>();
+            event_queue->push_back_entry(event_queue_entry);
+
+            hid_queue_values_arrived(*this,
+                                     event_queue);
+          });
+        }
       }
     });
     hid_queue_value_monitor_->stopped.connect([this] {
       control_caps_lock_led_state_manager();
+
+      game_pad_stick_converter_ = nullptr;
     });
     hid_queue_value_monitor_->values_arrived.connect([this](auto&& values_ptr) {
       auto hid_values = hid_queue_values_converter_.make_hid_values(device_id_,
@@ -89,7 +93,7 @@ public:
       // game pad stick to pointing motion
       //
 
-      if (seized()) {
+      if (game_pad_stick_converter_) {
         game_pad_stick_converter_->convert(hid_values);
       }
     });
@@ -111,11 +115,15 @@ public:
     return device_id_;
   }
 
+  // This method should be called in the shared dispatcher thread.
   void set_weak_core_configuration(std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration) {
     weak_core_configuration_ = weak_core_configuration;
 
     control_caps_lock_led_state_manager();
-    game_pad_stick_converter_->set_weak_core_configuration(weak_core_configuration);
+
+    if (game_pad_stick_converter_) {
+      game_pad_stick_converter_->set_weak_core_configuration(weak_core_configuration);
+    }
   }
 
   gsl::not_null<std::shared_ptr<device_properties>> get_device_properties(void) const {
