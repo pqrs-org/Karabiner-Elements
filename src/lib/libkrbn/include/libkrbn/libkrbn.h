@@ -465,7 +465,7 @@ typedef void (*libkrbn_file_updated)(void);
 void libkrbn_register_file_updated_callback(const char* file_path, libkrbn_file_updated callback);
 void libkrbn_unregister_file_updated_callback(const char* file_path, libkrbn_file_updated callback);
 
-void libkrbn_get_device_details_json_file_path(char* buffer, size_t length);
+void libkrbn_get_devices_json_file_path(char* buffer, size_t length);
 void libkrbn_get_grabber_state_json_file_path(char* buffer, size_t length);
 void libkrbn_get_manipulator_environment_json_file_path(char* buffer, size_t length);
 void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length);

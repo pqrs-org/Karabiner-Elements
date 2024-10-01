@@ -97,11 +97,6 @@ public:
     return path;
   }
 
-  static const std::filesystem::path& get_device_details_json_file_path(void) {
-    static auto path = get_tmp_directory() / "karabiner_grabber_device_details.json";
-    return path;
-  }
-
   static const std::filesystem::path& get_manipulator_environment_json_file_path(void) {
     static auto path = get_tmp_directory() / "karabiner_grabber_manipulator_environment.json";
     return path;

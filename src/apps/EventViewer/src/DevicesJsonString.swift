@@ -3,7 +3,7 @@ import SwiftUI
 private func callback() {
   guard
     let text = try? String(
-      contentsOfFile: DevicesJsonString.shared.deviceDetailsJsonFilePath,
+      contentsOfFile: DevicesJsonString.shared.devicesJsonFilePath,
       encoding: .utf8
     )
   else { return }
@@ -16,7 +16,7 @@ private func callback() {
 public class DevicesJsonString: ObservableObject {
   public static let shared = DevicesJsonString()
 
-  let deviceDetailsJsonFilePath = LibKrbn.deviceDetailsJsonFilePath()
+  let devicesJsonFilePath = LibKrbn.devicesJsonFilePath()
 
   @Published var text = ""
 
@@ -27,7 +27,7 @@ public class DevicesJsonString: ObservableObject {
     libkrbn_enable_file_monitors()
 
     libkrbn_register_file_updated_callback(
-      deviceDetailsJsonFilePath.cString(using: .utf8),
+      devicesJsonFilePath.cString(using: .utf8),
       callback)
     libkrbn_enqueue_callback(callback)
   }
@@ -35,7 +35,7 @@ public class DevicesJsonString: ObservableObject {
   public func stop() {
 
     libkrbn_unregister_file_updated_callback(
-      deviceDetailsJsonFilePath.cString(using: .utf8),
+      devicesJsonFilePath.cString(using: .utf8),
       callback)
 
     // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.

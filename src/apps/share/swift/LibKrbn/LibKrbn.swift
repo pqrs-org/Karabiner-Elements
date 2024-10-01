@@ -1,7 +1,7 @@
 public struct LibKrbn {
-  public static func deviceDetailsJsonFilePath() -> String {
+  public static func devicesJsonFilePath() -> String {
     var buffer = [Int8](repeating: 0, count: 1024)
-    libkrbn_get_device_details_json_file_path(&buffer, buffer.count)
+    libkrbn_get_devices_json_file_path(&buffer, buffer.count)
     return String(cString: buffer)
   }
 

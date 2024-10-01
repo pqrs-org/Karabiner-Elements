@@ -270,7 +270,6 @@ public:
         // ----------------------------------------
 
         output_devices_json();
-        output_device_details_json();
 
         update_virtual_hid_pointing();
 
@@ -319,7 +318,6 @@ public:
       // ----------------------------------------
 
       output_devices_json();
-      output_device_details_json();
 
       // ----------------------------------------
 
@@ -948,22 +946,6 @@ private:
 
     auto file_path = constants::get_devices_json_file_path();
     connected_devices.async_save_to_file(file_path);
-  }
-
-  void output_device_details_json(void) const {
-    std::vector<device_properties> device_details;
-    for (const auto& e : entries_) {
-      device_details.push_back(*(e.second->get_device_properties()));
-    }
-
-    std::sort(std::begin(device_details),
-              std::end(device_details),
-              [](auto& a, auto& b) {
-                return a.compare(b);
-              });
-
-    auto file_path = constants::get_device_details_json_file_path();
-    json_writer::async_save_to_file(nlohmann::json(device_details), file_path, 0755, 0644);
   }
 
   void update_complex_modifications_manipulators(void) {

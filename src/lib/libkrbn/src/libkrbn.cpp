@@ -586,8 +586,8 @@ void libkrbn_unregister_file_updated_callback(const char* file_path, libkrbn_fil
   }
 }
 
-void libkrbn_get_device_details_json_file_path(char* buffer, size_t length) {
-  strlcpy(buffer, krbn::constants::get_device_details_json_file_path().c_str(), length);
+void libkrbn_get_devices_json_file_path(char* buffer, size_t length) {
+  strlcpy(buffer, krbn::constants::get_devices_json_file_path().c_str(), length);
 }
 
 void libkrbn_get_grabber_state_json_file_path(char* buffer, size_t length) {
