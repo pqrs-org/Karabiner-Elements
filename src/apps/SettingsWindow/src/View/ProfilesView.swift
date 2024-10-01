@@ -53,8 +53,8 @@ struct ProfilesView: View {
                 settings.selectProfile(profile)
               },
               label: {
-                HStack {
-                  HStack {
+                HStack(spacing: 0.0) {
+                  HStack(spacing: 0.0) {
                     if profile.selected {
                       Image(systemName: "circle.circle.fill")
                     } else {
@@ -64,63 +64,70 @@ struct ProfilesView: View {
                   .foregroundColor(.accentColor)
 
                   Text(profile.name)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 6.0)
+                    .padding(.vertical, 2.0)
                     .if(hoverProfile == profile) {
-                      $0.font(.body.weight(.bold))
+                      $0.overlay(
+                        RoundedRectangle(cornerRadius: 2)
+                          .stroke(
+                            Color(NSColor(Color.accentColor)),
+                            lineWidth: 1
+                          )
+                      )
                     }
                 }
               }
             )
             .buttonStyle(.plain)
 
-            Spacer()
+            HStack(alignment: .center, spacing: 10) {
+              Button(
+                action: {
+                  editingProfile = profile
+                  showingSheet = true
+                },
+                label: {
+                  Label("Rename", systemImage: "pencil.circle.fill")
+                })
 
-            Button(
-              action: {
-                editingProfile = profile
-                showingSheet = true
-              },
-              label: {
-                Label("Rename", systemImage: "pencil.circle.fill")
-              })
+              Button(
+                action: {
+                  settings.duplicateProfile(profile)
+                },
+                label: {
+                  Label("Duplicate", systemImage: "person.2.fill")
+                })
 
-            Button(
-              action: {
-                settings.duplicateProfile(profile)
-              },
-              label: {
-                Label("Duplicate", systemImage: "person.2.fill")
-              })
-
-            HStack {
-              Spacer()
-
-              if !profile.selected {
-                Button(
-                  role: .destructive,
-                  action: {
-                    settings.removeProfile(profile)
-                  },
-                  label: {
-                    Image(systemName: "trash")
-                      .buttonLabelStyle()
-                  }
-                )
-                .deleteButtonStyle()
+              HStack {
+                if !profile.selected {
+                  Button(
+                    role: .destructive,
+                    action: {
+                      settings.removeProfile(profile)
+                    },
+                    label: {
+                      Image(systemName: "trash")
+                        .buttonLabelStyle()
+                    }
+                  )
+                  .deleteButtonStyle()
+                }
+              }
+              .frame(width: 60)
+            }
+            .onHover { hovering in
+              if hovering {
+                hoverProfile = profileCopy
+              } else {
+                if hoverProfile == profileCopy {
+                  hoverProfile = nil
+                }
               }
             }
-            .frame(width: 60)
           }
           .padding(.vertical, 5.0)
           .moveDisabled(moveDisabled)
-          .onHover { hovering in
-            if hovering {
-              hoverProfile = profileCopy
-            } else {
-              if hoverProfile == profileCopy {
-                hoverProfile = nil
-              }
-            }
-          }
         }
         .onMove { indices, destination in
           if let first = indices.first {
