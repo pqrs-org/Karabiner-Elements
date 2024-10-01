@@ -111,35 +111,8 @@ public:
 
     std::sort(devices_.begin(),
               devices_.end(),
-              [](const auto& a, const auto& b) {
-                auto a_name = fmt::format("{0} {1} {2}",
-                                          type_safe::get(a->get_product()),
-                                          type_safe::get(a->get_manufacturer()),
-                                          a->get_transport());
-                auto a_kb = a->get_device_identifiers().get_is_keyboard();
-                auto a_pd = a->get_device_identifiers().get_is_pointing_device();
-
-                auto b_name = fmt::format("{0} {1} {2}",
-                                          type_safe::get(b->get_product()),
-                                          type_safe::get(b->get_manufacturer()),
-                                          b->get_transport());
-                auto b_kb = b->get_device_identifiers().get_is_keyboard();
-                auto b_pd = b->get_device_identifiers().get_is_pointing_device();
-
-                if (a_name == b_name) {
-                  if (a_kb == b_kb) {
-                    if (a_pd == b_pd) {
-                      return false;
-                    } else {
-                      return a_pd;
-                    }
-                  } else {
-                    return a_kb;
-                  }
-                } else {
-                  return a_name < b_name;
-                }
-                return true;
+              [](auto& a, auto& b) {
+                return a->compare(*b);
               });
   }
 
