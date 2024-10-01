@@ -47,6 +47,7 @@ struct ComplexModificationsEditView: View {
                   }
                 )
                 .buttonStyle(BorderedProminentButtonStyle())
+                .keyboardShortcut("s")
               }
             }
 
