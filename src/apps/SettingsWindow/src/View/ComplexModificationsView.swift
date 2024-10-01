@@ -88,20 +88,28 @@ struct ComplexModificationsView: View {
                 }
             }
 
-            Text(complexModificationRule.description)
-              .padding(.leading, 6.0)
-              .if(hoverRuleIndex == complexModificationRule.index) {
-                $0.font(.body.weight(.bold))
-              }
-              .if(!complexModificationRule.enabled) {
-                $0.foregroundColor(.gray)
-              }
+            HStack {
+              Text(complexModificationRule.description)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .if(!complexModificationRule.enabled) {
+                  $0.foregroundColor(.gray)
+                }
 
-            Spacer()
-
-            if !complexModificationRule.enabled {
-              Text("disabled")
-                .foregroundColor(.gray)
+              if !complexModificationRule.enabled {
+                Text("disabled")
+                  .foregroundColor(.gray)
+              }
+            }
+            .padding(.horizontal, 6.0)
+            .padding(.vertical, 2.0)
+            .if(hoverRuleIndex == ruleIndex) {
+              $0.overlay(
+                RoundedRectangle(cornerRadius: 2)
+                  .stroke(
+                    Color(NSColor(Color.accentColor)),
+                    lineWidth: 1
+                  )
+              )
             }
 
             HStack(alignment: .center, spacing: 10) {
@@ -109,8 +117,8 @@ struct ComplexModificationsView: View {
                 Text("")
               }
               .switchToggleStyle()
-              .padding(.horizontal, 10.0)
-              .scaledToFit()
+              .padding(.trailing, 10.0)
+              .frame(width: 60)
 
               Button(
                 action: {
