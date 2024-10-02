@@ -17,6 +17,10 @@
     -   The implicit conversion feature for fn+arrow keys, fn+return, and fn+delete has been removed.
         For example, fn+up arrow used to be automatically changed to page up, but it will now be treated as fn+up arrow without modification.
     -   To improve the behavior around the fn key, the Vendor ID and Product ID of the virtual keyboard used by Karabiner-Elements have been changed to the same values as those of a real Apple external keyboard.
+    -   There were two JSON files that output information about connected devices, but this information has now been consolidated into `karabiner_grabber_devices.json`.
+        `karabiner_grabber_device_details.json` is no longer used. Please use `karabiner_grabber_devices.json` from now on.
+        -   `karabiner_grabber_devices.json`
+        -   `karabiner_grabber_device_details.json` (obsoleted)
 -   ✨ New Features
     -   A setting has been added to disable mouse cursor movement and scrolling for both the mouse and gamepad.
     -   Settings of the gamepad stick have been added; deadzone and delta magnitude detection threshold.
