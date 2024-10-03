@@ -26,6 +26,7 @@
     -   Settings of the gamepad stick have been added; deadzone and delta magnitude detection threshold.
     -   Added an option to allow quitting EventViewer with Command+Q and Command+W.
 -   ⚡️ Improvements
+    -   Fixed an issue where disconnected devices would occasionally remain in the device list.
     -   Updated the embedded screenshots and help messages for macOS 15 Sequoia.
     -   Adjusted the gamepad deadzone default value.
 
