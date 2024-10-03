@@ -1,6 +1,6 @@
 //
-// experimental/impl/co_composed.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// co_composed.hpp
+// ~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
@@ -8,14 +8,17 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef ASIO_IMPL_EXPERIMENTAL_CO_COMPOSED_HPP
-#define ASIO_IMPL_EXPERIMENTAL_CO_COMPOSED_HPP
+#ifndef ASIO_CO_COMPOSED_HPP
+#define ASIO_CO_COMPOSED_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+
+#if defined(ASIO_HAS_CO_AWAIT) || defined(GENERATING_DOCUMENTATION)
+
 #include <new>
 #include <tuple>
 #include <variant>
@@ -44,7 +47,6 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
-namespace experimental {
 namespace detail {
 
 #if defined(ASIO_HAS_STD_COROUTINE)
@@ -74,7 +76,7 @@ class co_composed_handler_base;
 template <typename Executors, typename Handler, typename Return>
 class co_composed_promise;
 
-template <completion_signature... Signatures>
+template <ASIO_COMPLETION_SIGNATURE... Signatures>
 class co_composed_returns
 {
 };
@@ -90,7 +92,7 @@ struct co_composed_completion : std::tuple<T&&...>
 {
   template <typename... U>
   co_composed_completion(U&&... u) noexcept
-    : std::tuple<T&&...>(std::forward<U>(u)...)
+    : std::tuple<T&&...>(static_cast<U&&>(u)...)
   {
   }
 };
@@ -312,8 +314,8 @@ public:
         (get_associated_cancellation_slot)(
           static_cast<co_composed_state<Executors, Handler, Return>*>(
             this)->handler()),
-        std::forward<InFilter>(in_filter),
-        std::forward<OutFilter>(out_filter));
+        static_cast<InFilter&&>(in_filter),
+        static_cast<OutFilter&&>(out_filter));
   }
 
   cancellation_type_t cancelled() const noexcept
@@ -468,7 +470,7 @@ public:
   co_composed_state(composed_io_executors<Executors>&& executors,
       H&& h, co_composed_on_suspend& on_suspend)
     : work_(std::move(executors)),
-      handler_(std::forward<H>(h)),
+      handler_(static_cast<H&&>(h)),
       on_suspend_(&on_suspend)
   {
     this->reset_cancellation_state(enable_terminal_cancellation());
@@ -481,9 +483,9 @@ public:
 
   template <typename... Args>
   [[nodiscard]] co_composed_completion<Args...> complete(Args&&... args)
-    requires requires { declval<Handler>()(std::forward<Args>(args)...); }
+    requires requires { declval<Handler>()(static_cast<Args&&>(args)...); }
   {
-    return co_composed_completion<Args...>(std::forward<Args>(args)...);
+    return co_composed_completion<Args...>(static_cast<Args&&>(args)...);
   }
 
   const Handler& handler() const noexcept
@@ -592,7 +594,7 @@ public:
   template <typename... T>
   void operator()(T&&... args)
   {
-    result_type result(std::forward<T>(args)...);
+    result_type result(static_cast<T&&>(args)...);
     this->resume(&result);
   }
 
@@ -624,7 +626,7 @@ public:
   template <typename... T>
   void operator()(const asio::error_code& ec, T&&... args)
   {
-    result_type result(ec, args_type(std::forward<T>(args)...));
+    result_type result(ec, args_type(static_cast<T&&>(args)...));
     this->resume(&result);
   }
 
@@ -657,7 +659,7 @@ public:
   template <typename... T>
   void operator()(std::exception_ptr ex, T&&... args)
   {
-    result_type result(std::move(ex), args_type(std::forward<T>(args)...));
+    result_type result(std::move(ex), args_type(static_cast<T&&>(args)...));
     this->resume(&result);
   }
 
@@ -863,7 +865,7 @@ public:
 # endif // defined(ASIO_HAS_SOURCE_LOCATION)
 #endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
         )
-        : op_(std::forward<Op>(op)),
+        : op_(static_cast<Op&&>(op)),
           promise_(promise)
 #if defined(ASIO_ENABLE_HANDLER_TRACKING)
 # if defined(ASIO_HAS_SOURCE_LOCATION)
@@ -894,7 +896,7 @@ public:
                   static_cast<awaitable*>(p)->location_.function_name()));
 # endif // defined(ASIO_HAS_SOURCE_LOCATION)
 #endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
-              std::forward<Op>(static_cast<awaitable*>(p)->op_)(
+              static_cast<Op&&>(static_cast<awaitable*>(p)->op_)(
                   co_composed_handler<Executors, Handler,
                     Return, completion_signature_of_t<Op>>(
                       static_cast<awaitable*>(p)->promise_));
@@ -919,7 +921,7 @@ public:
     };
 
     state_.check_for_cancellation_on_transform();
-    return awaitable{std::forward<Op>(op), *this
+    return awaitable{static_cast<Op&&>(op), *this
 #if defined(ASIO_ENABLE_HANDLER_TRACKING)
 # if defined(ASIO_HAS_SOURCE_LOCATION)
         , location
@@ -1013,7 +1015,7 @@ public:
 
   template <typename I>
   initiate_co_composed(I&& impl, composed_io_executors<Executors>&& executors)
-    : implementation_(std::forward<I>(impl)),
+    : implementation_(static_cast<I&&>(impl)),
       executors_(std::move(executors))
   {
   }
@@ -1031,8 +1033,8 @@ public:
     co_composed_on_suspend on_suspend{};
     implementation_(
         co_composed_state<Executors, handler_type, returns_type>(
-          executors_, std::forward<Handler>(handler), on_suspend),
-        std::forward<InitArgs>(init_args)...);
+          executors_, static_cast<Handler&&>(handler), on_suspend),
+        static_cast<InitArgs&&>(init_args)...);
     if (on_suspend.fn_)
       on_suspend.fn_(on_suspend.arg_);
   }
@@ -1045,8 +1047,8 @@ public:
     co_composed_on_suspend on_suspend{};
     std::move(implementation_)(
         co_composed_state<Executors, handler_type, returns_type>(
-          std::move(executors_), std::forward<Handler>(handler), on_suspend),
-        std::forward<InitArgs>(init_args)...);
+          std::move(executors_), static_cast<Handler&&>(handler), on_suspend),
+        static_cast<InitArgs&&>(init_args)...);
     if (on_suspend.fn_)
       on_suspend.fn_(on_suspend.arg_);
   }
@@ -1056,6 +1058,50 @@ private:
   composed_io_executors<Executors> executors_;
 };
 
+template <typename Implementation, typename... Signatures>
+class initiate_co_composed<Implementation, void(), Signatures...>
+{
+public:
+  template <typename I>
+  initiate_co_composed(I&& impl, composed_io_executors<void()>&&)
+    : implementation_(static_cast<I&&>(impl))
+  {
+  }
+
+  template <typename Handler, typename... InitArgs>
+  void operator()(Handler&& handler, InitArgs&&... init_args) const &
+  {
+    using handler_type = decay_t<Handler>;
+    using returns_type = co_composed_returns<Signatures...>;
+    co_composed_on_suspend on_suspend{};
+    implementation_(
+        co_composed_state<void(), handler_type, returns_type>(
+          composed_io_executors<void()>(),
+          static_cast<Handler&&>(handler), on_suspend),
+        static_cast<InitArgs&&>(init_args)...);
+    if (on_suspend.fn_)
+      on_suspend.fn_(on_suspend.arg_);
+  }
+
+  template <typename Handler, typename... InitArgs>
+  void operator()(Handler&& handler, InitArgs&&... init_args) &&
+  {
+    using handler_type = decay_t<Handler>;
+    using returns_type = co_composed_returns<Signatures...>;
+    co_composed_on_suspend on_suspend{};
+    std::move(implementation_)(
+        co_composed_state<void(), handler_type, returns_type>(
+          composed_io_executors<void()>(),
+          static_cast<Handler&&>(handler), on_suspend),
+        static_cast<InitArgs&&>(init_args)...);
+    if (on_suspend.fn_)
+      on_suspend.fn_(on_suspend.arg_);
+  }
+
+private:
+  Implementation implementation_;
+};
+
 template <typename... Signatures, typename Implementation, typename Executors>
 inline initiate_co_composed<Implementation, Executors, Signatures...>
 make_initiate_co_composed(Implementation&& implementation,
@@ -1063,25 +1109,10 @@ make_initiate_co_composed(Implementation&& implementation,
 {
   return initiate_co_composed<
     decay_t<Implementation>, Executors, Signatures...>(
-        std::forward<Implementation>(implementation), std::move(executors));
+        static_cast<Implementation&&>(implementation), std::move(executors));
 }
 
 } // namespace detail
-
-template <completion_signature... Signatures,
-    typename Implementation, typename... IoObjectsOrExecutors>
-inline auto co_composed(Implementation&& implementation,
-    IoObjectsOrExecutors&&... io_objects_or_executors)
-{
-  return detail::make_initiate_co_composed<Signatures...>(
-      std::forward<Implementation>(implementation),
-      detail::make_composed_io_executors(
-        detail::get_composed_io_executor(
-          std::forward<IoObjectsOrExecutors>(
-            io_objects_or_executors))...));
-}
-
-} // namespace experimental
 
 #if !defined(GENERATING_DOCUMENTATION)
 
@@ -1089,13 +1120,12 @@ template <template <typename, typename> class Associator,
     typename Executors, typename Handler, typename Return,
     typename Signature, typename DefaultCandidate>
 struct associator<Associator,
-    experimental::detail::co_composed_handler<
-      Executors, Handler, Return, Signature>,
+    detail::co_composed_handler<Executors, Handler, Return, Signature>,
     DefaultCandidate>
   : Associator<Handler, DefaultCandidate>
 {
   static typename Associator<Handler, DefaultCandidate>::type get(
-      const experimental::detail::co_composed_handler<
+      const detail::co_composed_handler<
         Executors, Handler, Return, Signature>& h) noexcept
   {
     return Associator<Handler, DefaultCandidate>::get(
@@ -1103,7 +1133,7 @@ struct associator<Associator,
   }
 
   static auto get(
-      const experimental::detail::co_composed_handler<
+      const detail::co_composed_handler<
         Executors, Handler, Return, Signature>& h,
       const DefaultCandidate& c) noexcept
     -> decltype(
@@ -1129,37 +1159,28 @@ namespace std { namespace experimental {
 template <typename C, typename Executors,
     typename Handler, typename Return, typename... Args>
 struct coroutine_traits<void, C&,
-    asio::experimental::detail::co_composed_state<
-      Executors, Handler, Return>,
-    Args...>
+    asio::detail::co_composed_state<Executors, Handler, Return>, Args...>
 {
   using promise_type =
-    asio::experimental::detail::co_composed_promise<
-      Executors, Handler, Return>;
+    asio::detail::co_composed_promise<Executors, Handler, Return>;
 };
 
 template <typename C, typename Executors,
     typename Handler, typename Return, typename... Args>
 struct coroutine_traits<void, C&&,
-    asio::experimental::detail::co_composed_state<
-      Executors, Handler, Return>,
-    Args...>
+    asio::detail::co_composed_state<Executors, Handler, Return>, Args...>
 {
   using promise_type =
-    asio::experimental::detail::co_composed_promise<
-      Executors, Handler, Return>;
+    asio::detail::co_composed_promise<Executors, Handler, Return>;
 };
 
 template <typename Executors, typename Handler,
     typename Return, typename... Args>
 struct coroutine_traits<void,
-    asio::experimental::detail::co_composed_state<
-      Executors, Handler, Return>,
-    Args...>
+    asio::detail::co_composed_state<Executors, Handler, Return>, Args...>
 {
   using promise_type =
-    asio::experimental::detail::co_composed_promise<
-      Executors, Handler, Return>;
+    asio::detail::co_composed_promise<Executors, Handler, Return>;
 };
 
 # if defined(ASIO_HAS_STD_COROUTINE)
@@ -1169,6 +1190,130 @@ struct coroutine_traits<void,
 # endif // defined(ASIO_HAS_STD_COROUTINE)
 #endif // !defined(GENERATING_DOCUMENTATION)
 
+namespace asio {
+
+/// Creates an initiation function object that may be used to launch a
+/// coroutine-based composed asynchronous operation.
+/**
+ * The co_composed utility simplifies the implementation of composed
+ * asynchronous operations by automatically adapting a coroutine to be an
+ * initiation function object for use with @c async_initiate. When awaiting
+ * asynchronous operations, the coroutine automatically uses a conforming
+ * intermediate completion handler.
+ *
+ * @param implementation A function object that contains the coroutine-based
+ * implementation of the composed asynchronous operation. The first argument to
+ * the function object represents the state of the operation, and may be used
+ * to test for cancellation. The remaining arguments are those passed to @c
+ * async_initiate after the completion token.
+ *
+ * @param io_objects_or_executors Zero or more I/O objects or I/O executors for
+ * which outstanding work must be maintained while the operation is incomplete.
+ *
+ * @par Per-Operation Cancellation
+ * By default, terminal per-operation cancellation is enabled for composed
+ * operations that use co_composed. To disable cancellation for the composed
+ * operation, or to alter its supported cancellation types, call the state's
+ * @c reset_cancellation_state function.
+ *
+ * @par Examples
+ * The following example illustrates manual error handling and explicit checks
+ * for cancellation. The completion handler is invoked via a @c co_yield to the
+ * state's @c complete function, which never returns.
+ *
+ * @code template <typename CompletionToken>
+ * auto async_echo(tcp::socket& socket,
+ *     CompletionToken&& token)
+ * {
+ *   return asio::async_initiate<
+ *     CompletionToken, void(std::error_code)>(
+ *       asio::co_composed(
+ *         [](auto state, tcp::socket& socket) -> void
+ *         {
+ *           state.reset_cancellation_state(
+ *             asio::enable_terminal_cancellation());
+ *
+ *           while (!state.cancelled())
+ *           {
+ *             char data[1024];
+ *             auto [e1, n1] =
+ *               co_await socket.async_read_some(
+ *                 asio::buffer(data));
+ *
+ *             if (e1)
+ *               co_yield state.complete(e1);
+ *
+ *             if (!!state.cancelled())
+ *               co_yield state.complete(
+ *                 make_error_code(asio::error::operation_aborted));
+ *
+ *             auto [e2, n2] =
+ *               co_await asio::async_write(socket,
+ *                 asio::buffer(data, n1));
+ *
+ *             if (e2)
+ *               co_yield state.complete(e2);
+ *           }
+ *         }, socket),
+ *       token, std::ref(socket));
+ * } @endcode
+ *
+ * This next example shows exception-based error handling and implicit checks
+ * for cancellation. The completion handler is invoked after returning from the
+ * coroutine via @c co_return. Valid @c co_return values are specified using
+ * completion signatures passed to the @c co_composed function.
+ *
+ * @code template <typename CompletionToken>
+ * auto async_echo(tcp::socket& socket,
+ *     CompletionToken&& token)
+ * {
+ *   return asio::async_initiate<
+ *     CompletionToken, void(std::error_code)>(
+ *       asio::co_composed<
+ *         void(std::error_code)>(
+ *           [](auto state, tcp::socket& socket) -> void
+ *           {
+ *             try
+ *             {
+ *               state.throw_if_cancelled(true);
+ *               state.reset_cancellation_state(
+ *                 asio::enable_terminal_cancellation());
+ *
+ *               for (;;)
+ *               {
+ *                 char data[1024];
+ *                 std::size_t n = co_await socket.async_read_some(
+ *                     asio::buffer(data));
+ *
+ *                 co_await asio::async_write(socket,
+ *                     asio::buffer(data, n));
+ *               }
+ *             }
+ *             catch (const std::system_error& e)
+ *             {
+ *               co_return {e.code()};
+ *             }
+ *           }, socket),
+ *       token, std::ref(socket));
+ * } @endcode
+ */
+template <ASIO_COMPLETION_SIGNATURE... Signatures,
+    typename Implementation, typename... IoObjectsOrExecutors>
+inline auto co_composed(Implementation&& implementation,
+    IoObjectsOrExecutors&&... io_objects_or_executors)
+{
+  return detail::make_initiate_co_composed<Signatures...>(
+      static_cast<Implementation&&>(implementation),
+      detail::make_composed_io_executors(
+        detail::get_composed_io_executor(
+          static_cast<IoObjectsOrExecutors&&>(
+            io_objects_or_executors))...));
+}
+
+} // namespace asio
+
 #include "asio/detail/pop_options.hpp"
 
-#endif // ASIO_IMPL_EXPERIMENTAL_CO_COMPOSED_HPP
+#endif // defined(ASIO_HAS_CO_AWAIT) || defined(GENERATING_DOCUMENTATION)
+
+#endif // ASIO_CO_COMPOSED_HPP

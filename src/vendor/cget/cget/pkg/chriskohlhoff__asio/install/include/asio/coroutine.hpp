@@ -200,7 +200,7 @@ class coroutine_ref;
  * The @c fork pseudo-keyword is used when "forking" a coroutine, i.e. splitting
  * it into two (or more) copies. One use of @c fork is in a server, where a new
  * coroutine is created to handle each client connection:
- * 
+ *
  * @code reenter (this)
  * {
  *   do
@@ -211,9 +211,9 @@ class coroutine_ref;
  *   } while (is_parent());
  *   ... client-specific handling follows ...
  * } @endcode
- * 
+ *
  * The logical steps involved in a @c fork are:
- * 
+ *
  * @li @c fork saves the current state of the coroutine.
  * @li The statement creates a copy of the coroutine and either executes it
  *     immediately or schedules it for later execution.
@@ -257,7 +257,6 @@ private:
   friend class detail::coroutine_ref;
   int value_;
 };
-
 
 namespace detail {
 

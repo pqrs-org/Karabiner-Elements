@@ -54,18 +54,18 @@ namespace asio {
  * if any of the following conditions are true:
  *
  * @li @c s.post(a) happens-before @c s.post(b)
- * 
+ *
  * @li @c s.post(a) happens-before @c s.dispatch(b), where the latter is
  * performed outside the strand
- * 
+ *
  * @li @c s.dispatch(a) happens-before @c s.post(b), where the former is
  * performed outside the strand
- * 
+ *
  * @li @c s.dispatch(a) happens-before @c s.dispatch(b), where both are
  * performed outside the strand
- *   
+ *
  * then @c a() happens-before @c b()
- * 
+ *
  * Note that in the following case:
  * @code async_op_1(..., s.wrap(a));
  * async_op_2(..., s.wrap(b)); @endcode

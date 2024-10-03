@@ -54,12 +54,12 @@ template <typename Allocator>
 struct partial_promise_base
 {
   template <typename Executor, typename Token, typename... Args>
-  void* operator new(const std::size_t size, Executor&, Token& tk, Args&...)
+  void* operator new(std::size_t size, Executor&, Token& tk, Args&...)
   {
     return allocate_coroutine<Allocator>(size, get_associated_allocator(tk));
   }
 
-  void operator delete(void* raw, const std::size_t size)
+  void operator delete(void* raw, std::size_t size)
   {
     deallocate_coroutine<Allocator>(raw, size);
   }
@@ -110,9 +110,7 @@ struct partial_promise : partial_promise_base<Allocator>
   }
 };
 
-
-
-}; // namespace detail
+} // namespace detail
 } // namespace experimental
 } // namespace asio
 

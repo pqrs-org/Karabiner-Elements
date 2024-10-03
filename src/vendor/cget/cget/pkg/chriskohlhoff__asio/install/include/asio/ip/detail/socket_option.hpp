@@ -39,7 +39,7 @@ public:
 #if defined(__sun) || defined(__osf__)
   typedef unsigned char ipv4_value_type;
   typedef unsigned char ipv6_value_type;
-#elif defined(_AIX) || defined(__hpux) || defined(__QNXNTO__) 
+#elif defined(_AIX) || defined(__hpux) || defined(__QNXNTO__)
   typedef unsigned char ipv4_value_type;
   typedef unsigned int ipv6_value_type;
 #else

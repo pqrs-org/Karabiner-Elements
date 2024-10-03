@@ -89,7 +89,17 @@ public:
     };
   };
 
-  enum { max_mem_index = parallel_group_tag::end_mem_index };
+  struct timed_cancel_tag
+  {
+    enum
+    {
+      cache_size = ASIO_RECYCLING_ALLOCATOR_CACHE_SIZE,
+      begin_mem_index = parallel_group_tag::end_mem_index,
+      end_mem_index = begin_mem_index + cache_size
+    };
+  };
+
+  enum { max_mem_index = timed_cancel_tag::end_mem_index };
 
   thread_info_base()
 #if !defined(ASIO_NO_EXCEPTIONS)

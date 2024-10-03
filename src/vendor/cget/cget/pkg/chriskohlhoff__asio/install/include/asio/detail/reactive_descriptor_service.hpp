@@ -239,7 +239,7 @@ public:
     default:
       p.p->ec_ = asio::error::invalid_argument;
       start_op(impl, reactor::read_op, p.p,
-          is_continuation, false, true, &io_ex, 0);
+          is_continuation, false, true, false, &io_ex, 0);
       p.v = p.p = 0;
       return;
     }
@@ -252,7 +252,8 @@ public:
             &reactor_, &impl.reactor_data_, impl.descriptor_, op_type);
     }
 
-    start_op(impl, op_type, p.p, is_continuation, false, false, &io_ex, 0);
+    start_op(impl, op_type, p.p, is_continuation,
+        false, false, false, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -326,7 +327,7 @@ public:
 
     start_op(impl, reactor::write_op, p.p, is_continuation, true,
         buffer_sequence_adapter<asio::const_buffer,
-          ConstBufferSequence>::all_empty(buffers), &io_ex, 0);
+          ConstBufferSequence>::all_empty(buffers), true, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -360,7 +361,7 @@ public:
           &impl, impl.descriptor_, "async_write_some(null_buffers)"));
 
     start_op(impl, reactor::write_op, p.p,
-        is_continuation, false, false, &io_ex, 0);
+        is_continuation, false, false, false, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -435,7 +436,7 @@ public:
 
     start_op(impl, reactor::read_op, p.p, is_continuation, true,
         buffer_sequence_adapter<asio::mutable_buffer,
-          MutableBufferSequence>::all_empty(buffers), &io_ex, 0);
+          MutableBufferSequence>::all_empty(buffers), true, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -469,14 +470,15 @@ public:
           &impl, impl.descriptor_, "async_read_some(null_buffers)"));
 
     start_op(impl, reactor::read_op, p.p,
-        is_continuation, false, false, &io_ex, 0);
+        is_continuation, false, false, false, &io_ex, 0);
     p.v = p.p = 0;
   }
 
 private:
   // Start the asynchronous operation.
-  ASIO_DECL void do_start_op(implementation_type& impl, int op_type,
-      reactor_op* op, bool is_continuation, bool is_non_blocking, bool noop,
+  ASIO_DECL void do_start_op(implementation_type& impl,
+      int op_type, reactor_op* op, bool is_continuation,
+      bool allow_speculative, bool noop, bool needs_non_blocking,
       void (*on_immediate)(operation* op, bool, const void*),
       const void* immediate_arg);
 
@@ -484,18 +486,19 @@ private:
   // immediate completion.
   template <typename Op>
   void start_op(implementation_type& impl, int op_type, Op* op,
-      bool is_continuation, bool is_non_blocking, bool noop,
-      const void* io_ex, ...)
+      bool is_continuation, bool allow_speculative, bool noop,
+      bool needs_non_blocking, const void* io_ex, ...)
   {
-    return do_start_op(impl, op_type, op, is_continuation,
-        is_non_blocking, noop, &Op::do_immediate, io_ex);
+    return do_start_op(impl, op_type, op, is_continuation, allow_speculative,
+        noop, needs_non_blocking, &Op::do_immediate, io_ex);
   }
 
   // Start the asynchronous operation for handlers that are not specialised for
   // immediate completion.
   template <typename Op>
-  void start_op(implementation_type& impl, int op_type, Op* op,
-      bool is_continuation, bool is_non_blocking, bool noop, const void*,
+  void start_op(implementation_type& impl, int op_type,
+      Op* op, bool is_continuation, bool allow_speculative,
+      bool noop, bool needs_non_blocking, const void*,
       enable_if_t<
         is_same<
           typename associated_immediate_executor<
@@ -506,8 +509,9 @@ private:
         >::value
       >*)
   {
-    return do_start_op(impl, op_type, op, is_continuation, is_non_blocking,
-        noop, &reactor::call_post_immediate_completion, &reactor_);
+    return do_start_op(impl, op_type, op, is_continuation,
+        allow_speculative, noop, needs_non_blocking,
+        &reactor::call_post_immediate_completion, &reactor_);
   }
 
   // Helper class used to implement per-operation cancellation

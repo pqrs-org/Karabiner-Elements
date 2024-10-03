@@ -33,7 +33,7 @@ template <typename CompletionToken>
 class redirect_error_t
 {
 public:
-  /// Constructor. 
+  /// Constructor.
   template <typename T>
   redirect_error_t(T&& completion_token, asio::error_code& ec)
     : token_(static_cast<T&&>(completion_token)),
@@ -46,10 +46,50 @@ public:
   asio::error_code& ec_;
 };
 
+/// A function object type that adapts a @ref completion_token to capture
+/// error_code values to a variable.
+/**
+ * May also be used directly as a completion token, in which case it adapts the
+ * asynchronous operation's default completion token (or asio::deferred
+ * if no default is available).
+ */
+class partial_redirect_error
+{
+public:
+  /// Constructor that specifies the variable used to capture error_code values.
+  explicit partial_redirect_error(asio::error_code& ec)
+    : ec_(ec)
+  {
+  }
+
+  /// Adapt a @ref completion_token to specify that the completion handler
+  /// should capture error_code values to a variable.
+  template <typename CompletionToken>
+  ASIO_NODISCARD inline
+  constexpr redirect_error_t<decay_t<CompletionToken>>
+  operator()(CompletionToken&& completion_token) const
+  {
+    return redirect_error_t<decay_t<CompletionToken>>(
+        static_cast<CompletionToken&&>(completion_token), ec_);
+  }
+
+//private:
+  asio::error_code& ec_;
+};
+
+/// Create a partial completion token adapter that captures error_code values
+/// to a variable.
+ASIO_NODISCARD inline partial_redirect_error
+redirect_error(asio::error_code& ec)
+{
+  return partial_redirect_error(ec);
+}
+
 /// Adapt a @ref completion_token to capture error_code values to a variable.
 template <typename CompletionToken>
-inline redirect_error_t<decay_t<CompletionToken>> redirect_error(
-    CompletionToken&& completion_token, asio::error_code& ec)
+ASIO_NODISCARD inline redirect_error_t<decay_t<CompletionToken>>
+redirect_error(CompletionToken&& completion_token,
+    asio::error_code& ec)
 {
   return redirect_error_t<decay_t<CompletionToken>>(
       static_cast<CompletionToken&&>(completion_token), ec);

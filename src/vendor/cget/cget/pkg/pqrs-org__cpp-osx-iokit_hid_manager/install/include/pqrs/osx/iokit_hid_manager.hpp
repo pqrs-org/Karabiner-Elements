@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_manager v5.0
+// pqrs::osx::iokit_hid_manager v6.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -54,12 +54,6 @@ public:
   void async_stop(void) {
     enqueue_to_dispatcher([this] {
       stop();
-    });
-  }
-
-  void async_rescan(void) {
-    enqueue_to_dispatcher([this] {
-      rescan();
     });
   }
 
@@ -189,12 +183,6 @@ private:
     service_monitors_.clear();
     devices_.clear();
     device_matched_called_ids_.clear();
-  }
-
-  void rescan(void) {
-    for (const auto& m : service_monitors_) {
-      m->async_invoke_service_matched();
-    }
   }
 
   std::shared_ptr<cf::run_loop_thread> run_loop_thread_;

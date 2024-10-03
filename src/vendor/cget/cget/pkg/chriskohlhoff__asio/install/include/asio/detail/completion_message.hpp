@@ -1,6 +1,6 @@
 //
-// experimental/detail/channel_message.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// detail/completion_message.hpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef ASIO_EXPERIMENTAL_DETAIL_CHANNEL_MESSAGE_HPP
-#define ASIO_EXPERIMENTAL_DETAIL_CHANNEL_MESSAGE_HPP
+#ifndef ASIO_DETAIL_COMPLETION_MESSAGE_HPP
+#define ASIO_DETAIL_COMPLETION_MESSAGE_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -23,17 +23,16 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
-namespace experimental {
 namespace detail {
 
 template <typename Signature>
-class channel_message;
+class completion_message;
 
 template <typename R>
-class channel_message<R()>
+class completion_message<R()>
 {
 public:
-  channel_message(int)
+  completion_message(int)
   {
   }
 
@@ -45,11 +44,11 @@ public:
 };
 
 template <typename R, typename Arg0>
-class channel_message<R(Arg0)>
+class completion_message<R(Arg0)>
 {
 public:
   template <typename T0>
-  channel_message(int, T0&& t0)
+  completion_message(int, T0&& t0)
     : arg0_(static_cast<T0&&>(t0))
   {
   }
@@ -67,11 +66,11 @@ private:
 };
 
 template <typename R, typename Arg0, typename Arg1>
-class channel_message<R(Arg0, Arg1)>
+class completion_message<R(Arg0, Arg1)>
 {
 public:
   template <typename T0, typename T1>
-  channel_message(int, T0&& t0, T1&& t1)
+  completion_message(int, T0&& t0, T1&& t1)
     : arg0_(static_cast<T0&&>(t0)),
       arg1_(static_cast<T1&&>(t1))
   {
@@ -93,11 +92,11 @@ private:
 };
 
 template <typename R, typename... Args>
-class channel_message<R(Args...)>
+class completion_message<R(Args...)>
 {
 public:
   template <typename... T>
-  channel_message(int, T&&... t)
+  completion_message(int, T&&... t)
     : args_(static_cast<T&&>(t)...)
   {
   }
@@ -121,9 +120,8 @@ private:
 };
 
 } // namespace detail
-} // namespace experimental
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
 
-#endif // ASIO_EXPERIMENTAL_DETAIL_CHANNEL_MESSAGE_HPP
+#endif // ASIO_DETAIL_COMPLETION_MESSAGE_HPP

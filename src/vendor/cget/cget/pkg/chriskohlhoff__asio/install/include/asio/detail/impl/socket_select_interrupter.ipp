@@ -90,7 +90,7 @@ void socket_select_interrupter::open_descriptors()
   socket_holder server(socket_ops::accept(acceptor.get(), 0, 0, ec));
   if (server.get() == invalid_socket)
     asio::detail::throw_error(ec, "socket_select_interrupter");
-  
+
   ioctl_arg_type non_blocking = 1;
   socket_ops::state_type client_state = 0;
   if (socket_ops::ioctl(client.get(), client_state,

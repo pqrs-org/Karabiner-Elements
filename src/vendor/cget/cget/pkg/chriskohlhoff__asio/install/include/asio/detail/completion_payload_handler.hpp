@@ -1,6 +1,6 @@
 //
-// experimental/detail/channel_handler.hpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// detail/completion_payload_handler.hpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef ASIO_EXPERIMENTAL_DETAIL_CHANNEL_HANDLER_HPP
-#define ASIO_EXPERIMENTAL_DETAIL_CHANNEL_HANDLER_HPP
+#ifndef ASIO_DETAIL_COMPLETION_PAYLOAD_HANDLER_HPP
+#define ASIO_DETAIL_COMPLETION_PAYLOAD_HANDLER_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -17,19 +17,17 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/associator.hpp"
-#include "asio/experimental/detail/channel_payload.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
-namespace experimental {
 namespace detail {
 
 template <typename Payload, typename Handler>
-class channel_handler
+class completion_payload_handler
 {
 public:
-  channel_handler(Payload&& p, Handler& h)
+  completion_payload_handler(Payload&& p, Handler& h)
     : payload_(static_cast<Payload&&>(p)),
       handler_(static_cast<Handler&&>(h))
   {
@@ -40,29 +38,33 @@ public:
     payload_.receive(handler_);
   }
 
+  Handler& handler()
+  {
+    return handler_;
+  }
+
 //private:
   Payload payload_;
   Handler handler_;
 };
 
 } // namespace detail
-} // namespace experimental
 
 template <template <typename, typename> class Associator,
     typename Payload, typename Handler, typename DefaultCandidate>
 struct associator<Associator,
-    experimental::detail::channel_handler<Payload, Handler>,
+    detail::completion_payload_handler<Payload, Handler>,
     DefaultCandidate>
   : Associator<Handler, DefaultCandidate>
 {
   static typename Associator<Handler, DefaultCandidate>::type get(
-      const experimental::detail::channel_handler<Payload, Handler>& h) noexcept
+      const detail::completion_payload_handler<Payload, Handler>& h) noexcept
   {
     return Associator<Handler, DefaultCandidate>::get(h.handler_);
   }
 
   static auto get(
-      const experimental::detail::channel_handler<Payload, Handler>& h,
+      const detail::completion_payload_handler<Payload, Handler>& h,
       const DefaultCandidate& c) noexcept
     -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
   {
@@ -74,4 +76,4 @@ struct associator<Associator,
 
 #include "asio/detail/pop_options.hpp"
 
-#endif // ASIO_EXPERIMENTAL_DETAIL_CHANNEL_HANDLER_HPP
+#endif // ASIO_DETAIL_COMPLETION_PAYLOAD_HANDLER_HPP

@@ -794,7 +794,7 @@ ASIO_SYNC_OP_VOID context::use_certificate_chain(
         ASIO_SYNC_OP_VOID_RETURN(ec);
       }
     }
-  
+
     result = ::ERR_peek_last_error();
     if ((ERR_GET_LIB(result) == ERR_LIB_PEM)
         && (ERR_GET_REASON(result) == PEM_R_NO_START_LINE))

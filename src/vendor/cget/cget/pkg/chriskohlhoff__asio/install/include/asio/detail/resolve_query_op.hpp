@@ -85,7 +85,7 @@ public:
     {
       // The operation is being run on the worker io_context. Time to perform
       // the resolver operation.
-    
+
       // Perform the blocking host resolution operation.
       socket_ops::background_getaddrinfo(o->cancel_token_,
           o->query_.host_name().c_str(), o->query_.service_name().c_str(),

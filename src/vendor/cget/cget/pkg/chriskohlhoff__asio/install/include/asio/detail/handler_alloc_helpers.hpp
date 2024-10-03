@@ -17,119 +17,12 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/memory.hpp"
-#include "asio/detail/noncopyable.hpp"
 #include "asio/detail/recycling_allocator.hpp"
-#include "asio/detail/thread_info_base.hpp"
 #include "asio/associated_allocator.hpp"
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
-namespace detail {
-
-inline void* default_allocate(std::size_t s,
-    std::size_t align = ASIO_DEFAULT_ALIGN)
-{
-#if !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
-  return asio::detail::thread_info_base::allocate(
-      asio::detail::thread_context::top_of_thread_call_stack(),
-      s, align);
-#else // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
-  return asio::aligned_new(align, s);
-#endif // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
-}
-
-inline void default_deallocate(void* p, std::size_t s)
-{
-#if !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
-  asio::detail::thread_info_base::deallocate(
-      asio::detail::thread_context::top_of_thread_call_stack(), p, s);
-#else // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
-  (void)s;
-  asio::aligned_delete(p);
-#endif // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
-}
-
-template <typename T>
-class default_allocator
-{
-public:
-  typedef T value_type;
-
-  template <typename U>
-  struct rebind
-  {
-    typedef default_allocator<U> other;
-  };
-
-  default_allocator() noexcept
-  {
-  }
-
-  template <typename U>
-  default_allocator(const default_allocator<U>&) noexcept
-  {
-  }
-
-  T* allocate(std::size_t n)
-  {
-    return static_cast<T*>(default_allocate(sizeof(T) * n, alignof(T)));
-  }
-
-  void deallocate(T* p, std::size_t n)
-  {
-    default_deallocate(p, sizeof(T) * n);
-  }
-};
-
-template <>
-class default_allocator<void>
-{
-public:
-  typedef void value_type;
-
-  template <typename U>
-  struct rebind
-  {
-    typedef default_allocator<U> other;
-  };
-
-  default_allocator() noexcept
-  {
-  }
-
-  template <typename U>
-  default_allocator(const default_allocator<U>&) noexcept
-  {
-  }
-};
-
-template <typename Allocator>
-struct get_default_allocator
-{
-  typedef Allocator type;
-
-  static type get(const Allocator& a)
-  {
-    return a;
-  }
-};
-
-template <typename T>
-struct get_default_allocator<std::allocator<T>>
-{
-  typedef default_allocator<T> type;
-
-  static type get(const std::allocator<T>&)
-  {
-    return type();
-  }
-};
-
-} // namespace detail
-} // namespace asio
-
-#define ASIO_DEFINE_HANDLER_PTR(op) \
+#define ASIO_DEFINE_TAGGED_HANDLER_PTR(purpose, op) \
   struct ptr \
   { \
     Handler* h; \
@@ -143,11 +36,11 @@ struct get_default_allocator<std::allocator<T>>
     { \
       typedef typename ::asio::associated_allocator< \
         Handler>::type associated_allocator_type; \
-      typedef typename ::asio::detail::get_default_allocator< \
-        associated_allocator_type>::type default_allocator_type; \
+      typedef typename ::asio::detail::get_recycling_allocator< \
+        associated_allocator_type, purpose>::type default_allocator_type; \
       ASIO_REBIND_ALLOC(default_allocator_type, op) a( \
-            ::asio::detail::get_default_allocator< \
-              associated_allocator_type>::get( \
+            ::asio::detail::get_recycling_allocator< \
+              associated_allocator_type, purpose>::get( \
                 ::asio::get_associated_allocator(handler))); \
       return a.allocate(1); \
     } \
@@ -162,17 +55,22 @@ struct get_default_allocator<std::allocator<T>>
       { \
         typedef typename ::asio::associated_allocator< \
           Handler>::type associated_allocator_type; \
-        typedef typename ::asio::detail::get_default_allocator< \
-          associated_allocator_type>::type default_allocator_type; \
+        typedef typename ::asio::detail::get_recycling_allocator< \
+          associated_allocator_type, purpose>::type default_allocator_type; \
         ASIO_REBIND_ALLOC(default_allocator_type, op) a( \
-              ::asio::detail::get_default_allocator< \
-                associated_allocator_type>::get( \
+              ::asio::detail::get_recycling_allocator< \
+                associated_allocator_type, purpose>::get( \
                   ::asio::get_associated_allocator(*h))); \
         a.deallocate(static_cast<op*>(v), 1); \
         v = 0; \
       } \
     } \
   } \
+  /**/
+
+#define ASIO_DEFINE_HANDLER_PTR(op) \
+  ASIO_DEFINE_TAGGED_HANDLER_PTR( \
+      ::asio::detail::thread_info_base::default_tag, op ) \
   /**/
 
 #define ASIO_DEFINE_TAGGED_HANDLER_ALLOCATOR_PTR(purpose, op) \

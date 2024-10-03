@@ -49,9 +49,10 @@ struct has_immediate_executor_type<T,
 template <typename E, typename = void, typename = void>
 struct default_immediate_executor
 {
-  typedef require_result_t<E, execution::blocking_t::never_t> type;
+  typedef decay_t<require_result_t<E, execution::blocking_t::never_t>> type;
 
-  static type get(const E& e) noexcept
+  static auto get(const E& e) noexcept
+    -> decltype(asio::require(e, execution::blocking.never))
   {
     return asio::require(e, execution::blocking.never);
   }

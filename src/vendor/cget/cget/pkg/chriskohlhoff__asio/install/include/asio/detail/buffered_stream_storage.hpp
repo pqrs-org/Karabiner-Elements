@@ -113,7 +113,7 @@ private:
 
   // The offset to the end of the unread data.
   size_type end_offset_;
-  
+
   // The data in the buffer.
   std::vector<byte_type> buffer_;
 };

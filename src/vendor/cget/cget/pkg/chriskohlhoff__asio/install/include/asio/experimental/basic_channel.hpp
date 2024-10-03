@@ -110,7 +110,8 @@ private:
 
   template <typename... PayloadSignatures,
       ASIO_COMPLETION_TOKEN_FOR(PayloadSignatures...) CompletionToken>
-  auto do_async_receive(detail::channel_payload<PayloadSignatures...>*,
+  auto do_async_receive(
+      asio::detail::completion_payload<PayloadSignatures...>*,
       CompletionToken&& token)
     -> decltype(
         async_initiate<CompletionToken, PayloadSignatures...>(

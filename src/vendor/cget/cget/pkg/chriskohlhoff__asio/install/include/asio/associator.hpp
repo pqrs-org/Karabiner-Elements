@@ -23,7 +23,7 @@ namespace asio {
 
 /// Used to generically specialise associators for a type.
 template <template <typename, typename> class Associator,
-    typename T, typename DefaultCandidate>
+    typename T, typename DefaultCandidate, typename _ = void>
 struct associator
 {
 };

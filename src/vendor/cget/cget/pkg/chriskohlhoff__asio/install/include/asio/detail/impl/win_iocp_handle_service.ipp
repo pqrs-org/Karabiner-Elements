@@ -163,7 +163,7 @@ void win_iocp_handle_service::destroy(
     win_iocp_handle_service::implementation_type& impl)
 {
   close_for_destruction(impl);
-  
+
   // Remove implementation from linked list of all implementations.
   asio::detail::mutex::scoped_lock lock(mutex_);
   if (impl_list_ == &impl)
@@ -365,12 +365,12 @@ size_t win_iocp_handle_service::do_write(
     return 0;
   }
 
-  // Write the data. 
+  // Write the data.
   overlapped.Offset = offset & 0xFFFFFFFF;
   overlapped.OffsetHigh = (offset >> 32) & 0xFFFFFFFF;
   BOOL ok = ::WriteFile(impl.handle_, buffer.data(),
       static_cast<DWORD>(buffer.size()), 0, &overlapped);
-  if (!ok) 
+  if (!ok)
   {
     DWORD last_error = ::GetLastError();
     if (last_error != ERROR_IO_PENDING)
@@ -446,7 +446,7 @@ size_t win_iocp_handle_service::do_read(
     ASIO_ERROR_LOCATION(ec);
     return 0;
   }
-  
+
   // A request to read 0 bytes on a stream handle is a no-op.
   if (buffer.size() == 0)
   {
@@ -466,7 +466,7 @@ size_t win_iocp_handle_service::do_read(
   overlapped.OffsetHigh = (offset >> 32) & 0xFFFFFFFF;
   BOOL ok = ::ReadFile(impl.handle_, buffer.data(),
       static_cast<DWORD>(buffer.size()), 0, &overlapped);
-  if (!ok) 
+  if (!ok)
   {
     DWORD last_error = ::GetLastError();
     if (last_error != ERROR_IO_PENDING && last_error != ERROR_MORE_DATA)

@@ -47,8 +47,9 @@ namespace experimental {
  * the asynchronous operation completes, and the result of the operation is
  * returned.
  *
- * Note that this token is not the most efficient (use @c asio::deferred
- * for that) but does provide type erasure, as it will always return a @c coro.
+ * Note that this token is not the most efficient (use the default completion
+ * token @c asio::deferred for that) but does provide type erasure, as it
+ * will always return a @c coro.
  */
 template <typename Allocator = std::allocator<void>>
 struct use_coro_t
@@ -82,7 +83,6 @@ struct use_coro_t
 #endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
   {
   }
-
 
   /// Specify an alternate allocator.
   template <typename OtherAllocator>

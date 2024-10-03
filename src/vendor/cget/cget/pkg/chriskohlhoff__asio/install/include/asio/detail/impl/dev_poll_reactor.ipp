@@ -66,7 +66,7 @@ void dev_poll_reactor::shutdown()
   timer_queues_.get_all_timers(ops);
 
   scheduler_.abandon_operations(ops);
-} 
+}
 
 void dev_poll_reactor::notify_fork(
     asio::execution_context::fork_event fork_ev)

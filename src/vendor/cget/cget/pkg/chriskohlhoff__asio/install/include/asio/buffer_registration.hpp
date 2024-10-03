@@ -129,7 +129,7 @@ public:
       service_->unregister_buffers();
 #endif // defined(ASIO_HAS_IO_URING)
   }
-  
+
   /// Move assignment.
   buffer_registration& operator=(buffer_registration&& other) noexcept
   {

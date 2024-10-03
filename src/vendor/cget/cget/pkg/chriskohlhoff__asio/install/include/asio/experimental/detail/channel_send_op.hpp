@@ -21,7 +21,6 @@
 #include "asio/error.hpp"
 #include "asio/experimental/channel_error.hpp"
 #include "asio/experimental/detail/channel_operation.hpp"
-#include "asio/experimental/detail/channel_payload.hpp"
 
 #include "asio/detail/push_options.hpp"
 

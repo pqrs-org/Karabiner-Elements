@@ -207,6 +207,36 @@ public:
 /**
  * For example:
  * @code asio::experimental::make_parallel_group(
+ *    in.async_read_some(asio::buffer(data)),
+ *    timer.async_wait()
+ *  ).async_wait(
+ *    asio::experimental::wait_for_all(),
+ *    [](
+ *        std::array<std::size_t, 2> completion_order,
+ *        std::error_code ec1, std::size_t n1,
+ *        std::error_code ec2
+ *    )
+ *    {
+ *      switch (completion_order[0])
+ *      {
+ *      case 0:
+ *        {
+ *          std::cout << "descriptor finished: " << ec1 << ", " << n1 << "\n";
+ *        }
+ *        break;
+ *      case 1:
+ *        {
+ *          std::cout << "timer finished: " << ec2 << "\n";
+ *        }
+ *        break;
+ *      }
+ *    }
+ *  );
+ * @endcode
+ *
+ * If preferred, the asynchronous operations may be explicitly packaged as
+ * function objects:
+ * @code asio::experimental::make_parallel_group(
  *    [&](auto token)
  *    {
  *      return in.async_read_some(asio::buffer(data), token);
@@ -332,28 +362,12 @@ public:
  *
  * For example:
  * @code
- * using op_type = decltype(
- *     socket1.async_read_some(
- *       asio::buffer(data1),
- *       asio::deferred
- *     )
- *   );
+ * using op_type =
+ *   decltype(socket1.async_read_some(asio::buffer(data1)));
  *
  * std::vector<op_type> ops;
- *
- * ops.push_back(
- *     socket1.async_read_some(
- *       asio::buffer(data1),
- *       asio::deferred
- *     )
- *   );
- *
- * ops.push_back(
- *     socket2.async_read_some(
- *       asio::buffer(data2),
- *       asio::deferred
- *     )
- *   );
+ * ops.push_back(socket1.async_read_some(asio::buffer(data1)));
+ * ops.push_back(socket2.async_read_some(asio::buffer(data2)));
  *
  * asio::experimental::make_parallel_group(ops).async_wait(
  *     asio::experimental::wait_for_all(),
@@ -391,28 +405,12 @@ make_parallel_group(Range&& range,
  *
  * For example:
  * @code
- * using op_type = decltype(
- *     socket1.async_read_some(
- *       asio::buffer(data1),
- *       asio::deferred
- *     )
- *   );
+ * using op_type =
+ *   decltype(socket1.async_read_some(asio::buffer(data1)));
  *
  * std::vector<op_type> ops;
- *
- * ops.push_back(
- *     socket1.async_read_some(
- *       asio::buffer(data1),
- *       asio::deferred
- *     )
- *   );
- *
- * ops.push_back(
- *     socket2.async_read_some(
- *       asio::buffer(data2),
- *       asio::deferred
- *     )
- *   );
+ * ops.push_back(socket1.async_read_some(asio::buffer(data1)));
+ * ops.push_back(socket2.async_read_some(asio::buffer(data2)));
  *
  * asio::experimental::make_parallel_group(
  *     std::allocator_arg_t,
