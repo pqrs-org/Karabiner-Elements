@@ -13,6 +13,16 @@ struct ContentView: View {
         OverlayAlertView {
           DoctorAlertView()
         }
+      } else if contentViewStates.showSettingsAlert {
+        // When performing a clean install, many alerts are enabled,
+        // but among them, SettingsAlertView is always displayed first,
+        // followed by other permission-related alerts in order.
+        // If the display priority of SettingsAlertView is low,
+        // it briefly appears before being replaced by other alerts, causing a flickering effect.
+        // To avoid this, the display priority of SettingsAlertView should be set higher.
+        OverlayAlertView {
+          SettingsAlertView()
+        }
       } else if contentViewStates.showInputMonitoringPermissionsAlert {
         OverlayAlertView {
           InputMonitoringPermissionsAlertView()
@@ -34,10 +44,6 @@ struct ContentView: View {
           OverlayAlertView {
             DriverNotActivatedAlertViewMacOS14()
           }
-        }
-      } else if contentViewStates.showSettingsAlert {
-        OverlayAlertView {
-          SettingsAlertView()
         }
       }
     }
