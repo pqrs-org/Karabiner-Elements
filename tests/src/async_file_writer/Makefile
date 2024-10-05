@@ -1,6 +1,6 @@
 all: build_make
 	rm -rf tmp/*
-	./build/karabiner_test
+	MallocNanoZone=0 ./build/karabiner_test
 	[ `cat tmp/example` = 'example3' ]
 	[ `stat -f '%p' tmp/mode644` = '100644' ]
 	[ `stat -f '%p' tmp/mode666` = '100666' ]
