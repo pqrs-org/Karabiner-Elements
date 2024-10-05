@@ -4,6 +4,33 @@
 
 import AppKit
 
+@_cdecl("pqrs_osx_workspace_open_application_by_bundle_identifier")
+func pqrs_osx_workspace_open_application_by_bundle_identifier(
+  _ bundleIdentifierPtr: UnsafePointer<Int8>
+) {
+  let bundleIdentifier = String(cString: bundleIdentifierPtr)
+
+  if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
+    NSWorkspace.shared.openApplication(
+      at: url,
+      configuration: NSWorkspace.OpenConfiguration(),
+      completionHandler: nil
+    )
+  }
+}
+
+@_cdecl("pqrs_osx_workspace_open_application_by_file_path")
+func pqrs_osx_workspace_open_application_by_file_path(_ filePathPtr: UnsafePointer<Int8>) {
+  let filePath = String(cString: filePathPtr)
+
+  let url = URL(filePath: filePath, directoryHint: .notDirectory, relativeTo: nil)
+  NSWorkspace.shared.openApplication(
+    at: url,
+    configuration: NSWorkspace.OpenConfiguration(),
+    completionHandler: nil
+  )
+}
+
 @_cdecl("pqrs_osx_workspace_find_application_url_by_bundle_identifier")
 func pqrs_osx_workspace_find_application_url_by_bundle_identifier(
   _ bundleIdentifierPtr: UnsafePointer<Int8>,

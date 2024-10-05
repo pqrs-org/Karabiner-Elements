@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::workspace v2.3
+// pqrs::osx::workspace v2.4
 
 // (C) Copyright Takayama Fumihiko 2022.
 // Distributed under the Boost Software License, Version 1.0.
@@ -12,6 +12,14 @@
 namespace pqrs {
 namespace osx {
 namespace workspace {
+
+inline void open_application_by_bundle_identifier(const std::string& bundle_identifier) {
+  pqrs_osx_workspace_open_application_by_bundle_identifier(bundle_identifier.c_str());
+}
+
+inline void open_application_by_file_path(const std::string& file_path) {
+  pqrs_osx_workspace_open_application_by_file_path(file_path.c_str());
+}
 
 inline std::string find_application_url_by_bundle_identifier(const std::string& bundle_identifier) {
   char buffer[512];
