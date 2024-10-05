@@ -50,8 +50,10 @@ inline void from_json(const nlohmann::json& json, open_application& value) {
 
   for (const auto& [k, v] : json.items()) {
     if (k == "bundle_identifier") {
+      pqrs::json::requires_string(v, "`" + k + "`");
       value.set_bundle_identifier(v.get<std::string>());
     } else if (k == "file_path") {
+      pqrs::json::requires_string(v, "`" + k + "`");
       value.set_file_path(v.get<std::string>());
     }
   }
