@@ -37,6 +37,32 @@ void run_software_function_test(void) {
     }
 
     //
+    // open_application
+    //
+
+    {
+      auto json = nlohmann::json::object({
+          {"bundle_identifier", "com.apple.Terminal"},
+      });
+
+      auto value = json.get<krbn::software_function_details::open_application>();
+      expect("com.apple.Terminal" == value.get_bundle_identifier());
+
+      expect(nlohmann::json(value) == json);
+    }
+
+    {
+      auto json = nlohmann::json::object({
+          {"file_path", "/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal"},
+      });
+
+      auto value = json.get<krbn::software_function_details::open_application>();
+      expect("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal" == value.get_file_path());
+
+      expect(nlohmann::json(value) == json);
+    }
+
+    //
     // set_mouse_cursor_position
     //
 
