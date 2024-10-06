@@ -377,6 +377,49 @@
         },
         "error": "`software_function` error: `iokit_power_management_sleep_system` error: unknown key: `unknown`"
     },
+    // open_application
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "open_application": null
+            }
+        },
+        "error": "`software_function` error: `open_application` error: json must be object, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "open_application": {
+                    "bundle_identifier": null
+                }
+            }
+        },
+        "error": "`software_function` error: `open_application` error: `bundle_identifier` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "open_application": {
+                    "file_path": null
+                }
+            }
+        },
+        "error": "`software_function` error: `open_application` error: `file_path` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "open_application": {
+                    "unknown": null
+                }
+            }
+        },
+        "error": "`software_function` error: `open_application` error: unknown key: `unknown`"
+    },
     // set_mouse_cursor_position
     {
         "class": "event_definition",

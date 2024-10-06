@@ -10,6 +10,10 @@ extern "C" {
 
 // Do not use these functions directly.
 
+void pqrs_osx_workspace_open_application_by_bundle_identifier(const char* bundle_identifier);
+
+void pqrs_osx_workspace_open_application_by_file_path(const char* file_path);
+
 void pqrs_osx_workspace_find_application_url_by_bundle_identifier(const char* bundle_identifier,
                                                                   char* buffer,
                                                                   int buffer_size);
