@@ -2,7 +2,6 @@ import SwiftUI
 
 struct KeyboardTypeSelectorView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var grabberClient = LibKrbn.GrabberClient.shared
 
   var body: some View {
     Picker(
@@ -13,7 +12,6 @@ struct KeyboardTypeSelectorView: View {
       Text("JIS (Japanese)").tag("jis")
     }
     .pickerStyle(RadioGroupPickerStyle())
-    .disabled(!grabberClient.connected)
   }
 }
 
