@@ -304,6 +304,15 @@
         },
         "error": "`software_function` error: json must be object, but is `null`"
     },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "unknown": null
+            }
+        },
+        "error": "`software_function` error: unknown key: `unknown`"
+    },
     // cg_event_double_click
     {
         "class": "event_definition",
@@ -399,6 +408,17 @@
             }
         },
         "error": "`software_function` error: `open_application` error: `file_path` must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "open_application": {
+                    "unknown": null
+                }
+            }
+        },
+        "error": "`software_function` error: `open_application` error: unknown key: `unknown`"
     },
     // set_mouse_cursor_position
     {

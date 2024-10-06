@@ -55,6 +55,8 @@ inline void from_json(const nlohmann::json& json, open_application& value) {
     } else if (k == "file_path") {
       pqrs::json::requires_string(v, "`" + k + "`");
       value.set_file_path(v.get<std::string>());
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));
     }
   }
 }

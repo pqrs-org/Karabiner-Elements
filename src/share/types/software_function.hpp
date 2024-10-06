@@ -83,6 +83,9 @@ inline void from_json(const nlohmann::json& json, software_function& value) {
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", k, e.what()));
       }
+
+    } else {
+      throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));
     }
   }
 }
