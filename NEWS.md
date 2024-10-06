@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 15.1.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.1.0/Karabiner-Elements-15.1.0.dmg)
+-   📅 Release date
+    -   Oct 6, 2024
 -   🔔 Important Notes
     -   After the upgrade, macOS must be restarted to update the virtual keyboard driver.
         <br/><br/>
