@@ -22,6 +22,7 @@
         -   `karabiner_grabber_devices.json`
         -   `karabiner_grabber_device_details.json` (obsoleted)
 -   ✨ New Features
+    -   Added [open_application](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/software_function/open_application/) to complex modifications.
     -   A setting has been added to disable mouse cursor movement and scrolling for both the mouse and gamepad.
     -   Settings of the gamepad stick have been added; deadzone and delta magnitude detection threshold.
     -   Added an option to allow quitting EventViewer with Command+Q and Command+W.
