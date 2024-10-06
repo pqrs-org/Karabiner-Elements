@@ -2,7 +2,6 @@ import SwiftUI
 
 struct VirtualKeyboardView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var grabberClient = LibKrbn.GrabberClient.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
