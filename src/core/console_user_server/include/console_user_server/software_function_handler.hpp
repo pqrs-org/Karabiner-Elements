@@ -7,6 +7,7 @@
 #include <pqrs/osx/iokit_power_management.hpp>
 #include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/system_preferences.hpp>
+#include <pqrs/osx/workspace.hpp>
 
 namespace krbn {
 namespace console_user_server {
@@ -26,6 +27,8 @@ public:
       execute_cg_event_double_click(*v);
     } else if (auto v = software_function.get_if<software_function_details::iokit_power_management_sleep_system>()) {
       execute_iokit_power_management_sleep_system(*v);
+    } else if (auto v = software_function.get_if<software_function_details::open_application>()) {
+      execute_open_application(*v);
     } else if (auto v = software_function.get_if<software_function_details::set_mouse_cursor_position>()) {
       execute_set_mouse_cursor_position(*v);
     }
@@ -54,6 +57,14 @@ private:
           }
         },
         when_now() + pqrs::osx::chrono::make_milliseconds(duration));
+  }
+
+  void execute_open_application(const software_function_details::open_application& open_application) {
+    if (auto v = open_application.get_bundle_identifier()) {
+      pqrs::osx::workspace::open_application_by_bundle_identifier(*v);
+    } else if (auto v = open_application.get_file_path()) {
+      pqrs::osx::workspace::open_application_by_file_path(*v);
+    }
   }
 
   void execute_set_mouse_cursor_position(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {

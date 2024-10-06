@@ -25,5 +25,6 @@ targets:
           - '-std=c++20'
       - path: ../../vendor/cget/src/pqrs/osx/frontmost_application_monitor
       - path: ../../vendor/cget/src/pqrs/osx/process_info
+      - path: ../../vendor/cget/src/pqrs/osx/workspace
     dependencies:
       - framework: Carbon.framework
