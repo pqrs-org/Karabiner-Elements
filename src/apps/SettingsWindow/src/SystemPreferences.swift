@@ -36,14 +36,5 @@ final class SystemPreferences: ObservableObject {
     didSetEnabled = true
   }
 
-  @Published var useFkeysAsStandardFunctionKeys: Bool = false {
-    didSet {
-      if didSetEnabled {
-        var domain =
-          UserDefaults.standard.persistentDomain(forName: UserDefaults.globalDomain) ?? [:]
-        domain["com.apple.keyboard.fnState"] = useFkeysAsStandardFunctionKeys
-        UserDefaults.standard.setPersistentDomain(domain, forName: UserDefaults.globalDomain)
-      }
-    }
-  }
+  @Published var useFkeysAsStandardFunctionKeys: Bool = false
 }

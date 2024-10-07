@@ -17,12 +17,36 @@ struct FunctionKeysView: View {
         }
       }
 
-      HStack {
-        Toggle(isOn: $systemPreferences.useFkeysAsStandardFunctionKeys) {
-          Text("Use all F1, F2, etc. keys as standard function keys")
-        }.switchToggleStyle()
+      VStack(alignment: .leading) {
+        // When using Apple's Vendor ID and Product ID with the virtual keyboard,
+        // useFkeysAsStandardFunctionKeys needs to be changed through the System Settings; otherwise,
+        // the setting will not be applied correctly.
+        // Therefore, instead of changing it directly here, providing a button to open the System Settings.
 
-        Spacer()
+        HStack {
+          Text("Use all F1, F2, etc. keys as standard function keys:")
+
+          if systemPreferences.useFkeysAsStandardFunctionKeys {
+            Text("On").foregroundColor(.accentColor).bold()
+          } else {
+            Text("Off")
+          }
+        }
+
+        Button(
+          action: {
+            if let url = URL(
+              string: "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?FunctionKeys"
+            ) {
+              NSWorkspace.shared.open(url)
+            }
+          },
+          label: {
+            Label(
+              "Open System Settings > Function Keys...",
+              systemImage: "arrow.up.forward.app")
+          }
+        )
       }
     }
     .padding()
