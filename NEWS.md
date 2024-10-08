@@ -1,5 +1,9 @@
 # Changelog
 
+## Beta
+
+-   Improved the behavior when setting the function keys to act as regular f1...f12 keys instead of media controls.
+
 ## Karabiner-Elements 15.2.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.2.0/Karabiner-Elements-15.2.0.dmg)

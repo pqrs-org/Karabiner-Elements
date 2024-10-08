@@ -23,28 +23,25 @@ public:
               const pqrs::osx::system_preferences::properties& system_preferences_properties) {
     manipulator_manager_->invalidate_manipulators();
 
-    auto from_mandatory_modifiers = nlohmann::json::array();
-
-    auto from_optional_modifiers = nlohmann::json::array();
-    from_optional_modifiers.push_back("any");
-
-    auto to_modifiers = nlohmann::json::array();
+    bool from_mandatory_modifiers_fn = false;
 
     if (system_preferences_properties.get_use_fkeys_as_standard_function_keys()) {
+      // Use all F1, F2, etc. keys as standard function keys: On
+      //
       // f1 -> f1
       // fn+f1 -> display_brightness_decrement
 
-      from_mandatory_modifiers.push_back("fn");
+      from_mandatory_modifiers_fn = true;
 
       // consumer_key_code::dictation does not work with modifier_flag::fn.
       // So, we send the plain media keys.
       // (e.g., display_brightness_decrement, not fn+display_brightness_decrement)
 
     } else {
+      // Use all F1, F2, etc. keys as standard function keys: Off
+      //
       // f1 -> display_brightness_decrement
-      // fn+f1 -> f1
-
-      // fn+f1 ... fn+f12 -> f1 .. f12
+      // fn+f1...fn+f12 -> f1...f12
 
       for (int i = 1; i <= 12; ++i) {
         auto from_json = nlohmann::json::object({
@@ -82,10 +79,8 @@ public:
     for (const auto& device : profile.get_devices()) {
       for (const auto& pair : device->get_fn_function_keys()->get_pairs()) {
         try {
-          if (auto m = make_manipulator(pair,
-                                        from_mandatory_modifiers,
-                                        from_optional_modifiers,
-                                        to_modifiers)) {
+          if (auto m = make_function_key_manipulator(pair,
+                                                     from_mandatory_modifiers_fn)) {
             m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
             m->push_back_condition(manipulator::manipulator_factory::make_device_unless_touch_bar_condition());
 
@@ -105,10 +100,8 @@ public:
     }
 
     for (const auto& pair : profile.get_fn_function_keys()->get_pairs()) {
-      if (auto m = make_manipulator(pair,
-                                    from_mandatory_modifiers,
-                                    from_optional_modifiers,
-                                    to_modifiers)) {
+      if (auto m = make_function_key_manipulator(pair,
+                                                 from_mandatory_modifiers_fn)) {
         m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
         m->push_back_condition(manipulator::manipulator_factory::make_device_unless_touch_bar_condition());
 
@@ -231,17 +224,19 @@ public:
   }
 
 private:
-  std::shared_ptr<manipulator::manipulators::base> make_manipulator(const std::pair<std::string, std::string>& pair,
-                                                                    const nlohmann::json& from_mandatory_modifiers,
-                                                                    const nlohmann::json& from_optional_modifiers,
-                                                                    const nlohmann::json& to_modifiers) const {
+  std::shared_ptr<manipulator::manipulators::base> make_function_key_manipulator(const std::pair<std::string, std::string>& pair,
+                                                                                 bool from_mandatory_modifiers_fn) const {
     try {
       auto from_json = json_utility::parse_jsonc(pair.first);
       if (from_json.empty()) {
         return nullptr;
       }
-      from_json["modifiers"]["mandatory"] = from_mandatory_modifiers;
-      from_json["modifiers"]["optional"] = from_optional_modifiers;
+      from_json["modifiers"]["mandatory"] = nlohmann::json::array();
+      if (from_mandatory_modifiers_fn) {
+        from_json["modifiers"]["mandatory"].push_back("fn");
+      }
+
+      from_json["modifiers"]["optional"] = nlohmann::json::array({"any"});
 
       auto to_json = json_utility::parse_jsonc(pair.second);
       if (to_json.empty()) {
@@ -250,7 +245,38 @@ private:
 
       std::vector<manipulator::to_event_definition> to_event_definitions;
       for (auto&& j : to_json) {
-        j["modifiers"] = to_modifiers;
+        // Note:
+        // Normal f1...f12 keys will be changed media control keys by the Apple keyboard driver of macOS.
+        // Therefore, if f1...f12 is specified in `to` events, we should send these keys with/without fn.
+        //
+        // - When `from_mandatory_modifiers_fn` == true:
+        //     - Use all F1, F2, etc. keys as standard function keys: On
+        //     - In this case, f1 is interpreted as a regular f1 key.
+        // - When `from_mandatory_modifiers_fn` == false:
+        //     - Use all F1, F2, etc. keys as standard function keys: Off
+        //     - In this case, fn+f1 is interpreted as a regular f1 key.
+
+        if (j.contains("key_code")) {
+          if (j["key_code"] == "f1" ||
+              j["key_code"] == "f2" ||
+              j["key_code"] == "f3" ||
+              j["key_code"] == "f4" ||
+              j["key_code"] == "f5" ||
+              j["key_code"] == "f6" ||
+              j["key_code"] == "f7" ||
+              j["key_code"] == "f8" ||
+              j["key_code"] == "f9" ||
+              j["key_code"] == "f10" ||
+              j["key_code"] == "f11" ||
+              j["key_code"] == "f12") {
+            if (!from_mandatory_modifiers_fn) {
+              if (!j["modifiers"].contains("fn")) {
+                j["modifiers"].push_back("fn");
+              }
+            }
+          }
+        }
+
         to_event_definitions.emplace_back(j);
       }
 
