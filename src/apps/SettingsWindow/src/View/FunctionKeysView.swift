@@ -54,6 +54,7 @@ struct FunctionKeysView: View {
 
   struct FnFunctionKeysView: View {
     @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var systemPreferences = SystemPreferences.shared
 
     private let selectedDevice: LibKrbn.ConnectedDevice?
     private let fnFunctionKeys: [LibKrbn.SimpleModification]
@@ -71,8 +72,12 @@ struct FunctionKeysView: View {
         VStack(alignment: .leading, spacing: 6.0) {
           ForEach(fnFunctionKeys) { fnFunctionKey in
             HStack {
-              Text(fnFunctionKey.fromEntry.label)
-                .frame(width: 40)
+              Text(
+                systemPreferences.useFkeysAsStandardFunctionKeys
+                  ? "fn + \(fnFunctionKey.fromEntry.label)"
+                  : fnFunctionKey.fromEntry.label
+              )
+              .frame(width: 80)
 
               Image(systemName: "arrow.forward")
                 .padding(.horizontal, 6.0)
