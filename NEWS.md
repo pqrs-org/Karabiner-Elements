@@ -4,6 +4,8 @@
 
 -   🐛 Bug Fixes
     -   Fixed the behavior when setting the function keys to act as regular f1...f12 keys instead of media controls.
+-   ⚡️ Improvements
+    -   The key names in the Function Keys settings became clearer when "Use all F1, F2, etc. keys as standard function keys" is enabled.
 
 ## Karabiner-Elements 15.2.0
 
