@@ -77,7 +77,7 @@ struct FunctionKeysView: View {
                   ? "fn + \(fnFunctionKey.fromEntry.label)"
                   : fnFunctionKey.fromEntry.label
               )
-              .frame(width: 80)
+              .frame(width: 80, alignment: .trailing)
 
               Image(systemName: "arrow.forward")
                 .padding(.horizontal, 6.0)
