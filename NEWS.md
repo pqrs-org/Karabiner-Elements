@@ -4,6 +4,10 @@
 
 -   🐛 Bug Fixes
     -   Fixed the behavior when setting the function keys to act as regular f1...f12 keys instead of media controls.
+-   ✨ New Features
+    -   Added the following variables for `variable_if`, `variable_unless`:
+        -   `system.scroll_direction_is_natural`
+        -   `system.use_fkeys_as_standard_function_keys`
 -   ⚡️ Improvements
     -   The key names in the Function Keys settings became clearer when "Use all F1, F2, etc. keys as standard function keys" is enabled.
 
