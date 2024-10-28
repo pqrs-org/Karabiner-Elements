@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 15.3.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.3.0/Karabiner-Elements-15.3.0.dmg)
+-   📅 Release date
+    -   Oct 28, 2024
 -   🐛 Bug Fixes
     -   Fixed the behavior when setting the function keys to act as regular f1...f12 keys instead of media controls.
 -   ✨ New Features
