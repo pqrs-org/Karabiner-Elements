@@ -21,11 +21,15 @@ public:
       count_ += value;
 
       while (count_ <= -threshold_) {
-        --result;
+        if (result > -127) {
+          --result;
+        }
         count_ += threshold_;
       }
       while (count_ >= threshold_) {
-        ++result;
+        if (result < 127) {
+          ++result;
+        }
         count_ -= threshold_;
       }
 
