@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   🐛 Bug Fixes
+    -   Fixed an overflow issue with the mouse key movements.
+
 ## Karabiner-Elements 15.3.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.3.0/Karabiner-Elements-15.3.0.dmg)
