@@ -2863,6 +2863,16 @@
         "data": [{ "consumer_key_code": "ac_bookmarks" }]
     },
     {
+        "not_to": true,
+        "label": "ac_zoom_out",
+        "data": [{ "consumer_key_code": "ac_zoom_out" }]
+    },
+    {
+        "not_to": true,
+        "label": "ac_zoom_in",
+        "data": [{ "consumer_key_code": "ac_zoom_in" }]
+    },
+    {
         "category": "Remote control buttons"
     },
     {
