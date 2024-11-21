@@ -277,6 +277,27 @@ private:
           }
         }
 
+        // When we change fn+f10 to mute, directly mapping fn+f10 to mute will result in the following events being sent:
+        //
+        // - input: fn keydown
+        //     - output: fn keydown
+        // - input: f10 keydown
+        //     - output: fn keyup
+        //     - output: mute keydown
+        // - input: fn10 keyup
+        //     - output: mute keyup
+        // - input: fn keyup
+        //     - output: none
+        //
+        // In this case, the fn key is unintentionally tapped.
+        // To avoid this, fn+f10 should be remapped to fn+mute instead.
+
+        if (from_mandatory_modifiers_fn) {
+          if (!j["modifiers"].contains("fn")) {
+            j["modifiers"].push_back("fn");
+          }
+        }
+
         to_event_definitions.emplace_back(j);
       }
 

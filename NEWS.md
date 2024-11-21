@@ -4,6 +4,7 @@
 
 -   🐛 Bug Fixes
     -   Fixed an overflow issue with the mouse key movements.
+    -   Fixed an issue that the fn key is unintentionally tapped when use the media keys if "Use all F1, F2, etc. keys as standard function keys" is enabled.
 -   ⚡️ Improvements
     -   Support the following keys:
         -   consumer::ac_zoom_out
