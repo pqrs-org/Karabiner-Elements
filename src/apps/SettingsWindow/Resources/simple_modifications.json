@@ -2481,7 +2481,7 @@
         ]
     },
     {
-        "category": "Application Launch keys"
+        "category": "Application launch keys"
     },
     {
         "label": "al_consumer_control_configuration (Music)",
@@ -2835,7 +2835,7 @@
         "data": [{ "consumer_key_code": "al_contextaware_desktop_assistant" }]
     },
     {
-        "category": "Generic GUI application Control keys"
+        "category": "Generic GUI application control keys"
     },
     {
         "not_to": true,
@@ -2989,6 +2989,18 @@
         "not_to": true,
         "label": "three_dimensional_mode_select",
         "data": [{ "consumer_key_code": "three_dimensional_mode_select" }]
+    },
+    {
+        "category": "Generic desktop keys"
+    },
+    {
+        "not_to": true,
+        "label": "system_sleep",
+        "data": [
+            {
+                "generic_desktop": "system_sleep"
+            }
+        ]
     },
     {
         "category": "Others"
