@@ -257,18 +257,7 @@ private:
         //     - In this case, fn+f1 is interpreted as a regular f1 key.
 
         if (j.contains("key_code")) {
-          if (j["key_code"] == "f1" ||
-              j["key_code"] == "f2" ||
-              j["key_code"] == "f3" ||
-              j["key_code"] == "f4" ||
-              j["key_code"] == "f5" ||
-              j["key_code"] == "f6" ||
-              j["key_code"] == "f7" ||
-              j["key_code"] == "f8" ||
-              j["key_code"] == "f9" ||
-              j["key_code"] == "f10" ||
-              j["key_code"] == "f11" ||
-              j["key_code"] == "f12") {
+          if (f1_f12_key(j["key_code"])) {
             if (!from_mandatory_modifiers_fn) {
               if (!j["modifiers"].contains("fn")) {
                 j["modifiers"].push_back("fn");
@@ -291,10 +280,19 @@ private:
         //
         // In this case, the fn key is unintentionally tapped.
         // To avoid this, fn+f10 should be remapped to fn+mute instead.
+        //
+        // Note:
+        // However, if we want to send f10 as is, sending it as fn+f10 will result in macOS converting it to mute.
+        // For f1–f12 specifically, fn should not be added.
 
         if (from_mandatory_modifiers_fn) {
-          if (!j["modifiers"].contains("fn")) {
-            j["modifiers"].push_back("fn");
+          if (j.contains("key_code") &&
+              f1_f12_key(j["key_code"])) {
+            // Do not append fn modifier
+          } else {
+            if (!j["modifiers"].contains("fn")) {
+              j["modifiers"].push_back("fn");
+            }
           }
         }
 
@@ -310,6 +308,21 @@ private:
     }
 
     return nullptr;
+  }
+
+  bool f1_f12_key(const std::string key_code) const {
+    return key_code == "f1" ||
+           key_code == "f2" ||
+           key_code == "f3" ||
+           key_code == "f4" ||
+           key_code == "f5" ||
+           key_code == "f6" ||
+           key_code == "f7" ||
+           key_code == "f8" ||
+           key_code == "f9" ||
+           key_code == "f10" ||
+           key_code == "f11" ||
+           key_code == "f12";
   }
 
   std::shared_ptr<manipulator::manipulator_manager> manipulator_manager_;
