@@ -153,6 +153,7 @@ int main(void) {
       }
 
       auto events = nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events());
+      // std::cout << events << std::endl;
 
       // f1 -> mission_control
       auto index = 0;
@@ -228,6 +229,122 @@ int main(void) {
 
       // check size
       expect(index + 1 == events.size());
+
+      // cleanup
+      post_event_to_virtual_devices_manipulator->clear_queue();
+    }
+
+    //
+    // use_fkeys_as_standard_function_keys: true
+    // (f1 -> f1, fn+f1 -> mission_control)
+    //
+
+    {
+      pqrs::osx::system_preferences::properties properties;
+      properties.set_use_fkeys_as_standard_function_keys(true);
+
+      manager->update(core_configuration->get_selected_profile(), properties);
+
+      auto input_event_queue_copy = std::make_shared<krbn::event_queue::queue>();
+      auto intermediate_event_queue = std::make_shared<krbn::event_queue::queue>();
+      auto output_event_queue = std::make_shared<krbn::event_queue::queue>();
+
+      auto connector = std::make_shared<krbn::manipulator::manipulator_managers_connector>();
+      connector->emplace_back_connection(manager->get_manipulator_manager(),
+                                         input_event_queue_copy,
+                                         intermediate_event_queue);
+      connector->emplace_back_connection(post_event_to_virtual_devices_manipulator_manager,
+                                         output_event_queue);
+
+      //
+      // manipulate
+      //
+
+      for (const auto& e : input_event_queue->get_entries()) {
+        input_event_queue_copy->push_back_entry(e);
+        connector->manipulate(e.get_event_time_stamp().get_time_stamp());
+      }
+
+      auto events = nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events());
+      std::cout << events << std::endl;
+
+      // f1 -> f1
+      auto index = 0;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f1" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // f2 -> f2
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f2" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // f3 -> f3
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f3" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn key_down
+      ++index;
+      expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "apple_vendor_top_case_key_code": "keyboard_fn" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn+f1 -> fn+mission_control
+      ++index;
+      expect("apple_vendor_keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "apple_vendor_keyboard_key_code": "mission_control" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("apple_vendor_keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn+f2 -> f3
+      ++index;
+      expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f3" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn+f3 -> fn+spacebar
+      ++index;
+      expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "apple_vendor_top_case_key_code": "keyboard_fn" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "spacebar" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn key_up
+      ++index;
+      expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // check size
+      expect(index + 1 == events.size());
+
+      // cleanup
+      post_event_to_virtual_devices_manipulator->clear_queue();
     }
   };
 
