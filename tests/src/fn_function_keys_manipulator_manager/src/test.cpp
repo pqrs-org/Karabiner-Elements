@@ -1,13 +1,18 @@
 #include "../../../src/core/grabber/include/grabber/device_grabber_details/fn_function_keys_manipulator_manager.hpp"
+#include "manipulator/manipulator_managers_connector.hpp"
+#include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include <boost/ut.hpp>
 
 int main(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
+  using namespace std::string_literals;
+  using namespace std::literals::string_view_literals;
 
   "fn_function_keys_manipulator_manager"_test = [] {
     auto device_id_1 = krbn::device_id(1);
     auto state_original = krbn::event_queue::state::original;
+    auto state_virtual = krbn::event_queue::state::virtual_event;
 
     auto f1 = krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_f1));
@@ -21,8 +26,17 @@ int main(void) {
                                                                                  pqrs::hid::usage::apple_vendor_keyboard::expose_all));
     auto spacebar = krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                           pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
+    auto released_event = krbn::event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
 
     auto manager = std::make_shared<krbn::grabber::device_grabber_details::fn_function_keys_manipulator_manager>();
+
+    auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
+    auto notification_message_manager = std::make_shared<krbn::notification_message_manager>("tmp/notification_message.json");
+    auto post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
+        console_user_server_client,
+        notification_message_manager);
+    auto post_event_to_virtual_devices_manipulator_manager = std::make_shared<krbn::manipulator::manipulator_manager>();
+    post_event_to_virtual_devices_manipulator_manager->push_back_manipulator(post_event_to_virtual_devices_manipulator);
 
     auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
     auto fn_function_keys = core_configuration->get_selected_profile().get_fn_function_keys();
@@ -43,7 +57,73 @@ int main(void) {
                                    R"( [ { "key_code" : "spacebar" } ] )");
 
     //
-    // f1 -> mission_control, fn+f1 -> f1
+    // input events
+    //
+
+    auto input_event_queue = std::make_shared<krbn::event_queue::queue>();
+
+    // f1 key_down
+    auto t = krbn::absolute_time_point(1);
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f1, krbn::event_type::key_down, f1, state_original);
+
+    // f1 key_up
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f1, krbn::event_type::key_up, f1, state_original);
+
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), released_event, krbn::event_type::single, released_event, state_virtual);
+
+    // f2 key_down
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f2, krbn::event_type::key_down, f2, state_original);
+
+    // f2 key_up
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f2, krbn::event_type::key_up, f2, state_original);
+
+    // f3 key_down
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f3, krbn::event_type::key_down, f3, state_original);
+
+    // f3 key_up
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f3, krbn::event_type::key_up, f3, state_original);
+
+    // fn key_down
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), fn, krbn::event_type::key_down, fn, state_original);
+
+    // fn+f1 key_down
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f1, krbn::event_type::key_down, f1, state_original);
+
+    // fn+f1 key_up
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f1, krbn::event_type::key_up, f1, state_original);
+
+    // fn+f2 key_down
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f2, krbn::event_type::key_down, f2, state_original);
+
+    // fn+f2 key_up
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f2, krbn::event_type::key_up, f2, state_original);
+
+    // fn+f3 key_down
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f3, krbn::event_type::key_down, f3, state_original);
+
+    // fn+f3 key_up
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f3, krbn::event_type::key_up, f3, state_original);
+
+    // fn key_up
+    t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
+    input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), fn, krbn::event_type::key_up, fn, state_original);
+
+    //
+    // use_fkeys_as_standard_function_keys: false
+    // (f1 -> mission_control, fn+f1 -> f1)
     //
 
     {
@@ -52,61 +132,102 @@ int main(void) {
 
       manager->update(core_configuration->get_selected_profile(), properties);
 
-      std::cout << core_configuration->get_selected_profile().get_fn_function_keys() << std::endl;
-
-      auto input_event_queue = std::make_shared<krbn::event_queue::queue>();
+      auto input_event_queue_copy = std::make_shared<krbn::event_queue::queue>();
+      auto intermediate_event_queue = std::make_shared<krbn::event_queue::queue>();
       auto output_event_queue = std::make_shared<krbn::event_queue::queue>();
 
-      //
-      // f1
-      //
-
-      auto t = krbn::absolute_time_point(1);
-      input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f1, krbn::event_type::key_down, f1, state_original);
-
-      t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-      input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f1, krbn::event_type::key_up, f1, state_original);
-
-      //
-      // f2
-      //
-
-      t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-      input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f2, krbn::event_type::key_down, f2, state_original);
-
-      t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-      input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f2, krbn::event_type::key_up, f2, state_original);
-
-      //
-      // f3
-      //
-
-      t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-      input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f3, krbn::event_type::key_down, f3, state_original);
-
-      t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-      input_event_queue->emplace_back_entry(device_id_1, krbn::event_queue::event_time_stamp(t), f3, krbn::event_type::key_up, f3, state_original);
+      auto connector = std::make_shared<krbn::manipulator::manipulator_managers_connector>();
+      connector->emplace_back_connection(manager->get_manipulator_manager(),
+                                         input_event_queue_copy,
+                                         intermediate_event_queue);
+      connector->emplace_back_connection(post_event_to_virtual_devices_manipulator_manager,
+                                         output_event_queue);
 
       //
       // manipulate
       //
 
-      t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-      while (manager->get_manipulator_manager()->manipulate(input_event_queue,
-                                                            output_event_queue,
-                                                            t)) {
+      for (const auto& e : input_event_queue->get_entries()) {
+        input_event_queue_copy->push_back_entry(e);
+        connector->manipulate(e.get_event_time_stamp().get_time_stamp());
       }
 
-      expect(8 == output_event_queue->get_entries().size());
+      auto events = nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events());
 
-      expect(mission_control == output_event_queue->get_entries()[0].get_event()); // key_down
-      expect(mission_control == output_event_queue->get_entries()[1].get_event()); // key_up
-      expect(fn == output_event_queue->get_entries()[2].get_event());              // key_down
-      expect(f3 == output_event_queue->get_entries()[3].get_event());              // key_down
-      expect(fn == output_event_queue->get_entries()[4].get_event());              // key_up
-      expect(f3 == output_event_queue->get_entries()[5].get_event());              // key_up
-      expect(spacebar == output_event_queue->get_entries()[6].get_event());        // key_down
-      expect(spacebar == output_event_queue->get_entries()[7].get_event());        // key_up
+      // f1 -> mission_control
+      auto index = 0;
+      expect("apple_vendor_keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "apple_vendor_keyboard_key_code": "mission_control" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("apple_vendor_keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // f2 -> f3
+      ++index;
+      expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "apple_vendor_top_case_key_code": "keyboard_fn" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f3" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // f3 -> spacebar
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "spacebar" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn key_down
+      ++index;
+      expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "apple_vendor_top_case_key_code": "keyboard_fn" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn+f1 -> fn+f1
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f1" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn+f2 -> fn+f2
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f2" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn+f3 -> fn+f3
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [{ "key_code": "f3" }] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      ++index;
+      expect("keyboard_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // fn key_up
+      ++index;
+      expect("apple_vendor_top_case_input"sv == events[index]["type"].get<std::string>());
+      expect(R"( [] )"_json == events[index][events[index]["type"]]["keys"]);
+
+      // check size
+      expect(index + 1 == events.size());
     }
   };
 
