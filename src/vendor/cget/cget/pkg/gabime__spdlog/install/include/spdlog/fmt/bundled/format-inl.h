@@ -8,17 +8,19 @@
 #ifndef FMT_FORMAT_INL_H_
 #define FMT_FORMAT_INL_H_
 
-#include <algorithm>
-#include <cerrno>  // errno
-#include <climits>
-#include <cmath>
-#include <exception>
+#ifndef FMT_MODULE
+#  include <algorithm>
+#  include <cerrno>  // errno
+#  include <climits>
+#  include <cmath>
+#  include <exception>
 
-#ifndef FMT_STATIC_THOUSANDS_SEPARATOR
-#  include <locale>
+#  if !defined(FMT_STATIC_THOUSANDS_SEPARATOR)
+#    include <locale>
+#  endif
 #endif
 
-#if defined(_WIN32) && !defined(FMT_WINDOWS_NO_WCHAR)
+#if defined(_WIN32) && !defined(FMT_USE_WRITE_CONSOLE)
 #  include <io.h>  // _isatty
 #endif
 
@@ -34,10 +36,6 @@ FMT_FUNC void assert_fail(const char* file, int line, const char* message) {
   // Chosen instead of std::abort to satisfy Clang in CUDA mode during device
   // code pass.
   std::terminate();
-}
-
-FMT_FUNC void throw_format_error(const char* message) {
-  FMT_THROW(format_error(message));
 }
 
 FMT_FUNC void format_error_code(detail::buffer<char>& out, int error_code,
@@ -56,7 +54,7 @@ FMT_FUNC void format_error_code(detail::buffer<char>& out, int error_code,
     ++error_code_size;
   }
   error_code_size += detail::to_unsigned(detail::count_digits(abs_value));
-  auto it = buffer_appender<char>(out);
+  auto it = appender(out);
   if (message.size() <= inline_buffer_size - error_code_size)
     fmt::format_to(it, FMT_STRING("{}{}"), message, SEP);
   fmt::format_to(it, FMT_STRING("{}{}"), ERROR_STR, error_code);
@@ -113,8 +111,12 @@ template <typename Char> FMT_FUNC Char decimal_point_impl(locale_ref) {
 #endif
 
 FMT_FUNC auto write_loc(appender out, loc_value value,
-                        const format_specs<>& specs, locale_ref loc) -> bool {
-#ifndef FMT_STATIC_THOUSANDS_SEPARATOR
+                        const format_specs& specs, locale_ref loc) -> bool {
+#ifdef FMT_STATIC_THOUSANDS_SEPARATOR
+  value.visit(loc_writer<>{
+      out, specs, std::string(1, FMT_STATIC_THOUSANDS_SEPARATOR), "\3", "."});
+  return true;
+#else
   auto locale = loc.get<std::locale>();
   // We cannot use the num_put<char> facet because it may produce output in
   // a wrong encoding.
@@ -123,9 +125,12 @@ FMT_FUNC auto write_loc(appender out, loc_value value,
     return std::use_facet<facet>(locale).put(out, value, specs);
   return facet(locale).put(out, value, specs);
 #endif
-  return false;
 }
 }  // namespace detail
+
+FMT_FUNC void report_error(const char* message) {
+  FMT_THROW(format_error(message));
+}
 
 template <typename Locale> typename Locale::id format_facet<Locale>::id;
 
@@ -138,7 +143,7 @@ template <typename Locale> format_facet<Locale>::format_facet(Locale& loc) {
 
 template <>
 FMT_API FMT_FUNC auto format_facet<std::locale>::do_put(
-    appender out, loc_value val, const format_specs<>& specs) const -> bool {
+    appender out, loc_value val, const format_specs& specs) const -> bool {
   return val.visit(
       detail::loc_writer<>{out, specs, separator_, grouping_, decimal_point_});
 }
@@ -1411,7 +1416,7 @@ FMT_FUNC void format_system_error(detail::buffer<char>& out, int error_code,
                                   const char* message) noexcept {
   FMT_TRY {
     auto ec = std::error_code(error_code, std::generic_category());
-    write(std::back_inserter(out), std::system_error(ec, message).what());
+    detail::write(appender(out), std::system_error(ec, message).what());
     return;
   }
   FMT_CATCH(...) {}
@@ -1432,9 +1437,242 @@ FMT_FUNC auto vformat(string_view fmt, format_args args) -> std::string {
 }
 
 namespace detail {
-#if !defined(_WIN32) || defined(FMT_WINDOWS_NO_WCHAR)
+
+template <typename T> struct span {
+  T* data;
+  size_t size;
+};
+
+template <typename F> auto flockfile(F* f) -> decltype(_lock_file(f)) {
+  _lock_file(f);
+}
+template <typename F> auto funlockfile(F* f) -> decltype(_unlock_file(f)) {
+  _unlock_file(f);
+}
+
+#ifndef getc_unlocked
+template <typename F> auto getc_unlocked(F* f) -> decltype(_fgetc_nolock(f)) {
+  return _fgetc_nolock(f);
+}
+#endif
+
+template <typename F = FILE, typename Enable = void>
+struct has_flockfile : std::false_type {};
+
+template <typename F>
+struct has_flockfile<F, void_t<decltype(flockfile(&std::declval<F&>()))>>
+    : std::true_type {};
+
+// A FILE wrapper. F is FILE defined as a template parameter to make system API
+// detection work.
+template <typename F> class file_base {
+ public:
+  F* file_;
+
+ public:
+  file_base(F* file) : file_(file) {}
+  operator F*() const { return file_; }
+
+  // Reads a code unit from the stream.
+  auto get() -> int {
+    int result = getc_unlocked(file_);
+    if (result == EOF && ferror(file_) != 0)
+      FMT_THROW(system_error(errno, FMT_STRING("getc failed")));
+    return result;
+  }
+
+  // Puts the code unit back into the stream buffer.
+  void unget(char c) {
+    if (ungetc(c, file_) == EOF)
+      FMT_THROW(system_error(errno, FMT_STRING("ungetc failed")));
+  }
+
+  void flush() { fflush(this->file_); }
+};
+
+// A FILE wrapper for glibc.
+template <typename F> class glibc_file : public file_base<F> {
+ private:
+  enum {
+    line_buffered = 0x200,  // _IO_LINE_BUF
+    unbuffered = 2          // _IO_UNBUFFERED
+  };
+
+ public:
+  using file_base<F>::file_base;
+
+  auto is_buffered() const -> bool {
+    return (this->file_->_flags & unbuffered) == 0;
+  }
+
+  void init_buffer() {
+    if (this->file_->_IO_write_ptr) return;
+    // Force buffer initialization by placing and removing a char in a buffer.
+    putc_unlocked(0, this->file_);
+    --this->file_->_IO_write_ptr;
+  }
+
+  // Returns the file's read buffer.
+  auto get_read_buffer() const -> span<const char> {
+    auto ptr = this->file_->_IO_read_ptr;
+    return {ptr, to_unsigned(this->file_->_IO_read_end - ptr)};
+  }
+
+  // Returns the file's write buffer.
+  auto get_write_buffer() const -> span<char> {
+    auto ptr = this->file_->_IO_write_ptr;
+    return {ptr, to_unsigned(this->file_->_IO_buf_end - ptr)};
+  }
+
+  void advance_write_buffer(size_t size) { this->file_->_IO_write_ptr += size; }
+
+  bool needs_flush() const {
+    if ((this->file_->_flags & line_buffered) == 0) return false;
+    char* end = this->file_->_IO_write_end;
+    return memchr(end, '\n', to_unsigned(this->file_->_IO_write_ptr - end));
+  }
+
+  void flush() { fflush_unlocked(this->file_); }
+};
+
+// A FILE wrapper for Apple's libc.
+template <typename F> class apple_file : public file_base<F> {
+ private:
+  enum {
+    line_buffered = 1,  // __SNBF
+    unbuffered = 2      // __SLBF
+  };
+
+ public:
+  using file_base<F>::file_base;
+
+  auto is_buffered() const -> bool {
+    return (this->file_->_flags & unbuffered) == 0;
+  }
+
+  void init_buffer() {
+    if (this->file_->_p) return;
+    // Force buffer initialization by placing and removing a char in a buffer.
+    putc_unlocked(0, this->file_);
+    --this->file_->_p;
+    ++this->file_->_w;
+  }
+
+  auto get_read_buffer() const -> span<const char> {
+    return {reinterpret_cast<char*>(this->file_->_p),
+            to_unsigned(this->file_->_r)};
+  }
+
+  auto get_write_buffer() const -> span<char> {
+    return {reinterpret_cast<char*>(this->file_->_p),
+            to_unsigned(this->file_->_bf._base + this->file_->_bf._size -
+                        this->file_->_p)};
+  }
+
+  void advance_write_buffer(size_t size) {
+    this->file_->_p += size;
+    this->file_->_w -= size;
+  }
+
+  bool needs_flush() const {
+    if ((this->file_->_flags & line_buffered) == 0) return false;
+    return memchr(this->file_->_p + this->file_->_w, '\n',
+                  to_unsigned(-this->file_->_w));
+  }
+};
+
+// A fallback FILE wrapper.
+template <typename F> class fallback_file : public file_base<F> {
+ private:
+  char next_;  // The next unconsumed character in the buffer.
+  bool has_next_ = false;
+
+ public:
+  using file_base<F>::file_base;
+
+  auto is_buffered() const -> bool { return false; }
+  auto needs_flush() const -> bool { return false; }
+  void init_buffer() {}
+
+  auto get_read_buffer() const -> span<const char> {
+    return {&next_, has_next_ ? 1u : 0u};
+  }
+
+  auto get_write_buffer() const -> span<char> { return {nullptr, 0}; }
+
+  void advance_write_buffer(size_t) {}
+
+  auto get() -> int {
+    has_next_ = false;
+    return file_base<F>::get();
+  }
+
+  void unget(char c) {
+    file_base<F>::unget(c);
+    next_ = c;
+    has_next_ = true;
+  }
+};
+
+#ifndef FMT_USE_FALLBACK_FILE
+#  define FMT_USE_FALLBACK_FILE 1
+#endif
+
+template <typename F,
+          FMT_ENABLE_IF(sizeof(F::_p) != 0 && !FMT_USE_FALLBACK_FILE)>
+auto get_file(F* f, int) -> apple_file<F> {
+  return f;
+}
+template <typename F,
+          FMT_ENABLE_IF(sizeof(F::_IO_read_ptr) != 0 && !FMT_USE_FALLBACK_FILE)>
+inline auto get_file(F* f, int) -> glibc_file<F> {
+  return f;
+}
+
+inline auto get_file(FILE* f, ...) -> fallback_file<FILE> { return f; }
+
+using file_ref = decltype(get_file(static_cast<FILE*>(nullptr), 0));
+
+template <typename F = FILE, typename Enable = void>
+class file_print_buffer : public buffer<char> {
+ public:
+  explicit file_print_buffer(F*) : buffer(nullptr, size_t()) {}
+};
+
+template <typename F>
+class file_print_buffer<F, enable_if_t<has_flockfile<F>::value>>
+    : public buffer<char> {
+ private:
+  file_ref file_;
+
+  static void grow(buffer<char>& base, size_t) {
+    auto& self = static_cast<file_print_buffer&>(base);
+    self.file_.advance_write_buffer(self.size());
+    if (self.file_.get_write_buffer().size == 0) self.file_.flush();
+    auto buf = self.file_.get_write_buffer();
+    FMT_ASSERT(buf.size > 0, "");
+    self.set(buf.data, buf.size);
+    self.clear();
+  }
+
+ public:
+  explicit file_print_buffer(F* f) : buffer(grow, size_t()), file_(f) {
+    flockfile(f);
+    file_.init_buffer();
+    auto buf = file_.get_write_buffer();
+    set(buf.data, buf.size);
+  }
+  ~file_print_buffer() {
+    file_.advance_write_buffer(size());
+    bool flush = file_.needs_flush();
+    F* f = file_;    // Make funlockfile depend on the template parameter F
+    funlockfile(f);  // for the system API detection to work.
+    if (flush) fflush(file_);
+  }
+};
+
+#if !defined(_WIN32) || defined(FMT_USE_WRITE_CONSOLE)
 FMT_FUNC auto write_console(int, string_view) -> bool { return false; }
-FMT_FUNC auto write_console(std::FILE*, string_view) -> bool { return false; }
 #else
 using dword = conditional_t<sizeof(long) == 4, unsigned long, unsigned>;
 extern "C" __declspec(dllimport) int __stdcall WriteConsoleW(  //
@@ -1445,23 +1683,21 @@ FMT_FUNC bool write_console(int fd, string_view text) {
   return WriteConsoleW(reinterpret_cast<void*>(_get_osfhandle(fd)), u16.c_str(),
                        static_cast<dword>(u16.size()), nullptr, nullptr) != 0;
 }
-
-FMT_FUNC auto write_console(std::FILE* f, string_view text) -> bool {
-  return write_console(_fileno(f), text);
-}
 #endif
 
 #ifdef _WIN32
 // Print assuming legacy (non-Unicode) encoding.
-FMT_FUNC void vprint_mojibake(std::FILE* f, string_view fmt, format_args args) {
+FMT_FUNC void vprint_mojibake(std::FILE* f, string_view fmt, format_args args,
+                              bool newline) {
   auto buffer = memory_buffer();
   detail::vformat_to(buffer, fmt, args);
+  if (newline) buffer.push_back('\n');
   fwrite_fully(buffer.data(), buffer.size(), f);
 }
 #endif
 
 FMT_FUNC void print(std::FILE* f, string_view text) {
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(FMT_USE_WRITE_CONSOLE)
   int fd = _fileno(f);
   if (_isatty(fd)) {
     std::fflush(f);
@@ -1472,9 +1708,23 @@ FMT_FUNC void print(std::FILE* f, string_view text) {
 }
 }  // namespace detail
 
-FMT_FUNC void vprint(std::FILE* f, string_view fmt, format_args args) {
+FMT_FUNC void vprint_buffered(std::FILE* f, string_view fmt, format_args args) {
   auto buffer = memory_buffer();
   detail::vformat_to(buffer, fmt, args);
+  detail::print(f, {buffer.data(), buffer.size()});
+}
+
+FMT_FUNC void vprint(std::FILE* f, string_view fmt, format_args args) {
+  if (!detail::file_ref(f).is_buffered() || !detail::has_flockfile<>())
+    return vprint_buffered(f, fmt, args);
+  auto&& buffer = detail::file_print_buffer<>(f);
+  return detail::vformat_to(buffer, fmt, args);
+}
+
+FMT_FUNC void vprintln(std::FILE* f, string_view fmt, format_args args) {
+  auto buffer = memory_buffer();
+  detail::vformat_to(buffer, fmt, args);
+  buffer.push_back('\n');
   detail::print(f, {buffer.data(), buffer.size()});
 }
 

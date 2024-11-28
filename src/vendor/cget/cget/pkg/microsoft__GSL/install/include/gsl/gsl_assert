@@ -1,3 +1,0 @@
-#pragma once
-#pragma message("This header will soon be removed. Use <gsl/assert> instead of <gsl/gsl_assert>")
-#include <gsl/assert>

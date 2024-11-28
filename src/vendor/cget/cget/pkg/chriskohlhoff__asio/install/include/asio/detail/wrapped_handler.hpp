@@ -41,12 +41,36 @@ struct is_continuation_if_running
   }
 };
 
+template <typename Dispatcher, typename = void>
+struct wrapped_executor
+{
+  typedef Dispatcher executor_type;
+
+  static const Dispatcher& get(const Dispatcher& dispatcher) noexcept
+  {
+    return dispatcher;
+  }
+};
+
+template <typename Dispatcher>
+struct wrapped_executor<Dispatcher,
+    void_type<typename Dispatcher::executor_type>>
+{
+  typedef typename Dispatcher::executor_type executor_type;
+
+  static executor_type get(const Dispatcher& dispatcher) noexcept
+  {
+    return dispatcher.get_executor();
+  }
+};
+
 template <typename Dispatcher, typename Handler,
     typename IsContinuation = is_continuation_delegated>
 class wrapped_handler
 {
 public:
   typedef void result_type;
+  typedef typename wrapped_executor<Dispatcher>::executor_type executor_type;
 
   wrapped_handler(Dispatcher dispatcher, Handler& handler)
     : dispatcher_(dispatcher),
@@ -64,6 +88,11 @@ public:
     : dispatcher_(other.dispatcher_),
       handler_(static_cast<Handler&&>(other.handler_))
   {
+  }
+
+  executor_type get_executor() const noexcept
+  {
+    return wrapped_executor<Dispatcher>::get(dispatcher_);
   }
 
   void operator()()
@@ -151,62 +180,11 @@ public:
   Handler handler_;
 };
 
-template <typename Handler, typename Context>
-class rewrapped_handler
-{
-public:
-  explicit rewrapped_handler(Handler& handler, const Context& context)
-    : context_(context),
-      handler_(static_cast<Handler&&>(handler))
-  {
-  }
-
-  explicit rewrapped_handler(const Handler& handler, const Context& context)
-    : context_(context),
-      handler_(handler)
-  {
-  }
-
-  rewrapped_handler(const rewrapped_handler& other)
-    : context_(other.context_),
-      handler_(other.handler_)
-  {
-  }
-
-  rewrapped_handler(rewrapped_handler&& other)
-    : context_(static_cast<Context&&>(other.context_)),
-      handler_(static_cast<Handler&&>(other.handler_))
-  {
-  }
-
-  void operator()()
-  {
-    handler_();
-  }
-
-  void operator()() const
-  {
-    handler_();
-  }
-
-//private:
-  Context context_;
-  Handler handler_;
-};
-
 template <typename Dispatcher, typename Handler, typename IsContinuation>
 inline bool asio_handler_is_continuation(
     wrapped_handler<Dispatcher, Handler, IsContinuation>* this_handler)
 {
   return IsContinuation()(this_handler->dispatcher_, this_handler->handler_);
-}
-
-template <typename Dispatcher, typename Context>
-inline bool asio_handler_is_continuation(
-    rewrapped_handler<Dispatcher, Context>* this_handler)
-{
-  return asio_handler_cont_helpers::is_continuation(
-      this_handler->context_);
 }
 
 } // namespace detail

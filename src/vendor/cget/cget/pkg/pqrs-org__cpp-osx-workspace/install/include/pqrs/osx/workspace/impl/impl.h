@@ -18,6 +18,10 @@ void pqrs_osx_workspace_find_application_url_by_bundle_identifier(const char* bu
                                                                   char* buffer,
                                                                   int buffer_size);
 
+int pqrs_osx_workspace_application_running_by_bundle_identifier(const char* bundle_identifier);
+
+int pqrs_osx_workspace_application_running_by_file_path(const char* file_path);
+
 #ifdef __cplusplus
 }
 #endif

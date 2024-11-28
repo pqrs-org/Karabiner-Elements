@@ -1,3 +1,0 @@
-#pragma once
-#pragma message("This header will soon be removed. Use <gsl/util> instead of <gsl/gsl_util>")
-#include <gsl/util>

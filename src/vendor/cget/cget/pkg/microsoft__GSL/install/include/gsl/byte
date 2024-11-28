@@ -17,24 +17,8 @@
 #ifndef GSL_BYTE_H
 #define GSL_BYTE_H
 
-//
-// make suppress attributes work for some compilers
-// Hopefully temporary until suppression standardization occurs
-//
-#if defined(__clang__)
-#define GSL_SUPPRESS(x) [[gsl::suppress("x")]]
-#else
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
-#define GSL_SUPPRESS(x) [[gsl::suppress(x)]]
-#else
-#define GSL_SUPPRESS(x)
-#endif // _MSC_VER
-#endif // __clang__
-
 #include <type_traits>
 
-// VS2017 15.8 added support for the __cpp_lib_byte definition
-// To do: drop _HAS_STD_BYTE when support for pre 15.8 expires
 #ifdef _MSC_VER
 
 #pragma warning(push)
@@ -45,18 +29,15 @@
 
 #ifndef GSL_USE_STD_BYTE
 // this tests if we are under MSVC and the standard lib has std::byte and it is enabled
-#if (defined(_HAS_STD_BYTE) && _HAS_STD_BYTE) ||                                                   \
-    (defined(__cpp_lib_byte) && __cpp_lib_byte >= 201603)
+#if defined(__cpp_lib_byte) && __cpp_lib_byte >= 201603
 
 #define GSL_USE_STD_BYTE 1
 
-#else // (defined(_HAS_STD_BYTE) && _HAS_STD_BYTE) || (defined(__cpp_lib_byte) && __cpp_lib_byte >=
-      // 201603)
+#else // defined(__cpp_lib_byte) && __cpp_lib_byte >= 201603
 
 #define GSL_USE_STD_BYTE 0
 
-#endif // (defined(_HAS_STD_BYTE) && _HAS_STD_BYTE) || (defined(__cpp_lib_byte) && __cpp_lib_byte >=
-       // 201603)
+#endif // defined(__cpp_lib_byte) && __cpp_lib_byte >= 201603
 #endif // GSL_USE_STD_BYTE
 
 #else // _MSC_VER
@@ -174,26 +155,15 @@ constexpr IntegerType to_integer(byte b) noexcept
 
 #endif // GSL_USE_STD_BYTE
 
-template <bool E, typename T>
-constexpr byte to_byte_impl(T t) noexcept
-{
-    static_assert(
-        E, "gsl::to_byte(t) must be provided an unsigned char, otherwise data loss may occur. "
-           "If you are calling to_byte with an integer contant use: gsl::to_byte<t>() version.");
-    return static_cast<byte>(t);
-}
-template <>
+template <typename T>
 // NOTE: need suppression since c++14 does not allow "return {t}"
 // GSL_SUPPRESS(type.4) // NO-FORMAT: attribute // TODO: suppression does not work
-constexpr byte to_byte_impl<true, unsigned char>(unsigned char t) noexcept
-{
-    return byte(t);
-}
-
-template <typename T>
 constexpr byte to_byte(T t) noexcept
 {
-    return to_byte_impl<std::is_same<T, unsigned char>::value, T>(t);
+    static_assert(std::is_same<T, unsigned char>::value,
+                  "gsl::to_byte(t) must be provided an unsigned char, otherwise data loss may occur. "
+                  "If you are calling to_byte with an integer constant use: gsl::to_byte<t>() version.");
+    return byte(t);
 }
 
 template <int I>

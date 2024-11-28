@@ -3,6 +3,10 @@
 
 #pragma once
 
+#if defined(SPDLOG_NO_TLS)
+    #error "This header requires thread local storage support, but SPDLOG_NO_TLS is defined."
+#endif
+
 #include <map>
 #include <string>
 

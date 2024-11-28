@@ -27,8 +27,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <gsl/assert> // GSL_KERNEL_MODE
-#include <gsl/util>   // for narrow_cast, narrow
+#include "assert" // GSL_KERNEL_MODE
+#include "util"   // for narrow_cast, narrow
 
 #include <cstddef> // for ptrdiff_t, size_t
 #include <utility>
@@ -41,7 +41,7 @@ namespace gsl
 {
 
 // [span.views.constants], constants
-constexpr const std::size_t dynamic_extent = narrow_cast<std::size_t>(-1);
+GSL_INLINE constexpr const std::size_t dynamic_extent = narrow_cast<std::size_t>(-1);
 
 template <class ElementType, std::size_t Extent = dynamic_extent>
 class span;
@@ -123,12 +123,14 @@ constexpr span<const typename Container::value_type> make_span(const Container& 
 }
 
 template <class Ptr>
+[[deprecated("This function is deprecated. See GSL issue #1092.")]]
 constexpr span<typename Ptr::element_type> make_span(Ptr& cont, std::size_t count)
 {
     return span<typename Ptr::element_type>(cont, count);
 }
 
 template <class Ptr>
+[[deprecated("This function is deprecated. See GSL issue #1092.")]]
 constexpr span<typename Ptr::element_type> make_span(Ptr& cont)
 {
     return span<typename Ptr::element_type>(cont);

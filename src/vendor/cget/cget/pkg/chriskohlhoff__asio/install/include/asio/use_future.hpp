@@ -145,7 +145,7 @@ private:
 /**
  * See the documentation for asio::use_future_t for a usage example.
  */
-constexpr use_future_t<> use_future;
+ASIO_INLINE_VARIABLE constexpr use_future_t<> use_future;
 
 } // namespace asio
 

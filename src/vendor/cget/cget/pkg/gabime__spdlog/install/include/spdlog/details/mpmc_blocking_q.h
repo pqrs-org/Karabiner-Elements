@@ -148,19 +148,19 @@ public:
 #endif
 
     size_t overrun_counter() {
-        std::unique_lock<std::mutex> lock(queue_mutex_);
+        std::lock_guard<std::mutex> lock(queue_mutex_);
         return q_.overrun_counter();
     }
 
     size_t discard_counter() { return discard_counter_.load(std::memory_order_relaxed); }
 
     size_t size() {
-        std::unique_lock<std::mutex> lock(queue_mutex_);
+        std::lock_guard<std::mutex> lock(queue_mutex_);
         return q_.size();
     }
 
     void reset_overrun_counter() {
-        std::unique_lock<std::mutex> lock(queue_mutex_);
+        std::lock_guard<std::mutex> lock(queue_mutex_);
         q_.reset_overrun_counter();
     }
 

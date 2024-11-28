@@ -718,7 +718,7 @@ void blocking_execute(
 
 typedef detail::blocking_adaptation_t<> blocking_adaptation_t;
 
-constexpr blocking_adaptation_t blocking_adaptation;
+ASIO_INLINE_VARIABLE constexpr blocking_adaptation_t blocking_adaptation;
 
 } // namespace execution
 

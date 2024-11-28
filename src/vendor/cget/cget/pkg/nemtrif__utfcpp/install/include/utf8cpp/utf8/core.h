@@ -215,7 +215,7 @@ namespace internal
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        code_point += (*it) & 0x3f;
+        code_point = static_cast<utfchar32_t>(code_point + ((*it) & 0x3f));
 
         return UTF8_OK;
     }
@@ -234,11 +234,11 @@ namespace internal
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        code_point += (utf8::internal::mask8(*it) << 6) & 0xfff;
+        code_point = static_cast<utfchar32_t>(code_point + ((utf8::internal::mask8(*it) << 6) & 0xfff));
 
         UTF8_CPP_INCREASE_AND_RETURN_ON_ERROR(it, end)
 
-        code_point += (*it) & 0x3f;
+        code_point = static_cast<utfchar32_t>(code_point + ((*it) & 0x3f));
 
         return UTF8_OK;
     }
@@ -327,7 +327,7 @@ namespace internal
             else if (is_lead_surrogate(first_word)) {
                 const utfchar16_t second_word = *it++;
                 if (is_trail_surrogate(second_word)) {
-                    code_point = (first_word << 10) + second_word + SURROGATE_OFFSET;
+                    code_point = static_cast<utfchar32_t>(first_word << 10) + second_word + SURROGATE_OFFSET;
                     return UTF8_OK;
                 } else 
                     err = INCOMPLETE_SEQUENCE; 

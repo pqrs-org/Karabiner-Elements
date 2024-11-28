@@ -32,7 +32,7 @@ class msvc_sink : public base_sink<Mutex> {
 public:
     msvc_sink() = default;
     msvc_sink(bool check_debugger_present)
-        : check_debugger_present_{check_debugger_present} {};
+        : check_debugger_present_{check_debugger_present} {}
 
 protected:
     void sink_it_(const details::log_msg &msg) override {

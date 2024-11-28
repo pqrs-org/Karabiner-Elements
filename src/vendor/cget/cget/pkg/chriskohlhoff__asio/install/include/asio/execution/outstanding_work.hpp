@@ -544,7 +544,7 @@ const T tracked_t<I>::static_query_v;
 
 typedef detail::outstanding_work_t<> outstanding_work_t;
 
-constexpr outstanding_work_t outstanding_work;
+ASIO_INLINE_VARIABLE constexpr outstanding_work_t outstanding_work;
 
 } // namespace execution
 

@@ -23,7 +23,7 @@ func pqrs_osx_workspace_open_application_by_bundle_identifier(
 func pqrs_osx_workspace_open_application_by_file_path(_ filePathPtr: UnsafePointer<Int8>) {
   let filePath = String(cString: filePathPtr)
 
-  let url = URL(filePath: filePath, directoryHint: .notDirectory, relativeTo: nil)
+  let url = URL(filePath: filePath, directoryHint: .checkFileSystem, relativeTo: nil)
   NSWorkspace.shared.openApplication(
     at: url,
     configuration: NSWorkspace.OpenConfiguration(),
@@ -44,5 +44,26 @@ func pqrs_osx_workspace_find_application_url_by_bundle_identifier(
 
   _ = urlString.utf8CString.withUnsafeBufferPointer { ptr in
     strlcpy(buffer, ptr.baseAddress, Int(bufferSize))
+  }
+}
+
+@_cdecl("pqrs_osx_workspace_application_running_by_bundle_identifier")
+func pqrs_osx_workspace_application_running_by_bundle_identifier(
+  _ bundleIdentifierPtr: UnsafePointer<Int8>
+) -> Bool {
+  let bundleIdentifier = String(cString: bundleIdentifierPtr)
+
+  return !NSRunningApplication.runningApplications(withBundleIdentifier: bundleIdentifier).isEmpty
+}
+
+@_cdecl("pqrs_osx_workspace_application_running_by_file_path")
+func pqrs_osx_workspace_application_running_by_file_path(
+  _ filePathPtr: UnsafePointer<Int8>
+) -> Bool {
+  let filePath = String(cString: filePathPtr)
+
+  let url = URL(filePath: filePath, directoryHint: .checkFileSystem, relativeTo: nil)
+  return NSWorkspace.shared.runningApplications.contains {
+    $0.bundleURL == url
   }
 }

@@ -545,7 +545,7 @@ public:
   {
     this->coro_ = coroutine_handle<awaitable_frame>::from_promise(*this);
     return awaitable<T, Executor>(this);
-  };
+  }
 
   template <typename U>
   void return_value(U&& u)
@@ -582,7 +582,7 @@ public:
   {
     this->coro_ = coroutine_handle<awaitable_frame>::from_promise(*this);
     return awaitable<void, Executor>(this);
-  };
+  }
 
   void return_void()
   {
@@ -620,7 +620,7 @@ public:
   {
     this->coro_ = coroutine_handle<awaitable_frame>::from_promise(*this);
     return awaitable<awaitable_thread_entry_point, Executor>(this);
-  };
+  }
 
   void return_void()
   {

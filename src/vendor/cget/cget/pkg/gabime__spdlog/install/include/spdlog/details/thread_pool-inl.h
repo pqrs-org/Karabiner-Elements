@@ -62,13 +62,9 @@ void SPDLOG_INLINE thread_pool::post_log(async_logger_ptr &&worker_ptr,
     post_async_msg_(std::move(async_m), overflow_policy);
 }
 
-std::future<void> SPDLOG_INLINE thread_pool::post_flush(async_logger_ptr &&worker_ptr,
-                                                        async_overflow_policy overflow_policy) {
-    std::promise<void> promise;
-    std::future<void> future = promise.get_future();
-    post_async_msg_(async_msg(std::move(worker_ptr), async_msg_type::flush, std::move(promise)),
-                    overflow_policy);
-    return future;
+void SPDLOG_INLINE thread_pool::post_flush(async_logger_ptr &&worker_ptr,
+                                           async_overflow_policy overflow_policy) {
+    post_async_msg_(async_msg(std::move(worker_ptr), async_msg_type::flush), overflow_policy);
 }
 
 size_t SPDLOG_INLINE thread_pool::overrun_counter() { return q_.overrun_counter(); }
@@ -112,7 +108,6 @@ bool SPDLOG_INLINE thread_pool::process_next_msg_() {
         }
         case async_msg_type::flush: {
             incoming_async_msg.worker_ptr->backend_flush_();
-            incoming_async_msg.flush_promise.set_value();
             return true;
         }
 

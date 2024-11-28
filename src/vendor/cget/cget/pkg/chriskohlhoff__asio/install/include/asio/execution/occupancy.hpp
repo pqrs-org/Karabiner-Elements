@@ -131,7 +131,7 @@ const T occupancy_t<I>::static_query_v;
 
 typedef detail::occupancy_t<> occupancy_t;
 
-constexpr occupancy_t occupancy;
+ASIO_INLINE_VARIABLE constexpr occupancy_t occupancy;
 
 } // namespace execution
 

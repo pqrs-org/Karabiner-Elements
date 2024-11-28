@@ -29,6 +29,7 @@
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/detail/utility.hpp"
+#include "asio/error.hpp"
 #include "asio/system_error.hpp"
 
 #if defined(ASIO_HAS_BOOST_CONTEXT_FIBER)

@@ -142,7 +142,9 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
   (co_await awaitable_thread_has_context_switched{}) = false;
   std::exception_ptr e = nullptr;
   bool done = false;
+#if !defined(ASIO_NO_EXCEPTIONS)
   try
+#endif // !defined(ASIO_NO_EXCEPTIONS)
   {
     T t = co_await s.function();
 
@@ -163,6 +165,7 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
 
     co_return;
   }
+#if !defined(ASIO_NO_EXCEPTIONS)
   catch (...)
   {
     if (done)
@@ -170,6 +173,7 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
 
     e = std::current_exception();
   }
+#endif // !defined(ASIO_NO_EXCEPTIONS)
 
   bool switched = (co_await awaitable_thread_has_context_switched{});
   if (!switched)
@@ -193,14 +197,18 @@ awaitable<awaitable_thread_entry_point, Executor> co_spawn_entry_point(
 
   (co_await awaitable_thread_has_context_switched{}) = false;
   std::exception_ptr e = nullptr;
+#if !defined(ASIO_NO_EXCEPTIONS)
   try
+#endif // !defined(ASIO_NO_EXCEPTIONS)
   {
     co_await s.function();
   }
+#if !defined(ASIO_NO_EXCEPTIONS)
   catch (...)
   {
     e = std::current_exception();
   }
+#endif // !defined(ASIO_NO_EXCEPTIONS)
 
   bool switched = (co_await awaitable_thread_has_context_switched{});
   if (!switched)

@@ -227,7 +227,7 @@ struct color_type {
 };
 }  // namespace detail
 
-/** A text style consisting of foreground and background colors and emphasis. */
+/// A text style consisting of foreground and background colors and emphasis.
 class text_style {
  public:
   FMT_CONSTEXPR text_style(emphasis em = emphasis()) noexcept
@@ -239,7 +239,7 @@ class text_style {
       foreground_color = rhs.foreground_color;
     } else if (rhs.set_foreground_color) {
       if (!foreground_color.is_rgb || !rhs.foreground_color.is_rgb)
-        FMT_THROW(format_error("can't OR a terminal color"));
+        report_error("can't OR a terminal color");
       foreground_color.value.rgb_color |= rhs.foreground_color.value.rgb_color;
     }
 
@@ -248,7 +248,7 @@ class text_style {
       background_color = rhs.background_color;
     } else if (rhs.set_background_color) {
       if (!background_color.is_rgb || !rhs.background_color.is_rgb)
-        FMT_THROW(format_error("can't OR a terminal color"));
+        report_error("can't OR a terminal color");
       background_color.value.rgb_color |= rhs.background_color.value.rgb_color;
     }
 
@@ -310,13 +310,13 @@ class text_style {
   emphasis ems;
 };
 
-/** Creates a text style from the foreground (text) color. */
+/// Creates a text style from the foreground (text) color.
 FMT_CONSTEXPR inline auto fg(detail::color_type foreground) noexcept
     -> text_style {
   return text_style(true, foreground);
 }
 
-/** Creates a text style from the background color. */
+/// Creates a text style from the background color.
 FMT_CONSTEXPR inline auto bg(detail::color_type background) noexcept
     -> text_style {
   return text_style(false, background);
@@ -390,8 +390,8 @@ template <typename Char> struct ansi_color_escape {
   FMT_CONSTEXPR operator const Char*() const noexcept { return buffer; }
 
   FMT_CONSTEXPR auto begin() const noexcept -> const Char* { return buffer; }
-  FMT_CONSTEXPR_CHAR_TRAITS auto end() const noexcept -> const Char* {
-    return buffer + std::char_traits<Char>::length(buffer);
+  FMT_CONSTEXPR20 auto end() const noexcept -> const Char* {
+    return buffer + basic_string_view<Char>(buffer).size();
   }
 
  private:
@@ -441,9 +441,9 @@ template <typename T> struct styled_arg : detail::view {
 };
 
 template <typename Char>
-void vformat_to(buffer<Char>& buf, const text_style& ts,
-                basic_string_view<Char> format_str,
-                basic_format_args<buffer_context<type_identity_t<Char>>> args) {
+void vformat_to(
+    buffer<Char>& buf, const text_style& ts, basic_string_view<Char> format_str,
+    basic_format_args<buffered_context<type_identity_t<Char>>> args) {
   bool has_style = false;
   if (ts.has_emphasis()) {
     has_style = true;
@@ -466,121 +466,92 @@ void vformat_to(buffer<Char>& buf, const text_style& ts,
 
 }  // namespace detail
 
-inline void vprint(std::FILE* f, const text_style& ts, string_view fmt,
+inline void vprint(FILE* f, const text_style& ts, string_view fmt,
                    format_args args) {
-  // Legacy wide streams are not supported.
   auto buf = memory_buffer();
   detail::vformat_to(buf, ts, fmt, args);
-  if (detail::is_utf8()) {
-    detail::print(f, string_view(buf.begin(), buf.size()));
-    return;
-  }
-  buf.push_back('\0');
-  int result = std::fputs(buf.data(), f);
-  if (result < 0)
-    FMT_THROW(system_error(errno, FMT_STRING("cannot write to file")));
+  print(f, FMT_STRING("{}"), string_view(buf.begin(), buf.size()));
 }
 
 /**
-  \rst
-  Formats a string and prints it to the specified file stream using ANSI
-  escape sequences to specify text formatting.
-
-  **Example**::
-
-    fmt::print(fmt::emphasis::bold | fg(fmt::color::red),
-               "Elapsed time: {0:.2f} seconds", 1.23);
-  \endrst
+ * Formats a string and prints it to the specified file stream using ANSI
+ * escape sequences to specify text formatting.
+ *
+ * **Example**:
+ *
+ *     fmt::print(fmt::emphasis::bold | fg(fmt::color::red),
+ *                "Elapsed time: {0:.2f} seconds", 1.23);
  */
-template <typename S, typename... Args,
-          FMT_ENABLE_IF(detail::is_string<S>::value)>
-void print(std::FILE* f, const text_style& ts, const S& format_str,
-           const Args&... args) {
-  vprint(f, ts, format_str,
-         fmt::make_format_args<buffer_context<char_t<S>>>(args...));
+template <typename... T>
+void print(FILE* f, const text_style& ts, format_string<T...> fmt,
+           T&&... args) {
+  vprint(f, ts, fmt, fmt::make_format_args(args...));
 }
 
 /**
-  \rst
-  Formats a string and prints it to stdout using ANSI escape sequences to
-  specify text formatting.
-
-  **Example**::
-
-    fmt::print(fmt::emphasis::bold | fg(fmt::color::red),
-               "Elapsed time: {0:.2f} seconds", 1.23);
-  \endrst
+ * Formats a string and prints it to stdout using ANSI escape sequences to
+ * specify text formatting.
+ *
+ * **Example**:
+ *
+ *     fmt::print(fmt::emphasis::bold | fg(fmt::color::red),
+ *                "Elapsed time: {0:.2f} seconds", 1.23);
  */
-template <typename S, typename... Args,
-          FMT_ENABLE_IF(detail::is_string<S>::value)>
-void print(const text_style& ts, const S& format_str, const Args&... args) {
-  return print(stdout, ts, format_str, args...);
+template <typename... T>
+void print(const text_style& ts, format_string<T...> fmt, T&&... args) {
+  return print(stdout, ts, fmt, std::forward<T>(args)...);
 }
 
-template <typename S, typename Char = char_t<S>>
-inline auto vformat(
-    const text_style& ts, const S& format_str,
-    basic_format_args<buffer_context<type_identity_t<Char>>> args)
-    -> std::basic_string<Char> {
-  basic_memory_buffer<Char> buf;
-  detail::vformat_to(buf, ts, detail::to_string_view(format_str), args);
+inline auto vformat(const text_style& ts, string_view fmt, format_args args)
+    -> std::string {
+  auto buf = memory_buffer();
+  detail::vformat_to(buf, ts, fmt, args);
   return fmt::to_string(buf);
 }
 
 /**
-  \rst
-  Formats arguments and returns the result as a string using ANSI
-  escape sequences to specify text formatting.
-
-  **Example**::
-
-    #include <fmt/color.h>
-    std::string message = fmt::format(fmt::emphasis::bold | fg(fmt::color::red),
-                                      "The answer is {}", 42);
-  \endrst
-*/
-template <typename S, typename... Args, typename Char = char_t<S>>
-inline auto format(const text_style& ts, const S& format_str,
-                   const Args&... args) -> std::basic_string<Char> {
-  return fmt::vformat(ts, detail::to_string_view(format_str),
-                      fmt::make_format_args<buffer_context<Char>>(args...));
+ * Formats arguments and returns the result as a string using ANSI escape
+ * sequences to specify text formatting.
+ *
+ * **Example**:
+ *
+ * ```
+ * #include <fmt/color.h>
+ * std::string message = fmt::format(fmt::emphasis::bold | fg(fmt::color::red),
+ *                                   "The answer is {}", 42);
+ * ```
+ */
+template <typename... T>
+inline auto format(const text_style& ts, format_string<T...> fmt, T&&... args)
+    -> std::string {
+  return fmt::vformat(ts, fmt, fmt::make_format_args(args...));
 }
 
-/**
-  Formats a string with the given text_style and writes the output to ``out``.
- */
-template <typename OutputIt, typename Char,
-          FMT_ENABLE_IF(detail::is_output_iterator<OutputIt, Char>::value)>
-auto vformat_to(OutputIt out, const text_style& ts,
-                basic_string_view<Char> format_str,
-                basic_format_args<buffer_context<type_identity_t<Char>>> args)
-    -> OutputIt {
-  auto&& buf = detail::get_buffer<Char>(out);
-  detail::vformat_to(buf, ts, format_str, args);
+/// Formats a string with the given text_style and writes the output to `out`.
+template <typename OutputIt,
+          FMT_ENABLE_IF(detail::is_output_iterator<OutputIt, char>::value)>
+auto vformat_to(OutputIt out, const text_style& ts, string_view fmt,
+                format_args args) -> OutputIt {
+  auto&& buf = detail::get_buffer<char>(out);
+  detail::vformat_to(buf, ts, fmt, args);
   return detail::get_iterator(buf, out);
 }
 
 /**
-  \rst
-  Formats arguments with the given text_style, writes the result to the output
-  iterator ``out`` and returns the iterator past the end of the output range.
-
-  **Example**::
-
-    std::vector<char> out;
-    fmt::format_to(std::back_inserter(out),
-                   fmt::emphasis::bold | fg(fmt::color::red), "{}", 42);
-  \endrst
-*/
-template <
-    typename OutputIt, typename S, typename... Args,
-    bool enable = detail::is_output_iterator<OutputIt, char_t<S>>::value &&
-                  detail::is_string<S>::value>
-inline auto format_to(OutputIt out, const text_style& ts, const S& format_str,
-                      Args&&... args) ->
-    typename std::enable_if<enable, OutputIt>::type {
-  return vformat_to(out, ts, detail::to_string_view(format_str),
-                    fmt::make_format_args<buffer_context<char_t<S>>>(args...));
+ * Formats arguments with the given text style, writes the result to the output
+ * iterator `out` and returns the iterator past the end of the output range.
+ *
+ * **Example**:
+ *
+ *     std::vector<char> out;
+ *     fmt::format_to(std::back_inserter(out),
+ *                    fmt::emphasis::bold | fg(fmt::color::red), "{}", 42);
+ */
+template <typename OutputIt, typename... T,
+          FMT_ENABLE_IF(detail::is_output_iterator<OutputIt, char>::value)>
+inline auto format_to(OutputIt out, const text_style& ts,
+                      format_string<T...> fmt, T&&... args) -> OutputIt {
+  return vformat_to(out, ts, fmt, fmt::make_format_args(args...));
 }
 
 template <typename T, typename Char>
@@ -620,16 +591,14 @@ struct formatter<detail::styled_arg<T>, Char> : formatter<T, Char> {
 };
 
 /**
-  \rst
-  Returns an argument that will be formatted using ANSI escape sequences,
-  to be used in a formatting function.
-
-  **Example**::
-
-    fmt::print("Elapsed time: {0:.2f} seconds",
-               fmt::styled(1.23, fmt::fg(fmt::color::green) |
-                                 fmt::bg(fmt::color::blue)));
-  \endrst
+ * Returns an argument that will be formatted using ANSI escape sequences,
+ * to be used in a formatting function.
+ *
+ * **Example**:
+ *
+ *     fmt::print("Elapsed time: {0:.2f} seconds",
+ *                fmt::styled(1.23, fmt::fg(fmt::color::green) |
+ *                                  fmt::bg(fmt::color::blue)));
  */
 template <typename T>
 FMT_CONSTEXPR auto styled(const T& value, text_style ts)

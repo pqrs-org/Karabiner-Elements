@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef GSL_CONTRACTS_H
-#define GSL_CONTRACTS_H
+#ifndef GSL_ASSERT_H
+#define GSL_ASSERT_H
 
 //
 // Temporary until MSVC STL supports no-exceptions mode.
@@ -46,17 +46,14 @@
 // Hopefully temporary until suppression standardization occurs
 //
 #if defined(__clang__)
-#define GSL_SUPPRESS(x) [[gsl::suppress("x")]]
+#define GSL_SUPPRESS(x) [[gsl::suppress(#x)]]
 #else
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+#if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
 #define GSL_SUPPRESS(x) [[gsl::suppress(x)]]
 #else
 #define GSL_SUPPRESS(x)
 #endif // _MSC_VER
 #endif // __clang__
-
-#define GSL_STRINGIFY_DETAIL(x) #x
-#define GSL_STRINGIFY(x) GSL_STRINGIFY_DETAIL(x)
 
 #if defined(__clang__) || defined(__GNUC__)
 #define GSL_LIKELY(x) __builtin_expect(!!(x), 1)
@@ -133,4 +130,4 @@ namespace details
 #pragma clang diagnostic pop
 #endif
 
-#endif // GSL_CONTRACTS_H
+#endif // GSL_ASSERT_H

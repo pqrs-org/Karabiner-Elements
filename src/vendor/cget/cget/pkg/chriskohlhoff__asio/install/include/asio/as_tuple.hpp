@@ -141,7 +141,7 @@ struct partial_as_tuple
  * asynchronous operation's default completion token (or asio::deferred
  * if no default is available).
  */
-constexpr partial_as_tuple as_tuple;
+ASIO_INLINE_VARIABLE constexpr partial_as_tuple as_tuple;
 
 } // namespace asio
 

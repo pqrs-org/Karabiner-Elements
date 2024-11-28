@@ -281,7 +281,7 @@ address_v6 make_address_v6(const char* str,
   if (asio::detail::socket_ops::inet_pton(
         ASIO_OS_DEF(AF_INET6), str, &bytes[0], &scope_id, ec) <= 0)
     return address_v6();
-  return address_v6(bytes, scope_id);
+  return address_v6(bytes, static_cast<scope_id_type>(scope_id));
 }
 
 address_v6 make_address_v6(const std::string& str)

@@ -62,6 +62,9 @@ struct daily_filename_format_calculator {
  * Rotating file sink based on date.
  * If truncate != false , the created file will be truncated.
  * If max_files > 0, retain only the last max_files and delete previous.
+ * If max_files > 0, retain only the last max_files and delete previous.
+ * Note that old log files from previous executions will not be deleted by this class,
+ * rotation and deletion is only applied while the program is running.
  */
 template <typename Mutex, typename FileNameCalc = daily_filename_calculator>
 class daily_file_sink final : public base_sink<Mutex> {
