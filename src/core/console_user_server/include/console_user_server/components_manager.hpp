@@ -254,6 +254,14 @@ private:
     if (auto m = pqrs::osx::frontmost_application_monitor::monitor::get_shared_monitor().lock()) {
       m->frontmost_application_changed.connect([this](auto&& application_ptr) {
         if (application_ptr) {
+          if (software_function_handler_) {
+            software_function_handler_->add_frontmost_application_history(*application_ptr);
+          }
+
+          //
+          // Notify the grabber of frontmost application changed.
+          //
+
           if (application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner.EventViewer" ||
               application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner-EventViewer") {
             return;
