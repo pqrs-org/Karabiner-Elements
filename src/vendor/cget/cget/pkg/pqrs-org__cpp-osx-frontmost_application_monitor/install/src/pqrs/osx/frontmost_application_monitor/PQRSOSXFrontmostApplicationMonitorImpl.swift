@@ -33,10 +33,7 @@ private class PQRSOSXFrontmostApplicationMonitor {
         return
       }
 
-      let bundleIdentifier = runningApplication.bundleIdentifier ?? ""
-      let path = runningApplication.executableURL?.path ?? ""
-
-      self.runCallback(bundleIdentifier: bundleIdentifier, path: path)
+      self.runCallback(runningApplication)
     }
   }
 
@@ -52,14 +49,23 @@ private class PQRSOSXFrontmostApplicationMonitor {
     }
   }
 
-  func runCallback(bundleIdentifier: String, path: String) {
+  func runCallback(_ runningApplication: NSRunningApplication) {
+    let bundleIdentifier = runningApplication.bundleIdentifier ?? ""
+    let bundlePath = runningApplication.bundleURL?.path ?? ""
+    let filePath = runningApplication.executableURL?.path ?? ""
+    let processIdentifier = runningApplication.processIdentifier
+
     lock.withLock {
       bundleIdentifier.utf8CString.withUnsafeBufferPointer { bundleIdentifierPtr in
-        path.utf8CString.withUnsafeBufferPointer { pathPtr in
-          callback?(
-            bundleIdentifierPtr.baseAddress,
-            pathPtr.baseAddress
-          )
+        bundlePath.utf8CString.withUnsafeBufferPointer { bundlePathPtr in
+          filePath.utf8CString.withUnsafeBufferPointer { filePathPtr in
+            callback?(
+              bundleIdentifierPtr.baseAddress,
+              bundlePathPtr.baseAddress,
+              filePathPtr.baseAddress,
+              processIdentifier
+            )
+          }
         }
       }
     }
@@ -67,10 +73,7 @@ private class PQRSOSXFrontmostApplicationMonitor {
 
   func runCallbackWithFrontmostApplication() {
     if let runningApplication = NSWorkspace.shared.frontmostApplication {
-      let bundleIdentifier = runningApplication.bundleIdentifier ?? ""
-      let path = runningApplication.executableURL?.path ?? ""
-
-      runCallback(bundleIdentifier: bundleIdentifier, path: path)
+      runCallback(runningApplication)
     }
   }
 }

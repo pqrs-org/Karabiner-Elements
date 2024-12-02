@@ -62,22 +62,34 @@ public:
 
 private:
   static void static_cpp_callback(const char* bundle_identifier,
-                                  const char* file_path) {
+                                  const char* bundle_path,
+                                  const char* file_path,
+                                  pid_t pid) {
     auto m = shared_monitor_;
     if (m) {
       m->cpp_callback(bundle_identifier,
-                      file_path);
+                      bundle_path,
+                      file_path,
+                      pid);
     }
   }
 
   void cpp_callback(const char* bundle_identifier,
-                    const char* file_path) {
+                    const char* bundle_path,
+                    const char* file_path,
+                    pid_t pid) {
     auto application_ptr = std::make_shared<application>();
     if (bundle_identifier) {
       application_ptr->set_bundle_identifier(bundle_identifier);
     }
+    if (bundle_path) {
+      application_ptr->set_bundle_path(bundle_path);
+    }
     if (file_path) {
       application_ptr->set_file_path(file_path);
+    }
+    if (pid) {
+      application_ptr->set_pid(pid);
     }
 
     enqueue_to_dispatcher([this, application_ptr] {
