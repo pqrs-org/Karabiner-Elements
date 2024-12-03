@@ -115,6 +115,10 @@ private:
       pqrs::osx::workspace::open_application_by_file_path(*v);
     } else if (auto v = open_application.get_history_index()) {
       auto history_index = *v;
+
+      // If the number of applications specified by history_index does not exist, the oldest application will be selected.
+      std::optional<pqrs::osx::frontmost_application_monitor::application> target_application;
+
       for (const auto& h : frontmost_application_history_) {
         // Target only applications that are currently running.
 
@@ -123,17 +127,13 @@ private:
           if (!pqrs::osx::workspace::application_running_by_file_path(*bundle_path)) {
             continue;
           }
-          if (history_index == 0) {
-            pqrs::osx::workspace::open_application_by_file_path(*bundle_path);
-          }
+          target_application = h;
 
         } else if (auto bundle_identifier = h.get_bundle_identifier()) {
           if (!pqrs::osx::workspace::application_running_by_bundle_identifier(*bundle_identifier)) {
             continue;
           }
-          if (history_index == 0) {
-            pqrs::osx::workspace::open_application_by_bundle_identifier(*bundle_identifier);
-          }
+          target_application = h;
 
         } else {
           continue;
@@ -143,6 +143,14 @@ private:
           --history_index;
         } else {
           break;
+        }
+      }
+
+      if (target_application) {
+        if (auto bundle_path = target_application->get_bundle_path()) {
+          pqrs::osx::workspace::open_application_by_file_path(*bundle_path);
+        } else if (auto bundle_identifier = target_application->get_bundle_identifier()) {
+          pqrs::osx::workspace::open_application_by_bundle_identifier(*bundle_identifier);
         }
       }
     }
