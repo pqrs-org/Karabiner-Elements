@@ -113,10 +113,10 @@ private:
       pqrs::osx::workspace::open_application_by_bundle_identifier(*v);
     } else if (auto v = open_application.get_file_path()) {
       pqrs::osx::workspace::open_application_by_file_path(*v);
-    } else if (auto v = open_application.get_history_index()) {
+    } else if (auto v = open_application.get_frontmost_application_history_index()) {
       auto history_index = *v;
 
-      // If the number of applications specified by history_index does not exist, the oldest application will be selected.
+      // If the number of applications specified by frontmost_application_history_index does not exist, the oldest application will be selected.
       std::optional<pqrs::osx::frontmost_application_monitor::application> target_application;
 
       for (const auto& h : frontmost_application_history_) {

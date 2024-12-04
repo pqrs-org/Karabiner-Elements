@@ -29,12 +29,12 @@ public:
     file_path_ = value;
   }
 
-  const std::optional<size_t>& get_history_index(void) const {
-    return history_index_;
+  const std::optional<size_t>& get_frontmost_application_history_index(void) const {
+    return frontmost_application_history_index_;
   }
 
-  void set_history_index(const std::optional<size_t>& value) {
-    history_index_ = value;
+  void set_frontmost_application_history_index(const std::optional<size_t>& value) {
+    frontmost_application_history_index_ = value;
   }
 
   constexpr bool operator==(const open_application&) const = default;
@@ -42,7 +42,7 @@ public:
 private:
   std::optional<std::string> bundle_identifier_;
   std::optional<std::string> file_path_;
-  std::optional<size_t> history_index_;
+  std::optional<size_t> frontmost_application_history_index_;
 };
 
 inline void to_json(nlohmann::json& json, const open_application& value) {
@@ -52,8 +52,8 @@ inline void to_json(nlohmann::json& json, const open_application& value) {
   if (auto v = value.get_file_path()) {
     json["file_path"] = *v;
   }
-  if (auto v = value.get_history_index()) {
-    json["history_index"] = *v;
+  if (auto v = value.get_frontmost_application_history_index()) {
+    json["frontmost_application_history_index"] = *v;
   }
 }
 
@@ -67,9 +67,9 @@ inline void from_json(const nlohmann::json& json, open_application& value) {
     } else if (k == "file_path") {
       pqrs::json::requires_string(v, "`" + k + "`");
       value.set_file_path(v.get<std::string>());
-    } else if (k == "history_index") {
+    } else if (k == "frontmost_application_history_index") {
       pqrs::json::requires_number(v, "`" + k + "`");
-      value.set_history_index(v.get<size_t>());
+      value.set_frontmost_application_history_index(v.get<size_t>());
     } else {
       throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));
     }
@@ -86,7 +86,7 @@ struct hash<krbn::software_function_details::open_application> final {
 
     pqrs::hash::combine(h, value.get_bundle_identifier());
     pqrs::hash::combine(h, value.get_file_path());
-    pqrs::hash::combine(h, value.get_history_index());
+    pqrs::hash::combine(h, value.get_frontmost_application_history_index());
 
     return h;
   }

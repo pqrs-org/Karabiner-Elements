@@ -414,11 +414,11 @@
         "input": {
             "software_function": {
                 "open_application": {
-                    "history_index": null
+                    "frontmost_application_history_index": null
                 }
             }
         },
-        "error": "`software_function` error: `open_application` error: `history_index` must be number, but is `null`"
+        "error": "`software_function` error: `open_application` error: `frontmost_application_history_index` must be number, but is `null`"
     },
     {
         "class": "event_definition",
