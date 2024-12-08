@@ -23,13 +23,15 @@ public:
 
   simultaneous_options(const simultaneous_options&) = delete;
 
-  simultaneous_options(void) : detect_key_down_uninterruptedly_(false),
-                               key_down_order_(key_order::insensitive),
-                               key_up_order_(key_order::insensitive),
-                               key_up_when_(key_up_when::any) {
+  simultaneous_options(void)
+      : detect_key_down_uninterruptedly_(false),
+        key_down_order_(key_order::insensitive),
+        key_up_order_(key_order::insensitive),
+        key_up_when_(key_up_when::any) {
   }
 
-  simultaneous_options(const nlohmann::json& json) : simultaneous_options() {
+  simultaneous_options(const nlohmann::json& json)
+      : simultaneous_options() {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
