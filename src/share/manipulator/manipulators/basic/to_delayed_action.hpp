@@ -21,7 +21,7 @@ public:
           if (value.is_object()) {
             try {
               to_if_invoked_ = std::vector<to_event_definition>{
-                  value.get<to_event_definition>(),
+                  to_event_definition(value),
               };
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
@@ -29,7 +29,9 @@ public:
 
           } else if (value.is_array()) {
             try {
-              to_if_invoked_ = value.get<std::vector<to_event_definition>>();
+              for (const auto& j : value) {
+                to_if_invoked_.push_back(to_event_definition(j));
+              }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
             }
@@ -42,7 +44,7 @@ public:
           if (value.is_object()) {
             try {
               to_if_canceled_ = std::vector<to_event_definition>{
-                  value.get<to_event_definition>(),
+                  to_event_definition(value),
               };
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
@@ -50,7 +52,9 @@ public:
 
           } else if (value.is_array()) {
             try {
-              to_if_canceled_ = value.get<std::vector<to_event_definition>>();
+              for (const auto& j : value) {
+                to_if_canceled_.push_back(to_event_definition(j));
+              }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
             }

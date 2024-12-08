@@ -17,11 +17,13 @@ public:
     try {
       if (json.is_object()) {
         to_ = std::vector<to_event_definition>{
-            json.get<to_event_definition>(),
+            to_event_definition(json),
         };
 
       } else if (json.is_array()) {
-        to_ = json.get<std::vector<to_event_definition>>();
+        for (const auto& j : json) {
+          to_.push_back(to_event_definition(j));
+        }
 
       } else {
         throw pqrs::json::unmarshal_error(fmt::format("json must be object or array, but is `{0}`", pqrs::json::dump_for_error_message(json)));

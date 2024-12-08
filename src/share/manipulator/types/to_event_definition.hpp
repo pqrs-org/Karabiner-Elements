@@ -9,10 +9,71 @@ namespace krbn {
 namespace manipulator {
 class to_event_definition final {
 public:
-  to_event_definition(void) : lazy_(false),
-                              repeat_(true),
-                              halt_(false),
-                              hold_down_milliseconds_(0) {
+  to_event_definition(void)
+      : lazy_(false),
+        repeat_(true),
+        halt_(false),
+        hold_down_milliseconds_(0) {
+  }
+
+  to_event_definition(const nlohmann::json& json)
+      : to_event_definition() {
+    pqrs::json::requires_object(json, "json");
+
+    for (const auto& [key, value] : json.items()) {
+      if (event_definition_.handle_json(key, value, json)) {
+        // Do nothing
+
+      } else if (key == "modifiers") {
+        try {
+          modifiers_ = modifier_definition::make_modifiers(value);
+        } catch (const pqrs::json::unmarshal_error& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+
+      } else if (key == "lazy") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        lazy_ = value.get<bool>();
+
+      } else if (key == "repeat") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        repeat_ = value.get<bool>();
+
+      } else if (key == "halt") {
+        pqrs::json::requires_boolean(value, "`" + key + "`");
+
+        halt_ = value.get<bool>();
+
+      } else if (key == "hold_down_milliseconds" ||
+                 key == "held_down_milliseconds") {
+        pqrs::json::requires_number(value, "`" + key + "`");
+
+        hold_down_milliseconds_ = std::chrono::milliseconds(value.get<int>());
+
+      } else {
+        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
+      }
+    }
+
+    // ----------------------------------------
+
+    switch (event_definition_.get_type()) {
+      case event_definition::type::momentary_switch_event:
+      case event_definition::type::shell_command:
+      case event_definition::type::select_input_source:
+      case event_definition::type::set_variable:
+      case event_definition::type::set_notification_message:
+      case event_definition::type::mouse_key:
+      case event_definition::type::sticky_modifier:
+      case event_definition::type::software_function:
+        break;
+
+      case event_definition::type::none:
+      case event_definition::type::any:
+        throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", pqrs::json::dump_for_error_message(json)));
+    }
   }
 
   virtual ~to_event_definition(void) {
@@ -110,64 +171,5 @@ private:
   bool halt_;
   std::chrono::milliseconds hold_down_milliseconds_;
 };
-
-inline void from_json(const nlohmann::json& json, to_event_definition& d) {
-  pqrs::json::requires_object(json, "json");
-
-  for (const auto& [key, value] : json.items()) {
-    if (d.get_event_definition().handle_json(key, value, json)) {
-      // Do nothing
-
-    } else if (key == "modifiers") {
-      try {
-        d.set_modifiers(modifier_definition::make_modifiers(value));
-      } catch (const pqrs::json::unmarshal_error& e) {
-        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-      }
-
-    } else if (key == "lazy") {
-      pqrs::json::requires_boolean(value, "`" + key + "`");
-
-      d.set_lazy(value.get<bool>());
-
-    } else if (key == "repeat") {
-      pqrs::json::requires_boolean(value, "`" + key + "`");
-
-      d.set_repeat(value.get<bool>());
-
-    } else if (key == "halt") {
-      pqrs::json::requires_boolean(value, "`" + key + "`");
-
-      d.set_halt(value.get<bool>());
-
-    } else if (key == "hold_down_milliseconds" ||
-               key == "held_down_milliseconds") {
-      pqrs::json::requires_number(value, "`" + key + "`");
-
-      d.set_hold_down_milliseconds(std::chrono::milliseconds(value.get<int>()));
-
-    } else {
-      throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
-    }
-  }
-
-  // ----------------------------------------
-
-  switch (d.get_event_definition().get_type()) {
-    case event_definition::type::momentary_switch_event:
-    case event_definition::type::shell_command:
-    case event_definition::type::select_input_source:
-    case event_definition::type::set_variable:
-    case event_definition::type::set_notification_message:
-    case event_definition::type::mouse_key:
-    case event_definition::type::sticky_modifier:
-    case event_definition::type::software_function:
-      break;
-
-    case event_definition::type::none:
-    case event_definition::type::any:
-      throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", pqrs::json::dump_for_error_message(json)));
-  }
-}
 } // namespace manipulator
 } // namespace krbn

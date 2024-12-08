@@ -40,7 +40,7 @@ public:
           if (value.is_object()) {
             try {
               to_ = std::vector<to_event_definition>{
-                  value.get<to_event_definition>(),
+                  to_event_definition(value),
               };
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
@@ -48,7 +48,9 @@ public:
 
           } else if (value.is_array()) {
             try {
-              to_ = value.get<std::vector<to_event_definition>>();
+              for (const auto& j : value) {
+                to_.push_back(to_event_definition(j));
+              }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
             }
@@ -61,7 +63,7 @@ public:
           if (value.is_object()) {
             try {
               to_after_key_up_ = std::vector<to_event_definition>{
-                  value.get<to_event_definition>(),
+                  to_event_definition(value),
               };
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
@@ -69,7 +71,9 @@ public:
 
           } else if (value.is_array()) {
             try {
-              to_after_key_up_ = value.get<std::vector<to_event_definition>>();
+              for (const auto& j : value) {
+                to_after_key_up_.push_back(to_event_definition(j));
+              }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
             }
@@ -82,7 +86,7 @@ public:
           if (value.is_object()) {
             try {
               to_if_alone_ = std::vector<to_event_definition>{
-                  value.get<to_event_definition>(),
+                  to_event_definition(value),
               };
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
@@ -90,7 +94,9 @@ public:
 
           } else if (value.is_array()) {
             try {
-              to_if_alone_ = value.get<std::vector<to_event_definition>>();
+              for (const auto& j : value) {
+                to_if_alone_.push_back(to_event_definition(j));
+              }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
             }
