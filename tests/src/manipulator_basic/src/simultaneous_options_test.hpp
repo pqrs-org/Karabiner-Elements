@@ -42,7 +42,7 @@ void run_simultaneous_options_test(void) {
                               })},
       });
 
-      auto o = json.get<basic::simultaneous_options>();
+      auto o = basic::simultaneous_options(json);
       expect(o.get_to_after_key_up().size() == 1);
       {
         auto& d = o.get_to_after_key_up()[0].get_event_definition();
@@ -62,7 +62,7 @@ void run_simultaneous_options_test(void) {
                               })},
       });
 
-      auto o = json.get<basic::simultaneous_options>();
+      auto o = basic::simultaneous_options(json);
       expect(o.get_to_after_key_up().size() == 2);
       {
         auto& d = o.get_to_after_key_up()[0].get_event_definition();

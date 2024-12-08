@@ -19,7 +19,7 @@ void handle_json(const nlohmann::json& json) {
   } else if (c == "simultaneous_options::key_up_when") {
     json.at("input").get<krbn::manipulator::manipulators::basic::simultaneous_options::key_up_when>();
   } else if (c == "simultaneous_options") {
-    json.at("input").get<krbn::manipulator::manipulators::basic::simultaneous_options>();
+    krbn::manipulator::manipulators::basic::simultaneous_options(json.at("input"));
   } else {
     expect(false);
   }

@@ -192,7 +192,7 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
 
     } else if (key == "simultaneous_options") {
       try {
-        d.set_simultaneous_options(value.get<simultaneous_options>());
+        d.set_simultaneous_options(simultaneous_options(value));
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
