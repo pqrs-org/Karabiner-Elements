@@ -22,10 +22,10 @@ void run_simultaneous_options_test(void) {
                                    })},
       }));
 
-      expect(event_definition.get_simultaneous_options().get_detect_key_down_uninterruptedly() == true);
-      expect(event_definition.get_simultaneous_options().get_key_down_order() == basic::simultaneous_options::key_order::strict);
-      expect(event_definition.get_simultaneous_options().get_key_up_order() == basic::simultaneous_options::key_order::strict_inverse);
-      expect(event_definition.get_simultaneous_options().get_key_up_when() == basic::simultaneous_options::key_up_when::all);
+      expect(event_definition.get_simultaneous_options()->get_detect_key_down_uninterruptedly() == true);
+      expect(event_definition.get_simultaneous_options()->get_key_down_order() == basic::simultaneous_options::key_order::strict);
+      expect(event_definition.get_simultaneous_options()->get_key_up_order() == basic::simultaneous_options::key_order::strict_inverse);
+      expect(event_definition.get_simultaneous_options()->get_key_up_when() == basic::simultaneous_options::key_up_when::all);
     }
   };
 

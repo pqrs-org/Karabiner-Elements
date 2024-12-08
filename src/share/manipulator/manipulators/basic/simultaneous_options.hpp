@@ -21,6 +21,8 @@ public:
     all,
   };
 
+  simultaneous_options(const simultaneous_options&) = delete;
+
   simultaneous_options(void) : detect_key_down_uninterruptedly_(false),
                                key_down_order_(key_order::insensitive),
                                key_up_order_(key_order::insensitive),

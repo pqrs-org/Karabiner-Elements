@@ -276,7 +276,7 @@ public:
                       } else {
                         // Do not manipulate if another event arrived.
 
-                        if (!from_.get_simultaneous_options().get_detect_key_down_uninterruptedly()) {
+                        if (!from_.get_simultaneous_options()->get_detect_key_down_uninterruptedly()) {
                           if (!all_from_events_found(from_events)) {
                             is_target = false;
                           }
@@ -324,7 +324,7 @@ public:
 
                 if (is_target) {
                   if (!from_event_definition::test_key_order(ordered_key_down_events,
-                                                             from_.get_simultaneous_options().get_key_down_order(),
+                                                             from_.get_simultaneous_options()->get_key_down_order(),
                                                              from_.get_event_definitions())) {
                     is_target = false;
                   }
@@ -333,7 +333,7 @@ public:
                 bool needs_wait_key_up = false;
 
                 if (is_target) {
-                  switch (from_.get_simultaneous_options().get_key_up_order()) {
+                  switch (from_.get_simultaneous_options()->get_key_up_order()) {
                     case simultaneous_options::key_order::insensitive:
                       // Do nothing
                       break;
@@ -341,7 +341,7 @@ public:
                     case simultaneous_options::key_order::strict:
                     case simultaneous_options::key_order::strict_inverse:
                       if (!from_event_definition::test_key_order(ordered_key_up_events,
-                                                                 from_.get_simultaneous_options().get_key_up_order(),
+                                                                 from_.get_simultaneous_options()->get_key_up_order(),
                                                                  from_.get_event_definitions())) {
                         is_target = false;
                       } else {
@@ -475,7 +475,7 @@ public:
             case event_type::key_up: {
               bool skip = false;
 
-              switch (from_.get_simultaneous_options().get_key_up_when()) {
+              switch (from_.get_simultaneous_options()->get_key_up_when()) {
                 case simultaneous_options::key_up_when::any:
                   break;
 
@@ -583,7 +583,7 @@ public:
 
                 // simultaneous_options.to_after_key_up_
 
-                if (!from_.get_simultaneous_options().get_to_after_key_up().empty()) {
+                if (!from_.get_simultaneous_options()->get_to_after_key_up().empty()) {
                   if (current_manipulated_original_event->get_from_events().empty()) {
                     event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
                                                                        *current_manipulated_original_event,
@@ -591,7 +591,7 @@ public:
                                                                        *output_event_queue);
 
                     event_sender::post_extra_to_events(front_input_event,
-                                                       from_.get_simultaneous_options().get_to_after_key_up(),
+                                                       from_.get_simultaneous_options()->get_to_after_key_up(),
                                                        *current_manipulated_original_event,
                                                        time_stamp_delay,
                                                        *output_event_queue);

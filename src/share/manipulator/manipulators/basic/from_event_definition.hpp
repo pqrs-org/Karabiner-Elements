@@ -12,7 +12,8 @@ namespace manipulators {
 namespace basic {
 class from_event_definition final {
 public:
-  from_event_definition(void) {
+  from_event_definition(void)
+      : simultaneous_options_(std::make_shared<simultaneous_options>()) {
   }
 
   virtual ~from_event_definition(void) {
@@ -34,11 +35,11 @@ public:
     from_modifiers_definition_ = value;
   }
 
-  const simultaneous_options& get_simultaneous_options(void) const {
+  const gsl::not_null<std::shared_ptr<simultaneous_options>>& get_simultaneous_options(void) const {
     return simultaneous_options_;
   }
 
-  void set_simultaneous_options(const simultaneous_options& value) {
+  void set_simultaneous_options(const gsl::not_null<std::shared_ptr<simultaneous_options>>& value) {
     simultaneous_options_ = value;
   }
 
@@ -143,7 +144,7 @@ public:
 private:
   std::vector<event_definition> event_definitions_;
   from_modifiers_definition from_modifiers_definition_;
-  simultaneous_options simultaneous_options_;
+  gsl::not_null<std::shared_ptr<simultaneous_options>> simultaneous_options_;
 };
 
 inline void from_json(const nlohmann::json& json, from_event_definition& d) {
@@ -192,7 +193,7 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
 
     } else if (key == "simultaneous_options") {
       try {
-        d.set_simultaneous_options(simultaneous_options(value));
+        d.set_simultaneous_options(std::make_shared<simultaneous_options>(value));
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }
