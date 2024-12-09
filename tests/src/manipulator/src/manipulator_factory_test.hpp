@@ -50,12 +50,13 @@ void run_manipulator_factory_test(void) {
       auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                   parameters);
-      expect(dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get()) != nullptr);
-      expect(dynamic_cast<krbn::manipulator::manipulators::nop*>(manipulator.get()) == nullptr);
+      auto p = krbn::memory_utility::unwrap_not_null(manipulator).get();
+      expect(dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(p) != nullptr);
+      expect(dynamic_cast<krbn::manipulator::manipulators::nop*>(p) == nullptr);
       expect(manipulator->get_validity() == krbn::validity::valid);
       expect(manipulator->active() == false);
 
-      auto basic = dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(manipulator.get());
+      auto basic = dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(p);
       expect(basic->get_from().get_event_definitions().size() == 1);
       expect(basic->get_from().get_event_definitions().front().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
              pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,

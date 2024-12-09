@@ -2,6 +2,7 @@
 
 #include "event_definition.hpp"
 #include "event_queue.hpp"
+#include "manipulator/condition_factory.hpp"
 #include "manipulator/condition_manager.hpp"
 #include "modifier_definition.hpp"
 #include <set>
@@ -54,6 +55,13 @@ public:
         pqrs::json::requires_number(value, "`" + key + "`");
 
         hold_down_milliseconds_ = std::chrono::milliseconds(value.get<int>());
+
+      } else if (key == "conditions") {
+        pqrs::json::requires_array(value, "`" + key + "`");
+
+        for (const auto& j : value) {
+          condition_manager_.push_back_condition(condition_factory::make_condition(j));
+        }
 
       } else {
         throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
@@ -129,6 +137,10 @@ public:
 
   void set_hold_down_milliseconds(const std::chrono::milliseconds& value) {
     hold_down_milliseconds_ = value;
+  }
+
+  const condition_manager& get_condition_manager(void) const {
+    return condition_manager_;
   }
 
   bool needs_virtual_hid_pointing(void) const {

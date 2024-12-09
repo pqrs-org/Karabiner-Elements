@@ -11,7 +11,7 @@ public:
   condition_manager(void) {
   }
 
-  void push_back_condition(std::shared_ptr<manipulator::conditions::base> condition) {
+  void push_back_condition(gsl::not_null<std::shared_ptr<manipulator::conditions::base>> condition) {
     conditions_.push_back(condition);
   }
 
@@ -30,7 +30,7 @@ public:
   }
 
 private:
-  std::vector<std::shared_ptr<manipulator::conditions::base>> conditions_;
+  std::vector<gsl::not_null<std::shared_ptr<manipulator::conditions::base>>> conditions_;
 };
 } // namespace manipulator
 } // namespace krbn
