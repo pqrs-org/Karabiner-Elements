@@ -10,12 +10,12 @@ namespace manipulator {
 namespace manipulators {
 namespace basic {
 namespace event_sender {
-inline bool is_last_to_event_modifier_key_event(const std::vector<to_event_definition>& to_events) {
+inline bool is_last_to_event_modifier_key_event(const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& to_events) {
   if (to_events.empty()) {
     return false;
   }
 
-  if (auto e = to_events.back().get_event_definition().get_if<momentary_switch_event>()) {
+  if (auto e = to_events.back()->get_event_definition().get_if<momentary_switch_event>()) {
     if (e->modifier_flag()) {
       return true;
     }
@@ -109,7 +109,7 @@ inline void post_from_mandatory_modifiers_key_down(const event_queue::entry& fro
 }
 
 inline void post_events_at_key_down(const event_queue::entry& front_input_event,
-                                    std::vector<to_event_definition> to_events,
+                                    const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& to_events,
                                     manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                     absolute_time_duration& time_stamp_delay,
                                     event_queue::queue& output_event_queue) {
@@ -118,10 +118,11 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
   }
 
   for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
-    if (auto event = it->get_event_definition().to_event()) {
+    auto to = *it;
+    if (auto event = to->get_event_definition().to_event()) {
       // to_modifier down, to_key down, to_key up, to_modifier up
 
-      auto to_modifier_events = it->make_modifier_events();
+      auto to_modifier_events = to->make_modifier_events();
 
       bool is_modifier_key_event = false;
       if (auto e = event->get_if<momentary_switch_event>()) {
@@ -140,7 +141,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
       {
         // Unset lazy if event is modifier key event in order to keep modifier keys order.
 
-        bool lazy = !is_modifier_key_event || it->get_lazy();
+        bool lazy = !is_modifier_key_event || to->get_lazy();
         for (const auto& e : to_modifier_events) {
           base::post_lazy_modifier_key_event(e,
                                              event_type::key_down,
@@ -165,17 +166,17 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                               event_type::key_down,
                                               front_input_event.get_original_event(),
                                               event_queue::state::manipulated,
-                                              it->get_lazy());
+                                              to->get_lazy());
 
-        if (it->get_halt()) {
+        if (to->get_halt()) {
           current_manipulated_original_event.set_halted();
         }
       }
 
       // Post key_up event
 
-      if (it != std::end(to_events) - 1 || !it->get_repeat()) {
-        time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(it->get_hold_down_milliseconds());
+      if (it != std::end(to_events) - 1 || !to->get_repeat()) {
+        time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(to->get_hold_down_milliseconds());
 
         auto t = front_input_event.get_event_time_stamp();
         t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -186,13 +187,13 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
                                               event_type::key_up,
                                               front_input_event.get_original_event(),
                                               event_queue::state::manipulated,
-                                              it->get_lazy());
+                                              to->get_lazy());
       } else {
         current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
                                                                                      *event,
                                                                                      event_type::key_up,
                                                                                      front_input_event.get_original_event(),
-                                                                                     it->get_lazy());
+                                                                                     to->get_lazy());
       }
 
       {
@@ -233,7 +234,7 @@ inline void post_events_at_key_up(const event_queue::entry& front_input_event,
 }
 
 inline void post_extra_to_events(const event_queue::entry& front_input_event,
-                                 const std::vector<to_event_definition>& to_events,
+                                 const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& to_events,
                                  manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                  absolute_time_duration& time_stamp_delay,
                                  event_queue::queue& output_event_queue) {
@@ -242,9 +243,9 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
   }
 
   for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
-    auto& to = *it;
-    if (auto event = to.get_event_definition().to_event()) {
-      auto to_modifier_events = to.make_modifier_events();
+    auto to = *it;
+    if (auto event = to->get_event_definition().to_event()) {
+      auto to_modifier_events = to->make_modifier_events();
 
       // Post modifier events
 
@@ -270,9 +271,9 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               event_type::key_down,
                                               front_input_event.get_original_event(),
                                               event_queue::state::manipulated,
-                                              it->get_lazy());
+                                              to->get_lazy());
 
-        if (it->get_halt()) {
+        if (to->get_halt()) {
           current_manipulated_original_event.set_halted();
         }
       }
@@ -280,7 +281,7 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
       // Post key_up event
 
       {
-        time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(it->get_hold_down_milliseconds());
+        time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(to->get_hold_down_milliseconds());
 
         auto t = front_input_event.get_event_time_stamp();
         t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
@@ -291,7 +292,7 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
                                               event_type::key_up,
                                               front_input_event.get_original_event(),
                                               event_queue::state::manipulated,
-                                              it->get_lazy());
+                                              to->get_lazy());
       }
 
       // Post modifier events

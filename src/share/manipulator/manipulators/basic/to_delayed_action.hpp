@@ -20,9 +20,7 @@ public:
         if (key == "to_if_invoked") {
           if (value.is_object()) {
             try {
-              to_if_invoked_ = std::vector<to_event_definition>{
-                  to_event_definition(value),
-              };
+              to_if_invoked_.push_back(std::make_shared<to_event_definition>(value));
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
             }
@@ -30,7 +28,7 @@ public:
           } else if (value.is_array()) {
             try {
               for (const auto& j : value) {
-                to_if_invoked_.push_back(to_event_definition(j));
+                to_if_invoked_.push_back(std::make_shared<to_event_definition>(j));
               }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
@@ -43,9 +41,7 @@ public:
         } else if (key == "to_if_canceled") {
           if (value.is_object()) {
             try {
-              to_if_canceled_ = std::vector<to_event_definition>{
-                  to_event_definition(value),
-              };
+              to_if_canceled_.push_back(std::make_shared<to_event_definition>(value));
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
             }
@@ -53,7 +49,7 @@ public:
           } else if (value.is_array()) {
             try {
               for (const auto& j : value) {
-                to_if_canceled_.push_back(to_event_definition(j));
+                to_if_canceled_.push_back(std::make_shared<to_event_definition>(j));
               }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
@@ -78,11 +74,11 @@ public:
     detach_from_dispatcher();
   }
 
-  const std::vector<to_event_definition>& get_to_if_invoked(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_if_invoked(void) const {
     return to_if_invoked_;
   }
 
-  const std::vector<to_event_definition>& get_to_if_canceled(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_if_canceled(void) const {
     return to_if_canceled_;
   }
 
@@ -135,7 +131,7 @@ public:
       if (std::any_of(std::begin(events),
                       std::end(events),
                       [](auto& e) {
-                        return e.needs_virtual_hid_pointing();
+                        return e->needs_virtual_hid_pointing();
                       })) {
         return true;
       }
@@ -144,7 +140,7 @@ public:
   }
 
 private:
-  void post_events(const std::vector<to_event_definition>& events) {
+  void post_events(const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& events) {
     if (front_input_event_) {
       if (current_manipulated_original_event_) {
         if (auto oeq = output_event_queue_.lock()) {
@@ -186,8 +182,8 @@ private:
     current_manipulated_original_event_ = nullptr;
   }
 
-  std::vector<to_event_definition> to_if_invoked_;
-  std::vector<to_event_definition> to_if_canceled_;
+  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_if_invoked_;
+  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_if_canceled_;
   std::optional<event_queue::entry> front_input_event_;
   std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;

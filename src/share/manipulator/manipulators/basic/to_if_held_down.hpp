@@ -16,13 +16,11 @@ public:
                                                 current_held_down_id_(0) {
     try {
       if (json.is_object()) {
-        to_ = std::vector<to_event_definition>{
-            to_event_definition(json),
-        };
+        to_.push_back(std::make_shared<to_event_definition>(json));
 
       } else if (json.is_array()) {
         for (const auto& j : json) {
-          to_.push_back(to_event_definition(j));
+          to_.push_back(std::make_shared<to_event_definition>(j));
         }
 
       } else {
@@ -39,7 +37,7 @@ public:
     detach_from_dispatcher();
   }
 
-  const std::vector<to_event_definition>& get_to(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to(void) const {
     return to_;
   }
 
@@ -131,12 +129,12 @@ public:
     return std::any_of(std::begin(to_),
                        std::end(to_),
                        [](auto& e) {
-                         return e.needs_virtual_hid_pointing();
+                         return e->needs_virtual_hid_pointing();
                        });
   }
 
 private:
-  std::vector<to_event_definition> to_;
+  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_;
   std::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;

@@ -68,11 +68,11 @@ void run_manipulator_factory_test(void) {
                                                                                                modifier_definition::modifier::any,
                                                                                            }));
       expect(basic->get_to().size() == 1);
-      expect(basic->get_to()[0].get_event_definition().get_type() == event_definition::type::momentary_switch_event);
-      expect(basic->get_to()[0].get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
+      expect(basic->get_to()[0]->get_event_definition().get_type() == event_definition::type::momentary_switch_event);
+      expect(basic->get_to()[0]->get_event_definition().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
              pqrs::hid::usage_pair(pqrs::hid::usage_page::button,
                                    pqrs::hid::usage::button::button_1));
-      expect(basic->get_to()[0].get_modifiers() == std::set<modifier_definition::modifier>());
+      expect(basic->get_to()[0]->get_modifiers() == std::set<modifier_definition::modifier>());
     }
   };
 

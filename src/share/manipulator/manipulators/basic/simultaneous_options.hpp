@@ -66,9 +66,7 @@ public:
       } else if (key == "to_after_key_up") {
         if (value.is_object()) {
           try {
-            to_after_key_up_ = std::vector<to_event_definition>{
-                to_event_definition(value),
-            };
+            to_after_key_up_.push_back(std::make_shared<to_event_definition>(value));
           } catch (const pqrs::json::unmarshal_error& e) {
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
           }
@@ -76,7 +74,7 @@ public:
         } else if (value.is_array()) {
           try {
             for (const auto& j : value) {
-              to_after_key_up_.push_back(to_event_definition(j));
+              to_after_key_up_.push_back(std::make_shared<to_event_definition>(j));
             }
           } catch (const pqrs::json::unmarshal_error& e) {
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
@@ -111,7 +109,7 @@ public:
     return key_up_when_;
   }
 
-  const std::vector<to_event_definition>& get_to_after_key_up(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_after_key_up(void) const {
     return to_after_key_up_;
   }
 
@@ -120,7 +118,7 @@ private:
   key_order key_down_order_;
   key_order key_up_order_;
   key_up_when key_up_when_;
-  std::vector<to_event_definition> to_after_key_up_;
+  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_after_key_up_;
 };
 
 inline void from_json(const nlohmann::json& json, simultaneous_options::key_order& value) {

@@ -57,8 +57,8 @@ public:
             {"modifiers", nlohmann::json::array({"fn"})},
         });
 
-        std::vector<manipulator::to_event_definition> to_event_definitions;
-        to_event_definitions.emplace_back(to_json);
+        std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+        to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(to_json));
 
         try {
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
@@ -126,11 +126,11 @@ public:
                      {"consumer_key_code", "al_terminal_lock_or_screensaver"},
                  }),
              }) {
-          std::vector<manipulator::to_event_definition> to_event_definitions;
+          std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
 
-          to_event_definitions.emplace_back(nlohmann::json::object({
+          to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(nlohmann::json::object({
               {"consumer_key_code", "al_terminal_lock_or_screensaver"},
-          }));
+          })));
 
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                                        to_event_definitions);
@@ -205,8 +205,8 @@ public:
 
         auto to_json = d["to"];
 
-        std::vector<manipulator::to_event_definition> to_event_definitions;
-        to_event_definitions.emplace_back(to_json);
+        std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+        to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(to_json));
 
         try {
           auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
@@ -243,7 +243,7 @@ private:
         return nullptr;
       }
 
-      std::vector<manipulator::to_event_definition> to_event_definitions;
+      std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
       for (auto&& j : to_json) {
         // Note:
         // Normal f1...f12 keys will be changed media control keys by the Apple keyboard driver of macOS.
@@ -296,7 +296,7 @@ private:
           }
         }
 
-        to_event_definitions.emplace_back(j);
+        to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(j));
       }
 
       return std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),

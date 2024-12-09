@@ -39,9 +39,7 @@ public:
         } else if (key == "to") {
           if (value.is_object()) {
             try {
-              to_ = std::vector<to_event_definition>{
-                  to_event_definition(value),
-              };
+              to_.push_back(std::make_shared<to_event_definition>(value));
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
             }
@@ -49,7 +47,7 @@ public:
           } else if (value.is_array()) {
             try {
               for (const auto& j : value) {
-                to_.push_back(to_event_definition(j));
+                to_.push_back(std::make_shared<to_event_definition>(j));
               }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
@@ -62,9 +60,7 @@ public:
         } else if (key == "to_after_key_up") {
           if (value.is_object()) {
             try {
-              to_after_key_up_ = std::vector<to_event_definition>{
-                  to_event_definition(value),
-              };
+              to_after_key_up_.push_back(std::make_shared<to_event_definition>(value));
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
             }
@@ -72,7 +68,7 @@ public:
           } else if (value.is_array()) {
             try {
               for (const auto& j : value) {
-                to_after_key_up_.push_back(to_event_definition(j));
+                to_after_key_up_.push_back(std::make_shared<to_event_definition>(j));
               }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
@@ -85,9 +81,7 @@ public:
         } else if (key == "to_if_alone") {
           if (value.is_object()) {
             try {
-              to_if_alone_ = std::vector<to_event_definition>{
-                  to_event_definition(value),
-              };
+              to_if_alone_.push_back(std::make_shared<to_event_definition>(value));
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
             }
@@ -95,7 +89,7 @@ public:
           } else if (value.is_array()) {
             try {
               for (const auto& j : value) {
-                to_if_alone_.push_back(to_event_definition(j));
+                to_if_alone_.push_back(std::make_shared<to_event_definition>(j));
               }
             } catch (const pqrs::json::unmarshal_error& e) {
               throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
@@ -138,7 +132,7 @@ public:
 
   // For simple_modifications
   basic(const from_event_definition& from,
-        const std::vector<to_event_definition>& to)
+        const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& to)
       : base(),
         dispatcher_client(),
         parameters_(std::make_shared<core_configuration::details::complex_modifications_parameters>()),
@@ -660,7 +654,7 @@ public:
       if (std::any_of(std::begin(events),
                       std::end(events),
                       [](auto& e) {
-                        return e.needs_virtual_hid_pointing();
+                        return e->needs_virtual_hid_pointing();
                       })) {
         return true;
       }
@@ -710,15 +704,15 @@ public:
     return from_;
   }
 
-  const std::vector<to_event_definition>& get_to(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to(void) const {
     return to_;
   }
 
-  const std::vector<to_event_definition>& get_to_after_key_up(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_after_key_up(void) const {
     return to_after_key_up_;
   }
 
-  const std::vector<to_event_definition>& get_to_if_alone(void) const {
+  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_if_alone(void) const {
     return to_if_alone_;
   }
 
@@ -771,13 +765,13 @@ private:
   gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters_;
 
   from_event_definition from_;
-  std::vector<to_event_definition> to_;
-  std::vector<to_event_definition> to_after_key_up_;
-  std::vector<to_event_definition> to_if_alone_;
+  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_;
+  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_after_key_up_;
+  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_if_alone_;
   std::shared_ptr<to_if_held_down> to_if_held_down_;
   std::shared_ptr<to_delayed_action> to_delayed_action_;
 
-  std::vector<std::shared_ptr<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
+  std::vector<gsl::not_null<std::shared_ptr<manipulated_original_event::manipulated_original_event>>> manipulated_original_events_;
 };
 } // namespace basic
 } // namespace manipulators

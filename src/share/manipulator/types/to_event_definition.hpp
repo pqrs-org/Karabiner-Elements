@@ -9,6 +9,8 @@ namespace krbn {
 namespace manipulator {
 class to_event_definition final {
 public:
+  to_event_definition(const to_event_definition&) = delete;
+
   to_event_definition(void)
       : lazy_(false),
         repeat_(true),
