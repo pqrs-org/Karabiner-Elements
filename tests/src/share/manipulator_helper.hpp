@@ -2,6 +2,7 @@
 
 #include "event_queue.hpp"
 #include "json_utility.hpp"
+#include "manipulator/condition_factory.hpp"
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
@@ -66,7 +67,7 @@ public:
 
             if (auto conditions = pqrs::json::find_array(j, "conditions")) {
               for (const auto& c : conditions->value()) {
-                m->push_back_condition(krbn::manipulator::manipulator_factory::make_condition(c));
+                m->push_back_condition(krbn::manipulator::condition_factory::make_condition(c));
               }
             }
 
@@ -113,7 +114,7 @@ public:
 
         auto m = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
                                                                            to_event_definitions);
-        m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
+        m->push_back_condition(manipulator::condition_factory::make_event_changed_if_condition(false));
 
         manipulator_managers->back()->push_back_manipulator(m);
 

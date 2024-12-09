@@ -15,6 +15,8 @@
 #include "json_writer.hpp"
 #include "krbn_notification_center.hpp"
 #include "logger.hpp"
+#include "manipulator/condition_factory.hpp"
+#include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include "memory_utility.hpp"
@@ -961,7 +963,7 @@ private:
           auto m = manipulator::manipulator_factory::make_manipulator(manipulator->to_json(),
                                                                       manipulator->get_parameters());
           for (const auto& c : manipulator->get_conditions()) {
-            m->push_back_condition(manipulator::manipulator_factory::make_condition(c.get_json()));
+            m->push_back_condition(manipulator::condition_factory::make_condition(c.get_json()));
           }
           complex_modifications_manipulator_manager_->push_back_manipulator(m);
 

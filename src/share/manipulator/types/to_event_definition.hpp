@@ -2,6 +2,7 @@
 
 #include "event_definition.hpp"
 #include "event_queue.hpp"
+#include "manipulator/condition_manager.hpp"
 #include "modifier_definition.hpp"
 #include <set>
 
@@ -172,6 +173,7 @@ private:
   bool repeat_;
   bool halt_;
   std::chrono::milliseconds hold_down_milliseconds_;
+  condition_manager condition_manager_;
 };
 } // namespace manipulator
 } // namespace krbn

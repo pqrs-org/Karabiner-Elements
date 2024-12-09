@@ -7,7 +7,7 @@ void run_manipulator_conditions_test(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 
-  "manipulator.manipulator_factory"_test = [] {
+  "manipulator.condition_factory"_test = [] {
     {
       nlohmann::json json({
           {"type", "frontmost_application_if"},
@@ -19,7 +19,7 @@ void run_manipulator_conditions_test(void) {
               },
           },
       });
-      auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+      auto condition = krbn::manipulator::condition_factory::make_condition(json);
       expect(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(condition.get()) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
     }
@@ -27,7 +27,7 @@ void run_manipulator_conditions_test(void) {
       nlohmann::json json({
           {"type", "input_source_if"},
       });
-      auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+      auto condition = krbn::manipulator::condition_factory::make_condition(json);
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(condition.get()) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
     }
@@ -35,7 +35,7 @@ void run_manipulator_conditions_test(void) {
       nlohmann::json json({
           {"type", "input_source_unless"},
       });
-      auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+      auto condition = krbn::manipulator::condition_factory::make_condition(json);
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(condition.get()) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
     }
@@ -50,7 +50,7 @@ void run_manipulator_conditions_test(void) {
         j["input_mode_id"] = "^com\\.apple\\.inputmethod\\.SCIM\\.ITABC$";
         json["input_sources"].push_back(j);
       }
-      auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+      auto condition = krbn::manipulator::condition_factory::make_condition(json);
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(condition.get()) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
     }
@@ -60,7 +60,7 @@ void run_manipulator_conditions_test(void) {
           {"name", "variable_name"},
           {"value", 1},
       });
-      auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+      auto condition = krbn::manipulator::condition_factory::make_condition(json);
       expect(dynamic_cast<krbn::manipulator::conditions::variable*>(condition.get()) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
     }
@@ -70,7 +70,7 @@ void run_manipulator_conditions_test(void) {
           {"name", "variable_name"},
           {"value", 1},
       });
-      auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+      auto condition = krbn::manipulator::condition_factory::make_condition(json);
       expect(dynamic_cast<krbn::manipulator::conditions::variable*>(condition.get()) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
     }
@@ -78,7 +78,7 @@ void run_manipulator_conditions_test(void) {
       nlohmann::json json;
       json["type"] = "keyboard_type_if";
       json["keyboard_types"] = nlohmann::json::array({"iso"});
-      auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+      auto condition = krbn::manipulator::condition_factory::make_condition(json);
       expect(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(condition.get()) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
     }
@@ -86,7 +86,7 @@ void run_manipulator_conditions_test(void) {
       nlohmann::json json;
       json["type"] = "keyboard_type_unless";
       json["keyboard_types"] = nlohmann::json::array({"iso"});
-      auto condition = krbn::manipulator::manipulator_factory::make_condition(json);
+      auto condition = krbn::manipulator::condition_factory::make_condition(json);
       expect(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(condition.get()) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(condition.get()) == nullptr);
     }

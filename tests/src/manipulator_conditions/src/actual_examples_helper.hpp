@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../../share/json_helper.hpp"
+#include "manipulator/condition_factory.hpp"
 #include "manipulator/condition_manager.hpp"
-#include "manipulator/manipulator_factory.hpp"
 #include <boost/ut.hpp>
 
 namespace {
@@ -15,7 +15,7 @@ public:
     auto json = krbn::unit_testing::json_helper::load_jsonc(std::string("json/") + file_name);
     for (const auto& j : json) {
       try {
-        condition_manager_.push_back_condition(krbn::manipulator::manipulator_factory::make_condition(j));
+        condition_manager_.push_back_condition(krbn::manipulator::condition_factory::make_condition(j));
       } catch (pqrs::json::unmarshal_error& e) {
         error_messages_.push_back(e.what());
       } catch (std::exception& e) {

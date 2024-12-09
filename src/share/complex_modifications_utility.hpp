@@ -2,6 +2,7 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
+#include "manipulator/condition_factory.hpp"
 #include "manipulator/manipulator_factory.hpp"
 
 namespace krbn {
@@ -14,7 +15,7 @@ inline std::vector<std::string> lint_rule(const core_configuration::details::com
       manipulator::manipulator_factory::make_manipulator(m->to_json(),
                                                          m->get_parameters());
       for (const auto& c : m->get_conditions()) {
-        manipulator::manipulator_factory::make_condition(c.get_json());
+        manipulator::condition_factory::make_condition(c.get_json());
       }
 
     } catch (const std::exception& e) {

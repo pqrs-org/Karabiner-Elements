@@ -2,7 +2,7 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
-#include "manipulator/manipulator_factory.hpp"
+#include "manipulator/condition_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
 
@@ -30,7 +30,7 @@ public:
       for (const auto& pair : device->get_simple_modifications()->get_pairs()) {
         try {
           if (auto m = make_manipulator(pair)) {
-            auto c = manipulator::manipulator_factory::make_device_if_condition(*device);
+            auto c = manipulator::condition_factory::make_device_if_condition(*device);
             m->push_back_condition(c);
             manipulator_manager_->push_back_manipulator(m);
           }
@@ -95,7 +95,7 @@ public:
             auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
             auto m = std::make_shared<manipulator::manipulators::mouse_basic::mouse_basic>(json,
                                                                                            parameters);
-            auto c = manipulator::manipulator_factory::make_device_if_condition(*device);
+            auto c = manipulator::condition_factory::make_device_if_condition(*device);
             m->push_back_condition(c);
             manipulator_manager_->push_back_manipulator(m);
           } catch (const std::exception& e) {

@@ -2,7 +2,7 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
-#include "manipulator/manipulator_factory.hpp"
+#include "manipulator/condition_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
 
@@ -81,10 +81,10 @@ public:
         try {
           if (auto m = make_function_key_manipulator(pair,
                                                      from_mandatory_modifiers_fn)) {
-            m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
-            m->push_back_condition(manipulator::manipulator_factory::make_device_unless_touch_bar_condition());
+            m->push_back_condition(manipulator::condition_factory::make_event_changed_if_condition(false));
+            m->push_back_condition(manipulator::condition_factory::make_device_unless_touch_bar_condition());
 
-            auto c = manipulator::manipulator_factory::make_device_if_condition(*device);
+            auto c = manipulator::condition_factory::make_device_if_condition(*device);
             m->push_back_condition(c);
 
             manipulator_manager_->push_back_manipulator(m);
@@ -102,8 +102,8 @@ public:
     for (const auto& pair : profile.get_fn_function_keys()->get_pairs()) {
       if (auto m = make_function_key_manipulator(pair,
                                                  from_mandatory_modifiers_fn)) {
-        m->push_back_condition(manipulator::manipulator_factory::make_event_changed_if_condition(false));
-        m->push_back_condition(manipulator::manipulator_factory::make_device_unless_touch_bar_condition());
+        m->push_back_condition(manipulator::condition_factory::make_event_changed_if_condition(false));
+        m->push_back_condition(manipulator::condition_factory::make_device_unless_touch_bar_condition());
 
         manipulator_manager_->push_back_manipulator(m);
       }
