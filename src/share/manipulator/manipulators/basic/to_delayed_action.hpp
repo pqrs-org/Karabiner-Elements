@@ -74,11 +74,11 @@ public:
     detach_from_dispatcher();
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_if_invoked(void) const {
+  const to_event_definitions& get_to_if_invoked(void) const {
     return to_if_invoked_;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_if_canceled(void) const {
+  const to_event_definitions& get_to_if_canceled(void) const {
     return to_if_canceled_;
   }
 
@@ -140,7 +140,7 @@ public:
   }
 
 private:
-  void post_events(const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& events) {
+  void post_events(const to_event_definitions& events) {
     if (front_input_event_) {
       if (current_manipulated_original_event_) {
         if (auto oeq = output_event_queue_.lock()) {
@@ -182,8 +182,8 @@ private:
     current_manipulated_original_event_ = nullptr;
   }
 
-  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_if_invoked_;
-  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_if_canceled_;
+  to_event_definitions to_if_invoked_;
+  to_event_definitions to_if_canceled_;
   std::optional<event_queue::entry> front_input_event_;
   std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;

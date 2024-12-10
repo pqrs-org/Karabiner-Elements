@@ -37,7 +37,7 @@ public:
     detach_from_dispatcher();
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to(void) const {
+  const to_event_definitions& get_to(void) const {
     return to_;
   }
 
@@ -134,7 +134,7 @@ public:
   }
 
 private:
-  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_;
+  to_event_definitions to_;
   std::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;

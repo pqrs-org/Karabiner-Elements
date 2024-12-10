@@ -10,7 +10,8 @@ namespace manipulator {
 namespace manipulators {
 namespace basic {
 namespace event_sender {
-inline bool is_last_to_event_modifier_key_event(const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& to_events) {
+
+inline bool is_last_to_event_modifier_key_event(const to_event_definitions& to_events) {
   if (to_events.empty()) {
     return false;
   }
@@ -109,7 +110,7 @@ inline void post_from_mandatory_modifiers_key_down(const event_queue::entry& fro
 }
 
 inline void post_events_at_key_down(const event_queue::entry& front_input_event,
-                                    const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& to_events,
+                                    const to_event_definitions& to_events,
                                     manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                     absolute_time_duration& time_stamp_delay,
                                     event_queue::queue& output_event_queue) {
@@ -234,7 +235,7 @@ inline void post_events_at_key_up(const event_queue::entry& front_input_event,
 }
 
 inline void post_extra_to_events(const event_queue::entry& front_input_event,
-                                 const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& to_events,
+                                 const to_event_definitions& to_events,
                                  manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
                                  absolute_time_duration& time_stamp_delay,
                                  event_queue::queue& output_event_queue) {
@@ -324,6 +325,7 @@ inline void post_active_modifier_flags(const event_queue::entry& front_input_eve
                                        output_event_queue);
   }
 }
+
 } // namespace event_sender
 } // namespace basic
 } // namespace manipulators

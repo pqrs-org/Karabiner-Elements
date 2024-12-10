@@ -132,7 +132,7 @@ public:
 
   // For simple_modifications
   basic(const from_event_definition& from,
-        const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& to)
+        const to_event_definitions& to)
       : base(),
         dispatcher_client(),
         parameters_(std::make_shared<core_configuration::details::complex_modifications_parameters>()),
@@ -704,15 +704,15 @@ public:
     return from_;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to(void) const {
+  const to_event_definitions& get_to(void) const {
     return to_;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_after_key_up(void) const {
+  const to_event_definitions& get_to_after_key_up(void) const {
     return to_after_key_up_;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>>& get_to_if_alone(void) const {
+  const to_event_definitions& get_to_if_alone(void) const {
     return to_if_alone_;
   }
 
@@ -765,9 +765,9 @@ private:
   gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters_;
 
   from_event_definition from_;
-  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_;
-  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_after_key_up_;
-  std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_if_alone_;
+  to_event_definitions to_;
+  to_event_definitions to_after_key_up_;
+  to_event_definitions to_if_alone_;
   std::shared_ptr<to_if_held_down> to_if_held_down_;
   std::shared_ptr<to_delayed_action> to_delayed_action_;
 
