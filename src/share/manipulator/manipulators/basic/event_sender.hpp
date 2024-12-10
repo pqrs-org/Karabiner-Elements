@@ -11,6 +11,19 @@ namespace manipulators {
 namespace basic {
 namespace event_sender {
 
+inline to_event_definitions filter_by_conditions(const to_event_definitions& to_events,
+                                                 const event_queue::entry& entry,
+                                                 const manipulator_environment& manipulator_environment) {
+  to_event_definitions result;
+  std::copy_if(to_events.begin(),
+               to_events.end(),
+               std::back_inserter(result),
+               [&entry, &manipulator_environment](auto&& e) {
+                 return e->get_condition_manager().is_fulfilled(entry, manipulator_environment);
+               });
+  return result;
+}
+
 inline bool is_last_to_event_modifier_key_event(const to_event_definitions& to_events) {
   if (to_events.empty()) {
     return false;
@@ -118,7 +131,11 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
     return;
   }
 
-  for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
+  auto filtered_to_events = filter_by_conditions(to_events,
+                                                 front_input_event,
+                                                 output_event_queue.get_manipulator_environment());
+
+  for (auto it = std::begin(filtered_to_events); it != std::end(filtered_to_events); std::advance(it, 1)) {
     auto to = *it;
     if (auto event = to->get_event_definition().to_event()) {
       // to_modifier down, to_key down, to_key up, to_modifier up
@@ -176,7 +193,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
 
       // Post key_up event
 
-      if (it != std::end(to_events) - 1 || !to->get_repeat()) {
+      if (it != std::end(filtered_to_events) - 1 || !to->get_repeat()) {
         time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(to->get_hold_down_milliseconds());
 
         auto t = front_input_event.get_event_time_stamp();
@@ -199,7 +216,7 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
 
       {
         for (const auto& e : to_modifier_events) {
-          if (it == std::end(to_events) - 1 && is_modifier_key_event) {
+          if (it == std::end(filtered_to_events) - 1 && is_modifier_key_event) {
             auto pair = base::make_lazy_modifier_key_event(e, event_type::key_up);
 
             current_manipulated_original_event.get_events_at_key_up().emplace_back_event(front_input_event.get_device_id(),
@@ -243,7 +260,11 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
     return;
   }
 
-  for (auto it = std::begin(to_events); it != std::end(to_events); std::advance(it, 1)) {
+  auto filtered_to_events = filter_by_conditions(to_events,
+                                                 front_input_event,
+                                                 output_event_queue.get_manipulator_environment());
+
+  for (auto it = std::begin(filtered_to_events); it != std::end(filtered_to_events); std::advance(it, 1)) {
     auto to = *it;
     if (auto event = to->get_event_definition().to_event()) {
       auto to_modifier_events = to->make_modifier_events();
