@@ -65,6 +65,14 @@
     {
         "class": "to_event_definition",
         "input": {
+            "conditions": null
+        },
+        "error": "`conditions` must be array, but is `null`"
+    },
+
+    {
+        "class": "to_event_definition",
+        "input": {
             "Lazy": true,
             "repeat": false
         },

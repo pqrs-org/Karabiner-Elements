@@ -37,6 +37,7 @@ void run_event_definition_test(void) {
                      pqrs::hid::usage_page::keyboard_or_keypad,
                      pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift),
              }));
+      expect(event_definition.get_condition_manager().get_conditions().empty());
     }
     {
       nlohmann::json json({
@@ -144,6 +145,26 @@ void run_event_definition_test(void) {
       auto pair = event_definition.get_event_definition().get_if<std::pair<krbn::modifier_flag, krbn::sticky_modifier_type>>();
       expect(pair->first == krbn::modifier_flag::left_shift);
       expect(pair->second == krbn::sticky_modifier_type::toggle);
+    }
+    // conditions
+    {
+      auto json = R"(
+
+{
+  "key_code": "6",
+  "modifiers": ["left_shift"],
+  "conditions": [
+    {
+      "keyboard_types": ["ansi", "iso"],
+      "type": "keyboard_type_if"
+    }
+  ]
+}
+
+      )"_json;
+
+      krbn::manipulator::to_event_definition event_definition(json);
+      expect(1 == event_definition.get_condition_manager().get_conditions().size());
     }
     // set_variable
     {

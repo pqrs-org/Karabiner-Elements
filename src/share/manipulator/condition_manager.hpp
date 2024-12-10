@@ -11,6 +11,10 @@ public:
   condition_manager(void) {
   }
 
+  const std::vector<gsl::not_null<std::shared_ptr<manipulator::conditions::base>>>& get_conditions(void) const {
+    return conditions_;
+  }
+
   void push_back_condition(gsl::not_null<std::shared_ptr<manipulator::conditions::base>> condition) {
     conditions_.push_back(condition);
   }
