@@ -1,0 +1,72 @@
+[
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "f11",
+            "modifiers": { "optional": ["any"] }
+        },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "f11_pressed",
+                    "value": true,
+                    "key_up_value": false
+                }
+            }
+        ]
+    },
+    {
+        "type": "basic",
+        "from": {
+            "key_code": "f12",
+            "modifiers": { "optional": ["any"] }
+        },
+        "to": [
+            {
+                "key_code": "a",
+                "conditions": [
+                    {
+                        "type": "variable_if",
+                        "name": "f11_pressed",
+                        "value": true
+                    }
+                ]
+            },
+            {
+                "key_code": "b",
+                "conditions": [
+                    {
+                        "type": "variable_unless",
+                        "name": "f11_pressed",
+                        "value": true
+                    }
+                ]
+            }
+        ],
+        "to_delayed_action": {
+            "to_if_invoked": [{ "key_code": "f1" }],
+            "to_if_canceled": [
+                {
+                    "key_code": "1",
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "f11_pressed",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "key_code": "2",
+                    "conditions": [
+                        {
+                            "type": "variable_unless",
+                            "name": "f11_pressed",
+                            "value": true
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]
