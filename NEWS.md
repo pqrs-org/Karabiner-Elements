@@ -7,7 +7,7 @@
     -   Fixed an issue that the fn key is unintentionally tapped when use the media keys if "Use all F1, F2, etc. keys as standard function keys" is enabled.
 -   ✨ New Features
     -   Added `frontmost_application_history_index` option into `open_application`.
-    -  Added `conditions` option into `to`.
+    -   Added `conditions` option into `to`.
 -   ⚡️ Improvements
     -   Support the following keys:
         -   consumer::ac_zoom_out
