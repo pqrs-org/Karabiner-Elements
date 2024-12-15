@@ -910,14 +910,6 @@
         ]
     },
     {
-        "label": "consumer_key_code::stop",
-        "data": [
-            {
-                "consumer_key_code": "stop"
-            }
-        ]
-    },
-    {
         "label": "fast_forward",
         "data": [
             {
@@ -1027,10 +1019,47 @@
         ]
     },
     {
-        "label": "consumer_key_code::mute",
+        "not_to": true,
+        "label": "stop",
         "data": [
             {
-                "consumer_key_code": "mute"
+                "consumer_key_code": "stop"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "bass_boost",
+        "data": [
+            {
+                "consumer_key_code": "bass_boost"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "loudness",
+        "data": [
+            {
+                "consumer_key_code": "loudness"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "bass_increment",
+        "data": [
+            {
+                "consumer_key_code": "bass_increment"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "bass_decrement",
+        "data": [
+            {
+                "consumer_key_code": "bass_decrement"
             }
         ]
     },
@@ -2855,6 +2884,11 @@
     },
     {
         "not_to": true,
+        "label": "ac_search",
+        "data": [{ "consumer_key_code": "ac_search" }]
+    },
+    {
+        "not_to": true,
         "label": "ac_home",
         "data": [{ "consumer_key_code": "ac_home" }]
     },
@@ -2887,11 +2921,6 @@
         "not_to": true,
         "label": "ac_zoom_in",
         "data": [{ "consumer_key_code": "ac_zoom_in" }]
-    },
-    {
-        "not_to": true,
-        "label": "ac_search",
-        "data": [{ "consumer_key_code": "ac_search" }]
     },
     {
         "category": "Remote control buttons"
@@ -3382,38 +3411,6 @@
         "data": [
             {
                 "key_code": "volume_increment"
-            }
-        ]
-    },
-    {
-        "label": "bass_boost",
-        "data": [
-            {
-                "consumer_key_code": "bass_boost"
-            }
-        ]
-    },
-    {
-        "label": "loudness",
-        "data": [
-            {
-                "consumer_key_code": "loudness"
-            }
-        ]
-    },
-    {
-        "label": "bass_increment",
-        "data": [
-            {
-                "consumer_key_code": "bass_increment"
-            }
-        ]
-    },
-    {
-        "label": "bass_decrement",
-        "data": [
-            {
-                "consumer_key_code": "bass_decrement"
             }
         ]
     },
