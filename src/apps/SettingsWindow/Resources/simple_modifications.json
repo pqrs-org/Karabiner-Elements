@@ -910,6 +910,14 @@
         ]
     },
     {
+        "label": "consumer_key_code::stop",
+        "data": [
+            {
+                "consumer_key_code": "stop"
+            }
+        ]
+    },
+    {
         "label": "fast_forward",
         "data": [
             {
@@ -1015,6 +1023,14 @@
         "data": [
             {
                 "consumer_key_code": "scan_next_track"
+            }
+        ]
+    },
+    {
+        "label": "consumer_key_code::mute",
+        "data": [
+            {
+                "consumer_key_code": "mute"
             }
         ]
     },
@@ -2873,6 +2889,11 @@
         "data": [{ "consumer_key_code": "ac_zoom_in" }]
     },
     {
+        "not_to": true,
+        "label": "ac_search",
+        "data": [{ "consumer_key_code": "ac_search" }]
+    },
+    {
         "category": "Remote control buttons"
     },
     {
@@ -3361,6 +3382,38 @@
         "data": [
             {
                 "key_code": "volume_increment"
+            }
+        ]
+    },
+    {
+        "label": "bass_boost",
+        "data": [
+            {
+                "consumer_key_code": "bass_boost"
+            }
+        ]
+    },
+    {
+        "label": "loudness",
+        "data": [
+            {
+                "consumer_key_code": "loudness"
+            }
+        ]
+    },
+    {
+        "label": "bass_increment",
+        "data": [
+            {
+                "consumer_key_code": "bass_increment"
+            }
+        ]
+    },
+    {
+        "label": "bass_decrement",
+        "data": [
+            {
+                "consumer_key_code": "bass_decrement"
             }
         ]
     },

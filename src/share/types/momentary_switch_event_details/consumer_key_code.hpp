@@ -44,12 +44,17 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"rewind", pqrs::hid::usage::consumer::rewind},
     {"scan_next_track", pqrs::hid::usage::consumer::scan_next_track},
     {"scan_previous_track", pqrs::hid::usage::consumer::scan_previous_track},
+    {"stop", pqrs::hid::usage::consumer::stop},
     {"eject", pqrs::hid::usage::consumer::eject},
     {"play_or_pause", pqrs::hid::usage::consumer::play_or_pause},
     {"voice_command", pqrs::hid::usage::consumer::voice_command},
     {"mute", pqrs::hid::usage::consumer::mute},
+    {"bass_boost", pqrs::hid::usage::consumer::bass_boost},
+    {"loudness", pqrs::hid::usage::consumer::loudness},
     {"volume_increment", pqrs::hid::usage::consumer::volume_increment},
     {"volume_decrement", pqrs::hid::usage::consumer::volume_decrement},
+    {"bass_increment", pqrs::hid::usage::consumer::bass_increment},
+    {"bass_decrement", pqrs::hid::usage::consumer::bass_decrement},
 
     // Application launch buttons
     {"al_consumer_control_configuration", pqrs::hid::usage::consumer::al_consumer_control_configuration},
@@ -126,6 +131,7 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"al_contextaware_desktop_assistant", pqrs::hid::usage::consumer::al_contextaware_desktop_assistant},
 
     // Generic gui application controls
+    {"ac_search", pqrs::hid::usage::consumer::ac_search},
     {"ac_home", pqrs::hid::usage::consumer::ac_home},
     {"ac_back", pqrs::hid::usage::consumer::ac_back},
     {"ac_forward", pqrs::hid::usage::consumer::ac_forward},
