@@ -1019,6 +1019,51 @@
         ]
     },
     {
+        "not_to": true,
+        "label": "stop",
+        "data": [
+            {
+                "consumer_key_code": "stop"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "bass_boost",
+        "data": [
+            {
+                "consumer_key_code": "bass_boost"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "loudness",
+        "data": [
+            {
+                "consumer_key_code": "loudness"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "bass_increment",
+        "data": [
+            {
+                "consumer_key_code": "bass_increment"
+            }
+        ]
+    },
+    {
+        "not_to": true,
+        "label": "bass_decrement",
+        "data": [
+            {
+                "consumer_key_code": "bass_decrement"
+            }
+        ]
+    },
+    {
         "category": "Keypad keys"
     },
     {
@@ -2836,6 +2881,11 @@
     },
     {
         "category": "Generic GUI application control keys"
+    },
+    {
+        "not_to": true,
+        "label": "ac_search",
+        "data": [{ "consumer_key_code": "ac_search" }]
     },
     {
         "not_to": true,
