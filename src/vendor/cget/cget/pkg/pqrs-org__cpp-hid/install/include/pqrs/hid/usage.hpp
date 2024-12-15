@@ -338,12 +338,17 @@ constexpr value_t fast_forward(0x00b3);
 constexpr value_t rewind(0x00b4);
 constexpr value_t scan_next_track(0x00b5);
 constexpr value_t scan_previous_track(0x00b6);
+constexpr value_t stop(0x00b7);
 constexpr value_t eject(0x00b8);
 constexpr value_t play_or_pause(0x00cd);
 constexpr value_t voice_command(0x00cf);
 constexpr value_t mute(0x00e2);
+constexpr value_t bass_boost(0x00e5);
+constexpr value_t loudness(0x00e7);
 constexpr value_t volume_increment(0x00e9);
 constexpr value_t volume_decrement(0x00ea);
+constexpr value_t bass_increment(0x0152);
+constexpr value_t bass_decrement(0x0153);
 
 // application launch buttons
 
@@ -422,6 +427,7 @@ constexpr value_t al_contextaware_desktop_assistant(0x01cb);
 
 // generic gui application controls
 
+constexpr value_t ac_search(0x0221);
 constexpr value_t ac_home(0x0223);
 constexpr value_t ac_back(0x0224);
 constexpr value_t ac_forward(0x0225);
