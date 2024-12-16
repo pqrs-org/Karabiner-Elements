@@ -1020,7 +1020,7 @@
     },
     {
         "not_to": true,
-        "label": "stop",
+        "label": "consumer_key_code::stop",
         "data": [
             {
                 "consumer_key_code": "stop"
