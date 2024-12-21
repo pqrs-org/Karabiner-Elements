@@ -115,29 +115,32 @@ public:
 
     // Touch ID
     {
+      // from: Touch ID ("consumer_key_code": "menu")
+      // to:   Lock key on Magic Keyboard without Touch ID {"consumer_key_code": "al_terminal_lock_or_screensaver"}
       try {
-        for (const auto& from_json : {
-                 nlohmann::json::object({
-                     // Touch ID
-                     {"consumer_key_code", "menu"},
-                 }),
-                 nlohmann::json::object({
-                     // Lock key on Magic Keyboard without Touch ID
-                     {"consumer_key_code", "al_terminal_lock_or_screensaver"},
-                 }),
-             }) {
-          std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+        auto from_json = R"(
+{
+  "consumer_key_code": "menu",
+  "modifiers": {
+    "optional": ["any"]
+  }
+}
+      )"_json;
 
-          to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(nlohmann::json::object({
-              {"consumer_key_code", "al_terminal_lock_or_screensaver"},
-          })));
+        auto to_json = R"(
+{
+  "consumer_key_code": "al_terminal_lock_or_screensaver"
+}
+      )"_json;
 
-          auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
-                                                                                       to_event_definitions);
+        std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
 
-          manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
-        }
+        to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(to_json));
 
+        auto manipulator = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),
+                                                                                     to_event_definitions);
+
+        manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(manipulator));
       } catch (const std::exception& e) {
         logger::get_logger()->error(e.what());
       }
