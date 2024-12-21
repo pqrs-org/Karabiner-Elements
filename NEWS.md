@@ -20,6 +20,7 @@
         -   `{ "consumer_key_code": "bass_increment" }`
         -   `{ "consumer_key_code": "bass_decrement" }`
         -   `{ "consumer_key_code": "ac_search" }`
+    -   The implicit conversion of Touch ID to the Lock key has been modified to work even when modifiers are held down.
 
 ## Karabiner-Elements 15.3.0
 
