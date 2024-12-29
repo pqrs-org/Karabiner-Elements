@@ -1,0 +1,26 @@
+[
+    {
+        // specify modifiers order
+        "type": "basic",
+        "from": {
+            "key_code": "escape"
+        },
+        "to": [
+            {
+                "key_code": "vk_none",
+                "modifiers": ["left_shift"]
+            },
+            {
+                "key_code": "vk_none",
+                "modifiers": ["left_command", "left_shift"]
+            },
+            {
+                "key_code": "vk_none",
+                "modifiers": ["left_command", "left_option", "left_shift"]
+            },
+            {
+                "key_code": "left_option"
+            }
+        ]
+    }
+]

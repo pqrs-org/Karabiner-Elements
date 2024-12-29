@@ -1,0 +1,24 @@
+[
+    // escape key_down
+    {
+        "device_id": 1,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "escape"
+            }
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "escape"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "validity": true
+    }
+]
