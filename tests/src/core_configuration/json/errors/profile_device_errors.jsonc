@@ -55,6 +55,26 @@
         "error": "`disable_built_in_keyboard_if_exists` must be boolean, but is `null`"
     },
 
+    // pointing_motion_xy_multiplier
+
+    {
+        "class": "devices",
+        "input": {
+            "pointing_motion_xy_multiplier": null
+        },
+        "error": "`pointing_motion_xy_multiplier` must be number, but is `null`"
+    },
+
+    // pointing_motion_wheels_multiplier
+
+    {
+        "class": "devices",
+        "input": {
+            "pointing_motion_wheels_multiplier": null
+        },
+        "error": "`pointing_motion_wheels_multiplier` must be number, but is `null`"
+    },
+
     // mouse_flip_x
 
     {

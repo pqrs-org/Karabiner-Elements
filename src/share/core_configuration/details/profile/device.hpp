@@ -40,6 +40,14 @@ public:
                                          disable_built_in_keyboard_if_exists_,
                                          false);
 
+    helper_values_.push_back_value<double>("pointing_motion_xy_multiplier",
+                                           pointing_motion_xy_multiplier_,
+                                           1.0);
+
+    helper_values_.push_back_value<double>("pointing_motion_wheels_multiplier",
+                                           pointing_motion_wheels_multiplier_,
+                                           1.0);
+
     helper_values_.push_back_value<bool>("mouse_flip_x",
                                          mouse_flip_x_,
                                          false);
@@ -350,6 +358,24 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
+  const double& get_pointing_motion_xy_multiplier(void) const {
+    return pointing_motion_xy_multiplier_;
+  }
+  void set_pointing_motion_xy_multiplier(double value) {
+    pointing_motion_xy_multiplier_ = value;
+
+    coordinate_between_properties();
+  }
+
+  const double& get_pointing_motion_wheels_multiplier(void) const {
+    return pointing_motion_wheels_multiplier_;
+  }
+  void set_pointing_motion_wheels_multiplier(double value) {
+    pointing_motion_wheels_multiplier_ = value;
+
+    coordinate_between_properties();
+  }
+
   const bool& get_mouse_flip_x(void) const {
     return mouse_flip_x_;
   }
@@ -605,6 +631,8 @@ private:
   bool manipulate_caps_lock_led_;
   bool treat_as_built_in_keyboard_;
   bool disable_built_in_keyboard_if_exists_;
+  double pointing_motion_xy_multiplier_;
+  double pointing_motion_wheels_multiplier_;
   bool mouse_flip_x_;
   bool mouse_flip_y_;
   bool mouse_flip_vertical_wheel_;

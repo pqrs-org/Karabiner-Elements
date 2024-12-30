@@ -35,12 +35,13 @@ public:
 
   entry(device_id device_id,
         IOHIDDeviceRef device,
-        std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration) : dispatcher_client(),
-                                                                                               device_id_(device_id),
-                                                                                               weak_core_configuration_(weak_core_configuration),
-                                                                                               device_properties_(device_properties::make_device_properties(device_id,
-                                                                                                                                                            device)),
-                                                                                               disabled_(false) {
+        gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration)
+      : dispatcher_client(),
+        device_id_(device_id),
+        core_configuration_(core_configuration),
+        device_properties_(device_properties::make_device_properties(device_id,
+                                                                     device)),
+        disabled_(false) {
     probable_stuck_events_manager_ = std::make_shared<probable_stuck_events_manager>();
 
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
@@ -61,7 +62,7 @@ public:
 
         if (device_properties_->get_device_identifiers().get_is_game_pad()) {
           game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
-                                                                                 weak_core_configuration_);
+                                                                                 core_configuration_);
           game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& event_queue_entry) {
             auto event_queue = std::make_shared<event_queue::queue>();
             event_queue->push_back_entry(event_queue_entry);
@@ -78,10 +79,16 @@ public:
       game_pad_stick_converter_ = nullptr;
     });
     hid_queue_value_monitor_->values_arrived.connect([this](auto&& values_ptr) {
+      auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+
       auto hid_values = hid_queue_values_converter_.make_hid_values(device_id_,
                                                                     values_ptr);
       auto event_queue = event_queue::utility::make_queue(device_properties_,
-                                                          hid_values);
+                                                          hid_values,
+                                                          event_queue::utility::make_queue_parameters{
+                                                              .pointing_motion_xy_multiplier = d->get_pointing_motion_xy_multiplier(),
+                                                              .pointing_motion_wheels_multiplier = d->get_pointing_motion_wheels_multiplier(),
+                                                          });
 
       event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
                                                                                                      device_id_,
@@ -116,13 +123,13 @@ public:
   }
 
   // This method should be called in the shared dispatcher thread.
-  void set_weak_core_configuration(std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration) {
-    weak_core_configuration_ = weak_core_configuration;
+  void set_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
+    core_configuration_ = core_configuration;
 
     control_caps_lock_led_state_manager();
 
     if (game_pad_stick_converter_) {
-      game_pad_stick_converter_->set_weak_core_configuration(weak_core_configuration);
+      game_pad_stick_converter_->set_core_configuration(core_configuration);
     }
   }
 
@@ -177,20 +184,12 @@ public:
       return false;
     }
 
-    if (auto c = weak_core_configuration_.lock()) {
-      auto d = c->get_selected_profile().get_device(device_properties_->get_device_identifiers());
-      return d->get_disable_built_in_keyboard_if_exists();
-    }
-
-    return false;
+    auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+    return d->get_disable_built_in_keyboard_if_exists();
   }
 
   bool determine_is_built_in_keyboard(void) const {
-    if (auto c = weak_core_configuration_.lock()) {
-      return device_utility::determine_is_built_in_keyboard(*c, *device_properties_);
-    }
-
-    return false;
+    return device_utility::determine_is_built_in_keyboard(*core_configuration_, *device_properties_);
   }
 
   void async_start_queue_value_monitor(grabbable_state::state state) {
@@ -254,12 +253,8 @@ public:
       return true;
     }
 
-    if (auto c = weak_core_configuration_.lock()) {
-      auto d = c->get_selected_profile().get_device(device_properties_->get_device_identifiers());
-      return !(d->get_ignore());
-    }
-
-    return false;
+    auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+    return !(d->get_ignore());
   }
 
 private:
@@ -269,13 +264,11 @@ private:
     }
 
     if (caps_lock_led_state_manager_) {
-      if (auto c = weak_core_configuration_.lock()) {
-        auto d = c->get_selected_profile().get_device(device_properties_->get_device_identifiers());
-        if (d->get_manipulate_caps_lock_led()) {
-          if (seized()) {
-            caps_lock_led_state_manager_->async_start();
-            return;
-          }
+      auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+      if (d->get_manipulate_caps_lock_led()) {
+        if (seized()) {
+          caps_lock_led_state_manager_->async_start();
+          return;
         }
       }
 
@@ -284,7 +277,7 @@ private:
   }
 
   device_id device_id_;
-  std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration_;
+  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
   gsl::not_null<std::shared_ptr<device_properties>> device_properties_;
   std::shared_ptr<probable_stuck_events_manager> probable_stuck_events_manager_;
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;

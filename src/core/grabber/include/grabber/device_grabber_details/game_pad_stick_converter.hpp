@@ -252,9 +252,10 @@ public:
   //
 
   game_pad_stick_converter(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
-                           std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration)
+                           gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration)
       : dispatcher_client(),
         device_properties_(device_properties),
+        core_configuration_(core_configuration),
         continued_movement_timer_(*this),
         continued_movement_timer_count_(0),
         continued_movement_mode_(continued_movement_mode::none),
@@ -266,7 +267,7 @@ public:
         wheels_delta_magnitude_(0.0),
         wheels_absolute_magnitude_(0.0),
         wheels_continued_movement_(false) {
-    set_weak_core_configuration(weak_core_configuration);
+    set_core_configuration(core_configuration);
 
     xy_.values_updated.connect([this](void) {
       auto interval = xy_.get_continued_movement_interval_milliseconds();
@@ -321,12 +322,34 @@ public:
                                                  integer_value);
   }
 
-  void set_weak_core_configuration(std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration) {
-    weak_core_configuration_ = weak_core_configuration;
+  void set_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
+    core_configuration_ = core_configuration;
 
-    if (auto c = weak_core_configuration_.lock()) {
-      update_configurations(*c);
-    }
+    //
+    // Propagate the changes
+    //
+
+    auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+
+    xy_.set_deadzone(d->get_game_pad_xy_stick_deadzone());
+    xy_.set_delta_magnitude_detection_threshold(d->get_game_pad_xy_stick_delta_magnitude_detection_threshold());
+    xy_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold());
+    xy_.set_continued_movement_interval_milliseconds(d->get_game_pad_xy_stick_continued_movement_interval_milliseconds());
+
+    wheels_.set_deadzone(d->get_game_pad_wheels_stick_deadzone());
+    wheels_.set_delta_magnitude_detection_threshold(d->get_game_pad_wheels_stick_delta_magnitude_detection_threshold());
+    wheels_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold());
+    wheels_.set_continued_movement_interval_milliseconds(d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds());
+
+    x_formula_string_ = d->get_game_pad_stick_x_formula();
+    y_formula_string_ = d->get_game_pad_stick_y_formula();
+    vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula();
+    horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula();
+
+    x_formula_ = make_xy_formula_expression(x_formula_string_);
+    y_formula_ = make_xy_formula_expression(y_formula_string_);
+    vertical_wheel_formula_ = make_wheels_formula_expression(vertical_wheel_formula_string_);
+    horizontal_wheel_formula_ = make_wheels_formula_expression(horizontal_wheel_formula_string_);
   }
 
   // This method should be called in the shared dispatcher thread.
@@ -338,12 +361,7 @@ public:
       }
     }
 
-    auto c = weak_core_configuration_.lock();
-    if (!c) {
-      return;
-    }
-
-    auto device = c->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+    auto device = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
     bool swap_sticks = device->get_game_pad_swap_sticks();
 
     for (const auto& v : hid_values) {
@@ -406,30 +424,6 @@ public:
   }
 
 private:
-  void update_configurations(const core_configuration::core_configuration& core_configuration) {
-    auto d = core_configuration.get_selected_profile().get_device(device_properties_->get_device_identifiers());
-
-    xy_.set_deadzone(d->get_game_pad_xy_stick_deadzone());
-    xy_.set_delta_magnitude_detection_threshold(d->get_game_pad_xy_stick_delta_magnitude_detection_threshold());
-    xy_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold());
-    xy_.set_continued_movement_interval_milliseconds(d->get_game_pad_xy_stick_continued_movement_interval_milliseconds());
-
-    wheels_.set_deadzone(d->get_game_pad_wheels_stick_deadzone());
-    wheels_.set_delta_magnitude_detection_threshold(d->get_game_pad_wheels_stick_delta_magnitude_detection_threshold());
-    wheels_.set_continued_movement_absolute_magnitude_threshold(d->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold());
-    wheels_.set_continued_movement_interval_milliseconds(d->get_game_pad_wheels_stick_continued_movement_interval_milliseconds());
-
-    x_formula_string_ = d->get_game_pad_stick_x_formula();
-    y_formula_string_ = d->get_game_pad_stick_y_formula();
-    vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula();
-    horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula();
-
-    x_formula_ = make_xy_formula_expression(x_formula_string_);
-    y_formula_ = make_xy_formula_expression(y_formula_string_);
-    vertical_wheel_formula_ = make_wheels_formula_expression(vertical_wheel_formula_string_);
-    horizontal_wheel_formula_ = make_wheels_formula_expression(horizontal_wheel_formula_string_);
-  }
-
   exprtk_utility::expression_t make_xy_formula_expression(const std::string& formula) {
     return exprtk_utility::compile(formula,
                                    {},
@@ -624,7 +618,7 @@ private:
   }
 
   gsl::not_null<std::shared_ptr<device_properties>> device_properties_;
-  std::weak_ptr<const core_configuration::core_configuration> weak_core_configuration_;
+  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
 
   stick xy_;
   stick wheels_;
