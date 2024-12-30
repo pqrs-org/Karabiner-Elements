@@ -15,7 +15,19 @@ struct make_queue_parameters final {
 
 static inline int adjust_pointing_motion_value(const pqrs::osx::iokit_hid_value& value,
                                                double multiplier) {
-  auto v = static_cast<int>(static_cast<double>(value.get_integer_value() * multiplier));
+  auto integer_value = value.get_integer_value();
+  auto v = static_cast<int>(static_cast<double>(integer_value * multiplier));
+
+  if (v == 0) {
+    // To prevent all adjusted values from becoming 0 when an extremely small value is specified for the multiplier,
+    // ensure that the value is at least 1 or -1.
+    if (integer_value > 0) {
+      return 1;
+    } else if (integer_value < 0) {
+      return -1;
+    }
+  }
+
   return std::min(127, std::max(-127, v));
 }
 
