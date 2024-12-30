@@ -28,7 +28,7 @@ struct DevicesMouseSettingsView: View {
                 width: 60)
 
               Text(
-                "(Default: \(String(format: "%.01f", libkrbn_core_configuration_pointing_motion_xy_multiplier_default_value()))"
+                "(Default: \(String(format: "%.01f)", libkrbn_core_configuration_pointing_motion_xy_multiplier_default_value()))"
               )
             }
 
@@ -43,7 +43,7 @@ struct DevicesMouseSettingsView: View {
                 width: 60)
 
               Text(
-                "(Default: \(String(format: "%.01f", libkrbn_core_configuration_pointing_motion_wheels_multiplier_default_value()))"
+                "(Default: \(String(format: "%.01f)", libkrbn_core_configuration_pointing_motion_wheels_multiplier_default_value()))"
               )
             }
           }
