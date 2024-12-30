@@ -141,6 +141,14 @@ void run_device_test(void) {
       expect(false == device.get_treat_as_built_in_keyboard());
       expect(false == device.get_disable_built_in_keyboard_if_exists());
       {
+        auto& v = device.get_pointing_motion_xy_multiplier();
+        expect(device.find_default_value(v) == v);
+      }
+      {
+        auto& v = device.get_pointing_motion_wheels_multiplier();
+        expect(device.find_default_value(v) == v);
+      }
+      {
         auto& v = device.get_game_pad_xy_stick_deadzone();
         expect(device.find_default_value(v) == v);
       }
@@ -204,6 +212,8 @@ void run_device_test(void) {
           {"ignore", true},
           {"manipulate_caps_lock_led", false},
           {"treat_as_built_in_keyboard", false},
+          {"pointing_motion_xy_multiplier", 2.0},
+          {"pointing_motion_wheels_multiplier", 0.5},
           {"game_pad_xy_stick_deadzone", 0.2},
           {"game_pad_xy_stick_delta_magnitude_detection_threshold", 0.1},
           {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", 0.5},
@@ -229,6 +239,8 @@ void run_device_test(void) {
       expect(device.get_manipulate_caps_lock_led() == false);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
+      expect(device.get_pointing_motion_xy_multiplier() == 2.0);
+      expect(device.get_pointing_motion_wheels_multiplier() == 0.5);
       expect(device.get_game_pad_xy_stick_deadzone() == 0.2);
       expect(device.get_game_pad_xy_stick_delta_magnitude_detection_threshold() == 0.1);
       expect(device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold() == 0.5);
@@ -373,6 +385,8 @@ void run_device_test(void) {
           {"ignore", true},
           {"manipulate_caps_lock_led", false},
           {"treat_as_built_in_keyboard", true},
+          {"pointing_motion_xy_multiplier", 2.0},
+          {"pointing_motion_wheels_multiplier", 0.5},
           {"mouse_discard_horizontal_wheel", true},
           {"mouse_discard_vertical_wheel", true},
           {"mouse_discard_x", true},
@@ -438,6 +452,8 @@ void run_device_test(void) {
           {"mouse_flip_y", true},
           {"mouse_swap_wheels", true},
           {"mouse_swap_xy", true},
+          {"pointing_motion_xy_multiplier", 2.0},
+          {"pointing_motion_wheels_multiplier", 0.5},
           {"treat_as_built_in_keyboard", true},
       });
       expect(device.to_json() == expected) << UT_SHOW_LINE;

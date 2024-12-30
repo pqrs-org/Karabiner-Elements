@@ -55,7 +55,7 @@ struct DeviceSelectorView: View {
                       Image(systemName: "keyboard")
                     }
                     if connectedDevice.isPointingDevice {
-                      Image(systemName: "capsule.portrait")
+                      Image(systemName: "computermouse")
                     }
                     if connectedDevice.isGamePad {
                       Image(systemName: "gamecontroller")

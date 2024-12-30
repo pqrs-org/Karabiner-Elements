@@ -8,8 +8,32 @@
 namespace krbn {
 namespace event_queue {
 namespace utility {
+struct make_queue_parameters final {
+  double pointing_motion_xy_multiplier = 1.0;
+  double pointing_motion_wheels_multiplier = 1.0;
+};
+
+static inline int adjust_pointing_motion_value(const pqrs::osx::iokit_hid_value& value,
+                                               double multiplier) {
+  auto integer_value = value.get_integer_value();
+  auto v = static_cast<int>(static_cast<double>(integer_value * multiplier));
+
+  if (v == 0) {
+    // To prevent all adjusted values from becoming 0 when an extremely small value is specified for the multiplier,
+    // ensure that the value is at least 1 or -1.
+    if (integer_value > 0) {
+      return 1;
+    } else if (integer_value < 0) {
+      return -1;
+    }
+  }
+
+  return std::min(127, std::max(-127, v));
+}
+
 static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
-                                                const std::vector<pqrs::osx::iokit_hid_value>& hid_values) {
+                                                const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
+                                                const make_queue_parameters& parameters) {
   auto result = std::make_shared<queue>();
 
   // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
@@ -75,7 +99,8 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
-          pointing_motion_x = static_cast<int>(v.get_integer_value());
+          pointing_motion_x = adjust_pointing_motion_value(v,
+                                                           parameters.pointing_motion_xy_multiplier);
 
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                  pqrs::hid::usage::generic_desktop::y) &&
@@ -84,7 +109,8 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
-          pointing_motion_y = static_cast<int>(v.get_integer_value());
+          pointing_motion_y = adjust_pointing_motion_value(v,
+                                                           parameters.pointing_motion_xy_multiplier);
 
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                  pqrs::hid::usage::generic_desktop::wheel)) {
@@ -92,7 +118,8 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
-          pointing_motion_vertical_wheel = static_cast<int>(v.get_integer_value());
+          pointing_motion_vertical_wheel = adjust_pointing_motion_value(v,
+                                                                        parameters.pointing_motion_wheels_multiplier);
 
         } else if (v.conforms_to(pqrs::hid::usage_page::consumer,
                                  pqrs::hid::usage::consumer::ac_pan)) {
@@ -100,7 +127,8 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
             emplace_back_pointing_motion_event();
           }
           pointing_motion_time_stamp = v.get_time_stamp();
-          pointing_motion_horizontal_wheel = static_cast<int>(v.get_integer_value());
+          pointing_motion_horizontal_wheel = adjust_pointing_motion_value(v,
+                                                                          parameters.pointing_motion_wheels_multiplier);
 
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {

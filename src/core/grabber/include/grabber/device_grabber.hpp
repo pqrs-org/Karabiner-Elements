@@ -224,7 +224,7 @@ public:
 
         auto entry = std::make_shared<device_grabber_details::entry>(device_id,
                                                                      *device_ptr,
-                                                                     memory_utility::make_weak(core_configuration_));
+                                                                     core_configuration_);
         entries_[device_id] = entry;
 
         entry->hid_queue_values_arrived.connect([this](auto&& entry, auto&& event_queue) {
@@ -455,7 +455,7 @@ public:
           core_configuration_ = core_configuration;
 
           for (auto&& e : entries_) {
-            e.second->set_weak_core_configuration(core_configuration);
+            e.second->set_core_configuration(core_configuration);
           }
 
           manipulator_managers_connector_.set_manipulator_environment_core_configuration(core_configuration);

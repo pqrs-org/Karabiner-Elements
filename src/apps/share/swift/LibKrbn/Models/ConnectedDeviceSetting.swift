@@ -32,6 +32,14 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      pointingMotionXYMultiplier =
+        libkrbn_core_configuration_get_selected_profile_device_pointing_motion_xy_multiplier(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
+      pointingMotionWheelsMultiplier =
+        libkrbn_core_configuration_get_selected_profile_device_pointing_motion_wheels_multiplier(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
       //
       // mouseFlipXXX
       //
@@ -198,6 +206,28 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(
             connectedDevice.libkrbnDeviceIdentifiers, disableBuiltInKeyboardIfExists)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var pointingMotionXYMultiplier: Double = 1.0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_pointing_motion_xy_multiplier(
+            connectedDevice.libkrbnDeviceIdentifiers, pointingMotionXYMultiplier)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var pointingMotionWheelsMultiplier: Double = 1.0 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_pointing_motion_wheels_multiplier(
+            connectedDevice.libkrbnDeviceIdentifiers, pointingMotionWheelsMultiplier)
 
           Settings.shared.save()
         }

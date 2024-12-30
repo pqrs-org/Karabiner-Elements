@@ -115,7 +115,8 @@ void run_event_queue_utility_test(void) {
     auto device_properties = krbn::device_properties::make_device_properties(krbn::device_id(1),
                                                                              nullptr);
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values);
+                                                        hid_values,
+                                                        krbn::event_queue::utility::make_queue_parameters());
     assert(queue->get_entries().size() == 8);
 
     {
@@ -184,6 +185,93 @@ void run_event_queue_utility_test(void) {
     }
   };
 
+  "utility::make_queue pointing_motion_xy_multiplier, pointing_motion_wheels_multiplier"_test = [] {
+    std::vector<pqrs::osx::iokit_hid_value> hid_values;
+
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
+                                                       10,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::x,
+                                                       std::nullopt, // logical_max
+                                                       std::nullopt  // logical_min
+                                                       ));
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
+                                                       20,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::y,
+                                                       std::nullopt, // logical_max
+                                                       std::nullopt  // logical_min
+                                                       ));
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
+                                                       30,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::wheel,
+                                                       std::nullopt, // logical_max
+                                                       std::nullopt  // logical_min
+                                                       ));
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(1000),
+                                                       40,
+                                                       pqrs::hid::usage_page::consumer,
+                                                       pqrs::hid::usage::consumer::ac_pan,
+                                                       std::nullopt, // logical_max
+                                                       std::nullopt  // logical_min
+                                                       ));
+
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
+                                                       -10,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::x,
+                                                       std::nullopt, // logical_max
+                                                       std::nullopt  // logical_min
+                                                       ));
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
+                                                       -20,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::y,
+                                                       std::nullopt, // logical_max
+                                                       std::nullopt  // logical_min
+                                                       ));
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
+                                                       -30,
+                                                       pqrs::hid::usage_page::generic_desktop,
+                                                       pqrs::hid::usage::generic_desktop::wheel,
+                                                       std::nullopt, // logical_max
+                                                       std::nullopt  // logical_min
+                                                       ));
+    hid_values.emplace_back(pqrs::osx::iokit_hid_value(krbn::absolute_time_point(2000),
+                                                       -40,
+                                                       pqrs::hid::usage_page::consumer,
+                                                       pqrs::hid::usage::consumer::ac_pan,
+                                                       std::nullopt, // logical_max
+                                                       std::nullopt  // logical_min
+                                                       ));
+
+    auto device_properties = krbn::device_properties::make_device_properties(krbn::device_id(1),
+                                                                             nullptr);
+    auto queue = krbn::event_queue::utility::make_queue(device_properties,
+                                                        hid_values,
+                                                        krbn::event_queue::utility::make_queue_parameters{
+                                                            .pointing_motion_xy_multiplier = 2.0,
+                                                            .pointing_motion_wheels_multiplier = 0.5,
+                                                        });
+    assert(queue->get_entries().size() == 2);
+
+    {
+      auto& e = queue->get_entries()[0];
+      expect(e.get_device_id() == krbn::device_id(1));
+      expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
+      expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(20, 40, 15, 20));
+      expect(e.get_event_type() == krbn::event_type::single);
+    }
+    {
+      auto& e = queue->get_entries()[1];
+      expect(e.get_device_id() == krbn::device_id(1));
+      expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(2000));
+      expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(-20, -40, -15, -20));
+      expect(e.get_event_type() == krbn::event_type::single);
+    }
+  };
+
   "utility::make_queue not game_pad"_test = [] {
     std::vector<pqrs::osx::iokit_hid_value> hid_values;
 
@@ -221,7 +309,8 @@ void run_event_queue_utility_test(void) {
     auto device_properties = krbn::device_properties::make_device_properties(krbn::device_id(1),
                                                                              nullptr);
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values);
+                                                        hid_values,
+                                                        krbn::event_queue::utility::make_queue_parameters());
     assert(0_ul == queue->get_entries().size());
   };
 
@@ -265,7 +354,8 @@ void run_event_queue_utility_test(void) {
     });
 
     auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values);
+                                                        hid_values,
+                                                        krbn::event_queue::utility::make_queue_parameters());
     assert(4_ul == queue->get_entries().size());
 
     {

@@ -4,8 +4,6 @@ struct DevicesGamePadSettingsView: View {
   @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
   @Binding var showing: Bool
 
-  @ObservedObject private var settings = LibKrbn.Settings.shared
-
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 12.0) {
@@ -156,7 +154,7 @@ struct DevicesGamePadSettingsView: View {
     @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
 
     var body: some View {
-      VStack(alignment: .leading) {
+      VStack(alignment: .leading, spacing: 40.0) {
         HStack {
           Toggle(isOn: $connectedDeviceSetting.gamePadSwapSticks) {
             Text("Swap gamepad XY and wheels sticks")
@@ -165,6 +163,8 @@ struct DevicesGamePadSettingsView: View {
 
           Spacer()
         }
+
+        DevicesMouseFlagsView(connectedDeviceSetting: connectedDeviceSetting)
 
         Spacer()
       }

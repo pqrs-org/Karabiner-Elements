@@ -663,6 +663,42 @@ void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_key
   d->set_disable_built_in_keyboard_if_exists(value);
 }
 
+double libkrbn_core_configuration_get_selected_profile_device_pointing_motion_xy_multiplier(const libkrbn_device_identifiers* device_identifiers) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_pointing_motion_xy_multiplier();
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_pointing_motion_xy_multiplier(const libkrbn_device_identifiers* device_identifiers,
+                                                                                          double value) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_pointing_motion_xy_multiplier(value);
+}
+
+double libkrbn_core_configuration_pointing_motion_xy_multiplier_default_value(void) {
+  return empty_device->find_default_value(
+      empty_device->get_pointing_motion_xy_multiplier());
+}
+
+double libkrbn_core_configuration_get_selected_profile_device_pointing_motion_wheels_multiplier(const libkrbn_device_identifiers* device_identifiers) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_pointing_motion_wheels_multiplier();
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_pointing_motion_wheels_multiplier(const libkrbn_device_identifiers* device_identifiers,
+                                                                                              double value) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_pointing_motion_wheels_multiplier(value);
+}
+
+double libkrbn_core_configuration_pointing_motion_wheels_multiplier_default_value(void) {
+  return empty_device->find_default_value(
+      empty_device->get_pointing_motion_wheels_multiplier());
+}
+
 //
 // mouse_flip_XXX
 //
