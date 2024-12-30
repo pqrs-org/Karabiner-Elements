@@ -90,16 +90,6 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
           pointing_motion_x = adjust_pointing_motion_value(v,
                                                            parameters.pointing_motion_xy_multiplier);
 
-          // if (!device_properties->get_device_identifiers().get_is_virtual_device()) {
-          if (auto max = v.get_logical_max()) {
-            logger::get_logger()->info("logical_max: {0}", *max);
-          }
-          if (auto min = v.get_logical_min()) {
-            logger::get_logger()->info("logical_min: {0}", *min);
-          }
-          logger::get_logger()->info("x: {0}", v.get_integer_value());
-          //}
-
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                  pqrs::hid::usage::generic_desktop::y) &&
                    !is_game_pad) {
