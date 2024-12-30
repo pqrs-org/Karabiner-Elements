@@ -8,7 +8,7 @@ struct DevicesMouseSettingsView: View {
 
   var body: some View {
     ZStack(alignment: .topLeading) {
-      VStack(alignment: .leading, spacing: 12.0) {
+      VStack(alignment: .leading, spacing: 40.0) {
         Text(
           "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))"
         )
@@ -47,6 +47,7 @@ struct DevicesMouseSettingsView: View {
               )
             }
           }
+          .padding()
         }
 
         DevicesMouseFlagsView(connectedDeviceSetting: connectedDeviceSetting)
