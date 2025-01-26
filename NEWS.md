@@ -10,6 +10,7 @@
     -   Added `frontmost_application_history_index` option into `open_application`.
     -   Added `conditions` option into `to`.
 -   ⚡️ Improvements
+    -   Improved `to_delayed_action` behavior to use the modifier flags of the time the key is pressed, when sending events.
     -   Support the following keys:
         -   consumer::ac_zoom_out
         -   consumer::ac_zoom_in
