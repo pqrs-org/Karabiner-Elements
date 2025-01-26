@@ -1,0 +1,95 @@
+[
+    // left_shift key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": {
+            "time_stamp": 2
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    // f13 key_down
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "f13"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": {
+            "time_stamp": 4
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "f13"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    // f13 key_up
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "f13"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": {
+            "time_stamp": 6
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "f13"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    // left_shift key_up
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    // left_shift+a should be sent by to_if_invoked
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 2000
+    }
+]
