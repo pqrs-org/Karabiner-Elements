@@ -39,22 +39,36 @@
     },
     {
         "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "a"
-                }
-            ],
-            "modifiers": []
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 25,
         "type": "keyboard_input"
     },
     {
         "keyboard_input": {
-            "keys": [],
-            "modifiers": []
+            "keys": [
+                {
+                    "key_code": "a"
+                }
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
         },
         "time_stamp": 30,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 35,
         "type": "keyboard_input"
     }
 ]

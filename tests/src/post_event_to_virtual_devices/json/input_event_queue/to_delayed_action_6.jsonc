@@ -65,28 +65,6 @@
         },
         "validity": true
     },
-    // left_shift key_up
-    {
-        "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "left_shift"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 8
-        },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "left_shift"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
-    },
     // a,left_shift+a should be sent by to_if_invoked
     {
         "action": "invoke_dispatcher",

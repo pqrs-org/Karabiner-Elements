@@ -426,10 +426,16 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_4.json"
     },
     {
-        "description": "to_delayed_action (from.mandatory == to_delayed_action.to_if_invoked.modifiers == shift)",
+        "description": "to_delayed_action (from.mandatory is released)",
         "rules": ["json/rules/to_delayed_action.jsonc"],
         "input_event_queue": "json/input_event_queue/to_delayed_action_5.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_5.json"
+    },
+    {
+        "description": "to_delayed_action (from.mandatory is pressed)",
+        "rules": ["json/rules/to_delayed_action.jsonc"],
+        "input_event_queue": "json/input_event_queue/to_delayed_action_6.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_6.json"
     },
     {
         "description": "to_delayed_action cx",

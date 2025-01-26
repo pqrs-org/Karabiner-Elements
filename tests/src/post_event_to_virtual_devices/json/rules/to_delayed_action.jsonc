@@ -47,11 +47,17 @@
         "to_delayed_action": {
             "to_if_invoked": [
                 {
+                    "key_code": "a"
+                },
+                {
                     "key_code": "a",
                     "modifiers": ["left_shift"]
                 }
             ],
             "to_if_canceled": [
+                {
+                    "key_code": "b"
+                },
                 {
                     "key_code": "b",
                     "modifiers": ["left_shift"]
