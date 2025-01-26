@@ -347,6 +347,53 @@ inline void post_active_modifier_flags(const event_queue::entry& front_input_eve
   }
 }
 
+class scoped_from_key_modifier_flags_state_restorer final {
+public:
+  scoped_from_key_modifier_flags_state_restorer(const event_queue::entry& front_input_event,
+                                                manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
+                                                absolute_time_duration& time_stamp_delay,
+                                                event_queue::queue& output_event_queue)
+      : front_input_event_(front_input_event),
+        current_manipulated_original_event_(current_manipulated_original_event),
+        time_stamp_delay_(time_stamp_delay),
+        output_event_queue_(output_event_queue) {
+    std::vector<modifier_flag_manager::active_modifier_flag> scoped_active_modifier_flags;
+
+    {
+      // It's not only necessary to change the state of the output_event_queue::modifier_flag_manager, but also to send the key event here.
+      // So, once we use scoped_modifier_flags to find out which key events we need to send, and then send them.
+      modifier_flag_manager::scoped_modifier_flags scoped_modifier_flags(output_event_queue_.get_modifier_flag_manager(),
+                                                                         current_manipulated_original_event_.get_key_down_modifier_flags());
+      scoped_active_modifier_flags = scoped_modifier_flags.get_scoped_active_modifier_flags();
+      inverse_active_modifier_flags_ = scoped_modifier_flags.get_inverse_active_modifier_flags();
+    }
+
+    event_sender::post_active_modifier_flags(front_input_event_,
+                                             scoped_active_modifier_flags,
+                                             time_stamp_delay_,
+                                             output_event_queue_);
+  }
+
+  ~scoped_from_key_modifier_flags_state_restorer(void) {
+    //
+    // Revert scoped modifier flags changes.
+    //
+
+    event_sender::post_active_modifier_flags(front_input_event_,
+                                             inverse_active_modifier_flags_,
+                                             time_stamp_delay_,
+                                             output_event_queue_);
+  }
+
+private:
+  const event_queue::entry& front_input_event_;
+  manipulated_original_event::manipulated_original_event& current_manipulated_original_event_;
+  absolute_time_duration& time_stamp_delay_;
+  event_queue::queue& output_event_queue_;
+
+  std::vector<modifier_flag_manager::active_modifier_flag> inverse_active_modifier_flags_;
+};
+
 } // namespace event_sender
 } // namespace basic
 } // namespace manipulators
