@@ -95,7 +95,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
       &psn, ProcessApplicationTransformState(kProcessTransformToForegroundApplication))
 
     window = NSWindow(
-      contentRect: .zero,
+      contentRect: NSRect(x: 0, y: 0, width: 1100, height: 680),
       styleMask: [
         .titled,
         .closable,
