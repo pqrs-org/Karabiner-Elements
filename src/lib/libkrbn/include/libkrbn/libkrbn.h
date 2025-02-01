@@ -212,6 +212,9 @@ void libkrbn_core_configuration_set_selected_profile_device_ignore(const libkrbn
 bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers,
                                                                                      bool value);
+bool libkrbn_core_configuration_get_selected_profile_device_ignore_vendor_events(const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_ignore_vendor_events(const libkrbn_device_identifiers* device_identifiers,
+                                                                                 bool value);
 bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers);
 void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers,
                                                                                        bool value);
