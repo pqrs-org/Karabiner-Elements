@@ -24,6 +24,10 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(
           connectedDevice.libkrbnDeviceIdentifiers)
 
+      ignoreVendorEvents =
+        libkrbn_core_configuration_get_selected_profile_device_ignore_vendor_events(
+          connectedDevice.libkrbnDeviceIdentifiers)
+
       treatAsBuiltInKeyboard =
         libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(
           connectedDevice.libkrbnDeviceIdentifiers)
@@ -184,6 +188,17 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(
             connectedDevice.libkrbnDeviceIdentifiers, manipulateCapsLockLed)
+
+          Settings.shared.save()
+        }
+      }
+    }
+
+    @Published var ignoreVendorEvents: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_selected_profile_device_ignore_vendor_events(
+            connectedDevice.libkrbnDeviceIdentifiers, ignoreVendorEvents)
 
           Settings.shared.save()
         }
