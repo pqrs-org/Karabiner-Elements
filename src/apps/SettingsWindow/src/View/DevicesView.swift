@@ -246,26 +246,26 @@ struct DevicesView: View {
     @State var showing = false
 
     var body: some View {
-      VStack {
-        if connectedDeviceSetting.modifyEvents
-          && connectedDeviceSetting.connectedDevice.isPointingDevice
-        {
-          Button(
-            action: {
-              showing = true
-            },
-            label: {
-              Label("Open mouse settings", systemImage: "computermouse")
-                .buttonLabelStyle()
-            }
-          )
-          .sheet(isPresented: $showing) {
-            DevicesMouseSettingsView(
-              connectedDeviceSetting: connectedDeviceSetting,
-              showing: $showing
-            )
+      if connectedDeviceSetting.modifyEvents
+        && connectedDeviceSetting.connectedDevice.isPointingDevice
+      {
+        Button(
+          action: {
+            showing = true
+          },
+          label: {
+            Label("Open mouse settings", systemImage: "computermouse")
+              .buttonLabelStyle()
           }
+        )
+        .sheet(isPresented: $showing) {
+          DevicesMouseSettingsView(
+            connectedDeviceSetting: connectedDeviceSetting,
+            showing: $showing
+          )
         }
+      } else {
+        EmptyView()
       }
     }
   }
@@ -275,24 +275,24 @@ struct DevicesView: View {
     @State var showing = false
 
     var body: some View {
-      VStack {
-        if connectedDeviceSetting.modifyEvents && connectedDeviceSetting.connectedDevice.isGamePad {
-          Button(
-            action: {
-              showing = true
-            },
-            label: {
-              Label("Open game pad settings", systemImage: "gamecontroller")
-                .buttonLabelStyle()
-            }
-          )
-          .sheet(isPresented: $showing) {
-            DevicesGamePadSettingsView(
-              connectedDeviceSetting: connectedDeviceSetting,
-              showing: $showing
-            )
+      if connectedDeviceSetting.modifyEvents && connectedDeviceSetting.connectedDevice.isGamePad {
+        Button(
+          action: {
+            showing = true
+          },
+          label: {
+            Label("Open game pad settings", systemImage: "gamecontroller")
+              .buttonLabelStyle()
           }
+        )
+        .sheet(isPresented: $showing) {
+          DevicesGamePadSettingsView(
+            connectedDeviceSetting: connectedDeviceSetting,
+            showing: $showing
+          )
         }
+      } else {
+        EmptyView()
       }
     }
   }
