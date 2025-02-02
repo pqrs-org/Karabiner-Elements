@@ -21,15 +21,18 @@ struct DevicesView: View {
                   VStack(alignment: .leading, spacing: 0.0) {
                     ModifyEventsSetting(connectedDeviceSetting: connectedDeviceSetting)
 
-                    VStack(alignment: .leading, spacing: 12.0) {
+                    VStack(alignment: .leading, spacing: 6.0) {
                       KeyboardSettings(connectedDeviceSetting: connectedDeviceSetting)
 
                       MouseSettings(connectedDeviceSetting: connectedDeviceSetting)
 
                       GamePadSettings(connectedDeviceSetting: connectedDeviceSetting)
+
+                      ExtraSettings(connectedDeviceSetting: connectedDeviceSetting)
                     }
                     .padding(.leading, 20.0)
                     .padding(.top, 8.0)
+                    .frame(width: 400.0)
                   }
                   .padding(.leading, 62.0)
                   .padding(.top, 20.0)
@@ -231,19 +234,8 @@ struct DevicesView: View {
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
-
-              VStack(alignment: .leading, spacing: 0) {
-                Toggle(isOn: $connectedDeviceSetting.ignoreVendorEvents) {
-                  Text(
-                    "Ignore vendor events\n(With this setting enabled, the fn (globe) key will be ignored)"
-                  )
-                  .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .switchToggleStyle(controlSize: .mini, font: .callout)
-              }
             }
           }
-          .frame(width: 400.0)
         }
       }
     }
@@ -300,6 +292,24 @@ struct DevicesView: View {
               showing: $showing
             )
           }
+        }
+      }
+    }
+  }
+
+  struct ExtraSettings: View {
+    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+
+    var body: some View {
+      VStack {
+        if connectedDeviceSetting.modifyEvents {
+          Toggle(isOn: $connectedDeviceSetting.ignoreVendorEvents) {
+            Text(
+              "Ignore vendor events\n(It is recommended to enable this setting for non-Apple devices)"
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+          }
+          .switchToggleStyle(controlSize: .mini, font: .callout)
         }
       }
     }
