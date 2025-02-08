@@ -87,8 +87,18 @@ public:
       if (d->get_ignore_vendor_events()) {
         std::erase_if(hid_values,
                       [](const auto& v) {
-                        return v.get_usage_page() >= pqrs::hid::usage_page::value_t(0xff00) &&
-                               v.get_usage_page() <= pqrs::hid::usage_page::value_t(0xffff);
+                        // 0xff
+                        if (v.get_usage_page() == pqrs::hid::usage_page::apple_vendor_top_case) {
+                          return true;
+                        }
+
+                        // Vendor-defined (0xff00-0xffff)
+                        if (v.get_usage_page() >= pqrs::hid::usage_page::value_t(0xff00) &&
+                            v.get_usage_page() <= pqrs::hid::usage_page::value_t(0xffff)) {
+                          return true;
+                        }
+
+                        return false;
                       });
       }
 
