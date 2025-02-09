@@ -143,6 +143,15 @@ public:
            device_address_ == other.device_address_;
   }
 
+  //
+  // Helper methods
+  //
+
+  bool is_nintendo_pro_controller_0x057e_0x2009(void) const {
+    return get_vendor_id() == pqrs::hid::vendor_id::value_t(0x057e) &&
+           get_product_id() == pqrs::hid::product_id::value_t(0x2009);
+  }
+
 private:
   nlohmann::json json_;
   pqrs::hid::vendor_id::value_t vendor_id_;
