@@ -104,10 +104,22 @@ public:
                         }
                       }
 
-                      // Nintendo's Pro Controller continuously fires button1, button2, ... events at an extremely high frequency,
-                      // so they should be ignored.
-                      if (device_properties_->get_device_identifiers().is_nintendo_pro_controller_0x057e_0x2009()) {
+                      if (device_properties_->get_device_identifiers().is_nintendo_pro_controller_0x057e_0x2009() &&
+                          device_properties_->get_transport() == "USB") {
+                        // Nintendo's Pro Controller, when connected via USB, generates a high frequency of events even when no input is made.
+                        // As these events contain no meaningful information, they should be ignored.
+
+                        // Since button on/off events keep firing endlessly, they must be ignored.
                         if (v.get_usage_page() == pqrs::hid::usage_page::button) {
+                          return true;
+                        }
+
+                        // The sticks continuously move randomly, they must be ignored.
+                        if (v.get_usage_page() == pqrs::hid::usage_page::generic_desktop &&
+                            (v.get_usage() == pqrs::hid::usage::generic_desktop::x ||
+                             v.get_usage() == pqrs::hid::usage::generic_desktop::y ||
+                             v.get_usage() == pqrs::hid::usage::generic_desktop::z ||
+                             v.get_usage() == pqrs::hid::usage::generic_desktop::rz)) {
                           return true;
                         }
                       }
