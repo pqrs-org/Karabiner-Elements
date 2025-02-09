@@ -84,9 +84,14 @@ public:
       auto hid_values = hid_queue_values_converter_.make_hid_values(device_id_,
                                                                     values_ptr);
 
-      if (d->get_ignore_vendor_events()) {
-        std::erase_if(hid_values,
-                      [](const auto& v) {
+      //
+      // Eliminated the entries that needed to be removed from hid_values
+      //
+
+      std::erase_if(hid_values,
+                    [this, &d](const auto& v) {
+                      // Handle ignore_vendor_events
+                      if (d->get_ignore_vendor_events()) {
                         // 0xff
                         if (v.get_usage_page() == pqrs::hid::usage_page::apple_vendor_top_case) {
                           return true;
@@ -97,10 +102,22 @@ public:
                             v.get_usage_page() <= pqrs::hid::usage_page::value_t(0xffff)) {
                           return true;
                         }
+                      }
 
-                        return false;
-                      });
-      }
+                      // Nintendo's Pro Controller continuously fires button1, button2, ... events at an extremely high frequency,
+                      // so they should be ignored.
+                      if (device_properties_->get_device_identifiers().is_nintendo_pro_controller_0x057e_0x2009()) {
+                        if (v.get_usage_page() == pqrs::hid::usage_page::button) {
+                          return true;
+                        }
+                      }
+
+                      return false;
+                    });
+
+      //
+      // Make event queue
+      //
 
       auto event_queue = event_queue::utility::make_queue(device_properties_,
                                                           hid_values,
