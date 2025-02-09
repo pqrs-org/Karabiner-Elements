@@ -5,6 +5,8 @@ struct DevicesView: View {
   @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
   @State private var showEraseNotConnectedDeviceSettingsButton = false
 
+  static let detailedSettingWidth = 400.0
+
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       List {
@@ -32,7 +34,6 @@ struct DevicesView: View {
                     }
                     .padding(.leading, 20.0)
                     .padding(.top, 8.0)
-                    .frame(width: 400.0)
                   }
                   .padding(.leading, 62.0)
                   .padding(.top, 20.0)
@@ -216,6 +217,7 @@ struct DevicesView: View {
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
             }
 
             if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
@@ -226,6 +228,7 @@ struct DevicesView: View {
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
             }
 
             if connectedDeviceSetting.modifyEvents {
@@ -234,6 +237,7 @@ struct DevicesView: View {
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
             }
           }
         }
@@ -303,13 +307,25 @@ struct DevicesView: View {
     var body: some View {
       VStack {
         if connectedDeviceSetting.modifyEvents {
-          Toggle(isOn: $connectedDeviceSetting.ignoreVendorEvents) {
-            Text(
-              "Ignore vendor events\n(It is recommended to enable this setting for non-Apple devices)"
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
+          if !connectedDeviceSetting.connectedDevice.isAppleDevice {
+            VStack(alignment: .leading, spacing: 4.0) {
+              Toggle(isOn: $connectedDeviceSetting.ignoreVendorEvents) {
+                Text(
+                  "Ignore vendor events"
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+              }
+              .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
+
+              Label(
+                #"It is recommended to enable "Ignore vendor events" for non-Apple devices"#,
+                systemImage: "lightbulb"
+              )
+              .foregroundColor(Color(NSColor.textColor))
+              .font(.caption)
+            }
           }
-          .switchToggleStyle(controlSize: .mini, font: .callout)
         }
       }
     }
