@@ -32,6 +32,10 @@ public:
                                          manipulate_caps_lock_led_,
                                          false);
 
+    helper_values_.push_back_value<bool>("ignore_vendor_events",
+                                         ignore_vendor_events_,
+                                         false);
+
     helper_values_.push_back_value<bool>("treat_as_built_in_keyboard",
                                          treat_as_built_in_keyboard_,
                                          false);
@@ -340,6 +344,15 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
+  const bool& get_ignore_vendor_events(void) const {
+    return ignore_vendor_events_;
+  }
+  void set_ignore_vendor_events(bool value) {
+    ignore_vendor_events_ = value;
+
+    coordinate_between_properties();
+  }
+
   const bool& get_treat_as_built_in_keyboard(void) const {
     return treat_as_built_in_keyboard_;
   }
@@ -629,6 +642,7 @@ private:
   device_identifiers identifiers_;
   bool ignore_;
   bool manipulate_caps_lock_led_;
+  bool ignore_vendor_events_;
   bool treat_as_built_in_keyboard_;
   bool disable_built_in_keyboard_if_exists_;
   double pointing_motion_xy_multiplier_;

@@ -5,6 +5,8 @@ struct DevicesView: View {
   @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
   @State private var showEraseNotConnectedDeviceSettingsButton = false
 
+  static let detailedSettingWidth = 400.0
+
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       List {
@@ -21,12 +23,14 @@ struct DevicesView: View {
                   VStack(alignment: .leading, spacing: 0.0) {
                     ModifyEventsSetting(connectedDeviceSetting: connectedDeviceSetting)
 
-                    VStack(alignment: .leading, spacing: 12.0) {
+                    VStack(alignment: .leading, spacing: 6.0) {
                       KeyboardSettings(connectedDeviceSetting: connectedDeviceSetting)
 
                       MouseSettings(connectedDeviceSetting: connectedDeviceSetting)
 
                       GamePadSettings(connectedDeviceSetting: connectedDeviceSetting)
+
+                      ExtraSettings(connectedDeviceSetting: connectedDeviceSetting)
                     }
                     .padding(.leading, 20.0)
                     .padding(.top, 8.0)
@@ -204,7 +208,7 @@ struct DevicesView: View {
     var body: some View {
       VStack {
         if connectedDeviceSetting.connectedDevice.isKeyboard {
-          VStack(alignment: .leading, spacing: 2.0) {
+          VStack(alignment: .leading, spacing: 6.0) {
             if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
               && !connectedDeviceSetting.disableBuiltInKeyboardIfExists
             {
@@ -213,6 +217,7 @@ struct DevicesView: View {
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
             }
 
             if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
@@ -223,6 +228,7 @@ struct DevicesView: View {
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
             }
 
             if connectedDeviceSetting.modifyEvents {
@@ -231,9 +237,9 @@ struct DevicesView: View {
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
             }
           }
-          .frame(width: 400.0)
         }
       }
     }
@@ -244,26 +250,26 @@ struct DevicesView: View {
     @State var showing = false
 
     var body: some View {
-      VStack {
-        if connectedDeviceSetting.modifyEvents
-          && connectedDeviceSetting.connectedDevice.isPointingDevice
-        {
-          Button(
-            action: {
-              showing = true
-            },
-            label: {
-              Label("Open mouse settings", systemImage: "computermouse")
-                .buttonLabelStyle()
-            }
-          )
-          .sheet(isPresented: $showing) {
-            DevicesMouseSettingsView(
-              connectedDeviceSetting: connectedDeviceSetting,
-              showing: $showing
-            )
+      if connectedDeviceSetting.modifyEvents
+        && connectedDeviceSetting.connectedDevice.isPointingDevice
+      {
+        Button(
+          action: {
+            showing = true
+          },
+          label: {
+            Label("Open mouse settings", systemImage: "computermouse")
+              .buttonLabelStyle()
           }
+        )
+        .sheet(isPresented: $showing) {
+          DevicesMouseSettingsView(
+            connectedDeviceSetting: connectedDeviceSetting,
+            showing: $showing
+          )
         }
+      } else {
+        EmptyView()
       }
     }
   }
@@ -273,22 +279,52 @@ struct DevicesView: View {
     @State var showing = false
 
     var body: some View {
-      VStack {
-        if connectedDeviceSetting.modifyEvents && connectedDeviceSetting.connectedDevice.isGamePad {
-          Button(
-            action: {
-              showing = true
-            },
-            label: {
-              Label("Open game pad settings", systemImage: "gamecontroller")
-                .buttonLabelStyle()
-            }
+      if connectedDeviceSetting.modifyEvents && connectedDeviceSetting.connectedDevice.isGamePad {
+        Button(
+          action: {
+            showing = true
+          },
+          label: {
+            Label("Open game pad settings", systemImage: "gamecontroller")
+              .buttonLabelStyle()
+          }
+        )
+        .sheet(isPresented: $showing) {
+          DevicesGamePadSettingsView(
+            connectedDeviceSetting: connectedDeviceSetting,
+            showing: $showing
           )
-          .sheet(isPresented: $showing) {
-            DevicesGamePadSettingsView(
-              connectedDeviceSetting: connectedDeviceSetting,
-              showing: $showing
-            )
+        }
+      } else {
+        EmptyView()
+      }
+    }
+  }
+
+  struct ExtraSettings: View {
+    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+
+    var body: some View {
+      VStack {
+        if connectedDeviceSetting.modifyEvents {
+          if !connectedDeviceSetting.connectedDevice.isAppleDevice {
+            VStack(alignment: .leading, spacing: 4.0) {
+              Toggle(isOn: $connectedDeviceSetting.ignoreVendorEvents) {
+                Text(
+                  "Ignore vendor events"
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+              }
+              .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
+
+              Label(
+                #"It is recommended to enable "Ignore vendor events" for non-Apple devices"#,
+                systemImage: "lightbulb"
+              )
+              .foregroundColor(Color(NSColor.textColor))
+              .font(.caption)
+            }
           }
         }
       }

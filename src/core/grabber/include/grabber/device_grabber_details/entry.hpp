@@ -83,6 +83,25 @@ public:
 
       auto hid_values = hid_queue_values_converter_.make_hid_values(device_id_,
                                                                     values_ptr);
+
+      if (d->get_ignore_vendor_events()) {
+        std::erase_if(hid_values,
+                      [](const auto& v) {
+                        // 0xff
+                        if (v.get_usage_page() == pqrs::hid::usage_page::apple_vendor_top_case) {
+                          return true;
+                        }
+
+                        // Vendor-defined (0xff00-0xffff)
+                        if (v.get_usage_page() >= pqrs::hid::usage_page::value_t(0xff00) &&
+                            v.get_usage_page() <= pqrs::hid::usage_page::value_t(0xffff)) {
+                          return true;
+                        }
+
+                        return false;
+                      });
+      }
+
       auto event_queue = event_queue::utility::make_queue(device_properties_,
                                                           hid_values,
                                                           event_queue::utility::make_queue_parameters{

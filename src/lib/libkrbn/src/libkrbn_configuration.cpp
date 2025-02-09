@@ -637,6 +637,19 @@ void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock
   d->set_manipulate_caps_lock_led(value);
 }
 
+bool libkrbn_core_configuration_get_selected_profile_device_ignore_vendor_events(const libkrbn_device_identifiers* device_identifiers) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  return d->get_ignore_vendor_events();
+}
+
+void libkrbn_core_configuration_set_selected_profile_device_ignore_vendor_events(const libkrbn_device_identifiers* device_identifiers,
+                                                                                 bool value) {
+  auto c = get_current_core_configuration();
+  auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
+  d->set_ignore_vendor_events(value);
+}
+
 bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers) {
   auto c = get_current_core_configuration();
   auto d = c->get_selected_profile().get_device(libkrbn_cpp::make_device_identifiers(device_identifiers));
