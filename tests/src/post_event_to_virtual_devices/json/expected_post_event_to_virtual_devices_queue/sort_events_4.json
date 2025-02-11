@@ -1,0 +1,32 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 1000,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 1005,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "spacebar"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 1010,
+        "type": "keyboard_input"
+    }
+]

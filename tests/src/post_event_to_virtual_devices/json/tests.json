@@ -102,6 +102,18 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_3.json"
     },
     {
+        "description": "sort_events_4 (modify left_shift+f5 to spacebar after reordering)",
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue": "json/input_event_queue/sort_events_4.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_4.json"
+    },
+    {
+        "description": "sort_events_5 (do not modify left_shift+f5 unless reordering)",
+        "rules": ["json/rules/from_key.json"],
+        "input_event_queue": "json/input_event_queue/sort_events_5.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_5.json"
+    },
+    {
         "description": "f1 -> f2 (key to key)",
         "rules": ["json/rules/from_key.json"],
         "input_event_queue": "json/input_event_queue/key_to_key_1.json",
