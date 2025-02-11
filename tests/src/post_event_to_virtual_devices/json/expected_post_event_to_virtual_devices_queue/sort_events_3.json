@@ -1,0 +1,28 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "f2"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 1000,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "f2"
+                }
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 1005,
+        "type": "keyboard_input"
+    }
+]
