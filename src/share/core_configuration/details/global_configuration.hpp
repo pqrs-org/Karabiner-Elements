@@ -37,6 +37,10 @@ public:
                                          unsafe_ui_,
                                          false);
 
+    helper_values_.push_back_value<bool>("filter_useless_events_from_specific_devices",
+                                         filter_useless_events_from_specific_devices_,
+                                         true);
+
     pqrs::json::requires_object(json, "json");
 
     helper_values_.update_value(json, error_handling);
@@ -92,6 +96,13 @@ public:
     unsafe_ui_ = value;
   }
 
+  const bool& get_filter_useless_events_from_specific_devices(void) const {
+    return filter_useless_events_from_specific_devices_;
+  }
+  void set_filter_useless_events_from_specific_devices(bool value) {
+    filter_useless_events_from_specific_devices_ = value;
+  }
+
 private:
   nlohmann::json json_;
   bool check_for_updates_on_startup_;
@@ -100,6 +111,7 @@ private:
   bool enable_notification_window_;
   bool ask_for_confirmation_before_quitting_;
   bool unsafe_ui_;
+  bool filter_useless_events_from_specific_devices_;
   configuration_json_helper::helper_values helper_values_;
 };
 

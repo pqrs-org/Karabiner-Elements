@@ -90,7 +90,10 @@ public:
 
       std::erase_if(hid_values,
                     [this, &d](const auto& v) {
+                      //
                       // Handle ignore_vendor_events
+                      //
+
                       if (d->get_ignore_vendor_events()) {
                         // 0xff
                         if (v.get_usage_page() == pqrs::hid::usage_page::apple_vendor_top_case) {
@@ -104,23 +107,29 @@ public:
                         }
                       }
 
-                      if (device_properties_->get_device_identifiers().is_nintendo_pro_controller_0x057e_0x2009() &&
-                          device_properties_->get_transport() == "USB") {
-                        // Nintendo's Pro Controller, when connected via USB, generates a high frequency of events even when no input is made.
-                        // As these events contain no meaningful information, they should be ignored.
+                      //
+                      // Filter useless events
+                      //
 
-                        // Since button on/off events keep firing endlessly, they must be ignored.
-                        if (v.get_usage_page() == pqrs::hid::usage_page::button) {
-                          return true;
-                        }
+                      if (core_configuration_->get_global_configuration().get_filter_useless_events_from_specific_devices()) {
+                        if (device_properties_->get_device_identifiers().is_nintendo_pro_controller_0x057e_0x2009() &&
+                            device_properties_->get_transport() == "USB") {
+                          // Nintendo's Pro Controller, when connected via USB, generates a high frequency of events even when no input is made.
+                          // As these events contain no meaningful information, they should be ignored.
 
-                        // The sticks continuously move randomly, they must be ignored.
-                        if (v.get_usage_page() == pqrs::hid::usage_page::generic_desktop &&
-                            (v.get_usage() == pqrs::hid::usage::generic_desktop::x ||
-                             v.get_usage() == pqrs::hid::usage::generic_desktop::y ||
-                             v.get_usage() == pqrs::hid::usage::generic_desktop::z ||
-                             v.get_usage() == pqrs::hid::usage::generic_desktop::rz)) {
-                          return true;
+                          // Since button on/off events keep firing endlessly, they must be ignored.
+                          if (v.get_usage_page() == pqrs::hid::usage_page::button) {
+                            return true;
+                          }
+
+                          // The sticks continuously move randomly, they must be ignored.
+                          if (v.get_usage_page() == pqrs::hid::usage_page::generic_desktop &&
+                              (v.get_usage() == pqrs::hid::usage::generic_desktop::x ||
+                               v.get_usage() == pqrs::hid::usage::generic_desktop::y ||
+                               v.get_usage() == pqrs::hid::usage::generic_desktop::z ||
+                               v.get_usage() == pqrs::hid::usage::generic_desktop::rz)) {
+                            return true;
+                          }
                         }
                       }
 
