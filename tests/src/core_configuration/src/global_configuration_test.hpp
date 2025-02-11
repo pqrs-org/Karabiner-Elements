@@ -17,6 +17,7 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_enable_notification_window() == true);
       expect(global_configuration.get_ask_for_confirmation_before_quitting() == true);
       expect(global_configuration.get_unsafe_ui() == false);
+      expect(global_configuration.get_filter_useless_events_from_specific_devices() == true);
     }
 
     // load values from json
@@ -28,6 +29,7 @@ void run_global_configuration_test(void) {
           {"enable_notification_window", false},
           {"ask_for_confirmation_before_quitting", false},
           {"unsafe_ui", true},
+          {"filter_useless_events_from_specific_devices", false},
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::strict);
@@ -37,6 +39,7 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_enable_notification_window() == false);
       expect(global_configuration.get_ask_for_confirmation_before_quitting() == false);
       expect(global_configuration.get_unsafe_ui() == true);
+      expect(global_configuration.get_filter_useless_events_from_specific_devices() == false);
 
       //
       // Set default values
@@ -48,6 +51,7 @@ void run_global_configuration_test(void) {
       global_configuration.set_enable_notification_window(true);
       global_configuration.set_ask_for_confirmation_before_quitting(true);
       global_configuration.set_unsafe_ui(false);
+      global_configuration.set_filter_useless_events_from_specific_devices(true);
       nlohmann::json j(global_configuration);
       expect(j.empty());
     }
@@ -59,7 +63,8 @@ void run_global_configuration_test(void) {
           {"show_in_menu_bar", 0},
           {"show_profile_name_in_menu_bar", nlohmann::json::object()},
           {"enable_notification_window", nlohmann::json::object()},
-          {"unsafe_ui", false},
+          {"unsafe_ui", nlohmann::json::object()},
+          {"filter_useless_events_from_specific_devices", nlohmann::json::object()},
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::loose);
@@ -69,6 +74,7 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_enable_notification_window() == true);
       expect(global_configuration.get_ask_for_confirmation_before_quitting() == true);
       expect(global_configuration.get_unsafe_ui() == false);
+      expect(global_configuration.get_filter_useless_events_from_specific_devices() == true);
     }
   };
 }
