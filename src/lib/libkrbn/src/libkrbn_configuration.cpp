@@ -124,6 +124,16 @@ void libkrbn_core_configuration_set_global_configuration_unsafe_ui(bool value) {
   c->get_global_configuration().set_unsafe_ui(value);
 }
 
+bool libkrbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices(void) {
+  auto c = get_current_core_configuration();
+  return c->get_global_configuration().get_filter_useless_events_from_specific_devices();
+}
+
+void libkrbn_core_configuration_set_global_configuration_filter_useless_events_from_specific_devices(bool value) {
+  auto c = get_current_core_configuration();
+  c->get_global_configuration().set_filter_useless_events_from_specific_devices(value);
+}
+
 bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension(void) {
   auto c = get_current_core_configuration();
   return c->get_machine_specific().get_entry().get_enable_multitouch_extension();
