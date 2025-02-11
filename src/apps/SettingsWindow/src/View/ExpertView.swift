@@ -34,6 +34,34 @@ struct ExpertView: View {
         .padding(6.0)
       }
 
+      GroupBox(label: Text("Options")) {
+        VStack(alignment: .leading, spacing: 12.0) {
+          HStack {
+            Toggle(isOn: $settings.filterUselessEventsFromSpecificDevices) {
+              Text("Filter useless events from specific devices (Default: on)")
+            }
+            .switchToggleStyle()
+          }
+
+          VStack(alignment: .leading, spacing: 0.0) {
+            Text("If this setting is enabled, the following events will be ignored:")
+            Text("")
+            Text("- Nintendo's Pro Controller (USB connected):")
+            Text(
+              "    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed."
+            )
+            Text(
+              "    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all."
+            )
+          }
+          .padding()
+          .foregroundColor(Color.infoForeground)
+          .background(Color.infoBackground)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+      }
+
       GroupBox(label: Text("Delay to grab device")) {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {

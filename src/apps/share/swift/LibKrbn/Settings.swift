@@ -127,6 +127,8 @@ extension LibKrbn {
       askForConfirmationBeforeQuitting =
         libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting()
       unsafeUI = libkrbn_core_configuration_get_global_configuration_unsafe_ui()
+      filterUselessEventsFromSpecificDevices =
+        libkrbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices()
 
       updateSystemDefaultProfileExists()
 
@@ -742,6 +744,17 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_unsafe_ui(
             unsafeUI
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var filterUselessEventsFromSpecificDevices: Bool = true {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_filter_useless_events_from_specific_devices(
+            filterUselessEventsFromSpecificDevices
           )
           save()
         }
