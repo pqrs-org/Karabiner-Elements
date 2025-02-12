@@ -184,7 +184,9 @@ public:
           } else if (auto v = pqrs::json::find<bool>(j, "pause_manipulation")) {
             pause_manipulation = *v;
             if (!pause_manipulation) {
-              event_queues->front()->sort_events();
+              if (core_configuration->get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers()) {
+                event_queues->front()->sort_events();
+              }
               connector->manipulate(now_,
                                     core_configuration);
             }
@@ -200,7 +202,9 @@ public:
             advance_now(pqrs::osx::chrono::make_milliseconds(e.get_event_time_stamp().get_time_stamp() - absolute_time_point(0)));
 
             if (!pause_manipulation) {
-              event_queues->front()->sort_events();
+              if (core_configuration->get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers()) {
+                event_queues->front()->sort_events();
+              }
               connector->manipulate(now_,
                                     core_configuration);
             }
