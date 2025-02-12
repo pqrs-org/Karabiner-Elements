@@ -41,6 +41,10 @@ public:
                                          filter_useless_events_from_specific_devices_,
                                          true);
 
+    helper_values_.push_back_value<bool>("reorder_same_timestamp_input_events_to_prioritize_modifiers",
+                                         reorder_same_timestamp_input_events_to_prioritize_modifiers_,
+                                         false);
+
     pqrs::json::requires_object(json, "json");
 
     helper_values_.update_value(json, error_handling);
@@ -103,6 +107,13 @@ public:
     filter_useless_events_from_specific_devices_ = value;
   }
 
+  const bool& get_reorder_same_timestamp_input_events_to_prioritize_modifiers(void) const {
+    return reorder_same_timestamp_input_events_to_prioritize_modifiers_;
+  }
+  void set_reorder_same_timestamp_input_events_to_prioritize_modifiers(bool value) {
+    reorder_same_timestamp_input_events_to_prioritize_modifiers_ = value;
+  }
+
 private:
   nlohmann::json json_;
   bool check_for_updates_on_startup_;
@@ -112,6 +123,7 @@ private:
   bool ask_for_confirmation_before_quitting_;
   bool unsafe_ui_;
   bool filter_useless_events_from_specific_devices_;
+  bool reorder_same_timestamp_input_events_to_prioritize_modifiers_;
   configuration_json_helper::helper_values helper_values_;
 };
 

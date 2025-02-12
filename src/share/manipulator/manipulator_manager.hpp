@@ -45,7 +45,8 @@ public:
    */
   bool manipulate(std::weak_ptr<event_queue::queue> weak_input_event_queue,
                   std::weak_ptr<event_queue::queue> weak_output_event_queue,
-                  absolute_time_point now) {
+                  absolute_time_point now,
+                  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
     if (auto input_event_queue = weak_input_event_queue.lock()) {
       if (auto output_event_queue = weak_output_event_queue.lock()) {
         if (!input_event_queue->empty()) {
@@ -152,6 +153,10 @@ public:
 
           if (input_event_queue->get_front_event().get_validity() == validity::valid) {
             output_event_queue->push_back_entry(input_event_queue->get_front_event());
+          }
+
+          if (core_configuration->get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers()) {
+            output_event_queue->sort_events();
           }
 
           input_event_queue->erase_front_event();

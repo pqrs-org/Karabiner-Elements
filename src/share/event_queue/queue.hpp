@@ -44,8 +44,6 @@ public:
                          lazy,
                          validity);
 
-    sort_events();
-
     //
     // Update modifier_flag_manager, pointing_button_manager
     //
@@ -261,6 +259,23 @@ public:
     time_stamp_delay_ += value;
   }
 
+  void sort_events(void) {
+    if (events_.empty()) {
+      return;
+    }
+
+    for (int i = 0; i < events_.size() - 1;) {
+      if (needs_swap(events_[i], events_[i + 1])) {
+        std::swap(events_[i], events_[i + 1]);
+        if (i > 0) {
+          --i;
+        }
+        continue;
+      }
+      ++i;
+    }
+  }
+
   static bool needs_swap(const entry& v1, const entry& v2) {
     // Some devices are send modifier flag and key at the same HID report.
     // For example, a key sends control+up-arrow by this reports.
@@ -337,19 +352,6 @@ public:
   }
 
 private:
-  void sort_events(void) {
-    for (size_t i = 0; i < events_.size() - 1;) {
-      if (needs_swap(events_[i], events_[i + 1])) {
-        std::swap(events_[i], events_[i + 1]);
-        if (i > 0) {
-          --i;
-        }
-        continue;
-      }
-      ++i;
-    }
-  }
-
   std::string name_;
   std::vector<entry> events_;
   modifier_flag_manager modifier_flag_manager_;
