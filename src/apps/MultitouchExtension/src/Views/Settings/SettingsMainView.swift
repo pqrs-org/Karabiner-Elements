@@ -22,7 +22,7 @@ struct SettingsMainView: View {
             Text("(You need to restart app to enable/disable this option)")
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("Area")) {
@@ -41,7 +41,7 @@ struct SettingsMainView: View {
             Spacer()
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()

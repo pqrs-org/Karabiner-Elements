@@ -36,7 +36,7 @@ struct SettingsAdvancedView: View {
             }
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("Delay")) {
@@ -77,7 +77,7 @@ struct SettingsAdvancedView: View {
             Text("(Increasing this value allows you to ignore unintended release)")
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("Palm Detection")) {
@@ -102,7 +102,7 @@ struct SettingsAdvancedView: View {
           }
 
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()

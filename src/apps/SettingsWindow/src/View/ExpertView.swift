@@ -31,7 +31,7 @@ struct ExpertView: View {
           .foregroundColor(Color.errorForeground)
           .background(Color.errorBackground)
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("Options")) {
@@ -104,7 +104,7 @@ struct ExpertView: View {
             }
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()

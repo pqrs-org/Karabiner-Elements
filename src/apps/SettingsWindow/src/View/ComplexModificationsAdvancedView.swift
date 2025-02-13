@@ -65,7 +65,7 @@ struct ComplexModificationsAdvancedView: View {
             Spacer()
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("type:mouse_motion_to_scroll parameters")) {
@@ -83,7 +83,7 @@ struct ComplexModificationsAdvancedView: View {
             Spacer()
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()

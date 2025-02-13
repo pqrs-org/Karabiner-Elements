@@ -84,7 +84,7 @@ struct UnknownEventsView: View {
             }
           }
         }
-        .padding(6.0)
+        .padding()
       }
     }
     .padding()

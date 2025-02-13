@@ -9,7 +9,7 @@ struct VirtualKeyboardView: View {
         VStack(alignment: .leading, spacing: 6.0) {
           KeyboardTypeSelectorView()
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("Mouse key")) {
@@ -28,7 +28,7 @@ struct VirtualKeyboardView: View {
             Spacer()
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()

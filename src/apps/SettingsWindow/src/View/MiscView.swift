@@ -41,7 +41,7 @@ struct MiscView: View {
             Spacer()
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("Export & Import")) {
@@ -64,7 +64,7 @@ struct MiscView: View {
             Spacer()
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("System default configuration")) {
@@ -103,7 +103,7 @@ struct MiscView: View {
               Color.primary.opacity(0.5))
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()
