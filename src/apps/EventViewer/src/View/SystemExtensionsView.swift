@@ -42,7 +42,7 @@ struct SystemExtensionsView: View {
             .background(Color(NSColor.textBackgroundColor))
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()

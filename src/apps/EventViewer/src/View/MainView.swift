@@ -14,7 +14,7 @@ struct MainView: View {
           .frame(height: 60)
           .disableAutocorrection(true)
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("Keyboard & pointing events")) {
@@ -101,7 +101,7 @@ struct MainView: View {
             }
           }
         }
-        .padding(6.0)
+        .padding()
       }
     }
     .padding()

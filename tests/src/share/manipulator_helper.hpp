@@ -45,6 +45,7 @@ public:
 
       pseudo_time_source_->set_now(pqrs::dispatcher::time_point(std::chrono::milliseconds(0)));
 
+      auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
       auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
       auto notification_message_manager = std::make_shared<krbn::notification_message_manager>("tmp/notification_message.json");
       auto connector = std::make_shared<manipulator::manipulator_managers_connector>();
@@ -149,8 +150,9 @@ public:
 
       // Run manipulators
 
-      auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([this, connector] {
-        connector->manipulate(now_);
+      auto input_event_arrived_connection = krbn_notification_center::get_instance().input_event_arrived.connect([this, core_configuration, connector] {
+        connector->manipulate(now_,
+                              core_configuration);
       });
 
       bool pause_manipulation = false;
@@ -158,7 +160,7 @@ public:
       std::ifstream ifs(test["input_event_queue"].get<std::string>());
       expect(static_cast<bool>(ifs));
       for (const auto& j : json_utility::parse_jsonc(ifs)) {
-        enqueue_to_dispatcher([this, connector, event_queues, j, &pause_manipulation] {
+        enqueue_to_dispatcher([this, core_configuration, connector, event_queues, j, &pause_manipulation] {
           if (auto s = pqrs::json::find<std::string>(j, "action")) {
             if (*s == "invalidate_manipulators") {
               connector->invalidate_manipulators();
@@ -175,14 +177,22 @@ public:
                 advance_now(ms);
               }
 
-              connector->manipulate(time_stamp);
+              connector->manipulate(time_stamp,
+                                    core_configuration);
             }
 
           } else if (auto v = pqrs::json::find<bool>(j, "pause_manipulation")) {
             pause_manipulation = *v;
             if (!pause_manipulation) {
-              connector->manipulate(now_);
+              if (core_configuration->get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers()) {
+                event_queues->front()->sort_events();
+              }
+              connector->manipulate(now_,
+                                    core_configuration);
             }
+
+          } else if (auto v = pqrs::json::find<bool>(j, "reorder_same_timestamp_input_events_to_prioritize_modifiers")) {
+            core_configuration->get_global_configuration().set_reorder_same_timestamp_input_events_to_prioritize_modifiers(*v);
 
           } else {
             auto e = event_queue::entry::make_from_json(j);
@@ -192,7 +202,11 @@ public:
             advance_now(pqrs::osx::chrono::make_milliseconds(e.get_event_time_stamp().get_time_stamp() - absolute_time_point(0)));
 
             if (!pause_manipulation) {
-              connector->manipulate(now_);
+              if (core_configuration->get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers()) {
+                event_queues->front()->sort_events();
+              }
+              connector->manipulate(now_,
+                                    core_configuration);
             }
           }
         });

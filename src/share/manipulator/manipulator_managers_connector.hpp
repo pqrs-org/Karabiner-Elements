@@ -28,12 +28,14 @@ public:
       return weak_output_event_queue_;
     }
 
-    void manipulate(absolute_time_point now) const {
+    void manipulate(absolute_time_point now,
+                    gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) const {
       if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
         while (true) {
           auto processed = manipulator_manager->manipulate(weak_input_event_queue_,
                                                            weak_output_event_queue_,
-                                                           now);
+                                                           now,
+                                                           core_configuration);
           if (!processed) {
             break;
           }
@@ -113,11 +115,13 @@ public:
                               weak_output_event_queue);
   }
 
-  void manipulate(absolute_time_point now) const {
+  void manipulate(absolute_time_point now,
+                  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     for (auto&& c : connections_) {
-      c.manipulate(now);
+      c.manipulate(now,
+                   core_configuration);
     }
   }
 

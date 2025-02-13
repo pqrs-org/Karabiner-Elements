@@ -342,6 +342,8 @@ void run_event_queue_test(void) {
       ENQUEUE_EVENT(event_queue, 1, 500, device_keys_and_pointing_buttons_are_released_event, single, device_keys_and_pointing_buttons_are_released_event);
       ENQUEUE_EVENT(event_queue, 1, 500, left_shift_event, key_down, left_shift_event);
 
+      event_queue.sort_events();
+
       std::vector<krbn::event_queue::entry> expected;
       PUSH_BACK_ENTRY(expected, 1, 100, left_control_event, key_down, left_control_event);
       PUSH_BACK_ENTRY(expected, 1, 100, left_shift_event, key_down, left_shift_event);
@@ -364,6 +366,8 @@ void run_event_queue_test(void) {
       ENQUEUE_EVENT(event_queue, 1, 100, b_event, key_down, b_event);
       ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
 
+      event_queue.sort_events();
+
       std::vector<krbn::event_queue::entry> expected;
       PUSH_BACK_ENTRY(expected, 1, 100, left_shift_event, key_down, left_shift_event);
       PUSH_BACK_ENTRY(expected, 1, 100, left_control_event, key_down, left_control_event);
@@ -379,6 +383,8 @@ void run_event_queue_test(void) {
       ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
       ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
 
+      event_queue.sort_events();
+
       std::vector<krbn::event_queue::entry> expected;
       PUSH_BACK_ENTRY(expected, 1, 100, left_control_event, key_down, left_control_event);
       PUSH_BACK_ENTRY(expected, 1, 100, left_shift_event, key_down, left_shift_event);
@@ -393,6 +399,8 @@ void run_event_queue_test(void) {
       ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_up, a_event);
       ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
       ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+
+      event_queue.sort_events();
 
       std::vector<krbn::event_queue::entry> expected;
       PUSH_BACK_ENTRY(expected, 1, 100, left_control_event, key_down, left_control_event);
@@ -409,6 +417,8 @@ void run_event_queue_test(void) {
       ENQUEUE_EVENT(event_queue, 1, 100, device_keys_and_pointing_buttons_are_released_event, single, device_keys_and_pointing_buttons_are_released_event);
       ENQUEUE_EVENT(event_queue, 1, 100, left_control_event, key_down, left_control_event);
       ENQUEUE_EVENT(event_queue, 1, 100, left_shift_event, key_down, left_shift_event);
+
+      event_queue.sort_events();
 
       std::vector<krbn::event_queue::entry> expected;
       PUSH_BACK_ENTRY(expected, 1, 100, b_event, key_up, b_event);

@@ -129,6 +129,8 @@ extension LibKrbn {
       unsafeUI = libkrbn_core_configuration_get_global_configuration_unsafe_ui()
       filterUselessEventsFromSpecificDevices =
         libkrbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices()
+      reorderSameTimestampInputEventsToPrioritizeModifiers =
+        libkrbn_core_configuration_get_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers()
 
       updateSystemDefaultProfileExists()
 
@@ -755,6 +757,17 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_filter_useless_events_from_specific_devices(
             filterUselessEventsFromSpecificDevices
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var reorderSameTimestampInputEventsToPrioritizeModifiers: Bool = true {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers(
+            reorderSameTimestampInputEventsToPrioritizeModifiers
           )
           save()
         }

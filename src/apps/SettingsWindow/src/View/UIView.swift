@@ -37,7 +37,7 @@ struct UIView: View {
             }
 
           }
-          .padding(6.0)
+          .padding()
         }
 
         GroupBox(label: Text("Karabiner Notification Window")) {
@@ -84,7 +84,7 @@ struct UIView: View {
             .foregroundColor(Color.warningForeground)
             .background(Color.warningBackground)
           }
-          .padding(6.0)
+          .padding()
         }
 
         GroupBox(label: Text("App icon")) {
@@ -137,7 +137,7 @@ struct UIView: View {
 
             Divider()
           }
-          .padding(6.0)
+          .padding()
           .background(Color(NSColor.textBackgroundColor))
         }
       }

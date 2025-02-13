@@ -624,7 +624,8 @@ private:
 
   // This method is executed in the shared dispatcher thread.
   void manipulate(absolute_time_point now) {
-    manipulator_managers_connector_.manipulate(now);
+    manipulator_managers_connector_.manipulate(now,
+                                               core_configuration_);
 
     posted_event_queue_->clear_events();
     post_event_to_virtual_devices_manipulator_->async_post_events(virtual_hid_device_service_client_);
@@ -684,6 +685,10 @@ private:
 
           notify = true;
         }
+      }
+
+      if (core_configuration_->get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers()) {
+        merged_input_event_queue_->sort_events();
       }
 
       if (needs_regrab) {

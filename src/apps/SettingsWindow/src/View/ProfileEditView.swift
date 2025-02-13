@@ -48,7 +48,7 @@ struct ProfileEditView: View {
             }
           }
         }
-        .padding(6.0)
+        .padding()
       }
     }
     .padding()

@@ -56,7 +56,7 @@ struct UpdateView: View {
             .background(Color.errorBackground)
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       GroupBox(label: Text("Web sites")) {
@@ -80,7 +80,7 @@ struct UpdateView: View {
             Spacer()
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()

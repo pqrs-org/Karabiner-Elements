@@ -34,7 +34,7 @@ struct ActionView: View {
             Spacer()
           }
         }
-        .padding(6.0)
+        .padding()
       }
 
       Spacer()

@@ -1,6 +1,6 @@
 [
     {
-        "reorder_same_timestamp_input_events_to_prioritize_modifiers": true
+        "reorder_same_timestamp_input_events_to_prioritize_modifiers": false
     },
     {
         "pause_manipulation": true
