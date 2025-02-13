@@ -2,6 +2,9 @@
 
 ## Beta
 
+-   💥 Breaking changes
+    -   The reordering of key events with the same timestamp is now disabled by default.
+        It has been added as an option in the Expert tab: `Reorder same timestamp input events to prioritize modifiers`.
 -   🐛 Bug Fixes
     -   Fixed an overflow issue with the mouse key movements.
     -   Fixed an issue that the fn key is unintentionally tapped when use the media keys if "Use all F1, F2, etc. keys as standard function keys" is enabled.

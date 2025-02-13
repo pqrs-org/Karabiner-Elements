@@ -57,6 +57,22 @@ struct ExpertView: View {
           .padding()
           .foregroundColor(Color.infoForeground)
           .background(Color.infoBackground)
+
+          VStack(alignment: .leading, spacing: 4.0) {
+            HStack {
+              Toggle(isOn: $settings.reorderSameTimestampInputEventsToPrioritizeModifiers) {
+                Text("Reorder same timestamp input events to prioritize modifiers (Default: off)")
+              }
+              .switchToggleStyle()
+            }
+
+            Label(
+              #"If you feel that modifier keys are sometimes ignored when pressed with regular keys, enable this setting"#,
+              systemImage: "lightbulb"
+            )
+            .foregroundColor(Color(NSColor.textColor))
+            .font(.caption)
+          }
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
