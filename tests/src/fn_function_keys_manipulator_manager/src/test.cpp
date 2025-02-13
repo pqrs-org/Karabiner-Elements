@@ -149,7 +149,8 @@ int main(void) {
 
       for (const auto& e : input_event_queue->get_entries()) {
         input_event_queue_copy->push_back_entry(e);
-        connector->manipulate(e.get_event_time_stamp().get_time_stamp());
+        connector->manipulate(e.get_event_time_stamp().get_time_stamp(),
+                              core_configuration);
       }
 
       auto events = nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events());
@@ -262,7 +263,8 @@ int main(void) {
 
       for (const auto& e : input_event_queue->get_entries()) {
         input_event_queue_copy->push_back_entry(e);
-        connector->manipulate(e.get_event_time_stamp().get_time_stamp());
+        connector->manipulate(e.get_event_time_stamp().get_time_stamp(),
+                              core_configuration);
       }
 
       auto events = nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events());
