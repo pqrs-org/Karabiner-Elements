@@ -258,6 +258,7 @@ void run_device_test(void) {
                                      true,  // is_keyboard
                                      false, // is_pointing_device
                                      false, // is_game_pad
+                                     false, // is_consumer
                                      false, // is_virtual_device
                                      ""     // device_address
                                      ));
@@ -272,6 +273,7 @@ void run_device_test(void) {
                                      true,  // is_keyboard
                                      false, // is_pointing_device
                                      false, // is_game_pad
+                                     false, // is_consumer
                                      false, // is_virtual_device
                                      ""     // device_address
                                      ));
@@ -299,6 +301,31 @@ void run_device_test(void) {
             .vendor_id = pqrs::hid::vendor_id::value_t(1000),
             .product_id = pqrs::hid::product_id::value_t(2000),
             .is_game_pad = true,
+        });
+
+        auto e = manipulator_conditions_helper.make_event_queue_entry(d);
+        expect(condition.is_fulfilled(e, environment) == true);
+      }
+    }
+
+    // is_consumer
+    {
+      nlohmann::json json;
+      json["type"] = "device_if";
+      json["identifiers"] = nlohmann::json::array();
+      json["identifiers"].push_back(nlohmann::json::object());
+      json["identifiers"].back()["is_consumer"] = true;
+      krbn::manipulator::conditions::device condition(json);
+
+      {
+        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
+        expect(condition.is_fulfilled(e, environment) == false);
+      }
+      {
+        auto d = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
+            .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+            .product_id = pqrs::hid::product_id::value_t(2000),
+            .is_consumer = true,
         });
 
         auto e = manipulator_conditions_helper.make_event_queue_entry(d);

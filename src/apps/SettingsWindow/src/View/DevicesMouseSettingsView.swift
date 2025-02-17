@@ -63,29 +63,3 @@ struct DevicesMouseSettingsView: View {
     .frame(width: 1000, height: 600)
   }
 }
-
-struct DevicesMouseSettingsView_Previews: PreviewProvider {
-  @State static var connectedDevice = LibKrbn.ConnectedDevice(
-    index: 0,
-    manufacturerName: "",
-    productName: "",
-    transport: "",
-    vendorId: 0,
-    productId: 0,
-    deviceAddress: "",
-    isKeyboard: false,
-    isPointingDevice: true,
-    isGamePad: false,
-    isVirtualDevice: false,
-    isBuiltInKeyboard: false,
-    isAppleDevice: false
-  )
-  @State static var connectedDeviceSetting = LibKrbn.ConnectedDeviceSetting(connectedDevice)
-  @State static var showing = true
-
-  static var previews: some View {
-    DevicesMouseSettingsView(
-      connectedDeviceSetting: connectedDeviceSetting,
-      showing: $showing)
-  }
-}

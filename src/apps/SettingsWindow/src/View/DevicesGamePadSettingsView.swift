@@ -285,29 +285,3 @@ struct DevicesGamePadSettingsView: View {
     }
   }
 }
-
-struct DevicesGamePadSettingsView_Previews: PreviewProvider {
-  @State static var connectedDevice = LibKrbn.ConnectedDevice(
-    index: 0,
-    manufacturerName: "",
-    productName: "",
-    transport: "",
-    vendorId: 0,
-    productId: 0,
-    deviceAddress: "",
-    isKeyboard: false,
-    isPointingDevice: false,
-    isGamePad: true,
-    isVirtualDevice: false,
-    isBuiltInKeyboard: false,
-    isAppleDevice: false
-  )
-  @State static var connectedDeviceSetting = LibKrbn.ConnectedDeviceSetting(connectedDevice)
-  @State static var showing = true
-
-  static var previews: some View {
-    DevicesGamePadSettingsView(
-      connectedDeviceSetting: connectedDeviceSetting,
-      showing: $showing)
-  }
-}

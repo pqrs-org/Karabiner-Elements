@@ -207,6 +207,11 @@ public:
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::hid::usage_page::generic_desktop,
             pqrs::hid::usage::generic_desktop::game_pad),
+
+        // Headset
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::consumer,
+            pqrs::hid::usage::consumer::consumer_control),
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,

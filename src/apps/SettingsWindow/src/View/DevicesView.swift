@@ -120,6 +120,9 @@ struct DevicesView: View {
           if connectedDevice.isGamePad {
             Image(systemName: "gamecontroller")
           }
+          if connectedDevice.isConsumer {
+            Image(systemName: "headphones")
+          }
         }
         .frame(width: 50.0)
 

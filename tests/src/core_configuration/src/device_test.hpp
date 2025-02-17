@@ -41,6 +41,7 @@ void run_device_test(void) {
                                            true,               // is_keyboard
                                            false,              // is_pointing_device
                                            false,              // is_game_pad
+                                           false,              // is_consumer
                                            false,              // is_virtual_device
                                            "ec-ba-73-21-e6-f5" // device_address (ignored)
       );
@@ -56,6 +57,7 @@ void run_device_test(void) {
                                            true,               // is_keyboard
                                            false,              // is_pointing_device
                                            false,              // is_game_pad
+                                           false,              // is_consumer
                                            false,              // is_virtual_device
                                            "ec-ba-73-21-e6-f5" // device_address
       );
@@ -72,6 +74,7 @@ void run_device_test(void) {
                                            false, // is_keyboard
                                            true,  // is_pointing_device
                                            false, // is_game_pad
+                                           false, // is_consumer
                                            false, // is_virtual_device
                                            ""     // device_address
       );

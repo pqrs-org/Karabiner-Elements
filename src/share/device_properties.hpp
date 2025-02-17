@@ -22,6 +22,7 @@ public:
     bool is_keyboard = false;
     bool is_pointing_device = false;
     bool is_game_pad = false;
+    bool is_consumer = false;
   };
 
   device_properties(initialization_parameters parameters)
@@ -41,6 +42,7 @@ public:
         parameters.is_keyboard,
         parameters.is_pointing_device,
         parameters.is_game_pad,
+        parameters.is_consumer,
         iokit_utility::is_karabiner_virtual_hid_device(manufacturer_, product_),
         parameters.device_address);
 
@@ -117,7 +119,9 @@ public:
     if (!device_identifiers_.get_is_virtual_device()) {
       is_apple_ = parameters.vendor_id == pqrs::hid::vendor_id::value_t(0x05ac) ||
                   parameters.vendor_id == pqrs::hid::vendor_id::value_t(0x004c) ||
-                  type_safe::get(product_).find("Apple Internal ") != std::string::npos;
+                  type_safe::get(product_).find("Apple Internal ") != std::string::npos ||
+                  (manufacturer_ == pqrs::hid::manufacturer_string::value_t("Apple") &&
+                   product_ == pqrs::hid::product_string::value_t("Headset"));
     }
   }
 
@@ -141,6 +145,7 @@ public:
         .is_keyboard = iokit_utility::is_keyboard(hid_device),
         .is_pointing_device = iokit_utility::is_pointing_device(hid_device),
         .is_game_pad = iokit_utility::is_game_pad(hid_device),
+        .is_consumer = iokit_utility::is_consumer(hid_device),
     });
   }
 
@@ -162,6 +167,7 @@ public:
         parameters.is_keyboard = identifiers.get_is_keyboard();
         parameters.is_pointing_device = identifiers.get_is_pointing_device();
         parameters.is_game_pad = identifiers.get_is_game_pad();
+        parameters.is_consumer = identifiers.get_is_consumer();
 
       } else if (k == "location_id") {
         pqrs::json::requires_number(v, "`" + k + "`");
@@ -314,6 +320,15 @@ public:
     {
       auto p1 = device_identifiers_.get_is_game_pad();
       auto p2 = other.device_identifiers_.get_is_game_pad();
+      if (p1 != p2) {
+        return p1;
+      }
+    }
+
+    // is_consumer
+    {
+      auto p1 = device_identifiers_.get_is_consumer();
+      auto p2 = other.device_identifiers_.get_is_consumer();
       if (p1 != p2) {
         return p1;
       }

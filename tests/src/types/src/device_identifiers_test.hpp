@@ -17,6 +17,7 @@ void run_device_identifiers_test(void) {
       expect(false == di.get_is_keyboard());
       expect(false == di.get_is_pointing_device());
       expect(false == di.get_is_game_pad());
+      expect(false == di.get_is_consumer());
       expect(false == di.get_is_virtual_device());
       expect(true == di.empty());
     }
@@ -36,6 +37,7 @@ void run_device_identifiers_test(void) {
       expect(true == di.get_is_keyboard());
       expect(false == di.get_is_pointing_device());
       expect(false == di.get_is_game_pad());
+      expect(false == di.get_is_consumer());
       expect(false == di.get_is_virtual_device());
       expect(false == di.empty());
       expect(json == nlohmann::json(di));
@@ -58,6 +60,16 @@ void run_device_identifiers_test(void) {
       auto di = json.get<krbn::device_identifiers>();
       expect(true == di.get_is_game_pad());
       expect(true == nlohmann::json(di).at("is_game_pad").get<bool>());
+      expect(false == di.empty());
+    }
+    {
+      auto json = nlohmann::json::object({
+          {"is_consumer", true},
+      });
+
+      auto di = json.get<krbn::device_identifiers>();
+      expect(true == di.get_is_consumer());
+      expect(true == nlohmann::json(di).at("is_consumer").get<bool>());
       expect(false == di.empty());
     }
     // is_virtual_device
