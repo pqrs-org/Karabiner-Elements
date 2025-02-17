@@ -60,6 +60,9 @@ struct DeviceSelectorView: View {
                     if connectedDevice.isGamePad {
                       Image(systemName: "gamecontroller")
                     }
+                    if connectedDevice.isConsumer {
+                      Image(systemName: "headphones")
+                    }
                   }
                 }
                 .sidebarButtonLabelStyle()
