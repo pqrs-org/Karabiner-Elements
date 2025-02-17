@@ -84,6 +84,7 @@ bool libkrbn_connected_devices_get_device_identifiers(size_t index, libkrbn_devi
         device_identifiers->is_keyboard = identifiers.get_is_keyboard();
         device_identifiers->is_pointing_device = identifiers.get_is_pointing_device();
         device_identifiers->is_game_pad = identifiers.get_is_game_pad();
+        device_identifiers->is_consumer = identifiers.get_is_consumer();
         device_identifiers->is_virtual_device = identifiers.get_is_virtual_device();
         return true;
       }
@@ -155,6 +156,16 @@ bool libkrbn_connected_devices_get_is_game_pad(size_t index) {
     const auto& devices = c->get_devices();
     if (index < devices.size()) {
       return devices[index]->get_device_identifiers().get_is_game_pad();
+    }
+  }
+  return false;
+}
+
+bool libkrbn_connected_devices_get_is_consumer(size_t index) {
+  if (auto c = get_current_connected_devices()) {
+    const auto& devices = c->get_devices();
+    if (index < devices.size()) {
+      return devices[index]->get_device_identifiers().get_is_consumer();
     }
   }
   return false;

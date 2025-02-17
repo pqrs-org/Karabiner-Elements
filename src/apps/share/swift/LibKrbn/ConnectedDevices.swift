@@ -81,6 +81,7 @@ extension LibKrbn {
           isKeyboard: libkrbn_connected_devices_get_is_keyboard(i),
           isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(i),
           isGamePad: libkrbn_connected_devices_get_is_game_pad(i),
+          isConsumer: libkrbn_connected_devices_get_is_consumer(i),
           isVirtualDevice: libkrbn_connected_devices_get_is_virtual_device(i),
           isBuiltInKeyboard: libkrbn_connected_devices_get_is_built_in_keyboard(i),
           isAppleDevice: libkrbn_connected_devices_is_apple(i)

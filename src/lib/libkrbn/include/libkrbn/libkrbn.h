@@ -16,6 +16,7 @@ typedef struct {
   bool is_keyboard;
   bool is_pointing_device;
   bool is_game_pad;
+  bool is_consumer;
   bool is_virtual_device;
 } libkrbn_device_identifiers;
 
@@ -442,6 +443,7 @@ bool libkrbn_connected_devices_get_device_address(size_t index,
 bool libkrbn_connected_devices_get_is_keyboard(size_t index);
 bool libkrbn_connected_devices_get_is_pointing_device(size_t index);
 bool libkrbn_connected_devices_get_is_game_pad(size_t index);
+bool libkrbn_connected_devices_get_is_consumer(size_t index);
 bool libkrbn_connected_devices_get_is_virtual_device(size_t index);
 bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index);
 bool libkrbn_connected_devices_is_apple(size_t index);

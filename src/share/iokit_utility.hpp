@@ -24,8 +24,10 @@ public:
   }
 
   static bool is_pointing_device(const pqrs::osx::iokit_hid_device& device) {
-    if (device.conforms_to(pqrs::hid::usage_page::generic_desktop, pqrs::hid::usage::generic_desktop::pointer) ||
-        device.conforms_to(pqrs::hid::usage_page::generic_desktop, pqrs::hid::usage::generic_desktop::mouse)) {
+    if (device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                           pqrs::hid::usage::generic_desktop::pointer) ||
+        device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                           pqrs::hid::usage::generic_desktop::mouse)) {
       return true;
     }
 
@@ -37,6 +39,29 @@ public:
                            pqrs::hid::usage::generic_desktop::joystick) ||
         device.conforms_to(pqrs::hid::usage_page::generic_desktop,
                            pqrs::hid::usage::generic_desktop::game_pad)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  static bool is_consumer(const pqrs::osx::iokit_hid_device& device) {
+    // The is_consumer property was added later, so compatibility with previous versions must be maintained.
+    //
+    // Typically, keyboards also function as consumer devices.
+    // If is_consumer returns true for a standard keyboard,
+    // the device_identifiers stored in previous versions will not match the is_consumer value,
+    // causing the device to be treated as a different one.
+    //
+    // Therefore, is_consumer will be set to true only if the device is neither a keyboard, a pointing device, nor a gamepad.
+    if (is_keyboard(device) ||
+        is_pointing_device(device) ||
+        is_game_pad(device)) {
+      return false;
+    }
+
+    if (device.conforms_to(pqrs::hid::usage_page::consumer,
+                           pqrs::hid::usage::consumer::consumer_control)) {
       return true;
     }
 

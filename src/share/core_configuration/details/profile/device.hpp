@@ -253,6 +253,7 @@ cos(radian) * m;
 
     if (identifiers_.get_is_pointing_device() ||
         identifiers_.get_is_game_pad() ||
+        identifiers_.get_is_consumer() ||
         // YubiKey token
         identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x1050)) {
       helper_values_.set_default_value(ignore_,

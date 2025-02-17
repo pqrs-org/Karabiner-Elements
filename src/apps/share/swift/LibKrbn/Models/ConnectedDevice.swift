@@ -13,6 +13,7 @@ extension LibKrbn {
     let isKeyboard: Bool
     let isPointingDevice: Bool
     let isGamePad: Bool
+    let isConsumer: Bool
     let isVirtualDevice: Bool
     let isBuiltInKeyboard: Bool
     let isAppleDevice: Bool
@@ -30,6 +31,7 @@ extension LibKrbn {
       isKeyboard: Bool,
       isPointingDevice: Bool,
       isGamePad: Bool,
+      isConsumer: Bool,
       isVirtualDevice: Bool,
       isBuiltInKeyboard: Bool,
       isAppleDevice: Bool
@@ -44,6 +46,7 @@ extension LibKrbn {
       self.isKeyboard = isKeyboard
       self.isPointingDevice = isPointingDevice
       self.isGamePad = isGamePad
+      self.isConsumer = isConsumer
       self.isVirtualDevice = isVirtualDevice
       self.isBuiltInKeyboard = isBuiltInKeyboard
       self.isAppleDevice = isAppleDevice
@@ -64,6 +67,7 @@ extension LibKrbn {
       libkrbnDeviceIdentifiers.pointee.is_keyboard = isKeyboard
       libkrbnDeviceIdentifiers.pointee.is_pointing_device = isPointingDevice
       libkrbnDeviceIdentifiers.pointee.is_game_pad = isGamePad
+      libkrbnDeviceIdentifiers.pointee.is_consumer = isConsumer
       libkrbnDeviceIdentifiers.pointee.is_virtual_device = isVirtualDevice
     }
 
