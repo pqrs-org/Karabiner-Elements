@@ -48,7 +48,7 @@ public:
   static bool is_consumer(const pqrs::osx::iokit_hid_device& device) {
     // The is_consumer property was added later, so compatibility with previous versions must be maintained.
     //
-    // Typically, keyboards also function as consumer devices.
+    // Typically, keyboards also confirm the consumer usage page.
     // If is_consumer returns true for a standard keyboard,
     // the device_identifiers stored in previous versions will not match the is_consumer value,
     // causing the device to be treated as a different one.
