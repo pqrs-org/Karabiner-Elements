@@ -8,7 +8,7 @@
         "ask_for_confirmation_before_quitting": false,
         "unsafe_ui": true,
         "filter_useless_events_from_specific_devices": false,
-        "reorder_same_timestamp_input_events_to_prioritize_modifiers": true
+        "reorder_same_timestamp_input_events_to_prioritize_modifiers": false
     },
     "profiles": [
         {
