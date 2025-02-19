@@ -43,7 +43,7 @@ public:
 
     helper_values_.push_back_value<bool>("reorder_same_timestamp_input_events_to_prioritize_modifiers",
                                          reorder_same_timestamp_input_events_to_prioritize_modifiers_,
-                                         false);
+                                         true);
 
     pqrs::json::requires_object(json, "json");
 

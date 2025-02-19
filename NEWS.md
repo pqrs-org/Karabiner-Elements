@@ -2,9 +2,6 @@
 
 ## Beta
 
--   💥 Breaking changes
-    -   The reordering of key events with the same timestamp is now disabled by default.
-        It has been added as an option in the Expert tab: `Reorder same timestamp input events to prioritize modifiers`.
 -   🐛 Bug Fixes
     -   Fixed an overflow issue with the mouse key movements.
     -   Fixed an issue that the fn key is unintentionally tapped when use the media keys if "Use all F1, F2, etc. keys as standard function keys" is enabled.
@@ -15,6 +12,7 @@
     -   Added `frontmost_application_history_index` option into `open_application`.
     -   Added `conditions` option into `to`.
     -   Added `Filter useless events from specific devices` option in Expert tab.
+    -   Added `Reorder same timestamp input events to prioritize modifiers` in Expert tab.
 -   ⚡️ Improvements
     -   Improved `to_delayed_action` behavior to use the modifier flags of the time the key is pressed, when sending events.
     -   Supported the following keys:

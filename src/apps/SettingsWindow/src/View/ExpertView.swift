@@ -30,6 +30,7 @@ struct ExpertView: View {
           .padding()
           .foregroundColor(Color.errorForeground)
           .background(Color.errorBackground)
+          .fixedSize(horizontal: false, vertical: true)
         }
         .padding()
       }
@@ -57,21 +58,23 @@ struct ExpertView: View {
           .padding()
           .foregroundColor(Color.infoForeground)
           .background(Color.infoBackground)
+          .fixedSize(horizontal: false, vertical: true)
 
           VStack(alignment: .leading, spacing: 4.0) {
             HStack {
               Toggle(isOn: $settings.reorderSameTimestampInputEventsToPrioritizeModifiers) {
-                Text("Reorder same timestamp input events to prioritize modifiers (Default: off)")
+                Text("Reorder same timestamp input events to prioritize modifiers (Default: on)")
               }
               .switchToggleStyle()
             }
 
             Label(
-              #"If you feel that modifier keys are sometimes ignored when pressed with regular keys, enable this setting"#,
+              #"If your keyboard supports hardware macros and sends multiple keys at once, and you notice that modifier key order is changing, try turning this setting off."#,
               systemImage: "lightbulb"
             )
             .foregroundColor(Color(NSColor.textColor))
             .font(.caption)
+            .fixedSize(horizontal: false, vertical: true)
           }
         }
         .padding()
@@ -102,6 +105,7 @@ struct ExpertView: View {
                 "(This is a macOS problem and can be solved by unplugging the device and plugging it again.)"
               )
             }
+            .fixedSize(horizontal: false, vertical: true)
           }
         }
         .padding()
