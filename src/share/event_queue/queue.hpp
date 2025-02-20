@@ -315,6 +315,10 @@ public:
     //
     // These events will not be interpreted as intended in this order.
     // Thus, we have to reorder the events.
+    //
+    // Devices that exhibit this behavior are:
+    // - Logitech Keyboard K480 (the expose key)
+    // - RollerMouse (the copy key and the paste key)
 
     if (v1.get_event_time_stamp().get_time_stamp() == v2.get_event_time_stamp().get_time_stamp()) {
       auto e1 = v1.get_event().get_if<momentary_switch_event>();
