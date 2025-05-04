@@ -16,32 +16,35 @@ struct KarabinerUpdaterApp: App {
       NSApplication.shared.terminate(nil)
     }
 
+    var command = ""
     #if USE_SPARKLE
       if CommandLine.arguments.count > 1 {
-        let command = CommandLine.arguments[1]
-        switch command {
-        case "checkForUpdatesInBackground":
-          if !libkrbn_lock_single_application_with_user_pid_file(
-            "check_for_updates_in_background.pid")
-          {
-            print("Exit since another process is running.")
-            libkrbn_terminate()
-            NSApplication.shared.terminate(nil)
-          }
-
-          Updater.shared.checkForUpdatesInBackground()
-
-        case "checkForUpdatesStableOnly":
-          Updater.shared.checkForUpdatesStableOnly()
-
-        case "checkForUpdatesWithBetaVersion":
-          Updater.shared.checkForUpdatesWithBetaVersion()
-
-        default:
-          break
-        }
+        command = CommandLine.arguments[1]
       }
     #endif
+
+    switch command {
+    case "checkForUpdatesInBackground":
+      if !libkrbn_lock_single_application_with_user_pid_file(
+        "check_for_updates_in_background.pid")
+      {
+        print("Exit since another process is running.")
+        libkrbn_terminate()
+        NSApplication.shared.terminate(nil)
+      }
+
+      Updater.shared.checkForUpdatesInBackground()
+
+    case "checkForUpdatesStableOnly":
+      Updater.shared.checkForUpdatesStableOnly()
+
+    case "checkForUpdatesWithBetaVersion":
+      Updater.shared.checkForUpdatesWithBetaVersion()
+
+    default:
+      libkrbn_terminate()
+      NSApplication.shared.terminate(nil)
+    }
   }
 
   var body: some Scene {
