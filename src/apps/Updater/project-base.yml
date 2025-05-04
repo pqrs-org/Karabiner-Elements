@@ -1,0 +1,47 @@
+name: Karabiner-Updater
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.7.0
+
+targets:
+  Karabiner-Updater:
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Updater
+        CODE_SIGN_ENTITLEMENTS: ''
+        CODE_SIGN_IDENTITY: '-'
+        CODE_SIGN_STYLE: Manual
+        HEADER_SEARCH_PATHS:
+          - ../../lib/libkrbn/include
+        OTHER_LDFLAGS:
+          - -L../../lib/libkrbn/build/Release
+          - -lkrbn
+        OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+        SWIFT_OBJC_BRIDGING_HEADER:
+          - src/Bridging-Header.h
+        SYSTEM_HEADER_SEARCH_PATHS:
+          - ../../vendor/cget/include
+    type: application
+    platform: macOS
+    deploymentTarget: 13.0
+    sources:
+      - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: ../share/swift
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: Resources
+        excludes:
+          - .gitignore
+          - '*.orig.png'
+          - '*.plist.in'
+      - path: ../share/Resources/app.icns
+      - path: ../share/Resources/icons
+        excludes:
+          - '*.icns'
+    dependencies:
+      - sdk: libc++.tbd
