@@ -3,11 +3,12 @@ import AppKit
 for argument in CommandLine.arguments {
   for file in [
     "/Applications/Karabiner-Elements.app",
-    "/Applications/Karabiner-Elements.app/Contents/Frameworks/Sparkle.framework/Updater.app",
-    "/Library/Application Support/org.pqrs//Karabiner-Elements/Karabiner-Elements Non-Privileged Agents.app",
-    "/Library/Application Support/org.pqrs//Karabiner-Elements/Karabiner-Elements Privileged Daemons.app",
-    "/Library/Application Support/org.pqrs//Karabiner-Elements/Karabiner-Menu.app",
-    "/Library/Application Support/org.pqrs//Karabiner-Elements/Karabiner-NotificationWindow.app",
+    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents.app",
+    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons.app",
+    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Menu.app",
+    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app",
+    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app",
+    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app/Contents/Frameworks/Sparkle.framework/Updater.app",
   ] {
     if let icon = NSImage(named: "\(argument)-KarabinerElements.icns") {
       let result = NSWorkspace.shared.setIcon(
