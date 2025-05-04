@@ -39,7 +39,7 @@ private:
 };
 
 inline void to_json(nlohmann::json& json, const software_function& value) {
-  if (auto v = value.get_if<std::monostate>()) {
+  if (value.get_if<std::monostate>()) {
     json = nullptr;
   } else if (auto v = value.get_if<software_function_details::cg_event_double_click>()) {
     json = nlohmann::json::object({{"cg_event_double_click", *v}});

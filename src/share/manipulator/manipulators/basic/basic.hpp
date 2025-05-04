@@ -716,7 +716,7 @@ private:
 
   void unset_alone_if_needed(const event_queue::event& event,
                              event_type event_type) {
-    if (auto e = event.get_if<momentary_switch_event>()) {
+    if (event.get_if<momentary_switch_event>()) {
       if (event_type == event_type::key_down) {
         goto run;
       }
