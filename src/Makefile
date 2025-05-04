@@ -7,6 +7,7 @@ all:
 	$(MAKE) -C apps/ServiceManager-Non-Privileged-Agents
 	$(MAKE) -C apps/ServiceManager-Privileged-Daemons
 	$(MAKE) -C apps/SettingsWindow
+	$(MAKE) -C apps/Updater
 	$(MAKE) -C bin/cli
 	$(MAKE) -C core/console_user_server
 	$(MAKE) -C core/grabber
@@ -22,6 +23,7 @@ clean:
 	$(MAKE) -C apps/ServiceManager-Non-Privileged-Agents clean
 	$(MAKE) -C apps/ServiceManager-Privileged-Daemons clean
 	$(MAKE) -C apps/SettingsWindow clean
+	$(MAKE) -C apps/Updater clean
 	$(MAKE) -C bin/cli clean
 	$(MAKE) -C core/console_user_server clean
 	$(MAKE) -C core/grabber clean

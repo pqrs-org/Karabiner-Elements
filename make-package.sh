@@ -34,6 +34,7 @@ cp -R "src/apps/MultitouchExtension/build/Release/Karabiner-MultitouchExtension.
 cp -R "src/apps/NotificationWindow/build/Release/Karabiner-NotificationWindow.app" "$basedir"
 cp -R "src/apps/ServiceManager-Non-Privileged-Agents/build/Release/Karabiner-Elements Non-Privileged Agents.app" "$basedir"
 cp -R "src/apps/ServiceManager-Privileged-Daemons/build/Release/Karabiner-Elements Privileged Daemons.app" "$basedir"
+cp -R "src/apps/Updater/build/Release/Karabiner-Updater.app" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
 mkdir -p "$basedir"

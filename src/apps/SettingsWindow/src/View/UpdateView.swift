@@ -2,7 +2,6 @@ import SwiftUI
 
 struct UpdateView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var updater = Updater.shared
   let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
 
   var body: some View {
@@ -26,34 +25,23 @@ struct UpdateView: View {
           HStack {
             Button(
               action: {
-                updater.checkForUpdatesStableOnly()
+                libkrbn_updater_check_for_updates_stable_only()
               },
               label: {
                 Label("Check for updates", systemImage: "star")
               }
             )
-            .disabled(!updater.canCheckForUpdates)
 
             Spacer()
 
             Button(
               action: {
-                updater.checkForUpdatesWithBetaVersion()
+                libkrbn_updater_check_for_updates_with_beta_version()
               },
               label: {
                 Label("Check for beta updates", systemImage: "star.circle")
               }
             )
-            .disabled(!updater.canCheckForUpdates)
-          }
-
-          if updater.errorMessage != "" {
-            VStack {
-              Text("Update error: \(updater.errorMessage)")
-                .padding()
-            }
-            .foregroundColor(Color.errorForeground)
-            .background(Color.errorBackground)
           }
         }
         .padding()

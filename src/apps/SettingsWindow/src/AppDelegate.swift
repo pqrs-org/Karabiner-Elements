@@ -5,7 +5,6 @@ import os
 @NSApplicationMain
 public class AppDelegate: NSObject, NSApplicationDelegate {
   private var window: NSWindow?
-  private var updaterMode = false
 
   override public init() {
     super.init()
@@ -27,29 +26,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
     KarabinerAppHelper.shared.observeVersionUpdated()
 
-    NotificationCenter.default.addObserver(
-      forName: Updater.didFindValidUpdate,
-      object: nil,
-      queue: .main
-    ) { [weak self] _ in
-      guard let self = self else { return }
-
-      self.window?.makeKeyAndOrderFront(self)
-      NSApp.activate(ignoringOtherApps: true)
-    }
-
-    NotificationCenter.default.addObserver(
-      forName: Updater.didFinishUpdateCycleFor,
-      object: nil,
-      queue: .main
-    ) { [weak self] _ in
-      guard let self = self else { return }
-
-      if self.updaterMode {
-        NSApplication.shared.terminate(nil)
-      }
-    }
-
     //
     // Start components
     //
@@ -62,37 +38,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     SettingsChecker.shared.start()
     StateJsonMonitor.shared.start()
     SystemPreferences.shared.start()
-
-    //
-    // Run updater or open settings.
-    //
-
-    if CommandLine.arguments.count > 1 {
-      let command = CommandLine.arguments[1]
-      switch command {
-      case "checkForUpdatesInBackground":
-        #if USE_SPARKLE
-          if !libkrbn_lock_single_application_with_user_pid_file(
-            "check_for_updates_in_background.pid")
-          {
-            print("Exit since another process is running.")
-            NSApplication.shared.terminate(self)
-          }
-
-          updaterMode = true
-          Updater.shared.checkForUpdatesInBackground()
-          return
-        #else
-          NSApplication.shared.terminate(self)
-        #endif
-      default:
-        break
-      }
-    }
-
-    var psn = ProcessSerialNumber(highLongOfPSN: 0, lowLongOfPSN: UInt32(kCurrentProcess))
-    TransformProcessType(
-      &psn, ProcessApplicationTransformState(kProcessTransformToForegroundApplication))
 
     window = NSWindow(
       contentRect: NSRect(x: 0, y: 0, width: 1100, height: 680),
@@ -122,13 +67,6 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
 
   public func applicationWillTerminate(_: Notification) {
     libkrbn_terminate()
-  }
-
-  public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
-    if Updater.shared.sessionInProgress {
-      return false
-    }
-    return true
   }
 
   @objc func handleGetURLEvent(

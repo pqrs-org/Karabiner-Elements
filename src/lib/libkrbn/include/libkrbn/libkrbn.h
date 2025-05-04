@@ -52,6 +52,9 @@ bool libkrbn_services_agent_running(const char* service_name);
 bool libkrbn_services_core_daemons_running(void);
 bool libkrbn_services_core_agents_running(void);
 
+void libkrbn_updater_check_for_updates_stable_only(void);
+void libkrbn_updater_check_for_updates_with_beta_version(void);
+
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_settings(void);
 void libkrbn_killall_settings(void);

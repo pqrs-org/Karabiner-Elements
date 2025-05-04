@@ -164,6 +164,14 @@ bool libkrbn_services_core_agents_running(void) {
   return krbn::services_utility::core_agents_running();
 }
 
+void libkrbn_updater_check_for_updates_stable_only(void) {
+  krbn::update_utility::check_for_updates_stable_only();
+}
+
+void libkrbn_updater_check_for_updates_with_beta_version(void) {
+  krbn::update_utility::check_for_updates_with_beta_version();
+}
+
 void libkrbn_launch_event_viewer(void) {
   krbn::application_launcher::launch_event_viewer();
 }
