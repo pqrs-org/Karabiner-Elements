@@ -2,6 +2,11 @@ import AppKit
 import SwiftUI
 import os
 
+// Note:
+// The icon shown in Sparkle's dialog is generally taken from the file specified by CFBundleIconFile.
+// As a result, the icon overridden by AppIconSwitcher is not reflected.
+// The default icon is always used instead.
+
 @main
 struct KarabinerUpdaterApp: App {
   init() {
