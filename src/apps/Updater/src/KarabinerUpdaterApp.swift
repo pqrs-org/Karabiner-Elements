@@ -2,16 +2,19 @@ import AppKit
 import SwiftUI
 import os
 
-// Note:
+// Note #1:
 // The icon shown in Sparkle's dialog is generally taken from the file specified by CFBundleIconFile.
 // As a result, the icon overridden by AppIconSwitcher is not reflected.
 // The default icon is always used instead.
 
+// Note #2:
+// If an update is available, the Updater may attempt to restart during the update process.
+// When using libkrbn, this can cause the process to abort where libkrbn_terminate is not called,
+// Therefore, please avoid using libkrbn in Updater.
+
 @main
 struct KarabinerUpdaterApp: App {
   init() {
-    libkrbn_initialize()
-
     //
     // Set it to automatically exit after completing the check.
     //
@@ -21,7 +24,6 @@ struct KarabinerUpdaterApp: App {
       object: nil,
       queue: .main
     ) { _ in
-      libkrbn_terminate()
       NSApplication.shared.terminate(nil)
     }
 
@@ -38,14 +40,6 @@ struct KarabinerUpdaterApp: App {
 
     switch command {
     case "checkForUpdatesInBackground":
-      if !libkrbn_lock_single_application_with_user_pid_file(
-        "check_for_updates_in_background.pid")
-      {
-        print("Exit since another process is running.")
-        libkrbn_terminate()
-        NSApplication.shared.terminate(nil)
-      }
-
       Updater.shared.checkForUpdatesInBackground()
 
     case "checkForUpdatesStableOnly":
@@ -55,7 +49,6 @@ struct KarabinerUpdaterApp: App {
       Updater.shared.checkForUpdatesWithBetaVersion()
 
     default:
-      libkrbn_terminate()
       NSApplication.shared.terminate(nil)
     }
   }
