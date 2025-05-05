@@ -37,11 +37,7 @@ targets:
       - path: Resources
         excludes:
           - .gitignore
-          - '*.orig.png'
           - '*.plist.in'
       - path: ../share/Resources/app.icns
-      - path: ../share/Resources/icons
-        excludes:
-          - '*.icns'
     dependencies:
       - sdk: libc++.tbd

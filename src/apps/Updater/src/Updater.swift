@@ -15,24 +15,14 @@ final class Updater: ObservableObject {
     private let delegate = SparkleDelegate()
   #endif
 
-  @Published var canCheckForUpdates = false
-  @Published var sessionInProgress = false
-  @Published var errorMessage = ""
-
   private init() {
     #if USE_SPARKLE
       updaterController = SPUStandardUpdaterController(
-        startingUpdater: true,
         updaterDelegate: delegate,
-        userDriverDelegate: nil
+        userDriverDelegate: nil,
       )
 
       updaterController.updater.clearFeedURLFromUserDefaults()
-
-      updaterController.updater.publisher(for: \.canCheckForUpdates)
-        .assign(to: &$canCheckForUpdates)
-      updaterController.updater.publisher(for: \.sessionInProgress)
-        .assign(to: &$sessionInProgress)
     #endif
   }
 
@@ -58,9 +48,7 @@ final class Updater: ObservableObject {
   }
 
   #if USE_SPARKLE
-    private class SparkleDelegate: NSObject, SPUUpdaterDelegate,
-      SPUStandardUserDriverDelegate
-    {
+    private class SparkleDelegate: NSObject, SPUUpdaterDelegate {
       var includingBetaVersions = false
 
       func feedURLString(for updater: SPUUpdater) -> String? {
@@ -81,24 +69,6 @@ final class Updater: ObservableObject {
       func updater(
         _: SPUUpdater, didFinishUpdateCycleFor _: SPUUpdateCheck, error: Error?
       ) {
-        //
-        // Update errorMessage
-        //
-
-        if let error = error as? NSError {
-          if error.code == Sparkle.SUError.noUpdateError.rawValue {
-            Updater.shared.errorMessage = ""
-          } else {
-            dump(error, to: &Updater.shared.errorMessage)
-          }
-        } else {
-          Updater.shared.errorMessage = ""
-        }
-
-        //
-        // Post notification
-        //
-
         NotificationCenter.default.post(name: Updater.didFinishUpdateCycleFor, object: nil)
       }
     }

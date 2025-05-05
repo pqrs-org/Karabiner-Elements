@@ -7,6 +7,10 @@ struct KarabinerUpdaterApp: App {
   init() {
     libkrbn_initialize()
 
+    //
+    // Set it to automatically exit after completing the check.
+    //
+
     NotificationCenter.default.addObserver(
       forName: Updater.didFinishUpdateCycleFor,
       object: nil,
@@ -15,6 +19,10 @@ struct KarabinerUpdaterApp: App {
       libkrbn_terminate()
       NSApplication.shared.terminate(nil)
     }
+
+    //
+    // Process command-line arguments.
+    //
 
     var command = ""
     #if USE_SPARKLE

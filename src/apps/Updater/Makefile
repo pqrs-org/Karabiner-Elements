@@ -23,3 +23,10 @@ run-checkForUpdatesWithBetaVersion:
 
 xcode:
 	open *.xcodeproj
+
+install:
+	bash ../../../scripts/codesign.sh build/Release
+	sudo rsync -a --delete \
+		build/Release/Karabiner-Updater.app \
+		'/Library/Application Support/org.pqrs/Karabiner-Elements'
+	sudo chown -R root:wheel '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app'
