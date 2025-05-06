@@ -19,7 +19,7 @@ final class Updater: ObservableObject {
     #if USE_SPARKLE
       updaterController = SPUStandardUpdaterController(
         updaterDelegate: delegate,
-        userDriverDelegate: nil,
+        userDriverDelegate: nil
       )
 
       updaterController.updater.clearFeedURLFromUserDefaults()
