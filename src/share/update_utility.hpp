@@ -22,6 +22,8 @@ public:
 
 private:
   static void launch_updater(const std::string& argument) {
+    system("/usr/bin/killall Karabiner-Updater");
+
     auto command = std::string("open '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app' --args ") + argument;
     system(command.c_str());
   }
