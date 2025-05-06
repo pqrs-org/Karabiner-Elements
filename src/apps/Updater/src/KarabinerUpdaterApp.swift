@@ -15,41 +15,27 @@ import os
 @main
 struct KarabinerUpdaterApp: App {
   init() {
-    //
-    // Set it to automatically exit after completing the check.
-    //
+    Task { @MainActor in
+      var command = ""
+      #if USE_SPARKLE
+        if CommandLine.arguments.count > 1 {
+          command = CommandLine.arguments[1]
+        }
+      #endif
 
-    NotificationCenter.default.addObserver(
-      forName: Updater.didFinishUpdateCycleFor,
-      object: nil,
-      queue: .main
-    ) { _ in
-      NSApplication.shared.terminate(nil)
-    }
+      switch command {
+      case "checkForUpdatesInBackground":
+        Updater.shared.checkForUpdatesInBackground()
 
-    //
-    // Process command-line arguments.
-    //
+      case "checkForUpdatesStableOnly":
+        Updater.shared.checkForUpdatesStableOnly()
 
-    var command = ""
-    #if USE_SPARKLE
-      if CommandLine.arguments.count > 1 {
-        command = CommandLine.arguments[1]
+      case "checkForUpdatesWithBetaVersion":
+        Updater.shared.checkForUpdatesWithBetaVersion()
+
+      default:
+        NSApplication.shared.terminate(nil)
       }
-    #endif
-
-    switch command {
-    case "checkForUpdatesInBackground":
-      Updater.shared.checkForUpdatesInBackground()
-
-    case "checkForUpdatesStableOnly":
-      Updater.shared.checkForUpdatesStableOnly()
-
-    case "checkForUpdatesWithBetaVersion":
-      Updater.shared.checkForUpdatesWithBetaVersion()
-
-    default:
-      NSApplication.shared.terminate(nil)
     }
   }
 

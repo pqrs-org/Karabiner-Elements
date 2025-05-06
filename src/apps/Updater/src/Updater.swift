@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 
 #if USE_SPARKLE
   import Sparkle
@@ -6,9 +6,6 @@ import Foundation
 
 final class Updater: ObservableObject {
   public static let shared = Updater()
-
-  public static let didFindValidUpdate = Notification.Name("didFindValidUpdate")
-  public static let didFinishUpdateCycleFor = Notification.Name("didFinishUpdateCycleFor")
 
   #if USE_SPARKLE
     private let updaterController: SPUStandardUpdaterController
@@ -62,14 +59,19 @@ final class Updater: ObservableObject {
         return url
       }
 
+      func updaterDidNotFindUpdate(_: SPUUpdater) {
+        NSApp.activate(ignoringOtherApps: true)
+      }
+
       func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
-        NotificationCenter.default.post(name: Updater.didFindValidUpdate, object: nil)
+        NSApp.activate(ignoringOtherApps: true)
       }
 
       func updater(
         _: SPUUpdater, didFinishUpdateCycleFor _: SPUUpdateCheck, error: Error?
       ) {
-        NotificationCenter.default.post(name: Updater.didFinishUpdateCycleFor, object: nil)
+        // Exit after completing the check.
+        NSApplication.shared.terminate(nil)
       }
     }
   #endif
