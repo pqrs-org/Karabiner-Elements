@@ -54,5 +54,7 @@ struct KarabinerUpdaterApp: App {
   }
 
   var body: some Scene {
+    // Provide an empty Settings to prevent build errors.
+    Settings {}
   }
 }
