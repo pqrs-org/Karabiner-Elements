@@ -617,6 +617,15 @@ extension LibKrbn {
       updateProfiles()
     }
 
+    public func selectedProfileName() -> String {
+      var buffer = [Int8](repeating: 0, count: 32 * 1024)
+      if libkrbn_core_configuration_get_selected_profile_name(&buffer, buffer.count) {
+        return String(cString: buffer)
+      }
+
+      return ""
+    }
+
     public func selectProfile(_ profile: Profile) {
       libkrbn_core_configuration_select_profile(profile.index)
 
