@@ -60,6 +60,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     _ event: NSAppleEventDescriptor,
     withReplyEvent _: NSAppleEventDescriptor
   ) {
+    // If the application is already running when the handler is called, there's no issue.
+    // However, if the application is launched via an AppleEvent, the window may not display correctly.
+    // To avoid this problem, the handler will explicitly reopen the application to ensure that the window is shown properly.
+    Task { @MainActor in
+      NSWorkspace.shared.openApplication(
+        at: Bundle.main.bundleURL,
+        configuration: NSWorkspace.OpenConfiguration())
+    }
+
     // - url == "karabiner://karabiner/assets/complex_modifications/import?url=xxx"
     guard let url = event.paramDescriptor(forKeyword: AEKeyword(keyDirectObject))?.stringValue
     else { return }
