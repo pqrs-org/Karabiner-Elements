@@ -11,7 +11,7 @@ struct KarabinerMenuApp: App {
 
   init() {
     libkrbn_initialize()
-    LibKrbn.Settings.shared.watch()
+    settings.watch()
   }
 
   var body: some Scene {
@@ -88,7 +88,7 @@ struct KarabinerMenuApp: App {
         Button(
           action: {
             KarabinerAppHelper.shared.quitKarabiner(
-              askForConfirmation: LibKrbn.Settings.shared.askForConfirmationBeforeQuitting,
+              askForConfirmation: settings.askForConfirmationBeforeQuitting,
               quitFrom: .menu)
           },
           label: {
