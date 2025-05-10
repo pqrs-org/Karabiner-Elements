@@ -1,6 +1,4 @@
-import AppKit
 import SwiftUI
-import os
 
 @main
 struct KarabinerSettingsApp: App {
