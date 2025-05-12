@@ -1,23 +1,23 @@
-import AppKit
+import SwiftUI
 
-//
-// AppDelegate
-//
+@main
+struct KarabinerMultitouchExtensionApp: App {
+  @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-@NSApplicationMain
-public class AppDelegate: NSObject, NSApplicationDelegate {
-  private var activity: NSObjectProtocol?
-
-  override public init() {
-    super.init()
+  init() {
     libkrbn_initialize()
   }
 
+  var body: some Scene {
+    // Provide an empty Settings to prevent build errors.
+    Settings {}
+  }
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+  private var activity: NSObjectProtocol?
+
   public func applicationDidFinishLaunching(_: Notification) {
-    ProcessInfo.processInfo.enableSuddenTermination()
-
-    NSApplication.shared.disableRelaunchOnLogin()
-
     //
     // Handle kHideIconInDock
     //
