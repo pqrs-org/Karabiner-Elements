@@ -1,4 +1,5 @@
 name: Karabiner-Updater
+
 packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle

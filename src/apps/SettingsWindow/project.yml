@@ -1,4 +1,5 @@
 name: Karabiner-Elements
+
 packages:
   CodeEditor:
     url: https://github.com/ZeeZide/CodeEditor
