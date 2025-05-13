@@ -14,6 +14,7 @@
     -   Added `Filter useless events from specific devices` option in Expert tab.
     -   Added `Reorder same timestamp input events to prioritize modifiers` in Expert tab.
 -   ⚡️ Improvements
+    -   Migrated to the SwiftUI life cycle.
     -   Improved `to_delayed_action` behavior to use the modifier flags of the time the key is pressed, when sending events.
     -   Supported the following keys:
         -   consumer::ac_zoom_out
