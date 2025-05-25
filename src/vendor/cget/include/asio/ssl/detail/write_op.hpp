@@ -1,1 +1,0 @@
-../../../../cget/pkg/chriskohlhoff__asio/install/include/asio/ssl/detail/write_op.hpp

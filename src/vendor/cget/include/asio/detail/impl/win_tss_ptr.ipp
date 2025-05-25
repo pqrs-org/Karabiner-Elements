@@ -1,1 +1,0 @@
-../../../../cget/pkg/chriskohlhoff__asio/install/include/asio/detail/impl/win_tss_ptr.ipp

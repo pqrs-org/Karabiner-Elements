@@ -1,1 +1,0 @@
-../../../cget/pkg/pqrs-org__cpp-osx-iokit_hid_manager/install/include/pqrs/osx/iokit_hid_manager.hpp

@@ -1,1 +1,0 @@
-../../../cget/pkg/pqrs-org__cpp-osx-accessibility/install/include/pqrs/osx/accessibility.hpp

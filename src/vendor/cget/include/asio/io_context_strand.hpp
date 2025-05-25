@@ -1,1 +1,0 @@
-../../cget/pkg/chriskohlhoff__asio/install/include/asio/io_context_strand.hpp

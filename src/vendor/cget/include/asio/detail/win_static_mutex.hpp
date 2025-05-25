@@ -1,1 +1,0 @@
-../../../cget/pkg/chriskohlhoff__asio/install/include/asio/detail/win_static_mutex.hpp

@@ -1,4 +1,0 @@
-#pragma once
-#pragma message(                                                                                   \
-    "This header will soon be removed. Use <gsl/zstring> instead of <gsl/string_span>")
-#include "zstring"
