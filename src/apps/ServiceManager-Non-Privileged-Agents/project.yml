@@ -18,7 +18,7 @@ targets:
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
-        - ../../vendor/cget/include
+        - ../../../vendor/vendor/include
     type: application
     platform: macOS
     deploymentTarget: 13.0

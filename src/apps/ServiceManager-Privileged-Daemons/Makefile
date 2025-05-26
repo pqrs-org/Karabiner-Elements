@@ -5,7 +5,7 @@ all:
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 # Copy LaunchDaemons
 	mkdir -p 'build/Release/Karabiner-Elements Privileged Daemons.app/Contents/Library/LaunchDaemons'
-	cp ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/files/LaunchDaemons/*.plist 'build/Release/Karabiner-Elements Privileged Daemons.app/Contents/Library/LaunchDaemons'
+	cp ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/files/LaunchDaemons/*.plist 'build/Release/Karabiner-Elements Privileged Daemons.app/Contents/Library/LaunchDaemons'
 	cp LaunchDaemons/*.plist 'build/Release/Karabiner-Elements Privileged Daemons.app/Contents/Library/LaunchDaemons'
 
 clean:

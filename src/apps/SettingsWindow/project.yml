@@ -22,7 +22,7 @@ targets:
         SWIFT_OBJC_BRIDGING_HEADER:
           - src/Bridging-Header.h
         SYSTEM_HEADER_SEARCH_PATHS:
-          - ../../vendor/cget/include
+          - ../../../vendor/vendor/include
     type: application
     platform: macOS
     deploymentTarget: 13.0
@@ -35,7 +35,7 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
-      - path: ../../vendor/cget/src/pqrs/osx/process_info
+      - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: Resources
         excludes:
           - .gitignore

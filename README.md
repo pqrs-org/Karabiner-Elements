@@ -111,7 +111,7 @@ System requirements to build Karabiner-Elements:
 
 Karabiner-Elements uses some pre-built binaries in the source tree.
 
--   `src/vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg` (the latest one)
+-   `vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg` (the latest one)
 -   `Sparkle.framework` in `src/apps/SettingsWindow/`
 
 The above `make package` command does not rebuild these binaries.<br/>

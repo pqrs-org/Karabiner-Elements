@@ -1,5 +1,5 @@
-[submodule "src/vendor/Karabiner-DriverKit-VirtualHIDDevice"]
-	path = src/vendor/Karabiner-DriverKit-VirtualHIDDevice
+[submodule "vendor/Karabiner-DriverKit-VirtualHIDDevice"]
+	path = vendor/Karabiner-DriverKit-VirtualHIDDevice
 	url = https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice.git
 [submodule "vendor/cpm-cmake-package-lock"]
 	path = vendor/cpm-cmake-package-lock
