@@ -1,1 +1,0 @@
-../../../cget/pkg/pqrs-org__cpp-osx-iokit_hid_device_open_checker/install/include/pqrs/osx/iokit_hid_device_open_checker.hpp

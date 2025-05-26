@@ -1,1 +1,0 @@
-../../../cget/pkg/gabime__spdlog/install/include/spdlog/sinks/win_eventlog_sink.h

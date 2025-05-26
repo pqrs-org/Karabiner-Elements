@@ -13,8 +13,3 @@ clean:
 			make -C $$d clean; \
 		fi; \
 	done
-
-update_vendor:
-	rm -rf vendor
-	cget install --prefix vendor pqrs-org/cget-recipes
-	cget install --prefix vendor -f cget-requirements.txt

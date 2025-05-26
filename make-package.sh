@@ -96,7 +96,7 @@ pkgbuild \
 # Copy Karabiner-DriverKit-VirtualHIDDevice.pkg.
 #
 
-virtualHIDDeviceDmg=$(ls src/vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg | sort --version-sort | tail -n 1)
+virtualHIDDeviceDmg=$(ls vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg | sort --version-sort | tail -n 1)
 cp $virtualHIDDeviceDmg $archiveName/Karabiner-DriverKit-VirtualHIDDevice.pkg
 
 #

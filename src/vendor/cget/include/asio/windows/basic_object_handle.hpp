@@ -1,1 +1,0 @@
-../../../cget/pkg/chriskohlhoff__asio/install/include/asio/windows/basic_object_handle.hpp

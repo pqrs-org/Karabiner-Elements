@@ -1,1 +1,0 @@
-../../../cget/pkg/pqrs-org__cpp-osx-iokit_registry_entry/install/include/pqrs/osx/iokit_registry_entry.hpp

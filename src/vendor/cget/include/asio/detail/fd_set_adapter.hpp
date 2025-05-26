@@ -1,1 +1,0 @@
-../../../cget/pkg/chriskohlhoff__asio/install/include/asio/detail/fd_set_adapter.hpp

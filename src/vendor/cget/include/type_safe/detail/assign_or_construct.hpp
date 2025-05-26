@@ -1,1 +1,0 @@
-../../../cget/pkg/foonathan__type_safe/install/include/type_safe/detail/assign_or_construct.hpp

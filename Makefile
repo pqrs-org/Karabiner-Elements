@@ -22,7 +22,8 @@ clean-launch-services-database:
 
 gitclean:
 	git clean -f -x -d
-	(cd src/vendor/Karabiner-DriverKit-VirtualHIDDevice && git clean -f -x -d)
+	(cd vendor/cpm-cmake-package-lock && git clean -f -x -d)
+	(cd vendor/Karabiner-DriverKit-VirtualHIDDevice && git clean -f -x -d)
 
 notarize:
 	xcrun notarytool \

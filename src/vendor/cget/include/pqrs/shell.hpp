@@ -1,1 +1,0 @@
-../../cget/pkg/pqrs-org__cpp-shell/install/include/pqrs/shell.hpp
