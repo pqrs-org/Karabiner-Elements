@@ -12,7 +12,7 @@ targets:
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: swift/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
-        - ../../../vendor/vendor/Karabiner-DriverKit-VirtualHIDDevice/include
+        - ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../../vendor/vendor/include
     type: tool
     platform: macOS
@@ -23,8 +23,8 @@ targets:
           - -Wall
           - -Werror
           - '-std=c++20'
-      - path: ../../vendor/vendor/src/pqrs/osx/process_info
-      - path: ../../vendor/vendor/src/pqrs/osx/workspace
+      - path: ../../../vendor/vendor/src/pqrs/osx/process_info
+      - path: ../../../vendor/vendor/src/pqrs/osx/workspace
     dependencies:
       - framework: CoreGraphics.framework
       - framework: CoreServices.framework
