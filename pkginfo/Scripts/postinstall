@@ -23,7 +23,6 @@ chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabin
 # Relaunch karabiner processes
 #
 
-killall Karabiner-VirtualHIDDevice-Daemon
 killall karabiner_grabber
 killall karabiner_session_monitor
 killall karabiner_console_user_server
