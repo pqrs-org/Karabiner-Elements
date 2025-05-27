@@ -27,6 +27,7 @@ THE SOFTWARE.
 #ifndef CXXOPTS_HPP_INCLUDED
 #define CXXOPTS_HPP_INCLUDED
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
@@ -72,6 +73,12 @@ THE SOFTWARE.
 #      define CXXOPTS_HAS_OPTIONAL
 #    endif
 #  endif
+#  if __has_include(<filesystem>)
+#    include <filesystem>
+#    ifdef __cpp_lib_filesystem
+#      define CXXOPTS_HAS_FILESYSTEM
+#    endif
+#  endif
 #endif
 
 #define CXXOPTS_FALLTHROUGH
@@ -93,7 +100,7 @@ THE SOFTWARE.
 #endif
 
 #define CXXOPTS__VERSION_MAJOR 3
-#define CXXOPTS__VERSION_MINOR 2
+#define CXXOPTS__VERSION_MINOR 3
 #define CXXOPTS__VERSION_PATCH 1
 
 #if (__GNUC__ < 10 || (__GNUC__ == 10 && __GNUC_MINOR__ < 1)) && __GNUC__ >= 6
@@ -976,11 +983,11 @@ integer_parser(const std::string& text, T& value)
     US limit = 0;
     if (negative)
     {
-      limit = static_cast<US>(std::abs(static_cast<intmax_t>(std::numeric_limits<T>::min())));
+      limit = static_cast<US>(std::abs(static_cast<intmax_t>((std::numeric_limits<T>::min)())));
     }
     else
     {
-      limit = std::numeric_limits<T>::max();
+      limit = (std::numeric_limits<T>::max)();
     }
 
     if (base != 0 && result > limit / base)
@@ -1070,6 +1077,15 @@ parse_value(const std::string& text, std::optional<T>& value)
   T result;
   parse_value(text, result);
   value = std::move(result);
+}
+#endif
+
+#ifdef CXXOPTS_HAS_FILESYSTEM
+inline
+void
+parse_value(const std::string& text, std::filesystem::path& value)
+{
+  value.assign(text);
 }
 #endif
 
@@ -1538,6 +1554,18 @@ CXXOPTS_DIAGNOSTIC_POP
     return CXXOPTS_RTTI_CAST<const values::standard_value<T>&>(*m_value).get();
   }
 
+#ifdef CXXOPTS_HAS_OPTIONAL
+  template <typename T>
+  std::optional<T>
+  as_optional() const
+  {
+    if (m_value == nullptr) {
+      return std::nullopt;
+    }
+    return as<T>();
+  }
+#endif
+
   private:
   void
   ensure_value(const std::shared_ptr<const OptionDetails>& details)
@@ -1730,6 +1758,12 @@ CXXOPTS_DIAGNOSTIC_POP
     return viter->second.count();
   }
 
+  bool
+  contains(const std::string& o) const
+  {
+    return static_cast<bool>(count(o));
+  }
+
   const OptionValue&
   operator[](const std::string& option) const
   {
@@ -1749,6 +1783,24 @@ CXXOPTS_DIAGNOSTIC_POP
 
     return viter->second;
   }
+
+#ifdef CXXOPTS_HAS_OPTIONAL
+  template <typename T>
+  std::optional<T>
+  as_optional(const std::string& option) const
+  {
+    auto iter = m_keys.find(option);
+    if (iter != m_keys.end())
+    {
+      auto viter = m_values.find(iter->second);
+      if (viter != m_values.end())
+      {
+        return viter->second.as_optional<T>();
+      }
+    }
+    return std::nullopt;
+  }
+#endif
 
   const std::vector<KeyValue>&
   arguments() const
