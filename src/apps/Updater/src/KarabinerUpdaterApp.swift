@@ -14,7 +14,16 @@ import os
 
 @main
 struct KarabinerUpdaterApp: App {
-  init() {
+  @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+  var body: some Scene {
+    // Provide an empty Settings to prevent build errors.
+    Settings {}
+  }
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+  public func applicationDidFinishLaunching(_: Notification) {
     Task { @MainActor in
       var command = ""
       #if USE_SPARKLE
@@ -37,10 +46,5 @@ struct KarabinerUpdaterApp: App {
         NSApplication.shared.terminate(nil)
       }
     }
-  }
-
-  var body: some Scene {
-    // Provide an empty Settings to prevent build errors.
-    Settings {}
   }
 }
