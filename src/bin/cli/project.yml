@@ -13,7 +13,7 @@ targets:
         - ../../../vendor/duktape-2.7.0/extras/module-node
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER:
-        - ../../../vendor/vendor/include/pqrs/osx/process_info/impl/Bridging-Header.h
+        - src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
         - ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../../vendor/vendor/include
@@ -30,3 +30,4 @@ targets:
       - path: ../../../vendor/duktape-2.7.0/extras/console/duk_console.c
       - path: ../../../vendor/duktape-2.7.0/extras/module-node/duk_module_node.c
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
+      - path: ../../../vendor/vendor/src/pqrs/osx/workspace

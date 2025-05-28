@@ -8,7 +8,7 @@ targets:
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
       SYSTEM_HEADER_SEARCH_PATHS:
-        - ../../vendor/vendor/include
+        - ../../../vendor/vendor/include
       HEADER_SEARCH_PATHS:
         - ../../lib/libkrbn/include
       OTHER_LDFLAGS:
@@ -29,6 +29,7 @@ targets:
           - -Wall
           - -Werror
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
+      - path: ../../../vendor/vendor/src/pqrs/osx/workspace
       - path: Resources
         excludes:
           - .gitignore

@@ -36,6 +36,7 @@ targets:
           - -Wall
           - -Werror
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
+      - path: ../../../vendor/vendor/src/pqrs/osx/workspace
       - path: Resources
         excludes:
           - .gitignore

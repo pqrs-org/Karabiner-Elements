@@ -24,6 +24,7 @@ targets:
           - -Werror
           - '-std=c++20'
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
+      - path: ../../../vendor/vendor/src/pqrs/osx/workspace
     dependencies:
       - framework: CoreGraphics.framework
       - framework: CoreServices.framework

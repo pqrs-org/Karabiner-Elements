@@ -29,6 +29,8 @@ targets:
           - Info.plist.in
       - path: ../share/Resources/app.icns
       - path: ../share/swift/ServiceManagementHelper.swift
+      - path: ../../../vendor/vendor/src/pqrs/osx/process_info
+      - path: ../../../vendor/vendor/src/pqrs/osx/workspace
     dependencies:
       - sdk: libc++.tbd
       - sdk: ServiceManagement.framework

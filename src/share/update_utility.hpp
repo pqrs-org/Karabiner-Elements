@@ -3,6 +3,7 @@
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include <cstdlib>
+#include <pqrs/osx/workspace.hpp>
 #include <string>
 
 namespace krbn {
@@ -24,8 +25,10 @@ private:
   static void launch_updater(const std::string& argument) {
     system("/usr/bin/killall Karabiner-Updater");
 
-    auto command = std::string("open '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app' --args ") + argument;
-    system(command.c_str());
+    pqrs::osx::workspace::open_application_by_file_path(
+        "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app",
+        pqrs::osx::workspace::open_configuration{
+            .arguments = {argument}});
   }
 };
 } // namespace krbn
