@@ -5,7 +5,12 @@ import SwiftUI
 struct KarabinerEventViewerApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
+  @StateObject private var userSettings: UserSettings
+
   init() {
+    let userSettings = UserSettings()
+    _userSettings = StateObject(wrappedValue: userSettings)
+
     libkrbn_initialize()
 
     if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
@@ -20,7 +25,7 @@ struct KarabinerEventViewerApp: App {
     NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event -> NSEvent? in
       if event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command {
         if event.charactersIgnoringModifiers == "q" || event.charactersIgnoringModifiers == "w" {
-          if UserSettings.shared.quitUsingKeyboardShortcut {
+          if userSettings.quitUsingKeyboardShortcut {
             NSApplication.shared.terminate(nil)
           }
           return nil
@@ -36,6 +41,7 @@ struct KarabinerEventViewerApp: App {
       id: "main",
       content: {
         ContentView()
+          .environmentObject(userSettings)
       }
     )
   }

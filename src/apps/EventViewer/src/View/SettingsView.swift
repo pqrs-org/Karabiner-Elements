@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-  @ObservedObject var userSettings = UserSettings.shared
+  @EnvironmentObject private var userSettings: UserSettings
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {

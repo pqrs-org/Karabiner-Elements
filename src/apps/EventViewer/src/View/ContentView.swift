@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
+  @EnvironmentObject private var userSettings: UserSettings
+
   @ObservedObject var inputMonitoringAlertData = InputMonitoringAlertData.shared
 
   var body: some View {
@@ -16,7 +18,7 @@ struct ContentView: View {
     .onAppear {
       setWindowProperty()
     }
-    .onReceive(NotificationCenter.default.publisher(for: UserSettings.windowSettingChanged)) { _ in
+    .onReceive(userSettings.objectWillChange) { _ in
       Task { @MainActor in
         setWindowProperty()
       }
@@ -30,14 +32,14 @@ struct ContentView: View {
 
   private func setWindowProperty() {
     if let window = NSApp.windows.first {
-      if UserSettings.shared.forceStayTop {
+      if userSettings.forceStayTop {
         window.level = .floating
       } else {
         window.level = .normal
       }
 
       // ----------------------------------------
-      if UserSettings.shared.showInAllSpaces {
+      if userSettings.showInAllSpaces {
         window.collectionBehavior.insert(.canJoinAllSpaces)
       } else {
         window.collectionBehavior.remove(.canJoinAllSpaces)
