@@ -28,6 +28,7 @@ private:
     pqrs::osx::workspace::open_application_by_file_path(
         "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app",
         pqrs::osx::workspace::open_configuration{
+            .adds_to_recent_items = false,
             .arguments = {argument}});
   }
 };

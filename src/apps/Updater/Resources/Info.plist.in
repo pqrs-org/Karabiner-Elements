@@ -24,8 +24,12 @@
     <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
     <key>NSSupportsSuddenTermination</key>
     <true/>
+    <!--
+      When the menu is hidden, other applications may come to the front instead of the updater when the installer is launched.
+      To prevent this, LSUIElement must be set to false.
+    -->
     <key>LSUIElement</key>
-    <true/>
+    <false/>
     <key>SUFeedURL</key>
     <string>https://appcast.pqrs.org/karabiner-elements-appcast.xml</string>
     <key>SUEnableAutomaticChecks</key>
