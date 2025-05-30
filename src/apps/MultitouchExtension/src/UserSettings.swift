@@ -1,77 +1,18 @@
-import Foundation
+import SwiftUI
 
 final class UserSettings: ObservableObject {
   static let shared = UserSettings()
 
-  @UserDefault("kHideIconInDock", defaultValue: false)
-  var hideIconInDock: Bool {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kRelaunchAfterWakeUpFromSleep", defaultValue: true)
-  var relaunchAfterWakeUpFromSleep: Bool {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kRelaunchWait", defaultValue: 3)
-  var relaunchWait: Int {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kIgnoredAreaTop", defaultValue: 0)
-  var ignoredAreaTop: Int {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kIgnoredAreaBottom", defaultValue: 0)
-  var ignoredAreaBottom: Int {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kIgnoredAreaLeft", defaultValue: 0)
-  var ignoredAreaLeft: Int {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kIgnoredAreaRight", defaultValue: 0)
-  var ignoredAreaRight: Int {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kDelayBeforeTurnOff", defaultValue: 0)
-  var delayBeforeTurnOff: Int {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kDelayBeforeTurnOn", defaultValue: 0)
-  var delayBeforeTurnOn: Int {
-    willSet {
-      objectWillChange.send()
-    }
-  }
-
-  @UserDefault("kPalmThreshold", defaultValue: 2.0)
-  var palmThreshold: Double {
-    willSet {
-      objectWillChange.send()
-    }
-  }
+  @AppStorage("kHideIconInDock") var hideIconInDock = false
+  @AppStorage("kRelaunchAfterWakeUpFromSleep") var relaunchAfterWakeUpFromSleep = true
+  @AppStorage("kRelaunchWait") var relaunchWait = 3
+  @AppStorage("kIgnoredAreaTop") var ignoredAreaTop = 0
+  @AppStorage("kIgnoredAreaBottom") var ignoredAreaBottom = 0
+  @AppStorage("kIgnoredAreaLeft") var ignoredAreaLeft = 0
+  @AppStorage("kIgnoredAreaRight") var ignoredAreaRight = 0
+  @AppStorage("kDelayBeforeTurnOff") var delayBeforeTurnOff = 0
+  @AppStorage("kDelayBeforeTurnOn") var delayBeforeTurnOn = 0
+  @AppStorage("kPalmThreshold") var palmThreshold = 2.0
 
   var targetArea: NSRect {
     let top = Double(ignoredAreaTop) / 100

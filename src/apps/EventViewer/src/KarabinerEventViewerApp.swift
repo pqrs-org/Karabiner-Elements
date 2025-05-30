@@ -8,10 +8,10 @@ struct KarabinerEventViewerApp: App {
   @StateObject private var userSettings: UserSettings
 
   init() {
+    libkrbn_initialize()
+
     let userSettings = UserSettings()
     _userSettings = StateObject(wrappedValue: userSettings)
-
-    libkrbn_initialize()
 
     if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
       InputMonitoringAlertData.shared.showing = true
