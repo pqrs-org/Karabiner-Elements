@@ -53,9 +53,3 @@ struct SystemExtensionsView: View {
     }
   }
 }
-
-struct SystemExtensionsView_Previews: PreviewProvider {
-  static var previews: some View {
-    SystemExtensionsView()
-  }
-}

@@ -98,9 +98,3 @@ struct FrontmostApplicationView: View {
     .padding()
   }
 }
-
-struct FrontmostApplicationView_Previews: PreviewProvider {
-  static var previews: some View {
-    FrontmostApplicationView()
-  }
-}

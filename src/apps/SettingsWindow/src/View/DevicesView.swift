@@ -334,9 +334,3 @@ struct DevicesView: View {
     }
   }
 }
-
-struct DevicesView_Previews: PreviewProvider {
-  static var previews: some View {
-    DevicesView()
-  }
-}

@@ -59,12 +59,3 @@ struct InputMonitoringAlertView: View {
     NSApp.miniaturizeAll(nil)
   }
 }
-
-struct InputMonitoringAlertView_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      InputMonitoringAlertView()
-        .previewLayout(.sizeThatFits)
-    }
-  }
-}

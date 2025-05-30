@@ -145,9 +145,3 @@ struct UIView: View {
     .padding()
   }
 }
-
-struct UIView_Previews: PreviewProvider {
-  static var previews: some View {
-    UIView()
-  }
-}

@@ -90,9 +90,3 @@ struct UnknownEventsView: View {
     .padding()
   }
 }
-
-struct UnknownEventsView_Previews: PreviewProvider {
-  static var previews: some View {
-    UnknownEventsView()
-  }
-}

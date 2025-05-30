@@ -49,12 +49,3 @@ struct SettingsAlertView: View {
     }
   }
 }
-
-struct SettingsAlertView_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      SettingsAlertView()
-        .previewLayout(.sizeThatFits)
-    }
-  }
-}

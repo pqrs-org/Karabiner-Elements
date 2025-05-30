@@ -116,9 +116,3 @@ struct ExpertView: View {
     .padding()
   }
 }
-
-struct ExpertView_Previews: PreviewProvider {
-  static var previews: some View {
-    ExpertView()
-  }
-}

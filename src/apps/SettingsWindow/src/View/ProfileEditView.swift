@@ -58,11 +58,3 @@ struct ProfileEditView: View {
     }
   }
 }
-
-struct ProfileEditView_Previews: PreviewProvider {
-  @State static var profile: LibKrbn.Profile? = LibKrbn.Profile(0, "", false)
-  @State static var showing = true
-  static var previews: some View {
-    ProfileEditView(profile: $profile, showing: $showing)
-  }
-}

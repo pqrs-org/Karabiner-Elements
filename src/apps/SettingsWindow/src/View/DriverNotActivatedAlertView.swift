@@ -107,12 +107,3 @@ struct DriverNotActivatedAlertView: View {
     }
   }
 }
-
-struct DriverNotActivatedAlertView_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      DriverNotActivatedAlertView()
-        .previewLayout(.sizeThatFits)
-    }
-  }
-}

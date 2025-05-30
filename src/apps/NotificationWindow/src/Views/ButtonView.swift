@@ -25,12 +25,3 @@ struct ButtonView: View {
     )
   }
 }
-
-struct ButtonView_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      ButtonView(mainWindow: nil, buttonWindow: nil)
-        .previewLayout(.sizeThatFits)
-    }
-  }
-}

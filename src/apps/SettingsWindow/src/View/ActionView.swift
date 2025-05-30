@@ -42,9 +42,3 @@ struct ActionView: View {
     .padding()
   }
 }
-
-struct ActionView_Previews: PreviewProvider {
-  static var previews: some View {
-    ActionView()
-  }
-}

@@ -40,9 +40,3 @@ struct DevicesView: View {
     .padding()
   }
 }
-
-struct DevicesView_Previews: PreviewProvider {
-  static var previews: some View {
-    DevicesView()
-  }
-}

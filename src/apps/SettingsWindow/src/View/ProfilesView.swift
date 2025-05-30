@@ -143,9 +143,3 @@ struct ProfilesView: View {
     }
   }
 }
-
-struct ProfilesView_Previews: PreviewProvider {
-  static var previews: some View {
-    ProfilesView()
-  }
-}

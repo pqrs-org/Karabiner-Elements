@@ -40,9 +40,3 @@ struct VariablesView: View {
     .padding()
   }
 }
-
-struct VariablesView_Previews: PreviewProvider {
-  static var previews: some View {
-    VariablesView()
-  }
-}

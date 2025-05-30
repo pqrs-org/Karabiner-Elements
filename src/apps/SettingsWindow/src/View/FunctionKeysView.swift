@@ -107,9 +107,3 @@ struct FunctionKeysView: View {
     }
   }
 }
-
-struct FunctionKeysView_Previews: PreviewProvider {
-  static var previews: some View {
-    FunctionKeysView()
-  }
-}

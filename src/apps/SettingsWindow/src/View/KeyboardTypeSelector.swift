@@ -14,9 +14,3 @@ struct KeyboardTypeSelectorView: View {
     .pickerStyle(RadioGroupPickerStyle())
   }
 }
-
-struct KeyboardTypeSelectorView_Previews: PreviewProvider {
-  static var previews: some View {
-    KeyboardTypeSelectorView()
-  }
-}

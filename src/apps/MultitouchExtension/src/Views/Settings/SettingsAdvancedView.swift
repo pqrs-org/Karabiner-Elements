@@ -109,9 +109,3 @@ struct SettingsAdvancedView: View {
     }.padding()
   }
 }
-
-struct SettingsAdvancedView_Previews: PreviewProvider {
-  static var previews: some View {
-    SettingsAdvancedView()
-  }
-}

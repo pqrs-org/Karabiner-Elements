@@ -66,12 +66,3 @@ struct DoctorAlertView: View {
     NSWorkspace.shared.open(FileManager.default.homeDirectoryForCurrentUser)
   }
 }
-
-struct DoctorAlertView_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      DoctorAlertView()
-        .previewLayout(.sizeThatFits)
-    }
-  }
-}

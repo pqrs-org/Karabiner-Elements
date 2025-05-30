@@ -76,9 +76,3 @@ struct UpdateView: View {
     .padding()
   }
 }
-
-struct UpdateView_Previews: PreviewProvider {
-  static var previews: some View {
-    UpdateView()
-  }
-}

@@ -116,12 +116,3 @@ struct DriverNotActivatedAlertViewMacOS14: View {
     }
   }
 }
-
-struct DriverNotActivatedAlertViewMacOS14_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      DriverNotActivatedAlertViewMacOS14()
-        .previewLayout(.sizeThatFits)
-    }
-  }
-}

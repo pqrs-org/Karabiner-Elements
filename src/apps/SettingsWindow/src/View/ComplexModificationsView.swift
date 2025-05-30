@@ -179,9 +179,3 @@ struct ComplexModificationsView: View {
     }
   }
 }
-
-struct ComplexModificationsView_Previews: PreviewProvider {
-  static var previews: some View {
-    ComplexModificationsView()
-  }
-}

@@ -91,9 +91,3 @@ struct ComplexModificationsAdvancedView: View {
     .padding()
   }
 }
-
-struct ComplexModificationsAdvancedView_Previews: PreviewProvider {
-  static var previews: some View {
-    ComplexModificationsAdvancedView()
-  }
-}

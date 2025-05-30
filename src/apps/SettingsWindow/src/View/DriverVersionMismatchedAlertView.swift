@@ -73,12 +73,3 @@ struct DriverVersionMismatchedAlertView: View {
     }
   }
 }
-
-struct DriverVersionMismatchedAlertView_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      DriverVersionMismatchedAlertView()
-        .previewLayout(.sizeThatFits)
-    }
-  }
-}

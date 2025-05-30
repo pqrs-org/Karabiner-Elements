@@ -122,9 +122,3 @@ struct SimpleModificationsView: View {
     }
   }
 }
-
-struct SimpleModificationsView_Previews: PreviewProvider {
-  static var previews: some View {
-    SimpleModificationsView()
-  }
-}

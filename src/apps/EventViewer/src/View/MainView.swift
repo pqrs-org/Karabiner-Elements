@@ -107,9 +107,3 @@ struct MainView: View {
     .padding()
   }
 }
-
-struct MainView_Previews: PreviewProvider {
-  static var previews: some View {
-    MainView()
-  }
-}

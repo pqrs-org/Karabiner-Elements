@@ -68,10 +68,3 @@ struct SettingsView: View {
     }.frame(width: 900, height: 550)
   }
 }
-
-struct SettingsView_Previews: PreviewProvider {
-  static var previews: some View {
-    SettingsView()
-      .previewLayout(.sizeThatFits)
-  }
-}

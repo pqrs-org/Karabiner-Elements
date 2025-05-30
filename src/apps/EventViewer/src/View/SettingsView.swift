@@ -42,9 +42,3 @@ struct SettingsView: View {
     .padding()
   }
 }
-
-struct SettingsView_Previews: PreviewProvider {
-  static var previews: some View {
-    SettingsView()
-  }
-}

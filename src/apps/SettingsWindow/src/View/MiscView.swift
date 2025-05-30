@@ -111,9 +111,3 @@ struct MiscView: View {
     .padding()
   }
 }
-
-struct MiscView_Previews: PreviewProvider {
-  static var previews: some View {
-    MiscView()
-  }
-}

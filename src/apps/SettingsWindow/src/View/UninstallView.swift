@@ -31,9 +31,3 @@ struct UninstallView: View {
     .padding()
   }
 }
-
-struct UninstallView_Previews: PreviewProvider {
-  static var previews: some View {
-    UninstallView()
-  }
-}

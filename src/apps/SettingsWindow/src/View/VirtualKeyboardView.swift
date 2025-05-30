@@ -36,9 +36,3 @@ struct VirtualKeyboardView: View {
     .padding()
   }
 }
-
-struct VirtualKeyboardView_Previews: PreviewProvider {
-  static var previews: some View {
-    VirtualKeyboardView()
-  }
-}

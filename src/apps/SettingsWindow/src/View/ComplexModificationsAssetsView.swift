@@ -124,9 +124,3 @@ struct ComplexModificationsAssetsView: View {
     }
   }
 }
-
-struct ComplexModificationsAssetsView_Previews: PreviewProvider {
-  static var previews: some View {
-    ComplexModificationsAssetsView()
-  }
-}

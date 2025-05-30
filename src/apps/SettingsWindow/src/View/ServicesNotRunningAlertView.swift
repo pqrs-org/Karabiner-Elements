@@ -98,12 +98,3 @@ struct ServicesNotRunningAlertView: View {
     }
   }
 }
-
-struct ServicesNotRunningAlertView_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      ServicesNotRunningAlertView()
-        .previewLayout(.sizeThatFits)
-    }
-  }
-}

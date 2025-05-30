@@ -103,15 +103,3 @@ struct ComplexModificationsEditView: View {
     }
   }
 }
-
-struct ComplexModificationsEditView_Previews: PreviewProvider {
-  @State static var rule: LibKrbn.ComplexModificationsRule? = LibKrbn.ComplexModificationsRule(
-    index: 0,
-    description: "",
-    enabled: true,
-    jsonString: "{}")
-  @State static var showing = true
-  static var previews: some View {
-    ComplexModificationsEditView(rule: $rule, showing: $showing)
-  }
-}

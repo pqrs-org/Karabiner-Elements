@@ -33,10 +33,3 @@ struct SettingsActionView: View {
     }.padding()
   }
 }
-
-struct SettingsActionView_Previews: PreviewProvider {
-  static var previews: some View {
-    SettingsActionView()
-      .previewLayout(.sizeThatFits)
-  }
-}

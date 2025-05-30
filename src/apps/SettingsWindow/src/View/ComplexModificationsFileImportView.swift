@@ -75,9 +75,3 @@ struct ComplexModificationsFileImportView: View {
     .frame(width: 1000, height: 300)
   }
 }
-
-struct ComplexModificationsFileImportView_Previews: PreviewProvider {
-  static var previews: some View {
-    ComplexModificationsFileImportView()
-  }
-}

@@ -280,9 +280,3 @@ struct ContentMainView: View {
     }
   }
 }
-
-struct ContentMainView_Previews: PreviewProvider {
-  static var previews: some View {
-    ContentMainView()
-  }
-}
