@@ -1,7 +1,7 @@
 import Foundation
 
 extension LibKrbn {
-  class ConnectedDevice: Identifiable, Equatable {
+  class ConnectedDevice: Identifiable, Equatable, Hashable {
     let id = UUID()
     let index: Int
     let manufacturerName: String
@@ -77,6 +77,10 @@ extension LibKrbn {
 
     public static func == (lhs: ConnectedDevice, rhs: ConnectedDevice) -> Bool {
       lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+      hasher.combine(id)
     }
   }
 }
