@@ -18,7 +18,7 @@ final class ContentViewStates: ObservableObject {
   // ContentMainView
   //
 
-  @Published var navigationSelection = NavigationTag.simpleModifications
+  @Published var navigationSelection = SidebarItem.simpleModifications
 
   //
   // SimpleModificationsView

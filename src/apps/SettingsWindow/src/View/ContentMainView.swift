@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum NavigationTag: String {
+enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case simpleModifications
   case functionKeys
   case complexModifications
@@ -15,6 +15,46 @@ enum NavigationTag: String {
   case log
   case expert
   case action
+
+  var id: Self { self }
+
+  var title: String {
+    switch self {
+    case .simpleModifications: return "Simple Modifications"
+    case .functionKeys: return "Function Keys"
+    case .complexModifications: return "Complex Modifications"
+    case .complexModificationsAdvanced: return "Parameters"
+    case .devices: return "Devices"
+    case .virtualKeyboard: return "Virtual Keyboard"
+    case .profiles: return "Profiles"
+    case .ui: return "UI"
+    case .update: return "Update"
+    case .misc: return "Misc"
+    case .uninstall: return "Uninstall"
+    case .log: return "Log"
+    case .expert: return "Expert"
+    case .action: return "Quit, Restart"
+    }
+  }
+
+  var systemImage: String {
+    switch self {
+    case .simpleModifications: return "gearshape"
+    case .functionKeys: return "speaker.wave.2.circle"
+    case .complexModifications: return "gearshape.2"
+    case .complexModificationsAdvanced: return "dial.min"
+    case .devices: return "keyboard"
+    case .virtualKeyboard: return "puzzlepiece"
+    case .profiles: return "person.3"
+    case .ui: return "switch.2"
+    case .update: return "network"
+    case .misc: return "leaf"
+    case .uninstall: return "trash"
+    case .log: return "doc.plaintext"
+    case .expert: return "flame"
+    case .action: return "bolt.circle"
+    }
+  }
 }
 
 struct ContentMainView: View {
@@ -23,260 +63,131 @@ struct ContentMainView: View {
 
   private let padding = 6.0
 
+  struct SidebarSection {
+    let title: String
+    let items: [SidebarItem]
+  }
+
+  let sections: [SidebarSection] = [
+    SidebarSection(
+      title: "Modifications",
+      items: [
+        .simpleModifications,
+        .functionKeys,
+        .complexModifications,
+        .complexModificationsAdvanced,
+      ],
+    ),
+    SidebarSection(
+      title: "Configurations",
+      items: [
+        .devices,
+        .virtualKeyboard,
+        .profiles,
+        .ui,
+      ]
+    ),
+    SidebarSection(
+      title: "Maintenance",
+      items: [
+        .update,
+        .misc,
+        .uninstall,
+      ],
+    ),
+    SidebarSection(
+      title: "Tools",
+      items: [
+        .log,
+        .expert,
+        .action,
+      ]
+    ),
+  ]
+
   var body: some View {
-    HStack {
-      VStack(alignment: .leading, spacing: 0) {
-        if settings.unsafeUI {
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .expert
-            },
-            label: {
-              HStack {
-                Spacer()
-
-                Text("Unsafe configuration is enabled")
-
-                Spacer()
+    NavigationSplitView(
+      sidebar: {
+        List(selection: $contentViewStates.navigationSelection) {
+          ForEach(sections.indices, id: \.self) { section in
+            Section {
+              ForEach(sections[section].items) { item in
+                Label(item.title, systemImage: item.systemImage)
+                  .padding(.vertical, 4.0)
               }
-              .sidebarButtonLabelStyle()
+            } header: {
+              Text(sections[section].title)
             }
-          )
-          .buttonStyle(PlainButtonStyle())
-          .background(Color.red)
-          .foregroundColor(.white)
-          .cornerRadius(5)
-
-          Divider()
-            .padding(.vertical, 2.0)
-        }
-
-        Group {
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .simpleModifications
-            },
-            label: {
-              SidebarLabelView(
-                text: "Simple Modifications", systemImage: "gearshape", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .simpleModifications)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .functionKeys
-            },
-            label: {
-              SidebarLabelView(
-                text: "Function Keys", systemImage: "speaker.wave.2.circle", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .functionKeys
-          )
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .complexModifications
-            },
-            label: {
-              SidebarLabelView(
-                text: "Complex Modifications", systemImage: "gearshape.2", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .complexModifications)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .complexModificationsAdvanced
-            },
-            label: {
-              SidebarLabelView(text: "Parameters", systemImage: "dial.min", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .complexModificationsAdvanced)
-        }
-
-        Divider()
-          .padding(.vertical, 10.0)
-
-        Group {
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .devices
-            },
-            label: {
-              SidebarLabelView(text: "Devices", systemImage: "keyboard", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .devices)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .virtualKeyboard
-            },
-            label: {
-              SidebarLabelView(
-                text: "Virtual Keyboard", systemImage: "puzzlepiece", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .virtualKeyboard)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .profiles
-            },
-            label: {
-              SidebarLabelView(text: "Profiles", systemImage: "person.3", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .profiles)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .ui
-            },
-            label: {
-              SidebarLabelView(text: "UI", systemImage: "switch.2", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .ui)
-        }
-
-        Divider()
-          .padding(.vertical, 10.0)
-
-        Group {
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .update
-            },
-            label: {
-              SidebarLabelView(text: "Update", systemImage: "network", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .update)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .misc
-            },
-            label: {
-              SidebarLabelView(text: "Misc", systemImage: "leaf", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .misc)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .uninstall
-            },
-            label: {
-              SidebarLabelView(text: "Uninstall", systemImage: "trash", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .uninstall)
-        }
-
-        Divider()
-          .padding(.vertical, 10.0)
-
-        Group {
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .log
-            },
-            label: {
-              SidebarLabelView(text: "Log", systemImage: "doc.plaintext", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .log)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .expert
-            },
-            label: {
-              SidebarLabelView(text: "Expert", systemImage: "flame", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .expert)
-
-          Button(
-            action: {
-              contentViewStates.navigationSelection = .action
-            },
-            label: {
-              SidebarLabelView(text: "Quit, Restart", systemImage: "bolt.circle", padding: 2.0)
-            }
-          )
-          .sidebarButtonStyle(
-            selected: contentViewStates.navigationSelection == .action)
-        }
-
-        Spacer()
-      }
-      .frame(width: 250)
-
-      Divider()
-
-      VStack(alignment: .leading, spacing: 0) {
-        if settings.saveErrorMessage != "" {
-          VStack {
-            Label(
-              "Save failed:\n\(settings.saveErrorMessage)",
-              systemImage: "exclamationmark.circle.fill"
-            )
-            .padding()
           }
-          .foregroundColor(Color.errorForeground)
-          .background(Color.errorBackground)
         }
+        .navigationSplitViewColumnWidth(250)
+        .listStyle(.sidebar)
+      },
+      detail: {
+        VStack(alignment: .leading, spacing: 0) {
+          if settings.unsafeUI {
+            Button(
+              action: {
+                contentViewStates.navigationSelection = .expert
+              },
+              label: {
+                Label(
+                  "The unsafe configuration is enabled, so the foolproof feature is currently inactive.",
+                  systemImage: "exclamationmark.triangle"
+                )
+              }
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(8.0)
+            .buttonStyle(PlainButtonStyle())
+            .background(Color.red)
+            .foregroundColor(.white)
+          }
 
-        switch contentViewStates.navigationSelection {
-        case .simpleModifications:
-          SimpleModificationsView()
-        case .functionKeys:
-          FunctionKeysView()
-        case .complexModifications:
-          ComplexModificationsView()
-        case .complexModificationsAdvanced:
-          ComplexModificationsAdvancedView()
-        case .devices:
-          DevicesView()
-        case .virtualKeyboard:
-          VirtualKeyboardView()
-        case .profiles:
-          ProfilesView()
-        case .ui:
-          UIView()
-        case .update:
-          UpdateView()
-        case .misc:
-          MiscView()
-        case .uninstall:
-          UninstallView()
-        case .log:
-          LogView()
-        case .expert:
-          ExpertView()
-        case .action:
-          ActionView()
+          if settings.saveErrorMessage != "" {
+            VStack {
+              Label(
+                "Save failed:\n\(settings.saveErrorMessage)",
+                systemImage: "exclamationmark.circle.fill"
+              )
+              .padding()
+            }
+            .foregroundColor(Color.errorForeground)
+            .background(Color.errorBackground)
+          }
+
+          switch contentViewStates.navigationSelection {
+          case .simpleModifications:
+            SimpleModificationsView()
+          case .functionKeys:
+            FunctionKeysView()
+          case .complexModifications:
+            ComplexModificationsView()
+          case .complexModificationsAdvanced:
+            ComplexModificationsAdvancedView()
+          case .devices:
+            DevicesView()
+          case .virtualKeyboard:
+            VirtualKeyboardView()
+          case .profiles:
+            ProfilesView()
+          case .ui:
+            UIView()
+          case .update:
+            UpdateView()
+          case .misc:
+            MiscView()
+          case .uninstall:
+            UninstallView()
+          case .log:
+            LogView()
+          case .expert:
+            ExpertView()
+          case .action:
+            ActionView()
+          }
         }
       }
-    }
+    )
   }
 }
