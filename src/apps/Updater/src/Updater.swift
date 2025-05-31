@@ -59,6 +59,10 @@ final class Updater: ObservableObject {
         return url
       }
 
+      func updaterShouldRelaunchApplication(_ updater: SPUUpdater) -> Bool {
+        return false
+      }
+
       func updaterDidNotFindUpdate(_: SPUUpdater) {
         NSApp.activate(ignoringOtherApps: true)
       }
