@@ -1,61 +1,43 @@
 import SwiftUI
 
-enum NavigationTag: String {
+enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case main
   case advanced
   case action
+
+  var id: Self { self }
+
+  var title: String {
+    switch self {
+    case .main: return "Main"
+    case .advanced: return "Advanced"
+    case .action: return "Restart"
+    }
+  }
+
+  var systemImage: String {
+    switch self {
+    case .main: return "gearshape"
+    case .advanced: return "hammer"
+    case .action: return "bolt.circle"
+    }
+  }
 }
 
 struct SettingsView: View {
-  @State private var selection: NavigationTag = .main
+  @State private var selection: SidebarItem = .main
 
   var body: some View {
-    VStack {
-      HStack {
-        VStack(alignment: .leading, spacing: 0) {
-          Group {
-            Button(
-              action: {
-                selection = .main
-              },
-              label: {
-                SidebarLabelView(text: "Main", systemImage: "gearshape")
-              }
-            )
-            .sidebarButtonStyle(selected: selection == .main)
-
-            Button(
-              action: {
-                selection = .advanced
-              },
-              label: {
-                SidebarLabelView(text: "Advanced", systemImage: "hammer")
-              }
-            )
-            .sidebarButtonStyle(selected: selection == .advanced)
-          }
-
-          Divider()
-            .padding(.vertical, 10.0)
-
-          Group {
-            Button(
-              action: {
-                selection = .action
-              },
-              label: {
-                SidebarLabelView(text: "Restart", systemImage: "bolt.circle")
-              }
-            )
-            .sidebarButtonStyle(selected: selection == .action)
-          }
-
-          Spacer()
+    NavigationSplitView(
+      sidebar: {
+        List(SidebarItem.allCases, selection: $selection) { item in
+          Label(item.title, systemImage: item.systemImage)
+            .padding(.vertical, 8)
         }
-        .frame(width: 200)
-
-        Divider()
-
+        .navigationSplitViewColumnWidth(200)
+        .listStyle(.sidebar)
+      },
+      detail: {
         switch selection {
         case .main:
           SettingsMainView()
@@ -65,6 +47,11 @@ struct SettingsView: View {
           SettingsActionView()
         }
       }
-    }.frame(width: 900, height: 550)
+    )
+    .frame(
+      minWidth: 900,
+      maxWidth: .infinity,
+      minHeight: 600,
+      maxHeight: .infinity)
   }
 }
