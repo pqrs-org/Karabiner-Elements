@@ -15,8 +15,21 @@ class SettingsWindowManager: NSObject {
 
     closed = false
 
-    settingsWindow = NSWindow(
-      contentRect: .zero,
+    //
+    // Calculate the window size
+    //
+
+    let contentView = NSHostingView(rootView: SettingsView())
+    contentView.translatesAutoresizingMaskIntoConstraints = false
+    contentView.layoutSubtreeIfNeeded()
+    let size = contentView.fittingSize
+
+    //
+    // Create a window
+    //
+
+    let window = NSWindow(
+      contentRect: NSRect(origin: .zero, size: size),
       styleMask: [
         .titled,
         .closable,
@@ -27,14 +40,16 @@ class SettingsWindowManager: NSObject {
       defer: false
     )
 
-    settingsWindow!.isReleasedWhenClosed = false
-    settingsWindow!.title = "Karabiner-MultitouchExtension Settings"
-    settingsWindow!.contentView = NSHostingView(rootView: SettingsView())
-    settingsWindow!.delegate = self
-    settingsWindow!.center()
+    window.isReleasedWhenClosed = false
+    window.title = "Karabiner-MultitouchExtension Settings"
+    window.contentView = contentView
+    window.delegate = self
+    window.center()
 
-    settingsWindow!.makeKeyAndOrderFront(self)
+    window.makeKeyAndOrderFront(self)
     NSApp.activate(ignoringOtherApps: true)
+
+    settingsWindow = window
   }
 }
 
