@@ -1532,7 +1532,7 @@
         "category": "Japanese"
     },
     {
-        "label": "英数キー",
+        "label": "ABCキー（英数キー）",
         "data": [
             {
                 "key_code": "japanese_eisuu"
@@ -1540,7 +1540,7 @@
         ]
     },
     {
-        "label": "かなキー",
+        "label": "あいうキー（かなキー）",
         "data": [
             {
                 "key_code": "japanese_kana"
