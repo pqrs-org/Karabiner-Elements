@@ -13,7 +13,7 @@ Alternatively, for users of [homebrew](https://brew.sh/), Karabiner-Elements may
 
 ### Old releases
 
-You can download previous versions of Karabiner-Elements from [here](https://karabiner-elements.pqrs.org/docs/releasenotes/).
+You can download previous versions of Karabiner-Elements from [Release notes](https://karabiner-elements.pqrs.org/docs/releasenotes/).
 
 ## Supported systems
 
@@ -40,8 +40,8 @@ If you would like to contribute financially to the development of Karabiner-Elem
 
 System requirements to build Karabiner-Elements:
 
--   macOS 13+
--   Xcode 15.0.1+
+-   macOS 15+
+-   Xcode 16.0+
 -   Command Line Tools for Xcode (`xcode-select --install`)
 -   xz (`brew install xz`)
 -   [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
