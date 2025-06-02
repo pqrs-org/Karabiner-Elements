@@ -2,7 +2,8 @@ import SwiftUI
 
 struct UpdateView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
+  let version =
+    Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24.0) {
