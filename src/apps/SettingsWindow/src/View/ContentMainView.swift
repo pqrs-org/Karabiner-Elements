@@ -76,7 +76,7 @@ struct ContentMainView: View {
         .functionKeys,
         .complexModifications,
         .complexModificationsAdvanced,
-      ],
+      ]
     ),
     SidebarSection(
       title: "Configurations",
@@ -93,7 +93,7 @@ struct ContentMainView: View {
         .update,
         .misc,
         .uninstall,
-      ],
+      ]
     ),
     SidebarSection(
       title: "Tools",
