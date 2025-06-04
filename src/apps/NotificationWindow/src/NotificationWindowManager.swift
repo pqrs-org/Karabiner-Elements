@@ -30,6 +30,8 @@ public class NotificationWindowManager: NSObject {
 
   let notificationMessageJsonFilePath = LibKrbn.notificationMessageJsonFilePath()
 
+  private var notificationsTask: Task<Void, Never>?
+
   private struct ScreenWindow {
     var mainWindow: NSWindow
     var closeButtonWindow: NSWindow
@@ -40,20 +42,25 @@ public class NotificationWindowManager: NSObject {
   override public init() {
     super.init()
 
-    NotificationCenter.default.addObserver(
-      forName: NSApplication.didChangeScreenParametersNotification,
-      object: nil,
-      queue: .main
-    ) { [weak self] _ in
-      guard let self = self else { return }
-
-      self.updateWindows()
+    notificationsTask = Task { [weak self] in
+      await withTaskGroup(of: Void.self) { group in
+        group.addTask {
+          for await _ in NotificationCenter.default.notifications(
+            named: NSApplication.didChangeScreenParametersNotification
+          ) {
+            await self?.updateWindows()
+          }
+        }
+      }
     }
   }
+
+  deinit { notificationsTask?.cancel() }
 
   // We register the callback in the `start` method rather than in `init`.
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
+  @MainActor
   public func start() {
     libkrbn_enable_file_monitors()
 
@@ -66,6 +73,7 @@ public class NotificationWindowManager: NSObject {
     updateWindowsVisibility()
   }
 
+  @MainActor
   public func stop() {
     libkrbn_unregister_file_updated_callback(
       notificationMessageJsonFilePath.cString(using: .utf8),
@@ -74,6 +82,7 @@ public class NotificationWindowManager: NSObject {
     // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
   }
 
+  @MainActor
   func updateWindows() {
     let screens = NSScreen.screens
 
