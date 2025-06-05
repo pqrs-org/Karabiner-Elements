@@ -1,10 +1,11 @@
 import Foundation
 
 extension LibKrbn {
+  @MainActor
   final class ConnectedDeviceSetting: Identifiable, Equatable, ObservableObject {
     private var didSetEnabled = false
 
-    var id = UUID()
+    nonisolated let id = UUID()
     var connectedDevice: ConnectedDevice
 
     init(_ connectedDevice: ConnectedDevice) {
@@ -136,34 +137,34 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(
           connectedDevice.libkrbnDeviceIdentifiers))
 
-      var buffer = [Int8](repeating: 0, count: 16384)
+      var buffer = [CChar](repeating: 0, count: 16384)
 
       if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(
         connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
       {
-        gamePadStickXFormula = String(cString: buffer).trimmingCharacters(
-          in: .whitespacesAndNewlines)
+        gamePadStickXFormula =
+          String(utf8String: buffer)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
       }
 
       if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(
         connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
       {
-        gamePadStickYFormula = String(cString: buffer).trimmingCharacters(
-          in: .whitespacesAndNewlines)
+        gamePadStickYFormula =
+          String(utf8String: buffer)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
       }
 
       if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(
         connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
       {
-        gamePadStickVerticalWheelFormula = String(cString: buffer).trimmingCharacters(
-          in: .whitespacesAndNewlines)
+        gamePadStickVerticalWheelFormula =
+          String(utf8String: buffer)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
       }
 
       if libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
         connectedDevice.libkrbnDeviceIdentifiers, &buffer, buffer.count)
       {
-        gamePadStickHorizontalWheelFormula = String(cString: buffer).trimmingCharacters(
-          in: .whitespacesAndNewlines)
+        gamePadStickHorizontalWheelFormula =
+          String(utf8String: buffer)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
       }
 
       simpleModifications = LibKrbn.Settings.shared.makeSimpleModifications(connectedDevice)
@@ -575,7 +576,9 @@ extension LibKrbn {
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []
 
-    public static func == (lhs: ConnectedDeviceSetting, rhs: ConnectedDeviceSetting) -> Bool {
+    nonisolated public static func == (lhs: ConnectedDeviceSetting, rhs: ConnectedDeviceSetting)
+      -> Bool
+    {
       lhs.id == rhs.id
     }
   }
