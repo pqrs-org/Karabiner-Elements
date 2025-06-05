@@ -9,6 +9,7 @@ private func callback() {
 }
 
 extension LibKrbn {
+  @MainActor
   final class ConnectedDevices: ObservableObject {
     static let shared = ConnectedDevices()
     static let didConnectedDevicesUpdate = Notification.Name("didConnectedDevicesUpdate")
@@ -43,20 +44,24 @@ extension LibKrbn {
         var deviceAddress = ""
 
         if libkrbn_connected_devices_get_transport(i, &buffer, buffer.count) {
-          transport = String(cString: buffer)
+          transport = String(utf8String: buffer) ?? ""
         }
 
         if libkrbn_connected_devices_get_manufacturer(i, &buffer, buffer.count) {
-          manufacturerName = String(cString: buffer)
+          manufacturerName =
+            String(utf8String: buffer)?
             .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+            ?? ""
         }
         if manufacturerName == "" {
           manufacturerName = "No manufacturer name"
         }
 
         if libkrbn_connected_devices_get_product(i, &buffer, buffer.count) {
-          productName = String(cString: buffer)
+          productName =
+            String(utf8String: buffer)?
             .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+            ?? ""
         }
         if productName == "" {
           if transport == "FIFO" {
@@ -67,7 +72,7 @@ extension LibKrbn {
         }
 
         if libkrbn_connected_devices_get_device_address(i, &buffer, buffer.count) {
-          deviceAddress = String(cString: buffer)
+          deviceAddress = String(utf8String: buffer) ?? ""
         }
 
         let connectedDevice = LibKrbn.ConnectedDevice(
