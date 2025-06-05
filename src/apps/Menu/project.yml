@@ -1,5 +1,10 @@
 name: Karabiner-Menu
 
+packages:
+  AsyncAlgorithms:
+    url: https://github.com/apple/swift-async-algorithms
+    from: 1.0.0
+
 targets:
   Karabiner-Menu:
     settings:
@@ -16,6 +21,8 @@ targets:
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
         - ../../../vendor/vendor/include
+      DEAD_CODE_STRIPPING: 'YES'
+      #SWIFT_VERSION: '6.0'
     type: application
     platform: macOS
     deploymentTarget: 13.0
@@ -36,4 +43,5 @@ targets:
           - '*.plist.in'
       - path: ../share/Resources/app.icns
     dependencies:
+      - package: AsyncAlgorithms
       - sdk: libc++.tbd

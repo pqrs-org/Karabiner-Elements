@@ -576,9 +576,7 @@ extension LibKrbn {
     @Published var simpleModifications: [SimpleModification] = []
     @Published var fnFunctionKeys: [SimpleModification] = []
 
-    nonisolated public static func == (lhs: ConnectedDeviceSetting, rhs: ConnectedDeviceSetting)
-      -> Bool
-    {
+    nonisolated public static func == (lhs: ConnectedDeviceSetting, rhs: ConnectedDeviceSetting) -> Bool {
       lhs.id == rhs.id
     }
   }

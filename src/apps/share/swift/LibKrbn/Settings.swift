@@ -1,4 +1,4 @@
-import Combine
+import AsyncAlgorithms
 import Foundation
 import SwiftUI
 
@@ -14,20 +14,48 @@ private func callback() {
 }
 
 extension LibKrbn {
+  @MainActor
   final class Settings: ObservableObject {
     static let shared = Settings()
 
     static let didConfigurationLoad = Notification.Name("didConfigurationLoad")
 
+    private var notificationsTask: Task<Void, Never>?
     private var watching = false
     private var didSetEnabled = false
-    private var saveDebouncer = Debouncer(delay: 0.2)
+
+    private let saveStream: AsyncStream<Void>
+    private let saveContinuation: AsyncStream<Void>.Continuation
+    private var saveTask: Task<Void, Never>?
 
     @Published var saveErrorMessage = ""
 
     private init() {
+      var continuation: AsyncStream<Void>.Continuation!
+      self.saveStream = AsyncStream<Void> { continuation = $0 }
+      self.saveContinuation = continuation
+
+      self.saveTask = Task { @MainActor [weak self] in
+        guard let self = self else { return }
+
+        for await _ in self.saveStream.debounce(for: .seconds(0.2)) {
+          print("save")
+
+          self.saveErrorMessage = ""
+          var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
+          if !libkrbn_core_configuration_save(&errorMessageBuffer, errorMessageBuffer.count) {
+            self.saveErrorMessage = String(cString: errorMessageBuffer)
+          }
+        }
+      }
+
       updateProperties()
       didSetEnabled = true
+    }
+
+    deinit {
+      saveTask?.cancel()
+      saveContinuation.finish()
     }
 
     // We register the callback in the `watch` method rather than in `init`.
@@ -45,29 +73,21 @@ extension LibKrbn {
 
       ConnectedDevices.shared.watch()
 
-      NotificationCenter.default.addObserver(
-        forName: ConnectedDevices.didConnectedDevicesUpdate,
-        object: nil,
-        queue: .main
-      ) { [weak self] _ in
-        guard let self = self else { return }
-
-        self.updateConnectedDeviceSettings()
+      notificationsTask = Task { [weak self] in
+        await withTaskGroup(of: Void.self) { group in
+          group.addTask {
+            for await _ in await NotificationCenter.default.notifications(
+              named: ConnectedDevices.didConnectedDevicesUpdate)
+            {
+              await self?.updateConnectedDeviceSettings()
+            }
+          }
+        }
       }
     }
 
     func save() {
-      saveDebouncer.debounce { [weak self] in
-        guard let self = self else { return }
-
-        print("save")
-
-        self.saveErrorMessage = ""
-        var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-        if !libkrbn_core_configuration_save(&errorMessageBuffer, errorMessageBuffer.count) {
-          self.saveErrorMessage = String(cString: errorMessageBuffer)
-        }
-      }
+      saveContinuation.yield(())
     }
 
     public func updateProperties() {

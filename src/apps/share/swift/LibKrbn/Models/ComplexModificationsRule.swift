@@ -1,8 +1,9 @@
 import Foundation
 
 extension LibKrbn {
+  @MainActor
   class ComplexModificationsRule: Identifiable, Equatable, ObservableObject {
-    var id = UUID()
+    nonisolated let id = UUID()
     var index: Int
     var description: String
     var jsonString: String?
@@ -19,7 +20,9 @@ extension LibKrbn {
       self.jsonString = jsonString
     }
 
-    public static func == (lhs: ComplexModificationsRule, rhs: ComplexModificationsRule) -> Bool {
+    nonisolated public static func == (lhs: ComplexModificationsRule, rhs: ComplexModificationsRule)
+      -> Bool
+    {
       lhs.id == rhs.id
     }
 
@@ -27,6 +30,7 @@ extension LibKrbn {
       didSet {
         libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(
           index, enabled)
+
         Settings.shared.save()
       }
     }

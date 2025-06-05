@@ -1,5 +1,10 @@
 name: Karabiner-MultitouchExtension
 
+packages:
+  AsyncAlgorithms:
+    url: https://github.com/apple/swift-async-algorithms
+    from: 1.0.0
+
 targets:
   Karabiner-MultitouchExtension:
     settings:
@@ -16,6 +21,8 @@ targets:
         - -lkrbn
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
+      DEAD_CODE_STRIPPING: 'YES'
+      #SWIFT_VERSION: '6.0'
     type: application
     platform: macOS
     deploymentTarget: 13.0
@@ -35,5 +42,6 @@ targets:
           - .gitignore
           - '*.plist.in'
     dependencies:
-      - sdk: libc++.tbd
       - framework: /System/Library/PrivateFrameworks/MultitouchSupport.framework
+      - package: AsyncAlgorithms
+      - sdk: libc++.tbd

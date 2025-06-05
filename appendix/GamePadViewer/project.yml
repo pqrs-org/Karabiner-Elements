@@ -1,5 +1,10 @@
 name: Karabiner-GamePadViewer
 
+packages:
+  AsyncAlgorithms:
+    url: https://github.com/apple/swift-async-algorithms
+    from: 1.0.0
+
 targets:
   Karabiner-GamePadViewer:
     settings:
@@ -38,4 +43,5 @@ targets:
           - '*.plist.in'
       - path: ../../src/apps/share/Resources/app.icns
     dependencies:
+      - package: AsyncAlgorithms
       - sdk: libc++.tbd

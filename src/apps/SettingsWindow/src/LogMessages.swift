@@ -39,7 +39,7 @@ private func callback() {
 }
 
 public class LogMessageEntry: Identifiable, Equatable {
-  public var id = UUID()
+  public let id = UUID()
   public var text = ""
   public var dateNumber: UInt64
   public var foregroundColor = Color.primary
@@ -66,6 +66,7 @@ public class LogMessageEntry: Identifiable, Equatable {
   }
 }
 
+@MainActor
 public class LogMessages: ObservableObject {
   public static let shared = LogMessages()
 
@@ -78,7 +79,7 @@ public class LogMessages: ObservableObject {
   init() {}
 
   deinit {
-    unwatch()
+    libkrbn_disable_log_monitor()
   }
 
   public func watch() {
@@ -101,7 +102,10 @@ public class LogMessages: ObservableObject {
       let formatter = DateFormatter()
       formatter.locale = Locale(identifier: "en_US_POSIX")
       formatter.dateFormat = "[yyyy-MM-dd HH:mm:ss]"
-      self.currentTimeString = formatter.string(from: Date())
+
+      Task { @MainActor in
+        self.currentTimeString = formatter.string(from: Date())
+      }
     }
   }
 

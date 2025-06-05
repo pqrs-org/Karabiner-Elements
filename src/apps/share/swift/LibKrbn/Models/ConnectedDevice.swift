@@ -1,8 +1,9 @@
 import Foundation
 
 extension LibKrbn {
+  @MainActor
   class ConnectedDevice: Identifiable, Equatable, Hashable {
-    let id = UUID()
+    nonisolated let id = UUID()
     let index: Int
     let manufacturerName: String
     let productName: String
@@ -75,11 +76,11 @@ extension LibKrbn {
       libkrbnDeviceIdentifiers.deallocate()
     }
 
-    public static func == (lhs: ConnectedDevice, rhs: ConnectedDevice) -> Bool {
+    nonisolated public static func == (lhs: ConnectedDevice, rhs: ConnectedDevice) -> Bool {
       lhs.id == rhs.id
     }
 
-    func hash(into hasher: inout Hasher) {
+    nonisolated func hash(into hasher: inout Hasher) {
       hasher.combine(id)
     }
   }
