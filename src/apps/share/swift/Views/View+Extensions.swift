@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 extension View {
   func buttonLabelStyle() -> some View {
     self

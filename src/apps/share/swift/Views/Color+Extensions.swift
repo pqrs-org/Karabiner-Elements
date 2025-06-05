@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 extension Color {
   public init(colorString: String) {
     var red: Double = 0
