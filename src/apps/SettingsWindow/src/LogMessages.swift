@@ -1,3 +1,4 @@
+import AsyncAlgorithms
 import SwiftUI
 
 enum LogLevel {
@@ -74,12 +75,15 @@ public class LogMessages: ObservableObject {
   @Published var currentTimeString = ""
 
   private var dividers: [LogMessageEntry] = []
-  private var timer: Timer?
 
-  init() {}
+  private let timer: AsyncTimerSequence<ContinuousClock>
+  private var timerTask: Task<Void, Never>?
 
-  deinit {
-    libkrbn_disable_log_monitor()
+  init() {
+    timer = AsyncTimerSequence(
+      interval: .seconds(1),
+      clock: .continuous
+    )
   }
 
   public func watch() {
@@ -93,24 +97,21 @@ public class LogMessages: ObservableObject {
     // Create timer
     //
 
-    timer = Timer.scheduledTimer(
-      withTimeInterval: 1.0,
-      repeats: true
-    ) { [weak self] (_: Timer) in
+    timerTask = Task { @MainActor [weak self] in
       guard let self = self else { return }
 
-      let formatter = DateFormatter()
-      formatter.locale = Locale(identifier: "en_US_POSIX")
-      formatter.dateFormat = "[yyyy-MM-dd HH:mm:ss]"
+      self.updateCurrentTimeString()
 
-      Task { @MainActor in
-        self.currentTimeString = formatter.string(from: Date())
+      for await _ in timer {
+        self.updateCurrentTimeString()
       }
     }
   }
 
   public func unwatch() {
     libkrbn_disable_log_monitor()
+
+    timerTask?.cancel()
   }
 
   public func setEntries(_ entries: [LogMessageEntry]) {
@@ -167,5 +168,13 @@ public class LogMessages: ObservableObject {
       dividers.append(entry)
       entries.append(entry)
     }
+  }
+
+  private func updateCurrentTimeString() {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "[yyyy-MM-dd HH:mm:ss]"
+
+    self.currentTimeString = formatter.string(from: Date())
   }
 }
