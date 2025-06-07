@@ -35,9 +35,7 @@ extension LibKrbn {
       self.saveStream = AsyncStream<Void> { continuation = $0 }
       self.saveContinuation = continuation
 
-      self.saveTask = Task { @MainActor [weak self] in
-        guard let self = self else { return }
-
+      self.saveTask = Task { @MainActor in
         for await _ in self.saveStream.debounce(for: .seconds(0.2)) {
           print("save")
 
@@ -51,11 +49,6 @@ extension LibKrbn {
 
       updateProperties()
       didSetEnabled = true
-    }
-
-    deinit {
-      saveTask?.cancel()
-      saveContinuation.finish()
     }
 
     // We register the callback in the `watch` method rather than in `init`.
@@ -73,13 +66,13 @@ extension LibKrbn {
 
       ConnectedDevices.shared.watch()
 
-      notificationsTask = Task { [weak self] in
+      notificationsTask = Task {
         await withTaskGroup(of: Void.self) { group in
           group.addTask {
             for await _ in await NotificationCenter.default.notifications(
               named: ConnectedDevices.didConnectedDevicesUpdate)
             {
-              await self?.updateConnectedDeviceSettings()
+              await self.updateConnectedDeviceSettings()
             }
           }
         }

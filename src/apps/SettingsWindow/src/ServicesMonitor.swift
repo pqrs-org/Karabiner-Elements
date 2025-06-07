@@ -1,11 +1,17 @@
-import Foundation
+import AsyncAlgorithms
+import SwiftUI
 
+@MainActor
 public class ServicesMonitor: ObservableObject {
   static let shared = ServicesMonitor()
 
-  private var timer: Timer?
+  private let checkTimer: AsyncTimerSequence<ContinuousClock>
+  private var checkTimerTask: Task<Void, Never>?
+
+  private let servicesWaitingSecondsUpdateTimer: AsyncTimerSequence<ContinuousClock>
+  private var servicesWaitingSecondsUpdateTimerTask: Task<Void, Never>?
+
   private var previousServicesRunning: Bool?
-  private var servicesWaitingSecondsUpdateTimer: Timer?
   private var servicesWaitingStartedAt = Date()
 
   @Published var servicesEnabled = true
@@ -13,40 +19,17 @@ public class ServicesMonitor: ObservableObject {
   @Published var coreAgentsRunning = true
   @Published var servicesWaitingSeconds = 0
 
+  init() {
+    checkTimer = AsyncTimerSequence(
+      interval: .seconds(3),
+      clock: .continuous)
+
+    servicesWaitingSecondsUpdateTimer = AsyncTimerSequence(
+      interval: .seconds(1),
+      clock: .continuous)
+  }
+
   public func start() {
-    timer = Timer.scheduledTimer(
-      withTimeInterval: 3.0,
-      repeats: true
-    ) { [weak self] (_: Timer) in
-      guard let self = self else { return }
-
-      self.servicesEnabled =
-        libkrbn_services_core_daemons_enabled() && libkrbn_services_core_agents_enabled()
-      self.coreDaemonsRunning = libkrbn_services_core_daemons_running()
-      self.coreAgentsRunning = libkrbn_services_core_agents_running()
-
-      let servicesRunning = coreDaemonsRunning && coreAgentsRunning
-
-      // Display alerts only when the status changes.
-      if previousServicesRunning == nil || previousServicesRunning != servicesRunning {
-        previousServicesRunning = servicesRunning
-
-        ContentViewStates.shared.showServicesNotRunningAlert = !servicesRunning
-
-        if !servicesRunning {
-          servicesWaitingStartedAt = Date()
-        }
-      }
-
-      if !servicesRunning {
-        // For approved services, once they are disabled from System Settings > General > Login Items & Extensions,
-        // re-enabling them will not automatically start the service, and it is necessary to call SMAppService.register again.
-        // Therefore, if the service is not running, periodically register daemons and agents to restart them after enabled.
-        libkrbn_services_register_core_daemons()
-        libkrbn_services_register_core_agents()
-      }
-    }
-
     // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.
     // So we should enable them once before checking the status.
     libkrbn_services_register_core_daemons()
@@ -58,29 +41,63 @@ public class ServicesMonitor: ObservableObject {
     if libkrbn_services_core_daemons_enabled() && libkrbn_services_core_agents_enabled() {
       // Wait for the timer to fire.
     } else {
-      timer?.fire()
+      check()
     }
 
-    servicesWaitingSecondsUpdateTimer = Timer.scheduledTimer(
-      withTimeInterval: 1.0,
-      repeats: true
-    ) { [weak self] (_: Timer) in
-      guard let self = self else { return }
+    checkTimerTask = Task { @MainActor in
+      for await _ in checkTimer {
+        self.check()
+      }
+    }
 
-      if self.coreDaemonsRunning && self.coreAgentsRunning {
-        self.servicesWaitingSeconds = 0
-      } else {
-        self.servicesWaitingSeconds = Int(
-          (Date().timeIntervalSince(self.servicesWaitingStartedAt)).rounded())
+    servicesWaitingSecondsUpdateTimerTask = Task { @MainActor in
+      self.updateServicesWaitingSeconds()
+
+      for await _ in servicesWaitingSecondsUpdateTimer {
+        self.updateServicesWaitingSeconds()
       }
     }
   }
 
   public func stop() {
-    servicesWaitingSecondsUpdateTimer?.invalidate()
-    servicesWaitingSecondsUpdateTimer = nil
+    servicesWaitingSecondsUpdateTimerTask?.cancel()
+    checkTimerTask?.cancel()
+  }
 
-    timer?.invalidate()
-    timer = nil
+  private func check() {
+    servicesEnabled =
+      libkrbn_services_core_daemons_enabled() && libkrbn_services_core_agents_enabled()
+    coreDaemonsRunning = libkrbn_services_core_daemons_running()
+    coreAgentsRunning = libkrbn_services_core_agents_running()
+
+    let servicesRunning = coreDaemonsRunning && coreAgentsRunning
+
+    // Display alerts only when the status changes.
+    if previousServicesRunning == nil || previousServicesRunning != servicesRunning {
+      previousServicesRunning = servicesRunning
+
+      ContentViewStates.shared.showServicesNotRunningAlert = !servicesRunning
+
+      if !servicesRunning {
+        servicesWaitingStartedAt = Date()
+      }
+    }
+
+    if !servicesRunning {
+      // For approved services, once they are disabled from System Settings > General > Login Items & Extensions,
+      // re-enabling them will not automatically start the service, and it is necessary to call SMAppService.register again.
+      // Therefore, if the service is not running, periodically register daemons and agents to restart them after enabled.
+      libkrbn_services_register_core_daemons()
+      libkrbn_services_register_core_agents()
+    }
+  }
+
+  private func updateServicesWaitingSeconds() {
+    if coreDaemonsRunning && coreAgentsRunning {
+      servicesWaitingSeconds = 0
+    } else {
+      servicesWaitingSeconds = Int(
+        (Date().timeIntervalSince(servicesWaitingStartedAt)).rounded())
+    }
   }
 }

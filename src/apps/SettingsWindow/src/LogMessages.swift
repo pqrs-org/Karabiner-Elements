@@ -97,9 +97,7 @@ public class LogMessages: ObservableObject {
     // Create timer
     //
 
-    timerTask = Task { @MainActor [weak self] in
-      guard let self = self else { return }
-
+    timerTask = Task { @MainActor in
       self.updateCurrentTimeString()
 
       for await _ in timer {

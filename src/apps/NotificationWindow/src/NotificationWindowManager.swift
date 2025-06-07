@@ -42,7 +42,7 @@ public class NotificationWindowManager: NSObject {
   override public init() {
     super.init()
 
-    notificationsTask = Task { [weak self] in
+    notificationsTask = Task {
       await withTaskGroup(of: Void.self) { group in
         group.addTask {
           for await _ in NotificationCenter.default.notifications(
