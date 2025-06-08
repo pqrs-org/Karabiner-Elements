@@ -44,12 +44,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     MultitouchDeviceManager.shared.observeIONotification()
 
     //
-    // Register wake up handler
-    //
-
-    MultitouchDeviceManager.shared.observeWakeNotification()
-
-    //
     // Disable App Nap
     //
 

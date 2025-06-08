@@ -27,10 +27,45 @@ private func callback(
 class MultitouchDeviceManager {
   static let shared = MultitouchDeviceManager()
 
+  private var notificationsTask: Task<Void, Never>?
+
   private let notificationPort = IONotificationPortCreate(kIOMainPortDefault)
 
   private var devices: [MTDevice] = []
   private var wakeObserver: NSObjectProtocol?
+
+  init() {
+    notificationsTask = Task {
+      await withTaskGroup(of: Void.self) { group in
+        group.addTask {
+          for await _ in NSWorkspace.shared.notificationCenter.notifications(
+            named: NSWorkspace.didWakeNotification
+          ) {
+            Task { @MainActor in
+              print("didWakeNotification")
+
+              do {
+                // Sleep until devices are settled.
+                try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+
+                if UserSettings.shared.relaunchAfterWakeUpFromSleep {
+                  try await Task.sleep(
+                    nanoseconds: UInt64(UserSettings.shared.relaunchWait) * NSEC_PER_SEC)
+
+                  // MultitouchExtension will be relaunched by launchd.
+                  NSApplication.shared.terminate(self)
+                }
+
+                MultitouchDeviceManager.shared.setCallback(true)
+              } catch {
+                print(error.localizedDescription)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   func setCallback(_ register: Bool) {
     print("setCallback \(register)")
@@ -112,38 +147,5 @@ class MultitouchDeviceManager {
 
     let loopSource = IONotificationPortGetRunLoopSource(notificationPort).takeUnretainedValue()
     CFRunLoopAddSource(RunLoop.current.getCFRunLoop(), loopSource, .defaultMode)
-  }
-
-  //
-  // WakeNotification
-  //
-
-  func observeWakeNotification() {
-    NSWorkspace.shared.notificationCenter.addObserver(
-      forName: NSWorkspace.didWakeNotification,
-      object: nil,
-      queue: .main
-    ) { _ in
-      Task { @MainActor in
-        print("didWakeNotification")
-
-        do {
-          // Sleep until devices are settled.
-          try await Task.sleep(nanoseconds: NSEC_PER_SEC)
-
-          if UserSettings.shared.relaunchAfterWakeUpFromSleep {
-            try await Task.sleep(
-              nanoseconds: UInt64(UserSettings.shared.relaunchWait) * NSEC_PER_SEC)
-
-            // MultitouchExtension will be relaunched by launchd.
-            NSApplication.shared.terminate(self)
-          }
-
-          MultitouchDeviceManager.shared.setCallback(true)
-        } catch {
-          print(error.localizedDescription)
-        }
-      }
-    }
   }
 }

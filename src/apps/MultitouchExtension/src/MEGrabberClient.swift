@@ -21,6 +21,7 @@ private class PreviousFingerCount {
 
 private var previousFingerCount = PreviousFingerCount()
 
+@MainActor
 private func staticSetGrabberVariable(_ count: FingerCount) {
   struct GrabberVariable {
     var name: String
@@ -126,17 +127,24 @@ private func callback() {
   }
 }
 
+@MainActor
 final class MEGrabberClient {
   static let shared = MEGrabberClient()
 
+  private var notificationsTask: Task<Void, Never>?
+
   init() {
-    NotificationCenter.default.addObserver(
-      forName: FingerState.fingerStateChanged,
-      object: nil,
-      queue: .main
-    ) { _ in
-      Task { @MainActor in
-        staticSetGrabberVariable(FingerManager.shared.fingerCount)
+    notificationsTask = Task {
+      await withTaskGroup(of: Void.self) { group in
+        group.addTask {
+          for await _ in NotificationCenter.default.notifications(
+            named: FingerState.fingerStateChanged
+          ) {
+            Task { @MainActor in
+              staticSetGrabberVariable(FingerManager.shared.fingerCount)
+            }
+          }
+        }
       }
     }
   }
