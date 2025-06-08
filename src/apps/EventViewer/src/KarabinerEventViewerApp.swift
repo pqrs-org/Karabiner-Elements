@@ -18,7 +18,6 @@ struct KarabinerEventViewerApp: App {
     }
 
     DevicesJsonString.shared.start()
-    EventHistory.shared.start()
     FrontmostApplicationHistory.shared.start()
     VariablesJsonString.shared.start()
 

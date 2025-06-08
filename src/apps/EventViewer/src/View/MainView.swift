@@ -3,6 +3,7 @@ import SwiftUI
 struct MainView: View {
   @ObservedObject var eventHistory = EventHistory.shared
   @State private var textInput: String = "Press the key you want to investigate."
+  @State private var monitoring = true
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
@@ -41,6 +42,16 @@ struct MainView: View {
             .disabled(eventHistory.entries.isEmpty)
 
             Spacer()
+
+            Toggle("Monitoring events", isOn: $monitoring)
+              .switchToggleStyle()
+              .onChange(of: monitoring) { newValue in
+                if newValue {
+                  eventHistory.start()
+                } else {
+                  eventHistory.stop()
+                }
+              }
           }
 
           ScrollViewReader { proxy in
@@ -105,5 +116,14 @@ struct MainView: View {
       }
     }
     .padding()
+    .onAppear {
+      eventHistory.start()
+    }
+    .onDisappear {
+      eventHistory.stop()
+    }
+    .onReceive(eventHistory.$monitoring) { value in
+      monitoring = value
+    }
   }
 }
