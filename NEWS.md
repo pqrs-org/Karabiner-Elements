@@ -13,6 +13,7 @@
     -   Added `conditions` option into `to`.
     -   Added `Filter useless events from specific devices` option in Expert tab.
     -   Added `Reorder same timestamp input events to prioritize modifiers` in Expert tab.
+    -   Added a toggle to EventViewer for monitoring events.
 -   ⚡️ Improvements
     -   Migrated to the SwiftUI life cycle.
     -   Improved `to_delayed_action` behavior to use the modifier flags of the time the key is pressed, when sending events.
