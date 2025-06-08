@@ -1,39 +1,49 @@
-import Combine
+import AsyncAlgorithms
 import Foundation
 import SwiftUI
 
+@MainActor
 final class Doctor: ObservableObject {
   static let shared = Doctor()
 
-  private var timer: Timer?
+  private let timer: AsyncTimerSequence<ContinuousClock>
+  private var timerTask: Task<Void, Never>?
+
   private var previousShowAlert: Bool?
 
   @Published var userPIDDirectoryWritable: Bool = true
 
+  init() {
+    timer = AsyncTimerSequence(
+      interval: .seconds(3),
+      clock: .continuous
+    )
+  }
+
   public func start() {
-    timer = Timer.scheduledTimer(
-      withTimeInterval: 3.0,
-      repeats: true
-    ) { [weak self] (_: Timer) in
-      guard let self = self else { return }
+    timerTask = Task { @MainActor in
+      self.check()
 
-      userPIDDirectoryWritable = libkrbn_user_pid_directory_writable()
-
-      let showAlert = !userPIDDirectoryWritable
-
-      // Display alerts only when the status changes.
-      if previousShowAlert == nil || previousShowAlert != showAlert {
-        previousShowAlert = showAlert
-
-        ContentViewStates.shared.showDoctorAlert = showAlert
+      for await _ in timer {
+        self.check()
       }
     }
-
-    timer?.fire()
   }
 
   public func stop() {
-    timer?.invalidate()
-    timer = nil
+    timerTask?.cancel()
+  }
+
+  private func check() {
+    userPIDDirectoryWritable = libkrbn_user_pid_directory_writable()
+
+    let showAlert = !userPIDDirectoryWritable
+
+    // Display alerts only when the status changes.
+    if previousShowAlert == nil || previousShowAlert != showAlert {
+      previousShowAlert = showAlert
+
+      ContentViewStates.shared.showDoctorAlert = showAlert
+    }
   }
 }
