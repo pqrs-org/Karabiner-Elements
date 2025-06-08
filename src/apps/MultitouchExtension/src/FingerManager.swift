@@ -1,3 +1,4 @@
+import AsyncAlgorithms
 import Combine
 
 class FingerManager: ObservableObject {
@@ -5,29 +6,36 @@ class FingerManager: ObservableObject {
 
   private(set) var objectWillChange = ObservableObjectPublisher()
   private(set) var states: [FingerState] = []
-  // Task to reduce the frequency of calling objectWillChange.send
-  private var objectWillChangeTask: Task<(), Never>?
+
+  private var notificationsTask: Task<Void, Never>?
+
+  private let fingerStateChangedStream: AsyncStream<Void>
+  private let fingerStateChangedContinuation: AsyncStream<Void>.Continuation
+  private var fingerStateChangedTask: Task<Void, Never>?
 
   init() {
-    NotificationCenter.default.addObserver(
-      forName: FingerState.fingerStateChanged,
-      object: nil,
-      queue: .main
-    ) { [weak self] _ in
-      guard let self = self else { return }
+    var continuation: AsyncStream<Void>.Continuation!
+    self.fingerStateChangedStream = AsyncStream<Void> { continuation = $0 }
+    self.fingerStateChangedContinuation = continuation
 
-      if self.objectWillChangeTask == nil {
-        self.objectWillChangeTask = Task { @MainActor in
-          do {
-            try await Task.sleep(nanoseconds: 50 * NSEC_PER_MSEC)
-          } catch {
-            print(error.localizedDescription)
+    notificationsTask = Task {
+      await withTaskGroup(of: Void.self) { group in
+        group.addTask {
+          for await _ in NotificationCenter.default.notifications(
+            named: FingerState.fingerStateChanged
+          ) {
+            self.fingerStateChangedContinuation.yield(())
           }
-
-          self.objectWillChange.send()
-
-          self.objectWillChangeTask = nil
         }
+      }
+    }
+
+    self.fingerStateChangedTask = Task { @MainActor in
+      // Since FingerState.fingerStateChanged notifications are sent continuously,
+      // using debounce prevents objectWillChange from firing.
+      // That's why _throttle needs to be used instead.
+      for await _ in self.fingerStateChangedStream._throttle(for: .milliseconds(50)) {
+        self.objectWillChange.send()
       }
     }
   }
