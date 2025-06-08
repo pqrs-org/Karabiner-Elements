@@ -1,10 +1,11 @@
 import AsyncAlgorithms
 import Combine
 
+@MainActor
 class FingerManager: ObservableObject {
   static let shared = FingerManager()
 
-  private(set) var objectWillChange = ObservableObjectPublisher()
+  nonisolated let objectWillChange = ObservableObjectPublisher()
   private(set) var states: [FingerState] = []
 
   private var notificationsTask: Task<Void, Never>?
@@ -40,7 +41,6 @@ class FingerManager: ObservableObject {
     }
   }
 
-  @MainActor
   func update(
     device: MTDevice,
     fingers: [Finger],
@@ -126,7 +126,6 @@ class FingerManager: ObservableObject {
     NotificationCenter.default.post(name: FingerState.fingerStateChanged, object: nil)
   }
 
-  @MainActor
   var fingerCount: FingerCount {
     var fingerCount = FingerCount()
     let targetArea = UserSettings.shared.targetArea
