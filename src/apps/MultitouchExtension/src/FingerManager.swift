@@ -5,8 +5,14 @@ import Combine
 class FingerManager: ObservableObject {
   static let shared = FingerManager()
 
-  nonisolated let objectWillChange = ObservableObjectPublisher()
-  private(set) var states: [FingerState] = []
+  // Multitouch events are triggered frequently as long as fingers remain on the device.
+  // To avoid performance issues from updating a @Published variable on every event,
+  // we update the raw values in real time but throttle updates to the @Published property.
+  @Published var states: [FingerState] = []
+  private var rawStates: [FingerState] = []
+
+  @Published var fingerCount = FingerCount()
+  private var rawFingerCount = FingerCount()
 
   private var notificationsTask: Task<Void, Never>?
 
@@ -36,7 +42,8 @@ class FingerManager: ObservableObject {
       // using debounce prevents objectWillChange from firing.
       // That's why _throttle needs to be used instead.
       for await _ in self.fingerStateChangedStream._throttle(for: .milliseconds(50)) {
-        self.objectWillChange.send()
+        states = rawStates
+        fingerCount = rawFingerCount
       }
     }
   }
@@ -97,7 +104,7 @@ class FingerManager: ObservableObject {
     // Update physical untouched fingers
     //
 
-    for s in states {
+    for s in rawStates {
       if s.device == device && s.frame != frame && s.touchedPhysically {
         s.touchedPhysically = false
 
@@ -111,23 +118,25 @@ class FingerManager: ObservableObject {
     // Remove untouched fingers
     //
 
-    states.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
+    rawStates.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
 
     //
     // Remove FingerState which the contact frame has not been received for a certain period.
     //
 
-    states.removeAll(where: { now.timeIntervalSince($0.contactFrameArrivedAt) > 3.0 })
+    rawStates.removeAll(where: { now.timeIntervalSince($0.contactFrameArrivedAt) > 3.0 })
 
     //
     // Post notifications
     //
 
     NotificationCenter.default.post(name: FingerState.fingerStateChanged, object: nil)
+
+    updateRawFingerCount()
   }
 
-  var fingerCount: FingerCount {
-    var fingerCount = FingerCount()
+  private func updateRawFingerCount() {
+    var c = FingerCount()
     let targetArea = UserSettings.shared.targetArea
     let x25 = targetArea.origin.x + targetArea.size.width * 0.25
     let x50 = targetArea.origin.x + targetArea.size.width * 0.5
@@ -136,7 +145,7 @@ class FingerManager: ObservableObject {
     let y50 = targetArea.origin.y + targetArea.size.height * 0.5
     let y75 = targetArea.origin.y + targetArea.size.height * 0.75
 
-    for s in states {
+    for s in rawStates {
       if s.ignored {
         continue
       }
@@ -149,59 +158,59 @@ class FingerManager: ObservableObject {
         // If palm is detected, we do not increment touched finger counter.
 
         if s.point.x < x50 {
-          fingerCount.leftHalfAreaPalmCount += 1
+          c.leftHalfAreaPalmCount += 1
         } else {
-          fingerCount.rightHalfAreaPalmCount += 1
+          c.rightHalfAreaPalmCount += 1
         }
 
         if s.point.y < y50 {
-          fingerCount.lowerHalfAreaPalmCount += 1
+          c.lowerHalfAreaPalmCount += 1
         } else {
-          fingerCount.upperHalfAreaPalmCount += 1
+          c.upperHalfAreaPalmCount += 1
         }
 
-        fingerCount.totalPalmCount += 1
+        c.totalPalmCount += 1
       } else {
         if s.point.x < x50 {
-          fingerCount.leftHalfAreaCount += 1
+          c.leftHalfAreaCount += 1
           if s.point.x < x25 {
-            fingerCount.leftQuarterAreaCount += 1
+            c.leftQuarterAreaCount += 1
           }
         } else {
-          fingerCount.rightHalfAreaCount += 1
+          c.rightHalfAreaCount += 1
           if s.point.x > x75 {
-            fingerCount.rightQuarterAreaCount += 1
+            c.rightQuarterAreaCount += 1
           }
         }
 
         if s.point.y < y50 {
-          fingerCount.lowerHalfAreaCount += 1
+          c.lowerHalfAreaCount += 1
           if s.point.y < y25 {
-            fingerCount.lowerQuarterAreaCount += 1
+            c.lowerQuarterAreaCount += 1
           }
         } else {
-          fingerCount.upperHalfAreaCount += 1
+          c.upperHalfAreaCount += 1
           if s.point.y > y75 {
-            fingerCount.upperQuarterAreaCount += 1
+            c.upperQuarterAreaCount += 1
           }
         }
 
-        fingerCount.totalCount += 1
+        c.totalCount += 1
       }
     }
 
-    return fingerCount
+    rawFingerCount = c
   }
 
   private func getFingerState(device: MTDevice, identifier: Int) -> FingerState {
-    for s in states {
+    for s in rawStates {
       if s.device == device && s.identifier == identifier {
         return s
       }
     }
 
     let s = FingerState(device: device, identifier: identifier)
-    states.append(s)
+    rawStates.append(s)
     return s
   }
 }
