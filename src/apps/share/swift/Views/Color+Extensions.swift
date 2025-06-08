@@ -569,10 +569,10 @@ extension Color {
       UInt8(components.opacity * 255))
   }
 
-  public static var infoBackground: Color = Color(colorString: "#cff4fcff")
-  public static var infoForeground: Color = Color(colorString: "#055160ff")
-  public static var errorBackground: Color = Color(colorString: "#f2dedeff")
-  public static var errorForeground: Color = Color(colorString: "#a94442ff")
-  public static var warningBackground: Color = Color(colorString: "#fcf8e3ff")
-  public static var warningForeground: Color = Color(colorString: "#8a6d3bff")
+  public static let infoBackground: Color = Color(colorString: "#cff4fcff")
+  public static let infoForeground: Color = Color(colorString: "#055160ff")
+  public static let errorBackground: Color = Color(colorString: "#f2dedeff")
+  public static let errorForeground: Color = Color(colorString: "#a94442ff")
+  public static let warningBackground: Color = Color(colorString: "#fcf8e3ff")
+  public static let warningForeground: Color = Color(colorString: "#8a6d3bff")
 }
