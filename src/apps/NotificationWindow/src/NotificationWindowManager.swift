@@ -48,7 +48,7 @@ public class NotificationWindowManager: NSObject {
           for await _ in NotificationCenter.default.notifications(
             named: NSApplication.didChangeScreenParametersNotification
           ) {
-            await self?.updateWindows()
+            await self.updateWindows()
           }
         }
       }
