@@ -12,7 +12,6 @@ class FingerManager: ObservableObject {
   private var rawStates: [FingerState] = []
 
   @Published var fingerCount = FingerCount()
-  private var rawFingerCount = FingerCount()
 
   private var notificationsTask: Task<Void, Never>?
 
@@ -43,7 +42,7 @@ class FingerManager: ObservableObject {
       // That's why _throttle needs to be used instead.
       for await _ in self.fingerStateChangedStream._throttle(for: .milliseconds(50)) {
         states = rawStates
-        fingerCount = rawFingerCount
+        updateFingerCount()
       }
     }
   }
@@ -131,11 +130,9 @@ class FingerManager: ObservableObject {
     //
 
     NotificationCenter.default.post(name: FingerState.fingerStateChanged, object: nil)
-
-    updateRawFingerCount()
   }
 
-  private func updateRawFingerCount() {
+  private func updateFingerCount() {
     var c = FingerCount()
     let targetArea = UserSettings.shared.targetArea
     let x25 = targetArea.origin.x + targetArea.size.width * 0.25
@@ -199,7 +196,7 @@ class FingerManager: ObservableObject {
       }
     }
 
-    rawFingerCount = c
+    fingerCount = c
   }
 
   private func getFingerState(device: MTDevice, identifier: Int) -> FingerState {

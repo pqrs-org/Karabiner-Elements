@@ -1,4 +1,4 @@
-struct FingerCount {
+struct FingerCount: Equatable {
   var upperQuarterAreaCount = 0
   var lowerQuarterAreaCount = 0
   var leftQuarterAreaCount = 0

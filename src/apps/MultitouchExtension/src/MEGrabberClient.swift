@@ -1,3 +1,5 @@
+import Combine
+
 private class PreviousValue {
   var value: Int = -1
 }
@@ -131,22 +133,15 @@ private func callback() {
 final class MEGrabberClient {
   static let shared = MEGrabberClient()
 
-  private var notificationsTask: Task<Void, Never>?
+  private var cancellables: Set<AnyCancellable> = []
 
   init() {
-    notificationsTask = Task {
-      await withTaskGroup(of: Void.self) { group in
-        group.addTask {
-          for await _ in NotificationCenter.default.notifications(
-            named: FingerState.fingerStateChanged
-          ) {
-            Task { @MainActor in
-              staticSetGrabberVariable(FingerManager.shared.fingerCount)
-            }
-          }
-        }
+    FingerManager.shared.$fingerCount
+      .removeDuplicates()
+      .sink { newValue in
+        staticSetGrabberVariable(newValue)
       }
-    }
+      .store(in: &cancellables)
   }
 
   // We register the callback in the `start` method rather than in `init`.
