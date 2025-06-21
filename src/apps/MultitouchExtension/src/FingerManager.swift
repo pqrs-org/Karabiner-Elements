@@ -19,14 +19,10 @@ class FingerManager: ObservableObject {
   private var timerTask: Task<Void, Never>?
 
   private func evaluateTimerState() {
-    let needsTimer = rawStates.contains {
-      $0.touchedPhysically || $0.touchedFixed
-    }
-
-    switch (needsTimer, timerTask) {
-    case (true, nil):
+    switch (rawStates.isEmpty, timerTask) {
+    case (false, nil):
       startTimer()
-    case (false, let task?):
+    case (true, let task?):
       task.cancel()
       timerTask = nil
     default:
@@ -40,15 +36,33 @@ class FingerManager: ObservableObject {
       for await _ in timer {
         if Task.isCancelled { break }
 
+        //
+        // Update rawState
+        //
+
         let now = Date()
-        for rawState in rawStates {
-          rawState.updateTouchedFixed(now: now)
-        }
+
+        rawStates.forEach { $0.updateTouchedFixed(now: now) }
+
+        // Remove untouched fingers
+        rawStates.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
+
+        // Remove FingerState which the contact frame has not been received for a certain period.
+        rawStates.removeAll(where: { now.timeIntervalSince($0.contactFrameArrivedAt) > 3.0 })
+
+        //
+        // Update @Published variables
+        //
 
         if trackStates {
           states = rawStates
         }
+
         updateFingerCount()
+
+        //
+        // Stop the timer when all fingers are lifted.
+        //
 
         evaluateTimerState()
       }
@@ -70,11 +84,6 @@ class FingerManager: ObservableObject {
     //
 
     for finger in fingers {
-      // state values:
-      //   4: touched
-      //   1-3,5-7: near
-      let touched = (finger.state == 4)
-
       let s = getFingerState(device: device, identifier: Int(finger.identifier))
       s.frame = Int(frame)
       s.size = Double(finger.size)
@@ -83,8 +92,13 @@ class FingerManager: ObservableObject {
         y: CGFloat(finger.normalized.position.y))
       s.contactFrameArrivedAt = now
 
+      // state values:
+      //   4: touched
+      //   1-3,5-7: near
+      s.touchedPhysically = (finger.state == 4)
+
       // Note:
-      // Once the point in targetArea, keep `ignored == NO`.
+      // Once the point in targetArea, keep `ignored == false`.
       if s.ignored {
         if targetArea.contains(s.point) {
           s.ignored = false
@@ -95,10 +109,6 @@ class FingerManager: ObservableObject {
       // Once the finger is recognised as a palm, keep `palmed` in order to continue to recognise it as a palm even when the palm leaves.
       if Double(finger.size) > palmThreshold {
         s.palmed = true
-      }
-
-      if s.touchedPhysically != touched {
-        s.touchedPhysically = touched
       }
     }
 
@@ -112,18 +122,6 @@ class FingerManager: ObservableObject {
       }
       // print("\(e.touchedPhysically) \(e.point)")
     }
-
-    //
-    // Remove untouched fingers
-    //
-
-    rawStates.removeAll(where: { $0.touchedPhysically == false && $0.touchedFixed == false })
-
-    //
-    // Remove FingerState which the contact frame has not been received for a certain period.
-    //
-
-    rawStates.removeAll(where: { now.timeIntervalSince($0.contactFrameArrivedAt) > 3.0 })
 
     evaluateTimerState()
   }
