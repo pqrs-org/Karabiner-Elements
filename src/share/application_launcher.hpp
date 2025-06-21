@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <pqrs/osx/workspace.hpp>
 #include <spdlog/fmt/fmt.h>
 #include <sstream>
 
@@ -13,11 +14,11 @@ public:
   }
 
   static void launch_event_viewer(void) {
-    system("open '/Applications/Karabiner-EventViewer.app'");
+    pqrs::osx::workspace::open_application_by_file_path("/Applications/Karabiner-EventViewer.app");
   }
 
   static void launch_settings(void) {
-    system("open '/Applications/Karabiner-Elements.app'");
+    pqrs::osx::workspace::open_application_by_file_path("/Applications/Karabiner-Elements.app");
   }
 
   static void killall_settings(void) {
