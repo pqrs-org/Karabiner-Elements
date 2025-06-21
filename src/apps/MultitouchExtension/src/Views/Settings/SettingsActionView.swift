@@ -28,8 +28,6 @@ struct SettingsActionView: View {
           .background(Color.infoBackground)
         }.padding()
       }
-
-      Spacer()
-    }.padding()
+    }
   }
 }

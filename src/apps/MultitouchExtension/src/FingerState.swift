@@ -13,9 +13,7 @@ class FingerState: Identifiable {
   //
 
   var frame = 0
-
   var point = NSPoint.zero
-
   var size = 0.0
 
   // True if the finger is touched physically.

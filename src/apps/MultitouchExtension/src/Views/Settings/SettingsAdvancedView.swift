@@ -104,8 +104,6 @@ struct SettingsAdvancedView: View {
         }
         .padding()
       }
-
-      Spacer()
-    }.padding()
+    }
   }
 }

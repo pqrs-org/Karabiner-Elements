@@ -12,7 +12,7 @@ xcode:
 	open *.xcodeproj
 
 run:
-	./build/Release/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension --show-ui
+	./build/Release/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension
 
 install:
 	bash ../../../scripts/codesign.sh build/Release

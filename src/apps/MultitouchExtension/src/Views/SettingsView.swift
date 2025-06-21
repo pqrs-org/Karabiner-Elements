@@ -1,57 +1,35 @@
 import SwiftUI
 
-enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
+enum TabTag: String {
   case main
   case advanced
   case action
-
-  var id: Self { self }
-
-  var title: String {
-    switch self {
-    case .main: return "Main"
-    case .advanced: return "Advanced"
-    case .action: return "Restart"
-    }
-  }
-
-  var systemImage: String {
-    switch self {
-    case .main: return "gearshape"
-    case .advanced: return "hammer"
-    case .action: return "bolt.circle"
-    }
-  }
 }
 
 struct SettingsView: View {
-  @State private var selection: SidebarItem = .main
+  @State private var selection: TabTag = .main
 
   var body: some View {
-    NavigationSplitView(
-      sidebar: {
-        List(SidebarItem.allCases, selection: $selection) { item in
-          Label(item.title, systemImage: item.systemImage)
-            .padding(.vertical, 8)
+    TabView(selection: $selection) {
+      SettingsMainView()
+        .tabItem {
+          Label("Main", systemImage: "gearshape")
         }
-        .navigationSplitViewColumnWidth(200)
-        .listStyle(.sidebar)
-      },
-      detail: {
-        switch selection {
-        case .main:
-          SettingsMainView()
-        case .advanced:
-          SettingsAdvancedView()
-        case .action:
-          SettingsActionView()
+        .tag(TabTag.main)
+
+      SettingsAdvancedView()
+        .tabItem {
+          Label("Advanced", systemImage: "hammer")
         }
-      }
-    )
-    .frame(
-      minWidth: 900,
-      maxWidth: .infinity,
-      minHeight: 600,
-      maxHeight: .infinity)
+        .tag(TabTag.advanced)
+
+      SettingsActionView()
+        .tabItem {
+          Label("Restart", systemImage: "bolt.circle")
+        }
+        .tag(TabTag.action)
+    }
+    .scenePadding()
+    .frame(width: 600)
   }
 }

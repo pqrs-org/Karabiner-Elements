@@ -1,16 +1,37 @@
+import SettingsAccess
 import SwiftUI
 
 @main
 struct KarabinerMultitouchExtensionApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
+  private let version =
+    Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+
   init() {
     libkrbn_initialize()
   }
 
   var body: some Scene {
-    // Provide an empty Settings to prevent build errors.
-    Settings {}
+    MenuBarExtra(
+      "Karabiner-MultitouchExtension", systemImage: "rectangle.and.hand.point.up.left.filled",
+    ) {
+      Text("Karabiner-MultitouchExtension \(version)")
+
+      Divider()
+
+      SettingsLink {
+        Label("Settings...", systemImage: "gearshape")
+          .labelStyle(.titleAndIcon)
+      } preAction: {
+        NSApp.activate(ignoringOtherApps: true)
+      } postAction: {
+      }
+    }
+
+    Settings {
+      SettingsView()
+    }
   }
 }
 
@@ -18,24 +39,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   private var activity: NSObjectProtocol?
 
   public func applicationDidFinishLaunching(_: Notification) {
-    //
-    // Handle kHideIconInDock
-    //
-
-    if !UserSettings.shared.hideIconInDock {
-      var psn = ProcessSerialNumber(highLongOfPSN: 0, lowLongOfPSN: UInt32(kCurrentProcess))
-      TransformProcessType(
-        &psn, ProcessApplicationTransformState(kProcessTransformToForegroundApplication))
-    }
-
-    //
-    // Handle --show-ui
-    //
-
-    if CommandLine.arguments.contains("--show-ui") {
-      SettingsWindowManager.shared.show()
-    }
-
     //
     // Enable grabber_client
     //
@@ -62,13 +65,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     MultitouchDeviceManager.shared.setCallback(false)
 
     libkrbn_terminate()
-  }
-
-  public func applicationShouldHandleReopen(
-    _: NSApplication,
-    hasVisibleWindows _: Bool
-  ) -> Bool {
-    SettingsWindowManager.shared.show()
-    return true
   }
 }

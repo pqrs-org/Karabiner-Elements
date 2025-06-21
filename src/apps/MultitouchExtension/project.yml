@@ -4,6 +4,9 @@ packages:
   AsyncAlgorithms:
     url: https://github.com/apple/swift-async-algorithms
     from: 1.0.0
+  SettingsAccess:
+    url: https://github.com/orchetect/SettingsAccess
+    from: 2.1.0
 
 targets:
   Karabiner-MultitouchExtension:
@@ -44,4 +47,5 @@ targets:
     dependencies:
       - framework: /System/Library/PrivateFrameworks/MultitouchSupport.framework
       - package: AsyncAlgorithms
+      - package: SettingsAccess
       - sdk: libc++.tbd
