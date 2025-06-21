@@ -38,17 +38,12 @@ class FingerManager: ObservableObject {
         if Task.isCancelled { break }
 
         let now = Date()
-        var didChange = false
         for state in rawStates {
-          if state.updateTouchedFixed(now: now) {
-            didChange = true
-          }
+          state.updateTouchedFixed(now: now)
         }
 
-        if didChange {
-          states = rawStates
-          updateFingerCount()
-        }
+        states = rawStates
+        updateFingerCount()
 
         evaluateTimerState()
       }
@@ -192,7 +187,9 @@ class FingerManager: ObservableObject {
       }
     }
 
-    fingerCount = c
+    if fingerCount != c {
+      fingerCount = c
+    }
   }
 
   private func getFingerState(device: MTDevice, identifier: Int) -> FingerState {

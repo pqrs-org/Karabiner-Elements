@@ -42,7 +42,7 @@ class FingerState: Identifiable {
     self.identifier = identifier
   }
 
-  func updateTouchedFixed(now: Date) -> Bool {
+  func updateTouchedFixed(now: Date) {
     let delay =
       touchedPhysically
       ? UserSettings.shared.delayBeforeTurnOn
@@ -52,10 +52,7 @@ class FingerState: Identifiable {
       let elapsedMs = Int(now.timeIntervalSince(touchedPhysicallyAt) * 1000)
       if elapsedMs >= delay {
         touchedFixed = touchedPhysically
-        return true
       }
     }
-
-    return false
   }
 }
