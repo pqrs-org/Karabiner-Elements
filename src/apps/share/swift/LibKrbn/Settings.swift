@@ -42,7 +42,7 @@ extension LibKrbn {
           self.saveErrorMessage = ""
           var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
           if !libkrbn_core_configuration_save(&errorMessageBuffer, errorMessageBuffer.count) {
-            self.saveErrorMessage = String(cString: errorMessageBuffer)
+            self.saveErrorMessage = String(utf8String: errorMessageBuffer) ?? ""
           }
         }
       }
@@ -118,7 +118,7 @@ extension LibKrbn {
         libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(
           &buffer, buffer.count
         )
-        virtualHIDKeyboardKeyboardTypeV2 = String(cString: buffer)
+        virtualHIDKeyboardKeyboardTypeV2 = String(utf8String: buffer) ?? ""
       }
 
       virtualHIDKeyboardMouseKeyXYScale = Int(
@@ -172,14 +172,14 @@ extension LibKrbn {
           i, connectedDevice?.libkrbnDeviceIdentifiers,
           &buffer, buffer.count)
         {
-          fromJsonString = String(cString: buffer)
+          fromJsonString = String(utf8String: buffer) ?? ""
         }
 
         if libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(
           i, connectedDevice?.libkrbnDeviceIdentifiers,
           &buffer, buffer.count)
         {
-          toJsonString = String(cString: buffer)
+          toJsonString = String(utf8String: buffer) ?? ""
         }
 
         let simpleModification = SimpleModification(
@@ -279,14 +279,14 @@ extension LibKrbn {
           i, connectedDevice?.libkrbnDeviceIdentifiers,
           &buffer, buffer.count)
         {
-          fromJsonString = String(cString: buffer)
+          fromJsonString = String(utf8String: buffer) ?? ""
         }
 
         if libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(
           i, connectedDevice?.libkrbnDeviceIdentifiers,
           &buffer, buffer.count)
         {
-          toJsonString = String(cString: buffer)
+          toJsonString = String(utf8String: buffer) ?? ""
         }
 
         let simpleModification = SimpleModification(
@@ -343,14 +343,14 @@ extension LibKrbn {
         if libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(
           i, &buffer, buffer.count)
         {
-          jsonString = String(cString: buffer)
+          jsonString = String(utf8String: buffer)
         }
 
         var ruleDescription = ""
         if libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(
           i, &buffer, buffer.count)
         {
-          ruleDescription = String(cString: buffer)
+          ruleDescription = String(utf8String: buffer) ?? ""
         }
 
         let complexModificationsRule = ComplexModificationsRule(
@@ -382,7 +382,7 @@ extension LibKrbn {
         errorMessageBuffer.count
       )
 
-      let errorMessage = String(cString: errorMessageBuffer)
+      let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
       if errorMessage != "" {
         return errorMessage
       }
@@ -403,7 +403,7 @@ extension LibKrbn {
         errorMessageBuffer.count
       )
 
-      let errorMessage = String(cString: errorMessageBuffer)
+      let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
       if errorMessage != "" {
         return errorMessage
       }
@@ -616,7 +616,7 @@ extension LibKrbn {
         var buffer = [Int8](repeating: 0, count: 32 * 1024)
         var name = ""
         if libkrbn_core_configuration_get_profile_name(i, &buffer, buffer.count) {
-          name = String(cString: buffer)
+          name = String(utf8String: buffer) ?? ""
         }
 
         let profile = Profile(i, name, libkrbn_core_configuration_get_profile_selected(i))
@@ -633,7 +633,7 @@ extension LibKrbn {
     public func selectedProfileName() -> String {
       var buffer = [Int8](repeating: 0, count: 32 * 1024)
       if libkrbn_core_configuration_get_selected_profile_name(&buffer, buffer.count) {
-        return String(cString: buffer)
+        return String(utf8String: buffer) ?? ""
       }
 
       return ""
