@@ -24,10 +24,6 @@ public:
     system("killall Karabiner-Elements");
   }
 
-  static void launch_multitouch_extension(void) {
-    system("open '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app' --args --show-ui");
-  }
-
   static void launch_uninstaller(void) {
     // Use nohup because uninstaller kill the Settings Window.
     system("/usr/bin/nohup osascript '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript' >/dev/null 2>&1 &");

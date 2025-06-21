@@ -58,7 +58,6 @@ void libkrbn_updater_check_for_updates_with_beta_version(void);
 void libkrbn_launch_event_viewer(void);
 void libkrbn_launch_settings(void);
 void libkrbn_killall_settings(void);
-void libkrbn_launch_multitouch_extension(void);
 void libkrbn_launch_uninstaller(void);
 
 bool libkrbn_driver_running(void);

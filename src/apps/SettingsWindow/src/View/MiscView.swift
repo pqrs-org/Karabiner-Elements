@@ -27,20 +27,6 @@ struct MiscView: View {
             .padding()
             .foregroundColor(Color.infoForeground)
             .background(Color.infoBackground)
-
-            HStack {
-              Button(
-                action: {
-                  libkrbn_launch_multitouch_extension()
-                },
-                label: {
-                  Label("Open Multitouch Extension Settings", systemImage: "arrow.up.forward.app")
-                }
-              )
-              .disabled(!settings.enableMultitouchExtension)
-
-              Spacer()
-            }
           }
           .padding()
         }

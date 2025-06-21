@@ -184,10 +184,6 @@ void libkrbn_killall_settings(void) {
   krbn::application_launcher::killall_settings();
 }
 
-void libkrbn_launch_multitouch_extension(void) {
-  krbn::application_launcher::launch_multitouch_extension();
-}
-
 void libkrbn_launch_uninstaller(void) {
   krbn::application_launcher::launch_uninstaller();
 }
