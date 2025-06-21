@@ -1,7 +1,5 @@
 class FingerState: Identifiable {
-  static let fingerStateChanged = Notification.Name("fingerStateChanged")
-
-  public var id = UUID()
+  public let id = UUID()
 
   //
   // Unique keys
@@ -22,6 +20,7 @@ class FingerState: Identifiable {
 
   // True if the finger is touched physically.
   var touchedPhysically = false
+  var touchedPhysicallyAt = Date()
 
   // True if the finger is touched continuously for the specified time. (finger touch detection delay)
   var touchedFixed = false
@@ -34,15 +33,6 @@ class FingerState: Identifiable {
 
   var contactFrameArrivedAt = Date()
 
-  private var delayTask: Task<(), Never>?
-
-  enum DelayMode {
-    case none
-    case touched
-    case untouched
-  }
-  private var delayMode = DelayMode.none
-
   //
   // Methods
   //
@@ -52,41 +42,20 @@ class FingerState: Identifiable {
     self.identifier = identifier
   }
 
-  func setDelayTask(mode: DelayMode) {
-    if delayMode != mode {
-      delayTask?.cancel()
+  func updateTouchedFixed(now: Date) -> Bool {
+    let delay =
+      touchedPhysically
+      ? UserSettings.shared.delayBeforeTurnOn
+      : UserSettings.shared.delayBeforeTurnOff
 
-      let delay =
-        mode == .touched
-        ? UserSettings.shared.delayBeforeTurnOn
-        : UserSettings.shared.delayBeforeTurnOff
-
-      delayMode = mode
-      delayTask = Task { @MainActor in
-        do {
-          try await Task.sleep(nanoseconds: UInt64(delay) * NSEC_PER_MSEC)
-
-          if Task.isCancelled {
-            return
-          }
-
-          switch delayMode {
-          case .touched:
-            touchedFixed = true
-
-          case .untouched:
-            touchedFixed = false
-
-          case .none:
-            // Do nothing
-            break
-          }
-
-          NotificationCenter.default.post(name: FingerState.fingerStateChanged, object: nil)
-        } catch {
-          print("cancelled")
-        }
+    if touchedFixed != touchedPhysically {
+      let elapsedMs = Int(now.timeIntervalSince(touchedPhysicallyAt) * 1000)
+      if elapsedMs >= delay {
+        touchedFixed = touchedPhysically
+        return true
       }
     }
+
+    return false
   }
 }

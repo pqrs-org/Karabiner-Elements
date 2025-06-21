@@ -13,36 +13,44 @@ class FingerManager: ObservableObject {
 
   @Published var fingerCount = FingerCount()
 
-  private var notificationsTask: Task<Void, Never>?
+  private var timerTask: Task<Void, Never>?
 
-  private let fingerStateChangedStream: AsyncStream<Void>
-  private let fingerStateChangedContinuation: AsyncStream<Void>.Continuation
-  private var fingerStateChangedTask: Task<Void, Never>?
-
-  init() {
-    var continuation: AsyncStream<Void>.Continuation!
-    self.fingerStateChangedStream = AsyncStream<Void> { continuation = $0 }
-    self.fingerStateChangedContinuation = continuation
-
-    notificationsTask = Task {
-      await withTaskGroup(of: Void.self) { group in
-        group.addTask {
-          for await _ in NotificationCenter.default.notifications(
-            named: FingerState.fingerStateChanged
-          ) {
-            self.fingerStateChangedContinuation.yield(())
-          }
-        }
-      }
+  private func evaluateTimerState() {
+    let needsTimer = rawStates.contains {
+      $0.touchedPhysically || $0.touchedFixed
     }
 
-    self.fingerStateChangedTask = Task { @MainActor in
-      // Since FingerState.fingerStateChanged notifications are sent continuously,
-      // using debounce prevents objectWillChange from firing.
-      // That's why _throttle needs to be used instead.
-      for await _ in self.fingerStateChangedStream._throttle(for: .milliseconds(50)) {
-        states = rawStates
-        updateFingerCount()
+    switch (needsTimer, timerTask) {
+    case (true, nil):
+      startTimer()
+    case (false, let task?):
+      task.cancel()
+      timerTask = nil
+    default:
+      break
+    }
+  }
+
+  private func startTimer() {
+    timerTask = Task { @MainActor in
+      let timer = AsyncTimerSequence(interval: .milliseconds(20), clock: ContinuousClock())
+      for await _ in timer {
+        if Task.isCancelled { break }
+
+        let now = Date()
+        var didChange = false
+        for state in rawStates {
+          if state.updateTouchedFixed(now: now) {
+            didChange = true
+          }
+        }
+
+        if didChange {
+          states = rawStates
+          updateFingerCount()
+        }
+
+        evaluateTimerState()
       }
     }
   }
@@ -91,11 +99,6 @@ class FingerManager: ObservableObject {
 
       if s.touchedPhysically != touched {
         s.touchedPhysically = touched
-
-        s.setDelayTask(
-          mode: touched
-            ? FingerState.DelayMode.touched
-            : FingerState.DelayMode.untouched)
       }
     }
 
@@ -106,10 +109,7 @@ class FingerManager: ObservableObject {
     for s in rawStates {
       if s.device == device && s.frame != frame && s.touchedPhysically {
         s.touchedPhysically = false
-
-        s.setDelayTask(mode: FingerState.DelayMode.untouched)
       }
-
       // print("\(e.touchedPhysically) \(e.point)")
     }
 
@@ -125,11 +125,7 @@ class FingerManager: ObservableObject {
 
     rawStates.removeAll(where: { now.timeIntervalSince($0.contactFrameArrivedAt) > 3.0 })
 
-    //
-    // Post notifications
-    //
-
-    NotificationCenter.default.post(name: FingerState.fingerStateChanged, object: nil)
+    evaluateTimerState()
   }
 
   private func updateFingerCount() {
