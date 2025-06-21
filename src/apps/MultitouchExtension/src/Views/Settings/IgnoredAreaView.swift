@@ -161,5 +161,11 @@ struct IgnoredAreaView: View {
           width: 40)
       }
     }
+    .onAppear {
+      FingerManager.shared.trackStates = true
+    }
+    .onDisappear {
+      FingerManager.shared.trackStates = false
+    }
   }
 }

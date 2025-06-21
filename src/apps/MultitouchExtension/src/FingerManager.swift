@@ -8,8 +8,11 @@ class FingerManager: ObservableObject {
   // Multitouch events are triggered frequently as long as fingers remain on the device.
   // To avoid performance issues from updating a @Published variable on every event,
   // we update the raw values in real time but throttle updates to the @Published property.
-  @Published var states: [FingerState] = []
   private var rawStates: [FingerState] = []
+  // Tracking finger positions requires updating states at a high frame rate,
+  // which is resource-intensive, so it should only be done when necessary.
+  var trackStates = false
+  @Published var states: [FingerState] = []
 
   @Published var fingerCount = FingerCount()
 
@@ -38,11 +41,13 @@ class FingerManager: ObservableObject {
         if Task.isCancelled { break }
 
         let now = Date()
-        for state in rawStates {
-          state.updateTouchedFixed(now: now)
+        for rawState in rawStates {
+          rawState.updateTouchedFixed(now: now)
         }
 
-        states = rawStates
+        if trackStates {
+          states = rawStates
+        }
         updateFingerCount()
 
         evaluateTimerState()
