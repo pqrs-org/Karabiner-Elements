@@ -160,36 +160,35 @@ extension LibKrbn {
     {
       var result: [SimpleModification] = []
 
-      let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size(
-        connectedDevice?.libkrbnDeviceIdentifiers)
+      connectedDevice.withDeviceIdentifiersCPointer {
+        let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size($0)
 
-      for i in 0..<size {
-        var buffer = [Int8](repeating: 0, count: 32 * 1024)
-        var fromJsonString = ""
-        var toJsonString = ""
+        for i in 0..<size {
+          var buffer = [Int8](repeating: 0, count: 32 * 1024)
+          var fromJsonString = ""
+          var toJsonString = ""
 
-        if libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(
-          i, connectedDevice?.libkrbnDeviceIdentifiers,
-          &buffer, buffer.count)
-        {
-          fromJsonString = String(utf8String: buffer) ?? ""
+          if libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(
+            i, $0, &buffer, buffer.count)
+          {
+            fromJsonString = String(utf8String: buffer) ?? ""
+          }
+
+          if libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(
+            i, $0, &buffer, buffer.count)
+          {
+            toJsonString = String(utf8String: buffer) ?? ""
+          }
+
+          let simpleModification = SimpleModification(
+            index: i,
+            fromJsonString: fromJsonString,
+            toJsonString: toJsonString,
+            toCategories: SimpleModificationDefinitions.shared.toCategories
+          )
+
+          result.append(simpleModification)
         }
-
-        if libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(
-          i, connectedDevice?.libkrbnDeviceIdentifiers,
-          &buffer, buffer.count)
-        {
-          toJsonString = String(utf8String: buffer) ?? ""
-        }
-
-        let simpleModification = SimpleModification(
-          index: i,
-          fromJsonString: fromJsonString,
-          toJsonString: toJsonString,
-          toCategories: SimpleModificationDefinitions.shared.toCategories
-        )
-
-        result.append(simpleModification)
       }
 
       return result
@@ -217,11 +216,13 @@ extension LibKrbn {
       toJsonString: String,
       device: ConnectedDevice?
     ) {
-      libkrbn_core_configuration_replace_selected_profile_simple_modification(
-        index,
-        fromJsonString.cString(using: .utf8),
-        toJsonString.cString(using: .utf8),
-        device?.libkrbnDeviceIdentifiers)
+      device.withDeviceIdentifiersCPointer {
+        libkrbn_core_configuration_replace_selected_profile_simple_modification(
+          index,
+          fromJsonString.cString(using: .utf8),
+          toJsonString.cString(using: .utf8),
+          $0)
+      }
 
       reflectSimpleModificationChanges(device)
 
@@ -229,8 +230,9 @@ extension LibKrbn {
     }
 
     public func appendSimpleModification(device: ConnectedDevice?) {
-      libkrbn_core_configuration_push_back_selected_profile_simple_modification(
-        device?.libkrbnDeviceIdentifiers)
+      device.withDeviceIdentifiersCPointer {
+        libkrbn_core_configuration_push_back_selected_profile_simple_modification($0)
+      }
 
       reflectSimpleModificationChanges(device)
 
@@ -238,10 +240,11 @@ extension LibKrbn {
     }
 
     public func appendSimpleModificationIfEmpty(device: ConnectedDevice?) {
-      let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size(
-        device?.libkrbnDeviceIdentifiers)
-      if size == 0 {
-        appendSimpleModification(device: device)
+      device.withDeviceIdentifiersCPointer {
+        let size = libkrbn_core_configuration_get_selected_profile_simple_modifications_size($0)
+        if size == 0 {
+          appendSimpleModification(device: device)
+        }
       }
     }
 
@@ -249,9 +252,9 @@ extension LibKrbn {
       index: Int,
       device: ConnectedDevice?
     ) {
-      libkrbn_core_configuration_erase_selected_profile_simple_modification(
-        index,
-        device?.libkrbnDeviceIdentifiers)
+      device.withDeviceIdentifiersCPointer {
+        libkrbn_core_configuration_erase_selected_profile_simple_modification(index, $0)
+      }
 
       reflectSimpleModificationChanges(device)
 
@@ -267,38 +270,37 @@ extension LibKrbn {
     public func makeFnFunctionKeys(_ connectedDevice: ConnectedDevice?) -> [SimpleModification] {
       var result: [SimpleModification] = []
 
-      let size = libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(
-        connectedDevice?.libkrbnDeviceIdentifiers)
+      connectedDevice.withDeviceIdentifiersCPointer {
+        let size = libkrbn_core_configuration_get_selected_profile_fn_function_keys_size($0)
 
-      for i in 0..<size {
-        var buffer = [Int8](repeating: 0, count: 32 * 1024)
-        var fromJsonString = ""
-        var toJsonString = ""
+        for i in 0..<size {
+          var buffer = [Int8](repeating: 0, count: 32 * 1024)
+          var fromJsonString = ""
+          var toJsonString = ""
 
-        if libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(
-          i, connectedDevice?.libkrbnDeviceIdentifiers,
-          &buffer, buffer.count)
-        {
-          fromJsonString = String(utf8String: buffer) ?? ""
+          if libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(
+            i, $0, &buffer, buffer.count)
+          {
+            fromJsonString = String(utf8String: buffer) ?? ""
+          }
+
+          if libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(
+            i, $0, &buffer, buffer.count)
+          {
+            toJsonString = String(utf8String: buffer) ?? ""
+          }
+
+          let simpleModification = SimpleModification(
+            index: i,
+            fromJsonString: fromJsonString,
+            toJsonString: toJsonString,
+            toCategories: connectedDevice == nil
+              ? SimpleModificationDefinitions.shared.toCategories
+              : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase
+          )
+
+          result.append(simpleModification)
         }
-
-        if libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(
-          i, connectedDevice?.libkrbnDeviceIdentifiers,
-          &buffer, buffer.count)
-        {
-          toJsonString = String(utf8String: buffer) ?? ""
-        }
-
-        let simpleModification = SimpleModification(
-          index: i,
-          fromJsonString: fromJsonString,
-          toJsonString: toJsonString,
-          toCategories: connectedDevice == nil
-            ? SimpleModificationDefinitions.shared.toCategories
-            : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase
-        )
-
-        result.append(simpleModification)
       }
 
       return result
@@ -317,10 +319,12 @@ extension LibKrbn {
       toJsonString: String,
       device: ConnectedDevice?
     ) {
-      libkrbn_core_configuration_replace_selected_profile_fn_function_key(
-        fromJsonString.cString(using: .utf8),
-        toJsonString.cString(using: .utf8),
-        device?.libkrbnDeviceIdentifiers)
+      device.withDeviceIdentifiersCPointer {
+        libkrbn_core_configuration_replace_selected_profile_fn_function_key(
+          fromJsonString.cString(using: .utf8),
+          toJsonString.cString(using: .utf8),
+          $0)
+      }
 
       reflectFnFunctionKeyChanges(device)
 
