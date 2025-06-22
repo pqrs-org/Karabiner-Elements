@@ -1,6 +1,7 @@
 import Foundation
 
 extension LibKrbn {
+  @MainActor
   struct SimpleModificationDefinitionCategories: Identifiable {
     var id = UUID()
 

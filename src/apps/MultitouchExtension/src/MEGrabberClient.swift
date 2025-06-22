@@ -21,6 +21,7 @@ private class PreviousFingerCount {
   var totalPalmCount = PreviousValue()
 }
 
+@MainActor
 private var previousFingerCount = PreviousFingerCount()
 
 @MainActor

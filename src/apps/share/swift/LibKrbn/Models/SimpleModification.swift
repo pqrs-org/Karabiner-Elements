@@ -1,6 +1,7 @@
 import Foundation
 
 extension LibKrbn {
+  @MainActor
   struct SimpleModification: Identifiable {
     var id = UUID()
     var index = -1

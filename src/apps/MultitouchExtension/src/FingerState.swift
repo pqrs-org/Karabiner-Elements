@@ -1,3 +1,4 @@
+@MainActor
 class FingerState: Identifiable {
   public let id = UUID()
 

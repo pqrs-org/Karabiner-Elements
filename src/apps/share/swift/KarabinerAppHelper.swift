@@ -5,6 +5,7 @@ private func versionUpdatedCallbackRelaunch() {
   Relauncher.relaunch()
 }
 
+@MainActor
 final class KarabinerAppHelper {
   public static let shared = KarabinerAppHelper()
 

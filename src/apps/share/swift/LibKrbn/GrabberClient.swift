@@ -13,6 +13,7 @@ private func callback() {
 }
 
 extension LibKrbn {
+  @MainActor
   public class GrabberClient: ObservableObject {
     public static let shared = GrabberClient()
 

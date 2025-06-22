@@ -1,6 +1,7 @@
 import SwiftUI
 
 extension LibKrbn {
+  @MainActor
   public struct SimpleModificationDefinitions {
     public static let shared = SimpleModificationDefinitions()
 

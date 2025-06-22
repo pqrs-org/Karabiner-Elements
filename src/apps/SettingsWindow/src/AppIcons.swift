@@ -1,7 +1,8 @@
 import SwiftUI
 
+@MainActor
 public class AppIcon: Identifiable, Equatable {
-  public var id: Int32
+  nonisolated public let id: Int32
   public var karabinerElementsThumbnailImage: NSImage?
   public var eventViewerThumbnailImage: NSImage?
   public var multitouchExtensionThumbnailImage: NSImage?
@@ -17,11 +18,12 @@ public class AppIcon: Identifiable, Equatable {
       named: String(format: "%03d-MultitouchExtension.png", id))
   }
 
-  public static func == (lhs: AppIcon, rhs: AppIcon) -> Bool {
+  nonisolated public static func == (lhs: AppIcon, rhs: AppIcon) -> Bool {
     lhs.id == rhs.id
   }
 }
 
+@MainActor
 public class AppIcons: ObservableObject {
   public static let shared = AppIcons()
 
