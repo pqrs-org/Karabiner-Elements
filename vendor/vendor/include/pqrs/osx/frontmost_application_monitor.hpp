@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::frontmost_application_monitor v5.1
+// pqrs::osx::frontmost_application_monitor v5.2
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
