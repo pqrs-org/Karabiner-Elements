@@ -14,6 +14,7 @@ targets:
       SYSTEM_HEADER_SEARCH_PATHS:
         - ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../../vendor/vendor/include
+      DEAD_CODE_STRIPPING: 'YES'
     type: tool
     platform: macOS
     deploymentTarget: 13.0

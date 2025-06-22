@@ -1,13 +1,13 @@
 import Combine
 import SwiftUI
 
+@MainActor
 public class StickManager {
   public static let shared = StickManager()
 
   class StickSensor: ObservableObject {
     @Published var lastDoubleValue = 0.0
 
-    @MainActor
     func add(
       _ logicalMax: Int64,
       _ logicalMin: Int64,
@@ -30,7 +30,6 @@ public class StickManager {
     @Published var radian = 0.0
     @Published var magnitude = 0.0
 
-    @MainActor
     public func update() {
       radian = atan2(vertical.lastDoubleValue, horizontal.lastDoubleValue)
       magnitude = min(

@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 class InputMonitoringAlertData: ObservableObject {
   public static let shared = InputMonitoringAlertData()
 

@@ -19,6 +19,8 @@ targets:
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
         - ../../../vendor/vendor/include
+      DEAD_CODE_STRIPPING: 'YES'
+      SWIFT_VERSION: '6.0'
     type: application
     platform: macOS
     deploymentTarget: 13.0

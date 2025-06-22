@@ -18,6 +18,7 @@ private func callback(
   }
 }
 
+@MainActor
 public class EventObserver: ObservableObject {
   public static let shared = EventObserver()
 

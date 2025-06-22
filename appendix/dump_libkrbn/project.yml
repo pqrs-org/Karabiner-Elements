@@ -15,6 +15,7 @@ targets:
       SWIFT_OBJC_BRIDGING_HEADER: Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
         - ../../vendor/vendor/include
+      DEAD_CODE_STRIPPING: 'YES'
     type: tool
     platform: macOS
     deploymentTarget: 13.0
