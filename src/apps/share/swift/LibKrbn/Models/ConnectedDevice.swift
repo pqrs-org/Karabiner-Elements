@@ -19,7 +19,7 @@ extension LibKrbn {
     let isBuiltInKeyboard: Bool
     let isAppleDevice: Bool
 
-    let libkrbnDeviceIdentifiers: UnsafeMutablePointer<libkrbn_device_identifiers>
+    let libkrbnDeviceIdentifiers: libkrbn_device_identifiers
 
     init(
       index: Int,
@@ -52,28 +52,16 @@ extension LibKrbn {
       self.isBuiltInKeyboard = isBuiltInKeyboard
       self.isAppleDevice = isAppleDevice
 
-      libkrbnDeviceIdentifiers = UnsafeMutablePointer<libkrbn_device_identifiers>.allocate(
-        capacity: 1)
-      libkrbnDeviceIdentifiers.pointee.vendor_id = vendorId
-      libkrbnDeviceIdentifiers.pointee.product_id = productId
-
-      deviceAddress.withCString {
-        _ = strlcpy(
-          &libkrbnDeviceIdentifiers.pointee.device_address,
-          $0,
-          MemoryLayout.size(ofValue: libkrbnDeviceIdentifiers.pointee.device_address)
-        )
-      }
-
-      libkrbnDeviceIdentifiers.pointee.is_keyboard = isKeyboard
-      libkrbnDeviceIdentifiers.pointee.is_pointing_device = isPointingDevice
-      libkrbnDeviceIdentifiers.pointee.is_game_pad = isGamePad
-      libkrbnDeviceIdentifiers.pointee.is_consumer = isConsumer
-      libkrbnDeviceIdentifiers.pointee.is_virtual_device = isVirtualDevice
-    }
-
-    deinit {
-      libkrbnDeviceIdentifiers.deallocate()
+      libkrbnDeviceIdentifiers = libkrbn_device_identifiers(
+        vendorId: vendorId,
+        productId: productId,
+        deviceAddress: deviceAddress,
+        isKeyboard: isKeyboard,
+        isPointingDevice: isPointingDevice,
+        isGamePad: isGamePad,
+        isConsumer: isConsumer,
+        isVirtualDevice: isVirtualDevice,
+      )
     }
 
     nonisolated public static func == (lhs: ConnectedDevice, rhs: ConnectedDevice) -> Bool {
@@ -82,6 +70,26 @@ extension LibKrbn {
 
     nonisolated func hash(into hasher: inout Hasher) {
       hasher.combine(id)
+    }
+
+    func withDeviceIdentifiersCPointer<Result>(
+      _ body: (UnsafePointer<libkrbn_device_identifiers>?) -> Result
+    ) -> Result {
+      return withUnsafePointer(to: libkrbnDeviceIdentifiers) { body($0) }
+    }
+  }
+}
+
+extension Optional where Wrapped: LibKrbn.ConnectedDevice {
+  @MainActor
+  func withDeviceIdentifiersCPointer<Result>(
+    _ body: (UnsafePointer<libkrbn_device_identifiers>?) -> Result
+  ) -> Result {
+    switch self {
+    case .some(let connectedDevice):
+      return connectedDevice.withDeviceIdentifiersCPointer(body)
+    case .none:
+      return body(nil)
     }
   }
 }
