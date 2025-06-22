@@ -1,3 +1,15 @@
+func mtDeviceRegistryEntryID(of device: MTDevice?) -> UInt64? {
+  let service = MTDeviceGetService(device)
+  var entryID: UInt64 = 0
+  let kr = IORegistryEntryGetRegistryEntryID(service, &entryID)
+
+  guard kr == KERN_SUCCESS else {
+    return nil
+  }
+
+  return entryID
+}
+
 private func callback(
   _ device: MTDevice?,
   _ fingerData: UnsafeMutablePointer<Finger>?,
@@ -11,12 +23,14 @@ private func callback(
     : []
 
   if let device = device {
-    Task { @MainActor in
-      FingerManager.shared.update(
-        device: device,
-        fingers: fingers,
-        timestamp: timestamp,
-        frame: frame)
+    if let mtDeviceRegistryEntryID = mtDeviceRegistryEntryID(of: device) {
+      Task { @MainActor in
+        FingerManager.shared.update(
+          mtDeviceRegistryEntryID: mtDeviceRegistryEntryID,
+          fingers: fingers,
+          timestamp: timestamp,
+          frame: frame)
+      }
     }
   }
 

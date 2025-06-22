@@ -6,8 +6,8 @@ class FingerState: Identifiable {
   // Unique keys
   //
 
-  var device: MTDevice
-  var identifier = 0
+  let mtDeviceRegistryEntryID: UInt64
+  let identifier: Int
 
   //
   // Variables
@@ -36,8 +36,8 @@ class FingerState: Identifiable {
   // Methods
   //
 
-  init(device: MTDevice, identifier: Int) {
-    self.device = device
+  init(mtDeviceRegistryEntryID: UInt64, identifier: Int) {
+    self.mtDeviceRegistryEntryID = mtDeviceRegistryEntryID
     self.identifier = identifier
   }
 

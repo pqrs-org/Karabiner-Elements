@@ -32,6 +32,7 @@ typedef struct CF_BRIDGED_TYPE(id) MTDevice *MTDeviceRef;
 typedef int (*MTContactCallbackFunction)(MTDeviceRef, Finger *, int, double, int);
 
 CFMutableArrayRef MTDeviceCreateList(void);
+io_service_t MTDeviceGetService(MTDeviceRef);
 void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
 void MTUnregisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
 void MTDeviceStart(MTDeviceRef, int);

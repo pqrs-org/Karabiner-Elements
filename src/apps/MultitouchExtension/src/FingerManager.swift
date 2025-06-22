@@ -70,7 +70,7 @@ class FingerManager: ObservableObject {
   }
 
   func update(
-    device: MTDevice,
+    mtDeviceRegistryEntryID: UInt64,
     fingers: [Finger],
     timestamp: Double,
     frame: Int32
@@ -84,7 +84,9 @@ class FingerManager: ObservableObject {
     //
 
     for finger in fingers {
-      let s = getFingerState(device: device, identifier: Int(finger.identifier))
+      let s = getFingerState(
+        mtDeviceRegistryEntryID: mtDeviceRegistryEntryID,
+        identifier: Int(finger.identifier))
       s.frame = Int(frame)
       s.size = Double(finger.size)
       s.point = NSPoint(
@@ -117,7 +119,10 @@ class FingerManager: ObservableObject {
     //
 
     for s in rawStates {
-      if s.device == device && s.frame != frame && s.touchedPhysically {
+      if s.mtDeviceRegistryEntryID == mtDeviceRegistryEntryID
+        && s.frame != frame
+        && s.touchedPhysically
+      {
         s.touchedPhysically = false
       }
       // print("\(e.touchedPhysically) \(e.point)")
@@ -195,14 +200,19 @@ class FingerManager: ObservableObject {
     }
   }
 
-  private func getFingerState(device: MTDevice, identifier: Int) -> FingerState {
+  private func getFingerState(mtDeviceRegistryEntryID: UInt64, identifier: Int) -> FingerState {
     for s in rawStates {
-      if s.device == device && s.identifier == identifier {
+      if s.mtDeviceRegistryEntryID == mtDeviceRegistryEntryID
+        && s.identifier == identifier
+      {
         return s
       }
     }
 
-    let s = FingerState(device: device, identifier: identifier)
+    let s = FingerState(
+      mtDeviceRegistryEntryID: mtDeviceRegistryEntryID,
+      identifier: identifier,
+    )
     rawStates.append(s)
     return s
   }
