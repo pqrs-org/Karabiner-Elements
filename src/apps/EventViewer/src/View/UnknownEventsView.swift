@@ -6,7 +6,7 @@ struct UnknownEventsView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       GroupBox(label: Text("Showing events that are not supported by Karabiner-Elements")) {
-        VStack(alignment: .leading, spacing: 6.0) {
+        VStack(alignment: .leading, spacing: 12.0) {
           if eventHistory.unknownEventEntries.count == 0 {
             Divider()
             Spacer()

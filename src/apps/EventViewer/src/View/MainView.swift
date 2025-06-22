@@ -19,7 +19,7 @@ struct MainView: View {
       }
 
       GroupBox(label: Text("Keyboard & pointing events")) {
-        VStack(alignment: .leading, spacing: 6.0) {
+        VStack(alignment: .leading, spacing: 12.0) {
           HStack(alignment: .center, spacing: 12.0) {
             Button(
               action: {
