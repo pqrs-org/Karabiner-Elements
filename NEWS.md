@@ -16,6 +16,7 @@
     -   Added a toggle to EventViewer for monitoring events.
 -   ⚡️ Improvements
     -   Migrated to the SwiftUI life cycle.
+    -   Migrated to Swift 6.
     -   Improved `to_delayed_action` behavior to use the modifier flags of the time the key is pressed, when sending events.
     -   Supported the following keys:
         -   consumer::ac_zoom_out
