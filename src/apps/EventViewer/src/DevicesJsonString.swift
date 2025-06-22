@@ -1,18 +1,19 @@
 import SwiftUI
 
 private func callback() {
-  guard
-    let text = try? String(
-      contentsOfFile: DevicesJsonString.shared.devicesJsonFilePath,
-      encoding: .utf8
-    )
-  else { return }
-
   Task { @MainActor in
+    guard
+      let text = try? String(
+        contentsOfFile: DevicesJsonString.shared.devicesJsonFilePath,
+        encoding: .utf8
+      )
+    else { return }
+
     DevicesJsonString.shared.text = text
   }
 }
 
+@MainActor
 public class DevicesJsonString: ObservableObject {
   public static let shared = DevicesJsonString()
 

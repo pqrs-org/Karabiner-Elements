@@ -1,18 +1,19 @@
 import SwiftUI
 
 private func callback() {
-  guard
-    let text = try? String(
-      contentsOfFile: VariablesJsonString.shared.manipulatorEnvironmentJsonFilePath,
-      encoding: .utf8
-    )
-  else { return }
-
   Task { @MainActor in
+    guard
+      let text = try? String(
+        contentsOfFile: VariablesJsonString.shared.manipulatorEnvironmentJsonFilePath,
+        encoding: .utf8
+      )
+    else { return }
+
     VariablesJsonString.shared.text = text
   }
 }
 
+@MainActor
 public class VariablesJsonString: ObservableObject {
   public static let shared = VariablesJsonString()
 

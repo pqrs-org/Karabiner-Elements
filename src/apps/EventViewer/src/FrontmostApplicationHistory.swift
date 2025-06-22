@@ -10,8 +10,8 @@ private func callback() {
     &filePathBuffer,
     filePathBuffer.count)
   {
-    let bundleIdentifier = String(cString: bundleIdentifierBuffer)
-    let filePath = String(cString: filePathBuffer)
+    let bundleIdentifier = String(utf8String: bundleIdentifierBuffer) ?? ""
+    let filePath = String(utf8String: filePathBuffer) ?? ""
 
     if bundleIdentifier == "org.pqrs.Karabiner-EventViewer" { return }
     if bundleIdentifier == "" && filePath == "" { return }
@@ -26,8 +26,9 @@ private func callback() {
   }
 }
 
+@MainActor
 public class FrontmostApplicationEntry: Identifiable, Equatable {
-  public var id = UUID()
+  nonisolated public let id = UUID()
   public var bundleIdentifier = ""
   public var filePath = ""
 
@@ -40,11 +41,14 @@ public class FrontmostApplicationEntry: Identifiable, Equatable {
     pboard.writeObjects([string as NSString])
   }
 
-  public static func == (lhs: FrontmostApplicationEntry, rhs: FrontmostApplicationEntry) -> Bool {
+  nonisolated public static func == (lhs: FrontmostApplicationEntry, rhs: FrontmostApplicationEntry)
+    -> Bool
+  {
     lhs.id == rhs.id
   }
 }
 
+@MainActor
 public class FrontmostApplicationHistory: ObservableObject {
   public static let shared = FrontmostApplicationHistory()
 

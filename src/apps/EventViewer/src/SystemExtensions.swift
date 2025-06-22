@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 public class SystemExtensions: ObservableObject {
   public static let shared = SystemExtensions()
 
