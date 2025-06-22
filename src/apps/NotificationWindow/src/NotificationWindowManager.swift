@@ -5,26 +5,27 @@ private struct NotificationMessageJson: Codable {
 }
 
 private func callback() {
-  var body = ""
+  Task { @MainActor in
+    var body = ""
 
-  if let jsonData = try? Data(
-    contentsOf: URL(
-      fileURLWithPath: NotificationWindowManager.shared.notificationMessageJsonFilePath))
-  {
-    let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
-    if let message = try? decoder.decode(NotificationMessageJson.self, from: jsonData) {
-      body = message.body ?? ""
-      body = body.trimmingCharacters(in: .whitespacesAndNewlines)
+    if let jsonData = try? Data(
+      contentsOf: URL(
+        fileURLWithPath: NotificationWindowManager.shared.notificationMessageJsonFilePath))
+    {
+      let decoder = JSONDecoder()
+      decoder.keyDecodingStrategy = .convertFromSnakeCase
+      if let message = try? decoder.decode(NotificationMessageJson.self, from: jsonData) {
+        body = message.body ?? ""
+        body = body.trimmingCharacters(in: .whitespacesAndNewlines)
+      }
     }
-  }
 
-  Task { @MainActor [body] in
     NotificationMessage.shared.body = body
     NotificationWindowManager.shared.updateWindowsVisibility()
   }
 }
 
+@MainActor
 public class NotificationWindowManager: NSObject {
   static let shared = NotificationWindowManager()
 
@@ -60,7 +61,6 @@ public class NotificationWindowManager: NSObject {
   // We register the callback in the `start` method rather than in `init`.
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
-  @MainActor
   public func start() {
     libkrbn_enable_file_monitors()
 
@@ -73,7 +73,6 @@ public class NotificationWindowManager: NSObject {
     updateWindowsVisibility()
   }
 
-  @MainActor
   public func stop() {
     libkrbn_unregister_file_updated_callback(
       notificationMessageJsonFilePath.cString(using: .utf8),
@@ -82,7 +81,6 @@ public class NotificationWindowManager: NSObject {
     // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
   }
 
-  @MainActor
   func updateWindows() {
     let screens = NSScreen.screens
 

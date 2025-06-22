@@ -22,7 +22,7 @@ targets:
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       DEAD_CODE_STRIPPING: 'YES'
-      #SWIFT_VERSION: '6.0'
+      SWIFT_VERSION: '6.0'
     type: application
     platform: macOS
     deploymentTarget: 13.0
