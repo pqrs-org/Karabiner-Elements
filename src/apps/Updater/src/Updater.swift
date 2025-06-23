@@ -4,6 +4,7 @@ import AppKit
   import Sparkle
 #endif
 
+@MainActor
 final class Updater: ObservableObject {
   public static let shared = Updater()
 
@@ -64,18 +65,24 @@ final class Updater: ObservableObject {
       }
 
       func updaterDidNotFindUpdate(_: SPUUpdater) {
-        NSApp.activate(ignoringOtherApps: true)
+        Task { @MainActor in
+          NSApp.activate(ignoringOtherApps: true)
+        }
       }
 
       func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
-        NSApp.activate(ignoringOtherApps: true)
+        Task { @MainActor in
+          NSApp.activate(ignoringOtherApps: true)
+        }
       }
 
       func updater(
         _: SPUUpdater, didFinishUpdateCycleFor _: SPUUpdateCheck, error: Error?
       ) {
         // Exit after completing the check.
-        NSApplication.shared.terminate(nil)
+        Task { @MainActor in
+          NSApplication.shared.terminate(nil)
+        }
       }
     }
   #endif
