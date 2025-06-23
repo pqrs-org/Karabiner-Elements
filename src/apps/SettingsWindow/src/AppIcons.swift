@@ -48,7 +48,7 @@ public class AppIcons: ObservableObject {
 
     var buffer = [Int8](repeating: 0, count: 32 * 1024)
     libkrbn_get_system_app_icon_configuration_file_path(&buffer, buffer.count)
-    let path = String(cString: buffer)
+    guard let path = String(utf8String: buffer) else { return }
 
     if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: path)) {
       if let jsonDict =

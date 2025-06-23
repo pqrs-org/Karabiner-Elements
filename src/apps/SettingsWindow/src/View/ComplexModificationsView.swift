@@ -36,7 +36,7 @@ struct ComplexModificationsView: View {
               index: -1,
               description: "Edit the following setting and press the Save button.",
               enabled: true,
-              jsonString: String(cString: buffer)
+              jsonString: String(utf8String: buffer) ?? ""
             )
             showingEditSheet = true
           },

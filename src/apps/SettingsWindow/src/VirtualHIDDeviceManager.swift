@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 class VirtualHIDDeviceManager {
   static let shared = VirtualHIDDeviceManager()
 

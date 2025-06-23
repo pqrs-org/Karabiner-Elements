@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class ComplexModificationsFileImport: ObservableObject {
   static let shared = ComplexModificationsFileImport()
 
@@ -54,7 +55,7 @@ final class ComplexModificationsFileImport: ObservableObject {
     if let data = self.jsonData {
       var buffer = [Int8](repeating: 0, count: 32 * 1024)
       libkrbn_get_user_complex_modifications_assets_directory(&buffer, buffer.count)
-      let directory = String(cString: buffer)
+      guard let directory = String(utf8String: buffer) else { return }
 
       let time = Int(NSDate().timeIntervalSince1970)
       let path = URL(fileURLWithPath: "\(directory)/\(time).json")

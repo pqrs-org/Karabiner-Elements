@@ -8,6 +8,7 @@ private func callback() {
   }
 }
 
+@MainActor
 final class SystemPreferences: ObservableObject {
   static let shared = SystemPreferences()
 

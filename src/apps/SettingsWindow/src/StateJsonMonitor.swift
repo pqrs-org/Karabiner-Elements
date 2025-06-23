@@ -6,6 +6,7 @@ private func callback() {
   }
 }
 
+@MainActor
 private struct State: Codable {
   var driverActivated: Bool?
   var driverVersionMismatched: Bool?
@@ -18,6 +19,7 @@ private struct State: Codable {
   }
 }
 
+@MainActor
 public class StateJsonMonitor {
   static let shared = StateJsonMonitor()
 

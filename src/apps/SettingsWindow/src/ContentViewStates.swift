@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 final class ContentViewStates: ObservableObject {
   static let shared = ContentViewStates()
 

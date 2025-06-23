@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class ComplexModificationsAssetFiles: ObservableObject {
   static let shared = ComplexModificationsAssetFiles()
 
@@ -26,7 +27,7 @@ final class ComplexModificationsAssetFiles: ObservableObject {
         if libkrbn_complex_modifications_assets_manager_get_rule_description(
           fileIndex, ruleIndex, &buffer, buffer.count)
         {
-          ruleDescription = String(cString: buffer)
+          ruleDescription = String(utf8String: buffer) ?? ""
         }
 
         rules.append(LibKrbn.ComplexModificationsAssetRule(fileIndex, ruleIndex, ruleDescription))
@@ -36,7 +37,7 @@ final class ComplexModificationsAssetFiles: ObservableObject {
       if libkrbn_complex_modifications_assets_manager_get_file_title(
         fileIndex, &buffer, buffer.count)
       {
-        fileTitle = String(cString: buffer)
+        fileTitle = String(utf8String: buffer) ?? ""
       }
 
       newFiles.append(
