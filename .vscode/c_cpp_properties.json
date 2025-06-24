@@ -3,17 +3,6 @@
         {
             "name": "Mac",
             "browse": {
-                "path": [
-                    "${workspaceFolder}/src/core/grabber/include",
-                    "${workspaceFolder}/src/lib/libkrbn/include",
-                    "${workspaceFolder}/src/share",
-                    "${workspaceFolder}/src/vendor",
-                    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++",
-                    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
-                    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include",
-                    "/usr/include",
-                    "/usr/include/c++/4.2.1"
-                ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db"
             },
@@ -22,12 +11,11 @@
                 "${workspaceFolder}/src/core/grabber/include",
                 "${workspaceFolder}/src/lib/libkrbn/include",
                 "${workspaceFolder}/src/share",
-                "${workspaceFolder}/src/vendor",
-                "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++",
-                "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
-                "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include",
-                "/usr/include",
-                "/usr/include/c++/4.2.1"
+                "${workspaceFolder}/vendor/duktape-2.7.0/extras/console",
+                "${workspaceFolder}/vendor/duktape-2.7.0/extras/module-node",
+                "${workspaceFolder}/vendor/duktape-2.7.0/src",
+                "${workspaceFolder}/vendor/Karabiner-DriverKit-VirtualHIDDevice/include",
+                "${workspaceFolder}/vendor/vendor/include"
             ],
             "macFrameworkPath": []
         }
