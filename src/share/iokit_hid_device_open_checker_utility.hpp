@@ -13,14 +13,14 @@ inline bool run_checker(void) {
 
   std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
       // Devices other than keyboards don’t require input monitoring permission.
-      // So if gamepads or other thinks are in `matching_dictionaries`,
-      // the `iokit_hid_device_open_checker` might incorrectly assume input monitoring is allowed,
-      // even when it's not.
+      // Therefore, if gamepads or other devices are included in `matching_dictionaries`,
+      // the `iokit_hid_device_open_checker` may incorrectly assume that input monitoring
+      // permission has been granted, even when it has not.
       //
-      // This happens because `iokit_hid_device_open_checker` checks whether the device open call returns
-      // `not_permitted` to determine permission status.
+      // This occurs because `iokit_hid_device_open_checker` determines permission status
+      // based on whether the device open call returns `not_permitted`.
       //
-      // So we should include only the `generic_desktop::keyboard` here.
+      // To avoid this, we should include only `generic_desktop::keyboard` in the matching criteria.
 
       pqrs::osx::iokit_hid_manager::make_matching_dictionary(
           pqrs::hid::usage_page::generic_desktop,
