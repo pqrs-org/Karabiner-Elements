@@ -12,29 +12,19 @@ inline bool run_checker(void) {
   auto global_wait = pqrs::make_thread_wait();
 
   std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
+      // Devices other than keyboards don’t require input monitoring permission.
+      // So if gamepads or other thinks are in `matching_dictionaries`,
+      // the `iokit_hid_device_open_checker` might incorrectly assume input monitoring is allowed,
+      // even when it's not.
+      //
+      // This happens because `iokit_hid_device_open_checker` checks whether the device open call returns
+      // `not_permitted` to determine permission status.
+      //
+      // So we should include only the `generic_desktop::keyboard` here.
+
       pqrs::osx::iokit_hid_manager::make_matching_dictionary(
           pqrs::hid::usage_page::generic_desktop,
           pqrs::hid::usage::generic_desktop::keyboard),
-
-      pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-          pqrs::hid::usage_page::generic_desktop,
-          pqrs::hid::usage::generic_desktop::mouse),
-
-      pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-          pqrs::hid::usage_page::generic_desktop,
-          pqrs::hid::usage::generic_desktop::pointer),
-
-      pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-          pqrs::hid::usage_page::generic_desktop,
-          pqrs::hid::usage::generic_desktop::joystick),
-
-      pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-          pqrs::hid::usage_page::generic_desktop,
-          pqrs::hid::usage::generic_desktop::game_pad),
-
-      pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-          pqrs::hid::usage_page::consumer,
-          pqrs::hid::usage::consumer::consumer_control),
   };
 
   auto checker = std::make_unique<pqrs::osx::iokit_hid_device_open_checker>(pqrs::dispatcher::extra::get_shared_dispatcher(),
