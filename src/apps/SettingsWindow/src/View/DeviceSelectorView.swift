@@ -5,7 +5,7 @@ struct DeviceSelectorView: View {
   @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
 
-  @State var selected: LibKrbn.ConnectedDevice?
+  @State var selected = LibKrbn.ConnectedDevice.zero
 
   var body: some View {
     // Build a combined array with `ConnectedDevice.zero` for "For all devices"
@@ -39,25 +39,23 @@ struct DeviceSelectorView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.vertical, 8)
       .listRowSeparator(.visible, edges: .bottom)
-      .tag(Optional(device))
+      .tag(device)
     }
     .listStyle(.sidebar)
     .frame(width: 250)
     .onAppear {
-      if selectedDevice == nil {
-        selected = LibKrbn.ConnectedDevice.zero
-      } else {
+      if let selectedDevice = selectedDevice {
         selected = selectedDevice
+      } else {
+        selected = LibKrbn.ConnectedDevice.zero
       }
     }
     .onChange(of: selected) { newValue in
-      if let selected = selected {
-        if selected.index >= 0 {
-          selectedDevice = selected
-          return
-        }
+      if selected.index < 0 {
+        selectedDevice = nil
+      } else {
+        selectedDevice = selected
       }
-      selectedDevice = nil
     }
   }
 
