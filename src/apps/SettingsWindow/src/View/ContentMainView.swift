@@ -61,6 +61,8 @@ struct ContentMainView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
 
+  @State private var selectedSidebarItem: SidebarItem = .simpleModifications
+
   private let padding = 6.0
 
   struct SidebarSection {
@@ -108,7 +110,7 @@ struct ContentMainView: View {
   var body: some View {
     NavigationSplitView(
       sidebar: {
-        List(selection: $contentViewStates.navigationSelection) {
+        List(selection: $selectedSidebarItem) {
           ForEach(sections.indices, id: \.self) { section in
             Section {
               ForEach(sections[section].items) { item in
@@ -119,6 +121,9 @@ struct ContentMainView: View {
               Text(sections[section].title)
             }
           }
+        }
+        .onChange(of: selectedSidebarItem) { newValue in
+          contentViewStates.navigationSelection = newValue
         }
         .navigationSplitViewColumnWidth(250)
         .listStyle(.sidebar)
@@ -156,7 +161,7 @@ struct ContentMainView: View {
             .background(Color.errorBackground)
           }
 
-          switch contentViewStates.navigationSelection {
+          switch selectedSidebarItem {
           case .simpleModifications:
             SimpleModificationsView()
           case .functionKeys:
