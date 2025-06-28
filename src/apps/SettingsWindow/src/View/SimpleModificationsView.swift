@@ -7,16 +7,13 @@ struct SimpleModificationsView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       HStack(alignment: .top, spacing: 12.0) {
-        DeviceSelectorView(selectedDevice: $contentViewStates.simpleModificationsViewSelectedDevice)
+        DeviceSelectorView(
+          selectedDevice: $contentViewStates.simpleModificationsViewSelectedDevice
+        )
 
-        VStack {
-          SimpleModificationView(
-            selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice)
-
-          Spacer()
-        }
-
-        Spacer()
+        SimpleModificationView(
+          selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice
+        )
       }
     }
     .padding()

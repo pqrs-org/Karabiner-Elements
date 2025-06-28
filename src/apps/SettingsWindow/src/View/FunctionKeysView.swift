@@ -7,16 +7,6 @@ struct FunctionKeysView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
-      HStack(alignment: .top, spacing: 12.0) {
-        DeviceSelectorView(selectedDevice: $contentViewStates.functionKeysViewSelectedDevice)
-
-        VStack {
-          FnFunctionKeysView(selectedDevice: contentViewStates.functionKeysViewSelectedDevice)
-
-          Spacer()
-        }
-      }
-
       VStack(alignment: .leading) {
         // When using Apple's Vendor ID and Product ID with the virtual keyboard,
         // useFkeysAsStandardFunctionKeys needs to be changed through the System Settings; otherwise,
@@ -47,6 +37,14 @@ struct FunctionKeysView: View {
               systemImage: "arrow.up.forward.app")
           }
         )
+      }
+
+      Divider()
+
+      HStack(alignment: .top, spacing: 12.0) {
+        DeviceSelectorView(selectedDevice: $contentViewStates.functionKeysViewSelectedDevice)
+
+        FnFunctionKeysView(selectedDevice: contentViewStates.functionKeysViewSelectedDevice)
       }
     }
     .padding()
@@ -99,7 +97,6 @@ struct FunctionKeysView: View {
 
             Divider()
           }
-          Spacer()
         }
         .padding(10)
         .background(Color(NSColor.textBackgroundColor))
