@@ -123,7 +123,14 @@ struct ContentMainView: View {
           }
         }
         .onChange(of: selectedSidebarItem) { newValue in
-          contentViewStates.navigationSelection = newValue
+          if contentViewStates.navigationSelection != newValue {
+            contentViewStates.navigationSelection = newValue
+          }
+        }
+        .onChange(of: contentViewStates.navigationSelection) { newValue in
+          if selectedSidebarItem != newValue {
+            selectedSidebarItem = newValue
+          }
         }
         .navigationSplitViewColumnWidth(250)
         .listStyle(.sidebar)
