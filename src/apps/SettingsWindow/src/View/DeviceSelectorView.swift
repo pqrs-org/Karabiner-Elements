@@ -42,7 +42,6 @@ struct DeviceSelectorView: View {
       .tag(device)
     }
     .listStyle(.sidebar)
-    .frame(width: 250)
     .onAppear {
       if let selectedDevice = selectedDevice {
         selected = selectedDevice

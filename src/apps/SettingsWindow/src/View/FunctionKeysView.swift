@@ -41,8 +41,9 @@ struct FunctionKeysView: View {
 
       Divider()
 
-      HStack(alignment: .top, spacing: 12.0) {
+      HSplitView {
         DeviceSelectorView(selectedDevice: $contentViewStates.functionKeysViewSelectedDevice)
+          .frame(minWidth: 250, maxWidth: 250)
 
         FnFunctionKeysView(selectedDevice: contentViewStates.functionKeysViewSelectedDevice)
       }
