@@ -3,7 +3,7 @@ import Foundation
 extension LibKrbn {
   @MainActor
   class ConnectedDevice: Identifiable, Equatable, Hashable {
-    nonisolated let id = UUID()
+    nonisolated let id: UUID
     let index: Int
     let manufacturerName: String
     let productName: String
@@ -21,7 +21,28 @@ extension LibKrbn {
 
     let libkrbnDeviceIdentifiers: libkrbn_device_identifiers
 
+    static var zero: ConnectedDevice {
+      return ConnectedDevice(
+        id: UUID(uuid: uuid_t(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
+        index: -1,
+        manufacturerName: "",
+        productName: "",
+        transport: "",
+        vendorId: 0,
+        productId: 0,
+        deviceAddress: "",
+        isKeyboard: false,
+        isPointingDevice: false,
+        isGamePad: false,
+        isConsumer: false,
+        isVirtualDevice: false,
+        isBuiltInKeyboard: false,
+        isAppleDevice: false
+      )
+    }
+
     init(
+      id: UUID = UUID(),
       index: Int,
       manufacturerName: String,
       productName: String,
@@ -37,6 +58,7 @@ extension LibKrbn {
       isBuiltInKeyboard: Bool,
       isAppleDevice: Bool
     ) {
+      self.id = id
       self.index = index
       self.manufacturerName = manufacturerName
       self.productName = productName
