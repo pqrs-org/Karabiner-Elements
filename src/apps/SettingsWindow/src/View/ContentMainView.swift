@@ -133,7 +133,7 @@ struct ContentMainView: View {
           if settings.unsafeUI {
             Button(
               action: {
-                contentViewStates.navigationSelection = .expert
+                selectedSidebarItem = .expert
               },
               label: {
                 Label(
