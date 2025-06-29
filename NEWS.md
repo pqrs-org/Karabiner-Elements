@@ -1,6 +1,6 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 15.4.0
 
 -   🐛 Bug Fixes
     -   Fixed an overflow issue with the mouse key movements.
