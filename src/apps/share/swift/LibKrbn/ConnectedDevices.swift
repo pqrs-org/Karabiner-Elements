@@ -38,10 +38,15 @@ extension LibKrbn {
       let size = libkrbn_connected_devices_get_size()
       for i in 0..<size {
         var buffer = [Int8](repeating: 0, count: 32 * 1024)
+        var uniqueIdenfitier = ""
         var transport = ""
         var manufacturerName = ""
         var productName = ""
         var deviceAddress = ""
+
+        if libkrbn_connected_devices_get_unique_identifier(i, &buffer, buffer.count) {
+          uniqueIdenfitier = String(utf8String: buffer) ?? ""
+        }
 
         if libkrbn_connected_devices_get_transport(i, &buffer, buffer.count) {
           transport = String(utf8String: buffer) ?? ""
@@ -76,6 +81,7 @@ extension LibKrbn {
         }
 
         let connectedDevice = LibKrbn.ConnectedDevice(
+          id: uniqueIdenfitier,
           index: i,
           manufacturerName: manufacturerName,
           productName: productName,

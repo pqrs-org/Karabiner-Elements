@@ -426,6 +426,9 @@ bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_ke
 //
 
 size_t libkrbn_connected_devices_get_size(void);
+bool libkrbn_connected_devices_get_unique_identifier(size_t index,
+                                                     char* buffer,
+                                                     size_t length);
 bool libkrbn_connected_devices_get_manufacturer(size_t index,
                                                 char* buffer,
                                                 size_t length);

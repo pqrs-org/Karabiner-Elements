@@ -19,6 +19,26 @@ size_t libkrbn_connected_devices_get_size(void) {
   return 0;
 }
 
+bool libkrbn_connected_devices_get_unique_identifier(size_t index,
+                                                     char* buffer,
+                                                     size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
+  if (auto c = get_current_connected_devices()) {
+    const auto& devices = c->get_devices();
+    if (index < devices.size()) {
+      auto& identifiers = devices[index]->get_device_identifiers();
+      auto unique_idenfitier = nlohmann::json(identifiers).dump();
+      strlcpy(buffer, unique_idenfitier.c_str(), length);
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool libkrbn_connected_devices_get_manufacturer(size_t index,
                                                 char* buffer,
                                                 size_t length) {

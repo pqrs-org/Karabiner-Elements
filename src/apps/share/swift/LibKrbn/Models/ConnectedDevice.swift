@@ -3,7 +3,7 @@ import Foundation
 extension LibKrbn {
   @MainActor
   class ConnectedDevice: Identifiable, Equatable, Hashable {
-    nonisolated let id: UUID
+    nonisolated let id: String
     let index: Int
     let manufacturerName: String
     let productName: String
@@ -23,7 +23,7 @@ extension LibKrbn {
 
     static var zero: ConnectedDevice {
       return ConnectedDevice(
-        id: UUID(uuid: uuid_t(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
+        id: "",
         index: -1,
         manufacturerName: "",
         productName: "",
@@ -42,7 +42,7 @@ extension LibKrbn {
     }
 
     init(
-      id: UUID = UUID(),
+      id: String,
       index: Int,
       manufacturerName: String,
       productName: String,
