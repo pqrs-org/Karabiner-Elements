@@ -7,7 +7,15 @@ targets:
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
+      HEADER_SEARCH_PATHS:
+        - ../../lib/libkrbn/include
+      OTHER_LDFLAGS:
+        - -L../../lib/libkrbn/build/Release
+        - -lkrbn
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
+      SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../../vendor/vendor/include
       DEAD_CODE_STRIPPING: 'YES'
       SWIFT_VERSION: '6.0'
     type: application
@@ -25,3 +33,5 @@ targets:
       - path: ../share/Resources/icons
         excludes:
           - '*.png'
+    dependencies:
+      - sdk: libc++.tbd

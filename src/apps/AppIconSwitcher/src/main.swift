@@ -1,40 +1,42 @@
 import AppKit
 
-for argument in CommandLine.arguments {
-  for file in [
-    "/Applications/Karabiner-Elements.app",
-    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents.app",
-    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons.app",
-    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Menu.app",
-    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app",
-    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app",
-    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app/Contents/Frameworks/Sparkle.framework/Updater.app",
-  ] {
-    if let icon = NSImage(named: "\(argument)-KarabinerElements.icns") {
-      let result = NSWorkspace.shared.setIcon(
-        icon,
-        forFile: file,
-        options: [])
-      print("setIcon Karabiner-Elements.app: \(result)")
-    }
-  }
+let appIconNumber = String(format: "%03d", librkbn_get_app_icon_number())
 
-  if let icon = NSImage(named: "\(argument)-EventViewer.icns") {
+for file in [
+  "/Applications/Karabiner-Elements.app",
+  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents.app",
+  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons.app",
+  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Menu.app",
+  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app",
+  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app",
+  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app/Contents/Frameworks/Sparkle.framework/Updater.app",
+] {
+  let iconName = "\(appIconNumber)-KarabinerElements.icns"
+  setIcon(iconName: iconName, file: String(file))
+}
+
+setIcon(
+  iconName: "\(appIconNumber)-EventViewer.icns",
+  file: String("/Applications/Karabiner-EventViewer.app")
+)
+
+setIcon(
+  iconName: "\(appIconNumber)-MultitouchExtension.icns",
+  file: String(
+    "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app"
+  )
+)
+
+private func setIcon(iconName: String, file: String) {
+  print("setIcon:")
+  print("  iconName: \(iconName)")
+  print("  file: \(file)")
+
+  if let icon = NSImage(named: iconName) {
     let result = NSWorkspace.shared.setIcon(
       icon,
-      forFile: "/Applications/Karabiner-EventViewer.app",
+      forFile: file,
       options: [])
-
-    print("setIcon Karabiner-EventViewer.app: \(result)")
-  }
-
-  if let icon = NSImage(named: "\(argument)-MultitouchExtension.icns") {
-    let result = NSWorkspace.shared.setIcon(
-      icon,
-      forFile:
-        "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app",
-      options: [])
-
-    print("setIcon Karabiner-MultitouchExtension.app: \(result)")
+    print("  result \(result)")
   }
 }
