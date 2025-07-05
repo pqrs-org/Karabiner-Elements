@@ -32,8 +32,6 @@ void libkrbn_get_user_configuration_directory(char* buffer,
                                               size_t length);
 void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
                                                              size_t length);
-void libkrbn_get_system_app_icon_configuration_file_path(char* buffer,
-                                                         size_t length);
 
 bool libkrbn_user_pid_directory_writable(void);
 
@@ -64,6 +62,8 @@ bool libkrbn_driver_running(void);
 bool libkrbn_virtual_hid_keyboard_exists(void);
 bool libkrbn_virtual_hid_pointing_exists(void);
 bool libkrbn_system_core_configuration_file_path_exists(void);
+
+int librkbn_get_app_icon_number(void);
 
 // types
 

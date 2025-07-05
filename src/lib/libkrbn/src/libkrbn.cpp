@@ -1,4 +1,5 @@
 #include "libkrbn/libkrbn.h"
+#include "app_icon.hpp"
 #include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
@@ -71,11 +72,6 @@ void libkrbn_get_user_configuration_directory(char* buffer,
 void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
                                                              size_t length) {
   strlcpy(buffer, krbn::constants::get_user_complex_modifications_assets_directory().c_str(), length);
-}
-
-void libkrbn_get_system_app_icon_configuration_file_path(char* buffer,
-                                                         size_t length) {
-  strlcpy(buffer, krbn::constants::get_system_app_icon_configuration_file_path().c_str(), length);
 }
 
 bool libkrbn_user_pid_directory_writable(void) {
@@ -202,6 +198,11 @@ bool libkrbn_virtual_hid_pointing_exists(void) {
 
 bool libkrbn_system_core_configuration_file_path_exists(void) {
   return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
+}
+
+int librkbn_get_app_icon_number(void) {
+  auto icon = krbn::app_icon(krbn::constants::get_system_app_icon_configuration_file_path());
+  return icon.get_number();
 }
 
 bool libkrbn_is_momentary_switch_event_target(int32_t usage_page, int32_t usage) {
