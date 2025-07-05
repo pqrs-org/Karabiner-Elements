@@ -46,19 +46,7 @@ public class AppIcons: ObservableObject {
     icons.append(AppIcon(1))
     icons.append(AppIcon(2))
 
-    var buffer = [Int8](repeating: 0, count: 32 * 1024)
-    libkrbn_get_system_app_icon_configuration_file_path(&buffer, buffer.count)
-    guard let path = String(utf8String: buffer) else { return }
-
-    if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: path)) {
-      if let jsonDict =
-        try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-      {
-        if let number = jsonDict["number"] as? Int32 {
-          selectedAppIconNumber = number
-        }
-      }
-    }
+    selectedAppIconNumber = librkbn_get_app_icon_number()
 
     didSetEnabled = true
   }
