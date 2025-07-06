@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   ⚡️ Improvements
+    -   Suppress forced icon updates (e.g., for Karabiner-Elements.app) during `karabiner_grabber` startup.
+
 ## Karabiner-Elements 15.4.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.4.0/Karabiner-Elements-15.4.0.dmg)
