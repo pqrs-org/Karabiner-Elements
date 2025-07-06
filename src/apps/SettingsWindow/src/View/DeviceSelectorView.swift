@@ -50,10 +50,10 @@ struct DeviceSelectorView: View {
       }
     }
     .onChange(of: selected) { newValue in
-      if selected.index < 0 {
+      if newValue.index < 0 {
         selectedDevice = nil
       } else {
-        selectedDevice = selected
+        selectedDevice = newValue
       }
     }
   }
