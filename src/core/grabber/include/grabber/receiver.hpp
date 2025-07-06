@@ -175,9 +175,10 @@ public:
 
               logger::get_logger()->info("set_app_icon {0}", number);
 
-              application_launcher::launch_app_icon_switcher(number);
-
               app_icon(number).async_save_to_file(constants::get_system_app_icon_configuration_file_path());
+
+              application_launcher::launch_app_icon_switcher();
+
               break;
             }
 

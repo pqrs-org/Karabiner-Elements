@@ -56,17 +56,6 @@ int daemon(void) {
   logger::get_logger()->info("Karabiner-Elements.app path: {0}", settings_application_url);
 
   //
-  // Update app_icon
-  //
-
-  {
-    auto icon = app_icon(constants::get_system_app_icon_configuration_file_path());
-    auto number = icon.get_number();
-    logger::get_logger()->info("set_app_icon {0}", number);
-    application_launcher::launch_app_icon_switcher(number);
-  }
-
-  //
   // Prepare state_json_writer
   //
 

@@ -8,9 +8,11 @@
 namespace krbn {
 class application_launcher final {
 public:
-  static void launch_app_icon_switcher(int number) {
-    auto command = fmt::format("'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher' {:03} &", number);
-    system(command.c_str());
+  static void launch_app_icon_switcher(void) {
+    // Note:
+    // Updating the icon may trigger Spotlight index updates, so only call it when necessary.
+    // (Avoid calling it every time, such as during grabber startup.)
+    system("'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'");
   }
 
   static void launch_event_viewer(void) {

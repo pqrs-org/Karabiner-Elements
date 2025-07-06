@@ -20,6 +20,12 @@ fi
 chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
 
 #
+# Set icon
+#
+
+'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'
+
+#
 # Relaunch karabiner processes
 #
 
