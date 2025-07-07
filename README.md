@@ -19,6 +19,7 @@ You can download previous versions of Karabiner-Elements from [Release notes](ht
 
 -   macOS 26 Tahoe
     -   Apple Silicon Macs
+    -   It will probably work on Intel Macs as well, but we haven't tested it.
 -   macOS 15 Sequoia
     -   Both Intel-based Macs and Apple Silicon Macs
 -   macOS 14 Sonoma
