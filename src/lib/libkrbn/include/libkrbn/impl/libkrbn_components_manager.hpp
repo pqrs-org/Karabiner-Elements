@@ -9,7 +9,6 @@
 #include "libkrbn/impl/libkrbn_grabber_client.hpp"
 #include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
-#include "libkrbn/impl/libkrbn_system_preferences_monitor.hpp"
 #include "libkrbn/impl/libkrbn_version_monitor.hpp"
 
 class libkrbn_components_manager {
@@ -88,31 +87,6 @@ public:
 
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> get_complex_modifications_assets_manager(void) const {
     return complex_modifications_assets_manager_;
-  }
-
-  //
-  // system_preferences_monitor_
-  //
-
-  void enable_system_preferences_monitor(void) {
-    if (!system_preferences_monitor_) {
-      system_preferences_monitor_ = std::make_shared<libkrbn_system_preferences_monitor>();
-    }
-  }
-
-  void disable_system_preferences_monitor(void) {
-    system_preferences_monitor_ = nullptr;
-  }
-
-  std::shared_ptr<libkrbn_system_preferences_monitor> get_libkrbn_system_preferences_monitor(void) const {
-    return system_preferences_monitor_;
-  }
-
-  std::shared_ptr<pqrs::osx::system_preferences::properties> get_current_system_preferences_properties(void) const {
-    if (auto m = system_preferences_monitor_) {
-      return m->get_weak_system_preferences_properties().lock();
-    }
-    return nullptr;
   }
 
   //
@@ -242,7 +216,6 @@ private:
   std::shared_ptr<libkrbn_version_monitor> version_monitor_;
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
-  std::shared_ptr<libkrbn_system_preferences_monitor> system_preferences_monitor_;
   std::shared_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
   std::shared_ptr<libkrbn_file_monitors> file_monitors_;
   std::shared_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;

@@ -409,19 +409,6 @@ void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configura
 void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated callback);
 
 //
-// libkrbn_system_preferences_monitor
-//
-
-void libkrbn_enable_system_preferences_monitor(void);
-void libkrbn_disable_system_preferences_monitor(void);
-
-typedef void (*libkrbn_system_preferences_updated)(void);
-void libkrbn_register_system_preferences_updated_callback(libkrbn_system_preferences_updated callback);
-void libkrbn_unregister_system_preferences_updated_callback(libkrbn_system_preferences_updated callback);
-
-bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys(void);
-
-//
 // libkrbn_connected_devices
 //
 

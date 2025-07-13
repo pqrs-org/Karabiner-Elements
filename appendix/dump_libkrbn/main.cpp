@@ -14,14 +14,6 @@ void version_updated_callback(void) {
   }
 }
 
-void system_preferences_updated_callback(void) {
-  std::cout << __func__ << std::endl;
-
-  std::cout << "  use_fkeys_as_standard_function_keys: "
-            << libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys()
-            << std::endl;
-}
-
 void manipulator_environment_json_file_updated_callback(void) {
   std::cout << __func__ << std::endl;
 }
@@ -119,10 +111,6 @@ int main(int argc, const char* argv[]) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   std::cout << std::endl;
-
-  libkrbn_enable_system_preferences_monitor();
-  libkrbn_register_system_preferences_updated_callback(system_preferences_updated_callback);
-  system_preferences_updated_callback();
 
   std::thread thread([] {
     global_wait->wait_notice();

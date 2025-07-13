@@ -486,48 +486,6 @@ void libkrbn_complex_modifications_assets_manager_erase_file(size_t index) {
 }
 
 //
-// system_preferences_monitor
-//
-
-void libkrbn_enable_system_preferences_monitor(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->enable_system_preferences_monitor();
-  }
-}
-
-void libkrbn_disable_system_preferences_monitor(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->disable_system_preferences_monitor();
-  }
-}
-
-void libkrbn_register_system_preferences_updated_callback(libkrbn_system_preferences_updated callback) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_system_preferences_monitor()) {
-      m->register_libkrbn_system_preferences_updated_callback(callback);
-    }
-  }
-}
-
-void libkrbn_unregister_system_preferences_updated_callback(libkrbn_system_preferences_updated callback) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_system_preferences_monitor()) {
-      m->unregister_libkrbn_system_preferences_updated_callback(callback);
-    }
-  }
-}
-
-bool libkrbn_system_preferences_properties_get_use_fkeys_as_standard_function_keys(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto p = manager->get_current_system_preferences_properties()) {
-      return p->get_use_fkeys_as_standard_function_keys();
-    }
-  }
-
-  return false;
-}
-
-//
 // connected_devices_monitor
 //
 
