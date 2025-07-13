@@ -1,10 +1,10 @@
 #pragma once
 
-// pqrs::osx::system_preferences_monitor v1.0
+// pqrs::osx::system_preferences_monitor v1.1
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
@@ -45,6 +45,13 @@ public:
           }
         },
         check_interval);
+  }
+
+  // A method for forcibly retrieving the current value in case of missed events, such as during user account switches.
+  void async_trigger_system_preferences_changed(void) {
+    enqueue_to_dispatcher([this] {
+      system_preferences_changed(last_properties_);
+    });
   }
 
 private:
