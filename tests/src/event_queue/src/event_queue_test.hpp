@@ -213,7 +213,6 @@ void run_event_queue_test(void) {
       expected["system_preferences_properties"] = nlohmann::json::object({
           {"use_fkeys_as_standard_function_keys", false},
           {"scroll_direction_is_natural", true},
-          {"keyboard_types", nlohmann::json::array()},
       });
 
       pqrs::osx::system_preferences::properties properties;
