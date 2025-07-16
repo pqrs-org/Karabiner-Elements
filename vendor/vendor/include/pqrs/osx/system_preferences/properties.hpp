@@ -2,10 +2,10 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
-#include "keyboard_type_key.hpp"
 #include "system_preferences.hpp"
+#include <IOKit/IOKitLib.h>
 #include <map>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/hash.hpp>
@@ -36,79 +36,53 @@ public:
     scroll_direction_is_natural_ = value;
   }
 
-  const std::map<keyboard_type_key, iokit_keyboard_type::value_t> get_keyboard_types(void) const {
-    return keyboard_types_;
-  }
-
-  void set_keyboard_types(const std::map<keyboard_type_key, iokit_keyboard_type::value_t>& value) {
-    keyboard_types_ = value;
-  }
-
   void update(void) {
+    //
     // use_fkeys_as_standard_function_keys_
+    //
 
-    if (auto value = find_app_bool_property(CFSTR("com.apple.keyboard.fnState"),
-                                            CFSTR("Apple Global Domain"))) {
-      use_fkeys_as_standard_function_keys_ = *value;
+    // The setting is saved in `com.apple.keyboard.fnState` under `Apple Global Domain`.
+    // However, retrieving data using CFPreferencesCopyAppValue can result in issues,
+    // such as returning no value for guest users.
+    //
+    // Therefore, instead of retrieving the setting from CFPreferences,
+    // we'll get it from the corresponding parameter in IOHIDSystem, which stays in sync with that setting.
+
+    if (auto entry = IORegistryEntryFromPath(kIOMainPortDefault,
+                                             "IOService:/IOResources/IOHIDSystem")) {
+      if (auto property = IORegistryEntryCreateCFProperty(entry,
+                                                          CFSTR("HIDParameters"),
+                                                          kCFAllocatorDefault,
+                                                          0)) {
+        if (CFDictionaryGetTypeID() == CFGetTypeID(property)) {
+          auto dict = static_cast<CFDictionaryRef>(property);
+          if (auto value = pqrs::cf::make_number<int32_t>(CFDictionaryGetValue(dict, CFSTR("HIDFKeyMode")))) {
+            use_fkeys_as_standard_function_keys_ = *value;
+          }
+        }
+
+        CFRelease(property);
+      }
+
+      IOObjectRelease(entry);
     }
 
+    //
     // scroll_direction_is_natural_
+    //
+
+    // Since this setting isn't mirrored in IOHIDSystem, we'll retrieve it from CFPreferences instead.
+    // Because it's a per-user setting, it can be accessed from CFPreferences without issues.
 
     if (auto value = find_app_bool_property(CFSTR("com.apple.swipescrolldirection"),
                                             CFSTR("Apple Global Domain"))) {
       scroll_direction_is_natural_ = *value;
     }
-
-    // keyboard_types_
-
-    keyboard_types_.clear();
-
-    if (auto value = find_dictionary_property(CFSTR("keyboardtype"),
-                                              CFSTR("com.apple.keyboardtype"),
-                                              user::any_user,
-                                              host::current_host)) {
-      CFDictionaryApplyFunction(
-          *value,
-          [](const void* key, const void* value, void* context) {
-            auto self = reinterpret_cast<properties*>(context);
-
-            if (auto key_string = pqrs::cf::make_string(key)) {
-              auto separator1 = key_string->find("-", 0);
-              if (separator1 == std::string::npos) {
-                return;
-              }
-              auto separator2 = key_string->find("-", separator1 + 1);
-              if (separator2 == std::string::npos) {
-                return;
-              }
-
-              try {
-                auto product_id_string = key_string->substr(0, separator1);
-                auto vendor_id_string = key_string->substr(separator1 + 1, separator2 - separator1 - 1);
-                auto country_code_string = key_string->substr(separator2 + 1);
-
-                auto product_id = hid::product_id::value_t(std::stoll(product_id_string));
-                auto vendor_id = hid::vendor_id::value_t(std::stoll(vendor_id_string));
-                auto country_code = hid::country_code::value_t(std::stoll(country_code_string));
-
-                if (auto value_number = pqrs::cf::make_number<int8_t>(value)) {
-                  auto k = keyboard_type_key(vendor_id,
-                                             product_id,
-                                             country_code);
-                  self->keyboard_types_[k] = iokit_keyboard_type::value_t(*value_number);
-                }
-              } catch (...) {
-              }
-            }
-          },
-          this);
-    }
   }
 
   bool operator==(const properties& other) const {
     return use_fkeys_as_standard_function_keys_ == other.use_fkeys_as_standard_function_keys_ &&
-           scroll_direction_is_natural_ == other.scroll_direction_is_natural_ &&
-           keyboard_types_ == other.keyboard_types_;
+           scroll_direction_is_natural_ == other.scroll_direction_is_natural_;
   }
 
   bool operator!=(const properties& other) const {
@@ -118,7 +92,6 @@ public:
 private:
   bool use_fkeys_as_standard_function_keys_;
   bool scroll_direction_is_natural_;
-  std::map<keyboard_type_key, iokit_keyboard_type::value_t> keyboard_types_;
 };
 } // namespace system_preferences
 } // namespace osx
@@ -132,10 +105,6 @@ struct hash<pqrs::osx::system_preferences::properties> final {
 
     pqrs::hash::combine(h, value.get_use_fkeys_as_standard_function_keys());
     pqrs::hash::combine(h, value.get_scroll_direction_is_natural());
-    for (const auto& [k, v] : value.get_keyboard_types()) {
-      pqrs::hash::combine(h, k);
-      pqrs::hash::combine(h, v);
-    }
 
     return h;
   }
