@@ -29,7 +29,7 @@ struct UpdateView: View {
                 libkrbn_updater_check_for_updates_stable_only()
               },
               label: {
-                Label("Check for updates", systemImage: "star")
+                Label("Check for updates", systemImage: "network")
               }
             )
 
@@ -64,7 +64,7 @@ struct UpdateView: View {
                   URL(string: "https://github.com/pqrs-org/Karabiner-Elements")!)
               },
               label: {
-                Label("Open GitHub (source code)", systemImage: "network")
+                Label("Open GitHub (source code)", systemImage: "hammer")
               })
             Spacer()
           }
