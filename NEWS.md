@@ -4,6 +4,8 @@
 
 -   🐛 Bug Fixes
     -   Fixed an issue where the "Use all F1, F2, etc. keys as standard function keys" setting wasn't correctly detected in some environments.
+-   ✨ New Features
+    -   Added `Show additional menu items` option in UI tab.
 -   ⚡️ Improvements
     -   Suppress forced icon updates (e.g., for Karabiner-Elements.app) during `karabiner_grabber` startup.
 
