@@ -133,6 +133,8 @@ extension LibKrbn {
       showIconInMenuBar = libkrbn_core_configuration_get_global_configuration_show_in_menu_bar()
       showProfileNameInMenuBar =
         libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar()
+      showAdditionalMenuItems =
+        libkrbn_core_configuration_get_global_configuration_show_additional_menu_items()
       enableNotificationWindow =
         libkrbn_core_configuration_get_global_configuration_enable_notification_window()
       enableMultitouchExtension =
@@ -728,6 +730,17 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(
             showProfileNameInMenuBar
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var showAdditionalMenuItems: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_show_additional_menu_items(
+            showAdditionalMenuItems
           )
           save()
         }

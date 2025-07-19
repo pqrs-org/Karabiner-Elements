@@ -14,6 +14,7 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_check_for_updates_on_startup() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
+      expect(global_configuration.get_show_additional_menu_items() == false);
       expect(global_configuration.get_enable_notification_window() == true);
       expect(global_configuration.get_ask_for_confirmation_before_quitting() == true);
       expect(global_configuration.get_unsafe_ui() == false);
@@ -27,6 +28,7 @@ void run_global_configuration_test(void) {
           {"check_for_updates_on_startup", false},
           {"show_in_menu_bar", false},
           {"show_profile_name_in_menu_bar", true},
+          {"show_additional_menu_items", true},
           {"enable_notification_window", false},
           {"ask_for_confirmation_before_quitting", false},
           {"unsafe_ui", true},
@@ -38,6 +40,7 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_check_for_updates_on_startup() == false);
       expect(global_configuration.get_show_in_menu_bar() == false);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == true);
+      expect(global_configuration.get_show_additional_menu_items() == true);
       expect(global_configuration.get_enable_notification_window() == false);
       expect(global_configuration.get_ask_for_confirmation_before_quitting() == false);
       expect(global_configuration.get_unsafe_ui() == true);
@@ -51,6 +54,7 @@ void run_global_configuration_test(void) {
       global_configuration.set_check_for_updates_on_startup(true);
       global_configuration.set_show_in_menu_bar(true);
       global_configuration.set_show_profile_name_in_menu_bar(false);
+      global_configuration.set_show_additional_menu_items(false);
       global_configuration.set_enable_notification_window(true);
       global_configuration.set_ask_for_confirmation_before_quitting(true);
       global_configuration.set_unsafe_ui(false);
@@ -66,6 +70,7 @@ void run_global_configuration_test(void) {
           {"check_for_updates_on_startup", nlohmann::json::array()},
           {"show_in_menu_bar", 0},
           {"show_profile_name_in_menu_bar", nlohmann::json::object()},
+          {"show_additional_menu_items", nlohmann::json::object()},
           {"enable_notification_window", nlohmann::json::object()},
           {"unsafe_ui", nlohmann::json::object()},
           {"filter_useless_events_from_specific_devices", nlohmann::json::object()},
@@ -76,6 +81,7 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_check_for_updates_on_startup() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
+      expect(global_configuration.get_show_additional_menu_items() == false);
       expect(global_configuration.get_enable_notification_window() == true);
       expect(global_configuration.get_ask_for_confirmation_before_quitting() == true);
       expect(global_configuration.get_unsafe_ui() == false);

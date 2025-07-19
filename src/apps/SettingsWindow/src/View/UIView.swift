@@ -28,6 +28,15 @@ struct UIView: View {
             }
 
             HStack {
+              Toggle(isOn: $settings.showAdditionalMenuItems) {
+                Text("Show additional menu items (Default: off)")
+              }
+              .switchToggleStyle()
+
+              Spacer()
+            }
+
+            HStack {
               Toggle(isOn: $settings.askForConfirmationBeforeQuitting) {
                 Text("Ask for confirmation when quitting (Default: on)")
               }

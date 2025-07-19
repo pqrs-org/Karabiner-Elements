@@ -108,6 +108,7 @@ void run_core_configuration_test(void) {
     expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == false);
     expect(configuration.get_global_configuration().get_show_in_menu_bar() == false);
     expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
+    expect(configuration.get_global_configuration().get_show_additional_menu_items() == false);
     expect(configuration.get_global_configuration().get_ask_for_confirmation_before_quitting() == false);
     expect(configuration.get_global_configuration().get_unsafe_ui() == true);
     expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == false);
@@ -144,6 +145,7 @@ void run_core_configuration_test(void) {
       expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
       expect(configuration.get_global_configuration().get_show_in_menu_bar() == true);
       expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
+      expect(configuration.get_global_configuration().get_show_additional_menu_items() == false);
       expect(configuration.get_global_configuration().get_ask_for_confirmation_before_quitting() == true);
       expect(configuration.get_global_configuration().get_unsafe_ui() == false);
       expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == true);
@@ -207,6 +209,7 @@ void run_core_configuration_test(void) {
       global_configuration.set_check_for_updates_on_startup(false);
       global_configuration.set_show_in_menu_bar(false);
       global_configuration.set_show_profile_name_in_menu_bar(true);
+      global_configuration.set_show_additional_menu_items(true);
       global_configuration.set_ask_for_confirmation_before_quitting(false);
       global_configuration.set_unsafe_ui(true);
       global_configuration.set_filter_useless_events_from_specific_devices(false);
@@ -216,6 +219,7 @@ void run_core_configuration_test(void) {
           {"dummy", {{"keep_me", true}}},
           {"show_in_menu_bar", false},
           {"show_profile_name_in_menu_bar", true},
+          {"show_additional_menu_items", true},
           {"ask_for_confirmation_before_quitting", false},
           {"unsafe_ui", true},
           {"filter_useless_events_from_specific_devices", false},

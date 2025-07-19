@@ -94,6 +94,16 @@ void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_me
   c->get_global_configuration().set_show_profile_name_in_menu_bar(value);
 }
 
+bool libkrbn_core_configuration_get_global_configuration_show_additional_menu_items(void) {
+  auto c = get_current_core_configuration();
+  return c->get_global_configuration().get_show_additional_menu_items();
+}
+
+void libkrbn_core_configuration_set_global_configuration_show_additional_menu_items(bool value) {
+  auto c = get_current_core_configuration();
+  c->get_global_configuration().set_show_additional_menu_items(value);
+}
+
 bool libkrbn_core_configuration_get_global_configuration_enable_notification_window(void) {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_enable_notification_window();

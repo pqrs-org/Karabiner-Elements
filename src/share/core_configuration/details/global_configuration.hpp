@@ -25,6 +25,10 @@ public:
                                          show_profile_name_in_menu_bar_,
                                          false);
 
+    helper_values_.push_back_value<bool>("show_additional_menu_items",
+                                         show_additional_menu_items_,
+                                         false);
+
     helper_values_.push_back_value<bool>("enable_notification_window",
                                          enable_notification_window_,
                                          true);
@@ -79,6 +83,13 @@ public:
     show_profile_name_in_menu_bar_ = value;
   }
 
+  const bool& get_show_additional_menu_items(void) const {
+    return show_additional_menu_items_;
+  }
+  void set_show_additional_menu_items(bool value) {
+    show_additional_menu_items_ = value;
+  }
+
   const bool& get_enable_notification_window(void) const {
     return enable_notification_window_;
   }
@@ -119,6 +130,7 @@ private:
   bool check_for_updates_on_startup_;
   bool show_in_menu_bar_;
   bool show_profile_name_in_menu_bar_;
+  bool show_additional_menu_items_;
   bool enable_notification_window_;
   bool ask_for_confirmation_before_quitting_;
   bool unsafe_ui_;
