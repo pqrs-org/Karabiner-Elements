@@ -63,6 +63,8 @@ bool libkrbn_virtual_hid_keyboard_exists(void);
 bool libkrbn_virtual_hid_pointing_exists(void);
 bool libkrbn_system_core_configuration_file_path_exists(void);
 
+bool libkrbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists(void);
+
 int librkbn_get_app_icon_number(void);
 
 // types

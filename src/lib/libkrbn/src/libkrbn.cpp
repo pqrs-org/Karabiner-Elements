@@ -14,7 +14,9 @@
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <pqrs/cf/dictionary.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
+#include <pqrs/osx/system_preferences.hpp>
 #include <string>
 
 namespace {
@@ -198,6 +200,29 @@ bool libkrbn_virtual_hid_pointing_exists(void) {
 
 bool libkrbn_system_core_configuration_file_path_exists(void) {
   return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
+}
+
+bool libkrbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists(void) {
+  if (auto matching_dictionary = pqrs::cf::make_cf_mutable_dictionary()) {
+    CFDictionarySetValue(*matching_dictionary,
+                         CFSTR(kIOProviderClassKey),
+                         CFSTR("IOHIDEventService"));
+
+    if (auto dict = pqrs::cf::make_cf_mutable_dictionary()) {
+      CFDictionarySetValue(*dict,
+                           CFSTR("SerialNumber"),
+                           CFSTR("pqrs.org:Karabiner-DriverKit-VirtualHIDKeyboard"));
+
+      CFDictionarySetValue(*matching_dictionary,
+                           CFSTR(kIOPropertyMatchKey),
+                           *dict);
+
+      auto modifier_mappings = pqrs::osx::system_preferences::get_modifier_mappings(*matching_dictionary);
+      return !modifier_mappings.empty();
+    }
+  }
+
+  return false;
 }
 
 int librkbn_get_app_icon_number(void) {

@@ -60,6 +60,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 struct ContentMainView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var systemPreferences = SystemPreferences.shared
 
   @State private var selectedSidebarItem: SidebarItem = .simpleModifications
 
@@ -159,14 +160,49 @@ struct ContentMainView: View {
             .foregroundColor(.white)
           }
 
+          if systemPreferences.virtualHIDKeyboardModifierMappingsExists {
+            VStack(alignment: .leading) {
+              Label(
+                "macOS also remaps modifier keys. It's recommended to restore defaults and configure them via Karabiner-Elements.\n"
+                  + "\n"
+                  + "You can reset the macOS setting by following steps:\n"
+                  + "1. Open System Settings and go to Keyboard Shortcuts... > Modifier Keys.\n"
+                  + "2. Choose Karabiner DriverKit VirtualHIDKeyboard.\n"
+                  + "3. Click the Restore Defaults button.",
+                systemImage: "lightbulb"
+              )
+
+              Button(
+                action: {
+                  if let url = URL(
+                    string: "x-apple.systempreferences:com.apple.preference.keyboard"
+                  ) {
+                    NSWorkspace.shared.open(url)
+                  }
+                },
+                label: {
+                  Label(
+                    "Open System Settings...",
+                    systemImage: "arrow.up.forward.app"
+                  )
+                }
+              )
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .foregroundColor(Color.warningForeground)
+            .background(Color.warningBackground)
+          }
+
           if settings.saveErrorMessage != "" {
-            VStack {
+            VStack(alignment: .leading) {
               Label(
                 "Save failed:\n\(settings.saveErrorMessage)",
                 systemImage: "exclamationmark.circle.fill"
               )
-              .padding()
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
             .foregroundColor(Color.errorForeground)
             .background(Color.errorBackground)
           }
