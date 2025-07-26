@@ -85,6 +85,7 @@ public:
 
           } catch (std::exception& e) {
             logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
+            parse_error_message_ = e.what();
           }
         } else {
           logger::get_logger()->error("failed to open {0}", file_path);
@@ -111,6 +112,10 @@ public:
   }
 
   bool is_loaded(void) const { return loaded_; }
+
+  const std::string& get_parse_error_message(void) const {
+    return parse_error_message_;
+  }
 
   const details::global_configuration& get_global_configuration(void) const {
     return *global_configuration_;
@@ -262,6 +267,7 @@ private:
   nlohmann::json json_;
   error_handling error_handling_;
   bool loaded_;
+  std::string parse_error_message_;
 
   gsl::not_null<std::shared_ptr<details::global_configuration>> global_configuration_;
   gsl::not_null<std::shared_ptr<details::machine_specific>> machine_specific_;

@@ -141,6 +141,7 @@ void run_core_configuration_test(void) {
 
       expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
       expect(configuration.is_loaded() == false);
+      expect(configuration.get_parse_error_message() == "[json.exception.parse_error.101] parse error at line 7, column 1: syntax error while parsing object key - unexpected end of input; expected string literal");
 
       expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
       expect(configuration.get_global_configuration().get_show_in_menu_bar() == true);
