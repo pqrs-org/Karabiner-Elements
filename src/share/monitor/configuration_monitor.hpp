@@ -66,6 +66,14 @@ public:
                                                                         expected_user_core_configuration_file_owner,
                                                                         error_handling);
 
+      // In the case of a parse error, core_configuration_ should not be updated, but parse_error_message_ should be.
+      // Therefore, we update parse_error_message_ first.
+      {
+        std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+
+        parse_error_message_ = c->get_parse_error_message();
+      }
+
       if (core_configuration_ && !c->is_loaded()) {
         return;
       }
@@ -104,10 +112,17 @@ public:
     return core_configuration_;
   }
 
+  const std::string& get_parse_error_message(void) const {
+    std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+
+    return parse_error_message_;
+  }
+
 private:
   std::unique_ptr<pqrs::osx::file_monitor> file_monitor_;
 
   std::shared_ptr<core_configuration::core_configuration> core_configuration_;
+  std::string parse_error_message_;
   mutable std::mutex core_configuration_mutex_;
 };
 } // namespace krbn

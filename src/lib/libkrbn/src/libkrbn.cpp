@@ -394,6 +394,23 @@ void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configu
   }
 }
 
+bool libkrbn_configuration_monitor_get_parse_error_message(char* buffer,
+                                                           size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_configuration_monitor()) {
+      auto message = m->get_parse_error_message();
+      strlcpy(buffer, message.c_str(), length);
+      return true;
+    }
+  }
+
+  return false;
+}
+
 //
 // complex_modifications_assets_manager
 //

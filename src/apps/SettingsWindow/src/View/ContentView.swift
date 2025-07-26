@@ -14,8 +14,8 @@ struct ContentView: View {
           DoctorAlertView()
         }
       } else if contentViewStates.showSettingsAlert {
-        // When performing a clean install, many alerts are enabled,
-        // but among them, SettingsAlertView is always displayed first,
+        // When performing a clean install, many alerts are displayed.
+        // Among them, SettingsAlertView is always displayed first,
         // followed by other permission-related alerts in order.
         // If the display priority of SettingsAlertView is low,
         // it briefly appears before being replaced by other alerts, causing a flickering effect.

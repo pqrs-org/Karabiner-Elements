@@ -412,6 +412,9 @@ typedef void (*libkrbn_core_configuration_updated)(void);
 void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated callback);
 void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated callback);
 
+bool libkrbn_configuration_monitor_get_parse_error_message(char* buffer,
+                                                           size_t length);
+
 //
 // libkrbn_connected_devices
 //

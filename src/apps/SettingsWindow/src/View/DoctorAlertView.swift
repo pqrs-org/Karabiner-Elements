@@ -49,6 +49,27 @@ struct DoctorAlertView: View {
             .padding()
           }
         }
+
+        if !doctor.karabinerJSONParseErrorMessage.isEmpty {
+          Label(
+            "karabiner.json couldn't be loaded due to a parse error",
+            systemImage: "exclamationmark.triangle"
+          )
+          .font(.system(size: 24))
+
+          GroupBox {
+            VStack(alignment: .leading, spacing: 6.0) {
+              Text(
+                "It looks like the file was edited manually and now contains invalid JSON."
+              )
+              Text(doctor.karabinerJSONParseErrorMessage)
+                .padding()
+                .foregroundColor(Color.errorForeground)
+                .background(Color.errorBackground)
+            }
+            .padding()
+          }
+        }
       }
       .padding()
       .frame(width: 850)
