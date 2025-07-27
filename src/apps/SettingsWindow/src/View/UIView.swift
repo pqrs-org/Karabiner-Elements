@@ -89,9 +89,7 @@ struct UIView: View {
                 .frame(height: 150)
 
             }
-            .padding()
-            .foregroundColor(Color.warningForeground)
-            .background(Color.warningBackground)
+            .modifier(WarningBorder())
           }
           .padding()
         }
@@ -103,9 +101,7 @@ struct UIView: View {
                 "It takes a few seconds for changes to the application icon to take effect.\nAnd to update the Dock icon, you need to close and reopen the application.",
                 systemImage: "lightbulb"
               )
-              .padding()
-              .foregroundColor(Color.warningForeground)
-              .background(Color.warningBackground)
+              .modifier(WarningBorder())
             }
 
             Picker(selection: $appIcons.selectedAppIconNumber, label: Text("")) {
