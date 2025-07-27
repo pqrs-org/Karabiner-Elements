@@ -52,22 +52,18 @@ struct ComplexModificationsEditView: View {
             }
 
             if disabled {
-              VStack {
-                Text(
-                  "Content is too large to edit. Please edit karabiner.json directly with your favorite editor."
-                )
-              }
-              .padding()
-              .foregroundColor(Color.errorForeground)
-              .background(Color.errorBackground)
+              Label(
+                "Content is too large to edit. Please edit karabiner.json directly with your favorite editor.",
+                systemImage: "exclamationmark.circle.fill"
+              )
+              .modifier(ErrorBorder())
             } else {
-              if errorMessage != nil {
-                VStack {
-                  Text(errorMessage!)
-                }
-                .padding()
-                .foregroundColor(Color.errorForeground)
-                .background(Color.errorBackground)
+              if let errorMessage = errorMessage {
+                Label(
+                  errorMessage,
+                  systemImage: "exclamationmark.circle.fill"
+                )
+                .modifier(ErrorBorder())
               }
 
               CodeEditor(
