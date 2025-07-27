@@ -201,9 +201,8 @@ struct ContentMainView: View {
               )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .modifier(ErrorBorder())
             .padding()
-            .foregroundColor(Color.errorForeground)
-            .background(Color.errorBackground)
           }
 
           switch selectedSidebarItem {
