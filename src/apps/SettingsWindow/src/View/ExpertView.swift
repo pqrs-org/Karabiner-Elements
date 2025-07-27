@@ -19,7 +19,7 @@ struct ExpertView: View {
                 + "\n" + "Unsafe configuration allows the following items:\n"
                 + "- Allow you to enable Apple pointing devices in the Devices tab.\n"
                 + "- Allow you to change left-click in Simple Modifications tab.",
-              systemImage: "exclamationmark.triangle"
+              systemImage: WarningBorder.icon
             )
             .modifier(WarningBorder())
           }
@@ -79,7 +79,7 @@ struct ExpertView: View {
             Label(
               "Setting insufficient delay (e.g., 0) will result in a device becoming unusable after Karabiner-Elements is quit.\n"
                 + "(This is a macOS problem and can be solved by unplugging the device and plugging it again.)",
-              systemImage: "exclamationmark.triangle"
+              systemImage: WarningBorder.icon
             )
             .modifier(WarningBorder())
           }

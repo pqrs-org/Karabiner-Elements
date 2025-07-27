@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct WarningBorder: ViewModifier {
+  static let icon = "exclamationmark.triangle"
+
   let padding: CGFloat?
 
   init(padding: CGFloat? = nil) {

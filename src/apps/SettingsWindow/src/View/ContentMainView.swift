@@ -169,7 +169,7 @@ struct ContentMainView: View {
                   + "1. Open System Settings and go to Keyboard Shortcuts... > Modifier Keys.\n"
                   + "2. Choose Karabiner DriverKit VirtualHIDKeyboard.\n"
                   + "3. Click the Restore Defaults button.",
-                systemImage: "lightbulb"
+                systemImage: WarningBorder.icon
               )
 
               Button(
