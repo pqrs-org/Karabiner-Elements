@@ -68,12 +68,11 @@ struct ServicesNotRunningAlertView: View {
             }
 
             Label(
-              "If these are already enabled, the settings might not be properly reflected on the macOS side. Please disable them once and then enable them again.",
+              "If these services are already enabled, the settings might not have been correctly applied on the macOS side.\n"
+                + "Try disabling them once and then enabling them again.",
               systemImage: "lightbulb"
             )
-            .padding()
-            .foregroundColor(Color.warningForeground)
-            .background(Color.warningBackground)
+            .modifier(WarningBorder())
 
             if !servicesMonitor.servicesEnabled {
               Image(decorative: "login-items")
@@ -81,7 +80,6 @@ struct ServicesNotRunningAlertView: View {
                 .aspectRatio(contentMode: .fit)
                 .border(Color.gray, width: 1)
             }
-
           }
           .padding()
         }
