@@ -17,16 +17,13 @@ struct MiscView: View {
               Spacer()
             }
 
-            VStack(alignment: .leading, spacing: 0.0) {
-              Text(
-                "Note: This setting is hardware-specific. "
-                  + "When you import Karabiner-Elements settings to another Mac, "
-                  + "the enabled state of the Multitouch Extension is not carried over."
-              )
-            }
-            .padding()
-            .foregroundColor(Color.infoForeground)
-            .background(Color.infoBackground)
+            Label(
+              "This setting is hardware-specific. "
+                + "When you import Karabiner-Elements settings to another Mac, "
+                + "the enabled state of the Multitouch Extension is not carried over.",
+              systemImage: "lightbulb"
+            )
+            .modifier(InfoBorder())
           }
           .padding()
         }

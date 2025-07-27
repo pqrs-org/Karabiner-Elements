@@ -63,11 +63,11 @@ struct DevicesView: View {
 
       if settings.notConnectedDeviceSettingsCount > 0 {
         HStack {
-          Text(
-            "There are \(settings.notConnectedDeviceSettingsCount) other settings for devices that are not currently connected"
+          Label(
+            "There are \(settings.notConnectedDeviceSettingsCount) other settings for devices that are not currently connected",
+            systemImage: "lightbulb"
           )
-
-          Spacer()
+          .frame(maxWidth: .infinity, alignment: .leading)
 
           if !showEraseNotConnectedDeviceSettingsButton {
             Button(
