@@ -259,9 +259,11 @@ struct DevicesGamePadSettingsView: View {
           Text(name)
 
           if error {
-            Text("Invalid formula")
-              .foregroundColor(Color.errorForeground)
-              .background(Color.errorBackground)
+            Label(
+              "Invalid formula",
+              systemImage: "exclamationmark.circle.fill"
+            )
+            .modifier(ErrorBorder(padding: 4.0))
           }
 
           Spacer()
