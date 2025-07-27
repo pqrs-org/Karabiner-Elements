@@ -261,7 +261,7 @@ struct DevicesGamePadSettingsView: View {
           if error {
             Label(
               "Invalid formula",
-              systemImage: "exclamationmark.circle.fill"
+              systemImage: ErrorBorder.icon
             )
             .modifier(ErrorBorder(padding: 4.0))
           }

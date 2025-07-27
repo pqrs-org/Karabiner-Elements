@@ -197,7 +197,7 @@ struct ContentMainView: View {
             VStack(alignment: .leading) {
               Label(
                 "Save failed:\n\(settings.saveErrorMessage)",
-                systemImage: "exclamationmark.circle.fill"
+                systemImage: ErrorBorder.icon
               )
             }
             .frame(maxWidth: .infinity, alignment: .leading)

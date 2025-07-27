@@ -21,7 +21,7 @@ struct MiscView: View {
               "This setting is hardware-specific. "
                 + "When you import Karabiner-Elements settings to another Mac, "
                 + "the enabled state of the Multitouch Extension is not carried over.",
-              systemImage: "lightbulb"
+              systemImage: InfoBorder.icon
             )
             .modifier(InfoBorder())
           }

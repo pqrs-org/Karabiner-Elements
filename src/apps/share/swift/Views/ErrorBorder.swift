@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ErrorBorder: ViewModifier {
+  static let icon = "exclamationmark.circle.fill"
+
   let padding: CGFloat?
 
   init(padding: CGFloat? = nil) {

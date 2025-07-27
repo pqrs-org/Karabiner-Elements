@@ -72,7 +72,7 @@ struct UIView: View {
             VStack(alignment: .leading, spacing: 12.0) {
               Label(
                 "What is the Karabiner Notification Window?",
-                systemImage: "lightbulb"
+                systemImage: InfoBorder.icon
               )
               VStack(alignment: .leading, spacing: 0.0) {
                 Text(
@@ -99,7 +99,7 @@ struct UIView: View {
             VStack {
               Label(
                 "It takes a few seconds for changes to the application icon to take effect.\nAnd to update the Dock icon, you need to close and reopen the application.",
-                systemImage: "lightbulb"
+                systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())
             }

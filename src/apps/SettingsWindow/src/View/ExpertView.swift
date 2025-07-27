@@ -40,7 +40,7 @@ struct ExpertView: View {
                   + "- Nintendo's Pro Controller (USB connected):\n"
                   + "    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed.\n"
                   + "    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all.",
-                systemImage: "lightbulb"
+                systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())
               .fixedSize(horizontal: false, vertical: true)
@@ -54,7 +54,7 @@ struct ExpertView: View {
 
               Label(
                 "If your keyboard supports hardware macros and sends multiple keys at once, and you notice that modifier key order is changing, try turning this setting off.",
-                systemImage: "lightbulb"
+                systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())
             }

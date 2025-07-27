@@ -65,7 +65,7 @@ struct DevicesView: View {
         HStack {
           Label(
             "There are \(settings.notConnectedDeviceSettingsCount) other settings for devices that are not currently connected",
-            systemImage: "lightbulb"
+            systemImage: InfoBorder.icon
           )
           .frame(maxWidth: .infinity, alignment: .leading)
 

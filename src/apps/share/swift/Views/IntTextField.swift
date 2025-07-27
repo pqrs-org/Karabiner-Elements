@@ -55,7 +55,7 @@ struct IntTextField: View {
       if error {
         Label(
           "must be between \(range.lowerBound) and \(range.upperBound)",
-          systemImage: "exclamationmark.circle.fill"
+          systemImage: ErrorBorder.icon
         )
         .modifier(ErrorBorder(padding: 4.0))
       }

@@ -16,7 +16,7 @@ struct SettingsActionView: View {
 
           Label(
             "To disable the Multitouch Extension, configure it in the Misc tab of the Karabiner-Elements settings.",
-            systemImage: "lightbulb"
+            systemImage: InfoBorder.icon
           )
           .modifier(InfoBorder())
         }

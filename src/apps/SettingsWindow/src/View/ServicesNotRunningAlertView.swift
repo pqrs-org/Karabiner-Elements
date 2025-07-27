@@ -70,7 +70,7 @@ struct ServicesNotRunningAlertView: View {
             Label(
               "If these services are already enabled, the settings might not have been correctly applied on the macOS side.\n"
                 + "Try disabling them once and then enabling them again.",
-              systemImage: "lightbulb"
+              systemImage: InfoBorder.icon
             )
             .modifier(InfoBorder())
 

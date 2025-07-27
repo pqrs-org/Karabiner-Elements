@@ -62,7 +62,7 @@ struct DoubleTextField: View {
             format: "must be between %.\(maximumFractionDigits)f and %.\(maximumFractionDigits)f",
             range.lowerBound,
             range.upperBound),
-          systemImage: "exclamationmark.circle.fill"
+          systemImage: ErrorBorder.icon
         )
         .modifier(ErrorBorder(padding: 4.0))
       }

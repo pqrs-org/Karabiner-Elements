@@ -54,14 +54,14 @@ struct ComplexModificationsEditView: View {
             if disabled {
               Label(
                 "Content is too large to edit. Please edit karabiner.json directly with your favorite editor.",
-                systemImage: "exclamationmark.circle.fill"
+                systemImage: ErrorBorder.icon
               )
               .modifier(ErrorBorder())
             } else {
               if let errorMessage = errorMessage {
                 Label(
                   errorMessage,
-                  systemImage: "exclamationmark.circle.fill"
+                  systemImage: ErrorBorder.icon
                 )
                 .modifier(ErrorBorder())
               }

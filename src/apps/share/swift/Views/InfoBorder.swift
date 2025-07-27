@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct InfoBorder: ViewModifier {
+  static let icon = "lightbulb"
+
   let padding: CGFloat?
 
   init(padding: CGFloat? = nil) {
