@@ -14,16 +14,12 @@ struct DoctorAlertView: View {
           )
           .font(.system(size: 24))
 
-          GroupBox {
-            VStack(alignment: .leading, spacing: 0.0) {
-              Text(
-                "Karabiner-Elements failed to write a file to $HOME/.local/share/karabiner folder."
-              )
-              Text("Typically this is due to incorrect permissions on the $HOME/.local folder.")
-              Text("Make sure you have a permission to write $HOME/.local/share/karabiner.")
-            }
-            .padding()
-          }
+          Text(
+            "Karabiner-Elements failed to write a file to $HOME/.local/share/karabiner folder.\n"
+              + "Typically this is due to incorrect permissions on the $HOME/.local folder.\n"
+              + "Make sure you have a permission to write $HOME/.local/share/karabiner."
+          )
+          .modifier(ErrorBorder())
 
           GroupBox(label: Text("How to check the permission")) {
             VStack(alignment: .leading, spacing: 10.0) {
@@ -55,20 +51,12 @@ struct DoctorAlertView: View {
             "karabiner.json couldn't be loaded due to a parse error",
             systemImage: "exclamationmark.triangle"
           )
-          .font(.system(size: 24))
+          .font(.title)
 
-          GroupBox {
-            VStack(alignment: .leading, spacing: 6.0) {
-              Text(
-                "It looks like the file was edited manually and now contains invalid JSON."
-              )
-              Text(doctor.karabinerJSONParseErrorMessage)
-                .padding()
-                .foregroundColor(Color.errorForeground)
-                .background(Color.errorBackground)
-            }
-            .padding()
-          }
+          Text("It looks like the file was edited manually and now contains invalid JSON.")
+
+          Text(doctor.karabinerJSONParseErrorMessage)
+            .modifier(ErrorBorder())
         }
       }
       .padding()
