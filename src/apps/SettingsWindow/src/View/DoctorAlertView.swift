@@ -10,7 +10,7 @@ struct DoctorAlertView: View {
         if !doctor.userPIDDirectoryWritable {
           Label(
             "Unable to write files to the working folder.",
-            systemImage: "exclamationmark.triangle"
+            systemImage: "exclamationmark.circle.fill"
           )
           .font(.system(size: 24))
 
@@ -49,7 +49,7 @@ struct DoctorAlertView: View {
         if !doctor.karabinerJSONParseErrorMessage.isEmpty {
           Label(
             "karabiner.json couldn't be loaded due to a parse error",
-            systemImage: "exclamationmark.triangle"
+            systemImage: "exclamationmark.circle.fill"
           )
           .font(.title)
 
