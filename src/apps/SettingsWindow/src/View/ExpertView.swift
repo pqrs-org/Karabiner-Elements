@@ -7,73 +7,56 @@ struct ExpertView: View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
         GroupBox(label: Text("Expert mode")) {
-          VStack(alignment: .leading, spacing: 12.0) {
-            HStack {
-              Toggle(isOn: $settings.unsafeUI) {
-                Text("Enable unsafe configuration (Default: off)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+          VStack(alignment: .leading, spacing: 4.0) {
+            Toggle(isOn: $settings.unsafeUI) {
+              Text("Enable unsafe configuration (Default: off)")
             }
+            .switchToggleStyle()
 
-            VStack(alignment: .leading, spacing: 0.0) {
-              Text("Warning:")
-              Text("Unsafe configuration disables the foolproof feature on the configuration UI.")
-              Text(
-                "You should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. (e.g., using Screen Sharing)"
-              )
-              Text("")
-              Text("Unsafe configuration allows the following items:")
-              Text("- Allow you to enable Apple pointing devices in the Devices tab.")
-              Text("- Allow you to change left-click in Simple Modifications tab.")
-            }
-            .modifier(ErrorBorder())
-            .fixedSize(horizontal: false, vertical: true)
+            Label(
+              "Unsafe configuration disables the foolproof feature on the configuration UI.\n"
+                + "You should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. (e.g., using Screen Sharing)\n"
+                + "\n" + "Unsafe configuration allows the following items:\n"
+                + "- Allow you to enable Apple pointing devices in the Devices tab.\n"
+                + "- Allow you to change left-click in Simple Modifications tab.",
+              systemImage: "exclamationmark.triangle"
+            )
+            .modifier(WarningBorder())
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
 
         GroupBox(label: Text("Options")) {
-          VStack(alignment: .leading, spacing: 12.0) {
-            HStack {
+          VStack(alignment: .leading, spacing: 20.0) {
+            VStack(alignment: .leading, spacing: 4.0) {
               Toggle(isOn: $settings.filterUselessEventsFromSpecificDevices) {
                 Text("Filter useless events from specific devices (Default: on)")
               }
               .switchToggleStyle()
-            }
-
-            VStack(alignment: .leading, spacing: 0.0) {
-              Text("If this setting is enabled, the following events will be ignored:")
-              Text("")
-              Text("- Nintendo's Pro Controller (USB connected):")
-              Text(
-                "    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed."
-              )
-              Text(
-                "    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all."
-              )
-            }
-            .padding()
-            .foregroundColor(Color.infoForeground)
-            .background(Color.infoBackground)
-            .fixedSize(horizontal: false, vertical: true)
-
-            VStack(alignment: .leading, spacing: 4.0) {
-              HStack {
-                Toggle(isOn: $settings.reorderSameTimestampInputEventsToPrioritizeModifiers) {
-                  Text("Reorder same timestamp input events to prioritize modifiers (Default: on)")
-                }
-                .switchToggleStyle()
-              }
 
               Label(
-                #"If your keyboard supports hardware macros and sends multiple keys at once, and you notice that modifier key order is changing, try turning this setting off."#,
+                "If this setting is enabled, the following events will be ignored:\n"
+                  + "- Nintendo's Pro Controller (USB connected):\n"
+                  + "    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed.\n"
+                  + "    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all.",
                 systemImage: "lightbulb"
               )
-              .foregroundColor(Color(NSColor.textColor))
-              .font(.caption)
+              .modifier(InfoBorder())
               .fixedSize(horizontal: false, vertical: true)
+            }
+
+            VStack(alignment: .leading, spacing: 4.0) {
+              Toggle(isOn: $settings.reorderSameTimestampInputEventsToPrioritizeModifiers) {
+                Text("Reorder same timestamp input events to prioritize modifiers (Default: on)")
+              }
+              .switchToggleStyle()
+
+              Label(
+                "If your keyboard supports hardware macros and sends multiple keys at once, and you notice that modifier key order is changing, try turning this setting off.",
+                systemImage: "lightbulb"
+              )
+              .modifier(InfoBorder())
             }
           }
           .padding()
@@ -81,7 +64,7 @@ struct ExpertView: View {
         }
 
         GroupBox(label: Text("Delay to grab device")) {
-          VStack(alignment: .leading, spacing: 12.0) {
+          VStack(alignment: .leading, spacing: 4.0) {
             HStack {
               IntTextField(
                 value: $settings.delayMillisecondsBeforeOpenDevice,
@@ -93,24 +76,16 @@ struct ExpertView: View {
               Spacer()
             }
 
-            HStack(alignment: .center, spacing: 12.0) {
-              Image(systemName: "exclamationmark.triangle")
-
-              VStack(alignment: .leading, spacing: 0.0) {
-                Text(
-                  "Setting insufficient delay (e.g., 0) will result in a device becoming unusable after Karabiner-Elements is quit."
-                )
-                Text(
-                  "(This is a macOS problem and can be solved by unplugging the device and plugging it again.)"
-                )
-              }
-              .fixedSize(horizontal: false, vertical: true)
-            }
+            Label(
+              "Setting insufficient delay (e.g., 0) will result in a device becoming unusable after Karabiner-Elements is quit.\n"
+                + "(This is a macOS problem and can be solved by unplugging the device and plugging it again.)",
+              systemImage: "exclamationmark.triangle"
+            )
+            .modifier(WarningBorder())
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
-
-        Spacer()
       }
     }
     .padding()
