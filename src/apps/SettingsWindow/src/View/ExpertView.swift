@@ -28,9 +28,7 @@ struct ExpertView: View {
               Text("- Allow you to enable Apple pointing devices in the Devices tab.")
               Text("- Allow you to change left-click in Simple Modifications tab.")
             }
-            .padding()
-            .foregroundColor(Color.errorForeground)
-            .background(Color.errorBackground)
+            .modifier(ErrorBorder())
             .fixedSize(horizontal: false, vertical: true)
           }
           .padding()
