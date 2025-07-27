@@ -63,8 +63,7 @@ struct DoubleTextField: View {
             range.lowerBound,
             range.upperBound)
         )
-        .foregroundColor(Color.errorForeground)
-        .background(Color.errorBackground)
+        .modifier(ErrorBorder(padding: 4.0))
       }
     }
     .onChange(of: text) { newText in

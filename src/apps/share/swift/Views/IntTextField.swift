@@ -54,8 +54,7 @@ struct IntTextField: View {
 
       if error {
         Text("must be between \(range.lowerBound) and \(range.upperBound)")
-          .foregroundColor(Color.errorForeground)
-          .background(Color.errorBackground)
+          .modifier(ErrorBorder(padding: 4.0))
       }
     }
     .onChange(of: text) { newText in

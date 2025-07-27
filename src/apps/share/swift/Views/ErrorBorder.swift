@@ -1,9 +1,15 @@
 import SwiftUI
 
 struct ErrorBorder: ViewModifier {
+  let padding: CGFloat?
+
+  init(padding: CGFloat? = nil) {
+    self.padding = padding
+  }
+
   func body(content: Content) -> some View {
     content
-      .padding()
+      .padding(.all, padding)
       .overlay(
         RoundedRectangle(cornerRadius: 8)
           .stroke(Color.errorForeground, lineWidth: 4)
