@@ -89,7 +89,7 @@ struct UIView: View {
                 .frame(height: 150)
 
             }
-            .modifier(WarningBorder())
+            .modifier(InfoBorder())
           }
           .padding()
         }
@@ -101,7 +101,7 @@ struct UIView: View {
                 "It takes a few seconds for changes to the application icon to take effect.\nAnd to update the Dock icon, you need to close and reopen the application.",
                 systemImage: "lightbulb"
               )
-              .modifier(WarningBorder())
+              .modifier(InfoBorder())
             }
 
             Picker(selection: $appIcons.selectedAppIconNumber, label: Text("")) {

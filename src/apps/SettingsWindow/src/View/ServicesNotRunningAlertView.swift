@@ -72,7 +72,7 @@ struct ServicesNotRunningAlertView: View {
                 + "Try disabling them once and then enabling them again.",
               systemImage: "lightbulb"
             )
-            .modifier(WarningBorder())
+            .modifier(InfoBorder())
 
             if !servicesMonitor.servicesEnabled {
               Image(decorative: "login-items")
