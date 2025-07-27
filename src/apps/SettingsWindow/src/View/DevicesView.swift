@@ -96,9 +96,7 @@ struct DevicesView: View {
             .deleteButtonStyle()
           }
         }
-        .padding()
-        .foregroundColor(Color.infoForeground)
-        .background(Color.infoBackground)
+        .modifier(InfoBorder())
       }
     }
     .padding()
