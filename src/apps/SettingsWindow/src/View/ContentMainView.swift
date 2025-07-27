@@ -189,9 +189,8 @@ struct ContentMainView: View {
               )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .modifier(WarningBorder())
             .padding()
-            .foregroundColor(Color.warningForeground)
-            .background(Color.warningBackground)
           }
 
           if settings.saveErrorMessage != "" {
