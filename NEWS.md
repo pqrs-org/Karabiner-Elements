@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 15.5.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.5.0/Karabiner-Elements-15.5.0.dmg)
+-   📅 Release date
+    -   Jul 29, 2025
 -   🐛 Bug Fixes
     -   Fixed an issue where the "Use all F1, F2, etc. keys as standard function keys" setting wasn't correctly detected in some environments.
     -   Fixed an issue where some buttons were hard to see in Dark Mode.
