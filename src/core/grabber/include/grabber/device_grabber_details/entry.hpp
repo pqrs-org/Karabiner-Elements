@@ -94,7 +94,11 @@ public:
                       // Handle ignore_vendor_events
                       //
 
-                      if (d->get_ignore_vendor_events()) {
+                      // For Apple devices, process vendor events regardless of the "ignore_vendor_events" setting.
+                      // Even if karabiner.json is manually edited to set "ignore_vendor_events": true,
+                      // ignore that setting and handle vendor events.
+                      if (d->get_ignore_vendor_events() &&
+                          !device_properties_->get_is_apple()) {
                         // 0xff
                         if (v.get_usage_page() == pqrs::hid::usage_page::apple_vendor_top_case) {
                           return true;
