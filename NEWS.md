@@ -1,5 +1,11 @@
 # Changelog
 
+## Beta
+
+-   ⚡️ Improvements
+    -   Improved handling of the `ignore_vendor_events` setting.
+        The UI already prevented enabling this for Apple devices, and now, even if you manually set `ignore_vendor_events` in karabiner.json, vendor events for Apple devices will always be processed regardless of the setting.
+
 ## Karabiner-Elements 15.5.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.5.0/Karabiner-Elements-15.5.0.dmg)
