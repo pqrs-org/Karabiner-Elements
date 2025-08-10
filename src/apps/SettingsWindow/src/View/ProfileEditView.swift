@@ -10,43 +10,34 @@ struct ProfileEditView: View {
     VStack(alignment: .leading, spacing: 12.0) {
       if profile != nil {
         VStack(alignment: .leading, spacing: 12.0) {
-          VStack(alignment: .leading, spacing: 0.0) {
-            HStack {
-              Text("Profile name:")
-              TextField("Profile name", text: $name)
-            }
+          HStack {
+            Text("Profile name:")
+            TextField("Profile name", text: $name)
           }
 
-          VStack(alignment: .center, spacing: 0.0) {
-            HStack(alignment: .center) {
-              Spacer()
+          HStack(alignment: .center) {
+            Button(
+              action: {
+                showing = false
+              },
+              label: {
+                Label("Cancel", systemImage: "xmark")
+              })
 
-              Button(
-                action: {
-                  showing = false
-                },
-                label: {
-                  Label("Cancel", systemImage: "xmark")
-                })
-
-              Spacer()
-                .frame(width: 24.0)
-
-              Button(
-                action: {
-                  settings.updateProfileName(profile!, name)
-                  showing = false
-                },
-                label: {
-                  Label("Save", systemImage: "checkmark")
-                    .buttonLabelStyle()
-                }
-              )
-              .buttonStyle(BorderedProminentButtonStyle())
-
-              Spacer()
-            }
+            Button(
+              action: {
+                settings.updateProfileName(profile!, name)
+                showing = false
+              },
+              label: {
+                Label("Save", systemImage: "checkmark")
+                  .buttonLabelStyle()
+              }
+            )
+            .buttonStyle(BorderedProminentButtonStyle())
+            .padding(.leading, 24.0)
           }
+          .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding()
       }
