@@ -146,7 +146,7 @@ struct UIView: View {
           .background(Color(NSColor.textBackgroundColor))
         }
       }
+      .padding()
     }
-    .padding()
   }
 }
