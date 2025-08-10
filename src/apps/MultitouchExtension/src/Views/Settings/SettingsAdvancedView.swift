@@ -15,8 +15,6 @@ struct SettingsAdvancedView: View {
               .switchToggleStyle()
 
               Text("(Default: on)")
-
-              Spacer()
             }
 
             HStack {
@@ -31,12 +29,11 @@ struct SettingsAdvancedView: View {
               .disabled(!userSettings.relaunchAfterWakeUpFromSleep)
 
               Text("seconds (Default: 3)")
-
-              Spacer()
             }
           }
         }
         .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
 
       GroupBox(label: Text("Delay")) {
@@ -52,8 +49,6 @@ struct SettingsAdvancedView: View {
                 width: 80)
 
               Text("milliseconds (Default: 0)")
-
-              Spacer()
             }
 
             Text("(Increasing this value allows you to ignore unintended touch)")
@@ -70,14 +65,13 @@ struct SettingsAdvancedView: View {
                 width: 80)
 
               Text("milliseconds (Default: 0)")
-
-              Spacer()
             }
 
             Text("(Increasing this value allows you to ignore unintended release)")
           }
         }
         .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
 
       GroupBox(label: Text("Palm Detection")) {
@@ -94,8 +88,6 @@ struct SettingsAdvancedView: View {
                 width: 80)
 
               Text("touch size threshold (Default: 2)")
-
-              Spacer()
             }
 
             Text("(Increasing this value allows you to ignore unintended palm touches)")
@@ -103,6 +95,7 @@ struct SettingsAdvancedView: View {
 
         }
         .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
     }
   }
