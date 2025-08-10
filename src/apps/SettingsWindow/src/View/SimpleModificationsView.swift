@@ -14,7 +14,6 @@ struct SimpleModificationsView: View {
           selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice)
       }
     }
-    .padding()
     .onAppear {
       settings.appendSimpleModificationIfEmpty(
         device: contentViewStates.simpleModificationsViewSelectedDevice)
