@@ -12,6 +12,7 @@ struct DevicesMouseSettingsView: View {
         Text(
           "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))"
         )
+        .font(.title)
         .padding(.leading, 40)
         .padding(.top, 20)
 
@@ -51,8 +52,6 @@ struct DevicesMouseSettingsView: View {
         }
 
         DevicesMouseFlagsView(connectedDeviceSetting: connectedDeviceSetting)
-
-        Spacer()
       }
 
       SheetCloseButton {
@@ -60,6 +59,6 @@ struct DevicesMouseSettingsView: View {
       }
     }
     .padding()
-    .frame(width: 1000, height: 600)
+    .frame(width: 1000, height: 600, alignment: .top)
   }
 }
