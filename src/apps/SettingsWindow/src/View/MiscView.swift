@@ -8,14 +8,10 @@ struct MiscView: View {
       VStack(alignment: .leading, spacing: 24.0) {
         GroupBox(label: Text("Extra tool: Multitouch Extension")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            HStack {
-              Toggle(isOn: $settings.enableMultitouchExtension) {
-                Text("Enable Multitouch Extension (Default: off)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+            Toggle(isOn: $settings.enableMultitouchExtension) {
+              Text("Enable Multitouch Extension (Default: off)")
             }
+            .switchToggleStyle()
 
             Label(
               "This setting is hardware-specific. "
@@ -26,40 +22,38 @@ struct MiscView: View {
             .modifier(InfoBorder())
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
 
         GroupBox(label: Text("Export & Import")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            HStack {
-              Button(
-                action: {
-                  var buffer = [Int8](repeating: 0, count: 32 * 1024)
-                  libkrbn_get_user_configuration_directory(&buffer, buffer.count)
-                  guard let path = String(utf8String: buffer) else { return }
+            Button(
+              action: {
+                var buffer = [Int8](repeating: 0, count: 32 * 1024)
+                libkrbn_get_user_configuration_directory(&buffer, buffer.count)
+                guard let path = String(utf8String: buffer) else { return }
 
-                  let url = URL(fileURLWithPath: path, isDirectory: true)
-                  NSWorkspace.shared.open(url)
-                },
-                label: {
-                  Label(
-                    "Open config folder (~/.config/karabiner)", systemImage: "arrow.up.forward.app")
-                })
+                let url = URL(fileURLWithPath: path, isDirectory: true)
+                NSWorkspace.shared.open(url)
+              },
+              label: {
+                Label(
+                  "Open config folder", systemImage: "arrow.up.forward.app")
+              })
 
-              Spacer()
-            }
+            Label(
+              "You can back up your settings or migrate them to another machine by copying karabiner.json. "
+                + "There are also backups under the automatic_backups folder, so you can restore a previous state by overwriting karabiner.json with one of those backups.",
+              systemImage: InfoBorder.icon
+            )
+            .modifier(InfoBorder())
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
 
         GroupBox(label: Text("System default configuration")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            VStack(alignment: .leading, spacing: 0) {
-              Text(
-                "You can use Karabiner-Elements even before login by setting the system default configuration."
-              )
-              Text("(These operations require the administrator privilege.)")
-            }
-
             Button(
               action: {
                 settings.installSystemDefaultProfile()
@@ -69,6 +63,13 @@ struct MiscView: View {
                   "Copy the current configuration to the system default configuration",
                   systemImage: "square.and.arrow.down")
               })
+
+            Label(
+              "You can use Karabiner-Elements even before login by setting the system default configuration. "
+                + "(This operation requires the administrator privilege.)",
+              systemImage: InfoBorder.icon
+            )
+            .modifier(InfoBorder())
 
             if settings.systemDefaultProfileExists {
               Button(
@@ -88,9 +89,8 @@ struct MiscView: View {
             }
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
-
-        Spacer()
       }
     }
     .padding()
