@@ -89,28 +89,24 @@ struct SimpleModificationsView: View {
             Divider()
           }
 
-          HStack {
-            Button(
-              action: {
-                LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
-              },
-              label: {
-                // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
-                Image(systemName: "plus.circle.fill").foregroundColor(.blue)
-                Text("Add item")
-              }
-            )
-            .buttonStyle(.automatic)
+          Button(
+            action: {
+              LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
+            },
+            label: {
+              // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
+              Image(systemName: "plus.circle.fill").foregroundColor(.blue)
+              Text("Add item")
+            }
+          )
+          .buttonStyle(.automatic)
 
-            Spacer()
-          }
           .if(simpleModifications.count > 0) {
             $0.padding(.top, 20.0)
           }
-
-          Spacer()
         }
-        .padding(10)
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(NSColor.textBackgroundColor))
       }
     }
