@@ -8,14 +8,12 @@ struct ComplexModificationsFileImportView: View {
     VStack(alignment: .leading, spacing: 12.0) {
       if complexModificationsFileImport.fetching {
         HStack(alignment: .center, spacing: 8.0) {
-          Spacer()
-
           ProgressView()
 
           Text("Loading...")
-
-          Spacer()
         }
+        .frame(maxWidth: .infinity, alignment: .center)
+
       } else {
         Text("Import file from \(complexModificationsFileImport.url?.absoluteString ?? "")")
 
@@ -39,8 +37,6 @@ struct ComplexModificationsFileImportView: View {
       }
 
       HStack(alignment: .center) {
-        Spacer()
-
         Button(
           action: {
             contentViewStates.complexModificationsViewSheetPresented = false
@@ -48,9 +44,6 @@ struct ComplexModificationsFileImportView: View {
           label: {
             Label("Cancel", systemImage: "xmark")
           })
-
-        Spacer()
-          .frame(width: 24.0)
 
         Button(
           action: {
@@ -66,10 +59,10 @@ struct ComplexModificationsFileImportView: View {
           }
         )
         .buttonStyle(BorderedProminentButtonStyle())
+        .padding(.leading, 24.0)
         .disabled(complexModificationsFileImport.jsonData == nil)
-
-        Spacer()
       }
+      .frame(maxWidth: .infinity, alignment: .center)
     }
     .padding()
     .frame(width: 1000, height: 300)
