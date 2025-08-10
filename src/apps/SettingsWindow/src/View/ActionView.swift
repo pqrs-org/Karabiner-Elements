@@ -4,10 +4,10 @@ struct ActionView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 24.0) {
-      GroupBox(label: Text("Action")) {
-        VStack(alignment: .leading, spacing: 16) {
-          HStack {
+    ScrollView {
+      VStack(alignment: .leading, spacing: 24.0) {
+        GroupBox(label: Text("Action")) {
+          VStack(alignment: .leading, spacing: 16) {
             Button(
               action: {
                 libkrbn_services_restart_console_user_server_agent()
@@ -17,10 +17,6 @@ struct ActionView: View {
                 Label("Restart Karabiner-Elements", systemImage: "arrow.clockwise")
               })
 
-            Spacer()
-          }
-
-          HStack {
             Button(
               action: {
                 KarabinerAppHelper.shared.quitKarabiner(
@@ -30,15 +26,12 @@ struct ActionView: View {
               label: {
                 Label("Quit Karabiner-Elements", systemImage: "xmark.circle.fill")
               })
-
-            Spacer()
           }
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding()
       }
-
-      Spacer()
+      .padding()
     }
-    .padding()
   }
 }
