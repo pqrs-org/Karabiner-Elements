@@ -9,89 +9,59 @@ struct UIView: View {
       VStack(alignment: .leading, spacing: 24.0) {
         GroupBox(label: Text("Menu bar")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            HStack {
-              Toggle(isOn: $settings.showIconInMenuBar) {
-                Text("Show icon in menu bar (Default: on)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+            Toggle(isOn: $settings.showIconInMenuBar) {
+              Text("Show icon in menu bar (Default: on)")
             }
+            .switchToggleStyle()
 
-            HStack {
-              Toggle(isOn: $settings.showProfileNameInMenuBar) {
-                Text("Show profile name in menu bar (Default: off)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+            Toggle(isOn: $settings.showProfileNameInMenuBar) {
+              Text("Show profile name in menu bar (Default: off)")
             }
+            .switchToggleStyle()
 
-            HStack {
-              Toggle(isOn: $settings.showAdditionalMenuItems) {
-                Text("Show additional menu items (Default: off)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+            Toggle(isOn: $settings.showAdditionalMenuItems) {
+              Text("Show additional menu items (Default: off)")
             }
+            .switchToggleStyle()
 
-            HStack {
-              Toggle(isOn: $settings.askForConfirmationBeforeQuitting) {
-                Text("Ask for confirmation when quitting (Default: on)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+            Toggle(isOn: $settings.askForConfirmationBeforeQuitting) {
+              Text("Ask for confirmation when quitting (Default: on)")
             }
-
+            .switchToggleStyle()
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
 
         GroupBox(label: Text("Karabiner Notification Window")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            HStack {
-              Toggle(isOn: $settings.enableNotificationWindow) {
-                Text("Enable Karabiner Notification Window (Default: on)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+            Toggle(isOn: $settings.enableNotificationWindow) {
+              Text("Enable Karabiner Notification Window (Default: on)")
             }
+            .switchToggleStyle()
 
-            HStack {
-              Toggle(isOn: $settings.virtualHIDKeyboardIndicateStickyModifierKeysState) {
-                Text("Indicate sticky modifier keys state (Default: on)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+            Toggle(isOn: $settings.virtualHIDKeyboardIndicateStickyModifierKeysState) {
+              Text("Indicate sticky modifier keys state (Default: on)")
             }
+            .switchToggleStyle()
 
             VStack(alignment: .leading, spacing: 12.0) {
               Label(
-                "What is the Karabiner Notification Window?",
+                "What is the Karabiner Notification Window?\n\n"
+                  + "Karabiner Notification Window is a window that displays messages, located at the bottom right of the screen."
+                  + "It is used for temporary alerts, displaying the status of sticky modifiers, and showing messages for some complex modifications.",
                 systemImage: InfoBorder.icon
               )
-              VStack(alignment: .leading, spacing: 0.0) {
-                Text(
-                  "Karabiner Notification Window is a window that displays messages, located at the bottom right of the screen. "
-                )
-                Text(
-                  "It is used for temporary alerts, displaying the status of sticky modifiers, and showing messages for some complex modifications."
-                )
-              }
 
               Image(decorative: "notification-window")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 150)
-
             }
             .modifier(InfoBorder())
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
 
         GroupBox(label: Text("App icon")) {
@@ -139,10 +109,9 @@ struct UIView: View {
                 .tag(appIcon.id)
               }
             }.pickerStyle(RadioGroupPickerStyle())
-
-            Divider()
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
           .background(Color(NSColor.textBackgroundColor))
         }
       }
