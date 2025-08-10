@@ -72,8 +72,6 @@ struct UpdateView: View {
           }
           .padding()
         }
-
-        Spacer()
       }
       .padding()
     }
