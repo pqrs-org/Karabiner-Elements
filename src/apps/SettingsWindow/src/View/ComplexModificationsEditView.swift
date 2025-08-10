@@ -15,68 +15,62 @@ struct ComplexModificationsEditView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 12.0) {
         if rule != nil {
-          VStack(alignment: .leading, spacing: 12.0) {
-            HStack(alignment: .center) {
-              Text(description)
-                .padding(.leading, 32)
-                .font(.system(size: 24))
+          HStack(alignment: .center) {
+            Text(description)
+              .padding(.leading, 32)
+              .font(.system(size: 24))
 
-              Spacer()
+            Spacer()
 
-              if !disabled {
-                Spacer()
-                  .frame(width: 24.0)
-
-                Button(
-                  action: {
-                    if rule!.index < 0 {
-                      errorMessage = settings.pushFrontComplexModificationsRule(jsonString)
-                      if errorMessage == nil {
-                        showing = false
-                      }
-                    } else {
-                      errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
-                      if errorMessage == nil {
-                        showing = false
-                      }
+            if !disabled {
+              Button(
+                action: {
+                  if rule!.index < 0 {
+                    errorMessage = settings.pushFrontComplexModificationsRule(jsonString)
+                    if errorMessage == nil {
+                      showing = false
                     }
-                  },
-                  label: {
-                    Label("Save", systemImage: "checkmark")
-                      .buttonLabelStyle()
+                  } else {
+                    errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
+                    if errorMessage == nil {
+                      showing = false
+                    }
                   }
-                )
-                .buttonStyle(BorderedProminentButtonStyle())
-                .keyboardShortcut("s")
-              }
+                },
+                label: {
+                  Label("Save", systemImage: "checkmark")
+                    .buttonLabelStyle()
+                }
+              )
+              .buttonStyle(BorderedProminentButtonStyle())
+              .padding(.leading, 24.0)
+              .keyboardShortcut("s")
             }
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
 
-            if disabled {
+          if disabled {
+            Label(
+              "Content is too large to edit. Please edit karabiner.json directly with your favorite editor.",
+              systemImage: ErrorBorder.icon
+            )
+            .modifier(ErrorBorder())
+          } else {
+            if let errorMessage = errorMessage {
               Label(
-                "Content is too large to edit. Please edit karabiner.json directly with your favorite editor.",
+                errorMessage,
                 systemImage: ErrorBorder.icon
               )
               .modifier(ErrorBorder())
-            } else {
-              if let errorMessage = errorMessage {
-                Label(
-                  errorMessage,
-                  systemImage: ErrorBorder.icon
-                )
-                .modifier(ErrorBorder())
-              }
-
-              CodeEditor(
-                source: $jsonString, language: .json,
-                theme: CodeEditor.ThemeName(
-                  rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light")
-              )
-              .border(Color(NSColor.textColor), width: 1)
             }
 
-            Spacer()
+            CodeEditor(
+              source: $jsonString, language: .json,
+              theme: CodeEditor.ThemeName(
+                rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light")
+            )
+            .border(Color(NSColor.textColor), width: 1)
           }
-          .padding(12.0)
         }
       }
 
