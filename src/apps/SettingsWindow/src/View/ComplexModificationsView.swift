@@ -44,8 +44,6 @@ struct ComplexModificationsView: View {
             AccentColorIconLabel(title: "Add your own rule", systemImage: "sparkles")
           })
 
-        Spacer()
-
         if settings.complexModificationsRules.count > 1 {
           HStack {
             Text("You can reorder list by dragging")
@@ -56,6 +54,8 @@ struct ComplexModificationsView: View {
           }
         }
       }
+      .padding()
+      .frame(maxWidth: .infinity, alignment: .leading)
 
       List {
         ForEach($settings.complexModificationsRules) { $complexModificationRule in
@@ -163,7 +163,6 @@ struct ComplexModificationsView: View {
       }
       .background(Color(NSColor.textBackgroundColor))
     }
-    .padding()
     .sheet(isPresented: $contentViewStates.complexModificationsViewSheetPresented) {
       if let sheetView = contentViewStates.complexModificationsViewSheetView {
         switch sheetView {
