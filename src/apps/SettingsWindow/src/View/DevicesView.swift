@@ -10,53 +10,47 @@ struct DevicesView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       List {
-        VStack(alignment: .leading, spacing: 0.0) {
-          ForEach(connectedDevices.connectedDevices) { connectedDevice in
-            if let connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice) {
-              VStack(alignment: .leading, spacing: 0.0) {
-                DeviceName(connectedDevice: connectedDevice)
-                  .if(connectedDevice.isVirtualDevice) {
-                    $0.foregroundColor(Color(NSColor.placeholderTextColor))
-                  }
-
-                if !connectedDevice.isVirtualDevice {
-                  VStack(alignment: .leading, spacing: 0.0) {
-                    ModifyEventsSetting(connectedDeviceSetting: connectedDeviceSetting)
-
-                    VStack(alignment: .leading, spacing: 6.0) {
-                      KeyboardSettings(connectedDeviceSetting: connectedDeviceSetting)
-
-                      MouseSettings(connectedDeviceSetting: connectedDeviceSetting)
-
-                      GamePadSettings(connectedDeviceSetting: connectedDeviceSetting)
-
-                      ExtraSettings(connectedDeviceSetting: connectedDeviceSetting)
-                    }
-                    .padding(.leading, 20.0)
-                    .padding(.top, 8.0)
-                  }
-                  .padding(.leading, 62.0)
-                  .padding(.top, 20.0)
+        ForEach(connectedDevices.connectedDevices) { connectedDevice in
+          if let connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice) {
+            VStack(alignment: .leading, spacing: 0.0) {
+              DeviceName(connectedDevice: connectedDevice)
+                .if(connectedDevice.isVirtualDevice) {
+                  $0.foregroundColor(Color(NSColor.placeholderTextColor))
                 }
+
+              if !connectedDevice.isVirtualDevice {
+                VStack(alignment: .leading, spacing: 0.0) {
+                  ModifyEventsSetting(connectedDeviceSetting: connectedDeviceSetting)
+
+                  VStack(alignment: .leading, spacing: 6.0) {
+                    KeyboardSettings(connectedDeviceSetting: connectedDeviceSetting)
+
+                    MouseSettings(connectedDeviceSetting: connectedDeviceSetting)
+
+                    GamePadSettings(connectedDeviceSetting: connectedDeviceSetting)
+
+                    ExtraSettings(connectedDeviceSetting: connectedDeviceSetting)
+                  }
+                  .padding(.leading, 20.0)
+                  .padding(.top, 8.0)
+                }
+                .padding(.leading, 62.0)
+                .padding(.top, 20.0)
               }
-              .padding(.vertical, 12.0)
-              .padding(.trailing, 12.0)
-              .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                  .stroke(
-                    Color(NSColor.selectedControlColor),
-                    lineWidth: settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents
-                      ?? false && !connectedDevice.isVirtualDevice
-                      ? 3 : 0
-                  )
-                  .padding(2)
-              )
-
-              Divider()
             }
+            .padding(.vertical, 12.0)
+            .padding(.trailing, 12.0)
+            .overlay(
+              RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                  Color(NSColor.selectedControlColor),
+                  lineWidth: settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents
+                    ?? false && !connectedDevice.isVirtualDevice
+                    ? 3 : 0
+                )
+                .padding(2)
+            )
           }
-
-          Spacer()
         }
       }
       .background(Color(NSColor.textBackgroundColor))
@@ -97,9 +91,9 @@ struct DevicesView: View {
           }
         }
         .modifier(InfoBorder())
+        .padding()
       }
     }
-    .padding()
   }
 
   struct DeviceName: View {
