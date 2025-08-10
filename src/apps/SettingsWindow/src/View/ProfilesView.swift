@@ -31,6 +31,7 @@ struct ProfilesView: View {
           }
         }
       }
+      .padding()
 
       List {
         ForEach($settings.profiles) { $profile in
@@ -137,7 +138,6 @@ struct ProfilesView: View {
       }
       .background(Color(NSColor.textBackgroundColor))
     }
-    .padding()
     .sheet(isPresented: $showingSheet) {
       ProfileEditView(profile: $editingProfile, showing: $showingSheet)
     }
