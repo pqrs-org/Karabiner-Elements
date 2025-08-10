@@ -38,6 +38,7 @@ struct FunctionKeysView: View {
           }
         )
       }
+      .padding()
 
       Divider()
 
@@ -48,7 +49,6 @@ struct FunctionKeysView: View {
         FnFunctionKeysView(selectedDevice: contentViewStates.functionKeysViewSelectedDevice)
       }
     }
-    .padding()
   }
 
   struct FnFunctionKeysView: View {
