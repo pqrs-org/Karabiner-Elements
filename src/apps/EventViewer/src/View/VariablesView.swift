@@ -18,24 +18,18 @@ struct VariablesView: View {
             })
 
           ScrollView {
-            HStack {
-              VStack(alignment: .leading) {
-                Text(variablesJsonString.text)
-                  .lineLimit(nil)
-                  .font(.custom("Menlo", size: 11.0))
-                  .padding(5)
-                  .textSelection(.enabled)
-              }
-
-              Spacer()
-            }
-            .background(Color(NSColor.textBackgroundColor))
+            Text(variablesJsonString.text)
+              .lineLimit(nil)
+              .font(.custom("Menlo", size: 11.0))
+              .padding(5)
+              .textSelection(.enabled)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .background(Color(NSColor.textBackgroundColor))
         }
         .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
-
-      Spacer()
     }
     .padding()
   }
