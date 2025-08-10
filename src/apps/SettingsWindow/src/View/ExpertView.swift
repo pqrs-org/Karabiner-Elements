@@ -73,7 +73,6 @@ struct ExpertView: View {
                 width: 50)
 
               Text("milliseconds (Default value is 1000)")
-              Spacer()
             }
 
             Label(
