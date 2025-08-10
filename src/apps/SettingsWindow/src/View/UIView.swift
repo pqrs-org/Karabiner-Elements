@@ -94,8 +94,6 @@ struct UIView: View {
                       .resizable()
                       .frame(width: 64.0, height: 64.0)
                   }
-
-                  Spacer()
                 }
                 .padding(.vertical, 5.0)
                 .overlay(
