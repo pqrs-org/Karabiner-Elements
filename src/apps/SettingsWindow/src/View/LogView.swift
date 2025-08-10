@@ -16,8 +16,8 @@ struct LogView: View {
                 .background(e.backgroundColor)
                 .textSelection(.enabled)
             }
-            Spacer()
           }
+          .padding()
           .background(Color(NSColor.textBackgroundColor))
           .onChange(of: logMessages.entries.count) { _ in
             if let last = logMessages.entries.last {
@@ -26,6 +26,7 @@ struct LogView: View {
           }
         }
       }
+
       HStack {
         Text("Current time: \(logMessages.currentTimeString)")
 
@@ -54,8 +55,8 @@ struct LogView: View {
             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
           })
       }
+      .padding()
     }
-    .padding()
     .onAppear {
       logMessages.watch()
     }
