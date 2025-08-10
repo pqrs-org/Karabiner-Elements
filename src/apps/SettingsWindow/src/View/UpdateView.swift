@@ -10,19 +10,12 @@ struct UpdateView: View {
       VStack(alignment: .leading, spacing: 24.0) {
         GroupBox(label: Text("Update")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            HStack {
-              Text("Karabiner-Elements version \(version)")
-              Spacer()
-            }
+            Text("Karabiner-Elements version \(version)")
 
-            HStack {
-              Toggle(isOn: $settings.checkForUpdatesOnStartup) {
-                Text("Check for updates on startup (Default: on)")
-              }
-              .switchToggleStyle()
-
-              Spacer()
+            Toggle(isOn: $settings.checkForUpdatesOnStartup) {
+              Text("Check for updates on startup (Default: on)")
             }
+            .switchToggleStyle()
 
             HStack {
               Button(
@@ -47,6 +40,7 @@ struct UpdateView: View {
             }
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
 
         GroupBox(label: Text("Web sites")) {
@@ -59,6 +53,7 @@ struct UpdateView: View {
                 label: {
                   Label("Open official website", systemImage: "house")
                 })
+
               Button(
                 action: {
                   NSWorkspace.shared.open(
@@ -67,10 +62,10 @@ struct UpdateView: View {
                 label: {
                   Label("Open GitHub (source code)", systemImage: "hammer")
                 })
-              Spacer()
             }
           }
           .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
       }
       .padding()
