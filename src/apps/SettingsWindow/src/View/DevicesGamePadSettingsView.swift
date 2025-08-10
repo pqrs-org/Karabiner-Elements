@@ -16,24 +16,25 @@ struct DevicesGamePadSettingsView: View {
         TabView {
           XYStickTabView(connectedDeviceSetting: connectedDeviceSetting)
             .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .tabItem {
               Text("XY stick")
             }
 
           WheelsStickTabView(connectedDeviceSetting: connectedDeviceSetting)
             .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .tabItem {
               Text("Wheels stick")
             }
 
           OthersTabView(connectedDeviceSetting: connectedDeviceSetting)
             .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .tabItem {
               Text("Others")
             }
         }
-
-        Spacer()
       }
 
       SheetCloseButton {
@@ -41,7 +42,7 @@ struct DevicesGamePadSettingsView: View {
       }
     }
     .padding()
-    .frame(width: 1000, height: 600)
+    .frame(width: 1000, height: 600, alignment: .top)
   }
 
   struct XYStickTabView: View {
@@ -91,8 +92,6 @@ struct DevicesGamePadSettingsView: View {
           )
         }
         .padding(.top, 20.0)
-
-        Spacer()
       }
     }
   }
@@ -144,8 +143,6 @@ struct DevicesGamePadSettingsView: View {
           )
         }
         .padding(.top, 20.0)
-
-        Spacer()
       }
     }
   }
@@ -155,18 +152,12 @@ struct DevicesGamePadSettingsView: View {
 
     var body: some View {
       VStack(alignment: .leading, spacing: 40.0) {
-        HStack {
-          Toggle(isOn: $connectedDeviceSetting.gamePadSwapSticks) {
-            Text("Swap gamepad XY and wheels sticks")
-          }
-          .switchToggleStyle(controlSize: .mini, font: .callout)
-
-          Spacer()
+        Toggle(isOn: $connectedDeviceSetting.gamePadSwapSticks) {
+          Text("Swap gamepad XY and wheels sticks")
         }
+        .switchToggleStyle(controlSize: .mini, font: .callout)
 
         DevicesMouseFlagsView(connectedDeviceSetting: connectedDeviceSetting)
-
-        Spacer()
       }
     }
   }
