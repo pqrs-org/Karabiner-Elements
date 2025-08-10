@@ -40,6 +40,7 @@ struct DevicesView: View {
             }
             .padding(.vertical, 12.0)
             .padding(.trailing, 12.0)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .overlay(
               RoundedRectangle(cornerRadius: 8)
                 .stroke(
@@ -102,7 +103,6 @@ struct DevicesView: View {
     var body: some View {
       HStack(alignment: .center, spacing: 0) {
         HStack(spacing: 4.0) {
-          Spacer()
           if connectedDevice.isKeyboard {
             Image(systemName: "keyboard")
           }
@@ -116,7 +116,7 @@ struct DevicesView: View {
             Image(systemName: "headphones")
           }
         }
-        .frame(width: 50.0)
+        .frame(width: 50.0, alignment: .trailing)
 
         Text("\(connectedDevice.productName) (\(connectedDevice.manufacturerName))")
           .padding(.leading, 12.0)
@@ -125,43 +125,28 @@ struct DevicesView: View {
         if connectedDevice.transport != "FIFO" {
           VStack(alignment: .trailing, spacing: 4.0) {
             if connectedDevice.vendorId != 0 {
-              HStack(alignment: .firstTextBaseline, spacing: 0) {
-                Spacer()
-
-                Text(
-                  String(
-                    format: "Vendor ID: %5d (0x%04x)",
-                    connectedDevice.vendorId,
-                    connectedDevice.vendorId)
-                )
-              }
+              Text(
+                String(
+                  format: "Vendor ID: %5d (0x%04x)",
+                  connectedDevice.vendorId,
+                  connectedDevice.vendorId)
+              )
             }
 
             if connectedDevice.productId != 0 {
-              HStack(alignment: .center, spacing: 0) {
-                Spacer()
-
-                Text(
-                  String(
-                    format: "Product ID: %5d (0x%04x)",
-                    connectedDevice.productId,
-                    connectedDevice.productId)
-                )
-              }
+              Text(
+                String(
+                  format: "Product ID: %5d (0x%04x)",
+                  connectedDevice.productId,
+                  connectedDevice.productId)
+              )
             }
 
             if !connectedDevice.deviceAddress.isEmpty {
-              HStack(alignment: .center, spacing: 0) {
-                Spacer()
-
-                Text("Device Address: ")
-
-                Text(connectedDevice.deviceAddress)
-              }
+              Text("Device Address: \(connectedDevice.deviceAddress)")
             }
           }
           .font(.custom("Menlo", size: 12.0))
-          .frame(width: 220.0)
         }
       }
     }
@@ -189,8 +174,6 @@ struct DevicesView: View {
           .switchToggleStyle()
           .frame(width: 140.0)
         }
-
-        Spacer()
       }
     }
   }
