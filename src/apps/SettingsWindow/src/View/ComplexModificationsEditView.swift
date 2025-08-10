@@ -19,8 +19,7 @@ struct ComplexModificationsEditView: View {
             Text(description)
               .padding(.leading, 32)
               .font(.system(size: 24))
-
-            Spacer()
+              .frame(maxWidth: .infinity, alignment: .leading)
 
             if !disabled {
               Button(
