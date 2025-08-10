@@ -39,12 +39,8 @@ struct ComplexModificationsAssetsView: View {
             if search == "" || assetFile.match(search) {
               GroupBox(
                 label:
-                  HStack(alignment: .bottom, spacing: 16.0) {
-                    Text(assetFile.title)
-                      .font(.title)
-
-                    Spacer()
-                  }
+                  Text(assetFile.title)
+                  .font(.title)
               ) {
                 VStack(alignment: .leading, spacing: 8.0) {
                   ForEach($assetFile.assetRules) { $assetRule in
@@ -61,17 +57,14 @@ struct ComplexModificationsAssetsView: View {
                           Image(systemName: "plus.circle.fill").foregroundColor(.blue)
                           Text("Enable")
                         })
-
-                      Spacer()
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                     Divider()
                       .padding(.vertical, 4.0)
                   }
 
                   HStack {
-                    Spacer()
-
                     if assetFile.userFile {
                       Text(
                         "Imported at \(formatter.string(from: assetFile.importedAt))"
@@ -103,6 +96,7 @@ struct ComplexModificationsAssetsView: View {
                       .deleteButtonStyle()
                     }
                   }
+                  .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .padding()
               }

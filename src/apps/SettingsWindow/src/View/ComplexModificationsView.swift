@@ -45,6 +45,8 @@ struct ComplexModificationsView: View {
           })
 
         if settings.complexModificationsRules.count > 1 {
+          Spacer()
+
           HStack {
             Text("You can reorder list by dragging")
             Image(systemName: "arrow.up.arrow.down.square.fill")
