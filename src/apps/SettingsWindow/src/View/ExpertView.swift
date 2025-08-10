@@ -87,7 +87,7 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
       }
+      .padding()
     }
-    .padding()
   }
 }
