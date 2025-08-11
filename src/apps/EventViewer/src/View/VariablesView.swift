@@ -26,7 +26,7 @@ struct VariablesView: View {
         Text(variablesJsonString.text)
           .lineLimit(nil)
           .font(.custom("Menlo", size: 11.0))
-          .padding(5)
+          .padding()
           .textSelection(.enabled)
       }
       .frame(maxWidth: .infinity, alignment: .leading)

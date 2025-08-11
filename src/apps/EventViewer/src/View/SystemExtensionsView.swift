@@ -4,50 +4,44 @@ struct SystemExtensionsView: View {
   @ObservedObject var systemExtensions = SystemExtensions.shared
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
-      GroupBox(label: Text("System Extensions")) {
-        VStack(alignment: .leading, spacing: 12.0) {
-          HStack(alignment: .center, spacing: 12.0) {
-            Button(
-              action: {
-                let pboard = NSPasteboard.general
-                pboard.clearContents()
-                pboard.writeObjects([systemExtensions.list as NSString])
-              },
-              label: {
-                Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-              })
+    VStack {
+      VStack(alignment: .leading, spacing: 12.0) {
+        Text("System Extensions")
+          .font(.title)
 
-            Button(
-              action: {
-                SystemExtensions.shared.updateList()
-              },
-              label: {
-                Label("Refresh", systemImage: "arrow.clockwise.circle")
-              })
-          }
+        HStack(alignment: .center, spacing: 12.0) {
+          Button(
+            action: {
+              let pboard = NSPasteboard.general
+              pboard.clearContents()
+              pboard.writeObjects([systemExtensions.list as NSString])
+            },
+            label: {
+              Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+            })
 
-          ScrollView {
-            HStack {
-              VStack(alignment: .leading) {
-                Text(systemExtensions.list)
-                  .lineLimit(nil)
-                  .font(.custom("Menlo", size: 11.0))
-                  .padding(5)
-                  .textSelection(.enabled)
-              }
-
-              Spacer()
-            }
-            .background(Color(NSColor.textBackgroundColor))
-          }
+          Button(
+            action: {
+              SystemExtensions.shared.updateList()
+            },
+            label: {
+              Label("Refresh", systemImage: "arrow.clockwise.circle")
+            })
         }
-        .padding()
       }
+      .padding()
+      .frame(maxWidth: .infinity, alignment: .leading)
 
-      Spacer()
+      ScrollView {
+        Text(systemExtensions.list)
+          .lineLimit(nil)
+          .font(.custom("Menlo", size: 11.0))
+          .padding()
+          .textSelection(.enabled)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(Color(NSColor.textBackgroundColor))
     }
-    .padding()
     .onAppear {
       SystemExtensions.shared.updateList()
     }
