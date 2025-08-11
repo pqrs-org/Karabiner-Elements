@@ -6,9 +6,6 @@ struct SystemExtensionsView: View {
   var body: some View {
     VStack {
       VStack(alignment: .leading, spacing: 12.0) {
-        Text("System Extensions")
-          .font(.title)
-
         HStack(alignment: .center, spacing: 12.0) {
           Button(
             action: {
@@ -35,12 +32,12 @@ struct SystemExtensionsView: View {
       ScrollView {
         Text(systemExtensions.list)
           .lineLimit(nil)
+          .textSelection(.enabled)
           .font(.custom("Menlo", size: 11.0))
           .padding()
-          .textSelection(.enabled)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .background(Color(NSColor.textBackgroundColor))
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(Color(NSColor.textBackgroundColor))
     }
     .onAppear {
       SystemExtensions.shared.updateList()

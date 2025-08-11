@@ -6,9 +6,6 @@ struct VariablesView: View {
   var body: some View {
     VStack {
       VStack(alignment: .leading, spacing: 12.0) {
-        Text("Internal variables of Karabiner-Elements")
-          .font(.title)
-
         Button(
           action: {
             let pboard = NSPasteboard.general
@@ -25,12 +22,12 @@ struct VariablesView: View {
       ScrollView {
         Text(variablesJsonString.text)
           .lineLimit(nil)
+          .textSelection(.enabled)
           .font(.custom("Menlo", size: 11.0))
           .padding()
-          .textSelection(.enabled)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .background(Color(NSColor.textBackgroundColor))
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(Color(NSColor.textBackgroundColor))
     }
   }
 }
