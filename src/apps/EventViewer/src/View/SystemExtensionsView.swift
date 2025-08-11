@@ -4,7 +4,7 @@ struct SystemExtensionsView: View {
   @ObservedObject var systemExtensions = SystemExtensions.shared
 
   var body: some View {
-    VStack {
+    VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
         HStack(alignment: .center, spacing: 12.0) {
           Button(

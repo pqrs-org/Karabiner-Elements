@@ -4,7 +4,7 @@ struct FrontmostApplicationView: View {
   @ObservedObject var frontmostApplicationHistory = FrontmostApplicationHistory.shared
 
   var body: some View {
-    VStack {
+    VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
         Label(
           "Switch to the app whose bundle identifier you want to check.",

@@ -4,8 +4,8 @@ struct VariablesView: View {
   @ObservedObject var variablesJsonString = VariablesJsonString.shared
 
   var body: some View {
-    VStack {
-      VStack(alignment: .leading, spacing: 12.0) {
+    VStack(alignment: .leading, spacing: 0.0) {
+      VStack {
         Button(
           action: {
             let pboard = NSPasteboard.general
