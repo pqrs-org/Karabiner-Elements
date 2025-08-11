@@ -38,7 +38,7 @@ struct UnknownEventsView: View {
         ScrollView {
           if eventHistory.unknownEventEntries.count == 0 {
             Text("Unknown events are not being sent.")
-              .padding(.horizontal, 12.0)
+              .padding(12.0)
               .frame(maxWidth: .infinity, alignment: .leading)
 
           } else {
