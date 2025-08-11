@@ -7,6 +7,7 @@
 -   ⚡️ Improvements
     -   Improved handling of the `ignore_vendor_events` setting.
         The UI already prevented enabling this for Apple devices, and now, even if you manually set `ignore_vendor_events` in karabiner.json, vendor events for Apple devices will always be processed regardless of the setting.
+    -   Optimized the SwiftUI code.
 
 ## Karabiner-Elements 15.5.0
 
