@@ -7,10 +7,7 @@ struct UnknownEventsView: View {
     VStack(alignment: .leading, spacing: 12.0) {
       GroupBox(label: Text("Showing events that are not supported by Karabiner-Elements")) {
         VStack(alignment: .leading, spacing: 12.0) {
-          if eventHistory.unknownEventEntries.count == 0 {
-            Divider()
-            Spacer()
-          } else {
+          if eventHistory.unknownEventEntries.count >= 0 {
             HStack(alignment: .center, spacing: 12.0) {
               Button(
                 action: {
@@ -27,8 +24,6 @@ struct UnknownEventsView: View {
                 label: {
                   Label("Clear", systemImage: "clear")
                 })
-
-              Spacer()
             }
 
             ScrollViewReader { proxy in
@@ -66,8 +61,6 @@ struct UnknownEventsView: View {
 
                     Divider().id("divider \(entry.id)")
                   }
-
-                  Spacer()
                 }
               }
               .background(Color(NSColor.textBackgroundColor))
@@ -85,8 +78,22 @@ struct UnknownEventsView: View {
           }
         }
         .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
     }
     .padding()
+    .task {
+      eventHistory.start()
+      eventHistory.pause(false)
+      defer { eventHistory.stop() }
+
+      do {
+        while true {
+          try Task.checkCancellation()
+          try await Task.sleep(for: .seconds(1))
+        }
+      } catch {
+      }
+    }
   }
 }

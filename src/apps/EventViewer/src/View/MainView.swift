@@ -46,11 +46,7 @@ struct MainView: View {
             Toggle("Monitoring events", isOn: $monitoring)
               .switchToggleStyle()
               .onChange(of: monitoring) { newValue in
-                if newValue {
-                  eventHistory.start()
-                } else {
-                  eventHistory.stop()
-                }
+                eventHistory.pause(!newValue)
               }
           }
 
@@ -116,14 +112,18 @@ struct MainView: View {
       }
     }
     .padding()
-    .onAppear {
+    .task {
       eventHistory.start()
-    }
-    .onDisappear {
-      eventHistory.stop()
-    }
-    .onReceive(eventHistory.$monitoring) { value in
-      monitoring = value
+      eventHistory.pause(false)
+      defer { eventHistory.stop() }
+
+      do {
+        while true {
+          try Task.checkCancellation()
+          try await Task.sleep(for: .seconds(1))
+        }
+      } catch {
+      }
     }
   }
 }

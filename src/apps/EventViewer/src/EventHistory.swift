@@ -208,27 +208,36 @@ public class EventHistory: ObservableObject {
 
   // Keep maxCount small since too many entries causes performance issue at SwiftUI rendering.
   private let maxCount = 32
+  private var startCount = 0
+  private var paused = false
   public var modifierFlags: [UInt64: Set<String>] = [:]
 
   @Published var entries: [EventHistoryEntry] = []
   @Published var unknownEventEntries: [EventHistoryEntry] = []
-  @Published var monitoring = false
 
   // We register the callback in the `start` method rather than in `init`.
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    libkrbn_enable_hid_value_monitor()
+    startCount += 1
+    if startCount == 1 {
+      libkrbn_enable_hid_value_monitor()
 
-    libkrbn_register_hid_value_arrived_callback(callback)
+      libkrbn_register_hid_value_arrived_callback(callback)
 
-    monitoring = true
+      paused = false
+    }
   }
 
   public func stop() {
-    libkrbn_disable_hid_value_monitor()
+    startCount -= 1
+    if startCount == 0 {
+      libkrbn_disable_hid_value_monitor()
+    }
+  }
 
-    monitoring = false
+  public func pause(_ value: Bool) {
+    paused = value
   }
 
   public func observed() -> Bool {
@@ -236,6 +245,10 @@ public class EventHistory: ObservableObject {
   }
 
   public func append(_ entry: EventHistoryEntry) {
+    if paused {
+      return
+    }
+
     entries.append(entry)
     if entries.count > maxCount {
       entries.removeFirst()
@@ -312,6 +325,10 @@ public class EventHistory: ObservableObject {
   //
 
   public func appendUnknownEvent(_ entry: EventHistoryEntry) {
+    if paused {
+      return
+    }
+
     unknownEventEntries.append(entry)
     if unknownEventEntries.count > maxCount {
       unknownEventEntries.removeFirst()
