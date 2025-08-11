@@ -8,7 +8,7 @@ struct ProfilesView: View {
   @State private var editingProfile: LibKrbn.Profile?
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
+    VStack(alignment: .leading, spacing: 0.0) {
       HStack {
         Button(
           action: {
@@ -39,11 +39,12 @@ struct ProfilesView: View {
           // (Without copy, the program crashes with an incorrect reference when the profile is deleted.)
           let profileCopy = profile
 
-          HStack(alignment: .center, spacing: 12.0) {
+          HStack(alignment: .center, spacing: 0) {
             if settings.profiles.count > 1 {
               Image(systemName: "arrow.up.arrow.down.square.fill")
                 .resizable(resizingMode: .stretch)
                 .frame(width: 16.0, height: 16.0)
+                .padding(.trailing, 6.0)
                 .onHover { hovering in
                   moveDisabled = !hovering
                 }
@@ -54,20 +55,13 @@ struct ProfilesView: View {
                 settings.selectProfile(profile)
               },
               label: {
-                HStack(spacing: 0.0) {
-                  HStack(spacing: 0.0) {
-                    if profile.selected {
-                      Image(systemName: "circle.circle.fill")
-                    } else {
-                      Image(systemName: "circle")
-                    }
-                  }
-                  .foregroundColor(.accentColor)
+                HStack(alignment: .center, spacing: 0.0) {
+                  Image(systemName: profile.selected ? "circle.circle.fill" : "circle")
+                    .padding(.trailing, 3.0)
+                    .foregroundColor(.accentColor)
 
                   Text(profile.name)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 6.0)
-                    .padding(.vertical, 2.0)
                     .if(hoverProfile == profile) {
                       $0.overlay(
                         RoundedRectangle(cornerRadius: 2)
@@ -127,7 +121,6 @@ struct ProfilesView: View {
               }
             }
           }
-          .padding(.vertical, 5.0)
           .moveDisabled(moveDisabled)
         }
         .onMove { indices, destination in

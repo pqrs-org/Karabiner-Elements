@@ -14,7 +14,7 @@ struct ComplexModificationsView: View {
   @State private var editingRule: LibKrbn.ComplexModificationsRule?
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
+    VStack(alignment: .leading, spacing: 0.0) {
       HStack {
         Button(
           action: {
@@ -69,6 +69,7 @@ struct ComplexModificationsView: View {
               Image(systemName: "arrow.up.arrow.down.square.fill")
                 .resizable(resizingMode: .stretch)
                 .frame(width: 16.0, height: 16.0)
+                .padding(.trailing, 6.0)
                 .onHover { hovering in
                   moveDisabled = !hovering
                 }
@@ -102,8 +103,6 @@ struct ComplexModificationsView: View {
                   .foregroundColor(.gray)
               }
             }
-            .padding(.horizontal, 6.0)
-            .padding(.vertical, 2.0)
             .if(hoverRuleIndex == ruleIndex) {
               $0.overlay(
                 RoundedRectangle(cornerRadius: 2)
@@ -154,7 +153,6 @@ struct ComplexModificationsView: View {
               }
             }
           }
-          .padding(.vertical, 5.0)
           .moveDisabled(moveDisabled)
         }
         .onMove { indices, destination in

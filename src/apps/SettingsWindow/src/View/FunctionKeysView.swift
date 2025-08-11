@@ -6,7 +6,7 @@ struct FunctionKeysView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
+    VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading) {
         // When using Apple's Vendor ID and Product ID with the virtual keyboard,
         // useFkeysAsStandardFunctionKeys needs to be changed through the System Settings; otherwise,
@@ -95,11 +95,9 @@ struct FunctionKeysView: View {
                 showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
               )
             }
-
-            Divider()
           }
         }
-        .padding(10)
+        .padding()
         .background(Color(NSColor.textBackgroundColor))
       }
     }

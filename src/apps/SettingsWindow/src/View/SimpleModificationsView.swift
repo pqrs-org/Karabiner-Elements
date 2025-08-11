@@ -5,14 +5,12 @@ struct SimpleModificationsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
-      HSplitView {
-        DeviceSelectorView(selectedDevice: $contentViewStates.simpleModificationsViewSelectedDevice)
-          .frame(minWidth: 250, maxWidth: 250)
+    HSplitView {
+      DeviceSelectorView(selectedDevice: $contentViewStates.simpleModificationsViewSelectedDevice)
+        .frame(minWidth: 250, maxWidth: 250)
 
-        SimpleModificationView(
-          selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice)
-      }
+      SimpleModificationView(
+        selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice)
     }
     .onAppear {
       settings.appendSimpleModificationIfEmpty(
@@ -85,8 +83,6 @@ struct SimpleModificationsView: View {
               )
               .deleteButtonStyle()
             }
-
-            Divider()
           }
 
           Button(
@@ -100,9 +96,8 @@ struct SimpleModificationsView: View {
             }
           )
           .buttonStyle(.automatic)
-
           .if(simpleModifications.count > 0) {
-            $0.padding(.top, 20.0)
+            $0.padding(.top)
           }
         }
         .padding()

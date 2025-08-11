@@ -8,7 +8,7 @@ struct DevicesView: View {
   static let detailedSettingWidth = 400.0
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
+    VStack(alignment: .leading, spacing: 0.0) {
       List {
         ForEach(connectedDevices.connectedDevices) { connectedDevice in
           if let connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice) {

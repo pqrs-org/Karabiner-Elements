@@ -4,7 +4,7 @@ struct LogView: View {
   @ObservedObject private var logMessages = LogMessages.shared
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
+    VStack(alignment: .leading, spacing: 0.0) {
       ScrollView {
         ScrollViewReader { proxy in
           VStack(alignment: .leading, spacing: 0) {
