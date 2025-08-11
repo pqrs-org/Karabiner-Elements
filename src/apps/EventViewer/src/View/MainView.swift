@@ -2,12 +2,18 @@ import SwiftUI
 
 struct MainView: View {
   @ObservedObject var eventHistory = EventHistory.shared
-  @State private var textInput: String = "Press the key you want to investigate."
+  @State private var textInput: String = "This text input field is used to inspect key events."
   @State private var monitoring = true
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
+        Label(
+          "Please enter text in the field below.",
+          systemImage: InfoBorder.icon
+        )
+        .modifier(InfoBorder())
+
         TextEditor(
           text: $textInput
         )
