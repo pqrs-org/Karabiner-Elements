@@ -6,112 +6,111 @@ struct MainView: View {
   @State private var monitoring = true
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12.0) {
-      GroupBox(label: Text("Text input test field")) {
-        VStack {
-          TextEditor(
-            text: $textInput
+    VStack {
+      VStack(alignment: .leading, spacing: 12.0) {
+        TextEditor(
+          text: $textInput
+        )
+        .frame(height: 60)
+        .disableAutocorrection(true)
+
+        HStack(alignment: .center, spacing: 12.0) {
+          Button(
+            action: {
+              eventHistory.copyToPasteboard()
+            },
+            label: {
+              Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+            }
           )
-          .frame(height: 60)
-          .disableAutocorrection(true)
+          .disabled(eventHistory.entries.isEmpty)
+
+          Button(
+            action: {
+              eventHistory.clear()
+            },
+            label: {
+              Label("Clear", systemImage: "clear")
+            }
+          )
+          .disabled(eventHistory.entries.isEmpty)
+
+          Spacer()
+
+          Toggle("Monitoring events", isOn: $monitoring)
+            .switchToggleStyle()
+            .onChange(of: monitoring) { newValue in
+              eventHistory.pause(!newValue)
+            }
         }
-        .padding()
       }
+      .padding()
 
-      GroupBox(label: Text("Keyboard & pointing events")) {
-        VStack(alignment: .leading, spacing: 12.0) {
-          HStack(alignment: .center, spacing: 12.0) {
-            Button(
-              action: {
-                eventHistory.copyToPasteboard()
-              },
-              label: {
-                Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-              }
+      ScrollViewReader { proxy in
+        ScrollView {
+          if eventHistory.entries.count == 0 {
+            Text(
+              "Please enter keyboard input. Using the text area above makes it easier to verify."
             )
-            .disabled(eventHistory.entries.isEmpty)
+            .padding(12.0)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Button(
-              action: {
-                eventHistory.clear()
-              },
-              label: {
-                Label("Clear", systemImage: "clear")
-              }
-            )
-            .disabled(eventHistory.entries.isEmpty)
+          } else {
+            VStack(alignment: .leading, spacing: 0.0) {
+              ForEach($eventHistory.entries) { $entry in
+                HStack(alignment: .center, spacing: 0) {
+                  Text(entry.eventType)
+                    .font(.title)
+                    .frame(width: 70, alignment: .leading)
 
-            Spacer()
-
-            Toggle("Monitoring events", isOn: $monitoring)
-              .switchToggleStyle()
-              .onChange(of: monitoring) { newValue in
-                eventHistory.pause(!newValue)
-              }
-          }
-
-          ScrollViewReader { proxy in
-            ScrollView {
-              VStack(alignment: .leading, spacing: 0.0) {
-                ForEach($eventHistory.entries) { $entry in
-                  HStack(alignment: .center, spacing: 0) {
-                    Text(entry.eventType)
-                      .font(.title)
-                      .frame(width: 70, alignment: .leading)
-
-                    VStack(alignment: .leading, spacing: 0) {
-                      Text(entry.name)
-                      Text(entry.misc)
-                        .font(.caption)
-                    }
-
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 0) {
-                      if entry.usagePage.count > 0 {
-                        HStack(alignment: .bottom, spacing: 0) {
-                          Text("usage page: ")
-                            .font(.caption)
-                          Text(entry.usagePage)
-                            .font(.custom("Menlo", size: 11.0))
-                        }
-                      }
-                      if entry.usage.count > 0 {
-                        HStack(alignment: .bottom, spacing: 0) {
-                          Text("usage: ")
-                            .font(.caption)
-                          Text(entry.usage)
-                            .font(.custom("Menlo", size: 11.0))
-                        }
-                      }
-                    }
-                    .frame(alignment: .leading)
+                  VStack(alignment: .leading, spacing: 0) {
+                    Text(entry.name)
+                    Text(entry.misc)
+                      .font(.caption)
                   }
-                  .padding(.horizontal, 12.0)
+                  .frame(maxWidth: .infinity, alignment: .leading)
 
-                  Divider().id("divider \(entry.id)")
+                  VStack(alignment: .trailing, spacing: 0) {
+                    if entry.usagePage.count > 0 {
+                      HStack(alignment: .bottom, spacing: 0) {
+                        Text("usage page: ")
+                          .font(.caption)
+                        Text(entry.usagePage)
+                          .font(.custom("Menlo", size: 11.0))
+                      }
+                    }
+                    if entry.usage.count > 0 {
+                      HStack(alignment: .bottom, spacing: 0) {
+                        Text("usage: ")
+                          .font(.caption)
+                        Text(entry.usage)
+                          .font(.custom("Menlo", size: 11.0))
+                      }
+                    }
+                  }
+                  .frame(alignment: .leading)
                 }
+                .padding(.horizontal, 12.0)
 
-                Spacer()
-              }
-            }
-            .background(Color(NSColor.textBackgroundColor))
-            .onAppear {
-              if let last = eventHistory.entries.last {
-                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
-              }
-            }
-            .onChange(of: eventHistory.entries) { newEntries in
-              if let last = newEntries.last {
-                proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+                Divider().id("divider \(entry.id)")
               }
             }
           }
         }
-        .padding()
+        .background(Color(NSColor.textBackgroundColor))
+        .onAppear {
+          if let last = eventHistory.entries.last {
+            proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+          }
+        }
+        .onChange(of: eventHistory.entries) { newEntries in
+          if let last = newEntries.last {
+            proxy.scrollTo("divider \(last.id)", anchor: .bottom)
+          }
+        }
       }
     }
-    .padding()
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .task {
       eventHistory.start()
       eventHistory.pause(false)
