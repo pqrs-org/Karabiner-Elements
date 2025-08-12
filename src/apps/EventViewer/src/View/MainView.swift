@@ -8,17 +8,19 @@ struct MainView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
-        Label(
-          "Please enter text in the field below.",
-          systemImage: InfoBorder.icon
-        )
-        .modifier(InfoBorder())
+        VStack(alignment: .leading, spacing: 12.0) {
+          Label(
+            "Please enter text in the field below.",
+            systemImage: InfoBorder.icon
+          )
 
-        TextEditor(
-          text: $textInput
-        )
-        .frame(height: 60)
-        .disableAutocorrection(true)
+          TextEditor(
+            text: $textInput
+          )
+          .frame(height: 60)
+          .disableAutocorrection(true)
+        }
+        .modifier(InfoBorder())
 
         HStack(alignment: .center, spacing: 12.0) {
           Button(
