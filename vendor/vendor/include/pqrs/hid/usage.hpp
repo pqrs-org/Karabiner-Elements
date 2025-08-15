@@ -57,6 +57,7 @@ constexpr value_t dial(0x37);
 constexpr value_t wheel(0x38);
 constexpr value_t hat_switch(0x39);
 constexpr value_t system_sleep(0x82);
+constexpr value_t system_app_menu(0x86);
 constexpr value_t dpad_up(0x90);
 constexpr value_t dpad_down(0x91);
 constexpr value_t dpad_right(0x92);
@@ -304,6 +305,7 @@ constexpr value_t button_32(0x20);
 
 namespace consumer {
 constexpr value_t consumer_control(0x0001);
+constexpr value_t microphone(0x0004);
 constexpr value_t power(0x0030);
 
 constexpr value_t menu(0x0040);
@@ -333,6 +335,7 @@ constexpr value_t aspect(0x006d);
 constexpr value_t three_dimensional_mode_select(0x006e);
 constexpr value_t display_brightness_increment(0x006f); // from macOS IOHIDUsageTables.h
 constexpr value_t display_brightness_decrement(0x0070); // from macOS IOHIDUsageTables.h
+constexpr value_t selection(0x0080);
 
 constexpr value_t fast_forward(0x00b3);
 constexpr value_t rewind(0x00b4);
