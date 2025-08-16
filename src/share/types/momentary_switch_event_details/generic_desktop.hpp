@@ -8,6 +8,7 @@ namespace momentary_switch_event_details {
 namespace generic_desktop {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
     {"system_sleep", pqrs::hid::usage::generic_desktop::system_sleep},
+    {"system_app_menu", pqrs::hid::usage::generic_desktop::system_app_menu},
     {"dpad_up", pqrs::hid::usage::generic_desktop::dpad_up},
     {"dpad_down", pqrs::hid::usage::generic_desktop::dpad_down},
     {"dpad_right", pqrs::hid::usage::generic_desktop::dpad_right},

@@ -3041,6 +3041,21 @@
         "data": [{ "consumer_key_code": "three_dimensional_mode_select" }]
     },
     {
+        "not_to": true,
+        "label": "microphone",
+        "data": [{ "consumer_key_code": "microphone" }]
+    },
+    {
+        "not_to": true,
+        "label": "selection",
+        "data": [{ "consumer_key_code": "selection" }]
+    },
+    {
+        "not_to": true,
+        "label": "system_app_menu",
+        "data": [{ "generic_desktop": "system_app_menu" }]
+    },
+    {
         "category": "Generic desktop keys"
     },
     {

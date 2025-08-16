@@ -10,6 +10,7 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     // High priority aliases
     {"dictation", pqrs::hid::usage::consumer::voice_command},
 
+    {"microphone", pqrs::hid::usage::consumer::microphone},
     {"power", pqrs::hid::usage::consumer::power},
 
     {"menu", pqrs::hid::usage::consumer::menu}, // Touch ID key on Magic Keyboard
@@ -39,6 +40,7 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"three_dimensional_mode_select", pqrs::hid::usage::consumer::three_dimensional_mode_select},
     {"display_brightness_increment", pqrs::hid::usage::consumer::display_brightness_increment},
     {"display_brightness_decrement", pqrs::hid::usage::consumer::display_brightness_decrement},
+    {"selection", pqrs::hid::usage::consumer::selection},
 
     {"fast_forward", pqrs::hid::usage::consumer::fast_forward},
     {"rewind", pqrs::hid::usage::consumer::rewind},
