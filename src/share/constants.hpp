@@ -122,6 +122,11 @@ public:
     return path;
   }
 
+  static const std::filesystem::path& get_system_environment_file_path(void) {
+    static auto path = get_system_configuration_directory() / "karabiner_environment";
+    return path;
+  }
+
   static const std::filesystem::path& get_user_configuration_directory(void) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);

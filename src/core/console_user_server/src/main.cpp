@@ -2,6 +2,7 @@
 #include "console_user_server/migration.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
+#include "environment_variable_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
@@ -23,6 +24,8 @@ int main(int argc, const char* argv[]) {
 
   pqrs::osx::process_info::enable_sudden_termination();
 
+  auto environment_variables = krbn::environment_variable_utility::load_karabiner_environment();
+
   //
   // Setup logger
   //
@@ -34,6 +37,8 @@ int main(int argc, const char* argv[]) {
   }
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
+
+  krbn::environment_variable_utility::log(environment_variables);
 
   //
   // Check another process
