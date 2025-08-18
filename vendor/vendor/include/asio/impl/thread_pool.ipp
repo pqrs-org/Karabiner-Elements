@@ -47,32 +47,26 @@ struct thread_pool::thread_function
 };
 
 #if !defined(ASIO_NO_TS_EXECUTORS)
-namespace detail {
 
-inline long default_thread_pool_size()
+long thread_pool::default_thread_pool_size()
 {
-  std::size_t num_threads = thread::hardware_concurrency() * 2;
+  std::size_t num_threads = detail::thread::hardware_concurrency() * 2;
   num_threads = num_threads == 0 ? 2 : num_threads;
   return static_cast<long>(num_threads);
 }
 
-} // namespace detail
-
 thread_pool::thread_pool()
-  : scheduler_(add_scheduler(new detail::scheduler(*this, false))),
-    num_threads_(detail::default_thread_pool_size()),
+  : scheduler_(asio::make_service<detail::scheduler>(*this, false)),
+    threads_(allocator<void>(*this)),
+    num_threads_(default_thread_pool_size()),
     joinable_(true)
 {
-  scheduler_.work_started();
-
-  thread_function f = { &scheduler_ };
-  threads_.create_threads(f, static_cast<std::size_t>(num_threads_));
+  start();
 }
+
 #endif // !defined(ASIO_NO_TS_EXECUTORS)
 
-namespace detail {
-
-inline long clamp_thread_pool_size(std::size_t n)
+long thread_pool::clamp_thread_pool_size(std::size_t n)
 {
   if (n > 0x7FFFFFFF)
   {
@@ -82,31 +76,25 @@ inline long clamp_thread_pool_size(std::size_t n)
   return static_cast<long>(n & 0x7FFFFFFF);
 }
 
-} // namespace detail
-
 thread_pool::thread_pool(std::size_t num_threads)
   : execution_context(config_from_concurrency_hint(num_threads == 1 ? 1 : 0)),
-    scheduler_(add_scheduler(new detail::scheduler(*this, false))),
-    num_threads_(detail::clamp_thread_pool_size(num_threads)),
+    scheduler_(asio::make_service<detail::scheduler>(*this, false)),
+    threads_(allocator<void>(*this)),
+    num_threads_(clamp_thread_pool_size(num_threads)),
     joinable_(true)
 {
-  scheduler_.work_started();
-
-  thread_function f = { &scheduler_ };
-  threads_.create_threads(f, static_cast<std::size_t>(num_threads_));
+  start();
 }
 
 thread_pool::thread_pool(std::size_t num_threads,
     const execution_context::service_maker& initial_services)
   : execution_context(initial_services),
-    scheduler_(add_scheduler(new detail::scheduler(*this, false))),
-    num_threads_(detail::clamp_thread_pool_size(num_threads)),
+    scheduler_(asio::make_service<detail::scheduler>(*this, false)),
+    threads_(allocator<void>(*this)),
+    num_threads_(clamp_thread_pool_size(num_threads)),
     joinable_(true)
 {
-  scheduler_.work_started();
-
-  thread_function f = { &scheduler_ };
-  threads_.create_threads(f, static_cast<std::size_t>(num_threads_));
+  start();
 }
 
 thread_pool::~thread_pool()
@@ -114,6 +102,13 @@ thread_pool::~thread_pool()
   stop();
   join();
   shutdown();
+}
+
+void thread_pool::start()
+{
+  scheduler_.work_started();
+  thread_function f = { &scheduler_ };
+  threads_.create_threads(f, static_cast<std::size_t>(num_threads_));
 }
 
 void thread_pool::stop()
@@ -136,13 +131,6 @@ void thread_pool::join()
     scheduler_.work_finished();
     threads_.join();
   }
-}
-
-detail::scheduler& thread_pool::add_scheduler(detail::scheduler* s)
-{
-  detail::scoped_ptr<detail::scheduler> scoped_impl(s);
-  asio::add_service<detail::scheduler>(*this, scoped_impl.get());
-  return *scoped_impl.release();
 }
 
 void thread_pool::wait()

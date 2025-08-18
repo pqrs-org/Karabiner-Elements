@@ -57,7 +57,7 @@ private:
   timer_queue_base* next_;
 };
 
-template <typename Time_Traits>
+template <typename TimeTraits, typename Allocator>
 class timer_queue;
 
 } // namespace detail

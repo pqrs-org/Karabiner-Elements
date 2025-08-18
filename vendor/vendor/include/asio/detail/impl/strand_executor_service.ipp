@@ -52,7 +52,8 @@ void strand_executor_service::shutdown()
 strand_executor_service::implementation_type
 strand_executor_service::create_implementation()
 {
-  implementation_type new_impl(new strand_impl);
+  execution_context::allocator<void> alloc(context());
+  implementation_type new_impl = allocate_shared<strand_impl>(alloc);
   new_impl->locked_ = false;
   new_impl->shutdown_ = false;
 
@@ -64,8 +65,8 @@ strand_executor_service::create_implementation()
   mutex_index += (reinterpret_cast<std::size_t>(new_impl.get()) >> 3);
   mutex_index ^= salt + 0x9e3779b9 + (mutex_index << 6) + (mutex_index >> 2);
   mutex_index = mutex_index % num_mutexes;
-  if (!mutexes_[mutex_index].get())
-    mutexes_[mutex_index].reset(new mutex);
+  if (!mutexes_[mutex_index])
+    mutexes_[mutex_index] = allocate_shared<mutex>(alloc);
   new_impl->mutex_ = mutexes_[mutex_index].get();
 
   // Insert implementation into linked list of all implementations.

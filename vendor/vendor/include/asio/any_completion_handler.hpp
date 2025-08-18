@@ -128,7 +128,7 @@ public:
         (get_associated_immediate_executor)(handler_, candidate));
   }
 
-  void* allocate(std::size_t size, std::size_t align) const
+  void* allocate(std::size_t size, std::size_t align_size) const
   {
     typename std::allocator_traits<
       associated_allocator_t<Handler,
@@ -137,13 +137,13 @@ public:
             (get_associated_allocator)(handler_,
               asio::recycling_allocator<void>()));
 
-    std::size_t space = size + align - 1;
+    std::size_t space = size + align_size - 1;
     unsigned char* base =
       std::allocator_traits<decltype(alloc)>::allocate(
         alloc, space + sizeof(std::ptrdiff_t));
 
     void* p = base;
-    if (detail::align(align, size, p, space))
+    if (detail::align(align_size, size, p, space))
     {
       std::ptrdiff_t off = static_cast<unsigned char*>(p) - base;
       std::memcpy(static_cast<unsigned char*>(p) + size, &off, sizeof(off));

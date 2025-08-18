@@ -38,6 +38,18 @@ Service& service_registry::use_service(io_context& owner)
   return *static_cast<Service*>(do_use_service(key, factory, &owner));
 }
 
+template <typename Service, typename... Args>
+Service& service_registry::make_service(Args&&... args)
+{
+  auto_service_ptr new_service =
+    { create<Service, execution_context>(owner_,
+        &owner_, static_cast<Args&&>(args)...) };
+  add_service(static_cast<Service*>(new_service.ptr_));
+  Service& result = *static_cast<Service*>(new_service.ptr_);
+  new_service.ptr_ = 0;
+  return result;
+}
+
 template <typename Service>
 void service_registry::add_service(Service* new_service)
 {
@@ -79,10 +91,22 @@ void service_registry::init_key_from_id(execution_context::service::key& key,
 }
 #endif // !defined(ASIO_NO_TYPEID)
 
-template <typename Service, typename Owner>
-execution_context::service* service_registry::create(void* owner)
+template <typename Service, typename Owner, typename... Args>
+execution_context::service* service_registry::create(
+    execution_context& context, void* owner, Args&&... args)
 {
-  return new Service(*static_cast<Owner*>(owner));
+  Service* svc = allocate_object<Service>(
+      execution_context::allocator<void>(context),
+      *static_cast<Owner*>(owner), static_cast<Args&&>(args)...);
+  svc->destroy_ = &service_registry::destroy_allocated<Service>;
+  return svc;
+}
+
+template <typename Service>
+void service_registry::destroy_allocated(execution_context::service* service)
+{
+  deallocate_object(execution_context::allocator<void>(service->owner_),
+      static_cast<Service*>(service));
 }
 
 } // namespace detail

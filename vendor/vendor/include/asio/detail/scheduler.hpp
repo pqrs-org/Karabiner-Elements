@@ -42,6 +42,9 @@ class scheduler
 public:
   typedef scheduler_operation operation;
 
+  // Tag type used for constructing as an internal scheduler.
+  struct internal {};
+
   // The type of a function used to obtain a task instance.
   typedef scheduler_task* (*get_task_func_type)(
       asio::execution_context&);
@@ -50,6 +53,9 @@ public:
   ASIO_DECL scheduler(asio::execution_context& ctx,
       bool own_thread = true,
       get_task_func_type get_task = &scheduler::get_default_task);
+
+  // Construct as an internal scheduler.
+  ASIO_DECL scheduler(internal, asio::execution_context& ctx);
 
   // Destructor.
   ASIO_DECL ~scheduler();
@@ -203,20 +209,17 @@ private:
   // Whether the task has been interrupted.
   bool task_interrupted_;
 
-  // The count of unfinished work.
-  atomic_count outstanding_work_;
-
-  // The queue of handlers that are ready to be delivered.
-  op_queue<operation> op_queue_;
-
   // Flag to indicate that the dispatcher has been stopped.
   bool stopped_;
 
   // Flag to indicate that the dispatcher has been shut down.
   bool shutdown_;
 
-  // The concurrency hint used to initialise the scheduler.
-  const int concurrency_hint_;
+  // The count of unfinished work.
+  atomic_count outstanding_work_;
+
+  // The queue of handlers that are ready to be delivered.
+  op_queue<operation> op_queue_;
 
   // The time limit on running the scheduler task, in microseconds.
   const long task_usec_;
@@ -225,7 +228,7 @@ private:
   const long wait_usec_;
 
   // The thread that is running the scheduler.
-  asio::detail::thread* thread_;
+  asio::detail::thread thread_;
 };
 
 } // namespace detail

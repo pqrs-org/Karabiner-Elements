@@ -47,7 +47,7 @@ io_uring_service::io_uring_service(asio::execution_context& ctx)
         config(ctx).get("reactor", "io_locking_spin_count", 0)),
     timeout_(),
     registration_mutex_(mutex_.enabled()),
-    registered_io_objects_(
+    registered_io_objects_(execution_context::allocator<void>(ctx),
         config(ctx).get("reactor", "preallocated_io_objects", 0U),
         io_locking_, io_locking_spin_count_),
     reactor_(use_service<reactor>(ctx)),

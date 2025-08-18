@@ -30,16 +30,17 @@ namespace detail {
 
 posix_thread::~posix_thread()
 {
-  if (!joined_)
-    ::pthread_detach(thread_);
+  if (arg_)
+    std::terminate();
 }
 
 void posix_thread::join()
 {
-  if (!joined_)
+  if (arg_)
   {
-    ::pthread_join(thread_, 0);
-    joined_ = true;
+    ::pthread_join(arg_->thread_, 0);
+    arg_->destroy();
+    arg_ = 0;
   }
 }
 
@@ -53,24 +54,23 @@ std::size_t posix_thread::hardware_concurrency()
   return 0;
 }
 
-void posix_thread::start_thread(func_base* arg)
+posix_thread::func_base* posix_thread::start_thread(func_base* arg)
 {
-  int error = ::pthread_create(&thread_, 0,
+  int error = ::pthread_create(&arg->thread_, 0,
         asio_detail_posix_thread_function, arg);
   if (error != 0)
   {
-    delete arg;
+    arg->destroy();
     asio::error_code ec(error,
         asio::error::get_system_category());
     asio::detail::throw_error(ec, "thread");
   }
+  return arg;
 }
 
 void* asio_detail_posix_thread_function(void* arg)
 {
-  posix_thread::auto_func_base_ptr func = {
-      static_cast<posix_thread::func_base*>(arg) };
-  func.ptr->run();
+  static_cast<posix_thread::func_base*>(arg)->run();
   return 0;
 }
 

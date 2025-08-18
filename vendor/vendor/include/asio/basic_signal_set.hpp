@@ -587,6 +587,11 @@ public:
    * @li @c cancellation_type::partial
    *
    * @li @c cancellation_type::total
+   *
+   * @note Unlike the POSIX function @c signal, @c async_wait executes its
+   * completion handler as specified in the @ref async_op_requirements. This
+   * means it places no async-signal safety restrictions on what work can be
+   * performed in a completion handler.
    */
   template <
     ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code, int))

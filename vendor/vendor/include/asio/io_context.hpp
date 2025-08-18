@@ -223,12 +223,35 @@ public:
 
   /// Constructor.
   /**
+   * @param a An allocator that will be used for allocating objects that are
+   * associated with the context, such as services and internal state for I/O
+   * objects.
+   */
+  template <typename Allocator>
+  io_context(allocator_arg_t, const Allocator& a);
+
+  /// Constructor.
+  /**
    * Construct with a hint about the required level of concurrency.
    *
    * @param concurrency_hint A suggestion to the implementation on how many
    * threads it should allow to run simultaneously.
    */
   ASIO_DECL explicit io_context(int concurrency_hint);
+
+  /// Constructor.
+  /**
+   * Construct with a hint about the required level of concurrency.
+   *
+   * @param a An allocator that will be used for allocating objects that are
+   * associated with the context, such as services and internal state for I/O
+   * objects.
+   *
+   * @param concurrency_hint A suggestion to the implementation on how many
+   * threads it should allow to run simultaneously.
+   */
+  template <typename Allocator>
+  io_context(allocator_arg_t, const Allocator& a, int concurrency_hint);
 
   /// Constructor.
   /**
@@ -240,6 +263,22 @@ public:
    */
   ASIO_DECL explicit io_context(
       const execution_context::service_maker& initial_services);
+
+  /// Constructor.
+  /**
+   * Construct with a service maker, to create an initial set of services that
+   * will be installed into the execution context at construction time.
+   *
+   * @param a An allocator that will be used for allocating objects that are
+   * associated with the context, such as services and internal state for I/O
+   * objects.
+   *
+   * @param initial_services Used to create the initial services. The @c make
+   * function will be called once at the end of execution_context construction.
+   */
+  template <typename Allocator>
+  io_context(allocator_arg_t, const Allocator& a,
+      const service_maker& initial_services);
 
   /// Destructor.
   /**
@@ -470,9 +509,6 @@ public:
 private:
   io_context(const io_context&) = delete;
   io_context& operator=(const io_context&) = delete;
-
-  // Helper function to add the implementation.
-  ASIO_DECL impl_type& add_impl(impl_type* impl);
 
   // Backwards compatible overload for use with services derived from
   // io_context::service.

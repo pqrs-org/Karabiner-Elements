@@ -47,7 +47,7 @@ public:
 
   /// Retrieve a configuration value.
   ASIO_DECL virtual const char* get_value(const char* section,
-      const char* key, char* value, std::size_t value_len) const;
+      const char* key_name, char* value, std::size_t value_len) const;
 };
 
 /// Provides access to the configuration values associated with an execution
@@ -74,7 +74,7 @@ public:
   /// Retrieve an integral configuration value.
   template <typename T>
   constraint_t<is_integral<T>::value, T>
-  get(const char* section, const char* key, T default_value) const;
+  get(const char* section, const char* key_name, T default_value) const;
 
 private:
   config_service& service_;

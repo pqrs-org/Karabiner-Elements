@@ -21,6 +21,7 @@
 
 #include "asio/impl/any_completion_executor.ipp"
 #include "asio/impl/any_io_executor.ipp"
+#include "asio/impl/awaitable.ipp"
 #include "asio/impl/cancellation_signal.ipp"
 #include "asio/impl/config.ipp"
 #include "asio/impl/connect_pipe.ipp"
@@ -54,6 +55,7 @@
 #include "asio/detail/impl/reactive_descriptor_service.ipp"
 #include "asio/detail/impl/reactive_socket_service_base.ipp"
 #include "asio/detail/impl/resolver_service_base.ipp"
+#include "asio/detail/impl/resolver_thread_pool.ipp"
 #include "asio/detail/impl/scheduler.ipp"
 #include "asio/detail/impl/select_reactor.ipp"
 #include "asio/detail/impl/service_registry.ipp"
@@ -64,7 +66,6 @@
 #include "asio/detail/impl/strand_service.ipp"
 #include "asio/detail/impl/thread_context.ipp"
 #include "asio/detail/impl/throw_error.ipp"
-#include "asio/detail/impl/timer_queue_ptime.ipp"
 #include "asio/detail/impl/timer_queue_set.ipp"
 #include "asio/detail/impl/win_iocp_file_service.ipp"
 #include "asio/detail/impl/win_iocp_handle_service.ipp"

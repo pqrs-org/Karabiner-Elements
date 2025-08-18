@@ -19,6 +19,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <typeinfo>
+#include "asio/detail/memory.hpp"
 #include "asio/detail/noncopyable.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -105,6 +106,7 @@ class execution_context
   : private noncopyable
 {
 public:
+  template <typename T> class allocator;
   class id;
   class service;
   class service_maker;
@@ -115,6 +117,15 @@ public:
 
   /// Constructor.
   /**
+   * @param a An allocator that will be used for allocating objects that are
+   * associated with the context, such as services and internal state for I/O
+   * objects.
+   */
+  template <typename Allocator>
+  execution_context(allocator_arg_t, const Allocator& a);
+
+  /// Constructor.
+  /**
    * Construct with a service maker, to create an initial set of services that
    * will be installed into the execution context at construction time.
    *
@@ -122,6 +133,22 @@ public:
    * function will be called once at the end of execution_context construction.
    */
   ASIO_DECL explicit execution_context(
+      const service_maker& initial_services);
+
+  /// Constructor.
+  /**
+   * Construct with a service maker, to create an initial set of services that
+   * will be installed into the execution context at construction time.
+   *
+   * @param a An allocator that will be used for allocating objects that are
+   * associated with the context, such as services and internal state for I/O
+   * objects.
+   *
+   * @param initial_services Used to create the initial services. The @c make
+   * function will be called once at the end of execution_context construction.
+   */
+  template <typename Allocator>
+  execution_context(allocator_arg_t, const Allocator& a,
       const service_maker& initial_services);
 
   /// Destructor.
@@ -286,8 +313,150 @@ public:
   friend bool has_service(execution_context& e);
 
 private:
+  class allocator_impl_base;
+  template <typename Allocator> class allocator_impl;
+
+  // Helper constructors to perform non-templated parts of context construction.
+  ASIO_DECL explicit execution_context(allocator_impl_base* alloc);
+  ASIO_DECL execution_context(allocator_impl_base* alloc,
+      const service_maker& initial_services);
+
+  // The allocator used for all services and other context-wide allocations.
+  struct auto_allocator_ptr
+  {
+    allocator_impl_base* ptr_;
+    ~auto_allocator_ptr();
+  } allocator_;
+
   // The service registry.
-  asio::detail::service_registry* service_registry_;
+  detail::service_registry* service_registry_;
+};
+
+class execution_context::allocator_impl_base
+{
+public:
+  virtual void destroy() = 0;
+  virtual void* allocate(std::size_t size, std::size_t align) = 0;
+  virtual void deallocate(void* ptr, std::size_t size, std::size_t align) = 0;
+
+protected:
+  ASIO_DECL virtual ~allocator_impl_base();
+};
+
+template <typename Allocator>
+class execution_context::allocator_impl
+  : public execution_context::allocator_impl_base
+{
+public:
+  allocator_impl(const Allocator& alloc) : allocator_(alloc) {}
+  void destroy();
+  void* allocate(std::size_t size, std::size_t align);
+  void deallocate(void* ptr, std::size_t size, std::size_t align);
+
+private:
+  Allocator allocator_;
+};
+
+template <typename T>
+class execution_context::allocator
+{
+public:
+  /// The type of objects that may be allocated by the allocator.
+  typedef T value_type;
+
+  /// Rebinds an allocator to another value type.
+  template <typename U>
+  struct rebind
+  {
+    /// Specifies the type of the rebound allocator.
+    typedef allocator<U> other;
+  };
+
+  /// Construct an allocator that is associated with an execution context.
+  explicit constexpr allocator(execution_context& e) noexcept
+    : impl_(e.allocator_.ptr_)
+  {
+  }
+
+  /// Construct from another @c allocator for a different value type.
+  template <typename U>
+  constexpr allocator(const allocator<U>& a) noexcept
+    : impl_(a.impl_)
+  {
+  }
+
+  /// Equality operator.
+  constexpr bool operator==(const allocator& other) const noexcept
+  {
+    return impl_ == other.impl_;
+  }
+
+  /// Inequality operator.
+  constexpr bool operator!=(const allocator& other) const noexcept
+  {
+    return impl_ != other.impl_;
+  }
+
+  /// Allocate space for @c n objects of the allocator's value type.
+  T* allocate(std::size_t n) const
+  {
+    return static_cast<T*>(impl_->allocate(sizeof(T) * n, alignof(T)));
+  }
+
+  /// Deallocate space for @c n objects of the allocator's value type.
+  void deallocate(T* p, std::size_t n) const
+  {
+    impl_->deallocate(p, sizeof(T) * n, alignof(T));
+  }
+
+private:
+  template <typename> friend class execution_context::allocator;
+  allocator_impl_base* impl_;
+};
+
+template <>
+class execution_context::allocator<void>
+{
+public:
+  /// @c void as no objects can be allocated through a proto-allocator.
+  typedef void value_type;
+
+  /// Rebinds an allocator to another value type.
+  template <typename U>
+  struct rebind
+  {
+    /// Specifies the type of the rebound allocator.
+    typedef allocator<U> other;
+  };
+
+  /// Construct an allocator that is associated with an execution context.
+  explicit constexpr allocator(execution_context& e) noexcept
+    : impl_(e.allocator_.ptr_)
+  {
+  }
+
+  /// Construct from another @c allocator for a different value type.
+  template <typename U>
+  constexpr allocator(const allocator<U>& a) noexcept
+    : impl_(a.impl_)
+  {
+  }
+
+  /// Equality operator.
+  constexpr bool operator==(const allocator& other) const noexcept
+  {
+    return impl_ == other.impl_;
+  }
+
+  /// Inequality operator.
+  constexpr bool operator!=(const allocator& other) const noexcept
+  {
+    return impl_ != other.impl_;
+  }
+
+private:
+  template <typename> friend class execution_context::allocator;
+  allocator_impl_base* impl_;
 };
 
 /// Class used to uniquely identify a service.
@@ -330,7 +499,7 @@ private:
   ASIO_DECL virtual void notify_fork(
       execution_context::fork_event event);
 
-  friend class asio::detail::service_registry;
+  friend class detail::service_registry;
   struct key
   {
     key() : type_info_(0), id_(0) {}
@@ -340,6 +509,7 @@ private:
 
   execution_context& owner_;
   service* next_;
+  void (*destroy_)(service*);
 };
 
 /// Base class for all execution context service makers.

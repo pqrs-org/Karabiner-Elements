@@ -50,7 +50,7 @@ void service_registry::destroy_services()
   while (first_service_)
   {
     execution_context::service* next_service = first_service_->next_;
-    destroy(first_service_);
+    first_service_->destroy_(first_service_);
     first_service_ = next_service;
   }
 }
@@ -104,9 +104,15 @@ bool service_registry::keys_match(
   return false;
 }
 
-void service_registry::destroy(execution_context::service* service)
+void service_registry::destroy_added(execution_context::service* service)
 {
   delete service;
+}
+
+service_registry::auto_service_ptr::~auto_service_ptr()
+{
+  if (ptr_)
+    ptr_->destroy_(ptr_);
 }
 
 execution_context::service* service_registry::do_use_service(
@@ -128,7 +134,7 @@ execution_context::service* service_registry::do_use_service(
   // at this time to allow for nested calls into this function from the new
   // service's constructor.
   lock.unlock();
-  auto_service_ptr new_service = { factory(owner) };
+  auto_service_ptr new_service = { factory(owner_, owner) };
   new_service.ptr_->key_ = key;
   lock.lock();
 
@@ -168,6 +174,8 @@ void service_registry::do_add_service(
   }
 
   // Take ownership of the service object.
+  if (!new_service->destroy_)
+    new_service->destroy_ = &service_registry::destroy_added;
   new_service->key_ = key;
   new_service->next_ = first_service_;
   first_service_ = new_service;

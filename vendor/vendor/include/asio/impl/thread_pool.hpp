@@ -15,6 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/config.hpp"
 #include "asio/detail/blocking_executor_op.hpp"
 #include "asio/detail/executor_op.hpp"
 #include "asio/detail/fenced_block.hpp"
@@ -25,6 +26,47 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+
+#if !defined(ASIO_NO_TS_EXECUTORS)
+
+template <typename Allocator>
+thread_pool::thread_pool(allocator_arg_t, const Allocator& a)
+  : execution_context(std::allocator_arg, a),
+    scheduler_(asio::make_service<detail::scheduler>(*this, false)),
+    threads_(allocator<void>(*this)),
+    num_threads_(default_thread_pool_size()),
+    joinable_(true)
+{
+  start();
+}
+
+#endif // !defined(ASIO_NO_TS_EXECUTORS)
+
+template <typename Allocator>
+thread_pool::thread_pool(allocator_arg_t,
+    const Allocator& a, std::size_t num_threads)
+  : execution_context(std::allocator_arg, a,
+      config_from_concurrency_hint(num_threads == 1 ? 1 : 0)),
+    scheduler_(asio::make_service<detail::scheduler>(*this, false)),
+    threads_(allocator<void>(*this)),
+    num_threads_(clamp_thread_pool_size(num_threads)),
+    joinable_(true)
+{
+  start();
+}
+
+template <typename Allocator>
+thread_pool::thread_pool(allocator_arg_t,
+    const Allocator& a, std::size_t num_threads,
+    const execution_context::service_maker& initial_services)
+  : execution_context(std::allocator_arg, a, initial_services),
+    scheduler_(asio::make_service<detail::scheduler>(*this, false)),
+    threads_(allocator<void>(*this)),
+    num_threads_(clamp_thread_pool_size(num_threads)),
+    joinable_(true)
+{
+  start();
+}
 
 inline thread_pool::executor_type
 thread_pool::get_executor() noexcept

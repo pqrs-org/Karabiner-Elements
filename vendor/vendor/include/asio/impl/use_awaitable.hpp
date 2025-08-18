@@ -219,9 +219,9 @@ public:
       };
 
     for (;;) {} // Never reached.
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__clang__)
     co_return dummy_return<typename return_type::value_type>();
-#endif // defined(_MSC_VER)
+#endif // defined(_MSC_VER) && !defined(__clang__)
   }
 };
 

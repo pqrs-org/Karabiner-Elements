@@ -66,6 +66,10 @@ public:
   template <typename Service>
   Service& use_service(io_context& owner);
 
+  // Create and add a service object.
+  template <typename Service, typename... Args>
+  Service& make_service(Args&&... args);
+
   // Add a service object. Throws on error, in which case ownership of the
   // object is retained by the caller.
   template <typename Service>
@@ -105,14 +109,20 @@ private:
       const execution_context::service::key& key2);
 
   // The type of a factory function used for creating a service instance.
-  typedef execution_context::service*(*factory_type)(void*);
+  typedef execution_context::service*(*factory_type)(execution_context&, void*);
 
   // Factory function for creating a service instance.
-  template <typename Service, typename Owner>
-  static execution_context::service* create(void* owner);
+  template <typename Service, typename Owner, typename... Args>
+  static execution_context::service* create(
+      execution_context& context, void* owner, Args&&... args);
 
-  // Destroy a service instance.
-  ASIO_DECL static void destroy(execution_context::service* service);
+  // Helper function to destroy an allocated service instance.
+  template <typename Service>
+  static void destroy_allocated(execution_context::service* service);
+
+  // Helper function to destroy an added service instance.
+  ASIO_DECL static void destroy_added(
+      execution_context::service* service);
 
   // Helper class to manage service pointers.
   struct auto_service_ptr;
@@ -120,7 +130,7 @@ private:
   struct auto_service_ptr
   {
     execution_context::service* ptr_;
-    ~auto_service_ptr() { destroy(ptr_); }
+    ASIO_DECL ~auto_service_ptr();
   };
 
   // Get the service object corresponding to the specified service key. Will

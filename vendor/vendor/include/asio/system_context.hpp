@@ -72,7 +72,7 @@ private:
   detail::scheduler& scheduler_;
 
   // The threads in the system thread pool.
-  detail::thread_group threads_;
+  detail::thread_group<std::allocator<void>> threads_;
 
   // The number of threads in the pool.
   std::size_t num_threads_;

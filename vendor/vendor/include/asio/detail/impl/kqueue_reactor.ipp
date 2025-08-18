@@ -56,7 +56,7 @@ kqueue_reactor::kqueue_reactor(asio::execution_context& ctx)
     io_locking_spin_count_(
         config(ctx).get("reactor", "io_locking_spin_count", 0)),
     registered_descriptors_mutex_(mutex_.enabled()),
-    registered_descriptors_(
+    registered_descriptors_(execution_context::allocator<void>(ctx),
         config(ctx).get("reactor", "preallocated_io_objects", 0U),
         io_locking_, io_locking_spin_count_)
 {

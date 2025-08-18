@@ -38,7 +38,7 @@ void config_service::shutdown()
 }
 
 const char* config_service::get_value(const char* /*section*/,
-    const char* /*key*/, char* /*value*/, std::size_t /*value_len*/) const
+    const char* /*key_name*/, char* /*value*/, std::size_t /*value_len*/) const
 {
   return nullptr;
 }
@@ -55,19 +55,28 @@ public:
   {
   }
 
-  const char* get_value(const char* section, const char* key,
+  const char* get_value(const char* section, const char* key_name,
       char* value, std::size_t value_len) const override
   {
     if (std::strcmp(section, "scheduler") == 0)
     {
-      if (std::strcmp(key, "concurrency_hint") == 0)
+      if (std::strcmp(key_name, "concurrency_hint") == 0)
       {
-        std::snprintf(value, value_len, "%d",
-            ASIO_CONCURRENCY_HINT_IS_SPECIAL(concurrency_hint_)
-              ? 1 : concurrency_hint_);
-        return value;
+        if (ASIO_CONCURRENCY_HINT_IS_SPECIAL(concurrency_hint_))
+        {
+          return
+            !ASIO_CONCURRENCY_HINT_IS_LOCKING(
+              SCHEDULER, concurrency_hint_) ||
+            !ASIO_CONCURRENCY_HINT_IS_LOCKING(
+                REACTOR_IO, concurrency_hint_) ? "1" : "-1";
+        }
+        else
+        {
+          std::snprintf(value, value_len, "%d", concurrency_hint_);
+          return value;
+        }
       }
-      else if (std::strcmp(key, "locking") == 0)
+      else if (std::strcmp(key_name, "locking") == 0)
       {
         return ASIO_CONCURRENCY_HINT_IS_LOCKING(
             SCHEDULER, concurrency_hint_) ? "1" : "0";
@@ -75,12 +84,12 @@ public:
     }
     else if (std::strcmp(section, "reactor") == 0)
     {
-      if (std::strcmp(key, "io_locking") == 0)
+      if (std::strcmp(key_name, "io_locking") == 0)
       {
         return ASIO_CONCURRENCY_HINT_IS_LOCKING(
             REACTOR_IO, concurrency_hint_) ? "1" : "0";
       }
-      else if (std::strcmp(key, "registration_locking") == 0)
+      else if (std::strcmp(key_name, "registration_locking") == 0)
       {
         return ASIO_CONCURRENCY_HINT_IS_LOCKING(
             REACTOR_REGISTRATION, concurrency_hint_) ? "1" : "0";
@@ -120,20 +129,20 @@ public:
   {
     enum
     {
-      expecting_key,
-      key,
+      expecting_key_name,
+      key_name,
       expecting_equals,
       expecting_value,
       value,
       expecting_eol
-    } state = expecting_key;
+    } state = expecting_key_name;
     std::pair<const char*, const char*> entry{};
 
     for (char& c : string_)
     {
       switch (state)
       {
-      case expecting_key:
+      case expecting_key_name:
         switch (c)
         {
         case ' ': case '\t': case '\n':
@@ -143,11 +152,11 @@ public:
           break;
         default:
           entry.first = &c;
-          state = key;
+          state = key_name;
           break;
         }
         break;
-      case key:
+      case key_name:
         switch (c)
         {
         case ' ': case '\t':
@@ -160,7 +169,7 @@ public:
           break;
         case '\n':
           entry.first = nullptr;
-          state = expecting_key;
+          state = expecting_key_name;
           break;
         case '#':
           entry.first = nullptr;
@@ -180,7 +189,7 @@ public:
           break;
         case '\n':
           entry.first = nullptr;
-          state = expecting_key;
+          state = expecting_key_name;
           break;
         default:
           entry.first = nullptr;
@@ -195,7 +204,7 @@ public:
           break;
         case '\n':
           entry.first = nullptr;
-          state = expecting_key;
+          state = expecting_key_name;
           break;
         case '#':
           entry.first = nullptr;
@@ -214,7 +223,7 @@ public:
           c = 0;
           entries_.push_back(entry);
           entry.first = entry.second = nullptr;
-          state = expecting_key;
+          state = expecting_key_name;
           break;
         case '#':
           c = 0;
@@ -230,7 +239,7 @@ public:
         switch (c)
         {
         case '\n':
-          state = expecting_key;
+          state = expecting_key_name;
           break;
         default:
           break;
@@ -242,19 +251,19 @@ public:
       entries_.push_back(entry);
   }
 
-  const char* get_value(const char* section, const char* key,
+  const char* get_value(const char* section, const char* key_name,
       char* /*value*/, std::size_t /*value_len*/) const override
   {
     std::string entry_key;
     entry_key.reserve(prefix_.length() + 1
         + std::strlen(section) + 1
-        + std::strlen(key) + 1);
+        + std::strlen(key_name) + 1);
     entry_key.append(prefix_);
     if (!entry_key.empty())
       entry_key.append(".");
     entry_key.append(section);
     entry_key.append(".");
-    entry_key.append(key);
+    entry_key.append(key_name);
     for (const std::pair<const char*, const char*>& entry : entries_)
       if (entry_key == entry.first)
         return entry.second;
@@ -291,19 +300,19 @@ public:
   {
   }
 
-  const char* get_value(const char* section, const char* key,
+  const char* get_value(const char* section, const char* key_name,
       char* /*value*/, std::size_t /*value_len*/) const override
   {
     std::string env_var;
     env_var.reserve(prefix_.length() + 1
         + std::strlen(section) + 1
-        + std::strlen(key) + 1);
+        + std::strlen(key_name) + 1);
     env_var.append(prefix_);
     if (!env_var.empty())
       env_var.append("_");
     env_var.append(section);
     env_var.append("_");
-    env_var.append(key);
+    env_var.append(key_name);
     for (char& c : env_var)
       c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
     return std::getenv(env_var.c_str());

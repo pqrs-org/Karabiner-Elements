@@ -60,13 +60,6 @@ public:
   // Destroy all user-defined handler objects owned by the service.
   void shutdown()
   {
-    this->base_shutdown();
-  }
-
-  // Perform any fork-related housekeeping.
-  void notify_fork(execution_context::fork_event fork_ev)
-  {
-    this->base_notify_fork(fork_ev);
   }
 
   // Resolve a query to a list of entries.
@@ -93,12 +86,12 @@ public:
     typedef resolve_query_op<Protocol, Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(impl, qry, scheduler_, handler, io_ex);
+    p.p = new (p.v) op(impl, qry, thread_pool_.scheduler(), handler, io_ex);
 
-    ASIO_HANDLER_CREATION((scheduler_.context(),
+    ASIO_HANDLER_CREATION((thread_pool_.context(),
           *p.p, "resolver", &impl, 0, "async_resolve"));
 
-    start_resolve_op(p.p);
+    thread_pool_.start_resolve_op(p.p);
     p.v = p.p = 0;
   }
 
@@ -126,12 +119,13 @@ public:
     typedef resolve_endpoint_op<Protocol, Handler, IoExecutor> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(impl, endpoint, scheduler_, handler, io_ex);
+    p.p = new (p.v) op(impl, endpoint,
+        thread_pool_.scheduler(), handler, io_ex);
 
-    ASIO_HANDLER_CREATION((scheduler_.context(),
+    ASIO_HANDLER_CREATION((thread_pool_.context(),
           *p.p, "resolver", &impl, 0, "async_resolve"));
 
-    start_resolve_op(p.p);
+    thread_pool_.start_resolve_op(p.p);
     p.v = p.p = 0;
   }
 };

@@ -182,6 +182,7 @@ public:
       return std::errc::operation_would_block;
     default:
       return std::make_error_condition(ev, *this);
+    }
   }
 #endif // defined(ASIO_HAS_STD_ERROR_CODE)
 

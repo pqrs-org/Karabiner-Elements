@@ -98,10 +98,33 @@ public:
 #if !defined(ASIO_NO_TS_EXECUTORS)
   /// Constructs a pool with an automatically determined number of threads.
   ASIO_DECL thread_pool();
+
+  /// Constructs a pool with an automatically determined number of threads.
+  /**
+   * @param a An allocator that will be used for allocating objects that are
+   * associated with the execution context, such as services and internal state
+   * for I/O objects.
+   */
+  template <typename Allocator>
+  thread_pool(allocator_arg_t, const Allocator& a);
 #endif // !defined(ASIO_NO_TS_EXECUTORS)
 
   /// Constructs a pool with a specified number of threads.
-  ASIO_DECL thread_pool(std::size_t num_threads);
+  /**
+   * @param num_threads The number of threads required.
+   */
+  ASIO_DECL explicit thread_pool(std::size_t num_threads);
+
+  /// Constructs a pool with a specified number of threads.
+  /**
+   * @param num_threads The number of threads required.
+   *
+   * @param a An allocator that will be used for allocating objects that are
+   * associated with the execution context, such as services and internal state
+   * for I/O objects.
+   */
+  template <typename Allocator>
+  thread_pool(allocator_arg_t, const Allocator& a, std::size_t num_threads);
 
   /// Constructs a pool with a specified number of threads.
   /**
@@ -114,6 +137,24 @@ public:
    * function will be called once at the end of execution_context construction.
    */
   ASIO_DECL thread_pool(std::size_t num_threads,
+      const execution_context::service_maker& initial_services);
+
+  /// Constructs a pool with a specified number of threads.
+  /**
+   * Construct with a service maker, to create an initial set of services that
+   * will be installed into the execution context at construction time.
+   *
+   * @param a An allocator that will be used for allocating objects that are
+   * associated with the execution context, such as services and internal state
+   * for I/O objects.
+   *
+   * @param num_threads The number of threads required.
+   *
+   * @param initial_services Used to create the initial services. The @c make
+   * function will be called once at the end of execution_context construction.
+   */
+  template <typename Allocator>
+  thread_pool(allocator_arg_t, const Allocator& a, std::size_t num_threads,
       const execution_context::service_maker& initial_services);
 
   /// Destructor.
@@ -167,14 +208,22 @@ private:
 
   struct thread_function;
 
-  // Helper function to create the underlying scheduler.
-  ASIO_DECL detail::scheduler& add_scheduler(detail::scheduler* s);
+#if !defined(ASIO_NO_TS_EXECUTORS)
+  // Helper function to calculate the default number of threads in the pool.
+  ASIO_DECL static long default_thread_pool_size();
+#endif // !defined(ASIO_NO_TS_EXECUTORS)
+
+  // Helper function to ensure the thread pool size is not out of range.
+  ASIO_DECL static long clamp_thread_pool_size(std::size_t n);
+
+  // Helper function to start all threads in the pool.
+  ASIO_DECL void start();
 
   // The underlying scheduler.
   detail::scheduler& scheduler_;
 
   // The threads in the pool.
-  detail::thread_group threads_;
+  detail::thread_group<allocator<void>> threads_;
 
   // The current number of threads in the pool.
   detail::atomic_count num_threads_;
