@@ -23,6 +23,10 @@ int main(int argc, const char* argv[]) {
 
   pqrs::osx::process_info::enable_sudden_termination();
 
+  // Note:
+  // Processes running as root should not rely on environment variables,
+  // so we do not load custom environment variables in the session_monitor.
+
   //
   // Check euid
   //
