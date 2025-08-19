@@ -24,6 +24,10 @@ int main(int argc, const char* argv[]) {
 
   pqrs::osx::process_info::enable_sudden_termination();
 
+  //
+  // Load custom environment variables
+  //
+
   auto environment_variables = krbn::environment_variable_utility::load_karabiner_environment();
 
   //
@@ -37,6 +41,10 @@ int main(int argc, const char* argv[]) {
   }
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
+
+  //
+  // Log custom environment variables
+  //
 
   krbn::environment_variable_utility::log(environment_variables);
 
