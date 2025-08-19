@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "environment_variable_utility.hpp"
 #include "iokit_hid_device_open_checker_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -12,13 +13,27 @@ namespace grabber {
 namespace main {
 int agent(void) {
   //
+  // Load custom environment variables
+  //
+
+  auto environment_variables = krbn::environment_variable_utility::load_karabiner_environment();
+
+  //
   // Setup logger
   //
 
-  logger::set_async_rotating_logger("grabber_agent",
-                                    constants::get_user_log_directory() / "grabber_agent.log",
-                                    pqrs::spdlog::filesystem::log_directory_perms_0700);
+  if (!krbn::constants::get_user_log_directory().empty()) {
+    logger::set_async_rotating_logger("grabber_agent",
+                                      constants::get_user_log_directory() / "grabber_agent.log",
+                                      pqrs::spdlog::filesystem::log_directory_perms_0700);
+  }
   logger::get_logger()->info("version {0}", karabiner_version);
+
+  //
+  // Log custom environment variables
+  //
+
+  krbn::environment_variable_utility::log(environment_variables);
 
   //
   // Check another process

@@ -18,6 +18,10 @@ namespace grabber {
 namespace main {
 
 int daemon(void) {
+  // Note:
+  // Processes running as root should not rely on environment variables,
+  // so we do not load custom environment variables in the grabber daemon.
+
   //
   // Setup logger
   //
