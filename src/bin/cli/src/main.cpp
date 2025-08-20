@@ -7,6 +7,7 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "duktape_utility.hpp"
+#include "environment_variable_utility.hpp"
 #include "grabber_client.hpp"
 #include "json_utility.hpp"
 #include "karabiner_version.h"
@@ -111,13 +112,32 @@ int remove_system_default_profile(void) {
 } // namespace
 
 int main(int argc, char** argv) {
+  //
+  // Initialize
+  //
+
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
 
-  int exit_code = 0;
+  //
+  // Load custom environment variables
+  //
+
+  auto environment_variables = krbn::environment_variable_utility::load_karabiner_environment();
+  // for (const auto& [k, v] : environment_variables) {
+  //   std::cout << "setenv: " << k << " = " << v << std::endl;
+  // }
+
+  //
+  // Setup logger
+  //
 
   krbn::logger::set_stdout_color_logger("karabiner_cli",
                                         "[%l] %v");
+
+  //
+  // Setup options
+  //
 
   cxxopts::Options options("karabiner_cli",
                            "A command line utility of Karabiner-Elements");
@@ -174,6 +194,12 @@ int main(int argc, char** argv) {
       "format-json",
       "eval-js",
   });
+
+  //
+  // Run
+  //
+
+  int exit_code = 0;
 
   try {
     auto parse_result = options.parse(argc, argv);
