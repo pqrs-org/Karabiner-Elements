@@ -26,6 +26,8 @@ void libkrbn_set_logging_level_info(void);
 void libkrbn_initialize(void);
 void libkrbn_terminate(void);
 
+void libkrbn_load_custom_environment_variables(void);
+
 void libkrbn_enqueue_callback(void (*callback)(void));
 
 void libkrbn_get_user_configuration_directory(char* buffer,

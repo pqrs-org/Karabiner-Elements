@@ -4,6 +4,7 @@
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "dispatcher_utility.hpp"
+#include "environment_variable_utility.hpp"
 #include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 #include "process_utility.hpp"
@@ -58,6 +59,11 @@ void libkrbn_terminate(void) {
   scoped_run_loop_thread_manager_ = nullptr;
 
   scoped_dispatcher_manager_ = nullptr;
+}
+
+void libkrbn_load_custom_environment_variables(void) {
+  auto environment_variables = krbn::environment_variable_utility::load_custom_environment_variables();
+  krbn::environment_variable_utility::log(environment_variables);
 }
 
 void libkrbn_enqueue_callback(void (*callback)(void)) {
