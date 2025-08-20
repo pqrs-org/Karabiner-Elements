@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
   // Load custom environment variables
   //
 
-  auto environment_variables = krbn::environment_variable_utility::load_karabiner_environment();
+  auto environment_variables = krbn::environment_variable_utility::load_custom_environment_variables();
   // for (const auto& [k, v] : environment_variables) {
   //   std::cout << "setenv: " << k << " = " << v << std::endl;
   // }

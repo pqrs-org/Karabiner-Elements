@@ -7,7 +7,7 @@
 namespace krbn {
 namespace environment_variable_utility {
 
-inline std::vector<std::pair<std::string, std::string>> load_karabiner_environment(void) {
+inline std::vector<std::pair<std::string, std::string>> load_custom_environment_variables(void) {
   std::vector<std::pair<std::string, std::string>> result;
 
   pqrs::environment_variable::load_environment_variables_from_file(

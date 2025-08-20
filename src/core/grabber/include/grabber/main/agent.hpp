@@ -16,7 +16,7 @@ int agent(void) {
   // Load custom environment variables
   //
 
-  auto environment_variables = krbn::environment_variable_utility::load_karabiner_environment();
+  auto environment_variables = krbn::environment_variable_utility::load_custom_environment_variables();
 
   //
   // Setup logger
