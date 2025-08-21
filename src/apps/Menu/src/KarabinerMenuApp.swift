@@ -71,7 +71,7 @@ struct KarabinerMenuApp: App {
               libkrbn_updater_check_for_updates_with_beta_version()
             },
             label: {
-              Label("Check for beta updates", systemImage: "hare")
+              Label("Check for beta updates...", systemImage: "hare")
                 .labelStyle(.titleAndIcon)
             }
           )
