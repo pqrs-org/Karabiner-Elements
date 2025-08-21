@@ -6,6 +6,7 @@ struct KarabinerSettingsApp: App {
 
   init() {
     libkrbn_initialize()
+    libkrbn_load_custom_environment_variables()
 
     //
     // Unregister old agents

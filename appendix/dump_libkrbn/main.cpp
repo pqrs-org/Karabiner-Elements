@@ -43,6 +43,7 @@ int main(int argc, const char* argv[]) {
   char buffer[32 * 1024];
 
   libkrbn_initialize();
+  libkrbn_load_custom_environment_variables();
 
   signal(SIGINT, [](int) {
     global_wait->notify();

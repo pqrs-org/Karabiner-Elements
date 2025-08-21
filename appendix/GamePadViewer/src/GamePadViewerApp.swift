@@ -6,6 +6,7 @@ struct GamePadViewerAppApp: App {
 
   init() {
     libkrbn_initialize()
+    libkrbn_load_custom_environment_variables()
 
     if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
       InputMonitoringAlertData.shared.showing = true

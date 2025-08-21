@@ -10,6 +10,7 @@ struct KarabinerMultitouchExtensionApp: App {
 
   init() {
     libkrbn_initialize()
+    libkrbn_load_custom_environment_variables()
   }
 
   var body: some Scene {

@@ -9,6 +9,7 @@ struct KarabinerEventViewerApp: App {
 
   init() {
     libkrbn_initialize()
+    libkrbn_load_custom_environment_variables()
 
     let userSettings = UserSettings()
     _userSettings = StateObject(wrappedValue: userSettings)
