@@ -110,7 +110,6 @@ struct UIView: View {
           }
           .padding()
           .frame(maxWidth: .infinity, alignment: .leading)
-          .background(Color(NSColor.textBackgroundColor))
         }
       }
       .padding()
