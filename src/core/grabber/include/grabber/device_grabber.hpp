@@ -212,6 +212,11 @@ public:
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::hid::usage_page::consumer,
             pqrs::hid::usage::consumer::consumer_control),
+
+        // Special devices (e.g., VEC USB Footpedal INFINITY USB-3)
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::consumer,
+            pqrs::hid::usage::consumer::programmable_buttons),
     };
 
     hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
