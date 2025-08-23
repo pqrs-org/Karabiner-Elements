@@ -132,6 +132,70 @@ public:
                                                                                   IOHIDDeviceRef device) {
     pqrs::osx::iokit_hid_device hid_device(device);
 
+    //
+    // Identify device types.
+    //
+
+    bool is_keyboard = false;
+    bool is_pointing_device = false;
+    bool is_game_pad = false;
+    bool is_consumer = false;
+
+    if (hid_device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                               pqrs::hid::usage::generic_desktop::keyboard)) {
+      is_keyboard = true;
+    }
+
+    if (hid_device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                               pqrs::hid::usage::generic_desktop::pointer) ||
+        hid_device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                               pqrs::hid::usage::generic_desktop::mouse)) {
+      is_pointing_device = true;
+    }
+
+    if (hid_device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                               pqrs::hid::usage::generic_desktop::joystick) ||
+        hid_device.conforms_to(pqrs::hid::usage_page::generic_desktop,
+                               pqrs::hid::usage::generic_desktop::game_pad)) {
+      is_game_pad = true;
+    }
+
+    // The is_consumer property was added later, so compatibility with previous versions must be maintained.
+    //
+    // Typically, keyboards also confirm the consumer usage page.
+    // If is_consumer becomes true for a standard keyboard,
+    // the device_identifiers stored in previous versions will not match the is_consumer value,
+    // causing the device to be treated as a different one.
+    //
+    // Therefore, is_consumer will be set to true only if the device is neither a keyboard, a pointing device, nor a gamepad.
+    if (!is_keyboard &&
+        !is_pointing_device &&
+        !is_game_pad) {
+      if (hid_device.conforms_to(pqrs::hid::usage_page::consumer,
+                                 pqrs::hid::usage::consumer::consumer_control)) {
+        is_consumer = true;
+      }
+    }
+
+    // The consumer::programmable_buttons support was added later,
+    // so compatibility with previous versions must be maintained.
+    //
+    // For devices with consumer::programmable_buttons, do nothing if the device kind is already set.
+    // Treat it as a keyboard only when the device kind is empty.
+    if (!is_keyboard &&
+        !is_pointing_device &&
+        !is_game_pad &&
+        !is_consumer) {
+      if (hid_device.conforms_to(pqrs::hid::usage_page::consumer,
+                                 pqrs::hid::usage::consumer::programmable_buttons)) {
+        is_keyboard = true;
+      }
+    }
+
+    //
+    // Create a device_properties.
+    //
+
     return std::make_shared<device_properties>(initialization_parameters{
         .device_id = device_id,
         .vendor_id = hid_device.find_vendor_id().value_or(pqrs::hid::vendor_id::value_t(0)),
@@ -142,10 +206,10 @@ public:
         .serial_number = hid_device.find_serial_number().value_or(""),
         .transport = hid_device.find_transport().value_or(""),
         .device_address = hid_device.find_device_address().value_or(""),
-        .is_keyboard = iokit_utility::is_keyboard(hid_device),
-        .is_pointing_device = iokit_utility::is_pointing_device(hid_device),
-        .is_game_pad = iokit_utility::is_game_pad(hid_device),
-        .is_consumer = iokit_utility::is_consumer(hid_device),
+        .is_keyboard = is_keyboard,
+        .is_pointing_device = is_pointing_device,
+        .is_game_pad = is_game_pad,
+        .is_consumer = is_consumer,
     });
   }
 
