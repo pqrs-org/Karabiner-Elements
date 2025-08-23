@@ -1580,260 +1580,262 @@
     {
         "unsafe_from": true,
         "label": "button1",
-        "data": [
-            {
-                "pointing_button": "button1"
-            }
-        ]
+        "data": [{ "pointing_button": "button1" }]
     },
-    {
-        "label": "button2",
-        "data": [
-            {
-                "pointing_button": "button2"
-            }
-        ]
-    },
-    {
-        "label": "button3",
-        "data": [
-            {
-                "pointing_button": "button3"
-            }
-        ]
-    },
-    {
-        "label": "button4",
-        "data": [
-            {
-                "pointing_button": "button4"
-            }
-        ]
-    },
-    {
-        "label": "button5",
-        "data": [
-            {
-                "pointing_button": "button5"
-            }
-        ]
-    },
-    {
-        "label": "button6",
-        "data": [
-            {
-                "pointing_button": "button6"
-            }
-        ]
-    },
-    {
-        "label": "button7",
-        "data": [
-            {
-                "pointing_button": "button7"
-            }
-        ]
-    },
-    {
-        "label": "button8",
-        "data": [
-            {
-                "pointing_button": "button8"
-            }
-        ]
-    },
-    {
-        "label": "button9",
-        "data": [
-            {
-                "pointing_button": "button9"
-            }
-        ]
-    },
-    {
-        "label": "button10",
-        "data": [
-            {
-                "pointing_button": "button10"
-            }
-        ]
-    },
-    {
-        "label": "button11",
-        "data": [
-            {
-                "pointing_button": "button11"
-            }
-        ]
-    },
-    {
-        "label": "button12",
-        "data": [
-            {
-                "pointing_button": "button12"
-            }
-        ]
-    },
-    {
-        "label": "button13",
-        "data": [
-            {
-                "pointing_button": "button13"
-            }
-        ]
-    },
-    {
-        "label": "button14",
-        "data": [
-            {
-                "pointing_button": "button14"
-            }
-        ]
-    },
-    {
-        "label": "button15",
-        "data": [
-            {
-                "pointing_button": "button15"
-            }
-        ]
-    },
-    {
-        "label": "button16",
-        "data": [
-            {
-                "pointing_button": "button16"
-            }
-        ]
-    },
-    {
-        "label": "button17",
-        "data": [
-            {
-                "pointing_button": "button17"
-            }
-        ]
-    },
-    {
-        "label": "button18",
-        "data": [
-            {
-                "pointing_button": "button18"
-            }
-        ]
-    },
-    {
-        "label": "button19",
-        "data": [
-            {
-                "pointing_button": "button19"
-            }
-        ]
-    },
-    {
-        "label": "button20",
-        "data": [
-            {
-                "pointing_button": "button20"
-            }
-        ]
-    },
-    {
-        "label": "button21",
-        "data": [
-            {
-                "pointing_button": "button21"
-            }
-        ]
-    },
-    {
-        "label": "button22",
-        "data": [
-            {
-                "pointing_button": "button22"
-            }
-        ]
-    },
-    {
-        "label": "button23",
-        "data": [
-            {
-                "pointing_button": "button23"
-            }
-        ]
-    },
-    {
-        "label": "button24",
-        "data": [
-            {
-                "pointing_button": "button24"
-            }
-        ]
-    },
-    {
-        "label": "button25",
-        "data": [
-            {
-                "pointing_button": "button25"
-            }
-        ]
-    },
-    {
-        "label": "button26",
-        "data": [
-            {
-                "pointing_button": "button26"
-            }
-        ]
-    },
-    {
-        "label": "button27",
-        "data": [
-            {
-                "pointing_button": "button27"
-            }
-        ]
-    },
-    {
-        "label": "button28",
-        "data": [
-            {
-                "pointing_button": "button28"
-            }
-        ]
-    },
-    {
-        "label": "button29",
-        "data": [
-            {
-                "pointing_button": "button29"
-            }
-        ]
-    },
-    {
-        "label": "button30",
-        "data": [
-            {
-                "pointing_button": "button30"
-            }
-        ]
-    },
-    {
-        "label": "button31",
-        "data": [
-            {
-                "pointing_button": "button31"
-            }
-        ]
-    },
-    {
-        "label": "button32",
-        "data": [
-            {
-                "pointing_button": "button32"
-            }
-        ]
-    },
+    { "label": "button2", "data": [{ "pointing_button": "button2" }] },
+    { "label": "button3", "data": [{ "pointing_button": "button3" }] },
+    { "label": "button4", "data": [{ "pointing_button": "button4" }] },
+    { "label": "button5", "data": [{ "pointing_button": "button5" }] },
+    { "label": "button6", "data": [{ "pointing_button": "button6" }] },
+    { "label": "button7", "data": [{ "pointing_button": "button7" }] },
+    { "label": "button8", "data": [{ "pointing_button": "button8" }] },
+    { "label": "button9", "data": [{ "pointing_button": "button9" }] },
+    { "label": "button10", "data": [{ "pointing_button": "button10" }] },
+    { "label": "button11", "data": [{ "pointing_button": "button11" }] },
+    { "label": "button12", "data": [{ "pointing_button": "button12" }] },
+    { "label": "button13", "data": [{ "pointing_button": "button13" }] },
+    { "label": "button14", "data": [{ "pointing_button": "button14" }] },
+    { "label": "button15", "data": [{ "pointing_button": "button15" }] },
+    { "label": "button16", "data": [{ "pointing_button": "button16" }] },
+    { "label": "button17", "data": [{ "pointing_button": "button17" }] },
+    { "label": "button18", "data": [{ "pointing_button": "button18" }] },
+    { "label": "button19", "data": [{ "pointing_button": "button19" }] },
+    { "label": "button20", "data": [{ "pointing_button": "button20" }] },
+    { "label": "button21", "data": [{ "pointing_button": "button21" }] },
+    { "label": "button22", "data": [{ "pointing_button": "button22" }] },
+    { "label": "button23", "data": [{ "pointing_button": "button23" }] },
+    { "label": "button24", "data": [{ "pointing_button": "button24" }] },
+    { "label": "button25", "data": [{ "pointing_button": "button25" }] },
+    { "label": "button26", "data": [{ "pointing_button": "button26" }] },
+    { "label": "button27", "data": [{ "pointing_button": "button27" }] },
+    { "label": "button28", "data": [{ "pointing_button": "button28" }] },
+    { "label": "button29", "data": [{ "pointing_button": "button29" }] },
+    { "label": "button30", "data": [{ "pointing_button": "button30" }] },
+    { "label": "button31", "data": [{ "pointing_button": "button31" }] },
+    { "label": "button32", "data": [{ "pointing_button": "button32" }] },
+    { "label": "button33", "data": [{ "pointing_button": "button33" }] },
+    { "label": "button34", "data": [{ "pointing_button": "button34" }] },
+    { "label": "button35", "data": [{ "pointing_button": "button35" }] },
+    { "label": "button36", "data": [{ "pointing_button": "button36" }] },
+    { "label": "button37", "data": [{ "pointing_button": "button37" }] },
+    { "label": "button38", "data": [{ "pointing_button": "button38" }] },
+    { "label": "button39", "data": [{ "pointing_button": "button39" }] },
+    { "label": "button40", "data": [{ "pointing_button": "button40" }] },
+    { "label": "button41", "data": [{ "pointing_button": "button41" }] },
+    { "label": "button42", "data": [{ "pointing_button": "button42" }] },
+    { "label": "button43", "data": [{ "pointing_button": "button43" }] },
+    { "label": "button44", "data": [{ "pointing_button": "button44" }] },
+    { "label": "button45", "data": [{ "pointing_button": "button45" }] },
+    { "label": "button46", "data": [{ "pointing_button": "button46" }] },
+    { "label": "button47", "data": [{ "pointing_button": "button47" }] },
+    { "label": "button48", "data": [{ "pointing_button": "button48" }] },
+    { "label": "button49", "data": [{ "pointing_button": "button49" }] },
+    { "label": "button50", "data": [{ "pointing_button": "button50" }] },
+    { "label": "button51", "data": [{ "pointing_button": "button51" }] },
+    { "label": "button52", "data": [{ "pointing_button": "button52" }] },
+    { "label": "button53", "data": [{ "pointing_button": "button53" }] },
+    { "label": "button54", "data": [{ "pointing_button": "button54" }] },
+    { "label": "button55", "data": [{ "pointing_button": "button55" }] },
+    { "label": "button56", "data": [{ "pointing_button": "button56" }] },
+    { "label": "button57", "data": [{ "pointing_button": "button57" }] },
+    { "label": "button58", "data": [{ "pointing_button": "button58" }] },
+    { "label": "button59", "data": [{ "pointing_button": "button59" }] },
+    { "label": "button60", "data": [{ "pointing_button": "button60" }] },
+    { "label": "button61", "data": [{ "pointing_button": "button61" }] },
+    { "label": "button62", "data": [{ "pointing_button": "button62" }] },
+    { "label": "button63", "data": [{ "pointing_button": "button63" }] },
+    { "label": "button64", "data": [{ "pointing_button": "button64" }] },
+    { "label": "button65", "data": [{ "pointing_button": "button65" }] },
+    { "label": "button66", "data": [{ "pointing_button": "button66" }] },
+    { "label": "button67", "data": [{ "pointing_button": "button67" }] },
+    { "label": "button68", "data": [{ "pointing_button": "button68" }] },
+    { "label": "button69", "data": [{ "pointing_button": "button69" }] },
+    { "label": "button70", "data": [{ "pointing_button": "button70" }] },
+    { "label": "button71", "data": [{ "pointing_button": "button71" }] },
+    { "label": "button72", "data": [{ "pointing_button": "button72" }] },
+    { "label": "button73", "data": [{ "pointing_button": "button73" }] },
+    { "label": "button74", "data": [{ "pointing_button": "button74" }] },
+    { "label": "button75", "data": [{ "pointing_button": "button75" }] },
+    { "label": "button76", "data": [{ "pointing_button": "button76" }] },
+    { "label": "button77", "data": [{ "pointing_button": "button77" }] },
+    { "label": "button78", "data": [{ "pointing_button": "button78" }] },
+    { "label": "button79", "data": [{ "pointing_button": "button79" }] },
+    { "label": "button80", "data": [{ "pointing_button": "button80" }] },
+    { "label": "button81", "data": [{ "pointing_button": "button81" }] },
+    { "label": "button82", "data": [{ "pointing_button": "button82" }] },
+    { "label": "button83", "data": [{ "pointing_button": "button83" }] },
+    { "label": "button84", "data": [{ "pointing_button": "button84" }] },
+    { "label": "button85", "data": [{ "pointing_button": "button85" }] },
+    { "label": "button86", "data": [{ "pointing_button": "button86" }] },
+    { "label": "button87", "data": [{ "pointing_button": "button87" }] },
+    { "label": "button88", "data": [{ "pointing_button": "button88" }] },
+    { "label": "button89", "data": [{ "pointing_button": "button89" }] },
+    { "label": "button90", "data": [{ "pointing_button": "button90" }] },
+    { "label": "button91", "data": [{ "pointing_button": "button91" }] },
+    { "label": "button92", "data": [{ "pointing_button": "button92" }] },
+    { "label": "button93", "data": [{ "pointing_button": "button93" }] },
+    { "label": "button94", "data": [{ "pointing_button": "button94" }] },
+    { "label": "button95", "data": [{ "pointing_button": "button95" }] },
+    { "label": "button96", "data": [{ "pointing_button": "button96" }] },
+    { "label": "button97", "data": [{ "pointing_button": "button97" }] },
+    { "label": "button98", "data": [{ "pointing_button": "button98" }] },
+    { "label": "button99", "data": [{ "pointing_button": "button99" }] },
+    { "label": "button100", "data": [{ "pointing_button": "button100" }] },
+    { "label": "button101", "data": [{ "pointing_button": "button101" }] },
+    { "label": "button102", "data": [{ "pointing_button": "button102" }] },
+    { "label": "button103", "data": [{ "pointing_button": "button103" }] },
+    { "label": "button104", "data": [{ "pointing_button": "button104" }] },
+    { "label": "button105", "data": [{ "pointing_button": "button105" }] },
+    { "label": "button106", "data": [{ "pointing_button": "button106" }] },
+    { "label": "button107", "data": [{ "pointing_button": "button107" }] },
+    { "label": "button108", "data": [{ "pointing_button": "button108" }] },
+    { "label": "button109", "data": [{ "pointing_button": "button109" }] },
+    { "label": "button110", "data": [{ "pointing_button": "button110" }] },
+    { "label": "button111", "data": [{ "pointing_button": "button111" }] },
+    { "label": "button112", "data": [{ "pointing_button": "button112" }] },
+    { "label": "button113", "data": [{ "pointing_button": "button113" }] },
+    { "label": "button114", "data": [{ "pointing_button": "button114" }] },
+    { "label": "button115", "data": [{ "pointing_button": "button115" }] },
+    { "label": "button116", "data": [{ "pointing_button": "button116" }] },
+    { "label": "button117", "data": [{ "pointing_button": "button117" }] },
+    { "label": "button118", "data": [{ "pointing_button": "button118" }] },
+    { "label": "button119", "data": [{ "pointing_button": "button119" }] },
+    { "label": "button120", "data": [{ "pointing_button": "button120" }] },
+    { "label": "button121", "data": [{ "pointing_button": "button121" }] },
+    { "label": "button122", "data": [{ "pointing_button": "button122" }] },
+    { "label": "button123", "data": [{ "pointing_button": "button123" }] },
+    { "label": "button124", "data": [{ "pointing_button": "button124" }] },
+    { "label": "button125", "data": [{ "pointing_button": "button125" }] },
+    { "label": "button126", "data": [{ "pointing_button": "button126" }] },
+    { "label": "button127", "data": [{ "pointing_button": "button127" }] },
+    { "label": "button128", "data": [{ "pointing_button": "button128" }] },
+    { "label": "button129", "data": [{ "pointing_button": "button129" }] },
+    { "label": "button130", "data": [{ "pointing_button": "button130" }] },
+    { "label": "button131", "data": [{ "pointing_button": "button131" }] },
+    { "label": "button132", "data": [{ "pointing_button": "button132" }] },
+    { "label": "button133", "data": [{ "pointing_button": "button133" }] },
+    { "label": "button134", "data": [{ "pointing_button": "button134" }] },
+    { "label": "button135", "data": [{ "pointing_button": "button135" }] },
+    { "label": "button136", "data": [{ "pointing_button": "button136" }] },
+    { "label": "button137", "data": [{ "pointing_button": "button137" }] },
+    { "label": "button138", "data": [{ "pointing_button": "button138" }] },
+    { "label": "button139", "data": [{ "pointing_button": "button139" }] },
+    { "label": "button140", "data": [{ "pointing_button": "button140" }] },
+    { "label": "button141", "data": [{ "pointing_button": "button141" }] },
+    { "label": "button142", "data": [{ "pointing_button": "button142" }] },
+    { "label": "button143", "data": [{ "pointing_button": "button143" }] },
+    { "label": "button144", "data": [{ "pointing_button": "button144" }] },
+    { "label": "button145", "data": [{ "pointing_button": "button145" }] },
+    { "label": "button146", "data": [{ "pointing_button": "button146" }] },
+    { "label": "button147", "data": [{ "pointing_button": "button147" }] },
+    { "label": "button148", "data": [{ "pointing_button": "button148" }] },
+    { "label": "button149", "data": [{ "pointing_button": "button149" }] },
+    { "label": "button150", "data": [{ "pointing_button": "button150" }] },
+    { "label": "button151", "data": [{ "pointing_button": "button151" }] },
+    { "label": "button152", "data": [{ "pointing_button": "button152" }] },
+    { "label": "button153", "data": [{ "pointing_button": "button153" }] },
+    { "label": "button154", "data": [{ "pointing_button": "button154" }] },
+    { "label": "button155", "data": [{ "pointing_button": "button155" }] },
+    { "label": "button156", "data": [{ "pointing_button": "button156" }] },
+    { "label": "button157", "data": [{ "pointing_button": "button157" }] },
+    { "label": "button158", "data": [{ "pointing_button": "button158" }] },
+    { "label": "button159", "data": [{ "pointing_button": "button159" }] },
+    { "label": "button160", "data": [{ "pointing_button": "button160" }] },
+    { "label": "button161", "data": [{ "pointing_button": "button161" }] },
+    { "label": "button162", "data": [{ "pointing_button": "button162" }] },
+    { "label": "button163", "data": [{ "pointing_button": "button163" }] },
+    { "label": "button164", "data": [{ "pointing_button": "button164" }] },
+    { "label": "button165", "data": [{ "pointing_button": "button165" }] },
+    { "label": "button166", "data": [{ "pointing_button": "button166" }] },
+    { "label": "button167", "data": [{ "pointing_button": "button167" }] },
+    { "label": "button168", "data": [{ "pointing_button": "button168" }] },
+    { "label": "button169", "data": [{ "pointing_button": "button169" }] },
+    { "label": "button170", "data": [{ "pointing_button": "button170" }] },
+    { "label": "button171", "data": [{ "pointing_button": "button171" }] },
+    { "label": "button172", "data": [{ "pointing_button": "button172" }] },
+    { "label": "button173", "data": [{ "pointing_button": "button173" }] },
+    { "label": "button174", "data": [{ "pointing_button": "button174" }] },
+    { "label": "button175", "data": [{ "pointing_button": "button175" }] },
+    { "label": "button176", "data": [{ "pointing_button": "button176" }] },
+    { "label": "button177", "data": [{ "pointing_button": "button177" }] },
+    { "label": "button178", "data": [{ "pointing_button": "button178" }] },
+    { "label": "button179", "data": [{ "pointing_button": "button179" }] },
+    { "label": "button180", "data": [{ "pointing_button": "button180" }] },
+    { "label": "button181", "data": [{ "pointing_button": "button181" }] },
+    { "label": "button182", "data": [{ "pointing_button": "button182" }] },
+    { "label": "button183", "data": [{ "pointing_button": "button183" }] },
+    { "label": "button184", "data": [{ "pointing_button": "button184" }] },
+    { "label": "button185", "data": [{ "pointing_button": "button185" }] },
+    { "label": "button186", "data": [{ "pointing_button": "button186" }] },
+    { "label": "button187", "data": [{ "pointing_button": "button187" }] },
+    { "label": "button188", "data": [{ "pointing_button": "button188" }] },
+    { "label": "button189", "data": [{ "pointing_button": "button189" }] },
+    { "label": "button190", "data": [{ "pointing_button": "button190" }] },
+    { "label": "button191", "data": [{ "pointing_button": "button191" }] },
+    { "label": "button192", "data": [{ "pointing_button": "button192" }] },
+    { "label": "button193", "data": [{ "pointing_button": "button193" }] },
+    { "label": "button194", "data": [{ "pointing_button": "button194" }] },
+    { "label": "button195", "data": [{ "pointing_button": "button195" }] },
+    { "label": "button196", "data": [{ "pointing_button": "button196" }] },
+    { "label": "button197", "data": [{ "pointing_button": "button197" }] },
+    { "label": "button198", "data": [{ "pointing_button": "button198" }] },
+    { "label": "button199", "data": [{ "pointing_button": "button199" }] },
+    { "label": "button200", "data": [{ "pointing_button": "button200" }] },
+    { "label": "button201", "data": [{ "pointing_button": "button201" }] },
+    { "label": "button202", "data": [{ "pointing_button": "button202" }] },
+    { "label": "button203", "data": [{ "pointing_button": "button203" }] },
+    { "label": "button204", "data": [{ "pointing_button": "button204" }] },
+    { "label": "button205", "data": [{ "pointing_button": "button205" }] },
+    { "label": "button206", "data": [{ "pointing_button": "button206" }] },
+    { "label": "button207", "data": [{ "pointing_button": "button207" }] },
+    { "label": "button208", "data": [{ "pointing_button": "button208" }] },
+    { "label": "button209", "data": [{ "pointing_button": "button209" }] },
+    { "label": "button210", "data": [{ "pointing_button": "button210" }] },
+    { "label": "button211", "data": [{ "pointing_button": "button211" }] },
+    { "label": "button212", "data": [{ "pointing_button": "button212" }] },
+    { "label": "button213", "data": [{ "pointing_button": "button213" }] },
+    { "label": "button214", "data": [{ "pointing_button": "button214" }] },
+    { "label": "button215", "data": [{ "pointing_button": "button215" }] },
+    { "label": "button216", "data": [{ "pointing_button": "button216" }] },
+    { "label": "button217", "data": [{ "pointing_button": "button217" }] },
+    { "label": "button218", "data": [{ "pointing_button": "button218" }] },
+    { "label": "button219", "data": [{ "pointing_button": "button219" }] },
+    { "label": "button220", "data": [{ "pointing_button": "button220" }] },
+    { "label": "button221", "data": [{ "pointing_button": "button221" }] },
+    { "label": "button222", "data": [{ "pointing_button": "button222" }] },
+    { "label": "button223", "data": [{ "pointing_button": "button223" }] },
+    { "label": "button224", "data": [{ "pointing_button": "button224" }] },
+    { "label": "button225", "data": [{ "pointing_button": "button225" }] },
+    { "label": "button226", "data": [{ "pointing_button": "button226" }] },
+    { "label": "button227", "data": [{ "pointing_button": "button227" }] },
+    { "label": "button228", "data": [{ "pointing_button": "button228" }] },
+    { "label": "button229", "data": [{ "pointing_button": "button229" }] },
+    { "label": "button230", "data": [{ "pointing_button": "button230" }] },
+    { "label": "button231", "data": [{ "pointing_button": "button231" }] },
+    { "label": "button232", "data": [{ "pointing_button": "button232" }] },
+    { "label": "button233", "data": [{ "pointing_button": "button233" }] },
+    { "label": "button234", "data": [{ "pointing_button": "button234" }] },
+    { "label": "button235", "data": [{ "pointing_button": "button235" }] },
+    { "label": "button236", "data": [{ "pointing_button": "button236" }] },
+    { "label": "button237", "data": [{ "pointing_button": "button237" }] },
+    { "label": "button238", "data": [{ "pointing_button": "button238" }] },
+    { "label": "button239", "data": [{ "pointing_button": "button239" }] },
+    { "label": "button240", "data": [{ "pointing_button": "button240" }] },
+    { "label": "button241", "data": [{ "pointing_button": "button241" }] },
+    { "label": "button242", "data": [{ "pointing_button": "button242" }] },
+    { "label": "button243", "data": [{ "pointing_button": "button243" }] },
+    { "label": "button244", "data": [{ "pointing_button": "button244" }] },
+    { "label": "button245", "data": [{ "pointing_button": "button245" }] },
+    { "label": "button246", "data": [{ "pointing_button": "button246" }] },
+    { "label": "button247", "data": [{ "pointing_button": "button247" }] },
+    { "label": "button248", "data": [{ "pointing_button": "button248" }] },
+    { "label": "button249", "data": [{ "pointing_button": "button249" }] },
+    { "label": "button250", "data": [{ "pointing_button": "button250" }] },
+    { "label": "button251", "data": [{ "pointing_button": "button251" }] },
+    { "label": "button252", "data": [{ "pointing_button": "button252" }] },
+    { "label": "button253", "data": [{ "pointing_button": "button253" }] },
+    { "label": "button254", "data": [{ "pointing_button": "button254" }] },
+    { "label": "button255", "data": [{ "pointing_button": "button255" }] },
     {
         "category": "D-pad"
     },
