@@ -41,5 +41,11 @@ int main(void) {
     expect(std::isnan(actual));
   };
 
+  "max_loop_iterations"_test = [] {
+    auto actual = krbn::exprtk_utility::eval("var x := 0; while (x < 1) { x -= 1; }; x;",
+                                             {});
+    expect(std::isnan(actual));
+  };
+
   return 0;
 }

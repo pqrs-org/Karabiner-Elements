@@ -424,7 +424,7 @@ public:
   }
 
 private:
-  exprtk_utility::expression_t make_xy_formula_expression(const std::string& formula) {
+  exprtk_utility::expression_wrapper make_xy_formula_expression(const std::string& formula) {
     return exprtk_utility::compile(formula,
                                    {},
                                    {
@@ -435,7 +435,7 @@ private:
                                    });
   }
 
-  exprtk_utility::expression_t make_wheels_formula_expression(const std::string& formula) {
+  exprtk_utility::expression_wrapper make_wheels_formula_expression(const std::string& formula) {
     return exprtk_utility::compile(formula,
                                    {},
                                    {
@@ -637,10 +637,10 @@ private:
   std::string y_formula_string_;
   std::string vertical_wheel_formula_string_;
   std::string horizontal_wheel_formula_string_;
-  exprtk_utility::expression_t x_formula_;
-  exprtk_utility::expression_t y_formula_;
-  exprtk_utility::expression_t vertical_wheel_formula_;
-  exprtk_utility::expression_t horizontal_wheel_formula_;
+  exprtk_utility::expression_wrapper x_formula_;
+  exprtk_utility::expression_wrapper y_formula_;
+  exprtk_utility::expression_wrapper vertical_wheel_formula_;
+  exprtk_utility::expression_wrapper horizontal_wheel_formula_;
 
   double xy_radian_;
   double xy_delta_magnitude_;
