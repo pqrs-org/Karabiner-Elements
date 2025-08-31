@@ -620,7 +620,8 @@ cos(radian) * m;
                                                 {"delta_magnitude", 0.1},
                                                 {"absolute_magnitude", 0.5},
                                                 {"continued_movement", 1.0},
-                                            });
+                                            },
+                                            {});
     return !std::isnan(value);
   }
 

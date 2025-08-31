@@ -9,7 +9,6 @@
 #include "event_tap_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
-#include "gsl/gsl"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
 #include "json_writer.hpp"
@@ -27,6 +26,7 @@
 #include "types.hpp"
 #include <deque>
 #include <fstream>
+#include <gsl/gsl>
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>

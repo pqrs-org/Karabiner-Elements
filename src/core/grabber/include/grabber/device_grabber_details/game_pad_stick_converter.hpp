@@ -259,6 +259,10 @@ public:
         continued_movement_timer_(*this),
         continued_movement_timer_count_(0),
         continued_movement_mode_(continued_movement_mode::none),
+        x_formula_(exprtk_utility::make_empty_expression()),
+        y_formula_(exprtk_utility::make_empty_expression()),
+        vertical_wheel_formula_(exprtk_utility::make_empty_expression()),
+        horizontal_wheel_formula_(exprtk_utility::make_empty_expression()),
         xy_radian_(0.0),
         xy_delta_magnitude_(0.0),
         xy_absolute_magnitude_(0.0),
@@ -424,7 +428,7 @@ public:
   }
 
 private:
-  exprtk_utility::expression_wrapper make_xy_formula_expression(const std::string& formula) {
+  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> make_xy_formula_expression(const std::string& formula) {
     return exprtk_utility::compile(formula,
                                    {},
                                    {
@@ -435,7 +439,7 @@ private:
                                    });
   }
 
-  exprtk_utility::expression_wrapper make_wheels_formula_expression(const std::string& formula) {
+  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> make_wheels_formula_expression(const std::string& formula) {
     return exprtk_utility::compile(formula,
                                    {},
                                    {
@@ -447,14 +451,14 @@ private:
   }
 
   std::pair<double, double> xy_hid_values(void) const {
-    auto x = x_formula_.value();
+    auto x = x_formula_->value();
     if (std::isnan(x)) {
       logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0}",
                                   x_formula_string_);
       x = 0.0;
     }
 
-    auto y = y_formula_.value();
+    auto y = y_formula_->value();
     if (std::isnan(y)) {
       logger::get_logger()->error("game_pad_stick_converter y_formula returns nan: {0}",
                                   y_formula_string_);
@@ -465,14 +469,14 @@ private:
   }
 
   std::pair<double, double> wheels_hid_values(void) const {
-    auto h = horizontal_wheel_formula_.value();
+    auto h = horizontal_wheel_formula_->value();
     if (std::isnan(h)) {
       logger::get_logger()->error("game_pad_stick_converter horizontal_wheel_formula returns nan: {0}",
                                   horizontal_wheel_formula_string_);
       h = 0.0;
     }
 
-    auto v = vertical_wheel_formula_.value();
+    auto v = vertical_wheel_formula_->value();
     if (std::isnan(v)) {
       logger::get_logger()->error("game_pad_stick_converter vertical_wheel_formula returns nan: {0}",
                                   vertical_wheel_formula_string_);
@@ -637,10 +641,10 @@ private:
   std::string y_formula_string_;
   std::string vertical_wheel_formula_string_;
   std::string horizontal_wheel_formula_string_;
-  exprtk_utility::expression_wrapper x_formula_;
-  exprtk_utility::expression_wrapper y_formula_;
-  exprtk_utility::expression_wrapper vertical_wheel_formula_;
-  exprtk_utility::expression_wrapper horizontal_wheel_formula_;
+  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> x_formula_;
+  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> y_formula_;
+  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> vertical_wheel_formula_;
+  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> horizontal_wheel_formula_;
 
   double xy_radian_;
   double xy_delta_magnitude_;
