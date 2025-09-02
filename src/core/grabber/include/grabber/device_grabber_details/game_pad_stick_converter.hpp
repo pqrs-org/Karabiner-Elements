@@ -262,15 +262,7 @@ public:
         x_formula_(exprtk_utility::make_empty_expression()),
         y_formula_(exprtk_utility::make_empty_expression()),
         vertical_wheel_formula_(exprtk_utility::make_empty_expression()),
-        horizontal_wheel_formula_(exprtk_utility::make_empty_expression()),
-        xy_radian_(0.0),
-        xy_delta_magnitude_(0.0),
-        xy_absolute_magnitude_(0.0),
-        xy_continued_movement_(false),
-        wheels_radian_(0.0),
-        wheels_delta_magnitude_(0.0),
-        wheels_absolute_magnitude_(0.0),
-        wheels_continued_movement_(false) {
+        horizontal_wheel_formula_(exprtk_utility::make_empty_expression()) {
     set_core_configuration(core_configuration);
 
     xy_.values_updated.connect([this](void) {
@@ -350,10 +342,14 @@ public:
     vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula();
     horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula();
 
-    x_formula_ = make_xy_formula_expression(x_formula_string_);
-    y_formula_ = make_xy_formula_expression(y_formula_string_);
-    vertical_wheel_formula_ = make_wheels_formula_expression(vertical_wheel_formula_string_);
-    horizontal_wheel_formula_ = make_wheels_formula_expression(horizontal_wheel_formula_string_);
+    x_formula_ = exprtk_utility::compile(x_formula_string_,
+                                         {});
+    y_formula_ = exprtk_utility::compile(y_formula_string_,
+                                         {});
+    vertical_wheel_formula_ = exprtk_utility::compile(vertical_wheel_formula_string_,
+                                                      {});
+    horizontal_wheel_formula_ = exprtk_utility::compile(horizontal_wheel_formula_string_,
+                                                        {});
   }
 
   // This method should be called in the shared dispatcher thread.
@@ -428,28 +424,6 @@ public:
   }
 
 private:
-  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> make_xy_formula_expression(const std::string& formula) {
-    return exprtk_utility::compile(formula,
-                                   {},
-                                   {
-                                       {"radian", xy_radian_},
-                                       {"delta_magnitude", xy_delta_magnitude_},
-                                       {"absolute_magnitude", xy_absolute_magnitude_},
-                                       {"continued_movement", xy_continued_movement_},
-                                   });
-  }
-
-  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> make_wheels_formula_expression(const std::string& formula) {
-    return exprtk_utility::compile(formula,
-                                   {},
-                                   {
-                                       {"radian", wheels_radian_},
-                                       {"delta_magnitude", wheels_delta_magnitude_},
-                                       {"absolute_magnitude", wheels_absolute_magnitude_},
-                                       {"continued_movement", wheels_continued_movement_},
-                                   });
-  }
-
   std::pair<double, double> xy_hid_values(void) const {
     auto x = x_formula_->value();
     if (std::isnan(x)) {
@@ -527,28 +501,58 @@ private:
   }
 
   void post_event(continued_movement_mode mode) {
-    xy_radian_ = xy_.get_radian();
-    xy_delta_magnitude_ = xy_.get_delta_magnitude();
-    xy_absolute_magnitude_ = xy_.get_absolute_magnitude();
-    xy_continued_movement_ = (continued_movement_mode_ == continued_movement_mode::xy);
-    if (continued_movement_mode_ == continued_movement_mode::xy &&
-        xy_.continued_movement()) {
-      // Add secondary stick absolute magnitude to magnitudes;
-      auto m = wheels_.get_absolute_magnitude();
-      xy_delta_magnitude_ += m;
-      xy_absolute_magnitude_ += m;
+    //
+    // Update xy variables
+    //
+
+    {
+      double radian = xy_.get_radian();
+      double delta_magnitude = xy_.get_delta_magnitude();
+      double absolute_magnitude = xy_.get_absolute_magnitude();
+      double continued_movement = (continued_movement_mode_ == continued_movement_mode::xy);
+      if (continued_movement_mode_ == continued_movement_mode::xy &&
+          xy_.continued_movement()) {
+        // Add secondary stick absolute magnitude to magnitudes;
+        auto m = wheels_.get_absolute_magnitude();
+        delta_magnitude += m;
+        absolute_magnitude += m;
+      }
+
+      std::vector<std::pair<std::string, double>> variables{
+          {"radian", radian},
+          {"delta_magnitude", delta_magnitude},
+          {"absolute_magnitude", absolute_magnitude},
+          {"continued_movement", continued_movement},
+      };
+      x_formula_->set_variables(variables);
+      y_formula_->set_variables(variables);
     }
 
-    wheels_radian_ = wheels_.get_radian();
-    wheels_delta_magnitude_ = wheels_.get_delta_magnitude();
-    wheels_absolute_magnitude_ = wheels_.get_absolute_magnitude();
-    wheels_continued_movement_ = (continued_movement_mode_ == continued_movement_mode::wheels);
-    if (continued_movement_mode_ == continued_movement_mode::wheels &&
-        wheels_.continued_movement()) {
-      // Add secondary stick absolute magnitude to magnitudes;
-      auto m = xy_.get_absolute_magnitude();
-      wheels_delta_magnitude_ += m;
-      wheels_absolute_magnitude_ += m;
+    //
+    // Update wheels variables
+    //
+
+    {
+      double radian = wheels_.get_radian();
+      double delta_magnitude = wheels_.get_delta_magnitude();
+      double absolute_magnitude = wheels_.get_absolute_magnitude();
+      double continued_movement = (continued_movement_mode_ == continued_movement_mode::wheels);
+      if (continued_movement_mode_ == continued_movement_mode::wheels &&
+          wheels_.continued_movement()) {
+        // Add secondary stick absolute magnitude to magnitudes;
+        auto m = xy_.get_absolute_magnitude();
+        delta_magnitude += m;
+        absolute_magnitude += m;
+      }
+
+      std::vector<std::pair<std::string, double>> variables{
+          {"radian", radian},
+          {"delta_magnitude", delta_magnitude},
+          {"absolute_magnitude", absolute_magnitude},
+          {"continued_movement", continued_movement},
+      };
+      vertical_wheel_formula_->set_variables(variables);
+      horizontal_wheel_formula_->set_variables(variables);
     }
 
     auto [x, y] = xy_hid_values();
@@ -645,15 +649,6 @@ private:
   gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> y_formula_;
   gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> vertical_wheel_formula_;
   gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> horizontal_wheel_formula_;
-
-  double xy_radian_;
-  double xy_delta_magnitude_;
-  double xy_absolute_magnitude_;
-  double xy_continued_movement_;
-  double wheels_radian_;
-  double wheels_delta_magnitude_;
-  double wheels_absolute_magnitude_;
-  double wheels_continued_movement_;
 };
 } // namespace device_grabber_details
 } // namespace grabber

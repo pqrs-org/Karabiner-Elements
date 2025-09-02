@@ -28,8 +28,7 @@ public:
   expression_wrapper(const expression_wrapper&) = delete;
 
   expression_wrapper(const std::string& expression_string,
-                     const std::unordered_map<std::string, double>& constants,
-                     const std::unordered_map<std::string, double&>& variables)
+                     const std::vector<std::pair<std::string, double>>& variables)
       : expression_string_(expression_string) {
     symbol_table_.add_constants(); // pi, epsilon and inf
 
@@ -38,54 +37,39 @@ public:
     parser_.register_loop_runtime_check(loop_rtc_);
 
     reset_expression();
-    replace_variables(constants,
-                      variables,
-                      true);
+
+    if (!set_variables(variables)) {
+      // If compile isn't called automatically inside set_variables, invoke it.
+      compile();
+    }
   }
 
-  bool replace_variables(const std::unordered_map<std::string, double>& new_constants,
-                         const std::unordered_map<std::string, double&>& new_variables,
-                         bool force_replace = false) {
+  // Return true if the expression was recompiled.
+  bool set_variable(const std::string& name, double value) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (force_replace ||
-        needs_to_replace_symbol_table(new_constants,
-                                      new_variables)) {
-      //
-      // Remove variables that are already registered.
-      // (We must remove them first, even when overwriting)
-      //
+    if (set_variable_(name, value)) {
+      compile();
+      return true;
+    }
 
-      for (auto&& [name, value] : constants_) {
-        symbol_table_.remove_variable(name);
+    return false;
+  }
+
+  // Return true if the expression was recompiled.
+  bool set_variables(const std::vector<std::pair<std::string, double>>& new_variables) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    bool needs_to_compile = false;
+
+    for (auto&& [name, value] : new_variables) {
+      if (set_variable_(name, value)) {
+        needs_to_compile = true;
       }
-      constants_.clear();
+    }
 
-      for (auto&& [name, value] : variables_) {
-        symbol_table_.remove_variable(name);
-      }
-      variables_.clear();
-
-      //
-      // Register variables.
-      //
-
-      for (auto&& [name, value] : new_constants) {
-        symbol_table_.add_constant(name, value);
-        constants_.emplace(name, value);
-      }
-
-      for (auto&& [name, value] : new_variables) {
-        symbol_table_.add_variable(name, value);
-        variables_.emplace(name, value);
-      }
-
-      // We need to recompile whenever the symbol table changes.
-      if (!parser_.compile(expression_string_, expression_)) {
-        // If compilation fails, the previous expression_ may remain intact, so explicitly reinitialize it.
-        reset_expression();
-      }
-
+    if (needs_to_compile) {
+      compile();
       return true;
     }
 
@@ -110,83 +94,61 @@ private:
     expression_.register_symbol_table(symbol_table_);
   }
 
-  bool needs_to_replace_symbol_table(const std::unordered_map<std::string, double>& new_constants,
-                                     const std::unordered_map<std::string, double&>& new_variables) const {
-    //
-    // Check for newly added variables or changes to existing values.
-    //
+  void compile(void) {
+    if (!parser_.compile(expression_string_, expression_)) {
+      // If compilation fails, the previous expression_ may remain intact, so explicitly reinitialize it.
+      reset_expression();
+    }
+  }
 
-    for (auto&& [name, value] : new_constants) {
-      auto it = constants_.find(name);
-      if (it != std::end(constants_) &&
-          value == it->second) {
-        continue;
+  // Return true if we need to recompile.
+  bool set_variable_(const std::string& name, double value) {
+    auto [it, inserted] = variables_.insert_or_assign(name, value);
+
+    if (inserted) {
+      symbol_table_.add_variable(name, it->second);
+    } else {
+      if (auto p = symbol_table_.get_variable(name)) {
+        p->ref() = value;
       }
-
-      return true;
     }
 
-    for (auto&& [name, value] : new_variables) {
-      auto it = variables_.find(name);
-      if (it != std::end(variables_) &&
-          &value == &(it->second)) {
-        continue;
-      }
-
-      return true;
-    }
-
-    //
-    // Check whether any variables have been deleted.
-    //
-
-    if (std::ranges::any_of(constants_,
-                            [&](auto&& kv) {
-                              return !new_constants.contains(kv.first);
-                            })) {
-      return true;
-    }
-
-    if (std::ranges::any_of(variables_,
-                            [&](auto&& kv) {
-                              return !new_variables.contains(kv.first);
-                            })) {
-      return true;
-    }
-
-    return false;
+    // We need to recompile whenever the symbol table changes.
+    return inserted;
   }
 
   std::string expression_string_;
   symbol_table_t symbol_table_;
-  std::unordered_map<std::string, double> constants_;
-  std::unordered_map<std::string, double&> variables_;
   loop_runtime_check_t loop_rtc_;
   expression_t expression_;
   parser_t parser_;
+
+  // Note:
+  // References to data in an unordered_map remain valid as long as the element is not erased.
+  //
+  // > References and pointers to either key or data stored in the container are only invalidated by erasing that element,
+  // > even when the corresponding iterator is invalidated.
+  // > https://en.cppreference.com/w/cpp/container/unordered_map.html
+  std::unordered_map<std::string, double> variables_;
+
   mutable std::mutex mutex_;
 };
 
 inline gsl::not_null<std::shared_ptr<expression_wrapper>> compile(const std::string& expression_string,
-                                                                  const std::unordered_map<std::string, double>& constants,
-                                                                  const std::unordered_map<std::string, double&>& variables) {
+                                                                  const std::vector<std::pair<std::string, double>>& variables) {
   return std::make_shared<expression_wrapper>(expression_string,
-                                              constants,
                                               variables);
 }
 
 inline double eval(const std::string& expression_string,
-                   const std::unordered_map<std::string, double>& constants,
-                   const std::unordered_map<std::string, double&>& variables) {
+                   const std::vector<std::pair<std::string, double>>& variables) {
   auto expression = compile(expression_string,
-                            constants,
                             variables);
   return expression->value();
 }
 
 inline gsl::not_null<std::shared_ptr<expression_wrapper>> make_empty_expression(void) {
   return compile("",
-                 {},
                  {});
 }
 

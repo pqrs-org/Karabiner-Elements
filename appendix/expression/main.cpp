@@ -12,16 +12,11 @@ int main(int argc, const char* argv[]) {
 
   auto expression = argv[1];
 
-  double example_variable = 242.0;
-
   std::cout << expression
             << " = "
             << krbn::exprtk_utility::eval(expression,
                                           {
-                                              {"example_constant", 142.0},
-                                          },
-                                          {
-                                              {"example_variable", example_variable},
+                                              {"example_variable", 42.0},
                                           })
             << std::endl;
 

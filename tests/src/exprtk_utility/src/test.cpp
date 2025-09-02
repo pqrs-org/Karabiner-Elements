@@ -11,25 +11,23 @@ int main(void) {
                                              {
                                                  {"radian", 0.78539816339},
                                                  {"delta_magnitude", 3.5},
-                                             },
-                                             {});
+                                             });
     expect(2.47487_d == actual);
   };
 
   "exprtk_utility::compile"_test = [] {
-    double radian = 0.0;
-    double delta_magnitude = 1.0;
-
     auto expression = krbn::exprtk_utility::compile("cos(radian) * delta_magnitude",
-                                                    {},
                                                     {
-                                                        {"radian", radian},
-                                                        {"delta_magnitude", delta_magnitude},
+                                                        {"radian", 0.0},
+                                                        {"delta_magnitude", 1.0},
                                                     });
     expect(1.0_d == expression->value());
 
-    radian = 0.78539816339;
-    delta_magnitude = 3.5;
+    expect(false == expression->set_variables({
+                        {"radian", 0.78539816339},
+                        {"delta_magnitude", 3.5},
+                    }));
+
     expect(2.47487_d == expression->value());
   };
 
@@ -38,136 +36,83 @@ int main(void) {
                                              {
                                                  {"radian", 0.78539816339},
                                                  {"delta_magnitude", 3.5},
-                                             },
-                                             {});
+                                             });
     expect(std::isnan(actual));
   };
 
   "max_loop_iterations"_test = [] {
     auto actual = krbn::exprtk_utility::eval("var x := 0; while (x < 1) { x -= 1; }; x;",
-                                             {},
                                              {});
     expect(std::isnan(actual));
   };
 
-  "expression_wrapper::replace_variables"_test = [] {
-    double example_variable1 = 11.0;
-    double example_variable2 = 12.0;
-
-    auto expression = krbn::exprtk_utility::compile("example_constant1 + example_constant2 + example_variable1 + example_variable2",
+  "expression_wrapper::set_variable"_test = [] {
+    auto expression = krbn::exprtk_utility::compile("example_variable1 + example_variable2",
                                                     {
-                                                        {"example_constant1", 1.0},
-                                                        {"example_constant2", 2.0},
-                                                    },
-                                                    {
-                                                        {"example_variable1", example_variable1},
-                                                        {"example_variable2", example_variable2},
+                                                        {"example_variable1", 1.0},
+                                                        {"example_variable2", 2.0},
                                                     });
-    expect(26.0_d == expression->value());
-
-    // No recompilation occurs if the variable addresses have not changed.
-    example_variable1 = 21.0;
-    expect(36.0_d == expression->value());
-
-    expect(false == expression->replace_variables({
-                                                      {"example_constant1", 1.0},
-                                                      {"example_constant2", 2.0},
-                                                  },
-                                                  {
-                                                      {"example_variable1", example_variable1},
-                                                      {"example_variable2", example_variable2},
-                                                  }));
-    expect(36.0_d == expression->value());
-
-    // A recompilation is triggered when constants change.
-    expect(true == expression->replace_variables({
-                                                     {"example_constant1", 11.0},
-                                                     {"example_constant2", 2.0},
-                                                 },
-                                                 {
-                                                     {"example_variable1", example_variable1},
-                                                     {"example_variable2", example_variable2},
-                                                 }));
-    expect(46.0_d == expression->value());
-
-    // A recompilation is triggered when variables address change.
-    double new_example_variable1 = 11.0;
-    expect(true == expression->replace_variables({
-                                                     {"example_constant1", 11.0},
-                                                     {"example_constant2", 2.0},
-                                                 },
-                                                 {
-                                                     {"example_variable1", new_example_variable1},
-                                                     {"example_variable2", example_variable2},
-                                                 }));
-    expect(36.0_d == expression->value());
-
-    // No recompilation occurs if the variable addresses have not changed.
-    new_example_variable1 = 111.0;
-    expect(136.0_d == expression->value());
-
-    expect(false == expression->replace_variables({
-                                                      {"example_constant1", 11.0},
-                                                      {"example_constant2", 2.0},
-                                                  },
-                                                  {
-                                                      {"example_variable1", new_example_variable1},
-                                                      {"example_variable2", example_variable2},
-                                                  }));
-    expect(136.0_d == expression->value());
-  };
-
-  "expression_wrapper::assign_variables remove/add constants"_test = [] {
-    auto expression = krbn::exprtk_utility::compile("example_constant1 + example_constant2",
-                                                    {
-                                                        {"example_constant1", 1.0},
-                                                        {"example_constant2", 2.0},
-                                                    },
-                                                    {});
     expect(3.0_d == expression->value());
 
-    // Remove example_constant2.
-    expect(true == expression->replace_variables({
-                                                     {"example_constant1", 1.0},
-                                                 },
-                                                 {}));
-    expect(std::isnan(expression->value()));
+    // No recompilation occurs if the variables already exist.
+    expect(false == expression->set_variable("example_variable1", 10.0));
+    expect(12.0_d == expression->value());
 
-    // Add example_constant2 again.
-    expect(true == expression->replace_variables({
-                                                     {"example_constant1", 10.0},
-                                                     {"example_constant2", 20.0},
-                                                 },
-                                                 {}));
-    expect(30.0_d == expression->value());
+    // A recompilation is triggered for new variable.
+    expect(true == expression->set_variable("example_variable3", 3.0));
+    expect(12.0_d == expression->value());
   };
 
-  "expression_wrapper::assign_variables remove/add variables"_test = [] {
-    double example_variable1 = 11.0;
-    double example_variable2 = 12.0;
-
+  "expression_wrapper::set_variables"_test = [] {
     auto expression = krbn::exprtk_utility::compile("example_variable1 + example_variable2",
-                                                    {},
                                                     {
-                                                        {"example_variable1", example_variable1},
-                                                        {"example_variable2", example_variable2},
+                                                        {"example_variable1", 1.0},
+                                                        {"example_variable2", 2.0},
                                                     });
+    expect(3.0_d == expression->value());
+
+    // No recompilation occurs if the variables already exist.
+    expect(false == expression->set_variables({
+                        {"example_variable1", 11.0},
+                        {"example_variable2", 12.0},
+                    }));
     expect(23.0_d == expression->value());
 
-    // Remove example_variable2.
-    expect(true == expression->replace_variables({},
-                                                 {
-                                                     {"example_variable1", example_variable1},
-                                                 }));
+    // Variables not included in the set_variables arguments keep their current values.
+    expect(false == expression->set_variables({
+                        {"example_variable1", 21.0},
+                        // {"example_variable2", 12.0},
+                    }));
+    expect(33.0_d == expression->value());
+
+    // A recompilation is triggered for new variable.
+    expect(true == expression->set_variables({
+                       {"example_variable1", 21.0},
+                       {"example_variable2", 22.0},
+                       {"example_variable3", 23.0},
+                   }));
+    expect(43.0_d == expression->value());
+  };
+
+  "expression_wrapper::set_variables new_variables"_test = [] {
+    auto expression = krbn::exprtk_utility::compile("x * 2",
+                                                    {});
     expect(std::isnan(expression->value()));
 
-    // Add example_constant2 again.
-    expect(true == expression->replace_variables({},
-                                                 {
-                                                     {"example_variable1", example_variable1},
-                                                     {"example_variable2", example_variable2},
-                                                 }));
-    expect(23.0_d == expression->value());
+    expect(true == expression->set_variables({
+                       {"x", 2.0},
+                   }));
+    expect(4.0_d == expression->value());
+  };
+
+  "expression_wrapper::set_variable with predefined constants"_test = [] {
+    auto expression = krbn::exprtk_utility::compile("pi * 2",
+                                                    {});
+    expect(6.28_d == expression->value());
+
+    // Calling set_variable on a defined constant does not change its value.
+    expect(true == expression->set_variable("pi", 3.0));
+    expect(6.28_d == expression->value());
   };
 
   return 0;
