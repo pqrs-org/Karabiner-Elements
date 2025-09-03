@@ -15,6 +15,27 @@ int main(void) {
     expect(2.47487_d == actual);
   };
 
+  "exprtk_utility::eval undefined variable"_test = [] {
+    auto actual = krbn::exprtk_utility::eval("x + 2",
+                                             {});
+    expect(2.0_d == actual);
+  };
+
+  "exprtk_utility::eval error"_test = [] {
+    auto actual = krbn::exprtk_utility::eval("cos(",
+                                             {
+                                                 {"radian", 0.78539816339},
+                                                 {"delta_magnitude", 3.5},
+                                             });
+    expect(std::isnan(actual));
+  };
+
+  "max_loop_iterations"_test = [] {
+    auto actual = krbn::exprtk_utility::eval("var x := 0; while (x < 1) { x -= 1; }; x;",
+                                             {});
+    expect(std::isnan(actual));
+  };
+
   "exprtk_utility::compile"_test = [] {
     auto expression = krbn::exprtk_utility::compile("cos(radian) * delta_magnitude",
                                                     {
@@ -29,21 +50,6 @@ int main(void) {
                     }));
 
     expect(2.47487_d == expression->value());
-  };
-
-  "exprtk_utility::eval error"_test = [] {
-    auto actual = krbn::exprtk_utility::eval("cos(unknown)",
-                                             {
-                                                 {"radian", 0.78539816339},
-                                                 {"delta_magnitude", 3.5},
-                                             });
-    expect(std::isnan(actual));
-  };
-
-  "max_loop_iterations"_test = [] {
-    auto actual = krbn::exprtk_utility::eval("var x := 0; while (x < 1) { x -= 1; }; x;",
-                                             {});
-    expect(std::isnan(actual));
   };
 
   "expression_wrapper::set_variable"_test = [] {
@@ -97,11 +103,12 @@ int main(void) {
   "expression_wrapper::set_variables new_variables"_test = [] {
     auto expression = krbn::exprtk_utility::compile("x * 2",
                                                     {});
-    expect(std::isnan(expression->value()));
+    expect(0.0_d == expression->value());
 
-    expect(true == expression->set_variables({
-                       {"x", 2.0},
-                   }));
+    // Any undefined variables are defined during the previous compilation pass.
+    expect(false == expression->set_variables({
+                        {"x", 2.0},
+                    }));
     expect(4.0_d == expression->value());
   };
 

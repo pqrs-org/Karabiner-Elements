@@ -96,6 +96,19 @@ private:
 
   void compile(void) {
     if (!parser_.compile(expression_string_, expression_)) {
+      // Since undefined variables cause a compilation error, define the variables first.
+      std::vector<std::string> variable_names;
+      if (exprtk::collect_variables(expression_string_, variable_names)) {
+        for (const auto& name : variable_names) {
+          set_variable_(name, 0);
+        }
+
+        // Try compiling again, and return if it succeeds.
+        if (parser_.compile(expression_string_, expression_)) {
+          return;
+        }
+      }
+
       // If compilation fails, the previous expression_ may remain intact, so explicitly reinitialize it.
       reset_expression();
     }
