@@ -465,6 +465,6 @@ void run_device_test(void) {
 
   "device.validate_stick_formula"_test = [] {
     expect(krbn::core_configuration::details::device::validate_stick_formula("cos(radian) * delta_magnitude"));
-    expect(!krbn::core_configuration::details::device::validate_stick_formula("cos(unknown) * delta_magnitude"));
+    expect(!krbn::core_configuration::details::device::validate_stick_formula("cos("));
   };
 }

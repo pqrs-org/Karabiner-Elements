@@ -259,10 +259,10 @@ public:
         continued_movement_timer_(*this),
         continued_movement_timer_count_(0),
         continued_movement_mode_(continued_movement_mode::none),
-        x_formula_(exprtk_utility::make_empty_expression()),
-        y_formula_(exprtk_utility::make_empty_expression()),
-        vertical_wheel_formula_(exprtk_utility::make_empty_expression()),
-        horizontal_wheel_formula_(exprtk_utility::make_empty_expression()) {
+        x_formula_(exprtk_utility::compile("")),
+        y_formula_(exprtk_utility::compile("")),
+        vertical_wheel_formula_(exprtk_utility::compile("")),
+        horizontal_wheel_formula_(exprtk_utility::compile("")) {
     set_core_configuration(core_configuration);
 
     xy_.values_updated.connect([this](void) {
@@ -342,14 +342,10 @@ public:
     vertical_wheel_formula_string_ = d->get_game_pad_stick_vertical_wheel_formula();
     horizontal_wheel_formula_string_ = d->get_game_pad_stick_horizontal_wheel_formula();
 
-    x_formula_ = exprtk_utility::compile(x_formula_string_,
-                                         {});
-    y_formula_ = exprtk_utility::compile(y_formula_string_,
-                                         {});
-    vertical_wheel_formula_ = exprtk_utility::compile(vertical_wheel_formula_string_,
-                                                      {});
-    horizontal_wheel_formula_ = exprtk_utility::compile(horizontal_wheel_formula_string_,
-                                                        {});
+    x_formula_ = exprtk_utility::compile(x_formula_string_);
+    y_formula_ = exprtk_utility::compile(y_formula_string_);
+    vertical_wheel_formula_ = exprtk_utility::compile(vertical_wheel_formula_string_);
+    horizontal_wheel_formula_ = exprtk_utility::compile(horizontal_wheel_formula_string_);
   }
 
   // This method should be called in the shared dispatcher thread.
