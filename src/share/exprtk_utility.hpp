@@ -33,6 +33,8 @@ struct zeroing_unknown_symbol_resolver : public unknown_symbol_resolver_t {
   bool process(const std::string& name,
                symbol_table_t& primary,
                std::string& error_message) override {
+    // With `create_variable`, exprtk manages the variable's storage internally,
+    // so unlike `add_variable` we don't need to manage the backing storage ourselves.
     if (!primary.create_variable(name, 0)) {
       error_message = "failed to create variable: " + name;
       return false;
