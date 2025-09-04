@@ -12,6 +12,8 @@ void handle_json(const nlohmann::json& json) {
     krbn::manipulator::conditions::device(json.at("input"));
   } else if (c == "event_changed") {
     krbn::manipulator::conditions::event_changed(json.at("input"));
+  } else if (c == "expression") {
+    krbn::manipulator::conditions::expression(json.at("input"));
   } else if (c == "frontmost_application") {
     krbn::manipulator::conditions::frontmost_application(json.at("input"));
   } else if (c == "input_source") {

@@ -1,0 +1,46 @@
+[
+    {
+        "class": "expression",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+
+    // type
+
+    {
+        "class": "expression",
+        "input": {
+            "type": null
+        },
+        "error": "type must be string, but is `null`"
+    },
+    {
+        "class": "expression",
+        "input": {
+            "type": "expression-if"
+        },
+        "error": "unknown type `expression-if`"
+    },
+
+    // value
+
+    {
+        "class": "expression",
+        "input": {
+            "type": "expression_if",
+            "expression": null
+        },
+        "error": "`expression` must be array of string, or string, but is `null`"
+    },
+
+    // unknown key
+
+    {
+        "class": "expression",
+        "input": {
+            "type": "expression_if",
+            "extra": []
+        },
+        "error": "unknown key `extra` in `{\"extra\":[],\"type\":\"expression_if\"}`"
+    }
+]

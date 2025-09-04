@@ -128,6 +128,94 @@ void run_manipulator_conditions_test(void) {
                                                           "tmp/manipulator_environment.json"));
   };
 
+  "conditions.expression"_test = [] {
+    krbn::manipulator::manipulator_environment manipulator_environment;
+    krbn::event_queue::entry entry(krbn::device_id(1),
+                                   krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
+                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                   krbn::event_type::key_down,
+                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
+                                   krbn::event_queue::state::original);
+
+    //
+    // expression_if
+    //
+
+    {
+      krbn::manipulator::conditions::expression condition(R"(
+{
+  "type": "expression_if",
+  "expression": "2 > 1"
+}
+      )"_json);
+
+      expect(condition.is_fulfilled(entry, manipulator_environment));
+    }
+
+    // nan
+    {
+      krbn::manipulator::conditions::expression condition(R"(
+{
+  "type": "expression_if",
+  "expression": "cos("
+}
+      )"_json);
+
+      expect(!condition.is_fulfilled(entry, manipulator_environment));
+    }
+
+    // no expression
+    {
+      krbn::manipulator::conditions::expression condition(R"(
+{
+  "type": "expression_if"
+}
+      )"_json);
+
+      expect(!condition.is_fulfilled(entry, manipulator_environment));
+    }
+
+    //
+    // expression_unless
+    //
+
+    {
+      krbn::manipulator::conditions::expression condition(R"(
+{
+  "type": "expression_unless",
+  "expression": "2 < 1"
+}
+      )"_json);
+
+      expect(condition.is_fulfilled(entry, manipulator_environment));
+    }
+
+    // nan
+    {
+      krbn::manipulator::conditions::expression condition(R"(
+{
+  "type": "expression_unless",
+  "expression": "cos("
+}
+      )"_json);
+
+      expect(!condition.is_fulfilled(entry, manipulator_environment));
+    }
+
+    // no expression
+    {
+      krbn::manipulator::conditions::expression condition(R"(
+{
+  "type": "expression_unless"
+}
+      )"_json);
+
+      expect(!condition.is_fulfilled(entry, manipulator_environment));
+    }
+  };
+
   "conditions.frontmost_application"_test = [] {
     actual_examples_helper helper("frontmost_application.json");
     krbn::manipulator::manipulator_environment manipulator_environment;
