@@ -36,7 +36,9 @@ inline gsl::not_null<std::shared_ptr<conditions::base>> make_condition(const nlo
     return std::make_shared<conditions::event_changed>(json);
   } else if (type == "expression_if" ||
              type == "expression_unless") {
-    return std::make_shared<conditions::expression>(json);
+    auto p = std::make_shared<conditions::expression>(json);
+    conditions::shared_expression_manager::get_shared_expression_manager()->get_expression_manager().insert(p);
+    return p;
   } else if (type == "frontmost_application_if" ||
              type == "frontmost_application_unless") {
     return std::make_shared<conditions::frontmost_application>(json);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#include "expression_manager.hpp"
 #include "exprtk_utility.hpp"
 #include <optional>
 #include <string>
