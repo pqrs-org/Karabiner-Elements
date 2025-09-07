@@ -514,14 +514,12 @@ private:
         absolute_magnitude += m;
       }
 
-      std::vector<std::pair<std::string, double>> variables{
-          {"radian", radian},
-          {"delta_magnitude", delta_magnitude},
-          {"absolute_magnitude", absolute_magnitude},
-          {"continued_movement", continued_movement},
-      };
-      x_formula_->set_variables(variables);
-      y_formula_->set_variables(variables);
+      for (auto&& f : {x_formula_, y_formula_}) {
+        f->set_variable("radian", radian);
+        f->set_variable("delta_magnitude", delta_magnitude);
+        f->set_variable("absolute_magnitude", absolute_magnitude);
+        f->set_variable("continued_movement", continued_movement);
+      }
     }
 
     //
@@ -541,14 +539,12 @@ private:
         absolute_magnitude += m;
       }
 
-      std::vector<std::pair<std::string, double>> variables{
-          {"radian", radian},
-          {"delta_magnitude", delta_magnitude},
-          {"absolute_magnitude", absolute_magnitude},
-          {"continued_movement", continued_movement},
-      };
-      vertical_wheel_formula_->set_variables(variables);
-      horizontal_wheel_formula_->set_variables(variables);
+      for (auto&& f : {vertical_wheel_formula_, horizontal_wheel_formula_}) {
+        f->set_variable("radian", radian);
+        f->set_variable("delta_magnitude", delta_magnitude);
+        f->set_variable("absolute_magnitude", absolute_magnitude);
+        f->set_variable("continued_movement", continued_movement);
+      }
     }
 
     auto [x, y] = xy_hid_values();
