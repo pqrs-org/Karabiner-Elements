@@ -10,14 +10,14 @@ int main(int argc, const char* argv[]) {
     return 1;
   }
 
-  auto expression = argv[1];
+  std::string expression_string(argv[1]);
+  auto expression = krbn::exprtk_utility::compile(expression_string);
+  expression->set_variable("example_variable", 42.0);
+  expression->set_variable("example_string", "exmaple");
 
-  std::cout << expression
+  std::cout << expression_string
             << " = "
-            << krbn::exprtk_utility::eval(expression,
-                                          {
-                                              {"example_variable", 42.0},
-                                          })
+            << expression->value()
             << std::endl;
 
   return 0;
