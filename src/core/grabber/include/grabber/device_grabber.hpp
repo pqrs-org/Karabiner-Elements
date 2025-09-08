@@ -58,16 +58,11 @@ public:
     fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
     post_event_to_virtual_devices_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
 
-    merged_input_event_queue_ = std::make_shared<event_queue::queue>(
-        "merged_input_event_queue");
-    simple_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>(
-        "simple_modifications_applied_event_queue");
-    complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>(
-        "complex_modifications_applied_event_queue");
-    fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>(
-        "fn_function_keys_applied_event_queue");
-    posted_event_queue_ = std::make_shared<event_queue::queue>(
-        "posted_event_queue");
+    merged_input_event_queue_ = std::make_shared<event_queue::queue>();
+    simple_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    posted_event_queue_ = std::make_shared<event_queue::queue>();
 
     //
     // virtual_hid_device_service_client_
