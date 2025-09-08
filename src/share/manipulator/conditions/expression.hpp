@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base.hpp"
-#include "expression_manager.hpp"
 #include "exprtk_utility.hpp"
 #include <optional>
 #include <string>
@@ -84,6 +83,10 @@ public:
     }
 
     return false;
+  }
+
+  std::shared_ptr<exprtk_utility::expression_wrapper> get_expression(void) const {
+    return expression_;
   }
 
 private:

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "condition_expression_manager.hpp"
 #include "conditions/device.hpp"
 #include "conditions/event_changed.hpp"
 #include "conditions/expression.hpp"
@@ -36,9 +37,9 @@ inline gsl::not_null<std::shared_ptr<conditions::base>> make_condition(const nlo
     return std::make_shared<conditions::event_changed>(json);
   } else if (type == "expression_if" ||
              type == "expression_unless") {
-    auto p = std::make_shared<conditions::expression>(json);
-    conditions::shared_expression_manager::get_shared_expression_manager()->get_expression_manager().insert(p);
-    return p;
+    auto c = std::make_shared<conditions::expression>(json);
+    get_shared_condition_expression_manager()->insert(c->get_expression());
+    return c;
   } else if (type == "frontmost_application_if" ||
              type == "frontmost_application_unless") {
     return std::make_shared<conditions::frontmost_application>(json);
