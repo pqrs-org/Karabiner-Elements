@@ -43,7 +43,7 @@ struct ComplexModificationsAssetsView: View {
                   Text(assetFile.title)
                   .font(.title)
               ) {
-                VStack(alignment: .leading, spacing: 8.0) {
+                VStack(alignment: .leading, spacing: 4.0) {
                   ForEach($assetFile.assetRules) { $assetRule in
                     HStack(alignment: .center, spacing: 16.0) {
                       Text(assetRule.description)
@@ -54,7 +54,7 @@ struct ComplexModificationsAssetsView: View {
                               .inset(by: -4)
                               .stroke(
                                 Color(NSColor(Color.accentColor)),
-                                lineWidth: 1
+                                lineWidth: 2
                               )
                           )
                         }
@@ -121,6 +121,7 @@ struct ComplexModificationsAssetsView: View {
                 .padding()
               }
               .padding(.bottom, 32.0)
+              .listRowSeparator(.hidden)
             }
           }
         }

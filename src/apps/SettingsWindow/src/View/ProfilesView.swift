@@ -65,12 +65,14 @@ struct ProfilesView: View {
                     .if(hoverProfile == profile) {
                       $0.overlay(
                         RoundedRectangle(cornerRadius: 2)
+                          .inset(by: -4)
                           .stroke(
                             Color(NSColor(Color.accentColor)),
-                            lineWidth: 1
+                            lineWidth: 2
                           )
                       )
                     }
+                    .padding(.trailing, 12)
                 }
               }
             )

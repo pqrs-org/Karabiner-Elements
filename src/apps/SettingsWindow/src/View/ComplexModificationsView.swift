@@ -106,9 +106,10 @@ struct ComplexModificationsView: View {
             .if(hoverRuleIndex == ruleIndex) {
               $0.overlay(
                 RoundedRectangle(cornerRadius: 2)
+                  .inset(by: -4)
                   .stroke(
                     Color(NSColor(Color.accentColor)),
-                    lineWidth: 1
+                    lineWidth: 2
                   )
               )
             }
