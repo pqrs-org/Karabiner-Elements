@@ -4,6 +4,7 @@ struct ComplexModificationsAssetsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var assetFiles = ComplexModificationsAssetFiles.shared
   @State private var search = ""
+  @State private var hoverRuleId: UUID?
 
   let formatter = DateFormatter()
 
@@ -46,6 +47,17 @@ struct ComplexModificationsAssetsView: View {
                   ForEach($assetFile.assetRules) { $assetRule in
                     HStack(alignment: .center, spacing: 16.0) {
                       Text(assetRule.description)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .if(hoverRuleId == assetRule.id) {
+                          $0.overlay(
+                            RoundedRectangle(cornerRadius: 2)
+                              .inset(by: -4)
+                              .stroke(
+                                Color(NSColor(Color.accentColor)),
+                                lineWidth: 1
+                              )
+                          )
+                        }
 
                       Button(
                         action: {
@@ -56,12 +68,20 @@ struct ComplexModificationsAssetsView: View {
                           // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
                           Image(systemName: "plus.circle.fill").foregroundColor(.blue)
                           Text("Enable")
-                        })
+                        }
+                      )
+                      .onHover { hovering in
+                        if hovering {
+                          hoverRuleId = assetRule.id
+                        } else {
+                          if hoverRuleId == assetRule.id {
+                            hoverRuleId = nil
+                          }
+                        }
+                      }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
 
                     Divider()
-                      .padding(.vertical, 4.0)
                   }
 
                   HStack {
