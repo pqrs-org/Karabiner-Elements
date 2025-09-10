@@ -6,10 +6,12 @@
 #include "event_time_stamp.hpp"
 #include "state.hpp"
 #include "types.hpp"
+#include <gsl/gsl>
 #include <pqrs/json.hpp>
 
 namespace krbn {
 namespace event_queue {
+
 class entry final {
 public:
   // Constructors
@@ -221,5 +223,9 @@ private:
 inline void to_json(nlohmann::json& json, const entry& value) {
   json = value.to_json();
 }
+
+typedef gsl::not_null<std::shared_ptr<const entry>> not_null_const_entry_ptr_t;
+typedef gsl::not_null<std::shared_ptr<std::vector<not_null_const_entry_ptr_t>>> not_null_entries_ptr_t;
+
 } // namespace event_queue
 } // namespace krbn
