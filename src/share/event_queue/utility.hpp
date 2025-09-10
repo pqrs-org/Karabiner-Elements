@@ -4,10 +4,12 @@
 #include "hat_switch_convert.hpp"
 #include "pressed_keys_manager.hpp"
 #include "queue.hpp"
+#include <gsl/gsl>
 
 namespace krbn {
 namespace event_queue {
 namespace utility {
+
 struct make_queue_parameters final {
   double pointing_motion_xy_multiplier = 1.0;
   double pointing_motion_wheels_multiplier = 1.0;
@@ -31,10 +33,10 @@ static inline int adjust_pointing_motion_value(const pqrs::osx::iokit_hid_value&
   return std::min(127, std::max(-127, v));
 }
 
-static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
-                                                const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
-                                                const make_queue_parameters& parameters) {
-  auto result = std::make_shared<queue>();
+static inline not_null_entries_ptr_t make_entries(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
+                                                  const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
+                                                  const make_queue_parameters& parameters) {
+  auto result = std::make_shared<std::vector<not_null_const_entry_ptr_t>>();
 
   // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.
   // We have to join them into one pointing_motion event to avoid VMware Remote Console problem that VMRC ignores frequently events.
@@ -54,13 +56,13 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
           pointing_motion_horizontal_wheel ? *pointing_motion_horizontal_wheel : 0);
 
       event_queue::event event(pointing_motion);
-
-      result->emplace_back_entry(device_properties->get_device_id(),
-                                 event_time_stamp(*pointing_motion_time_stamp),
-                                 event,
-                                 event_type::single,
-                                 event,
-                                 state::original);
+      auto e = std::make_shared<entry>(device_properties->get_device_id(),
+                                       event_time_stamp(*pointing_motion_time_stamp),
+                                       event,
+                                       event_type::single,
+                                       event,
+                                       state::original);
+      result->push_back(e);
 
       pointing_motion_time_stamp = std::nullopt;
       pointing_motion_x = std::nullopt;
@@ -85,12 +87,13 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
       if (auto usage = v.get_usage()) {
         if (momentary_switch_event::target(*usage_page, *usage)) {
           event_queue::event event(momentary_switch_event(*usage_page, *usage));
-          result->emplace_back_entry(device_properties->get_device_id(),
-                                     event_time_stamp(v.get_time_stamp()),
-                                     event,
-                                     v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                     event,
-                                     state::original);
+          auto e = std::make_shared<entry>(device_properties->get_device_id(),
+                                           event_time_stamp(v.get_time_stamp()),
+                                           event,
+                                           v.get_integer_value() ? event_type::key_down : event_type::key_up,
+                                           event,
+                                           state::original);
+          result->push_back(e);
 
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
                                  pqrs::hid::usage::generic_desktop::x) &&
@@ -133,12 +136,13 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {
           auto event = event_queue::event::make_caps_lock_state_changed_event(v.get_integer_value());
-          result->emplace_back_entry(device_properties->get_device_id(),
-                                     event_time_stamp(v.get_time_stamp()),
-                                     event,
-                                     event_type::single,
-                                     event,
-                                     state::virtual_event);
+          auto e = std::make_shared<entry>(device_properties->get_device_id(),
+                                           event_time_stamp(v.get_time_stamp()),
+                                           event,
+                                           event_type::single,
+                                           event,
+                                           state::virtual_event);
+          result->push_back(e);
 
         } else if (is_game_pad) {
           if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
@@ -148,12 +152,13 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
                                                                                                  v.get_integer_value());
             for (const auto& pair : pairs) {
               event_queue::event event(pair.first);
-              result->emplace_back_entry(device_properties->get_device_id(),
-                                         event_time_stamp(v.get_time_stamp()),
-                                         event,
-                                         pair.second,
-                                         event,
-                                         state::original);
+              auto e = std::make_shared<entry>(device_properties->get_device_id(),
+                                               event_time_stamp(v.get_time_stamp()),
+                                               event,
+                                               pair.second,
+                                               event,
+                                               state::original);
+              result->push_back(e);
             }
           }
         }
@@ -166,35 +171,34 @@ static inline std::shared_ptr<queue> make_queue(gsl::not_null<std::shared_ptr<de
   return result;
 }
 
-static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are_released_event(std::shared_ptr<queue> queue,
+static inline not_null_entries_ptr_t insert_device_keys_and_pointing_buttons_are_released_event(not_null_entries_ptr_t entries,
                                                                                                 device_id device_id,
-                                                                                                std::shared_ptr<pressed_keys_manager> pressed_keys_manager) {
-  auto result = std::make_shared<event_queue::queue>();
+                                                                                                gsl::not_null<std::shared_ptr<pressed_keys_manager>> pressed_keys_manager) {
+  auto result = std::make_shared<std::vector<not_null_const_entry_ptr_t>>();
 
-  if (queue && pressed_keys_manager) {
-    for (const auto& entry : queue->get_entries()) {
-      result->push_back_entry(entry);
+  for (const auto& entry : *entries) {
+    result->push_back(entry);
 
-      if (entry.get_device_id() == device_id) {
-        if (entry.get_event_type() == event_type::key_down) {
-          if (auto e = entry.get_event().get_if<momentary_switch_event>()) {
-            pressed_keys_manager->insert(*e);
+    if (entry->get_device_id() == device_id) {
+      if (entry->get_event_type() == event_type::key_down) {
+        if (auto e = entry->get_event().get_if<momentary_switch_event>()) {
+          pressed_keys_manager->insert(*e);
+        }
+      } else if (entry->get_event_type() == event_type::key_up) {
+        if (!pressed_keys_manager->empty()) {
+          if (auto e = entry->get_event().get_if<momentary_switch_event>()) {
+            pressed_keys_manager->erase(*e);
           }
-        } else if (entry.get_event_type() == event_type::key_up) {
-          if (!pressed_keys_manager->empty()) {
-            if (auto e = entry.get_event().get_if<momentary_switch_event>()) {
-              pressed_keys_manager->erase(*e);
-            }
 
-            if (pressed_keys_manager->empty()) {
-              auto event = event::make_device_keys_and_pointing_buttons_are_released_event();
-              result->emplace_back_entry(device_id,
-                                         entry.get_event_time_stamp(),
-                                         event,
-                                         event_type::single,
-                                         event,
-                                         state::virtual_event);
-            }
+          if (pressed_keys_manager->empty()) {
+            auto event = event::make_device_keys_and_pointing_buttons_are_released_event();
+            auto e = std::make_shared<event_queue::entry>(device_id,
+                                                          entry->get_event_time_stamp(),
+                                                          event,
+                                                          event_type::single,
+                                                          event,
+                                                          state::virtual_event);
+            result->push_back(e);
           }
         }
       }
@@ -203,6 +207,7 @@ static inline std::shared_ptr<queue> insert_device_keys_and_pointing_buttons_are
 
   return result;
 }
+
 } // namespace utility
 } // namespace event_queue
 } // namespace krbn
