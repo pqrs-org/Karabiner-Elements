@@ -6,6 +6,17 @@ int main(void) {
   using namespace boost::ut::literals;
   using namespace std::literals;
 
+  "is_valid_variable_name"_test = [] {
+    expect(true == krbn::exprtk_utility::is_valid_variable_name("example_variable"));
+    expect(true == krbn::exprtk_utility::is_valid_variable_name("system.now.milliseconds"));
+    expect(false == krbn::exprtk_utility::is_valid_variable_name("hello world"));
+  };
+
+  "is_string_variable_name"_test = [] {
+    expect(false == krbn::exprtk_utility::is_string_variable_name("example_variable"));
+    expect(true == krbn::exprtk_utility::is_string_variable_name("example_string"));
+  };
+
   "normal"_test = [] {
     auto expression = krbn::exprtk_utility::compile("cos(radian) * delta_magnitude");
     expect(true == expression->set_variable("radian", 0.78539816339));

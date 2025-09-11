@@ -23,6 +23,11 @@ typedef exprtk::parser<double> parser_t;
 typedef exprtk::loop_runtime_check loop_runtime_check_t;
 typedef parser_t::unknown_symbol_resolver unknown_symbol_resolver_t;
 
+inline bool is_valid_variable_name(const std::string& name) {
+  symbol_table_t t;
+  return t.create_variable(name, 0.0);
+}
+
 inline bool is_string_variable_name(const std::string& name) {
   return name.ends_with("_string");
 }
