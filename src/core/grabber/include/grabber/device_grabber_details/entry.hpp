@@ -64,7 +64,7 @@ public:
           game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
                                                                                  core_configuration_);
           game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& event_queue_entry) {
-            auto event_queue_entries = std::make_shared<std::vector<gsl::not_null<std::shared_ptr<const event_queue::entry>>>>();
+            auto event_queue_entries = std::make_shared<std::vector<event_queue::not_null_const_entry_ptr_t>>();
             event_queue_entries->push_back(event_queue_entry);
 
             hid_queue_values_arrived(*this,
