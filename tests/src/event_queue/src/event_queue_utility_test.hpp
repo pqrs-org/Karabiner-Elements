@@ -116,7 +116,7 @@ void run_event_queue_utility_test(void) {
                                                                              nullptr);
     auto entries = krbn::event_queue::utility::make_entries(device_properties,
                                                             hid_values,
-                                                            krbn::event_queue::utility::make_queue_parameters());
+                                                            {});
     assert(entries->size() == 8);
 
     {
@@ -250,7 +250,7 @@ void run_event_queue_utility_test(void) {
                                                                              nullptr);
     auto entries = krbn::event_queue::utility::make_entries(device_properties,
                                                             hid_values,
-                                                            krbn::event_queue::utility::make_queue_parameters{
+                                                            {
                                                                 .pointing_motion_xy_multiplier = 2.0,
                                                                 .pointing_motion_wheels_multiplier = 0.5,
                                                             });
@@ -310,7 +310,7 @@ void run_event_queue_utility_test(void) {
                                                                              nullptr);
     auto entries = krbn::event_queue::utility::make_entries(device_properties,
                                                             hid_values,
-                                                            krbn::event_queue::utility::make_queue_parameters());
+                                                            {});
     assert(0_ul == entries->size());
   };
 
@@ -355,7 +355,7 @@ void run_event_queue_utility_test(void) {
 
     auto entries = krbn::event_queue::utility::make_entries(device_properties,
                                                             hid_values,
-                                                            krbn::event_queue::utility::make_queue_parameters());
+                                                            {});
     assert(4_ul == entries->size());
 
     {

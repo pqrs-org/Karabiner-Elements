@@ -10,11 +10,6 @@ namespace krbn {
 namespace event_queue {
 namespace utility {
 
-struct make_queue_parameters final {
-  double pointing_motion_xy_multiplier = 1.0;
-  double pointing_motion_wheels_multiplier = 1.0;
-};
-
 static inline int adjust_pointing_motion_value(const pqrs::osx::iokit_hid_value& value,
                                                double multiplier) {
   auto integer_value = value.get_integer_value();
@@ -33,9 +28,14 @@ static inline int adjust_pointing_motion_value(const pqrs::osx::iokit_hid_value&
   return std::min(127, std::max(-127, v));
 }
 
+struct make_entries_parameters final {
+  double pointing_motion_xy_multiplier = 1.0;
+  double pointing_motion_wheels_multiplier = 1.0;
+};
+
 static inline not_null_entries_ptr_t make_entries(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
                                                   const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
-                                                  const make_queue_parameters& parameters) {
+                                                  const make_entries_parameters& parameters) {
   auto result = std::make_shared<std::vector<not_null_const_entry_ptr_t>>();
 
   // The pointing motion usage (hid_usage::gd_x, hid_usage::gd_y, etc.) are splitted from one HID report.

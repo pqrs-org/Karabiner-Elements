@@ -146,7 +146,7 @@ public:
 
       auto event_queue_entries = event_queue::utility::make_entries(device_properties_,
                                                                     hid_values,
-                                                                    event_queue::utility::make_queue_parameters{
+                                                                    {
                                                                         .pointing_motion_xy_multiplier = d->get_pointing_motion_xy_multiplier(),
                                                                         .pointing_motion_wheels_multiplier = d->get_pointing_motion_wheels_multiplier(),
                                                                     });
