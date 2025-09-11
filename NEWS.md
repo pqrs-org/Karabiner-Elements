@@ -5,6 +5,8 @@
 -   🐛 Bug Fixes
     -   Fixed an issue in EventViewer where new events were not added while the "Unknown Events" tab was open.
 -   ✨ New Features
+    -   Reduced the load on karabiner_grabber.
+        In particular, CPU usage is lower when handling high-frequency events (e.g., mouse input).
     -   Added a feature that lets you set environment variables via `/Library/Application Support/org.pqrs/config/karabiner_environment`.
     -   Added support for devices that expose the Programmable Buttons usage on the Consumer Usage Page. (e.g., VEC USB Footpedal)
 -   ⚡️ Improvements
