@@ -58,16 +58,11 @@ public:
     fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
     post_event_to_virtual_devices_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
 
-    merged_input_event_queue_ = std::make_shared<event_queue::queue>(
-        "merged_input_event_queue");
-    simple_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>(
-        "simple_modifications_applied_event_queue");
-    complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>(
-        "complex_modifications_applied_event_queue");
-    fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>(
-        "fn_function_keys_applied_event_queue");
-    posted_event_queue_ = std::make_shared<event_queue::queue>(
-        "posted_event_queue");
+    merged_input_event_queue_ = std::make_shared<event_queue::queue>();
+    simple_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>();
+    posted_event_queue_ = std::make_shared<event_queue::queue>();
 
     //
     // virtual_hid_device_service_client_
@@ -237,8 +232,10 @@ public:
                                                                      core_configuration_);
         entries_[device_id] = entry;
 
-        entry->hid_queue_values_arrived.connect([this](auto&& entry, auto&& event_queue) {
-          values_arrived(entry, event_queue);
+        entry->hid_queue_values_arrived.connect([this](auto&& entry,
+                                                       auto&& event_queue_entries) {
+          values_arrived(entry,
+                         event_queue_entries);
         });
 
         entry->get_hid_queue_value_monitor()->started.connect([this, device_id] {
@@ -656,12 +653,12 @@ private:
 
   // This method is executed in the shared dispatcher thread.
   void values_arrived(device_grabber_details::entry& entry,
-                      std::shared_ptr<event_queue::queue> event_queue) {
+                      event_queue::not_null_entries_ptr_t event_queue_entries) {
     if (entry.get_device_properties()->get_device_identifiers().get_is_virtual_device()) {
       // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
-      for (const auto& e : event_queue->get_entries()) {
-        if (e.get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
-          if (auto state = e.get_event().get_integer_value()) {
+      for (const auto& e : *event_queue_entries) {
+        if (e->get_event().get_type() == event_queue::event::type::caps_lock_state_changed) {
+          if (auto state = e->get_event().get_integer_value()) {
             last_caps_lock_state_ = *state;
             post_caps_lock_state_changed_event(*state);
             update_caps_lock_led();
@@ -674,22 +671,22 @@ private:
       bool needs_regrab = false;
       bool notify = false;
 
-      for (const auto& e : event_queue->get_entries()) {
-        if (auto ev = e.get_event().get_if<momentary_switch_event>()) {
+      for (const auto& e : *event_queue_entries) {
+        if (auto ev = e->get_event().get_if<momentary_switch_event>()) {
           needs_regrab |= entry.get_probable_stuck_events_manager()->update(
               *ev,
-              e.get_event_type(),
+              e->get_event_type(),
               entry.seized() ? device_state::seized
                              : device_state::observed);
         }
 
         if (!entry.get_disabled() && entry.seized()) {
-          event_queue::entry qe(e.get_device_id(),
-                                e.get_event_time_stamp(),
-                                e.get_event(),
-                                e.get_event_type(),
-                                e.get_original_event(),
-                                e.get_state());
+          event_queue::entry qe(e->get_device_id(),
+                                e->get_event_time_stamp(),
+                                e->get_event(),
+                                e->get_event_type(),
+                                e->get_original_event(),
+                                e->get_state());
 
           merged_input_event_queue_->push_back_entry(qe);
 

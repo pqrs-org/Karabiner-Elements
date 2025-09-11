@@ -24,7 +24,7 @@ public:
   //
 
   nod::signal<void(entry&,
-                   std::shared_ptr<event_queue::queue> event_queue)>
+                   event_queue::not_null_entries_ptr_t event_queue_entries)>
       hid_queue_values_arrived;
 
   //
@@ -64,11 +64,11 @@ public:
           game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
                                                                                  core_configuration_);
           game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& event_queue_entry) {
-            auto event_queue = std::make_shared<event_queue::queue>();
-            event_queue->push_back_entry(event_queue_entry);
+            auto event_queue_entries = std::make_shared<std::vector<event_queue::not_null_const_entry_ptr_t>>();
+            event_queue_entries->push_back(event_queue_entry);
 
             hid_queue_values_arrived(*this,
-                                     event_queue);
+                                     event_queue_entries);
           });
         }
       }
@@ -144,18 +144,18 @@ public:
       // Make event queue
       //
 
-      auto event_queue = event_queue::utility::make_queue(device_properties_,
-                                                          hid_values,
-                                                          event_queue::utility::make_queue_parameters{
-                                                              .pointing_motion_xy_multiplier = d->get_pointing_motion_xy_multiplier(),
-                                                              .pointing_motion_wheels_multiplier = d->get_pointing_motion_wheels_multiplier(),
-                                                          });
+      auto event_queue_entries = event_queue::utility::make_entries(device_properties_,
+                                                                    hid_values,
+                                                                    {
+                                                                        .pointing_motion_xy_multiplier = d->get_pointing_motion_xy_multiplier(),
+                                                                        .pointing_motion_wheels_multiplier = d->get_pointing_motion_wheels_multiplier(),
+                                                                    });
 
-      event_queue = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
-                                                                                                     device_id_,
-                                                                                                     pressed_keys_manager_);
+      event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue_entries,
+                                                                                       device_id_,
+                                                                                       pressed_keys_manager_);
       hid_queue_values_arrived(*this,
-                               event_queue);
+                               event_queue_entries);
 
       //
       // game pad stick to pointing motion

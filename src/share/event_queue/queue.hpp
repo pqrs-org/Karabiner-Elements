@@ -16,14 +16,6 @@ public:
   queue(void) : time_stamp_delay_(0) {
   }
 
-  queue(const std::string_view& name)
-      : name_(name) {
-  }
-
-  const std::string& get_name(void) const {
-    return name_;
-  }
-
   void emplace_back_entry(device_id device_id,
                           const event_time_stamp& event_time_stamp,
                           const class event& event,
@@ -356,7 +348,6 @@ public:
   }
 
 private:
-  std::string name_;
   std::vector<entry> events_;
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;

@@ -17,3 +17,11 @@
                                             krbn::event_type::EVENT_TYPE,                                               \
                                             ORIGINAL_EVENT,                                                             \
                                             krbn::event_queue::state::original))
+
+#define PUSH_BACK_ENTRY_PTR(VECTOR, DEVICE_ID, TIME_STAMP, EVENT, EVENT_TYPE, ORIGINAL_EVENT)                                             \
+  VECTOR.push_back(std::make_shared<krbn::event_queue::entry>(krbn::device_id(DEVICE_ID),                                                 \
+                                                              krbn::event_queue::event_time_stamp(krbn::absolute_time_point(TIME_STAMP)), \
+                                                              EVENT,                                                                      \
+                                                              krbn::event_type::EVENT_TYPE,                                               \
+                                                              ORIGINAL_EVENT,                                                             \
+                                                              krbn::event_queue::state::original))
