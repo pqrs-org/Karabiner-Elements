@@ -114,13 +114,13 @@ void run_event_queue_utility_test(void) {
 
     auto device_properties = krbn::device_properties::make_device_properties(krbn::device_id(1),
                                                                              nullptr);
-    auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values,
-                                                        krbn::event_queue::utility::make_queue_parameters());
-    assert(queue->get_entries().size() == 8);
+    auto entries = krbn::event_queue::utility::make_entries(device_properties,
+                                                            hid_values,
+                                                            krbn::event_queue::utility::make_queue_parameters());
+    assert(entries->size() == 8);
 
     {
-      auto& e = queue->get_entries()[0];
+      auto& e = *((*entries)[0]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
       expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
@@ -129,7 +129,7 @@ void run_event_queue_utility_test(void) {
       expect(e.get_event_type() == krbn::event_type::key_down);
     }
     {
-      auto& e = queue->get_entries()[1];
+      auto& e = *((*entries)[1]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(2000));
       expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
@@ -138,7 +138,7 @@ void run_event_queue_utility_test(void) {
       expect(e.get_event_type() == krbn::event_type::key_up);
     }
     {
-      auto& e = queue->get_entries()[2];
+      auto& e = *((*entries)[2]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(3000));
       expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
@@ -147,7 +147,7 @@ void run_event_queue_utility_test(void) {
       expect(e.get_event_type() == krbn::event_type::key_down);
     }
     {
-      auto& e = queue->get_entries()[3];
+      auto& e = *((*entries)[3]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(4000));
       expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
@@ -156,28 +156,28 @@ void run_event_queue_utility_test(void) {
       expect(e.get_event_type() == krbn::event_type::key_up);
     }
     {
-      auto& e = queue->get_entries()[4];
+      auto& e = *((*entries)[4]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(5000));
       expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(10, 20, 30, 40));
       expect(e.get_event_type() == krbn::event_type::single);
     }
     {
-      auto& e = queue->get_entries()[5];
+      auto& e = *((*entries)[5]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(6000));
       expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(-10, -20, -30, -40));
       expect(e.get_event_type() == krbn::event_type::single);
     }
     {
-      auto& e = queue->get_entries()[6];
+      auto& e = *((*entries)[6]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(7000));
       expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(10, 0, 0, 0));
       expect(e.get_event_type() == krbn::event_type::single);
     }
     {
-      auto& e = queue->get_entries()[7];
+      auto& e = *((*entries)[7]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(8000));
       expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(0, 0, 0, 0));
@@ -248,23 +248,23 @@ void run_event_queue_utility_test(void) {
 
     auto device_properties = krbn::device_properties::make_device_properties(krbn::device_id(1),
                                                                              nullptr);
-    auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values,
-                                                        krbn::event_queue::utility::make_queue_parameters{
-                                                            .pointing_motion_xy_multiplier = 2.0,
-                                                            .pointing_motion_wheels_multiplier = 0.5,
-                                                        });
-    assert(queue->get_entries().size() == 2);
+    auto entries = krbn::event_queue::utility::make_entries(device_properties,
+                                                            hid_values,
+                                                            krbn::event_queue::utility::make_queue_parameters{
+                                                                .pointing_motion_xy_multiplier = 2.0,
+                                                                .pointing_motion_wheels_multiplier = 0.5,
+                                                            });
+    assert(entries->size() == 2);
 
     {
-      auto& e = queue->get_entries()[0];
+      auto& e = *((*entries)[0]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
       expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(20, 40, 15, 20));
       expect(e.get_event_type() == krbn::event_type::single);
     }
     {
-      auto& e = queue->get_entries()[1];
+      auto& e = *((*entries)[1]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(2000));
       expect(e.get_event().get_pointing_motion() == krbn::pointing_motion(-20, -40, -15, -20));
@@ -308,10 +308,10 @@ void run_event_queue_utility_test(void) {
 
     auto device_properties = krbn::device_properties::make_device_properties(krbn::device_id(1),
                                                                              nullptr);
-    auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values,
-                                                        krbn::event_queue::utility::make_queue_parameters());
-    assert(0_ul == queue->get_entries().size());
+    auto entries = krbn::event_queue::utility::make_entries(device_properties,
+                                                            hid_values,
+                                                            krbn::event_queue::utility::make_queue_parameters());
+    assert(0_ul == entries->size());
   };
 
   "utility::make_queue game_pad"_test = [] {
@@ -353,13 +353,13 @@ void run_event_queue_utility_test(void) {
         .is_game_pad = true,
     });
 
-    auto queue = krbn::event_queue::utility::make_queue(device_properties,
-                                                        hid_values,
-                                                        krbn::event_queue::utility::make_queue_parameters());
-    assert(4_ul == queue->get_entries().size());
+    auto entries = krbn::event_queue::utility::make_entries(device_properties,
+                                                            hid_values,
+                                                            krbn::event_queue::utility::make_queue_parameters());
+    assert(4_ul == entries->size());
 
     {
-      auto& e = queue->get_entries()[0];
+      auto& e = *((*entries)[0]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
       expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
@@ -368,7 +368,7 @@ void run_event_queue_utility_test(void) {
       expect(e.get_event_type() == krbn::event_type::key_down);
     }
     {
-      auto& e = queue->get_entries()[1];
+      auto& e = *((*entries)[1]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1000));
       expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
@@ -377,7 +377,7 @@ void run_event_queue_utility_test(void) {
       expect(e.get_event_type() == krbn::event_type::key_down);
     }
     {
-      auto& e = queue->get_entries()[2];
+      auto& e = *((*entries)[2]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1001));
       expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
@@ -386,7 +386,7 @@ void run_event_queue_utility_test(void) {
       expect(e.get_event_type() == krbn::event_type::key_up);
     }
     {
-      auto& e = queue->get_entries()[3];
+      auto& e = *((*entries)[3]);
       expect(e.get_device_id() == krbn::device_id(1));
       expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(1001));
       expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
@@ -413,26 +413,26 @@ void run_event_queue_utility_test(void) {
     {
       // Normal
 
-      auto event_queue = std::make_shared<krbn::event_queue::queue>();
+      auto entries = std::make_shared<std::vector<krbn::event_queue::not_null_const_entry_ptr_t>>();
       auto pressed_keys_manager = std::make_shared<krbn::pressed_keys_manager>();
 
-      ENQUEUE_EVENT((*event_queue), 1, 100, a_event, key_down, a_event);
-      ENQUEUE_EVENT((*event_queue), 1, 200, a_event, key_up, a_event);
-      ENQUEUE_EVENT((*event_queue), 1, 300, b_event, key_down, b_event);
-      ENQUEUE_EVENT((*event_queue), 1, 400, b_event, key_up, b_event);
-      ENQUEUE_EVENT((*event_queue), 1, 500, mute_event, key_down, mute_event);
-      ENQUEUE_EVENT((*event_queue), 1, 600, mute_event, key_up, mute_event);
-      ENQUEUE_EVENT((*event_queue), 1, 700, button2_event, key_down, button2_event);
-      ENQUEUE_EVENT((*event_queue), 1, 800, button2_event, key_up, button2_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 100, a_event, key_down, a_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 200, a_event, key_up, a_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 300, b_event, key_down, b_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 400, b_event, key_up, b_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 500, mute_event, key_down, mute_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 600, mute_event, key_up, mute_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 700, button2_event, key_down, button2_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 800, button2_event, key_up, button2_event);
 
-      event_queue = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
-                                                                                                           krbn::device_id(1),
-                                                                                                           pressed_keys_manager);
+      entries = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(entries,
+                                                                                                       krbn::device_id(1),
+                                                                                                       pressed_keys_manager);
 
-      assert(event_queue->get_entries().size() == 12); // (2 + 1) * 4
+      assert(entries->size() == 12); // (2 + 1) * 4
 
       {
-        auto& e = event_queue->get_entries()[0];
+        auto& e = *((*entries)[0]);
         expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
                pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                      pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
@@ -440,7 +440,7 @@ void run_event_queue_utility_test(void) {
         expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(100));
       }
       {
-        auto& e = event_queue->get_entries()[1];
+        auto& e = *((*entries)[1]);
         expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
                pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                      pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
@@ -448,12 +448,12 @@ void run_event_queue_utility_test(void) {
         expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(200));
       }
       {
-        auto& e = event_queue->get_entries()[2];
+        auto& e = *((*entries)[2]);
         expect(e.get_event().get_type() == krbn::event_queue::event::type::device_keys_and_pointing_buttons_are_released);
         expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(200));
       }
       {
-        auto& e = event_queue->get_entries()[3];
+        auto& e = *((*entries)[3]);
         expect(e.get_event().get_if<krbn::momentary_switch_event>()->get_usage_pair() ==
                pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
                                      pqrs::hid::usage::keyboard_or_keypad::keyboard_b));
@@ -467,63 +467,63 @@ void run_event_queue_utility_test(void) {
     {
       // Different device_id
 
-      auto event_queue = std::make_shared<krbn::event_queue::queue>();
+      auto entries = std::make_shared<std::vector<krbn::event_queue::not_null_const_entry_ptr_t>>();
       auto pressed_keys_manager = std::make_shared<krbn::pressed_keys_manager>();
 
-      ENQUEUE_EVENT((*event_queue), 1, 100, a_event, key_down, a_event);
-      ENQUEUE_EVENT((*event_queue), 2, 200, a_event, key_up, a_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 100, a_event, key_down, a_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 2, 200, a_event, key_up, a_event);
 
-      event_queue = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
-                                                                                                           krbn::device_id(1),
-                                                                                                           pressed_keys_manager);
+      entries = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(entries,
+                                                                                                       krbn::device_id(1),
+                                                                                                       pressed_keys_manager);
 
-      assert(event_queue->get_entries().size() == 2);
+      assert(entries->size() == 2);
       expect(!pressed_keys_manager->empty());
     }
 
     {
       // Multiple key_down
 
-      auto event_queue = std::make_shared<krbn::event_queue::queue>();
+      auto entries = std::make_shared<std::vector<krbn::event_queue::not_null_const_entry_ptr_t>>();
       auto pressed_keys_manager = std::make_shared<krbn::pressed_keys_manager>();
 
-      ENQUEUE_EVENT((*event_queue), 1, 100, a_event, key_down, a_event);
-      ENQUEUE_EVENT((*event_queue), 1, 200, b_event, key_down, b_event);
-      ENQUEUE_EVENT((*event_queue), 1, 300, b_event, key_up, b_event);
-      ENQUEUE_EVENT((*event_queue), 1, 400, a_event, key_up, a_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 100, a_event, key_down, a_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 200, b_event, key_down, b_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 300, b_event, key_up, b_event);
+      PUSH_BACK_ENTRY_PTR((*entries), 1, 400, a_event, key_up, a_event);
 
-      event_queue = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue,
-                                                                                                           krbn::device_id(1),
-                                                                                                           pressed_keys_manager);
+      entries = krbn::event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(entries,
+                                                                                                       krbn::device_id(1),
+                                                                                                       pressed_keys_manager);
 
-      assert(event_queue->get_entries().size() == 5);
+      assert(entries->size() == 5);
 
       {
-        auto& e = event_queue->get_entries()[0];
+        auto& e = *((*entries)[0]);
         expect(e.get_event() == a_event);
         expect(e.get_event_type() == krbn::event_type::key_down);
         expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(100));
       }
       {
-        auto& e = event_queue->get_entries()[1];
+        auto& e = *((*entries)[1]);
         expect(e.get_event() == b_event);
         expect(e.get_event_type() == krbn::event_type::key_down);
         expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(200));
       }
       {
-        auto& e = event_queue->get_entries()[2];
+        auto& e = *((*entries)[2]);
         expect(e.get_event() == b_event);
         expect(e.get_event_type() == krbn::event_type::key_up);
         expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(300));
       }
       {
-        auto& e = event_queue->get_entries()[3];
+        auto& e = *((*entries)[3]);
         expect(e.get_event() == a_event);
         expect(e.get_event_type() == krbn::event_type::key_up);
         expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(400));
       }
       {
-        auto& e = event_queue->get_entries()[4];
+        auto& e = *((*entries)[4]);
         expect(e.get_event().get_type() == krbn::event_queue::event::type::device_keys_and_pointing_buttons_are_released);
         expect(e.get_event_time_stamp().get_time_stamp() == krbn::absolute_time_point(400));
       }
