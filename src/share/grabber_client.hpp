@@ -64,7 +64,7 @@ public:
         return find_grabber_socket_file_path();
       });
 
-      client_->connected.connect([this] {
+      client_->connected.connect([this](auto&& peer_pid) {
         logger::get_logger()->info("grabber_client is connected.");
 
         enqueue_to_dispatcher([this] {

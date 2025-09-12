@@ -46,7 +46,7 @@ public:
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
 
-      client_->connected.connect([this, endpoint_path] {
+      client_->connected.connect([this, endpoint_path](auto&& peer_pid) {
         logger::get_logger()->info("console_user_server_client is connected: {0}", endpoint_path);
 
         enqueue_to_dispatcher([this] {
