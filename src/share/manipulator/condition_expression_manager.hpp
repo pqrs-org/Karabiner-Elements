@@ -13,6 +13,11 @@ namespace manipulator {
 
 // We manage all conditions::expression instances with a manager
 // because changing a variable via set_variable requires updating every instance.
+//
+// Note:
+// Because expression variables can include key information, they must remain within the grabber.
+// Specifically, do not write them to JSON files or logs, and do not send them to other processes.
+// (e.g., console_user_server)
 
 class condition_expression_manager final {
 public:
