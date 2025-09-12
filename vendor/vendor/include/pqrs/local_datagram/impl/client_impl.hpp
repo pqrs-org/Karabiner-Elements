@@ -22,7 +22,7 @@ class client_impl final : public base_impl {
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(void)> connected;
+  nod::signal<void(std::optional<pid_t> peer_pid)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
 
   // Methods
@@ -129,8 +129,21 @@ public:
               start_client_socket_check(client_socket_file_path,
                                         client_socket_check_interval);
 
-              enqueue_to_dispatcher([this] {
-                connected();
+              std::optional<pid_t> peer_pid;
+              if (socket_) {
+                pid_t pid{};
+                socklen_t len = sizeof(pid);
+                if (getsockopt(socket_->native_handle(),
+                               SOL_LOCAL,
+                               LOCAL_PEERPID,
+                               &pid,
+                               &len) == 0) {
+                  peer_pid = pid;
+                }
+              }
+
+              enqueue_to_dispatcher([this, peer_pid] {
+                connected(peer_pid);
               });
 
               start_actors();
@@ -216,7 +229,7 @@ private:
           weak_dispatcher_,
           client_socket_check_client_send_entries_);
 
-      client_socket_check_client_impl_->connected.connect([this] {
+      client_socket_check_client_impl_->connected.connect([this](auto&& peer_pid) {
         asio::post(io_ctx_, [this] {
           client_socket_check_client_impl_ = nullptr;
         });

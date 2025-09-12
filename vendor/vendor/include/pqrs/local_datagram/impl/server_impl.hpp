@@ -134,7 +134,7 @@ private:
           weak_dispatcher_,
           server_check_client_send_entries_);
 
-      server_check_client_impl_->connected.connect([this] {
+      server_check_client_impl_->connected.connect([this](auto&& peer_pid) {
         asio::post(io_ctx_, [this] {
           server_check_client_impl_ = nullptr;
         });

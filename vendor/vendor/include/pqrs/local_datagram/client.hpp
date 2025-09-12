@@ -19,7 +19,7 @@ public:
   // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(const std::string&)> warning_reported;
-  nod::signal<void(void)> connected;
+  nod::signal<void(std::optional<pid_t> peer_pid)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
   nod::signal<void(const asio::error_code&)> error_occurred;
@@ -50,9 +50,9 @@ public:
       });
     });
 
-    client_impl_->connected.connect([this] {
-      enqueue_to_dispatcher([this] {
-        connected();
+    client_impl_->connected.connect([this](auto&& peer_pid) {
+      enqueue_to_dispatcher([this, peer_pid] {
+        connected(peer_pid);
       });
     });
 
