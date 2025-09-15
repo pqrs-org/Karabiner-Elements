@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::codesign v1.2
+// pqrs::osx::codesign v2.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -18,9 +18,32 @@ namespace pqrs {
 namespace osx {
 namespace codesign {
 
-struct signing_information final {
-  std::optional<std::string> team_id;
-  std::optional<std::string> identifier;
+class signing_information final {
+public:
+  signing_information(void) {
+  }
+
+  signing_information(CFDictionaryRef information) {
+    if (auto value = static_cast<CFStringRef>(CFDictionaryGetValue(information, kSecCodeInfoTeamIdentifier))) {
+      team_id_ = cf::make_string(value);
+    }
+
+    if (auto value = static_cast<CFStringRef>(CFDictionaryGetValue(information, kSecCodeInfoIdentifier))) {
+      identifier_ = cf::make_string(value);
+    }
+  }
+
+  const std::optional<std::string>& get_team_id(void) const {
+    return team_id_;
+  }
+
+  const std::optional<std::string>& get_identifier(void) const {
+    return identifier_;
+  }
+
+private:
+  std::optional<std::string> team_id_;
+  std::optional<std::string> identifier_;
 };
 
 inline signing_information get_signing_information_of_process(pid_t pid) {
@@ -34,13 +57,7 @@ inline signing_information get_signing_information_of_process(pid_t pid) {
       if (SecCodeCopyGuestWithAttributes(nullptr, *attributes, kSecCSDefaultFlags, &guest) == errSecSuccess) {
         CFDictionaryRef information;
         if (SecCodeCopySigningInformation(guest, kSecCSSigningInformation, &information) == errSecSuccess) {
-          if (auto team_id = static_cast<CFStringRef>(CFDictionaryGetValue(information, kSecCodeInfoTeamIdentifier))) {
-            result.team_id = cf::make_string(team_id);
-          }
-
-          if (auto identifier = static_cast<CFStringRef>(CFDictionaryGetValue(information, kSecCodeInfoIdentifier))) {
-            result.identifier = cf::make_string(identifier);
-          }
+          result = signing_information(information);
 
           CFRelease(information);
         }
