@@ -1,6 +1,7 @@
 #pragma once
 
 #include "app_icon.hpp"
+#include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "grabber/components_manager.hpp"
@@ -45,6 +46,12 @@ int daemon(void) {
       return 1;
     }
   }
+
+  //
+  // Get codesign
+  //
+
+  get_shared_codesign_manager()->log();
 
   //
   // Run repair.sh
