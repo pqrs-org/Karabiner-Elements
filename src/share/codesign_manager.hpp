@@ -18,6 +18,21 @@ public:
                                current_process_signing_information_.get_team_id().value_or("empty"));
   }
 
+  bool same_team_id(std::optional<pid_t> pid) {
+    // If the binary is not code-signed (e.g., a self-build from source), always return true.
+    auto current_team_id = current_process_signing_information_.get_team_id();
+    if (current_team_id == std::nullopt) {
+      return true;
+    }
+
+    if (pid == std::nullopt) {
+      return false;
+    }
+
+    auto signing_information = pqrs::osx::codesign::get_signing_information_of_process(*pid);
+    return current_team_id == signing_information.get_team_id();
+  }
+
 private:
   pqrs::osx::codesign::signing_information current_process_signing_information_;
 };
