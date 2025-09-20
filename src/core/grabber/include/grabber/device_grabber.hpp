@@ -618,6 +618,13 @@ public:
     });
   }
 
+  void async_invoke_with_manipulator_environment_json(std::function<void(const nlohmann::json&)> function) const {
+    enqueue_to_dispatcher([this, function] {
+      auto json = complex_modifications_applied_event_queue_->get_manipulator_environment().to_json();
+      function(json);
+    });
+  }
+
 private:
   void stop(void) {
     configuration_monitor_ = nullptr;
