@@ -12,6 +12,11 @@ enum class operation_type : uint8_t {
   system_preferences_updated,
   frontmost_application_changed,
   input_source_changed,
+  // event_viewer -> grabber
+  connect_event_viewer,
+  get_manipulator_environment,
+  // grabber -> event_viewer
+  manipulator_environment,
   // multitouch_extension -> grabber
   connect_multitouch_extension,
   // any -> grabber
@@ -33,6 +38,9 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::input_source_changed, "input_source_changed"},
+        {operation_type::connect_event_viewer, "connect_event_viewer"},
+        {operation_type::get_manipulator_environment, "get_manipulator_environment"},
+        {operation_type::manipulator_environment, "manipulator_environment"},
         {operation_type::connect_multitouch_extension, "connect_multitouch_extension"},
         {operation_type::set_app_icon, "set_app_icon"},
         {operation_type::set_variables, "set_variables"},
