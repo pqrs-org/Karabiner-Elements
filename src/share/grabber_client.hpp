@@ -181,6 +181,30 @@ public:
     });
   }
 
+  void async_connect_event_viewer(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::connect_event_viewer},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
+  void async_get_manipulator_environment(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::get_manipulator_environment},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
   void async_connect_multitouch_extension(void) const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
