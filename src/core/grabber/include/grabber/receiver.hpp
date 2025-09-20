@@ -7,6 +7,7 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
+#include "event_viewer_client.hpp"
 #include "filesystem_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
 #include "types.hpp"
@@ -131,7 +132,23 @@ public:
               }
               break;
 
-            case operation_type::connect_multitouch_extension: {
+            case operation_type::connect_event_viewer:
+              logger::get_logger()->info("EventViewer is attempting to connect.");
+              event_viewer_client_ = std::make_unique<event_viewer_client>(sender_endpoint->path());
+              break;
+
+            case operation_type::get_manipulator_environment:
+              if (device_grabber_) {
+                device_grabber_->async_invoke_with_manipulator_environment_json(
+                    [this](auto&& manipulator_environment_json) {
+                      if (event_viewer_client_) {
+                        event_viewer_client_->async_send_manipulator_environment(manipulator_environment_json);
+                      }
+                    });
+              }
+              break;
+
+            case operation_type::connect_multitouch_extension:
               logger::get_logger()->info("multitouch_extension is connected.");
 
               multitouch_extension_client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
@@ -167,7 +184,6 @@ public:
               multitouch_extension_client_->async_start();
 
               break;
-            }
 
             case operation_type::set_app_icon: {
               // `set_app_icon` requires root privileges.
@@ -215,6 +231,7 @@ public:
     detach_from_dispatcher([this] {
       server_ = nullptr;
       console_user_server_client_ = nullptr;
+      event_viewer_client_ = nullptr;
       multitouch_extension_client_ = nullptr;
       stop_device_grabber();
     });
@@ -296,6 +313,7 @@ private:
 
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
+  std::unique_ptr<event_viewer_client> event_viewer_client_;
   std::unique_ptr<pqrs::local_datagram::client> multitouch_extension_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 
