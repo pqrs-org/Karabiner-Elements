@@ -27,17 +27,16 @@ public class DevicesJsonString: ObservableObject {
   public func start() {
     libkrbn_enable_file_monitors()
 
-    libkrbn_register_file_updated_callback(
-      devicesJsonFilePath.cString(using: .utf8),
-      callback)
-    libkrbn_enqueue_callback(callback)
+    if let cString = devicesJsonFilePath.cString(using: .utf8) {
+      libkrbn_register_file_updated_callback(cString, callback)
+      libkrbn_enqueue_callback(callback)
+    }
   }
 
   public func stop() {
-
-    libkrbn_unregister_file_updated_callback(
-      devicesJsonFilePath.cString(using: .utf8),
-      callback)
+    if let cString = devicesJsonFilePath.cString(using: .utf8) {
+      libkrbn_unregister_file_updated_callback(cString, callback)
+    }
 
     // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
   }
