@@ -1,12 +1,17 @@
-all: build_make
+all:
+	$(MAKE) -C ../../src/lib/libkrbn
+	xcodegen generate
+	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
 clean: clean_builds
 
 run:
-	./build/a.out
+	codesign -dv build/Release/get_manipulator_environment 2>&1 | grep TeamIdentifier
+	@echo
+	./build/Release/get_manipulator_environment
 
 codesign: all
 #	operation_type::connect_event_viewer must be code-signed with the same Team ID as karabiner_grabber.
-	bash ../../scripts/codesign.sh build/a.out
+	bash ../../scripts/codesign.sh build/Release/get_manipulator_environment
 
 include ../Makefile.rules
