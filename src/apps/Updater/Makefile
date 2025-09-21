@@ -1,5 +1,5 @@
 all:
-	python3 ../../../scripts/update_version.py
+	/usr/bin/python3 ../../../scripts/update_version.py
 	bash run-xcodegen.sh
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
