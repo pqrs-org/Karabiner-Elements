@@ -61,10 +61,10 @@ final class SystemPreferences: ObservableObject {
 
     libkrbn_enable_file_monitors()
 
-    libkrbn_register_file_updated_callback(
-      manipulatorEnvironmentJsonFilePath.cString(using: .utf8),
-      callback)
-    libkrbn_enqueue_callback(callback)
+    if let cString = manipulatorEnvironmentJsonFilePath.cString(using: .utf8) {
+      libkrbn_register_file_updated_callback(cString, callback)
+      libkrbn_enqueue_callback(callback)
+    }
 
     //
     // Start the timer
@@ -84,9 +84,9 @@ final class SystemPreferences: ObservableObject {
     // Stop the json file monitoring
     //
 
-    libkrbn_unregister_file_updated_callback(
-      manipulatorEnvironmentJsonFilePath.cString(using: .utf8),
-      callback)
+    if let cString = manipulatorEnvironmentJsonFilePath.cString(using: .utf8) {
+      libkrbn_unregister_file_updated_callback(cString, callback)
+    }
 
     // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
 
