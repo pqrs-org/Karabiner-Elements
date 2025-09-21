@@ -566,7 +566,14 @@ void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_c
 
 libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void);
 
+void libkrbn_grabber_client_async_connect_event_viewer(void);
+void libkrbn_grabber_client_async_get_manipulator_environment(void);
+typedef void (*libkrbn_grabber_client_manipulator_environment_received)(const char* json_string);
+void libkrbn_register_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received callback);
+void libkrbn_unregister_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received callback);
+
 void libkrbn_grabber_client_async_connect_multitouch_extension(void);
+
 void libkrbn_grabber_client_async_set_app_icon(int number);
 void libkrbn_grabber_client_async_set_variable(const char* name, int value);
 

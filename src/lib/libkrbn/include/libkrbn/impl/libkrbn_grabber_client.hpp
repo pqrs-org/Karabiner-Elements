@@ -24,6 +24,35 @@ public:
     grabber_client_->closed.connect([this] {
       set_status(libkrbn_grabber_client_status_closed);
     });
+
+    grabber_client_->received.connect([this](auto&& buffer,
+                                             auto&& sender_endpoint) {
+      if (buffer) {
+        if (buffer->empty()) {
+          return;
+        }
+
+        try {
+          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+          switch (json.at("operation_type").get<krbn::operation_type>()) {
+            case krbn::operation_type::manipulator_environment: {
+              auto json_dump = krbn::json_utility::dump(json.at("manipulator_environment"));
+
+              for (const auto& c : manipulator_environment_received_callback_manager_.get_callbacks()) {
+                c(json_dump.c_str());
+              }
+
+              break;
+            }
+
+            default:
+              break;
+          }
+        } catch (std::exception& e) {
+          krbn::logger::get_logger()->error("libkrbn_grabber_client received data is corrupted");
+        }
+      }
+    });
   }
 
   ~libkrbn_grabber_client(void) {
@@ -38,6 +67,14 @@ public:
 
   libkrbn_grabber_client_status get_status(void) const {
     return status_;
+  }
+
+  void async_connect_event_viewer(void) {
+    grabber_client_->async_connect_event_viewer();
+  }
+
+  void async_get_manipulator_environment(void) {
+    grabber_client_->async_get_manipulator_environment();
   }
 
   void async_connect_multitouch_extension(void) {
@@ -70,13 +107,25 @@ public:
 
   void register_libkrbn_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback) {
     enqueue_to_dispatcher([this, callback] {
-      callback_manager_.register_callback(callback);
+      status_changed_callback_manager_.register_callback(callback);
     });
   }
 
   void unregister_libkrbn_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback) {
     enqueue_to_dispatcher([this, callback] {
-      callback_manager_.unregister_callback(callback);
+      status_changed_callback_manager_.unregister_callback(callback);
+    });
+  }
+
+  void register_libkrbn_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received callback) {
+    enqueue_to_dispatcher([this, callback] {
+      manipulator_environment_received_callback_manager_.register_callback(callback);
+    });
+  }
+
+  void unregister_libkrbn_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received callback) {
+    enqueue_to_dispatcher([this, callback] {
+      manipulator_environment_received_callback_manager_.unregister_callback(callback);
     });
   }
 
@@ -85,12 +134,13 @@ private:
   void set_status(libkrbn_grabber_client_status status) {
     status_ = status;
 
-    for (const auto& c : callback_manager_.get_callbacks()) {
+    for (const auto& c : status_changed_callback_manager_.get_callbacks()) {
       c();
     }
   }
 
   std::unique_ptr<krbn::grabber_client> grabber_client_;
   libkrbn_grabber_client_status status_;
-  libkrbn_callback_manager<libkrbn_version_updated> callback_manager_;
+  libkrbn_callback_manager<libkrbn_grabber_client_status_changed> status_changed_callback_manager_;
+  libkrbn_callback_manager<libkrbn_grabber_client_manipulator_environment_received> manipulator_environment_received_callback_manager_;
 };
