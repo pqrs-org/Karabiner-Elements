@@ -1,14 +1,10 @@
+import AsyncAlgorithms
 import SwiftUI
 
-private func callback() {
-  Task { @MainActor in
-    guard
-      let text = try? String(
-        contentsOfFile: VariablesJsonString.shared.manipulatorEnvironmentJsonFilePath,
-        encoding: .utf8
-      )
-    else { return }
+private func manipulatorEnvironmentReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+  let text = String(cString: jsonString)
 
+  Task { @MainActor in
     VariablesJsonString.shared.text = text
   }
 }
@@ -17,27 +13,38 @@ private func callback() {
 public class VariablesJsonString: ObservableObject {
   public static let shared = VariablesJsonString()
 
-  let manipulatorEnvironmentJsonFilePath = LibKrbn.manipulatorEnvironmentJsonFilePath()
+  private let timer: AsyncTimerSequence<ContinuousClock>
+  private var timerTask: Task<Void, Never>?
 
   @Published var text = ""
+
+  init() {
+    timer = AsyncTimerSequence(
+      interval: .milliseconds(500),
+      clock: .continuous
+    )
+  }
 
   // We register the callback in the `start` method rather than in `init`.
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    libkrbn_enable_file_monitors()
+    libkrbn_register_grabber_client_manipulator_environment_received_callback(
+      manipulatorEnvironmentReceivedCallback)
 
-    libkrbn_register_file_updated_callback(
-      manipulatorEnvironmentJsonFilePath.cString(using: .utf8),
-      callback)
-    libkrbn_enqueue_callback(callback)
+    timerTask = Task { @MainActor in
+      libkrbn_grabber_client_async_get_manipulator_environment()
+
+      for await _ in timer {
+        libkrbn_grabber_client_async_get_manipulator_environment()
+      }
+    }
   }
 
   public func stop() {
-    libkrbn_unregister_file_updated_callback(
-      manipulatorEnvironmentJsonFilePath.cString(using: .utf8),
-      callback)
+    libkrbn_unregister_grabber_client_manipulator_environment_received_callback(
+      manipulatorEnvironmentReceivedCallback)
 
-    // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
+    timerTask?.cancel()
   }
 }

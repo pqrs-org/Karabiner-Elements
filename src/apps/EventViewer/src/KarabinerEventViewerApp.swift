@@ -19,8 +19,8 @@ struct KarabinerEventViewerApp: App {
     }
 
     DevicesJsonString.shared.start()
+    EVGrabberClient.shared.start()
     FrontmostApplicationHistory.shared.start()
-    VariablesJsonString.shared.start()
 
     NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event -> NSEvent? in
       if event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command {
