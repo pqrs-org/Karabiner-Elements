@@ -93,26 +93,6 @@ bool libkrbn_connected_devices_get_transport(size_t index,
   return false;
 }
 
-bool libkrbn_connected_devices_get_device_identifiers(size_t index, libkrbn_device_identifiers* device_identifiers) {
-  if (auto c = get_current_connected_devices()) {
-    if (device_identifiers) {
-      const auto& devices = c->get_devices();
-      if (index < devices.size()) {
-        auto& identifiers = devices[index]->get_device_identifiers();
-        device_identifiers->vendor_id = type_safe::get(identifiers.get_vendor_id());
-        device_identifiers->product_id = type_safe::get(identifiers.get_product_id());
-        device_identifiers->is_keyboard = identifiers.get_is_keyboard();
-        device_identifiers->is_pointing_device = identifiers.get_is_pointing_device();
-        device_identifiers->is_game_pad = identifiers.get_is_game_pad();
-        device_identifiers->is_consumer = identifiers.get_is_consumer();
-        device_identifiers->is_virtual_device = identifiers.get_is_virtual_device();
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 uint64_t libkrbn_connected_devices_get_vendor_id(size_t index) {
   if (auto c = get_current_connected_devices()) {
     const auto& devices = c->get_devices();

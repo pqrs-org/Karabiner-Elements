@@ -105,25 +105,25 @@ public:
     wait->wait_notice();
   }
 
-  void register_libkrbn_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback) {
+  void register_libkrbn_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed_t callback) {
     enqueue_to_dispatcher([this, callback] {
       status_changed_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback) {
+  void unregister_libkrbn_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed_t callback) {
     enqueue_to_dispatcher([this, callback] {
       status_changed_callback_manager_.unregister_callback(callback);
     });
   }
 
-  void register_libkrbn_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received callback) {
+  void register_libkrbn_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       manipulator_environment_received_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received callback) {
+  void unregister_libkrbn_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       manipulator_environment_received_callback_manager_.unregister_callback(callback);
     });
@@ -141,6 +141,6 @@ private:
 
   std::unique_ptr<krbn::grabber_client> grabber_client_;
   libkrbn_grabber_client_status status_;
-  libkrbn_callback_manager<libkrbn_grabber_client_status_changed> status_changed_callback_manager_;
-  libkrbn_callback_manager<libkrbn_grabber_client_manipulator_environment_received> manipulator_environment_received_callback_manager_;
+  libkrbn_callback_manager<libkrbn_grabber_client_status_changed_t> status_changed_callback_manager_;
+  libkrbn_callback_manager<libkrbn_grabber_client_manipulator_environment_received_t> manipulator_environment_received_callback_manager_;
 };

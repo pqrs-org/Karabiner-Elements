@@ -49,13 +49,13 @@ public:
     return "";
   }
 
-  void register_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
+  void register_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated callback) {
+  void unregister_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.unregister_callback(callback);
     });
@@ -64,5 +64,5 @@ public:
 private:
   std::shared_ptr<krbn::configuration_monitor> monitor_;
   std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
-  libkrbn_callback_manager<libkrbn_core_configuration_updated> callback_manager_;
+  libkrbn_callback_manager<libkrbn_core_configuration_updated_t> callback_manager_;
 };

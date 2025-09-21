@@ -38,13 +38,13 @@ public:
     return application_;
   }
 
-  void register_libkrbn_frontmost_application_changed_callback(libkrbn_frontmost_application_changed callback) {
+  void register_libkrbn_frontmost_application_changed_callback(libkrbn_frontmost_application_changed_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_frontmost_application_changed_callback(libkrbn_frontmost_application_changed callback) {
+  void unregister_libkrbn_frontmost_application_changed_callback(libkrbn_frontmost_application_changed_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.unregister_callback(callback);
     });
@@ -53,5 +53,5 @@ public:
 private:
   std::unique_ptr<pqrs::osx::frontmost_application_monitor::monitor> monitor_;
   std::shared_ptr<pqrs::osx::frontmost_application_monitor::application> application_;
-  libkrbn_callback_manager<libkrbn_frontmost_application_changed> callback_manager_;
+  libkrbn_callback_manager<libkrbn_frontmost_application_changed_t> callback_manager_;
 };

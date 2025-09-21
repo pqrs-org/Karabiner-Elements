@@ -35,13 +35,13 @@ public:
     return version_;
   }
 
-  void register_libkrbn_version_updated_callback(libkrbn_version_updated callback) {
+  void register_libkrbn_version_updated_callback(libkrbn_version_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_version_updated_callback(libkrbn_version_updated callback) {
+  void unregister_libkrbn_version_updated_callback(libkrbn_version_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.unregister_callback(callback);
     });
@@ -50,5 +50,5 @@ public:
 private:
   std::unique_ptr<krbn::version_monitor> monitor_;
   std::string version_;
-  libkrbn_callback_manager<libkrbn_version_updated> callback_manager_;
+  libkrbn_callback_manager<libkrbn_version_updated_t> callback_manager_;
 };
