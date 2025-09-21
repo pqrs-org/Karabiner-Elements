@@ -219,11 +219,12 @@ extension LibKrbn {
       device: ConnectedDevice?
     ) {
       device.withDeviceIdentifiersCPointer {
-        libkrbn_core_configuration_replace_selected_profile_simple_modification(
-          index,
-          fromJsonString.cString(using: .utf8),
-          toJsonString.cString(using: .utf8),
-          $0)
+        if let fromJson = fromJsonString.cString(using: .utf8),
+          let toJson = toJsonString.cString(using: .utf8)
+        {
+          libkrbn_core_configuration_replace_selected_profile_simple_modification(
+            index, fromJson, toJson, $0)
+        }
       }
 
       reflectSimpleModificationChanges(device)
@@ -322,10 +323,11 @@ extension LibKrbn {
       device: ConnectedDevice?
     ) {
       device.withDeviceIdentifiersCPointer {
-        libkrbn_core_configuration_replace_selected_profile_fn_function_key(
-          fromJsonString.cString(using: .utf8),
-          toJsonString.cString(using: .utf8),
-          $0)
+        if let fromJson = fromJsonString.cString(using: .utf8),
+          let toJson = toJsonString.cString(using: .utf8)
+        {
+          libkrbn_core_configuration_replace_selected_profile_fn_function_key(fromJson, toJson, $0)
+        }
       }
 
       reflectFnFunctionKeyChanges(device)
@@ -381,21 +383,24 @@ extension LibKrbn {
       _ jsonString: String
     ) -> String? {
       var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-      libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(
-        complexModificationRule.index,
-        jsonString.cString(using: .utf8),
-        &errorMessageBuffer,
-        errorMessageBuffer.count
-      )
+      if let cString = jsonString.cString(using: .utf8) {
+        libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(
+          complexModificationRule.index,
+          cString,
+          &errorMessageBuffer,
+          errorMessageBuffer.count
+        )
 
-      let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
-      if errorMessage != "" {
-        return errorMessage
+        let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
+        if errorMessage != "" {
+          return errorMessage
+        }
+
+        reflectComplexModificationsRuleChanges()
+
+        save()
       }
 
-      reflectComplexModificationsRuleChanges()
-
-      save()
       return nil
     }
 
@@ -403,20 +408,23 @@ extension LibKrbn {
       _ jsonString: String
     ) -> String? {
       var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-      libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(
-        jsonString.cString(using: .utf8),
-        &errorMessageBuffer,
-        errorMessageBuffer.count
-      )
+      if let cString = jsonString.cString(using: .utf8) {
+        libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(
+          cString,
+          &errorMessageBuffer,
+          errorMessageBuffer.count
+        )
 
-      let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
-      if errorMessage != "" {
-        return errorMessage
+        let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
+        if errorMessage != "" {
+          return errorMessage
+        }
+
+        reflectComplexModificationsRuleChanges()
+
+        save()
       }
 
-      reflectComplexModificationsRuleChanges()
-
-      save()
       return nil
     }
 
@@ -578,10 +586,12 @@ extension LibKrbn {
     @Published var virtualHIDKeyboardKeyboardTypeV2 = "" {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(
-            virtualHIDKeyboardKeyboardTypeV2.cString(using: .utf8)
-          )
-          save()
+          if let cString = virtualHIDKeyboardKeyboardTypeV2.cString(using: .utf8) {
+            libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(
+              cString
+            )
+            save()
+          }
         }
       }
     }
@@ -655,13 +665,13 @@ extension LibKrbn {
     }
 
     public func updateProfileName(_ profile: Profile, _ name: String) {
-      libkrbn_core_configuration_set_profile_name(
-        profile.index, name.cString(using: .utf8)
-      )
+      if let cString = name.cString(using: .utf8) {
+        libkrbn_core_configuration_set_profile_name(profile.index, cString)
 
-      reflectProfileChanges()
+        reflectProfileChanges()
 
-      save()
+        save()
+      }
     }
 
     public func appendProfile() {
