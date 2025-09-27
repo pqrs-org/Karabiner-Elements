@@ -116,7 +116,7 @@ public:
 
 private:
   void values_arrived(krbn::device_id device_id,
-                      gsl::not_null<std::shared_ptr<krbn::device_properties>> device_properties,
+                      pqrs::not_null_shared_ptr_t<krbn::device_properties> device_properties,
                       std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
     for (const auto& value : *values) {
       auto v = pqrs::osx::iokit_hid_value(*value);

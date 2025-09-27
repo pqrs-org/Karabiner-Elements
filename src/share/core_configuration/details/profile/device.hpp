@@ -605,11 +605,11 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  gsl::not_null<std::shared_ptr<simple_modifications>> get_simple_modifications(void) const {
+  pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications(void) const {
     return simple_modifications_;
   }
 
-  gsl::not_null<std::shared_ptr<simple_modifications>> get_fn_function_keys(void) const {
+  pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys(void) const {
     return fn_function_keys_;
   }
 
@@ -672,8 +672,8 @@ private:
   std::string game_pad_stick_y_formula_;
   std::string game_pad_stick_vertical_wheel_formula_;
   std::string game_pad_stick_horizontal_wheel_formula_;
-  gsl::not_null<std::shared_ptr<simple_modifications>> simple_modifications_;
-  gsl::not_null<std::shared_ptr<simple_modifications>> fn_function_keys_;
+  pqrs::not_null_shared_ptr_t<simple_modifications> simple_modifications_;
+  pqrs::not_null_shared_ptr_t<simple_modifications> fn_function_keys_;
   configuration_json_helper::helper_values helper_values_;
 };
 

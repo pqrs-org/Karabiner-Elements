@@ -2,6 +2,7 @@
 
 #include "../../share/manipulator_conditions_helper.hpp"
 #include "actual_examples_helper.hpp"
+#include <pqrs/gsl.hpp>
 
 void run_manipulator_conditions_test(void) {
   using namespace boost::ut;
@@ -20,7 +21,7 @@ void run_manipulator_conditions_test(void) {
           },
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -29,7 +30,7 @@ void run_manipulator_conditions_test(void) {
           {"type", "input_source_if"},
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -38,7 +39,7 @@ void run_manipulator_conditions_test(void) {
           {"type", "input_source_unless"},
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -54,7 +55,7 @@ void run_manipulator_conditions_test(void) {
         json["input_sources"].push_back(j);
       }
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -65,7 +66,7 @@ void run_manipulator_conditions_test(void) {
           {"value", 1},
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::variable*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -76,7 +77,7 @@ void run_manipulator_conditions_test(void) {
           {"value", 1},
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::variable*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -85,7 +86,7 @@ void run_manipulator_conditions_test(void) {
       json["type"] = "keyboard_type_if";
       json["keyboard_types"] = nlohmann::json::array({"iso"});
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -94,7 +95,7 @@ void run_manipulator_conditions_test(void) {
       json["type"] = "keyboard_type_unless";
       json["keyboard_types"] = nlohmann::json::array({"iso"});
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }

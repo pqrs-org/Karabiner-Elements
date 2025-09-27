@@ -190,31 +190,31 @@ public:
     selected_ = value;
   }
 
-  gsl::not_null<std::shared_ptr<details::parameters>> get_parameters(void) const {
+  pqrs::not_null_shared_ptr_t<details::parameters> get_parameters(void) const {
     return parameters_;
   }
 
-  gsl::not_null<std::shared_ptr<simple_modifications>> get_simple_modifications(void) const {
+  pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications(void) const {
     return simple_modifications_;
   }
 
-  gsl::not_null<std::shared_ptr<simple_modifications>> get_fn_function_keys(void) const {
+  pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys(void) const {
     return fn_function_keys_;
   }
 
-  gsl::not_null<std::shared_ptr<details::complex_modifications>> get_complex_modifications(void) const {
+  pqrs::not_null_shared_ptr_t<details::complex_modifications> get_complex_modifications(void) const {
     return complex_modifications_;
   }
 
-  gsl::not_null<std::shared_ptr<details::virtual_hid_keyboard>> get_virtual_hid_keyboard(void) const {
+  pqrs::not_null_shared_ptr_t<details::virtual_hid_keyboard> get_virtual_hid_keyboard(void) const {
     return virtual_hid_keyboard_;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<details::device>>>& get_devices(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<details::device>>& get_devices(void) const {
     return devices_;
   }
 
-  gsl::not_null<std::shared_ptr<details::device>> get_device(const device_identifiers& identifiers) const {
+  pqrs::not_null_shared_ptr_t<details::device> get_device(const device_identifiers& identifiers) const {
     //
     // Find device
     //
@@ -263,12 +263,12 @@ private:
   error_handling error_handling_;
   std::string name_;
   bool selected_;
-  gsl::not_null<std::shared_ptr<details::parameters>> parameters_;
-  gsl::not_null<std::shared_ptr<simple_modifications>> simple_modifications_;
-  gsl::not_null<std::shared_ptr<simple_modifications>> fn_function_keys_;
-  gsl::not_null<std::shared_ptr<details::complex_modifications>> complex_modifications_;
-  gsl::not_null<std::shared_ptr<details::virtual_hid_keyboard>> virtual_hid_keyboard_;
-  mutable std::vector<gsl::not_null<std::shared_ptr<details::device>>> devices_;
+  pqrs::not_null_shared_ptr_t<details::parameters> parameters_;
+  pqrs::not_null_shared_ptr_t<simple_modifications> simple_modifications_;
+  pqrs::not_null_shared_ptr_t<simple_modifications> fn_function_keys_;
+  pqrs::not_null_shared_ptr_t<details::complex_modifications> complex_modifications_;
+  pqrs::not_null_shared_ptr_t<details::virtual_hid_keyboard> virtual_hid_keyboard_;
+  mutable std::vector<pqrs::not_null_shared_ptr_t<details::device>> devices_;
   configuration_json_helper::helper_values helper_values_;
 };
 

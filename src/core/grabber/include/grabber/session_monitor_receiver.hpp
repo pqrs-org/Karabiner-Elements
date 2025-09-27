@@ -50,56 +50,54 @@ public:
     });
 
     server_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
+      if (buffer->empty()) {
+        return;
+      }
 
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<operation_type>()) {
-            case operation_type::console_user_id_changed: {
-              auto new_value = current_console_user_id_;
+      try {
+        nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+        switch (json.at("operation_type").get<operation_type>()) {
+          case operation_type::console_user_id_changed: {
+            auto new_value = current_console_user_id_;
 
-              auto uid = json.at("user_id").get<uid_t>();
+            auto uid = json.at("user_id").get<uid_t>();
 
-              if (json.at("on_console").get<bool>()) {
-                new_value = uid;
-              } else {
-                if (current_console_user_id_ == uid) {
-                  new_value = std::nullopt;
-                }
+            if (json.at("on_console").get<bool>()) {
+              new_value = uid;
+            } else {
+              if (current_console_user_id_ == uid) {
+                new_value = std::nullopt;
               }
-
-              if (current_console_user_id_ != new_value) {
-                current_console_user_id_ = new_value;
-
-                if (new_value) {
-                  filesystem_utility::mkdir_system_user_directory(*new_value);
-                }
-
-                enqueue_to_dispatcher([this, new_value] {
-                  current_console_user_id_changed(new_value);
-                });
-              }
-
-              // manage session_monitor_client_
-
-              if (!sender_endpoint->path().empty()) {
-                register_session_monitor_client(uid,
-                                                sender_endpoint->path());
-              }
-
-              break;
             }
 
-            default:
-              break;
+            if (current_console_user_id_ != new_value) {
+              current_console_user_id_ = new_value;
+
+              if (new_value) {
+                filesystem_utility::mkdir_system_user_directory(*new_value);
+              }
+
+              enqueue_to_dispatcher([this, new_value] {
+                current_console_user_id_changed(new_value);
+              });
+            }
+
+            // manage session_monitor_client_
+
+            if (!sender_endpoint->path().empty()) {
+              register_session_monitor_client(uid,
+                                              sender_endpoint->path());
+            }
+
+            break;
           }
-          return;
-        } catch (std::exception& e) {
-          logger::get_logger()->error("session_monitor_receiver: received data is corrupted");
+
+          default:
+            break;
         }
+        return;
+      } catch (std::exception& e) {
+        logger::get_logger()->error("session_monitor_receiver: received data is corrupted");
       }
     });
 

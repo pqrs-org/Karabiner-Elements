@@ -224,8 +224,8 @@ inline void to_json(nlohmann::json& json, const entry& value) {
   json = value.to_json();
 }
 
-typedef gsl::not_null<std::shared_ptr<const entry>> not_null_const_entry_ptr_t;
-typedef gsl::not_null<std::shared_ptr<std::vector<not_null_const_entry_ptr_t>>> not_null_entries_ptr_t;
+typedef pqrs::not_null_shared_ptr_t<const entry> not_null_const_entry_ptr_t;
+typedef pqrs::not_null_shared_ptr_t<std::vector<not_null_const_entry_ptr_t>> not_null_entries_ptr_t;
 
 } // namespace event_queue
 } // namespace krbn

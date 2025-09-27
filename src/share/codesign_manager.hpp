@@ -1,7 +1,7 @@
 #pragma once
 
 #include "logger.hpp"
-#include <gsl/gsl>
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/codesign.hpp>
 #include <thread>
 
@@ -37,7 +37,7 @@ private:
   pqrs::osx::codesign::signing_information current_process_signing_information_;
 };
 
-inline gsl::not_null<std::shared_ptr<codesign_manager>> get_shared_codesign_manager(void) {
+inline pqrs::not_null_shared_ptr_t<codesign_manager> get_shared_codesign_manager(void) {
   static std::mutex mutex;
   std::lock_guard<std::mutex> lock(mutex);
 

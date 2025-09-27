@@ -33,7 +33,7 @@ public:
   // Methods
 
   counter(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-          gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters,
+          pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
           const options& options)
       : dispatcher_client(weak_dispatcher),
         parameters_(parameters),
@@ -410,7 +410,7 @@ private:
     }
   }
 
-  gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters_;
+  pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters_;
   const options options_;
 
   std::deque<counter_entry> entries_;

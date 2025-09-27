@@ -113,7 +113,7 @@ public:
         auto to_json = nlohmann::json::object({
             {"consumer_key_code", "mute"},
         });
-        std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+        std::vector<pqrs::not_null_shared_ptr_t<manipulator::to_event_definition>> to_event_definitions;
         to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(to_json));
 
         auto m = std::make_shared<manipulator::manipulators::basic::basic>(manipulator::manipulators::basic::from_event_definition(from_json),

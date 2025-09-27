@@ -2,7 +2,7 @@
 
 #include "iokit_utility.hpp"
 #include "types.hpp"
-#include <gsl/gsl>
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
@@ -128,8 +128,8 @@ public:
   device_properties(void) : device_properties(initialization_parameters{}) {
   }
 
-  static gsl::not_null<std::shared_ptr<device_properties>> make_device_properties(device_id device_id,
-                                                                                  IOHIDDeviceRef device) {
+  static pqrs::not_null_shared_ptr_t<device_properties> make_device_properties(device_id device_id,
+                                                                               IOHIDDeviceRef device) {
     pqrs::osx::iokit_hid_device hid_device(device);
 
     //
@@ -213,7 +213,7 @@ public:
     });
   }
 
-  static gsl::not_null<std::shared_ptr<device_properties>> make_device_properties(const nlohmann::json& json) {
+  static pqrs::not_null_shared_ptr_t<device_properties> make_device_properties(const nlohmann::json& json) {
     initialization_parameters parameters;
 
     pqrs::json::requires_object(json, "json");

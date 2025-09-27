@@ -73,7 +73,7 @@ public:
   }
 
   void insert_device_properties(device_id device_id,
-                                gsl::not_null<std::shared_ptr<device_properties>> device_properties) {
+                                pqrs::not_null_shared_ptr_t<device_properties> device_properties) {
     device_properties_manager_.insert(device_id, device_properties);
   }
 
@@ -118,11 +118,11 @@ public:
     async_save_to_file();
   }
 
-  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> get_core_configuration(void) const {
+  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration(void) const {
     return core_configuration_;
   }
 
-  void set_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
+  void set_core_configuration(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) {
     core_configuration_ = core_configuration;
     async_save_to_file();
   }
@@ -145,7 +145,7 @@ private:
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, manipulator_environment_variable_value> variables_;
-  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
+  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
   virtual_hid_devices_state virtual_hid_devices_state_;
 };
 } // namespace manipulator

@@ -35,11 +35,11 @@ public:
     from_modifiers_definition_ = value;
   }
 
-  const gsl::not_null<std::shared_ptr<simultaneous_options>>& get_simultaneous_options(void) const {
+  const pqrs::not_null_shared_ptr_t<simultaneous_options>& get_simultaneous_options(void) const {
     return simultaneous_options_;
   }
 
-  void set_simultaneous_options(const gsl::not_null<std::shared_ptr<simultaneous_options>>& value) {
+  void set_simultaneous_options(const pqrs::not_null_shared_ptr_t<simultaneous_options>& value) {
     simultaneous_options_ = value;
   }
 
@@ -144,7 +144,7 @@ public:
 private:
   std::vector<event_definition> event_definitions_;
   from_modifiers_definition from_modifiers_definition_;
-  gsl::not_null<std::shared_ptr<simultaneous_options>> simultaneous_options_;
+  pqrs::not_null_shared_ptr_t<simultaneous_options> simultaneous_options_;
 };
 
 inline void from_json(const nlohmann::json& json, from_event_definition& d) {

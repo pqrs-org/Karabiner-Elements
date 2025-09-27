@@ -188,6 +188,6 @@ private:
   condition_manager condition_manager_;
 };
 
-typedef std::vector<gsl::not_null<std::shared_ptr<to_event_definition>>> to_event_definitions;
+typedef std::vector<pqrs::not_null_shared_ptr_t<to_event_definition>> to_event_definitions;
 } // namespace manipulator
 } // namespace krbn

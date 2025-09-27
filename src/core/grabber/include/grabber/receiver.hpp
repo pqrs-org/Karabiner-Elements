@@ -63,160 +63,158 @@ public:
     });
 
     server_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
+      if (buffer->empty()) {
+        return;
+      }
 
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<operation_type>()) {
-            case operation_type::connect_console_user_server: {
-              auto user_core_configuration_file_path =
-                  json.at("user_core_configuration_file_path").get<std::string>();
+      try {
+        nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+        switch (json.at("operation_type").get<operation_type>()) {
+          case operation_type::connect_console_user_server: {
+            auto user_core_configuration_file_path =
+                json.at("user_core_configuration_file_path").get<std::string>();
 
-              logger::get_logger()->info("karabiner_console_user_server is connected.");
+            logger::get_logger()->info("karabiner_console_user_server is connected.");
 
-              console_user_server_client_ = nullptr;
+            console_user_server_client_ = nullptr;
 
-              if (!sender_endpoint->path().empty()) {
-                console_user_server_client_ = std::make_shared<console_user_server_client>();
+            if (!sender_endpoint->path().empty()) {
+              console_user_server_client_ = std::make_shared<console_user_server_client>();
 
-                console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
-                  stop_device_grabber();
-                  start_device_grabber(user_core_configuration_file_path);
-                });
+              console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
+                stop_device_grabber();
+                start_device_grabber(user_core_configuration_file_path);
+              });
 
-                console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
-                  console_user_server_client_ = nullptr;
+              console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
+                console_user_server_client_ = nullptr;
 
-                  stop_device_grabber();
-                  start_grabbing_if_system_core_configuration_file_exists();
-                });
+                stop_device_grabber();
+                start_grabbing_if_system_core_configuration_file_exists();
+              });
 
-                console_user_server_client_->closed.connect([this] {
-                  console_user_server_client_ = nullptr;
+              console_user_server_client_->closed.connect([this] {
+                console_user_server_client_ = nullptr;
 
-                  stop_device_grabber();
-                  start_grabbing_if_system_core_configuration_file_exists();
-                });
+                stop_device_grabber();
+                start_grabbing_if_system_core_configuration_file_exists();
+              });
 
-                console_user_server_client_->async_start(sender_endpoint->path());
-              }
-
-              break;
+              console_user_server_client_->async_start(sender_endpoint->path());
             }
 
-            case operation_type::system_preferences_updated:
-              system_preferences_properties_ = json.at("system_preferences_properties")
-                                                   .get<pqrs::osx::system_preferences::properties>();
-              if (device_grabber_) {
-                device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
-              }
-              logger::get_logger()->info("`system_preferences` is updated.");
-              break;
-
-            case operation_type::frontmost_application_changed:
-              frontmost_application_ = json.at("frontmost_application")
-                                           .get<pqrs::osx::frontmost_application_monitor::application>();
-              if (device_grabber_) {
-                device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
-              }
-              break;
-
-            case operation_type::input_source_changed:
-              input_source_properties_ = json.at("input_source_properties")
-                                             .get<pqrs::osx::input_source::properties>();
-              if (device_grabber_) {
-                device_grabber_->async_post_input_source_changed_event(input_source_properties_);
-              }
-              break;
-
-            case operation_type::connect_event_viewer:
-              logger::get_logger()->info("EventViewer is attempting to connect.");
-              event_viewer_client_ = std::make_unique<event_viewer_client>(sender_endpoint->path());
-              break;
-
-            case operation_type::get_manipulator_environment:
-              if (device_grabber_) {
-                device_grabber_->async_invoke_with_manipulator_environment_json(
-                    [this](auto&& manipulator_environment_json) {
-                      if (event_viewer_client_) {
-                        event_viewer_client_->async_send_manipulator_environment(manipulator_environment_json);
-                      }
-                    });
-              }
-              break;
-
-            case operation_type::connect_multitouch_extension:
-              logger::get_logger()->info("multitouch_extension is connected.");
-
-              multitouch_extension_client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                                                            sender_endpoint->path(),
-                                                                                            std::nullopt,
-                                                                                            constants::local_datagram_buffer_size);
-              multitouch_extension_client_->set_server_check_interval(std::chrono::milliseconds(3000));
-              multitouch_extension_client_->set_next_heartbeat_deadline(std::chrono::milliseconds(10000));
-              multitouch_extension_client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
-
-              multitouch_extension_client_->connected.connect([](auto&& peer_pid) {
-                logger::get_logger()->info("multitouch_extension_client_->connected");
-              });
-
-              multitouch_extension_client_->connect_failed.connect([this](auto&& error_code) {
-                logger::get_logger()->info("multitouch_extension_client_->connect_failed");
-
-                multitouch_extension_client_ = nullptr;
-                clear_multitouch_extension_environment_variables();
-              });
-
-              multitouch_extension_client_->closed.connect([this] {
-                logger::get_logger()->info("multitouch_extension_client_->closed");
-
-                multitouch_extension_client_ = nullptr;
-                clear_multitouch_extension_environment_variables();
-              });
-
-              multitouch_extension_client_->error_occurred.connect([](auto&& error_code) {
-                logger::get_logger()->error("multitouch_extension_client_->error_occurred: {0}", error_code.message());
-              });
-
-              multitouch_extension_client_->async_start();
-
-              break;
-
-            case operation_type::set_app_icon: {
-              // `set_app_icon` requires root privileges.
-              auto number = json.at("number").get<int>();
-
-              logger::get_logger()->info("set_app_icon {0}", number);
-
-              app_icon(number).async_save_to_file(constants::get_system_app_icon_configuration_file_path());
-
-              application_launcher::launch_app_icon_switcher();
-
-              break;
-            }
-
-            case operation_type::set_variables:
-              if (device_grabber_) {
-                for (const auto& [k, v] : json.at("variables").items()) {
-                  device_grabber_->async_post_set_variable_event(
-                      manipulator_environment_variable_set_variable(
-                          k,
-                          v.get<manipulator_environment_variable_value>(),
-                          std::nullopt));
-                }
-              }
-              break;
-
-            default:
-              break;
+            break;
           }
-          return;
-        } catch (std::exception& e) {
-          logger::get_logger()->error("received data is corrupted");
+
+          case operation_type::system_preferences_updated:
+            system_preferences_properties_ = json.at("system_preferences_properties")
+                                                 .get<pqrs::osx::system_preferences::properties>();
+            if (device_grabber_) {
+              device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
+            }
+            logger::get_logger()->info("`system_preferences` is updated.");
+            break;
+
+          case operation_type::frontmost_application_changed:
+            frontmost_application_ = json.at("frontmost_application")
+                                         .get<pqrs::osx::frontmost_application_monitor::application>();
+            if (device_grabber_) {
+              device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
+            }
+            break;
+
+          case operation_type::input_source_changed:
+            input_source_properties_ = json.at("input_source_properties")
+                                           .get<pqrs::osx::input_source::properties>();
+            if (device_grabber_) {
+              device_grabber_->async_post_input_source_changed_event(input_source_properties_);
+            }
+            break;
+
+          case operation_type::connect_event_viewer:
+            logger::get_logger()->info("EventViewer is attempting to connect.");
+            event_viewer_client_ = std::make_unique<event_viewer_client>(sender_endpoint->path());
+            break;
+
+          case operation_type::get_manipulator_environment:
+            if (device_grabber_) {
+              device_grabber_->async_invoke_with_manipulator_environment_json(
+                  [this](auto&& manipulator_environment_json) {
+                    if (event_viewer_client_) {
+                      event_viewer_client_->async_send_manipulator_environment(manipulator_environment_json);
+                    }
+                  });
+            }
+            break;
+
+          case operation_type::connect_multitouch_extension:
+            logger::get_logger()->info("multitouch_extension is connected.");
+
+            multitouch_extension_client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
+                                                                                          sender_endpoint->path(),
+                                                                                          std::nullopt,
+                                                                                          constants::local_datagram_buffer_size);
+            multitouch_extension_client_->set_server_check_interval(std::chrono::milliseconds(3000));
+            multitouch_extension_client_->set_next_heartbeat_deadline(std::chrono::milliseconds(10000));
+            multitouch_extension_client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
+
+            multitouch_extension_client_->connected.connect([](auto&& peer_pid) {
+              logger::get_logger()->info("multitouch_extension_client_->connected");
+            });
+
+            multitouch_extension_client_->connect_failed.connect([this](auto&& error_code) {
+              logger::get_logger()->info("multitouch_extension_client_->connect_failed");
+
+              multitouch_extension_client_ = nullptr;
+              clear_multitouch_extension_environment_variables();
+            });
+
+            multitouch_extension_client_->closed.connect([this] {
+              logger::get_logger()->info("multitouch_extension_client_->closed");
+
+              multitouch_extension_client_ = nullptr;
+              clear_multitouch_extension_environment_variables();
+            });
+
+            multitouch_extension_client_->error_occurred.connect([](auto&& error_code) {
+              logger::get_logger()->error("multitouch_extension_client_->error_occurred: {0}", error_code.message());
+            });
+
+            multitouch_extension_client_->async_start();
+
+            break;
+
+          case operation_type::set_app_icon: {
+            // `set_app_icon` requires root privileges.
+            auto number = json.at("number").get<int>();
+
+            logger::get_logger()->info("set_app_icon {0}", number);
+
+            app_icon(number).async_save_to_file(constants::get_system_app_icon_configuration_file_path());
+
+            application_launcher::launch_app_icon_switcher();
+
+            break;
+          }
+
+          case operation_type::set_variables:
+            if (device_grabber_) {
+              for (const auto& [k, v] : json.at("variables").items()) {
+                device_grabber_->async_post_set_variable_event(
+                    manipulator_environment_variable_set_variable(
+                        k,
+                        v.get<manipulator_environment_variable_value>(),
+                        std::nullopt));
+              }
+            }
+            break;
+
+          default:
+            break;
         }
+        return;
+      } catch (std::exception& e) {
+        logger::get_logger()->error("received data is corrupted");
       }
     });
 

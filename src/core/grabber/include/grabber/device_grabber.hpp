@@ -18,7 +18,6 @@
 #include "manipulator/manipulator_factory.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
-#include "memory_utility.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
 #include "notification_message_manager.hpp"
@@ -715,7 +714,7 @@ private:
     }
   }
 
-  void post_device_grabbed_event(gsl::not_null<std::shared_ptr<device_properties>> device_properties) {
+  void post_device_grabbed_event(pqrs::not_null_shared_ptr_t<device_properties> device_properties) {
     auto event = event_queue::event::make_device_grabbed_event(device_properties);
     event_queue::entry entry(device_properties->get_device_id(),
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
@@ -1010,7 +1009,7 @@ private:
   std::vector<nod::scoped_connection> external_signal_connections_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
-  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
+  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
 
   std::unique_ptr<event_tap_monitor> event_tap_monitor_;
   std::optional<bool> last_caps_lock_state_;

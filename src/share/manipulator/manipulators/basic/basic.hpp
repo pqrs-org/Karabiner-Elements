@@ -21,7 +21,7 @@ namespace basic {
 class basic final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   basic(const nlohmann::json& json,
-        gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters)
+        pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters)
       : base(),
         dispatcher_client(),
         parameters_(parameters) {
@@ -737,7 +737,7 @@ private:
     }
   }
 
-  gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters_;
+  pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters_;
 
   from_event_definition from_;
   to_event_definitions to_;
@@ -746,7 +746,7 @@ private:
   std::shared_ptr<to_if_held_down> to_if_held_down_;
   std::shared_ptr<to_delayed_action> to_delayed_action_;
 
-  std::vector<gsl::not_null<std::shared_ptr<manipulated_original_event::manipulated_original_event>>> manipulated_original_events_;
+  std::vector<pqrs::not_null_shared_ptr_t<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
 };
 } // namespace basic
 } // namespace manipulators

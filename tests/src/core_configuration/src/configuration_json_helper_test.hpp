@@ -54,8 +54,8 @@ public:
   int i;
   std::chrono::milliseconds ms;
   std::string s;
-  gsl::not_null<std::shared_ptr<test_object>> o;
-  std::vector<gsl::not_null<std::shared_ptr<test_object>>> a;
+  pqrs::not_null_shared_ptr_t<test_object> o;
+  std::vector<pqrs::not_null_shared_ptr_t<test_object>> a;
   krbn::core_configuration::configuration_json_helper::helper_values helper_values;
 };
 } // namespace

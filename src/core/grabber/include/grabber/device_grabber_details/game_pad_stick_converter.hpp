@@ -30,7 +30,7 @@ public:
   // Signals (invoked from the dispatcher thread)
   //
 
-  typedef nod::signal<void(gsl::not_null<std::shared_ptr<const event_queue::entry>>)> pointing_motion_arrived_t;
+  typedef nod::signal<void(pqrs::not_null_shared_ptr_t<const event_queue::entry>)> pointing_motion_arrived_t;
 
   pointing_motion_arrived_t pointing_motion_arrived;
 
@@ -251,8 +251,8 @@ public:
   // Methods
   //
 
-  game_pad_stick_converter(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
-                           gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration)
+  game_pad_stick_converter(pqrs::not_null_shared_ptr_t<device_properties> device_properties,
+                           pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration)
       : dispatcher_client(),
         device_properties_(device_properties),
         core_configuration_(core_configuration),
@@ -318,7 +318,7 @@ public:
                                                  integer_value);
   }
 
-  void set_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
+  void set_core_configuration(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) {
     core_configuration_ = core_configuration;
 
     //
@@ -617,8 +617,8 @@ private:
     });
   }
 
-  gsl::not_null<std::shared_ptr<device_properties>> device_properties_;
-  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
+  pqrs::not_null_shared_ptr_t<device_properties> device_properties_;
+  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
 
   stick xy_;
   stick wheels_;
@@ -637,10 +637,10 @@ private:
   std::string y_formula_string_;
   std::string vertical_wheel_formula_string_;
   std::string horizontal_wheel_formula_string_;
-  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> x_formula_;
-  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> y_formula_;
-  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> vertical_wheel_formula_;
-  gsl::not_null<std::shared_ptr<exprtk_utility::expression_wrapper>> horizontal_wheel_formula_;
+  pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> x_formula_;
+  pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> y_formula_;
+  pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> vertical_wheel_formula_;
+  pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> horizontal_wheel_formula_;
 };
 } // namespace device_grabber_details
 } // namespace grabber

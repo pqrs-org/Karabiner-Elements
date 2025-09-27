@@ -35,7 +35,7 @@ public:
 
   entry(device_id device_id,
         IOHIDDeviceRef device,
-        gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration)
+        pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration)
       : dispatcher_client(),
         device_id_(device_id),
         core_configuration_(core_configuration),
@@ -184,7 +184,7 @@ public:
   }
 
   // This method should be called in the shared dispatcher thread.
-  void set_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
+  void set_core_configuration(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) {
     core_configuration_ = core_configuration;
 
     control_caps_lock_led_state_manager();
@@ -194,7 +194,7 @@ public:
     }
   }
 
-  gsl::not_null<std::shared_ptr<device_properties>> get_device_properties(void) const {
+  pqrs::not_null_shared_ptr_t<device_properties> get_device_properties(void) const {
     return device_properties_;
   }
 
@@ -338,8 +338,8 @@ private:
   }
 
   device_id device_id_;
-  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
-  gsl::not_null<std::shared_ptr<device_properties>> device_properties_;
+  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
+  pqrs::not_null_shared_ptr_t<device_properties> device_properties_;
   std::shared_ptr<probable_stuck_events_manager> probable_stuck_events_manager_;
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
