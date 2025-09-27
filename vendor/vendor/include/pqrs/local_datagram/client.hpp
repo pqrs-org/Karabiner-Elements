@@ -23,8 +23,10 @@ public:
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
   nod::signal<void(const asio::error_code&)> error_occurred;
-  nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint>)> received;
-  nod::signal<void(std::shared_ptr<asio::local::datagram_protocol::endpoint> sender_endpoint)> next_heartbeat_deadline_exceeded;
+  nod::signal<void(not_null_shared_ptr_t<std::vector<uint8_t>>,
+                   not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint>)>
+      received;
+  nod::signal<void(not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> sender_endpoint)> next_heartbeat_deadline_exceeded;
 
   // Methods
 
@@ -38,7 +40,7 @@ public:
                                client_socket_file_path_(client_socket_file_path),
                                buffer_size_(buffer_size),
                                server_socket_file_path_resolver_(nullptr),
-                               client_send_entries_(std::make_shared<std::deque<std::shared_ptr<impl::send_entry>>>()),
+                               client_send_entries_(std::make_shared<std::deque<not_null_shared_ptr_t<impl::send_entry>>>()),
                                reconnect_timer_(*this) {
     client_impl_ = std::make_shared<impl::client_impl>(
         weak_dispatcher_,
@@ -220,7 +222,7 @@ private:
     }
   }
 
-  void async_send(std::shared_ptr<impl::send_entry> entry) {
+  void async_send(not_null_shared_ptr_t<impl::send_entry> entry) {
     enqueue_to_dispatcher([this, entry] {
       if (client_impl_) {
         client_impl_->async_send(entry);
@@ -248,7 +250,7 @@ private:
   std::optional<std::chrono::milliseconds> reconnect_interval_;
   std::function<std::filesystem::path(void)> server_socket_file_path_resolver_;
 
-  std::shared_ptr<std::deque<std::shared_ptr<impl::send_entry>>> client_send_entries_;
+  not_null_shared_ptr_t<std::deque<not_null_shared_ptr_t<impl::send_entry>>> client_send_entries_;
   std::shared_ptr<impl::client_impl> client_impl_;
   dispatcher::extra::timer reconnect_timer_;
 };

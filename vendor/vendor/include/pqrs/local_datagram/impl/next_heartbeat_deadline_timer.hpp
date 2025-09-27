@@ -12,6 +12,7 @@
 #include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/gsl.hpp>
 
 namespace pqrs {
 namespace local_datagram {
@@ -29,7 +30,7 @@ public:
   //
 
   next_heartbeat_deadline_timer(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                                std::shared_ptr<asio::local::datagram_protocol::endpoint> sender_endpoint,
+                                not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> sender_endpoint,
                                 std::chrono::milliseconds deadline)
       : dispatcher_client(weak_dispatcher),
         sender_endpoint_(sender_endpoint),
@@ -41,7 +42,7 @@ public:
     detach_from_dispatcher();
   }
 
-  std::shared_ptr<asio::local::datagram_protocol::endpoint> get_sender_endpoint(void) const {
+  not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> get_sender_endpoint(void) const {
     return sender_endpoint_;
   }
 
@@ -62,7 +63,7 @@ public:
   }
 
 private:
-  std::shared_ptr<asio::local::datagram_protocol::endpoint> sender_endpoint_;
+  not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> sender_endpoint_;
   dispatcher::extra::timer timer_;
   int timer_count_;
 };

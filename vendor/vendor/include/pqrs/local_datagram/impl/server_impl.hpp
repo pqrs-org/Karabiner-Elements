@@ -23,11 +23,12 @@ public:
   server_impl(const server_impl&) = delete;
 
   server_impl(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-              std::shared_ptr<std::deque<std::shared_ptr<send_entry>>> send_entries) : base_impl(weak_dispatcher,
-                                                                                                 base_impl::mode::server,
-                                                                                                 send_entries),
-                                                                                       server_check_timer_(*this),
-                                                                                       server_check_client_send_entries_(std::make_shared<std::deque<std::shared_ptr<impl::send_entry>>>()) {
+              not_null_shared_ptr_t<std::deque<not_null_shared_ptr_t<send_entry>>> send_entries)
+      : base_impl(weak_dispatcher,
+                  base_impl::mode::server,
+                  send_entries),
+        server_check_timer_(*this),
+        server_check_client_send_entries_(std::make_shared<std::deque<not_null_shared_ptr_t<impl::send_entry>>>()) {
   }
 
   ~server_impl(void) {
@@ -157,7 +158,7 @@ private:
 
   dispatcher::extra::timer server_check_timer_;
   std::unique_ptr<client_impl> server_check_client_impl_;
-  std::shared_ptr<std::deque<std::shared_ptr<send_entry>>> server_check_client_send_entries_;
+  not_null_shared_ptr_t<std::deque<not_null_shared_ptr_t<send_entry>>> server_check_client_send_entries_;
 };
 } // namespace impl
 } // namespace local_datagram

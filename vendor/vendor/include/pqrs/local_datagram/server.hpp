@@ -21,8 +21,10 @@ public:
   nod::signal<void(void)> bound;
   nod::signal<void(const asio::error_code&)> bind_failed;
   nod::signal<void(void)> closed;
-  nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint>)> received;
-  nod::signal<void(std::shared_ptr<asio::local::datagram_protocol::endpoint> sender_endpoint)> next_heartbeat_deadline_exceeded;
+  nod::signal<void(not_null_shared_ptr_t<std::vector<uint8_t>>,
+                   not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint>)>
+      received;
+  nod::signal<void(not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> sender_endpoint)> next_heartbeat_deadline_exceeded;
 
   // Methods
 
@@ -33,7 +35,7 @@ public:
          size_t buffer_size) : dispatcher_client(weak_dispatcher),
                                server_socket_file_path_(server_socket_file_path),
                                buffer_size_(buffer_size),
-                               server_send_entries_(std::make_shared<std::deque<std::shared_ptr<impl::send_entry>>>()),
+                               server_send_entries_(std::make_shared<std::deque<not_null_shared_ptr_t<impl::send_entry>>>()),
                                reconnect_timer_(*this) {
   }
 
@@ -66,7 +68,7 @@ public:
   }
 
   void async_send(const std::vector<uint8_t>& v,
-                  std::shared_ptr<asio::local::datagram_protocol::endpoint> destination_endpoint,
+                  not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> destination_endpoint,
                   std::function<void(void)> processed = nullptr) {
     auto entry = std::make_shared<impl::send_entry>(impl::send_entry::type::user_data,
                                                     v,
@@ -77,7 +79,7 @@ public:
 
   void async_send(const uint8_t* p,
                   size_t length,
-                  std::shared_ptr<asio::local::datagram_protocol::endpoint> destination_endpoint,
+                  not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> destination_endpoint,
                   std::function<void(void)> processed = nullptr) {
     auto entry = std::make_shared<impl::send_entry>(impl::send_entry::type::user_data,
                                                     p,
@@ -182,7 +184,7 @@ private:
     }
   }
 
-  void async_send(std::shared_ptr<impl::send_entry> entry) {
+  void async_send(not_null_shared_ptr_t<impl::send_entry> entry) {
     enqueue_to_dispatcher([this, entry] {
       if (server_impl_) {
         server_impl_->async_send(entry);
@@ -205,7 +207,7 @@ private:
   size_t buffer_size_;
   std::optional<std::chrono::milliseconds> server_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
-  std::shared_ptr<std::deque<std::shared_ptr<impl::send_entry>>> server_send_entries_;
+  not_null_shared_ptr_t<std::deque<not_null_shared_ptr_t<impl::send_entry>>> server_send_entries_;
   std::unique_ptr<impl::server_impl> server_impl_;
   dispatcher::extra::timer reconnect_timer_;
 };
