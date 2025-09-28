@@ -14,7 +14,7 @@ enum class operation_type : uint8_t {
   input_source_changed,
   // event_viewer -> grabber
   connect_event_viewer,
-  get_manipulator_environment,
+  get_manipulator_environment, // The grabber responds only if the client is code-signed with the same Team ID.
   // grabber -> event_viewer
   manipulator_environment,
   // multitouch_extension -> grabber
@@ -22,6 +22,9 @@ enum class operation_type : uint8_t {
   // any -> grabber
   set_app_icon,
   set_variables,
+  // grabber -> any
+  get_system_variables, // Return only the system.* entries from manipulator_environment.variables.
+  system_variables,
   // grabber -> console_user_server
   shell_command_execution,
   select_input_source,
@@ -44,6 +47,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::connect_multitouch_extension, "connect_multitouch_extension"},
         {operation_type::set_app_icon, "set_app_icon"},
         {operation_type::set_variables, "set_variables"},
+        {operation_type::get_system_variables, "get_system_variables"},
+        {operation_type::system_variables, "system_variables"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::select_input_source, "select_input_source"},
         {operation_type::software_function, "software_function"},

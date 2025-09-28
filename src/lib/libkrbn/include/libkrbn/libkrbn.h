@@ -28,16 +28,17 @@ void libkrbn_terminate(void);
 
 void libkrbn_load_custom_environment_variables(void);
 
-void libkrbn_enqueue_callback(void (*callback)(void));
+typedef void (*libkrbn_callback_t)(void);
+void libkrbn_enqueue_callback(libkrbn_callback_t _Nonnull callback);
 
-void libkrbn_get_user_configuration_directory(char* buffer,
+void libkrbn_get_user_configuration_directory(char* _Nonnull buffer,
                                               size_t length);
-void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
+void libkrbn_get_user_complex_modifications_assets_directory(char* _Nonnull buffer,
                                                              size_t length);
 
 bool libkrbn_user_pid_directory_writable(void);
 
-bool libkrbn_lock_single_application_with_user_pid_file(const char* pid_file_name);
+bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name);
 void libkrbn_unlock_single_application(void);
 
 void libkrbn_services_register_core_daemons(void);
@@ -47,8 +48,8 @@ void libkrbn_services_restart_console_user_server_agent(void);
 void libkrbn_services_unregister_all_agents(void);
 bool libkrbn_services_core_daemons_enabled(void);
 bool libkrbn_services_core_agents_enabled(void);
-bool libkrbn_services_daemon_running(const char* service_name);
-bool libkrbn_services_agent_running(const char* service_name);
+bool libkrbn_services_daemon_running(const char* _Nonnull service_name);
+bool libkrbn_services_agent_running(const char* _Nonnull service_name);
 bool libkrbn_services_core_daemons_running(void);
 bool libkrbn_services_core_agents_running(void);
 
@@ -73,16 +74,28 @@ int librkbn_get_app_icon_number(void);
 
 bool libkrbn_is_momentary_switch_event_target(int32_t usage_page, int32_t usage);
 bool libkrbn_is_modifier_flag(int32_t usage_page, int32_t usage);
-void libkrbn_get_momentary_switch_event_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage);
-void libkrbn_get_momentary_switch_event_usage_name(char* buffer, size_t length, int32_t usage_page, int32_t usage);
-void libkrbn_get_modifier_flag_name(char* buffer, size_t length, int32_t usage_page, int32_t usage);
-void libkrbn_get_simple_modification_json_string(char* buffer, size_t length, int32_t usage_page, int32_t usage);
+void libkrbn_get_momentary_switch_event_json_string(char* _Nonnull buffer,
+                                                    size_t length,
+                                                    int32_t usage_page,
+                                                    int32_t usage);
+void libkrbn_get_momentary_switch_event_usage_name(char* _Nonnull buffer,
+                                                   size_t length,
+                                                   int32_t usage_page,
+                                                   int32_t usage);
+void libkrbn_get_modifier_flag_name(char* _Nonnull buffer,
+                                    size_t length,
+                                    int32_t usage_page,
+                                    int32_t usage);
+void libkrbn_get_simple_modification_json_string(char* _Nonnull buffer,
+                                                 size_t length,
+                                                 int32_t usage_page,
+                                                 int32_t usage);
 
 //
 // libkrbn_core_configuration
 //
 
-bool libkrbn_core_configuration_save(char* error_message_buffer,
+bool libkrbn_core_configuration_save(char* _Nonnull error_message_buffer,
                                      size_t error_message_buffer_length);
 
 // global_configuration
@@ -115,12 +128,13 @@ void libkrbn_core_configuration_set_machine_specific_enable_multitouch_extension
 
 size_t libkrbn_core_configuration_get_profiles_size(void);
 bool libkrbn_core_configuration_get_profile_name(size_t index,
-                                                 char* buffer,
+                                                 char* _Nonnull buffer,
                                                  size_t length);
-void libkrbn_core_configuration_set_profile_name(size_t index, const char* value);
+void libkrbn_core_configuration_set_profile_name(size_t index,
+                                                 const char* _Nonnull value);
 bool libkrbn_core_configuration_get_profile_selected(size_t index);
 void libkrbn_core_configuration_select_profile(size_t index);
-bool libkrbn_core_configuration_get_selected_profile_name(char* buffer,
+bool libkrbn_core_configuration_get_selected_profile_name(char* _Nonnull buffer,
                                                           size_t length);
 void libkrbn_core_configuration_push_back_profile(void);
 void libkrbn_core_configuration_duplicate_profile(size_t source_index);
@@ -134,55 +148,55 @@ void libkrbn_core_configuration_set_selected_profile_parameters_delay_millisecon
 
 // profile::simple_modifications
 
-size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(const libkrbn_device_identifiers* device_identifiers);
+size_t libkrbn_core_configuration_get_selected_profile_simple_modifications_size(const libkrbn_device_identifiers* _Nullable device_identifiers);
 bool libkrbn_core_configuration_get_selected_profile_simple_modification_from_json_string(size_t index,
-                                                                                          const libkrbn_device_identifiers* device_identifiers,
-                                                                                          char* buffer,
+                                                                                          const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                          char* _Nonnull buffer,
                                                                                           size_t length);
 bool libkrbn_core_configuration_get_selected_profile_simple_modification_to_json_string(size_t index,
-                                                                                        const libkrbn_device_identifiers* device_identifiers,
-                                                                                        char* buffer,
+                                                                                        const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                        char* _Nonnull buffer,
                                                                                         size_t length);
 void libkrbn_core_configuration_replace_selected_profile_simple_modification(size_t index,
-                                                                             const char* from_json_string,
-                                                                             const char* to_json_string,
-                                                                             const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_push_back_selected_profile_simple_modification(const libkrbn_device_identifiers* device_identifiers);
+                                                                             const char* _Nonnull from_json_string,
+                                                                             const char* _Nonnull to_json_string,
+                                                                             const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_push_back_selected_profile_simple_modification(const libkrbn_device_identifiers* _Nullable device_identifiers);
 void libkrbn_core_configuration_erase_selected_profile_simple_modification(size_t index,
-                                                                           const libkrbn_device_identifiers* device_identifiers);
+                                                                           const libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // profile::fn_function_keys
 
-size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(const libkrbn_device_identifiers* device_identifiers);
+size_t libkrbn_core_configuration_get_selected_profile_fn_function_keys_size(const libkrbn_device_identifiers* _Nullable device_identifiers);
 bool libkrbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(size_t index,
-                                                                                      const libkrbn_device_identifiers* device_identifiers,
-                                                                                      char* buffer,
+                                                                                      const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                      char* _Nonnull buffer,
                                                                                       size_t length);
 bool libkrbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(size_t index,
-                                                                                    const libkrbn_device_identifiers* device_identifiers,
-                                                                                    char* buffer,
+                                                                                    const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                    char* _Nonnull buffer,
                                                                                     size_t length);
-void libkrbn_core_configuration_replace_selected_profile_fn_function_key(const char* from_json_string,
-                                                                         const char* to_json_string,
-                                                                         const libkrbn_device_identifiers* device_identifiers);
+void libkrbn_core_configuration_replace_selected_profile_fn_function_key(const char* _Nonnull from_json_string,
+                                                                         const char* _Nonnull to_json_string,
+                                                                         const libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // profile:complex_modifications
 
 size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(void);
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(size_t index,
-                                                                                            char* buffer,
+                                                                                            char* _Nonnull buffer,
                                                                                             size_t length);
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(size_t index);
 void libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(size_t index, bool value);
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(size_t index,
-                                                                                            char* buffer,
+                                                                                            char* _Nonnull buffer,
                                                                                             size_t length);
 void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(size_t index,
-                                                                                    const char* json_string,
-                                                                                    char* error_message_buffer,
+                                                                                    const char* _Nonnull json_string,
+                                                                                    char* _Nonnull error_message_buffer,
                                                                                     size_t error_message_buffer_length);
-void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* json_string,
-                                                                                       char* error_message_buffer,
+void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* _Nonnull json_string,
+                                                                                       char* _Nonnull error_message_buffer,
                                                                                        size_t error_message_buffer_length);
 void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(size_t index);
 void libkrbn_core_configuration_move_selected_profile_complex_modifications_rule(size_t source_index, size_t destination_index);
@@ -202,14 +216,14 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
 int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(void);
 void libkrbn_core_configuration_set_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(int value);
 
-void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(char* buffer,
+void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(char* _Nonnull buffer,
                                                                                size_t length);
 
 // profile::virtual_hid_device
 
-void libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(char* buffer,
+void libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(char* _Nonnull buffer,
                                                                                            size_t length);
-void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(const char* value);
+void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(const char* _Nonnull value);
 
 int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(void);
 void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(int value);
@@ -219,63 +233,63 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indica
 
 // profile::devices
 
-bool libkrbn_core_configuration_get_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_ignore(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_ignore(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_ignore(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                    bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                      bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_ignore_vendor_events(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_ignore_vendor_events(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_ignore_vendor_events(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_ignore_vendor_events(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                  bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                        bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                 bool value);
-double libkrbn_core_configuration_get_selected_profile_device_pointing_motion_xy_multiplier(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_pointing_motion_xy_multiplier(const libkrbn_device_identifiers* device_identifiers,
+double libkrbn_core_configuration_get_selected_profile_device_pointing_motion_xy_multiplier(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_pointing_motion_xy_multiplier(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                           double value);
 double libkrbn_core_configuration_pointing_motion_xy_multiplier_default_value(void);
-double libkrbn_core_configuration_get_selected_profile_device_pointing_motion_wheels_multiplier(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_pointing_motion_wheels_multiplier(const libkrbn_device_identifiers* device_identifiers,
+double libkrbn_core_configuration_get_selected_profile_device_pointing_motion_wheels_multiplier(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_pointing_motion_wheels_multiplier(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                               double value);
 double libkrbn_core_configuration_pointing_motion_wheels_multiplier_default_value(void);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_x(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                          bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_y(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                          bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                       bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                         bool value);
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_x(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_x(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_x(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_x(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                             bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_y(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_y(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_y(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_y(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                             bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_vertical_wheel(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_vertical_wheel(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_vertical_wheel(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_vertical_wheel(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                          bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_horizontal_wheel(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_discard_horizontal_wheel(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_discard_horizontal_wheel(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                            bool value);
 
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_xy(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                           bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                               bool value);
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* device_identifiers,
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                  bool value);
 
 size_t libkrbn_core_configuration_get_selected_profile_not_connected_devices_count(void);
@@ -283,99 +297,99 @@ void libkrbn_core_configuration_erase_selected_profile_not_connected_devices(voi
 
 // game_pad_xy_stick_deadzone
 
-double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* device_identifiers,
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                        double value);
 double libkrbn_core_configuration_game_pad_xy_stick_deadzone_default_value(void);
 
 // game_pad_xy_stick_delta_magnitude_detection_threshold
 
-double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* device_identifiers,
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                                   double value);
 double libkrbn_core_configuration_game_pad_xy_stick_delta_magnitude_detection_threshold_default_value(void);
 
 // game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
 
-double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers,
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                                               double value);
 double libkrbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value(void);
 
 // game_pad_xy_stick_continued_movement_interval_milliseconds
 
-int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers,
+int libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                                        int value);
 int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value(void);
 
 // game_pad_wheels_stick_deadzone
 
-double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_deadzone(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_deadzone(const libkrbn_device_identifiers* device_identifiers,
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_deadzone(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_deadzone(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                            double value);
 double libkrbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(void);
 
 // game_pad_wheels_stick_delta_magnitude_detection_threshold
 
-double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* device_identifiers,
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_delta_magnitude_detection_threshold(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                                       double value);
 double libkrbn_core_configuration_game_pad_wheels_stick_delta_magnitude_detection_threshold_default_value(void);
 
 // game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
 
-double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* device_identifiers,
+double libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                                                   double value);
 double libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value(void);
 
 // game_pad_wheels_stick_continued_movement_interval_milliseconds
 
-int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers);
-void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* device_identifiers,
+int libkrbn_core_configuration_get_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* _Nullable device_identifiers);
+void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                                                            int value);
 int libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value(void);
 
 // game_pad_stick_x_formula
 
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers,
-                                                                                     char* buffer,
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                     char* _Nonnull buffer,
                                                                                      size_t length);
-bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers,
-                                                                                     const char* value);
-void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                     const char* _Nonnull value);
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_x_formula(const libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // game_pad_stick_y_formula
 
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers,
-                                                                                     char* buffer,
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                     char* _Nonnull buffer,
                                                                                      size_t length);
-bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers,
-                                                                                     const char* value);
-void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                     const char* _Nonnull value);
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_y_formula(const libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // game_pad_stick_vertical_wheel_formula
 
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
-                                                                                                  char* buffer,
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                                  char* _Nonnull buffer,
                                                                                                   size_t length);
-bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
-                                                                                                  const char* value);
-void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                                  const char* _Nonnull value);
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_vertical_wheel_formula(const libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // game_pad_stick_horizontal_wheel_formula
 
-bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
-                                                                                                    char* buffer,
+bool libkrbn_core_configuration_get_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                                    char* _Nonnull buffer,
                                                                                                     size_t length);
-bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers,
-                                                                                                    const char* value);
-void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* device_identifiers);
+bool libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* _Nullable device_identifiers,
+                                                                                                    const char* _Nonnull value);
+void libkrbn_core_configuration_reset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(const libkrbn_device_identifiers* _Nullable device_identifiers);
 
 // game_pad_*
 
-bool libkrbn_core_configuration_game_pad_validate_stick_formula(const char* formula);
+bool libkrbn_core_configuration_game_pad_validate_stick_formula(const char* _Nonnull formula);
 
 //
 // libkrbn_complex_modifications_assets_manager
@@ -388,14 +402,14 @@ void libkrbn_complex_modifications_assets_manager_reload(void);
 
 size_t libkrbn_complex_modifications_assets_manager_get_files_size(void);
 bool libkrbn_complex_modifications_assets_manager_get_file_title(size_t index,
-                                                                 char* buffer,
+                                                                 char* _Nonnull buffer,
                                                                  size_t length);
 time_t libkrbn_complex_modifications_assets_manager_get_file_last_write_time(size_t index);
 
 size_t libkrbn_complex_modifications_assets_manager_get_rules_size(size_t file_index);
 bool libkrbn_complex_modifications_assets_manager_get_rule_description(size_t file_index,
                                                                        size_t index,
-                                                                       char* buffer,
+                                                                       char* _Nonnull buffer,
                                                                        size_t length);
 
 void libkrbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
@@ -410,11 +424,11 @@ void libkrbn_complex_modifications_assets_manager_erase_file(size_t index);
 void libkrbn_enable_configuration_monitor(void);
 void libkrbn_disable_configuration_monitor(void);
 
-typedef void (*libkrbn_core_configuration_updated)(void);
-void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated callback);
-void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated callback);
+typedef void (*libkrbn_core_configuration_updated_t)(void);
+void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated_t _Nonnull callback);
+void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated_t _Nonnull callback);
 
-bool libkrbn_configuration_monitor_get_parse_error_message(char* buffer,
+bool libkrbn_configuration_monitor_get_parse_error_message(char* _Nonnull buffer,
                                                            size_t length);
 
 //
@@ -423,23 +437,21 @@ bool libkrbn_configuration_monitor_get_parse_error_message(char* buffer,
 
 size_t libkrbn_connected_devices_get_size(void);
 bool libkrbn_connected_devices_get_unique_identifier(size_t index,
-                                                     char* buffer,
+                                                     char* _Nonnull buffer,
                                                      size_t length);
 bool libkrbn_connected_devices_get_manufacturer(size_t index,
-                                                char* buffer,
+                                                char* _Nonnull buffer,
                                                 size_t length);
 bool libkrbn_connected_devices_get_product(size_t index,
-                                           char* buffer,
+                                           char* _Nonnull buffer,
                                            size_t length);
 bool libkrbn_connected_devices_get_transport(size_t index,
-                                             char* buffer,
+                                             char* _Nonnull buffer,
                                              size_t length);
-bool libkrbn_connected_devices_get_device_identifiers(size_t index,
-                                                      libkrbn_device_identifiers* device_identifiers);
 uint64_t libkrbn_connected_devices_get_vendor_id(size_t index);
 uint64_t libkrbn_connected_devices_get_product_id(size_t index);
 bool libkrbn_connected_devices_get_device_address(size_t index,
-                                                  char* buffer,
+                                                  char* _Nonnull buffer,
                                                   size_t length);
 bool libkrbn_connected_devices_get_is_keyboard(size_t index);
 bool libkrbn_connected_devices_get_is_pointing_device(size_t index);
@@ -454,9 +466,9 @@ bool libkrbn_connected_devices_is_apple(size_t index);
 void libkrbn_enable_connected_devices_monitor(void);
 void libkrbn_disable_connected_devices_monitor(void);
 
-typedef void (*libkrbn_connected_devices_updated)(void);
-void libkrbn_register_connected_devices_updated_callback(libkrbn_connected_devices_updated callback);
-void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_devices_updated callback);
+typedef void (*libkrbn_connected_devices_updated_t)(void);
+void libkrbn_register_connected_devices_updated_callback(libkrbn_connected_devices_updated_t _Nonnull callback);
+void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_devices_updated_t _Nonnull callback);
 
 //
 // libkrbn_version_monitor
@@ -465,11 +477,11 @@ void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_dev
 void libkrbn_enable_version_monitor(void);
 void libkrbn_disable_version_monitor(void);
 
-typedef void (*libkrbn_version_updated)(void);
-void libkrbn_register_version_updated_callback(libkrbn_version_updated callback);
-void libkrbn_unregister_version_updated_callback(libkrbn_version_updated callback);
+typedef void (*libkrbn_version_updated_t)(void);
+void libkrbn_register_version_updated_callback(libkrbn_version_updated_t _Nonnull callback);
+void libkrbn_unregister_version_updated_callback(libkrbn_version_updated_t _Nonnull callback);
 
-bool libkrbn_get_version(char* buffer,
+bool libkrbn_get_version(char* _Nonnull buffer,
                          size_t length);
 
 //
@@ -479,14 +491,15 @@ bool libkrbn_get_version(char* buffer,
 void libkrbn_enable_file_monitors(void);
 void libkrbn_disable_file_monitors(void);
 
-typedef void (*libkrbn_file_updated)(void);
-void libkrbn_register_file_updated_callback(const char* file_path, libkrbn_file_updated callback);
-void libkrbn_unregister_file_updated_callback(const char* file_path, libkrbn_file_updated callback);
+typedef void (*libkrbn_file_updated_t)(void);
+void libkrbn_register_file_updated_callback(const char* _Nonnull file_path,
+                                            libkrbn_file_updated_t _Nonnull callback);
+void libkrbn_unregister_file_updated_callback(const char* _Nonnull file_path,
+                                              libkrbn_file_updated_t _Nonnull callback);
 
-void libkrbn_get_devices_json_file_path(char* buffer, size_t length);
-void libkrbn_get_grabber_state_json_file_path(char* buffer, size_t length);
-void libkrbn_get_manipulator_environment_json_file_path(char* buffer, size_t length);
-void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length);
+void libkrbn_get_devices_json_file_path(char* _Nonnull buffer, size_t length);
+void libkrbn_get_grabber_state_json_file_path(char* _Nonnull buffer, size_t length);
+void libkrbn_get_notification_message_json_file_path(char* _Nonnull buffer, size_t length);
 
 //
 // libkrbn_frontmost_application_monitor
@@ -495,13 +508,13 @@ void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length
 void libkrbn_enable_frontmost_application_monitor(void);
 void libkrbn_disable_frontmost_application_monitor(void);
 
-typedef void (*libkrbn_frontmost_application_changed)(void);
-void libkrbn_register_frontmost_application_changed_callback(libkrbn_frontmost_application_changed callback);
-void libkrbn_unregister_frontmost_application_changed_callback(libkrbn_frontmost_application_changed callback);
+typedef void (*libkrbn_frontmost_application_changed_t)(void);
+void libkrbn_register_frontmost_application_changed_callback(libkrbn_frontmost_application_changed_t _Nonnull callback);
+void libkrbn_unregister_frontmost_application_changed_callback(libkrbn_frontmost_application_changed_t _Nonnull callback);
 
-bool libkrbn_get_frontmost_application(char* bundle_identifier_buffer,
+bool libkrbn_get_frontmost_application(char* _Nonnull bundle_identifier_buffer,
                                        size_t bundle_identifier_buffer_length,
-                                       char* file_path_buffer,
+                                       char* _Nonnull file_path_buffer,
                                        size_t file_path_buffer_length);
 
 //
@@ -511,17 +524,17 @@ bool libkrbn_get_frontmost_application(char* bundle_identifier_buffer,
 void libkrbn_enable_log_monitor(void);
 void libkrbn_disable_log_monitor(void);
 
-typedef void (*libkrbn_log_messages_updated)(void);
-void libkrbn_register_log_messages_updated_callback(libkrbn_log_messages_updated callback);
-void libkrbn_unregister_log_messages_updated_callback(libkrbn_log_messages_updated callback);
+typedef void (*libkrbn_log_messages_updated_t)(void);
+void libkrbn_register_log_messages_updated_callback(libkrbn_log_messages_updated_t _Nonnull callback);
+void libkrbn_unregister_log_messages_updated_callback(libkrbn_log_messages_updated_t _Nonnull callback);
 
 size_t libkrbn_log_lines_get_size(void);
 bool libkrbn_log_lines_get_line(size_t index,
-                                char* buffer,
+                                char* _Nonnull buffer,
                                 size_t length);
-bool libkrbn_log_lines_is_warn_line(const char* line);
-bool libkrbn_log_lines_is_error_line(const char* line);
-uint64_t libkrbn_log_lines_get_date_number(const char* line);
+bool libkrbn_log_lines_is_warn_line(const char* _Nonnull line);
+bool libkrbn_log_lines_is_error_line(const char* _Nonnull line);
+uint64_t libkrbn_log_lines_get_date_number(const char* _Nonnull line);
 
 //
 // libkrbn_hid_value_monitor
@@ -530,17 +543,17 @@ uint64_t libkrbn_log_lines_get_date_number(const char* line);
 void libkrbn_enable_hid_value_monitor(void);
 void libkrbn_disable_hid_value_monitor(void);
 
-typedef void (*libkrbn_hid_value_arrived)(uint64_t device_id,
-                                          bool is_keyboard,
-                                          bool is_pointing_device,
-                                          bool is_game_pad,
-                                          int32_t usage_page,
-                                          int32_t usage,
-                                          int64_t logical_max,
-                                          int64_t logical_min,
-                                          int64_t integet_value);
-void libkrbn_register_hid_value_arrived_callback(libkrbn_hid_value_arrived callback);
-void libkrbn_unregister_hid_value_arrived_callback(libkrbn_hid_value_arrived callback);
+typedef void (*libkrbn_hid_value_arrived_t)(uint64_t device_id,
+                                            bool is_keyboard,
+                                            bool is_pointing_device,
+                                            bool is_game_pad,
+                                            int32_t usage_page,
+                                            int32_t usage,
+                                            int64_t logical_max,
+                                            int64_t logical_min,
+                                            int64_t integet_value);
+void libkrbn_register_hid_value_arrived_callback(libkrbn_hid_value_arrived_t _Nonnull callback);
+void libkrbn_unregister_hid_value_arrived_callback(libkrbn_hid_value_arrived_t _Nonnull callback);
 
 bool libkrbn_hid_value_monitor_observed(void);
 
@@ -555,27 +568,33 @@ typedef enum {
   libkrbn_grabber_client_status_closed,
 } libkrbn_grabber_client_status;
 
-void libkrbn_enable_grabber_client(const char* client_socket_directory_name);
+void libkrbn_enable_grabber_client(const char* _Nullable client_socket_directory_name);
 void libkrbn_disable_grabber_client(void);
 
 void libkrbn_grabber_client_async_start(void);
 
-typedef void (*libkrbn_grabber_client_status_changed)(void);
-void libkrbn_register_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback);
-void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed callback);
+typedef void (*libkrbn_grabber_client_status_changed_t)(void);
+void libkrbn_register_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed_t _Nonnull callback);
+void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed_t _Nonnull callback);
 
 libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void);
 
 void libkrbn_grabber_client_async_connect_event_viewer(void);
 void libkrbn_grabber_client_async_get_manipulator_environment(void);
-typedef void (*libkrbn_grabber_client_manipulator_environment_received)(const char* json_string);
-void libkrbn_register_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received callback);
-void libkrbn_unregister_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received callback);
+typedef void (*libkrbn_grabber_client_manipulator_environment_received_t)(const char* _Nonnull json_string);
+void libkrbn_register_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received_t _Nonnull callback);
+void libkrbn_unregister_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received_t _Nonnull callback);
+
+void libkrbn_grabber_client_async_get_system_variables(void);
+typedef void (*libkrbn_grabber_client_system_variables_received_t)(const char* _Nonnull json_string);
+void libkrbn_register_grabber_client_system_variables_received_callback(libkrbn_grabber_client_system_variables_received_t _Nonnull callback);
+void libkrbn_unregister_grabber_client_system_variables_received_callback(libkrbn_grabber_client_system_variables_received_t _Nonnull callback);
 
 void libkrbn_grabber_client_async_connect_multitouch_extension(void);
 
 void libkrbn_grabber_client_async_set_app_icon(int number);
-void libkrbn_grabber_client_async_set_variable(const char* name, int value);
+void libkrbn_grabber_client_async_set_variable(const char* _Nonnull name,
+                                               int value);
 
 #ifdef __cplusplus
 }

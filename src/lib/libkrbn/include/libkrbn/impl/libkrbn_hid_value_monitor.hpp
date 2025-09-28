@@ -102,13 +102,13 @@ public:
     return observed_;
   }
 
-  void register_libkrbn_hid_value_arrived_callback(libkrbn_hid_value_arrived callback) {
+  void register_libkrbn_hid_value_arrived_callback(libkrbn_hid_value_arrived_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_hid_value_arrived_callback(libkrbn_hid_value_arrived callback) {
+  void unregister_libkrbn_hid_value_arrived_callback(libkrbn_hid_value_arrived_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.unregister_callback(callback);
     });
@@ -116,7 +116,7 @@ public:
 
 private:
   void values_arrived(krbn::device_id device_id,
-                      gsl::not_null<std::shared_ptr<krbn::device_properties>> device_properties,
+                      pqrs::not_null_shared_ptr_t<krbn::device_properties> device_properties,
                       std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
     for (const auto& value : *values) {
       auto v = pqrs::osx::iokit_hid_value(*value);
@@ -146,5 +146,5 @@ private:
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<krbn::device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
   std::atomic<bool> observed_;
-  libkrbn_callback_manager<libkrbn_hid_value_arrived> callback_manager_;
+  libkrbn_callback_manager<libkrbn_hid_value_arrived_t> callback_manager_;
 };

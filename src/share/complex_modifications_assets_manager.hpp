@@ -54,11 +54,11 @@ public:
               });
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<complex_modifications_assets_file>>>& get_files(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_assets_file>>& get_files(void) const {
     return files_;
   }
 
 private:
-  std::vector<gsl::not_null<std::shared_ptr<complex_modifications_assets_file>>> files_;
+  std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_assets_file>> files_;
 };
 } // namespace krbn

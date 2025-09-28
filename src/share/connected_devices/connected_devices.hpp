@@ -85,7 +85,7 @@ public:
 
   bool is_loaded(void) const { return loaded_; }
 
-  const std::vector<gsl::not_null<std::shared_ptr<device_properties>>>& get_devices(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<device_properties>>& get_devices(void) const {
     return devices_;
   }
 
@@ -102,7 +102,7 @@ public:
     return nullptr;
   }
 
-  void push_back_device(gsl::not_null<std::shared_ptr<device_properties>> device) {
+  void push_back_device(pqrs::not_null_shared_ptr_t<device_properties> device) {
     if (find_device(device->get_device_identifiers())) {
       return;
     }
@@ -127,7 +127,7 @@ public:
 private:
   bool loaded_;
 
-  std::vector<gsl::not_null<std::shared_ptr<device_properties>>> devices_;
+  std::vector<pqrs::not_null_shared_ptr_t<device_properties>> devices_;
 };
 } // namespace connected_devices
 } // namespace krbn

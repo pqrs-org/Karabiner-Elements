@@ -104,7 +104,7 @@ public:
     //
 
     if (event.get_type() == event::type::device_grabbed) {
-      if (auto v = event.get_if<gsl::not_null<std::shared_ptr<device_properties>>>()) {
+      if (auto v = event.get_if<pqrs::not_null_shared_ptr_t<device_properties>>()) {
         manipulator_environment_.insert_device_properties(device_id, *v);
       }
     }
@@ -233,14 +233,6 @@ public:
 
   manipulator::manipulator_environment& get_manipulator_environment(void) {
     return const_cast<manipulator::manipulator_environment&>(static_cast<const queue&>(*this).get_manipulator_environment());
-  }
-
-  void enable_manipulator_environment_json_output(const std::string& file_path) {
-    manipulator_environment_.enable_json_output(file_path);
-  }
-
-  void disable_manipulator_environment_json_output(void) {
-    manipulator_environment_.disable_json_output();
   }
 
   absolute_time_duration get_time_stamp_delay(void) const {

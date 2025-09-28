@@ -65,19 +65,19 @@ public:
     return j;
   }
 
-  gsl::not_null<std::shared_ptr<complex_modifications_parameters>> get_parameters(void) const {
+  pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters(void) const {
     return parameters_;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<complex_modifications_rule>>>& get_rules(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_rule>>& get_rules(void) const {
     return rules_;
   }
 
-  void push_front_rule(gsl::not_null<std::shared_ptr<complex_modifications_rule>> rule) {
+  void push_front_rule(pqrs::not_null_shared_ptr_t<complex_modifications_rule> rule) {
     rules_.insert(std::begin(rules_), rule);
   }
 
-  void replace_rule(size_t index, gsl::not_null<std::shared_ptr<complex_modifications_rule>> rule) {
+  void replace_rule(size_t index, pqrs::not_null_shared_ptr_t<complex_modifications_rule> rule) {
     if (index < rules_.size()) {
       rules_[index] = rule;
     }
@@ -95,8 +95,8 @@ public:
 
 private:
   nlohmann::json json_;
-  gsl::not_null<std::shared_ptr<complex_modifications_parameters>> parameters_;
-  std::vector<gsl::not_null<std::shared_ptr<complex_modifications_rule>>> rules_;
+  pqrs::not_null_shared_ptr_t<complex_modifications_parameters> parameters_;
+  std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_rule>> rules_;
   configuration_json_helper::helper_values helper_values_;
 };
 } // namespace details

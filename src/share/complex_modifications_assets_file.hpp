@@ -63,7 +63,7 @@ public:
     return title_;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<core_configuration::details::complex_modifications_rule>>>& get_rules(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<core_configuration::details::complex_modifications_rule>>& get_rules(void) const {
     return rules_;
   }
 
@@ -113,6 +113,6 @@ public:
 private:
   std::filesystem::path file_path_;
   std::string title_;
-  std::vector<gsl::not_null<std::shared_ptr<core_configuration::details::complex_modifications_rule>>> rules_;
+  std::vector<pqrs::not_null_shared_ptr_t<core_configuration::details::complex_modifications_rule>> rules_;
 };
 } // namespace krbn

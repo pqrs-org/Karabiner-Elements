@@ -55,7 +55,7 @@ public:
                                software_function,                                        // For software_function
                                pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
                                pqrs::osx::input_source::properties,                      // For input_source_changed
-                               gsl::not_null<std::shared_ptr<device_properties>>,        // For device_grabbed
+                               pqrs::not_null_shared_ptr_t<device_properties>,           // For device_grabbed
                                pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
                                virtual_hid_devices_state,                                // For virtual_hid_devices_state_changed
                                std::monostate>;                                          // For virtual events
@@ -281,7 +281,7 @@ public:
     return make_virtual_event(type::device_keys_and_pointing_buttons_are_released);
   }
 
-  static event make_device_grabbed_event(gsl::not_null<std::shared_ptr<device_properties>> device_properties) {
+  static event make_device_grabbed_event(pqrs::not_null_shared_ptr_t<device_properties> device_properties) {
     event e;
     e.type_ = type::device_grabbed;
     e.value_ = device_properties;

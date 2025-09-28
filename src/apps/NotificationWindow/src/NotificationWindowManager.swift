@@ -64,19 +64,19 @@ public class NotificationWindowManager: NSObject {
   public func start() {
     libkrbn_enable_file_monitors()
 
-    libkrbn_register_file_updated_callback(
-      notificationMessageJsonFilePath.cString(using: .utf8),
-      callback)
-    libkrbn_enqueue_callback(callback)
+    if let cString = notificationMessageJsonFilePath.cString(using: .utf8) {
+      libkrbn_register_file_updated_callback(cString, callback)
+      libkrbn_enqueue_callback(callback)
+    }
 
     updateWindows()
     updateWindowsVisibility()
   }
 
   public func stop() {
-    libkrbn_unregister_file_updated_callback(
-      notificationMessageJsonFilePath.cString(using: .utf8),
-      callback)
+    if let cString = notificationMessageJsonFilePath.cString(using: .utf8) {
+      libkrbn_unregister_file_updated_callback(cString, callback)
+    }
 
     // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
   }

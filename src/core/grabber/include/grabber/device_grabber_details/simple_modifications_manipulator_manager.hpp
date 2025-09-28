@@ -121,7 +121,7 @@ private:
         from_json["modifiers"]["optional"].push_back("any");
 
         auto to_json = json_utility::parse_jsonc(pair.second);
-        std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+        std::vector<pqrs::not_null_shared_ptr_t<manipulator::to_event_definition>> to_event_definitions;
         for (auto&& j : to_json) {
           to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(j));
         }

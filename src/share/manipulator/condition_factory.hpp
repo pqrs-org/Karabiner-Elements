@@ -16,7 +16,7 @@ namespace krbn {
 namespace manipulator {
 namespace condition_factory {
 
-inline gsl::not_null<std::shared_ptr<conditions::base>> make_condition(const nlohmann::json& json) {
+inline pqrs::not_null_shared_ptr_t<conditions::base> make_condition(const nlohmann::json& json) {
   auto it = json.find("type");
   if (it == std::end(json)) {
     throw pqrs::json::unmarshal_error(
@@ -58,7 +58,7 @@ inline gsl::not_null<std::shared_ptr<conditions::base>> make_condition(const nlo
   }
 }
 
-inline gsl::not_null<std::shared_ptr<conditions::base>> make_device_if_condition(const core_configuration::details::device& device) {
+inline pqrs::not_null_shared_ptr_t<conditions::base> make_device_if_condition(const core_configuration::details::device& device) {
   nlohmann::json json;
   json["type"] = "device_if";
   json["identifiers"] = nlohmann::json::array({
@@ -74,7 +74,7 @@ inline gsl::not_null<std::shared_ptr<conditions::base>> make_device_if_condition
   return std::make_shared<conditions::device>(json);
 }
 
-inline gsl::not_null<std::shared_ptr<conditions::base>> make_device_unless_touch_bar_condition(void) {
+inline pqrs::not_null_shared_ptr_t<conditions::base> make_device_unless_touch_bar_condition(void) {
   nlohmann::json json;
   json["type"] = "device_unless";
   json["identifiers"] = nlohmann::json::array({
@@ -85,14 +85,14 @@ inline gsl::not_null<std::shared_ptr<conditions::base>> make_device_unless_touch
   return std::make_shared<conditions::device>(json);
 }
 
-inline gsl::not_null<std::shared_ptr<conditions::base>> make_event_changed_if_condition(bool value) {
+inline pqrs::not_null_shared_ptr_t<conditions::base> make_event_changed_if_condition(bool value) {
   nlohmann::json json;
   json["type"] = "event_changed_if";
   json["value"] = value;
   return std::make_shared<conditions::event_changed>(json);
 }
 
-inline gsl::not_null<std::shared_ptr<conditions::base>> make_frontmost_application_unless_condition(const std::vector<std::string>& bundle_identifiers) {
+inline pqrs::not_null_shared_ptr_t<conditions::base> make_frontmost_application_unless_condition(const std::vector<std::string>& bundle_identifiers) {
   nlohmann::json json;
   json["type"] = "frontmost_application_unless";
   json["bundle_identifiers"] = bundle_identifiers;

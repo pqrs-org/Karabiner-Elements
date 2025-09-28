@@ -9,7 +9,7 @@ class counter_test final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   counter_test(std::shared_ptr<pqrs::dispatcher::pseudo_time_source> time_source,
                std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-               gsl::not_null<std::shared_ptr<const krbn::core_configuration::details::complex_modifications_parameters>> parameters,
+               pqrs::not_null_shared_ptr_t<const krbn::core_configuration::details::complex_modifications_parameters> parameters,
                const mouse_motion_to_scroll::options& options) : dispatcher_client(weak_dispatcher),
                                                                  time_source_(time_source),
                                                                  counter_(weak_dispatcher,

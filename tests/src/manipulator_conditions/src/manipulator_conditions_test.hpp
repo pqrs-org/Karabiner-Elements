@@ -2,6 +2,7 @@
 
 #include "../../share/manipulator_conditions_helper.hpp"
 #include "actual_examples_helper.hpp"
+#include <pqrs/gsl.hpp>
 
 void run_manipulator_conditions_test(void) {
   using namespace boost::ut;
@@ -20,7 +21,7 @@ void run_manipulator_conditions_test(void) {
           },
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::frontmost_application*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -29,7 +30,7 @@ void run_manipulator_conditions_test(void) {
           {"type", "input_source_if"},
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -38,7 +39,7 @@ void run_manipulator_conditions_test(void) {
           {"type", "input_source_unless"},
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -54,7 +55,7 @@ void run_manipulator_conditions_test(void) {
         json["input_sources"].push_back(j);
       }
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::input_source*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -65,7 +66,7 @@ void run_manipulator_conditions_test(void) {
           {"value", 1},
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::variable*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -76,7 +77,7 @@ void run_manipulator_conditions_test(void) {
           {"value", 1},
       });
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::variable*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -85,7 +86,7 @@ void run_manipulator_conditions_test(void) {
       json["type"] = "keyboard_type_if";
       json["keyboard_types"] = nlohmann::json::array({"iso"});
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
@@ -94,38 +95,10 @@ void run_manipulator_conditions_test(void) {
       json["type"] = "keyboard_type_unless";
       json["keyboard_types"] = nlohmann::json::array({"iso"});
       auto condition = krbn::manipulator::condition_factory::make_condition(json);
-      auto p = krbn::memory_utility::unwrap_not_null(condition).get();
+      auto p = pqrs::unwrap_not_null(condition).get();
       expect(dynamic_cast<krbn::manipulator::conditions::keyboard_type*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::conditions::nop*>(p) == nullptr);
     }
-  };
-
-  "manipulator_environment.save_to_file"_test = [] {
-    krbn::manipulator::manipulator_environment manipulator_environment;
-    manipulator_environment.enable_json_output("tmp/manipulator_environment.json");
-
-    manipulator_environment.set_karabiner_machine_identifier(krbn::karabiner_machine_identifier("krbn-identifier1"));
-
-    pqrs::osx::frontmost_application_monitor::application application;
-    application.set_bundle_identifier("com.apple.Terminal");
-    application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
-    manipulator_environment.set_frontmost_application(application);
-
-    pqrs::osx::input_source::properties properties;
-    properties.set_first_language("en");
-    properties.set_input_source_id("com.apple.keylayout.US");
-    manipulator_environment.set_input_source_properties(properties);
-
-    manipulator_environment.set_variable("value1", krbn::manipulator_environment_variable_value(100));
-    manipulator_environment.set_variable("value2", krbn::manipulator_environment_variable_value(200));
-
-    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
-    manipulator_environment.set_core_configuration(core_configuration);
-
-    krbn::async_file_writer::wait();
-
-    expect(krbn::unit_testing::json_helper::compare_files("expected/manipulator_environment.json",
-                                                          "tmp/manipulator_environment.json"));
   };
 
   "conditions.expression"_test = [] {

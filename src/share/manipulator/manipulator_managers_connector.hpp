@@ -29,7 +29,7 @@ public:
     }
 
     void manipulate(absolute_time_point now,
-                    gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) const {
+                    pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) const {
       if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
         while (true) {
           auto processed = manipulator_manager->manipulate(weak_input_event_queue_,
@@ -49,7 +49,7 @@ public:
       }
     }
 
-    void set_manipulator_environment_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
+    void set_manipulator_environment_core_configuration(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) {
       if (auto queue = weak_input_event_queue_.lock()) {
         queue->get_manipulator_environment().set_core_configuration(core_configuration);
       }
@@ -116,7 +116,7 @@ public:
   }
 
   void manipulate(absolute_time_point now,
-                  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) const {
+                  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     for (auto&& c : connections_) {
@@ -133,7 +133,7 @@ public:
     }
   }
 
-  void set_manipulator_environment_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
+  void set_manipulator_environment_core_configuration(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     for (auto&& c : connections_) {

@@ -1,6 +1,7 @@
 #include "../../share/manipulator_conditions_helper.hpp"
 #include "../../share/manipulator_helper.hpp"
 #include <boost/ut.hpp>
+#include <pqrs/gsl.hpp>
 
 namespace modifier_definition = krbn::manipulator::modifier_definition;
 using krbn::manipulator::event_definition;
@@ -50,7 +51,7 @@ void run_manipulator_factory_test(void) {
       auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
       auto manipulator = krbn::manipulator::manipulator_factory::make_manipulator(json,
                                                                                   parameters);
-      auto p = krbn::memory_utility::unwrap_not_null(manipulator).get();
+      auto p = pqrs::unwrap_not_null(manipulator).get();
       expect(dynamic_cast<krbn::manipulator::manipulators::basic::basic*>(p) != nullptr);
       expect(dynamic_cast<krbn::manipulator::manipulators::nop*>(p) == nullptr);
       expect(manipulator->get_validity() == krbn::validity::valid);

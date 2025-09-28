@@ -33,7 +33,7 @@ struct make_entries_parameters final {
   double pointing_motion_wheels_multiplier = 1.0;
 };
 
-static inline not_null_entries_ptr_t make_entries(gsl::not_null<std::shared_ptr<device_properties>> device_properties,
+static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<device_properties> device_properties,
                                                   const std::vector<pqrs::osx::iokit_hid_value>& hid_values,
                                                   const make_entries_parameters& parameters) {
   auto result = std::make_shared<std::vector<not_null_const_entry_ptr_t>>();
@@ -173,7 +173,7 @@ static inline not_null_entries_ptr_t make_entries(gsl::not_null<std::shared_ptr<
 
 static inline not_null_entries_ptr_t insert_device_keys_and_pointing_buttons_are_released_event(not_null_entries_ptr_t entries,
                                                                                                 device_id device_id,
-                                                                                                gsl::not_null<std::shared_ptr<pressed_keys_manager>> pressed_keys_manager) {
+                                                                                                pqrs::not_null_shared_ptr_t<pressed_keys_manager> pressed_keys_manager) {
   auto result = std::make_shared<std::vector<not_null_const_entry_ptr_t>>();
 
   for (const auto& entry : *entries) {

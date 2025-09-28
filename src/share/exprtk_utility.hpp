@@ -11,8 +11,8 @@
 
 #include "logger.hpp"
 #include <exprtk/exprtk.hpp>
-#include <gsl/gsl>
 #include <iostream>
+#include <pqrs/gsl.hpp>
 
 namespace krbn {
 namespace exprtk_utility {
@@ -139,7 +139,7 @@ private:
   mutable std::mutex mutex_;
 };
 
-inline gsl::not_null<std::shared_ptr<expression_wrapper>> compile(const std::string& expression_string) {
+inline pqrs::not_null_shared_ptr_t<expression_wrapper> compile(const std::string& expression_string) {
   return std::make_shared<expression_wrapper>(expression_string);
 }
 

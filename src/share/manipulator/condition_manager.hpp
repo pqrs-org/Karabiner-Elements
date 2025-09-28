@@ -11,11 +11,11 @@ public:
   condition_manager(void) {
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<manipulator::conditions::base>>>& get_conditions(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<manipulator::conditions::base>>& get_conditions(void) const {
     return conditions_;
   }
 
-  void push_back_condition(gsl::not_null<std::shared_ptr<manipulator::conditions::base>> condition) {
+  void push_back_condition(pqrs::not_null_shared_ptr_t<manipulator::conditions::base> condition) {
     conditions_.push_back(condition);
   }
 
@@ -69,7 +69,7 @@ public:
   }
 
 private:
-  std::vector<gsl::not_null<std::shared_ptr<manipulator::conditions::base>>> conditions_;
+  std::vector<pqrs::not_null_shared_ptr_t<manipulator::conditions::base>> conditions_;
 };
 } // namespace manipulator
 } // namespace krbn

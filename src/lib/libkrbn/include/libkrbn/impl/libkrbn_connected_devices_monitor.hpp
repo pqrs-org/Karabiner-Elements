@@ -41,13 +41,13 @@ public:
     return weak_connected_devices_;
   }
 
-  void register_libkrbn_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
+  void register_libkrbn_connected_devices_updated_callback(libkrbn_connected_devices_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_connected_devices_updated_callback(libkrbn_connected_devices_updated callback) {
+  void unregister_libkrbn_connected_devices_updated_callback(libkrbn_connected_devices_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.unregister_callback(callback);
     });
@@ -56,5 +56,5 @@ public:
 private:
   std::unique_ptr<krbn::connected_devices_monitor> monitor_;
   std::weak_ptr<const krbn::connected_devices::connected_devices> weak_connected_devices_;
-  libkrbn_callback_manager<libkrbn_connected_devices_updated> callback_manager_;
+  libkrbn_callback_manager<libkrbn_connected_devices_updated_t> callback_manager_;
 };

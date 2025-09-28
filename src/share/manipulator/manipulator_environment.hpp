@@ -47,21 +47,12 @@ public:
     });
   }
 
-  void enable_json_output(const std::string& output_json_file_path) {
-    output_json_file_path_ = output_json_file_path;
-  }
-
-  void disable_json_output(void) {
-    output_json_file_path_.clear();
-  }
-
   const karabiner_machine_identifier& get_karabiner_machine_identifier(void) const {
     return karabiner_machine_identifier_;
   }
 
   void set_karabiner_machine_identifier(const karabiner_machine_identifier& value) {
     karabiner_machine_identifier_ = value;
-    async_save_to_file();
   }
 
   const device_properties_manager& get_device_properties_manager(void) const {
@@ -73,7 +64,7 @@ public:
   }
 
   void insert_device_properties(device_id device_id,
-                                gsl::not_null<std::shared_ptr<device_properties>> device_properties) {
+                                pqrs::not_null_shared_ptr_t<device_properties> device_properties) {
     device_properties_manager_.insert(device_id, device_properties);
   }
 
@@ -87,7 +78,6 @@ public:
 
   void set_frontmost_application(const pqrs::osx::frontmost_application_monitor::application& value) {
     frontmost_application_ = value;
-    async_save_to_file();
   }
 
   const pqrs::osx::input_source::properties& get_input_source_properties(void) const {
@@ -96,7 +86,6 @@ public:
 
   void set_input_source_properties(const pqrs::osx::input_source::properties& value) {
     input_source_properties_ = value;
-    async_save_to_file();
   }
 
   manipulator_environment_variable_value get_variable(const std::string& name) const {
@@ -110,42 +99,31 @@ public:
   void set_variable(const std::string& name, const manipulator_environment_variable_value& value) {
     // logger::get_logger()->info("set_variable {0} {1}", name, value);
     variables_[name] = value;
-    async_save_to_file();
   }
 
   void unset_variable(const std::string& name) {
     variables_.erase(name);
-    async_save_to_file();
   }
 
-  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> get_core_configuration(void) const {
+  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration(void) const {
     return core_configuration_;
   }
 
-  void set_core_configuration(gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration) {
+  void set_core_configuration(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) {
     core_configuration_ = core_configuration;
-    async_save_to_file();
   }
 
   void set_virtual_hid_devices_state(const virtual_hid_devices_state& value) {
     virtual_hid_devices_state_ = value;
-    async_save_to_file();
   }
 
 private:
-  void async_save_to_file(void) const {
-    if (!output_json_file_path_.empty()) {
-      json_writer::async_save_to_file(to_json(), output_json_file_path_, 0755, 0644);
-    }
-  }
-
-  std::string output_json_file_path_;
   karabiner_machine_identifier karabiner_machine_identifier_;
   device_properties_manager device_properties_manager_;
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, manipulator_environment_variable_value> variables_;
-  gsl::not_null<std::shared_ptr<const core_configuration::core_configuration>> core_configuration_;
+  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
   virtual_hid_devices_state virtual_hid_devices_state_;
 };
 } // namespace manipulator

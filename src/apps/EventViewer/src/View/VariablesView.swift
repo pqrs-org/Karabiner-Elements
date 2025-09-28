@@ -29,5 +29,11 @@ struct VariablesView: View {
           .background(Color(NSColor.textBackgroundColor))
       }
     }
+    .onAppear {
+      VariablesJsonString.shared.start()
+    }
+    .onDisappear {
+      VariablesJsonString.shared.stop()
+    }
   }
 }

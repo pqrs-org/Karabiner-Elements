@@ -16,7 +16,7 @@ public:
   }
 
   void insert(device_id key,
-              gsl::not_null<std::shared_ptr<device_properties>> value) {
+              pqrs::not_null_shared_ptr_t<device_properties> value) {
     map_[key] = value;
   }
 

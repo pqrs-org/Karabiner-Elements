@@ -26,7 +26,7 @@ public:
     manipulator(const manipulator&) = delete;
 
     manipulator(const nlohmann::json& json,
-                gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters,
+                pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
                 error_handling error_handling)
         : json_(json),
           parameters_(std::make_shared<complex_modifications_parameters>(parameters->to_json(), error_handling)) {
@@ -63,7 +63,7 @@ public:
       return conditions_;
     }
 
-    gsl::not_null<std::shared_ptr<complex_modifications_parameters>> get_parameters(void) const {
+    pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters(void) const {
       return parameters_;
     }
 
@@ -74,14 +74,14 @@ public:
   private:
     nlohmann::json json_;
     std::vector<condition> conditions_;
-    gsl::not_null<std::shared_ptr<complex_modifications_parameters>> parameters_;
+    pqrs::not_null_shared_ptr_t<complex_modifications_parameters> parameters_;
     std::string description_;
   };
 
   complex_modifications_rule(const complex_modifications_rule&) = delete;
 
   complex_modifications_rule(const nlohmann::json& json,
-                             gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters,
+                             pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
                              error_handling error_handling)
       : json_(json) {
     helper_values_.push_back_value<bool>("enabled",
@@ -144,7 +144,7 @@ public:
     return j;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<manipulator>>>& get_manipulators(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<manipulator>>& get_manipulators(void) const {
     return manipulators_;
   }
 
@@ -162,7 +162,7 @@ public:
 
 private:
   nlohmann::json json_;
-  std::vector<gsl::not_null<std::shared_ptr<manipulator>>> manipulators_;
+  std::vector<pqrs::not_null_shared_ptr_t<manipulator>> manipulators_;
   bool enabled_;
   std::string description_;
   configuration_json_helper::helper_values helper_values_;

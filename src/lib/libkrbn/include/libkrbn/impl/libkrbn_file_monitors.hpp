@@ -31,11 +31,11 @@ public:
       monitor_ = nullptr;
     }
 
-    void register_callback(libkrbn_file_updated callback) {
+    void register_callback(libkrbn_file_updated_t callback) {
       callback_manager_.register_callback(callback);
     }
 
-    void unregister_callback(libkrbn_file_updated callback) {
+    void unregister_callback(libkrbn_file_updated_t callback) {
       callback_manager_.unregister_callback(callback);
     }
 
@@ -45,7 +45,7 @@ public:
 
   private:
     std::unique_ptr<pqrs::osx::file_monitor> monitor_;
-    libkrbn_callback_manager<libkrbn_file_updated> callback_manager_;
+    libkrbn_callback_manager<libkrbn_file_updated_t> callback_manager_;
   };
 
   libkrbn_file_monitors(const libkrbn_file_monitors&) = delete;
@@ -61,7 +61,7 @@ public:
   }
 
   void register_libkrbn_file_updated_callback(const std::string& file_path,
-                                              libkrbn_file_updated callback) {
+                                              libkrbn_file_updated_t callback) {
     enqueue_to_dispatcher([this, file_path, callback] {
       auto it = monitors_.find(file_path);
       if (it == std::end(monitors_)) {
@@ -74,7 +74,7 @@ public:
   }
 
   void unregister_libkrbn_file_updated_callback(const std::string& file_path,
-                                                libkrbn_file_updated callback) {
+                                                libkrbn_file_updated_t callback) {
     enqueue_to_dispatcher([this, file_path, callback] {
       auto it = monitors_.find(file_path);
       if (it != std::end(monitors_)) {

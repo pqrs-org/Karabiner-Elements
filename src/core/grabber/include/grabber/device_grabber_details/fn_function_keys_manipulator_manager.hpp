@@ -57,7 +57,7 @@ public:
             {"modifiers", nlohmann::json::array({"fn"})},
         });
 
-        std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+        std::vector<pqrs::not_null_shared_ptr_t<manipulator::to_event_definition>> to_event_definitions;
         to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(to_json));
 
         try {
@@ -133,7 +133,7 @@ public:
 }
       )"_json;
 
-        std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+        std::vector<pqrs::not_null_shared_ptr_t<manipulator::to_event_definition>> to_event_definitions;
 
         to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(to_json));
 
@@ -208,7 +208,7 @@ public:
 
         auto to_json = d["to"];
 
-        std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+        std::vector<pqrs::not_null_shared_ptr_t<manipulator::to_event_definition>> to_event_definitions;
         to_event_definitions.push_back(std::make_shared<manipulator::to_event_definition>(to_json));
 
         try {
@@ -246,7 +246,7 @@ private:
         return nullptr;
       }
 
-      std::vector<gsl::not_null<std::shared_ptr<manipulator::to_event_definition>>> to_event_definitions;
+      std::vector<pqrs::not_null_shared_ptr_t<manipulator::to_event_definition>> to_event_definitions;
       for (auto&& j : to_json) {
         // Note:
         // Normal f1...f12 keys will be changed media control keys by the Apple keyboard driver of macOS.

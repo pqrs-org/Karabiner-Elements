@@ -7,7 +7,7 @@ namespace {
 auto empty_core_configuration = gsl::make_not_null(std::make_shared<krbn::core_configuration::core_configuration>());
 auto empty_device = gsl::make_not_null(std::make_shared<krbn::core_configuration::details::device>());
 
-gsl::not_null<std::shared_ptr<krbn::core_configuration::core_configuration>> get_current_core_configuration(void) {
+pqrs::not_null_shared_ptr_t<krbn::core_configuration::core_configuration> get_current_core_configuration(void) {
   if (auto manager = libkrbn_cpp::get_components_manager()) {
     if (auto c = manager->get_current_core_configuration()) {
       return c;
@@ -17,7 +17,7 @@ gsl::not_null<std::shared_ptr<krbn::core_configuration::core_configuration>> get
   return empty_core_configuration;
 }
 
-gsl::not_null<std::shared_ptr<krbn::core_configuration::details::simple_modifications>> find_simple_modifications(const libkrbn_device_identifiers* device_identifiers) {
+pqrs::not_null_shared_ptr_t<krbn::core_configuration::details::simple_modifications> find_simple_modifications(const libkrbn_device_identifiers* device_identifiers) {
   auto di = libkrbn_cpp::make_device_identifiers(device_identifiers);
   auto c = get_current_core_configuration();
   if (di.empty()) {
@@ -28,7 +28,7 @@ gsl::not_null<std::shared_ptr<krbn::core_configuration::details::simple_modifica
   }
 }
 
-gsl::not_null<std::shared_ptr<krbn::core_configuration::details::simple_modifications>> find_fn_function_keys(const libkrbn_device_identifiers* device_identifiers) {
+pqrs::not_null_shared_ptr_t<krbn::core_configuration::details::simple_modifications> find_fn_function_keys(const libkrbn_device_identifiers* device_identifiers) {
   auto di = libkrbn_cpp::make_device_identifiers(device_identifiers);
   auto c = get_current_core_configuration();
   if (di.empty()) {

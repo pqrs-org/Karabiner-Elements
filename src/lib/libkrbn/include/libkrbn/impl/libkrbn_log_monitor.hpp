@@ -47,13 +47,13 @@ public:
     return lines_;
   }
 
-  void register_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
+  void register_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated callback) {
+  void unregister_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.unregister_callback(callback);
     });
@@ -62,5 +62,5 @@ public:
 private:
   std::unique_ptr<pqrs::spdlog::monitor> monitor_;
   std::shared_ptr<std::deque<std::string>> lines_;
-  libkrbn_callback_manager<libkrbn_log_messages_updated> callback_manager_;
+  libkrbn_callback_manager<libkrbn_log_messages_updated_t> callback_manager_;
 };

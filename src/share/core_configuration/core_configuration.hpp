@@ -131,7 +131,7 @@ public:
     return *machine_specific_;
   }
 
-  const std::vector<gsl::not_null<std::shared_ptr<details::profile>>>& get_profiles(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<details::profile>>& get_profiles(void) const {
     return profiles_;
   }
 
@@ -269,9 +269,9 @@ private:
   bool loaded_;
   std::string parse_error_message_;
 
-  gsl::not_null<std::shared_ptr<details::global_configuration>> global_configuration_;
-  gsl::not_null<std::shared_ptr<details::machine_specific>> machine_specific_;
-  std::vector<gsl::not_null<std::shared_ptr<details::profile>>> profiles_;
+  pqrs::not_null_shared_ptr_t<details::global_configuration> global_configuration_;
+  pqrs::not_null_shared_ptr_t<details::machine_specific> machine_specific_;
+  std::vector<pqrs::not_null_shared_ptr_t<details::profile>> profiles_;
   configuration_json_helper::helper_values helper_values_;
 };
 } // namespace core_configuration

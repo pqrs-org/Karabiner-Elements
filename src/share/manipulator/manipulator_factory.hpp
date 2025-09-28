@@ -12,8 +12,8 @@
 namespace krbn {
 namespace manipulator {
 namespace manipulator_factory {
-inline gsl::not_null<std::shared_ptr<manipulators::base>> make_manipulator(const nlohmann::json& json,
-                                                                           gsl::not_null<std::shared_ptr<const core_configuration::details::complex_modifications_parameters>> parameters) {
+inline pqrs::not_null_shared_ptr_t<manipulators::base> make_manipulator(const nlohmann::json& json,
+                                                                        pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters) {
   auto it = json.find("type");
   if (it == std::end(json)) {
     throw pqrs::json::unmarshal_error(fmt::format("`type` must be specified: {0}", pqrs::json::dump_for_error_message(json)));

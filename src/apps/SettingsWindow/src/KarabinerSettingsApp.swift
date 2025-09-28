@@ -21,10 +21,10 @@ struct KarabinerSettingsApp: App {
     KarabinerAppHelper.shared.observeVersionUpdated()
     Doctor.shared.start()
     LibKrbn.ConnectedDevices.shared.watch()
-    LibKrbn.GrabberClient.shared.start("")
     LibKrbn.Settings.shared.watch()
     ServicesMonitor.shared.start()
     SettingsChecker.shared.start()
+    SettingsGrabberClient.shared.start()
     StateJsonMonitor.shared.start()
     SystemPreferences.shared.start()
   }

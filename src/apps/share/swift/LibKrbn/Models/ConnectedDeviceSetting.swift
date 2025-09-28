@@ -497,13 +497,15 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           connectedDevice.withDeviceIdentifiersCPointer {
-            if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(
-              $0, gamePadStickXFormula.cString(using: .utf8))
-            {
-              gamePadStickXFormulaError = false
-              Settings.shared.save()
-            } else {
-              gamePadStickXFormulaError = true
+            if let cString = gamePadStickXFormula.cString(using: .utf8) {
+              if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(
+                $0, cString)
+              {
+                gamePadStickXFormulaError = false
+                Settings.shared.save()
+              } else {
+                gamePadStickXFormulaError = true
+              }
             }
           }
         }
@@ -526,13 +528,15 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           connectedDevice.withDeviceIdentifiersCPointer {
-            if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(
-              $0, gamePadStickYFormula.cString(using: .utf8))
-            {
-              gamePadStickYFormulaError = false
-              Settings.shared.save()
-            } else {
-              gamePadStickYFormulaError = true
+            if let cString = gamePadStickYFormula.cString(using: .utf8) {
+              if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(
+                $0, cString)
+              {
+                gamePadStickYFormulaError = false
+                Settings.shared.save()
+              } else {
+                gamePadStickYFormulaError = true
+              }
             }
           }
         }
@@ -555,13 +559,15 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           connectedDevice.withDeviceIdentifiersCPointer {
-            if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(
-              $0, gamePadStickVerticalWheelFormula.cString(using: .utf8))
-            {
-              gamePadStickVerticalWheelFormulaError = false
-              Settings.shared.save()
-            } else {
-              gamePadStickVerticalWheelFormulaError = true
+            if let cString = gamePadStickVerticalWheelFormula.cString(using: .utf8) {
+              if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+                $0, cString)
+              {
+                gamePadStickVerticalWheelFormulaError = false
+                Settings.shared.save()
+              } else {
+                gamePadStickVerticalWheelFormulaError = true
+              }
             }
           }
         }
@@ -585,13 +591,15 @@ extension LibKrbn {
       didSet {
         if didSetEnabled {
           connectedDevice.withDeviceIdentifiersCPointer {
-            if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
-              $0, gamePadStickHorizontalWheelFormula.cString(using: .utf8))
-            {
-              gamePadStickHorizontalWheelFormulaError = false
-              Settings.shared.save()
-            } else {
-              gamePadStickHorizontalWheelFormulaError = true
+            if let cString = gamePadStickHorizontalWheelFormula.cString(using: .utf8) {
+              if libkrbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
+                $0, cString)
+              {
+                gamePadStickHorizontalWheelFormulaError = false
+                Settings.shared.save()
+              } else {
+                gamePadStickHorizontalWheelFormulaError = true
+              }
             }
           }
         }

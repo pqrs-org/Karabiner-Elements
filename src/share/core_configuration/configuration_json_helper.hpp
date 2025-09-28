@@ -1,10 +1,9 @@
 #pragma once
 
 #include "logger.hpp"
-#include "memory_utility.hpp"
 #include "types.hpp"
 #include <chrono>
-#include <gsl/gsl>
+#include <pqrs/gsl.hpp>
 #include <pqrs/json.hpp>
 
 namespace krbn {
@@ -168,7 +167,7 @@ template <typename T>
 class object_t final : public base_t {
 public:
   object_t(const std::string& key,
-           gsl::not_null<std::shared_ptr<T>>& value)
+           pqrs::not_null_shared_ptr_t<T>& value)
       : key_(key),
         value_(value) {
   }
@@ -203,14 +202,14 @@ public:
 
 private:
   std::string key_;
-  gsl::not_null<std::shared_ptr<T>>& value_;
+  pqrs::not_null_shared_ptr_t<T>& value_;
 };
 
 template <typename T>
 class array_t final : public base_t {
 public:
   array_t(const std::string& key,
-          std::vector<gsl::not_null<std::shared_ptr<T>>>& value)
+          std::vector<pqrs::not_null_shared_ptr_t<T>>& value)
       : key_(key),
         value_(value) {
   }
@@ -259,7 +258,7 @@ public:
 
 private:
   std::string key_;
-  std::vector<gsl::not_null<std::shared_ptr<T>>>& value_;
+  std::vector<pqrs::not_null_shared_ptr_t<T>>& value_;
 };
 
 class helper_values final {
@@ -275,14 +274,14 @@ public:
 
   template <typename T>
   void push_back_object(const std::string& key,
-                        gsl::not_null<std::shared_ptr<T>>& value) {
+                        pqrs::not_null_shared_ptr_t<T>& value) {
     values_.push_back(std::make_shared<object_t<T>>(key,
                                                     value));
   }
 
   template <typename T>
   void push_back_array(const std::string& key,
-                       std::vector<gsl::not_null<std::shared_ptr<T>>>& value) {
+                       std::vector<pqrs::not_null_shared_ptr_t<T>>& value) {
     values_.push_back(std::make_shared<array_t<T>>(key,
                                                    value));
   }
@@ -304,7 +303,7 @@ public:
   template <typename T>
   std::shared_ptr<value_t<T>> find_value(const T& value) const {
     for (const auto& v : values_) {
-      if (auto p = std::dynamic_pointer_cast<value_t<T>>(memory_utility::unwrap_not_null(v))) {
+      if (auto p = std::dynamic_pointer_cast<value_t<T>>(pqrs::unwrap_not_null(v))) {
         if (&(p->get_value()) == &value) {
           return p;
         }
@@ -352,7 +351,7 @@ public:
   }
 
 private:
-  std::vector<gsl::not_null<std::shared_ptr<base_t>>> values_;
+  std::vector<pqrs::not_null_shared_ptr_t<base_t>> values_;
 };
 
 } // namespace configuration_json_helper
