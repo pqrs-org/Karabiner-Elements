@@ -41,7 +41,7 @@ final class SettingsGrabberClient: ObservableObject {
 
   init() {
     systemVariablesTimer = AsyncTimerSequence(
-      interval: .milliseconds(500),
+      interval: .milliseconds(1000),
       clock: .continuous
     )
   }
