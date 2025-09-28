@@ -2,6 +2,9 @@
 
 ## Beta
 
+-   💥 Breaking changes
+    -   The file `/Library/Application Support/org.pqrs/tmp/karabiner_grabber_manipulator_environment.json` is no longer updated.
+        You can still use EventViewer to check current variable values.
 -   🐛 Bug Fixes
     -   Fixed an issue in EventViewer where new events were not added while the "Unknown Events" tab was open.
 -   ✨ New Features
