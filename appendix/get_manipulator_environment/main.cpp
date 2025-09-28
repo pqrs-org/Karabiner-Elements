@@ -63,13 +63,9 @@ int main(int argc, const char* argv[]) {
 
   libkrbn_grabber_client_async_get_manipulator_environment();
 
-  std::thread thread([] {
-    global_wait->wait_notice();
+  global_wait->wait_notice();
 
-    libkrbn_terminate();
-  });
-
-  thread.join();
+  libkrbn_terminate();
 
   std::cout << "finished" << std::endl;
 

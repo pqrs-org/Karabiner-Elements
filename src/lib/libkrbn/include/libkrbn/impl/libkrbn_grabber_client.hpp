@@ -45,6 +45,16 @@ public:
               break;
             }
 
+            case krbn::operation_type::system_variables: {
+              auto json_dump = krbn::json_utility::dump(json.at("system_variables"));
+
+              for (const auto& c : system_variables_received_callback_manager_.get_callbacks()) {
+                c(json_dump.c_str());
+              }
+
+              break;
+            }
+
             default:
               break;
           }
@@ -75,6 +85,10 @@ public:
 
   void async_get_manipulator_environment(void) {
     grabber_client_->async_get_manipulator_environment();
+  }
+
+  void async_get_system_variables(void) {
+    grabber_client_->async_get_system_variables();
   }
 
   void async_connect_multitouch_extension(void) {
@@ -129,6 +143,18 @@ public:
     });
   }
 
+  void register_libkrbn_grabber_client_system_variables_received_callback(libkrbn_grabber_client_manipulator_environment_received_t callback) {
+    enqueue_to_dispatcher([this, callback] {
+      system_variables_received_callback_manager_.register_callback(callback);
+    });
+  }
+
+  void unregister_libkrbn_grabber_client_system_variables_received_callback(libkrbn_grabber_client_manipulator_environment_received_t callback) {
+    enqueue_to_dispatcher([this, callback] {
+      system_variables_received_callback_manager_.unregister_callback(callback);
+    });
+  }
+
 private:
   // This method should be called in the shared dispatcher thread.
   void set_status(libkrbn_grabber_client_status status) {
@@ -143,4 +169,5 @@ private:
   libkrbn_grabber_client_status status_;
   libkrbn_callback_manager<libkrbn_grabber_client_status_changed_t> status_changed_callback_manager_;
   libkrbn_callback_manager<libkrbn_grabber_client_manipulator_environment_received_t> manipulator_environment_received_callback_manager_;
+  libkrbn_callback_manager<libkrbn_grabber_client_system_variables_received_t> system_variables_received_callback_manager_;
 };

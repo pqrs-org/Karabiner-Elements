@@ -37,6 +37,13 @@ public:
       chmod(directory_path.c_str(), 0755);
     }
 
+    verification_exempt_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
+        weak_dispatcher_,
+        constants::local_datagram_buffer_size,
+        [](auto&& peer_pid) {
+          return true;
+        });
+
     auto socket_file_path = grabber_socket_file_path();
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
@@ -209,6 +216,34 @@ public:
             }
             break;
 
+          case operation_type::get_system_variables:
+            if (device_grabber_) {
+              device_grabber_->async_invoke_with_manipulator_environment_json(
+                  [this, sender_endpoint](auto&& manipulator_environment_json) {
+                    if (verification_exempt_peer_manager_) {
+                      try {
+                        auto use_fkeys_as_standard_function_keys = manipulator_environment_json.at("variables").at("system.use_fkeys_as_standard_function_keys");
+                        auto scroll_direction_is_natural = manipulator_environment_json.at("variables").at("system.scroll_direction_is_natural");
+
+                        nlohmann::json json{
+                            {"operation_type", operation_type::system_variables},
+                            {
+                                "system_variables",
+                                {
+                                    {"system.use_fkeys_as_standard_function_keys", use_fkeys_as_standard_function_keys},
+                                    {"system.scroll_direction_is_natural", scroll_direction_is_natural},
+                                },
+                            }};
+                        verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
+                                                                      nlohmann::json::to_msgpack(json));
+                      } catch (std::exception& e) {
+                        // Do nothing
+                      }
+                    }
+                  });
+            }
+            break;
+
           default:
             break;
         }
@@ -231,6 +266,7 @@ public:
       console_user_server_client_ = nullptr;
       event_viewer_client_ = nullptr;
       multitouch_extension_client_ = nullptr;
+      verification_exempt_peer_manager_ = nullptr;
       stop_device_grabber();
     });
 
@@ -309,6 +345,7 @@ private:
   uid_t current_console_user_id_;
   std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer_;
 
+  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verification_exempt_peer_manager_;
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<event_viewer_client> event_viewer_client_;

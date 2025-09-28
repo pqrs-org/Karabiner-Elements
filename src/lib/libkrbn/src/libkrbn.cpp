@@ -845,6 +845,30 @@ void libkrbn_unregister_grabber_client_manipulator_environment_received_callback
   }
 }
 
+void libkrbn_grabber_client_async_get_system_variables(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->async_get_system_variables();
+    }
+  }
+}
+
+void libkrbn_register_grabber_client_system_variables_received_callback(libkrbn_grabber_client_system_variables_received_t _Nonnull callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->register_libkrbn_grabber_client_system_variables_received_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_grabber_client_system_variables_received_callback(libkrbn_grabber_client_system_variables_received_t _Nonnull callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_grabber_client()) {
+      c->unregister_libkrbn_grabber_client_system_variables_received_callback(callback);
+    }
+  }
+}
+
 void libkrbn_grabber_client_async_connect_multitouch_extension(void) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_grabber_client()) {
