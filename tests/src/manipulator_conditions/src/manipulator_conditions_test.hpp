@@ -101,34 +101,6 @@ void run_manipulator_conditions_test(void) {
     }
   };
 
-  "manipulator_environment.save_to_file"_test = [] {
-    krbn::manipulator::manipulator_environment manipulator_environment;
-    manipulator_environment.enable_json_output("tmp/manipulator_environment.json");
-
-    manipulator_environment.set_karabiner_machine_identifier(krbn::karabiner_machine_identifier("krbn-identifier1"));
-
-    pqrs::osx::frontmost_application_monitor::application application;
-    application.set_bundle_identifier("com.apple.Terminal");
-    application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
-    manipulator_environment.set_frontmost_application(application);
-
-    pqrs::osx::input_source::properties properties;
-    properties.set_first_language("en");
-    properties.set_input_source_id("com.apple.keylayout.US");
-    manipulator_environment.set_input_source_properties(properties);
-
-    manipulator_environment.set_variable("value1", krbn::manipulator_environment_variable_value(100));
-    manipulator_environment.set_variable("value2", krbn::manipulator_environment_variable_value(200));
-
-    auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
-    manipulator_environment.set_core_configuration(core_configuration);
-
-    krbn::async_file_writer::wait();
-
-    expect(krbn::unit_testing::json_helper::compare_files("expected/manipulator_environment.json",
-                                                          "tmp/manipulator_environment.json"));
-  };
-
   "conditions.expression"_test = [] {
     krbn::manipulator::manipulator_environment manipulator_environment;
     krbn::event_queue::entry entry(krbn::device_id(1),

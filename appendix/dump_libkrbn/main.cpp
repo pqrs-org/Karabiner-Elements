@@ -14,10 +14,6 @@ void version_updated_callback(void) {
   }
 }
 
-void manipulator_environment_json_file_updated_callback(void) {
-  std::cout << __func__ << std::endl;
-}
-
 void frontmost_application_changed_callback(void) {
   std::cout << __func__ << std::endl;
 
@@ -61,8 +57,6 @@ int main(int argc, const char* argv[]) {
   frontmost_application_changed_callback();
 
   libkrbn_enable_file_monitors();
-  libkrbn_get_manipulator_environment_json_file_path(buffer, sizeof(buffer));
-  libkrbn_register_file_updated_callback(buffer, manipulator_environment_json_file_updated_callback);
 
   {
     libkrbn_enable_complex_modifications_assets_manager();

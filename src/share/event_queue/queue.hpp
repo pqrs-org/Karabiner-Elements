@@ -235,14 +235,6 @@ public:
     return const_cast<manipulator::manipulator_environment&>(static_cast<const queue&>(*this).get_manipulator_environment());
   }
 
-  void enable_manipulator_environment_json_output(const std::string& file_path) {
-    manipulator_environment_.enable_json_output(file_path);
-  }
-
-  void disable_manipulator_environment_json_output(void) {
-    manipulator_environment_.disable_json_output();
-  }
-
   absolute_time_duration get_time_stamp_delay(void) const {
     return time_stamp_delay_;
   }

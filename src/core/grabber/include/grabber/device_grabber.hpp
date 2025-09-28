@@ -160,8 +160,6 @@ public:
             notification_message_manager_);
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
-    complex_modifications_applied_event_queue_->enable_manipulator_environment_json_output(constants::get_manipulator_environment_json_file_path());
-
     // Connect manipulator_managers
 
     manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_->get_manipulator_manager(),

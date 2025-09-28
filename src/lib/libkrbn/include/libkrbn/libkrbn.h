@@ -499,7 +499,6 @@ void libkrbn_unregister_file_updated_callback(const char* _Nonnull file_path,
 
 void libkrbn_get_devices_json_file_path(char* _Nonnull buffer, size_t length);
 void libkrbn_get_grabber_state_json_file_path(char* _Nonnull buffer, size_t length);
-void libkrbn_get_manipulator_environment_json_file_path(char* _Nonnull buffer, size_t length);
 void libkrbn_get_notification_message_json_file_path(char* _Nonnull buffer, size_t length);
 
 //

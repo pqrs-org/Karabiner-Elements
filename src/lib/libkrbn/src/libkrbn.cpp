@@ -621,10 +621,6 @@ void libkrbn_get_grabber_state_json_file_path(char* buffer, size_t length) {
   strlcpy(buffer, krbn::constants::get_grabber_state_json_file_path().c_str(), length);
 }
 
-void libkrbn_get_manipulator_environment_json_file_path(char* buffer, size_t length) {
-  strlcpy(buffer, krbn::constants::get_manipulator_environment_json_file_path().c_str(), length);
-}
-
 void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length) {
   strlcpy(buffer, krbn::constants::get_notification_message_file_path().c_str(), length);
 }
