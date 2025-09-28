@@ -55,11 +55,11 @@ public:
     });
   }
 
-  void async_send_manipulator_environment(const nlohmann::json& manipulator_environment_json) {
+  void async_send_manipulator_environment(const manipulator::manipulator_environment& manipulator_environment) {
     if (peer_verified_) {
       nlohmann::json json{
           {"operation_type", operation_type::manipulator_environment},
-          {"manipulator_environment", manipulator_environment_json},
+          {"manipulator_environment", manipulator_environment.to_json()},
       };
       client_->async_send(nlohmann::json::to_msgpack(json));
     }

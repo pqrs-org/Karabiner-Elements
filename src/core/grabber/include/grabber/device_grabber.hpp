@@ -617,10 +617,9 @@ public:
     });
   }
 
-  void async_invoke_with_manipulator_environment_json(std::function<void(const nlohmann::json&)> function) const {
+  void async_invoke_with_manipulator_environment(std::function<void(const manipulator::manipulator_environment&)> function) const {
     enqueue_to_dispatcher([this, function] {
-      auto json = complex_modifications_applied_event_queue_->get_manipulator_environment().to_json();
-      function(json);
+      function(complex_modifications_applied_event_queue_->get_manipulator_environment());
     });
   }
 

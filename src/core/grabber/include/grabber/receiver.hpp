@@ -145,10 +145,10 @@ public:
 
           case operation_type::get_manipulator_environment:
             if (device_grabber_) {
-              device_grabber_->async_invoke_with_manipulator_environment_json(
-                  [this](auto&& manipulator_environment_json) {
+              device_grabber_->async_invoke_with_manipulator_environment(
+                  [this](auto&& manipulator_environment) {
                     if (event_viewer_client_) {
-                      event_viewer_client_->async_send_manipulator_environment(manipulator_environment_json);
+                      event_viewer_client_->async_send_manipulator_environment(manipulator_environment);
                     }
                   });
             }
@@ -218,27 +218,26 @@ public:
 
           case operation_type::get_system_variables:
             if (device_grabber_) {
-              device_grabber_->async_invoke_with_manipulator_environment_json(
-                  [this, sender_endpoint](auto&& manipulator_environment_json) {
+              device_grabber_->async_invoke_with_manipulator_environment(
+                  [this, sender_endpoint](auto&& manipulator_environment) {
                     if (verification_exempt_peer_manager_) {
-                      try {
-                        auto use_fkeys_as_standard_function_keys = manipulator_environment_json.at("variables").at("system.use_fkeys_as_standard_function_keys");
-                        auto scroll_direction_is_natural = manipulator_environment_json.at("variables").at("system.scroll_direction_is_natural");
-
-                        nlohmann::json json{
-                            {"operation_type", operation_type::system_variables},
-                            {
-                                "system_variables",
-                                {
-                                    {"system.use_fkeys_as_standard_function_keys", use_fkeys_as_standard_function_keys},
-                                    {"system.scroll_direction_is_natural", scroll_direction_is_natural},
-                                },
-                            }};
-                        verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
-                                                                      nlohmann::json::to_msgpack(json));
-                      } catch (std::exception& e) {
-                        // Do nothing
-                      }
+                      nlohmann::json json{
+                          {"operation_type", operation_type::system_variables},
+                          {
+                              "system_variables",
+                              {
+                                  {
+                                      "system.use_fkeys_as_standard_function_keys",
+                                      manipulator_environment.get_variable("system.use_fkeys_as_standard_function_keys"),
+                                  },
+                                  {
+                                      "system.scroll_direction_is_natural",
+                                      manipulator_environment.get_variable("system.scroll_direction_is_natural"),
+                                  },
+                              },
+                          }};
+                      verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
+                                                                    nlohmann::json::to_msgpack(json));
                     }
                   });
             }
