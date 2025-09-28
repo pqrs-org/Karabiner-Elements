@@ -13,8 +13,6 @@ private func callback() {
 final class EVGrabberClient {
   static let shared = EVGrabberClient()
 
-  private var cancellables: Set<AnyCancellable> = []
-
   // We register the callback in the `start` method rather than in `init`.
   // If libkrbn_register_*_callback is called within init,
   // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
