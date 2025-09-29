@@ -36,7 +36,7 @@ struct SimpleModificationsView: View {
     var body: some View {
       // Use `ScrollView` instead of `List` to avoid `AttributeGraph: cycle detected through attribute` error.
       ScrollView {
-        VStack(alignment: .leading, spacing: 6.0) {
+        VStack(alignment: .leading, spacing: 4.0) {
           ForEach(simpleModifications) { simpleModification in
             HStack {
               SimpleModificationPickerView(
@@ -84,6 +84,8 @@ struct SimpleModificationsView: View {
               .deleteButtonStyle()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+
+            Divider()
           }
 
           Button(
