@@ -74,7 +74,7 @@ struct FunctionKeysView: View {
 
     var body: some View {
       ScrollView {
-        VStack(alignment: .leading, spacing: 6.0) {
+        VStack(alignment: .leading, spacing: 4.0) {
           ForEach(fnFunctionKeys) { fnFunctionKey in
             HStack {
               Text(
@@ -102,6 +102,8 @@ struct FunctionKeysView: View {
                 showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
               )
             }
+
+            Divider()
           }
         }
         .padding()
