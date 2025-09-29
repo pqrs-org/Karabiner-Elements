@@ -40,5 +40,6 @@ struct SimpleModificationPickerView: View {
         }
       }
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 }

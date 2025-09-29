@@ -83,6 +83,7 @@ struct SimpleModificationsView: View {
               )
               .deleteButtonStyle()
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
           }
 
           Button(

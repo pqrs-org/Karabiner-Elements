@@ -82,6 +82,7 @@ struct FunctionKeysView: View {
                   ? "fn + \(fnFunctionKey.fromEntry.label)"
                   : fnFunctionKey.fromEntry.label
               )
+              .monospaced()
               .frame(width: 80, alignment: .trailing)
 
               Image(systemName: "arrow.forward")
