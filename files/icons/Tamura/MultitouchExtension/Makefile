@@ -2,6 +2,7 @@ all:
 	bash ../../scripts/create-icns.sh exported/MultitouchExtension.png
 	mv app.icns exported/MultitouchExtension.icns
 # Copy files
-	cp    exported/MultitouchExtension.icns    ../../../../src/apps/MultitouchExtension/Resources/app.icns
-	cp    exported/MultitouchExtension.icns    ../../../../src/apps/share/Resources/icons/000-MultitouchExtension.icns
-	cp    exported/MultitouchExtension.png     ../../../../src/apps/share/Resources/icons/000-MultitouchExtension.png
+	cp                 exported/MultitouchExtension.icns            ../../../../src/apps/MultitouchExtension/Resources/app.icns
+	cp                 exported/MultitouchExtension.icns            ../../../../src/apps/share/Resources/icons/000-MultitouchExtension.icns
+	sips -z 128 128    exported/MultitouchExtension.png    --out    ../../../../src/apps/share/Resources/icons/000-MultitouchExtension.png
+	bash ../../scripts/optimize-image.sh                            ../../../../src/apps/share/Resources/icons/000-MultitouchExtension.png

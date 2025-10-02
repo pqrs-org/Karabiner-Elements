@@ -2,6 +2,7 @@ all:
 	bash ../../scripts/create-icns.sh exported/EventViewer.png
 	mv app.icns exported/EventViewer.icns
 # Copy files
-	cp    exported/EventViewer.icns    ../../../../src/apps/EventViewer/Resources/app.icns
-	cp    exported/EventViewer.icns    ../../../../src/apps/share/Resources/icons/000-EventViewer.icns
-	cp    exported/EventViewer.png     ../../../../src/apps/share/Resources/icons/000-EventViewer.png
+	cp                 exported/EventViewer.icns            ../../../../src/apps/EventViewer/Resources/app.icns
+	cp                 exported/EventViewer.icns            ../../../../src/apps/share/Resources/icons/000-EventViewer.icns
+	sips -z 128 128    exported/EventViewer.png    --out    ../../../../src/apps/share/Resources/icons/000-EventViewer.png
+	bash ../../scripts/optimize-image.sh                    ../../../../src/apps/share/Resources/icons/000-EventViewer.png

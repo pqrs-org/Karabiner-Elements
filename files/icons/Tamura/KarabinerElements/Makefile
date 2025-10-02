@@ -2,6 +2,7 @@ all:
 	bash ../../scripts/create-icns.sh exported/KarabinerElements.png
 	mv app.icns exported/KarabinerElements.icns
 # Copy files
-	cp    exported/KarabinerElements.icns    ../../../../src/apps/share/Resources/app.icns
-	cp    exported/KarabinerElements.icns    ../../../../src/apps/share/Resources/icons/000-KarabinerElements.icns
-	cp    exported/KarabinerElements.png     ../../../../src/apps/share/Resources/icons/000-KarabinerElements.png
+	cp                 exported/KarabinerElements.icns            ../../../../src/apps/share/Resources/app.icns
+	cp                 exported/KarabinerElements.icns            ../../../../src/apps/share/Resources/icons/000-KarabinerElements.icns
+	sips -z 128 128    exported/KarabinerElements.png    --out    ../../../../src/apps/share/Resources/icons/000-KarabinerElements.png
+	bash ../../scripts/optimize-image.sh                          ../../../../src/apps/share/Resources/icons/000-KarabinerElements.png
