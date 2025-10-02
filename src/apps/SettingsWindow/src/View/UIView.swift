@@ -95,9 +95,10 @@ struct UIView: View {
                       .frame(width: 64.0, height: 64.0)
                   }
                 }
-                .padding(.vertical, 5.0)
+                .padding(5.0)
                 .overlay(
                   RoundedRectangle(cornerRadius: 8)
+                    .inset(by: -4)
                     .stroke(
                       Color(NSColor.selectedControlColor),
                       lineWidth: appIcons.selectedAppIconNumber == appIcon.id ? 3 : 0
