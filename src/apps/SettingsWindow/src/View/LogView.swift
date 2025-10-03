@@ -11,7 +11,8 @@ struct LogView: View {
             ForEach(logMessages.entries) { e in
               Text(e.text)
                 .id(e.id)
-                .font(.custom("Menlo", size: 11.0))
+                .font(.callout)
+                .monospaced()
                 .foregroundColor(e.foregroundColor)
                 .background(e.backgroundColor)
                 .textSelection(.enabled)

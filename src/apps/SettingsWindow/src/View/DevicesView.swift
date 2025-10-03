@@ -146,7 +146,8 @@ struct DevicesView: View {
               Text("Device Address: \(connectedDevice.deviceAddress)")
             }
           }
-          .font(.custom("Menlo", size: 12.0))
+          .font(.callout)
+          .monospaced()
         }
       }
     }
