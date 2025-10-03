@@ -154,6 +154,7 @@ struct ComplexModificationsView: View {
               }
             }
           }
+          .listOverlayDivider()
           .moveDisabled(moveDisabled)
         }
         .onMove { indices, destination in
@@ -161,6 +162,7 @@ struct ComplexModificationsView: View {
             settings.moveComplexModificationsRule(first, destination)
           }
         }
+        .listRowSeparator(.hidden)
       }
       .background(Color(NSColor.textBackgroundColor))
     }

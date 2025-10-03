@@ -123,6 +123,7 @@ struct ProfilesView: View {
               }
             }
           }
+          .listOverlayDivider()
           .moveDisabled(moveDisabled)
         }
         .onMove { indices, destination in
