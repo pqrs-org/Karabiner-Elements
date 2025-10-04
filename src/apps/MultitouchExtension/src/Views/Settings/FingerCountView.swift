@@ -6,7 +6,7 @@ struct FingerCountView: View {
   var body: some View {
     HStack(alignment: .top) {
       let fingerCount = fingerManager.fingerCount
-      let font = Font.custom("Menlo", size: 11.0)
+      let font = Font.callout.monospaced()
 
       VStack(alignment: .trailing) {
         Text("total")

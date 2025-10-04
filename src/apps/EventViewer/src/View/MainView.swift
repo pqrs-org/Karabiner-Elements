@@ -84,7 +84,8 @@ struct MainView: View {
                         Text("usage page: ")
                           .font(.caption)
                         Text(entry.usagePage)
-                          .font(.custom("Menlo", size: 11.0))
+                          .font(.callout)
+                          .monospaced()
                       }
                     }
                     if entry.usage.count > 0 {
@@ -92,7 +93,8 @@ struct MainView: View {
                         Text("usage: ")
                           .font(.caption)
                         Text(entry.usage)
-                          .font(.custom("Menlo", size: 11.0))
+                          .font(.callout)
+                          .monospaced()
                       }
                     }
                   }
