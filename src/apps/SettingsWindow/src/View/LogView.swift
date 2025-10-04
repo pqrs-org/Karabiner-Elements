@@ -20,6 +20,7 @@ struct LogView: View {
           }
           .padding()
           .background(Color(NSColor.textBackgroundColor))
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
           .onChange(of: logMessages.entries.count) { _ in
             if let last = logMessages.entries.last {
               proxy.scrollTo(last.id, anchor: .bottom)
@@ -27,6 +28,7 @@ struct LogView: View {
           }
         }
       }
+      .border(Color(NSColor.separatorColor), width: 2)
 
       HStack {
         Text("Current time: \(logMessages.currentTimeString)")

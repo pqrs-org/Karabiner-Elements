@@ -68,7 +68,7 @@ struct ComplexModificationsEditView: View {
               theme: CodeEditor.ThemeName(
                 rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light")
             )
-            .border(Color(NSColor.textColor), width: 1)
+            .border(Color(NSColor.separatorColor), width: 2)
           }
         }
       }
