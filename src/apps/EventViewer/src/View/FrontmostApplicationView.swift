@@ -76,6 +76,7 @@ struct FrontmostApplicationView: View {
           }
         }
       }
+      .border(Color(NSColor.separatorColor), width: 2)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
   }

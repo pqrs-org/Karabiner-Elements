@@ -105,6 +105,7 @@ struct MainView: View {
           }
         }
         .background(Color(NSColor.textBackgroundColor))
+        .border(Color(NSColor.separatorColor), width: 2)
         .onAppear {
           if let last = eventHistory.entries.last {
             proxy.scrollTo("divider \(last.id)", anchor: .bottom)

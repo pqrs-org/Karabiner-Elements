@@ -29,6 +29,7 @@ struct DevicesView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
           .background(Color(NSColor.textBackgroundColor))
       }
+      .border(Color(NSColor.separatorColor), width: 2)
     }
   }
 }
