@@ -5,18 +5,18 @@ private func manipulatorEnvironmentReceivedCallback(_ jsonString: UnsafePointer<
   let text = String(cString: jsonString)
 
   Task { @MainActor in
-    VariablesJsonString.shared.text = text
+    VariablesJsonString.shared.stream.setText(text)
   }
 }
 
 @MainActor
-public class VariablesJsonString: ObservableObject {
+public class VariablesJsonString {
   public static let shared = VariablesJsonString()
 
   private let timer: AsyncTimerSequence<ContinuousClock>
   private var timerTask: Task<Void, Never>?
 
-  @Published var text = ""
+  let stream = RealtimeTextStream()
 
   init() {
     timer = AsyncTimerSequence(
