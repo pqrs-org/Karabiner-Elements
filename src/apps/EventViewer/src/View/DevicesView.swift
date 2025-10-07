@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct DevicesView: View {
-  @ObservedObject var devicesJsonString = DevicesJsonString.shared
-
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
@@ -10,7 +8,7 @@ struct DevicesView: View {
           action: {
             let pboard = NSPasteboard.general
             pboard.clearContents()
-            pboard.writeObjects([devicesJsonString.text as NSString])
+            pboard.writeObjects([DevicesJsonString.shared.stream.text as NSString])
           },
           label: {
             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
@@ -19,17 +17,21 @@ struct DevicesView: View {
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
 
-      ScrollView {
-        Text(devicesJsonString.text)
-          .lineLimit(nil)
-          .textSelection(.enabled)
-          .font(.callout)
-          .monospaced()
-          .padding()
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .background(Color(NSColor.textBackgroundColor))
-      }
+      RealtimeText(
+        stream: DevicesJsonString.shared.stream,
+        font: NSFont.monospacedSystemFont(
+          ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
+          weight: .regular)
+      )
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(Color(NSColor.textBackgroundColor))
       .border(Color(NSColor.separatorColor), width: 2)
+    }
+    .onAppear {
+      DevicesJsonString.shared.start()
+    }
+    .onDisappear {
+      DevicesJsonString.shared.stop()
     }
   }
 }

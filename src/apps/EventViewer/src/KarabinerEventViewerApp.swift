@@ -18,7 +18,6 @@ struct KarabinerEventViewerApp: App {
       InputMonitoringAlertData.shared.showing = true
     }
 
-    DevicesJsonString.shared.start()
     EVGrabberClient.shared.start()
     FrontmostApplicationHistory.shared.start()
 

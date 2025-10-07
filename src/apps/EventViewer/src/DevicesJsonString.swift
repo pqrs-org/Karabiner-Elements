@@ -9,17 +9,17 @@ private func callback() {
       )
     else { return }
 
-    DevicesJsonString.shared.text = text
+    DevicesJsonString.shared.stream.setText(text)
   }
 }
 
 @MainActor
-public class DevicesJsonString: ObservableObject {
+public class DevicesJsonString {
   public static let shared = DevicesJsonString()
 
   let devicesJsonFilePath = LibKrbn.devicesJsonFilePath()
 
-  @Published var text = ""
+  let stream = RealtimeTextStream()
 
   // We register the callback in the `start` method rather than in `init`.
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
