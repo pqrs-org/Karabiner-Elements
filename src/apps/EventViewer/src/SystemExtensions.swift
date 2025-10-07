@@ -1,12 +1,12 @@
 import SwiftUI
 
 @MainActor
-public class SystemExtensions: ObservableObject {
+public class SystemExtensions {
   public static let shared = SystemExtensions()
 
-  @Published var list = ""
+  let stream = RealtimeTextStream()
 
-  public func updateList() {
+  public func update() {
     let command = Process()
     command.launchPath = "/usr/bin/systemextensionsctl"
     command.arguments = [
@@ -24,7 +24,7 @@ public class SystemExtensions: ObservableObject {
     command.waitUntilExit()
 
     if let data = try? pipe.fileHandleForReading.readToEnd() {
-      list = String(data: data, encoding: .utf8) ?? ""
+      stream.setText(String(data: data, encoding: .utf8) ?? "")
     }
   }
 }

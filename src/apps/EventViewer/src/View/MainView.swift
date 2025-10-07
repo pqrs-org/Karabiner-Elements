@@ -119,6 +119,7 @@ struct MainView: View {
       }
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
     .task {
       eventHistory.start()
       eventHistory.pause(false)

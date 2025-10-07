@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct SystemExtensionsView: View {
-  @ObservedObject var systemExtensions = SystemExtensions.shared
-
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
@@ -11,7 +9,7 @@ struct SystemExtensionsView: View {
             action: {
               let pboard = NSPasteboard.general
               pboard.clearContents()
-              pboard.writeObjects([systemExtensions.list as NSString])
+              pboard.writeObjects([SystemExtensions.shared.stream.text as NSString])
             },
             label: {
               Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
@@ -19,7 +17,7 @@ struct SystemExtensionsView: View {
 
           Button(
             action: {
-              SystemExtensions.shared.updateList()
+              SystemExtensions.shared.update()
             },
             label: {
               Label("Refresh", systemImage: "arrow.clockwise.circle")
@@ -29,20 +27,19 @@ struct SystemExtensionsView: View {
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
 
-      ScrollView {
-        Text(systemExtensions.list)
-          .lineLimit(nil)
-          .textSelection(.enabled)
-          .font(.callout)
-          .monospaced()
-          .padding()
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .background(Color(NSColor.textBackgroundColor))
-      }
+      RealtimeText(
+        stream: SystemExtensions.shared.stream,
+        font: NSFont.monospacedSystemFont(
+          ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
+          weight: .regular)
+      )
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(Color(NSColor.textBackgroundColor))
       .border(Color(NSColor.separatorColor), width: 2)
+      .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
     }
     .onAppear {
-      SystemExtensions.shared.updateList()
+      SystemExtensions.shared.update()
     }
   }
 }
