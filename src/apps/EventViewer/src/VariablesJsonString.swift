@@ -20,7 +20,7 @@ public class VariablesJsonString {
 
   init() {
     timer = AsyncTimerSequence(
-      interval: .milliseconds(1000),
+      interval: .milliseconds(500),
       clock: .continuous
     )
   }
