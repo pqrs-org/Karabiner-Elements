@@ -40,6 +40,7 @@ struct RealtimeText: NSViewRepresentable {
   func makeNSView(context: Context) -> NSScrollView {
     let tv = NSTextView()
     tv.isEditable = false
+    tv.isRichText = false
     // Because the text updates invalidate the selection, disable text selection.
     tv.isSelectable = false
     // Disable background drawing to reduce rendering overhead.
@@ -51,6 +52,8 @@ struct RealtimeText: NSViewRepresentable {
     tv.textContainer?.widthTracksTextView = true
     tv.isHorizontallyResizable = false
     tv.isVerticallyResizable = true
+    // Without this setting, the height collapses to 0 and the text is not rendered on macOS 13.
+    tv.autoresizingMask = [.width]
 
     let scroll = NSScrollView()
     // Disable background drawing to reduce rendering overhead.
