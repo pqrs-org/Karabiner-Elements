@@ -5,6 +5,16 @@ struct ServicesNotRunningAlertView: View {
   @ObservedObject private var servicesMonitor = ServicesMonitor.shared
   @FocusState var focus: Bool
 
+  private let loginItemsImage: String
+
+  init() {
+    if #available(macOS 26.0, *) {
+      loginItemsImage = "login-items-macos26"
+    } else {
+      loginItemsImage = "login-items-macos15"
+    }
+  }
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
@@ -55,8 +65,6 @@ struct ServicesNotRunningAlertView: View {
               Button(
                 action: {
                   SMAppService.openSystemSettingsLoginItems()
-
-                  NSApp.miniaturizeAll(nil)
                 },
                 label: {
                   Label(
@@ -75,7 +83,7 @@ struct ServicesNotRunningAlertView: View {
             .modifier(InfoBorder())
 
             if !servicesMonitor.servicesEnabled {
-              Image(decorative: "login-items")
+              Image(decorative: loginItemsImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 600)
