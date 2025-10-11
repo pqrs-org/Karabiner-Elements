@@ -39,7 +39,7 @@ struct DriverNotActivatedAlertView: View {
               )
               .focused($focus)
 
-              Image(decorative: "driver-extensions-1")
+              Image(decorative: "driver-extensions-macos15-1")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 300)
