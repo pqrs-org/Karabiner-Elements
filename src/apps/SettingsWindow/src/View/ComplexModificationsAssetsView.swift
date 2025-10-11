@@ -53,7 +53,7 @@ struct ComplexModificationsAssetsView: View {
                             RoundedRectangle(cornerRadius: 2)
                               .inset(by: -4)
                               .stroke(
-                                Color(NSColor(Color.accentColor)),
+                                Color.accentColor,
                                 lineWidth: 2
                               )
                           )

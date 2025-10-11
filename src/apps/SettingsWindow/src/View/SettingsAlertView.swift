@@ -26,7 +26,7 @@ struct SettingsAlertView: View {
             .overlay(
               RoundedRectangle(cornerRadius: 8)
                 .stroke(
-                  Color(NSColor(Color.accentColor)),
+                  Color.accentColor,
                   lineWidth: 3
                 )
                 .padding(2))
