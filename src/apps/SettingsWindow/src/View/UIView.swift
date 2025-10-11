@@ -56,7 +56,14 @@ struct UIView: View {
               Image(decorative: "notification-window")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(height: 150)
+                .frame(height: 100)
+                .background(
+                  RoundedRectangle(cornerRadius: 9)
+                    .stroke(
+                      Color(NSColor.separatorColor),
+                      lineWidth: 4
+                    )
+                )
             }
             .modifier(InfoBorder())
           }
