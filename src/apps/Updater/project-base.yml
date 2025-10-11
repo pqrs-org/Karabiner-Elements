@@ -3,7 +3,7 @@ name: Karabiner-Updater
 packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
-    from: 2.7.1
+    from: 2.8.0
 
 targets:
   Karabiner-Updater:
