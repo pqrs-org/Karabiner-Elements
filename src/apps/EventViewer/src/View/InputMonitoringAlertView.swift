@@ -10,6 +10,16 @@ class InputMonitoringAlertData: ObservableObject {
 struct InputMonitoringAlertView: View {
   @FocusState var focus: Bool
 
+  private let inputMonitoringImage: String
+
+  init() {
+    if #available(macOS 26.0, *) {
+      inputMonitoringImage = "input-monitoring-macos26"
+    } else {
+      inputMonitoringImage = "input-monitoring-macos15"
+    }
+  }
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
@@ -34,7 +44,7 @@ struct InputMonitoringAlertView: View {
         )
         .focused($focus)
 
-        Image(decorative: "input_monitoring")
+        Image(decorative: inputMonitoringImage)
           .resizable()
           .aspectRatio(contentMode: .fit)
           .frame(height: 300.0)
