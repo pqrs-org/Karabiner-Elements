@@ -4,6 +4,16 @@ struct DriverNotActivatedAlertView: View {
   @State private var showingAdvanced = false
   @FocusState var focus: Bool
 
+  private let driverExtensionsImage: String
+
+  init() {
+    if #available(macOS 26.0, *) {
+      driverExtensionsImage = "driver-extensions-macos26"
+    } else {
+      driverExtensionsImage = "driver-extensions-macos15"
+    }
+  }
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center) {
@@ -28,8 +38,6 @@ struct DriverNotActivatedAlertView: View {
                   let url = URL(
                     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension")!
                   NSWorkspace.shared.open(url)
-
-                  NSApp.miniaturizeAll(nil)
                 },
                 label: {
                   Label(
@@ -39,7 +47,7 @@ struct DriverNotActivatedAlertView: View {
               )
               .focused($focus)
 
-              Image(decorative: "driver-extensions-macos15-1")
+              Image(decorative: driverExtensionsImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 300)

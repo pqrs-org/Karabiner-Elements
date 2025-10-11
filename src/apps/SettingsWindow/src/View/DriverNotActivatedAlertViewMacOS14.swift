@@ -29,8 +29,6 @@ struct DriverNotActivatedAlertViewMacOS14: View {
                   let url = URL(
                     string: "x-apple.systempreferences:com.apple.preference.security?General")!
                   NSWorkspace.shared.open(url)
-
-                  NSApp.miniaturizeAll(nil)
                 },
                 label: {
                   Label(
