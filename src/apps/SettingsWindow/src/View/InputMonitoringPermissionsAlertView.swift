@@ -3,6 +3,16 @@ import SwiftUI
 struct InputMonitoringPermissionsAlertView: View {
   @FocusState var focus: Bool
 
+  private let inputMonitoringImage: String
+
+  init() {
+    if #available(macOS 26.0, *) {
+      inputMonitoringImage = "input-monitoring-macos26"
+    } else {
+      inputMonitoringImage = "input-monitoring-macos15"
+    }
+  }
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(spacing: 20.0) {
@@ -27,7 +37,7 @@ struct InputMonitoringPermissionsAlertView: View {
         )
         .focused($focus)
 
-        Image(decorative: "input-monitoring")
+        Image(decorative: inputMonitoringImage)
           .resizable()
           .aspectRatio(contentMode: .fit)
           .border(Color.gray, width: 1)
@@ -49,7 +59,5 @@ struct InputMonitoringPermissionsAlertView: View {
     let url = URL(
       string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
     NSWorkspace.shared.open(url)
-
-    NSApp.miniaturizeAll(nil)
   }
 }
