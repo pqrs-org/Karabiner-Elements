@@ -23,6 +23,7 @@
         -   consumer_key_code::microphone
         -   consumer_key_code::selection
         -   pointing_button::button33 ... pointing_button::button255
+    -   Sparkle Framework has been updated.
 
 ## Karabiner-Elements 15.5.0
 
