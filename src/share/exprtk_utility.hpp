@@ -75,7 +75,13 @@ public:
 
     parser_.enable_unknown_symbol_resolver(&zeroing_unknown_symbol_resolver_);
 
-    parser_.compile(expression_string_, expression_);
+    if (!parser_.compile(expression_string_, expression_)) {
+      compile_error_ = parser_.error();
+    }
+  }
+
+  std::optional<std::string> get_compile_error(void) const {
+    return compile_error_;
   }
 
   bool set_variable(const std::string& name,
@@ -135,6 +141,7 @@ private:
   zeroing_unknown_symbol_resolver zeroing_unknown_symbol_resolver_;
   expression_t expression_;
   parser_t parser_;
+  std::optional<std::string> compile_error_;
 
   mutable std::mutex mutex_;
 };

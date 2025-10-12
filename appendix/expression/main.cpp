@@ -12,6 +12,10 @@ int main(int argc, const char* argv[]) {
 
   std::string expression_string(argv[1]);
   auto expression = krbn::exprtk_utility::compile(expression_string);
+  if (auto compile_error = expression->get_compile_error()) {
+    std::cout << "compile_error: " << *compile_error << std::endl;
+  }
+
   expression->set_variable("example_variable", 42.0);
   expression->set_variable("example_string", "exmaple");
 
