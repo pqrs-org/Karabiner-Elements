@@ -13,7 +13,7 @@ namespace event_sender {
 
 inline to_event_definitions filter_by_conditions(const to_event_definitions& to_events,
                                                  const event_queue::entry& entry,
-                                                 const manipulator_environment& manipulator_environment) {
+                                                 manipulator_environment& manipulator_environment) {
   to_event_definitions result;
   std::copy_if(to_events.begin(),
                to_events.end(),

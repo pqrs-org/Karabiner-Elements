@@ -20,7 +20,7 @@ public:
   }
 
   bool is_fulfilled(const event_queue::entry& entry,
-                    const manipulator_environment& manipulator_environment) const {
+                    manipulator_environment& manipulator_environment) const {
     bool result = true;
 
     //
@@ -30,6 +30,11 @@ public:
     {
       auto m = get_shared_condition_expression_manager();
       auto c = manipulator_environment.get_core_configuration();
+
+      //
+      // Set device.*
+      //
+
       if (auto dp = manipulator_environment.find_device_properties(entry.get_device_id())) {
         m->set_variable("device.vendor_id",
                         type_safe::get(dp->get_device_identifiers().get_vendor_id()));
@@ -52,6 +57,16 @@ public:
         m->set_variable("device.is_built_in_keyboard",
                         device_utility::determine_is_built_in_keyboard(*c, *dp));
       }
+
+      //
+      // Set system.now.milliseconds
+      //
+
+      auto now = std::chrono::system_clock::now();
+      auto now_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+      auto now_int64 = static_cast<int64_t>(now_milliseconds.count());
+      manipulator_environment.set_variable("system.now.milliseconds",
+                                           manipulator_environment_variable_value(now_int64));
     }
 
     //
