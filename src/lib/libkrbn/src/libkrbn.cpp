@@ -809,14 +809,6 @@ libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void) {
   return libkrbn_grabber_client_status_none;
 }
 
-void libkrbn_grabber_client_async_connect_event_viewer(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_grabber_client()) {
-      c->async_connect_event_viewer();
-    }
-  }
-}
-
 void libkrbn_grabber_client_async_get_manipulator_environment(void) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_grabber_client()) {

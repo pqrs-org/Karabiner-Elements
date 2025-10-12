@@ -9,10 +9,6 @@ void status_changed_callback(void) {
     case libkrbn_grabber_client_status_connected:
       std::cerr << "grabber_client connected" << std::endl;
 
-      libkrbn_grabber_client_async_connect_event_viewer();
-
-      // At this stage, the connection is typically not verified yet,
-      // so the `get_manipulator_environment` request is ignored.
       libkrbn_grabber_client_async_get_manipulator_environment();
 
       break;
@@ -60,8 +56,6 @@ int main(int argc, const char* argv[]) {
   libkrbn_grabber_client_async_start();
 
   std::this_thread::sleep_for(std::chrono::seconds(1));
-
-  libkrbn_grabber_client_async_get_manipulator_environment();
 
   global_wait->wait_notice();
 

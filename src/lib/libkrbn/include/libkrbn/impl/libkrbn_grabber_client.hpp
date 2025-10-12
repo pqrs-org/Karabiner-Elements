@@ -79,10 +79,6 @@ public:
     return status_;
   }
 
-  void async_connect_event_viewer(void) {
-    grabber_client_->async_connect_event_viewer();
-  }
-
   void async_get_manipulator_environment(void) {
     grabber_client_->async_get_manipulator_environment();
   }

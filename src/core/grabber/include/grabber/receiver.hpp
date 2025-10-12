@@ -7,7 +7,6 @@
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "device_grabber.hpp"
-#include "event_viewer_client.hpp"
 #include "filesystem_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
 #include "types.hpp"
@@ -36,6 +35,19 @@ public:
       std::filesystem::create_directory(directory_path, ec);
       chmod(directory_path.c_str(), 0755);
     }
+
+    verified_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
+        weak_dispatcher_,
+        constants::local_datagram_buffer_size,
+        [](auto&& peer_pid) {
+          if (get_shared_codesign_manager()->same_team_id(peer_pid)) {
+            logger::get_logger()->info("verified peer connected");
+            return true;
+          } else {
+            logger::get_logger()->warn("peer is not code-signed with same Team ID");
+            return false;
+          }
+        });
 
     verification_exempt_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
         weak_dispatcher_,
@@ -138,17 +150,17 @@ public:
             }
             break;
 
-          case operation_type::connect_event_viewer:
-            logger::get_logger()->info("EventViewer is attempting to connect.");
-            event_viewer_client_ = std::make_unique<event_viewer_client>(sender_endpoint->path());
-            break;
-
           case operation_type::get_manipulator_environment:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_manipulator_environment(
-                  [this](auto&& manipulator_environment) {
-                    if (event_viewer_client_) {
-                      event_viewer_client_->async_send_manipulator_environment(manipulator_environment);
+                  [this, sender_endpoint](auto&& manipulator_environment) {
+                    if (verified_peer_manager_) {
+                      nlohmann::json json{
+                          {"operation_type", operation_type::manipulator_environment},
+                          {"manipulator_environment", manipulator_environment.to_json()},
+                      };
+                      verified_peer_manager_->async_send(sender_endpoint->path(),
+                                                         nlohmann::json::to_msgpack(json));
                     }
                   });
             }
@@ -263,9 +275,9 @@ public:
     detach_from_dispatcher([this] {
       server_ = nullptr;
       console_user_server_client_ = nullptr;
-      event_viewer_client_ = nullptr;
       multitouch_extension_client_ = nullptr;
       verification_exempt_peer_manager_ = nullptr;
+      verified_peer_manager_ = nullptr;
       stop_device_grabber();
     });
 
@@ -344,10 +356,12 @@ private:
   uid_t current_console_user_id_;
   std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer_;
 
+  // For operation_type::get_manipulator_environment
+  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verified_peer_manager_;
+  // For operation_type::get_system_variables
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verification_exempt_peer_manager_;
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
-  std::unique_ptr<event_viewer_client> event_viewer_client_;
   std::unique_ptr<pqrs::local_datagram::client> multitouch_extension_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 

@@ -1,14 +1,5 @@
 import Combine
 
-private func callback() {
-  Task { @MainActor in
-    let status = libkrbn_grabber_client_get_status()
-    if status == libkrbn_grabber_client_status_connected {
-      libkrbn_grabber_client_async_connect_event_viewer()
-    }
-  }
-}
-
 @MainActor
 final class EVGrabberClient {
   static let shared = EVGrabberClient()
@@ -26,8 +17,6 @@ final class EVGrabberClient {
     // `/Library/Application Support/org.pqrs/tmp/user/501/ev_grb_clnt/186745e8160a7b98.sock`
 
     libkrbn_enable_grabber_client("ev_grb_clnt")
-
-    libkrbn_register_grabber_client_status_changed_callback(callback)
 
     libkrbn_grabber_client_async_start()
   }
