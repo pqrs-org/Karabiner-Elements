@@ -8,7 +8,7 @@
 namespace krbn {
 class manipulator_environment_variable_value final {
 public:
-  using value_t = std::variant<int,
+  using value_t = std::variant<int64_t,
                                bool,
                                std::string>;
 
@@ -36,7 +36,7 @@ private:
 };
 
 inline void to_json(nlohmann::json& j, const manipulator_environment_variable_value& value) {
-  if (auto v = value.get_if<int>()) {
+  if (auto v = value.get_if<int64_t>()) {
     j = *v;
   } else if (auto v = value.get_if<bool>()) {
     j = *v;
@@ -47,7 +47,7 @@ inline void to_json(nlohmann::json& j, const manipulator_environment_variable_va
 
 inline void from_json(const nlohmann::json& j, manipulator_environment_variable_value& value) {
   if (j.is_number()) {
-    value = manipulator_environment_variable_value(j.get<int>());
+    value = manipulator_environment_variable_value(j.get<int64_t>());
   } else if (j.is_boolean()) {
     value = manipulator_environment_variable_value(j.get<bool>());
   } else if (j.is_string()) {
