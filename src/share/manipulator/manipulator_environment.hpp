@@ -88,6 +88,10 @@ public:
     input_source_properties_ = value;
   }
 
+  const std::unordered_map<std::string, manipulator_environment_variable_value>& get_variables(void) const {
+    return variables_;
+  }
+
   manipulator_environment_variable_value get_variable(const std::string& name) const {
     auto it = variables_.find(name);
     if (it != std::end(variables_)) {
