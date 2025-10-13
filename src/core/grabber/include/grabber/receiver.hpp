@@ -223,7 +223,9 @@ public:
                     manipulator_environment_variable_set_variable(
                         k,
                         v.get<manipulator_environment_variable_value>(),
-                        std::nullopt));
+                        nullptr,
+                        std::nullopt,
+                        nullptr));
               }
             }
             break;
@@ -347,7 +349,9 @@ private:
             manipulator_environment_variable_set_variable(
                 name,
                 std::nullopt,
+                nullptr,
                 std::nullopt,
+                nullptr,
                 manipulator_environment_variable_set_variable::type::unset));
       }
     }
