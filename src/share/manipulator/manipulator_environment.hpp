@@ -105,6 +105,13 @@ public:
     variables_.erase(name);
   }
 
+  void set_variable_system_now_milliseconds(void) {
+    auto now = std::chrono::system_clock::now();
+    auto now_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+    auto now_int64 = static_cast<int64_t>(now_milliseconds.count());
+    variables_["system.now.milliseconds"] = manipulator_environment_variable_value(now_int64);
+  }
+
   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration(void) const {
     return core_configuration_;
   }

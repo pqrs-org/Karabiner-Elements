@@ -59,14 +59,10 @@ public:
       }
 
       //
-      // Set system.now.milliseconds
+      // Update manipulator_environment variables
       //
 
-      auto now = std::chrono::system_clock::now();
-      auto now_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
-      auto now_int64 = static_cast<int64_t>(now_milliseconds.count());
-      manipulator_environment.set_variable("system.now.milliseconds",
-                                           manipulator_environment_variable_value(now_int64));
+      manipulator_environment.set_variable_system_now_milliseconds();
     }
 
     //
