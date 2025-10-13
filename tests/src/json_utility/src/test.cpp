@@ -76,5 +76,32 @@ int main(void) {
     }
   };
 
+  "json_utility::marshal_string"_test = [] {
+    expect(R"(
+
+"hello"
+
+)"_json == krbn::json_utility::marshal_string("hello"));
+
+    expect(R"(
+
+[
+  "hello",
+  "world"
+]
+
+)"_json == krbn::json_utility::marshal_string("hello\nworld"));
+
+    expect(R"(
+
+[
+  "hello",
+  "",
+  "world"
+]
+
+)"_json == krbn::json_utility::marshal_string("hello\n\nworld\n"));
+  };
+
   return 0;
 }

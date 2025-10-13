@@ -87,6 +87,21 @@ error:
                                                 value));
 }
 
+// The string is saved as an array of strings if it is multi-line; otherwise, it is saved as a single string.
+nlohmann::json marshal_string(const std::string value) {
+  if (value.find('\n') == value.npos) {
+    return value;
+  }
+
+  std::stringstream ss(value);
+  std::string line;
+  std::vector<std::string> lines;
+  while (std::getline(ss, line, '\n')) {
+    lines.push_back(line);
+  }
+  return lines;
+}
+
 pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> unmarshal_expression_string(const std::string& key,
                                                                                             const nlohmann::json& value) {
   auto s = unmarshal_string(key, value);
