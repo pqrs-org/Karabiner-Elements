@@ -1,5 +1,6 @@
 #pragma once
 
+#include "exprtk_utility.hpp"
 #include <ostream>
 #include <pqrs/json.hpp>
 #include <spdlog/fmt/fmt.h>
@@ -25,6 +26,17 @@ public:
   template <typename T>
   const T* get_if(void) const {
     return std::get_if<T>(&value_);
+  }
+
+  void apply_to_expression_variable(const std::string& variable_name,
+                                    pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> expression) const {
+    if (auto v = get_if<int64_t>()) {
+      expression->set_variable(variable_name, *v);
+    } else if (auto v = get_if<bool>()) {
+      expression->set_variable(variable_name, *v);
+    } else if (auto v = get_if<std::string>()) {
+      expression->set_variable(variable_name, *v);
+    }
   }
 
   bool operator==(const manipulator_environment_variable_value& other) const {
