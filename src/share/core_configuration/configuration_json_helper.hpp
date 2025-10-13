@@ -100,19 +100,7 @@ public:
   void update_json(nlohmann::json& json) const override {
     if (value_ != default_value_) {
       if constexpr (std::is_same<T, std::string>::value) {
-        // The string is saved as an array of strings if it is multi-line; otherwise, it is saved as a single string.
-        std::stringstream ss(value_);
-        std::string line;
-        std::vector<std::string> lines;
-        while (std::getline(ss, line, '\n')) {
-          lines.push_back(line);
-        }
-
-        if (lines.size() == 1) {
-          json[key_] = value_;
-        } else {
-          json[key_] = lines;
-        }
+        json[key_] = json_utility::marshal_string(value_);
 
       } else if constexpr (std::is_same<T, std::chrono::milliseconds>::value) {
         json[key_] = value_.count();
