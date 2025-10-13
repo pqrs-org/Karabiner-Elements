@@ -68,6 +68,20 @@ public:
     });
   }
 
+  void apply_environment_variables(const manipulator::manipulator_environment& manipulator_environment) {
+    std::erase_if(expressions_, [&](auto&& weak_ptr) {
+      if (auto shared_ptr = weak_ptr.lock()) {
+        for (const auto& [name, value] : manipulator_environment.get_variables()) {
+          value.apply_to_expression_variable(name, shared_ptr);
+        }
+
+        return false;
+      }
+
+      return true;
+    });
+  }
+
 private:
   std::vector<std::weak_ptr<exprtk_utility::expression_wrapper>> expressions_;
   std::unordered_map<std::string, double> variables_;
