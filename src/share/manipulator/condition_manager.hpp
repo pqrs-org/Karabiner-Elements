@@ -27,43 +27,8 @@ public:
     // Update condition expression variables
     //
 
-    {
-      auto m = get_shared_condition_expression_manager();
-      auto c = manipulator_environment.get_core_configuration();
-
-      //
-      // Set device.*
-      //
-
-      if (auto dp = manipulator_environment.find_device_properties(entry.get_device_id())) {
-        m->set_variable("device.vendor_id",
-                        type_safe::get(dp->get_device_identifiers().get_vendor_id()));
-        m->set_variable("device.product_id",
-                        type_safe::get(dp->get_device_identifiers().get_product_id()));
-        m->set_variable("device.location_id",
-                        type_safe::get(dp->get_location_id()));
-        m->set_variable("device.device_address",
-                        dp->get_device_identifiers().get_device_address());
-        m->set_variable("device.is_keyboard",
-                        dp->get_device_identifiers().get_is_keyboard());
-        m->set_variable("device.is_pointing_device",
-                        dp->get_device_identifiers().get_is_pointing_device());
-        m->set_variable("device.is_game_pad",
-                        dp->get_device_identifiers().get_is_game_pad());
-        m->set_variable("device.is_consumer",
-                        dp->get_device_identifiers().get_is_consumer());
-        m->set_variable("device.is_touch_bar",
-                        dp->get_is_built_in_touch_bar());
-        m->set_variable("device.is_built_in_keyboard",
-                        device_utility::determine_is_built_in_keyboard(*c, *dp));
-      }
-
-      //
-      // Update manipulator_environment variables
-      //
-
-      manipulator_environment.set_variable_system_now_milliseconds();
-    }
+    manipulator_environment.set_variable_system_now_milliseconds();
+    get_shared_condition_expression_manager()->apply_environment_variables(manipulator_environment);
 
     //
     // Evaluate condition rules.

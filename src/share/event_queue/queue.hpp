@@ -3,6 +3,7 @@
 #include "event_queue/entry.hpp"
 #include "event_queue/event.hpp"
 #include "event_queue/event_time_stamp.hpp"
+#include "manipulator/condition_expression_manager.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
 #include <string_view>
@@ -126,6 +127,13 @@ public:
                 if (auto v = set_variable->get_value()) {
                   manipulator_environment_.set_variable(*n, *v);
                 }
+                if (auto v = set_variable->get_expression()) {
+                  manipulator_environment_.set_variable_system_now_milliseconds();
+                  manipulator::get_shared_condition_expression_manager()->apply_environment_variables(manipulator_environment_);
+
+                  manipulator_environment_.set_variable(*n,
+                                                        manipulator_environment_variable_value(v->value<int64_t>()));
+                }
                 break;
 
               case manipulator_environment_variable_set_variable::type::unset:
@@ -140,6 +148,13 @@ public:
               case manipulator_environment_variable_set_variable::type::set:
                 if (auto v = set_variable->get_key_up_value()) {
                   manipulator_environment_.set_variable(*n, *v);
+                }
+                if (auto v = set_variable->get_expression()) {
+                  manipulator_environment_.set_variable_system_now_milliseconds();
+                  manipulator::get_shared_condition_expression_manager()->apply_environment_variables(manipulator_environment_);
+
+                  manipulator_environment_.set_variable(*n,
+                                                        manipulator_environment_variable_value(v->value<int64_t>()));
                 }
                 break;
               case manipulator_environment_variable_set_variable::type::unset:
