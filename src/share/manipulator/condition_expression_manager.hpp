@@ -1,6 +1,7 @@
 #pragma once
 
-#include "conditions/expression.hpp"
+#include "exprtk_utility.hpp"
+#include "manipulator/manipulator_environment.hpp"
 #include <gsl/gsl>
 #include <memory>
 #include <string>

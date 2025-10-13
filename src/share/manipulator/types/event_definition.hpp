@@ -232,8 +232,11 @@ public:
       }
 
       if (v.get_type() == manipulator_environment_variable_set_variable::type::set) {
-        if (v.get_value() == std::nullopt && v.get_key_up_value() == std::nullopt) {
-          throw pqrs::json::unmarshal_error(fmt::format("neither `{0}.value` nor `{0}.key_up_value` are not found in `{1}`",
+        if (v.get_value() == std::nullopt &&
+            !(v.get_expression()) &&
+            v.get_key_up_value() == std::nullopt &&
+            !(v.get_key_up_expression())) {
+          throw pqrs::json::unmarshal_error(fmt::format("none of `{0}.value`, `{0}.expression`, `{0}.key_up_value`, or `{0}.key_up_expression` are not found in `{1}`",
                                                         key,
                                                         pqrs::json::dump_for_error_message(value)));
         }

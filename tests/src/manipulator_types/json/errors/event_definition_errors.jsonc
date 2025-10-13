@@ -168,7 +168,7 @@
                 "name": "flag"
             }
         },
-        "error": "neither `set_variable.value` nor `set_variable.key_up_value` are not found in `{\"name\":\"flag\"}`"
+        "error": "none of `set_variable.value`, `set_variable.expression`, `set_variable.key_up_value`, or `set_variable.key_up_expression` are not found in `{\"name\":\"flag\"}`"
     },
     {
         "class": "event_definition",
