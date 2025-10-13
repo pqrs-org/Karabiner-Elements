@@ -124,6 +124,27 @@ public:
     return NAN;
   }
 
+  template <typename T>
+  T value() const noexcept = delete;
+
+  template <>
+  int64_t value<int64_t>() const noexcept {
+    auto v = value();
+
+    if (!std::isfinite(v)) {
+      return 0;
+    }
+
+    constexpr double min = static_cast<double>(std::numeric_limits<int64_t>::min());
+    constexpr double max = static_cast<double>(std::numeric_limits<int64_t>::max());
+
+    if (v < min || v > max) {
+      return 0;
+    }
+
+    return v;
+  }
+
 private:
   void set_variable_(const std::string& name,
                      double value) {

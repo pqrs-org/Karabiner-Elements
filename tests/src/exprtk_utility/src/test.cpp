@@ -113,6 +113,19 @@ sin(radian) * m;
     expect(6.28_d == expression->value());
   };
 
+  "value<int64_t>"_test = [] {
+    auto expression = krbn::exprtk_utility::compile("42");
+    expect(42_i64 == expression->value<int64_t>());
+
+    auto nan = krbn::exprtk_utility::compile("_hello");
+    expect(std::isnan(nan->value()));
+    expect(0_i64 == nan->value<int64_t>());
+
+    auto out_of_range = krbn::exprtk_utility::compile("10000000000000000000.0");
+    expect(10000000000000000000.0 == out_of_range->value());
+    expect(0_i64 == out_of_range->value<int64_t>());
+  };
+
   "compare"_test = [] {
     auto e1_1 = krbn::exprtk_utility::compile("1");
     auto e1_2 = krbn::exprtk_utility::compile("1");
