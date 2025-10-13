@@ -36,11 +36,7 @@ public:
         }
 
       } else if (key == "expression") {
-        auto expression_string = json_utility::unmarshal_string(key, value);
-        expression_ = exprtk_utility::compile(expression_string);
-        if (std::isnan(expression_->value())) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: invalid expression `{1}`", key, value));
-        }
+        expression_ = json_utility::unmarshal_expression_string(key, value);
 
       } else if (key == "description") {
         // Do nothing

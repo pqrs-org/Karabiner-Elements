@@ -1,11 +1,14 @@
 #pragma once
 
+#include "exprtk_utility.hpp"
 #include <nlohmann/json.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/json.hpp>
 #include <spdlog/fmt/fmt.h>
 
 namespace krbn {
 namespace json_utility {
+
 template <typename T>
 inline nlohmann::json parse_jsonc(T&& input) {
   bool allow_exceptions = true;
@@ -52,6 +55,7 @@ inline std::string dump(const T& json) {
        }});
 }
 
+// The string is saved as an array of strings if it is multi-line; otherwise, it is saved as a single string.
 std::string unmarshal_string(const std::string& key,
                              const nlohmann::json& value) {
   if (value.is_string()) {
@@ -82,5 +86,16 @@ error:
                                                 key,
                                                 value));
 }
+
+pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> unmarshal_expression_string(const std::string& key,
+                                                                                            const nlohmann::json& value) {
+  auto s = unmarshal_string(key, value);
+  auto e = exprtk_utility::compile(s);
+  if (std::isnan(e->value())) {
+    throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: invalid expression `{1}`", key, value));
+  }
+  return e;
+}
+
 }; // namespace json_utility
 } // namespace krbn

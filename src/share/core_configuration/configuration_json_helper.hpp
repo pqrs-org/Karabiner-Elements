@@ -68,7 +68,6 @@ public:
 
     try {
       if constexpr (std::is_same<T, std::string>::value) {
-        // The string is saved as an array of strings if it is multi-line; otherwise, it is saved as a single string.
         value_ = json_utility::unmarshal_string(key_, *it);
 
       } else if constexpr (std::is_same<T, std::chrono::milliseconds>::value) {
