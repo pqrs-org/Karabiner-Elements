@@ -113,5 +113,19 @@ sin(radian) * m;
     expect(6.28_d == expression->value());
   };
 
+  "compare"_test = [] {
+    auto e1_1 = krbn::exprtk_utility::compile("1");
+    auto e1_2 = krbn::exprtk_utility::compile("1");
+    auto e2_1 = krbn::exprtk_utility::compile("2");
+    auto e2_2 = krbn::exprtk_utility::compile("2");
+
+    expect(true == krbn::exprtk_utility::compare(nullptr, nullptr));
+    expect(false == krbn::exprtk_utility::compare(nullptr, e1_1));
+    expect(false == krbn::exprtk_utility::compare(e1_1, nullptr));
+    expect(true == krbn::exprtk_utility::compare(e1_1, e1_2));
+    expect(true == krbn::exprtk_utility::compare(e2_1, e2_2));
+    expect(false == krbn::exprtk_utility::compare(e1_1, e2_2));
+  };
+
   return 0;
 }

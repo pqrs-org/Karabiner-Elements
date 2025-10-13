@@ -80,6 +80,10 @@ public:
     }
   }
 
+  const std::string& get_expression_string(void) const {
+    return expression_string_;
+  }
+
   std::optional<std::string> get_compile_error(void) const {
     return compile_error_;
   }
@@ -148,6 +152,14 @@ private:
 
 inline pqrs::not_null_shared_ptr_t<expression_wrapper> compile(const std::string& expression_string) {
   return std::make_shared<expression_wrapper>(expression_string);
+}
+
+inline bool compare(const std::shared_ptr<expression_wrapper>& a,
+                    const std::shared_ptr<expression_wrapper>& b) {
+  if (!a || !b) {
+    return !a && !b;
+  }
+  return a->get_expression_string() == b->get_expression_string();
 }
 
 } // namespace exprtk_utility
