@@ -1,5 +1,7 @@
 #pragma once
 
+#include "exprtk_utility.hpp"
+#include "json_utility.hpp"
 #include "manipulator_environment_variable_value.hpp"
 
 namespace krbn {
@@ -16,11 +18,15 @@ public:
 
   manipulator_environment_variable_set_variable(std::optional<std::string> name,
                                                 std::optional<manipulator_environment_variable_value> value,
+                                                std::shared_ptr<exprtk_utility::expression_wrapper> expression,
                                                 std::optional<manipulator_environment_variable_value> key_up_value,
+                                                std::shared_ptr<exprtk_utility::expression_wrapper> key_up_expression,
                                                 type type = type::set)
       : name_(name),
         value_(value),
+        expression_(expression),
         key_up_value_(key_up_value),
+        key_up_expression_(key_up_expression),
         type_(type) {
   }
 
@@ -40,12 +46,28 @@ public:
     value_ = value;
   }
 
+  std::shared_ptr<exprtk_utility::expression_wrapper> get_expression(void) const {
+    return expression_;
+  }
+
+  void set_expression(std::shared_ptr<exprtk_utility::expression_wrapper> value) {
+    expression_ = value;
+  }
+
   std::optional<manipulator_environment_variable_value> get_key_up_value(void) const {
     return key_up_value_;
   }
 
   void set_key_up_value(std::optional<manipulator_environment_variable_value> value) {
     key_up_value_ = value;
+  }
+
+  std::shared_ptr<exprtk_utility::expression_wrapper> get_key_up_expression(void) const {
+    return key_up_expression_;
+  }
+
+  void set_key_up_expression(std::shared_ptr<exprtk_utility::expression_wrapper> value) {
+    key_up_expression_ = value;
   }
 
   type get_type(void) const {
@@ -59,7 +81,9 @@ public:
   bool operator==(const manipulator_environment_variable_set_variable& other) const {
     return name_ == other.name_ &&
            value_ == other.value_ &&
+           exprtk_utility::compare(expression_, other.expression_) &&
            key_up_value_ == other.key_up_value_ &&
+           exprtk_utility::compare(key_up_expression_, other.key_up_expression_) &&
            type_ == other.type_;
   }
 
@@ -70,7 +94,9 @@ public:
 private:
   std::optional<std::string> name_;
   std::optional<manipulator_environment_variable_value> value_;
+  std::shared_ptr<exprtk_utility::expression_wrapper> expression_;
   std::optional<manipulator_environment_variable_value> key_up_value_;
+  std::shared_ptr<exprtk_utility::expression_wrapper> key_up_expression_;
   type type_;
 };
 
@@ -85,8 +111,16 @@ inline void to_json(nlohmann::json& json, const manipulator_environment_variable
     json["value"] = *v;
   }
 
+  if (auto v = m.get_expression()) {
+    json["expression"] = json_utility::marshal_string(v->get_expression_string());
+  }
+
   if (auto v = m.get_key_up_value()) {
     json["key_up_value"] = *v;
+  }
+
+  if (auto v = m.get_key_up_expression()) {
+    json["key_up_expression"] = json_utility::marshal_string(v->get_expression_string());
   }
 
   switch (m.get_type()) {
@@ -111,8 +145,14 @@ inline void from_json(const nlohmann::json& json, manipulator_environment_variab
     } else if (key == "value") {
       m.set_value(value.get<manipulator_environment_variable_value>());
 
+    } else if (key == "expression") {
+      m.set_expression(json_utility::unmarshal_expression_string(key, value));
+
     } else if (key == "key_up_value") {
       m.set_key_up_value(value.get<manipulator_environment_variable_value>());
+
+    } else if (key == "key_up_expression") {
+      m.set_key_up_expression(json_utility::unmarshal_expression_string(key, value));
 
     } else if (key == "type") {
       pqrs::json::requires_string(value, "`" + key + "`");
@@ -141,7 +181,9 @@ struct hash<krbn::manipulator_environment_variable_set_variable> final {
 
     pqrs::hash::combine(h, value.get_name());
     pqrs::hash::combine(h, value.get_value());
+    pqrs::hash::combine(h, value.get_expression());
     pqrs::hash::combine(h, value.get_key_up_value());
+    pqrs::hash::combine(h, value.get_key_up_expression());
     pqrs::hash::combine(h, value.get_type());
 
     return h;

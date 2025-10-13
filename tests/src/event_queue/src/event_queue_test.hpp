@@ -172,7 +172,9 @@ void run_event_queue_test(void) {
                       krbn::manipulator_environment_variable_set_variable(
                           "example1",
                           krbn::manipulator_environment_variable_value(100),
-                          std::nullopt))
+                          nullptr,
+                          std::nullopt,
+                          nullptr))
                       .to_json();
       expect(json == expected);
       auto event_from_json = krbn::event_queue::event::make_from_json(json);
