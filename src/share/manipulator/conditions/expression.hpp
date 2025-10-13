@@ -36,22 +36,10 @@ public:
         }
 
       } else if (key == "expression") {
-        if (value.is_string()) {
-          expression_ = exprtk_utility::compile(value.get<std::string>());
-
-        } else if (value.is_array()) {
-          std::stringstream ss;
-
-          for (const auto& j : value) {
-            ss << j.template get<std::string>();
-          }
-
-          expression_ = exprtk_utility::compile(ss.str());
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array of string, or string, but is `{1}`",
-                                                        key,
-                                                        value));
+        auto expression_string = json_utility::unmarshal_string(key, value);
+        expression_ = exprtk_utility::compile(expression_string);
+        if (std::isnan(expression_->value())) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: invalid expression `{1}`", key, value));
         }
 
       } else if (key == "description") {

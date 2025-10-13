@@ -69,34 +69,7 @@ public:
     try {
       if constexpr (std::is_same<T, std::string>::value) {
         // The string is saved as an array of strings if it is multi-line; otherwise, it is saved as a single string.
-        try {
-          if (it->is_string()) {
-            value_ = it->template get<std::string>();
-
-          } else if (it->is_array()) {
-            std::stringstream ss;
-
-            for (const auto& j : *it) {
-              ss << j.template get<std::string>() << '\n';
-            }
-
-            auto s = ss.str();
-            // Remove the last newline.
-            if (!s.empty()) {
-              s.pop_back();
-            }
-
-            value_ = s;
-
-          } else {
-            throw std::runtime_error("unknown type");
-          }
-
-        } catch (std::exception& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be array of string, or string, but is `{1}`",
-                                                        key_,
-                                                        pqrs::json::dump_for_error_message(*it)));
-        }
+        value_ = json_utility::unmarshal_string(key_, *it);
 
       } else if constexpr (std::is_same<T, std::chrono::milliseconds>::value) {
         pqrs::json::requires_number(*it, "`" + key_ + "`");

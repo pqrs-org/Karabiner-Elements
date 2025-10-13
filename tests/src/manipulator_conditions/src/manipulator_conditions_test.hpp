@@ -7,6 +7,7 @@
 void run_manipulator_conditions_test(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
+  using namespace std::literals;
 
   "manipulator.condition_factory"_test = [] {
     {
@@ -122,21 +123,26 @@ void run_manipulator_conditions_test(void) {
   "type": "expression_if",
   "expression": "2 > 1"
 }
-      )"_json);
+
+)"_json);
 
       expect(condition.is_fulfilled(entry, manipulator_environment));
     }
 
     // nan
     {
-      krbn::manipulator::conditions::expression condition(R"(
+      try {
+        krbn::manipulator::conditions::expression condition(R"(
 {
   "type": "expression_if",
   "expression": "cos("
 }
-      )"_json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+)"_json);
+        expect(false) << "json must throw unmarshal_error for invalid expression";
+      } catch (const pqrs::json::unmarshal_error& e) {
+        expect(R"(`expression` error: invalid expression `"cos("`)"sv == e.what());
+      }
     }
 
     // no expression
@@ -145,7 +151,8 @@ void run_manipulator_conditions_test(void) {
 {
   "type": "expression_if"
 }
-      )"_json);
+
+)"_json);
 
       expect(!condition.is_fulfilled(entry, manipulator_environment));
     }
@@ -160,21 +167,26 @@ void run_manipulator_conditions_test(void) {
   "type": "expression_unless",
   "expression": "2 < 1"
 }
-      )"_json);
+
+)"_json);
 
       expect(condition.is_fulfilled(entry, manipulator_environment));
     }
 
     // nan
     {
-      krbn::manipulator::conditions::expression condition(R"(
+      try {
+        krbn::manipulator::conditions::expression condition(R"(
 {
   "type": "expression_unless",
   "expression": "cos("
 }
-      )"_json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+)"_json);
+        expect(false) << "json must throw unmarshal_error for invalid expression";
+      } catch (const pqrs::json::unmarshal_error& e) {
+        expect(R"(`expression` error: invalid expression `"cos("`)"sv == e.what());
+      }
     }
 
     // no expression
@@ -183,7 +195,8 @@ void run_manipulator_conditions_test(void) {
 {
   "type": "expression_unless"
 }
-      )"_json);
+
+)"_json);
 
       expect(!condition.is_fulfilled(entry, manipulator_environment));
     }
