@@ -72,9 +72,7 @@ public:
   void apply_environment_variables(const manipulator::manipulator_environment& manipulator_environment) {
     std::erase_if(expressions_, [&](auto&& weak_ptr) {
       if (auto shared_ptr = weak_ptr.lock()) {
-        for (const auto& [name, value] : manipulator_environment.get_variables()) {
-          value.apply_to_expression_variable(name, shared_ptr);
-        }
+        manipulator_environment.apply_to_expression_variable(shared_ptr);
 
         return false;
       }

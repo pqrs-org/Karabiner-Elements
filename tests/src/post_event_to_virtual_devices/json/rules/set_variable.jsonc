@@ -39,6 +39,22 @@
         ]
     },
     {
+        "description": "c -> flag_c (expression)",
+        "type": "basic",
+        "from": {
+            "key_code": "c"
+        },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "flag_c",
+                    "expression": "flag_a * 10",
+                    "key_up_expression": "flag_c / 2"
+                }
+            }
+        ]
+    },
+    {
         "description": "tab -> escape if flag_a on",
         "type": "basic",
         "from": {
@@ -73,6 +89,44 @@
                 "name": "flag_b",
                 "type": "variable_if",
                 "value": 1
+            }
+        ]
+    },
+    {
+        "description": "tab -> 1 if flag_c is 10",
+        "type": "basic",
+        "from": {
+            "key_code": "tab"
+        },
+        "to": [
+            {
+                "key_code": "1"
+            }
+        ],
+        "conditions": [
+            {
+                "name": "flag_c",
+                "type": "variable_if",
+                "value": 10
+            }
+        ]
+    },
+    {
+        "description": "tab -> 2 if flag_c is 5",
+        "type": "basic",
+        "from": {
+            "key_code": "tab"
+        },
+        "to": [
+            {
+                "key_code": "2"
+            }
+        ],
+        "conditions": [
+            {
+                "name": "flag_c",
+                "type": "variable_if",
+                "value": 5
             }
         ]
     }

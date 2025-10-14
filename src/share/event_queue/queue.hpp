@@ -129,7 +129,7 @@ public:
                 }
                 if (auto v = set_variable->get_expression()) {
                   manipulator_environment_.set_variable_system_now_milliseconds();
-                  manipulator::get_shared_condition_expression_manager()->apply_environment_variables(manipulator_environment_);
+                  manipulator_environment_.apply_to_expression_variable(v);
 
                   manipulator_environment_.set_variable(*n,
                                                         manipulator_environment_variable_value(v->value<int64_t>()));
@@ -149,9 +149,9 @@ public:
                 if (auto v = set_variable->get_key_up_value()) {
                   manipulator_environment_.set_variable(*n, *v);
                 }
-                if (auto v = set_variable->get_expression()) {
+                if (auto v = set_variable->get_key_up_expression()) {
                   manipulator_environment_.set_variable_system_now_milliseconds();
-                  manipulator::get_shared_condition_expression_manager()->apply_environment_variables(manipulator_environment_);
+                  manipulator_environment_.apply_to_expression_variable(v);
 
                   manipulator_environment_.set_variable(*n,
                                                         manipulator_environment_variable_value(v->value<int64_t>()));

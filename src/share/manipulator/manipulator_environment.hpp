@@ -88,10 +88,6 @@ public:
     input_source_properties_ = value;
   }
 
-  const std::unordered_map<std::string, manipulator_environment_variable_value>& get_variables(void) const {
-    return variables_;
-  }
-
   manipulator_environment_variable_value get_variable(const std::string& name) const {
     auto it = variables_.find(name);
     if (it != std::end(variables_)) {
@@ -114,6 +110,12 @@ public:
     auto now_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
     auto now_int64 = static_cast<int64_t>(now_milliseconds.count());
     variables_["system.now.milliseconds"] = manipulator_environment_variable_value(now_int64);
+  }
+
+  void apply_to_expression_variable(pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> expression) const {
+    for (const auto& [name, value] : variables_) {
+      value.apply_to_expression_variable(name, expression);
+    }
   }
 
   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration(void) const {
