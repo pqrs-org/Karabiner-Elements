@@ -10,6 +10,8 @@
 -   ✨ New Features
     -   Added a feature that lets you set environment variables via `/Library/Application Support/org.pqrs/config/karabiner_environment`.
     -   Added support for devices that expose the Programmable Buttons usage on the Consumer Usage Page. (e.g., VEC USB Footpedal)
+    -   Added `set_variable.expression` and `set_variable.key_up_expression`.
+    -   Added `expression_if` and `expression_unless`.
 -   ⚡️ Improvements
     -   Updated the app icon for macOS 26.
     -   Added support for Liquid Glass.
