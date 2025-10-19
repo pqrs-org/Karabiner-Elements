@@ -5,6 +5,7 @@
 #include "types/device_id.hpp"
 #include "types/device_identifiers.hpp"
 #include "types/device_state.hpp"
+#include "types/event_integer_value.hpp"
 #include "types/event_type.hpp"
 #include "types/grabbable_state.hpp"
 #include "types/karabiner_machine_identifier.hpp"
