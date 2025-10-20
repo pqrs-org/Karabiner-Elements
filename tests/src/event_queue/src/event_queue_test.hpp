@@ -57,6 +57,7 @@ void run_event_queue_test(void) {
                                                                         krbn::absolute_time_duration(10)),
                                     a_event,
                                     krbn::event_type::key_down,
+                                    krbn::event_integer_value::value_t(1),
                                     a_event,
                                     krbn::event_queue::state::original,
                                     false);
@@ -437,6 +438,7 @@ void run_event_queue_test(void) {
                                                krbn::absolute_time_point(100)),
                                            spacebar_event,
                                            krbn::event_type::key_down,
+                                           krbn::event_integer_value::value_t(1),
                                            spacebar_event,
                                            krbn::event_queue::state::original);
     krbn::event_queue::entry right_shift_down(krbn::device_id(1),
@@ -444,6 +446,7 @@ void run_event_queue_test(void) {
                                                   krbn::absolute_time_point(100)),
                                               right_shift_event,
                                               krbn::event_type::key_down,
+                                              krbn::event_integer_value::value_t(1),
                                               right_shift_event,
                                               krbn::event_queue::state::original);
     krbn::event_queue::entry escape_down(krbn::device_id(1),
@@ -451,6 +454,7 @@ void run_event_queue_test(void) {
                                              krbn::absolute_time_point(200)),
                                          escape_event,
                                          krbn::event_type::key_down,
+                                         krbn::event_integer_value::value_t(1),
                                          escape_event,
                                          krbn::event_queue::state::original);
     krbn::event_queue::entry spacebar_up(krbn::device_id(1),
@@ -458,6 +462,7 @@ void run_event_queue_test(void) {
                                              krbn::absolute_time_point(300)),
                                          spacebar_event,
                                          krbn::event_type::key_up,
+                                         krbn::event_integer_value::value_t(0),
                                          spacebar_event,
                                          krbn::event_queue::state::original);
     krbn::event_queue::entry right_shift_up(krbn::device_id(1),
@@ -465,6 +470,7 @@ void run_event_queue_test(void) {
                                                 krbn::absolute_time_point(300)),
                                             right_shift_event,
                                             krbn::event_type::key_up,
+                                            krbn::event_integer_value::value_t(0),
                                             right_shift_event,
                                             krbn::event_queue::state::original);
 

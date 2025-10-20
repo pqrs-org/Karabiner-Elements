@@ -85,6 +85,7 @@ public:
                                t,
                                pair.first,
                                pair.second,
+                               std::nullopt,
                                original_event,
                                event_queue::state::manipulated,
                                lazy);

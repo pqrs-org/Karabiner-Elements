@@ -186,6 +186,7 @@ public:
                                                  front_input_event.get_event_time_stamp(),
                                                  event_queue::event(motion),
                                                  front_input_event.get_event_type(),
+                                                 front_input_event.get_event_integer_value(),
                                                  front_input_event.get_original_event(),
                                                  event_queue::state::manipulated,
                                                  front_input_event.get_lazy());

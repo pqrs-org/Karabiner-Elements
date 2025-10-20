@@ -27,6 +27,7 @@ public:
                                 event_time_stamp,
                                 event_,
                                 event_type_,
+                                std::nullopt,
                                 original_event_,
                                 event_queue::state::manipulated,
                                 lazy_);

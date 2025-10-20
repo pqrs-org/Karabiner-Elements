@@ -109,6 +109,7 @@ void run_manipulator_conditions_test(void) {
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_type::key_down,
+                                   krbn::event_integer_value::value_t(1),
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_queue::state::original);
@@ -210,6 +211,7 @@ void run_manipulator_conditions_test(void) {
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_type::key_down,
+                                   krbn::event_integer_value::value_t(1),
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_queue::state::original);
@@ -282,6 +284,7 @@ void run_manipulator_conditions_test(void) {
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_type::key_down,
+                                   krbn::event_integer_value::value_t(1),
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_queue::state::original);
@@ -351,6 +354,7 @@ void run_manipulator_conditions_test(void) {
                                             krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                             krbn::event_type::key_down,
+                                            krbn::event_integer_value::value_t(1),
                                             krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                             krbn::event_queue::state::original);
@@ -359,6 +363,7 @@ void run_manipulator_conditions_test(void) {
                                                krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                                      pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                                krbn::event_type::key_down,
+                                               krbn::event_integer_value::value_t(1),
                                                krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                                      pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                                krbn::event_queue::state::manipulated);
@@ -390,6 +395,7 @@ void run_manipulator_conditions_test(void) {
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_type::key_down,
+                                   krbn::event_integer_value::value_t(1),
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_queue::state::original);
@@ -435,6 +441,7 @@ void run_manipulator_conditions_test(void) {
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_type::key_down,
+                                   krbn::event_integer_value::value_t(1),
                                    krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
                                                                                          pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
                                    krbn::event_queue::state::original);

@@ -383,6 +383,7 @@ public:
                                                              front_input_event.get_event_time_stamp(),
                                                              event_queue::event::make_stop_keyboard_repeat_event(),
                                                              event_type::single,
+                                                             std::nullopt,
                                                              front_input_event.get_original_event(),
                                                              event_queue::state::virtual_event,
                                                              true);

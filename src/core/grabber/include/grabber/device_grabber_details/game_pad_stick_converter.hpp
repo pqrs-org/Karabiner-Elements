@@ -585,6 +585,7 @@ private:
                                                       event_time_stamp,
                                                       event,
                                                       event_type::single,
+                                                      std::nullopt,
                                                       event,
                                                       event_queue::state::original);
 
@@ -609,6 +610,7 @@ private:
                                                       event_time_stamp,
                                                       event,
                                                       event_type::single,
+                                                      std::nullopt,
                                                       event,
                                                       event_queue::state::original);
 

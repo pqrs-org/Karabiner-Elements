@@ -440,6 +440,7 @@ public:
                                  event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                  e,
                                  event_type,
+                                 std::nullopt,
                                  event,
                                  event_queue::state::virtual_event);
 
@@ -541,6 +542,7 @@ public:
                                  event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                  event,
                                  t,
+                                 std::nullopt,
                                  event,
                                  event_queue::state::virtual_event);
         merged_input_event_queue_->push_back_entry(entry);
@@ -557,6 +559,7 @@ public:
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
+                               std::nullopt,
                                event,
                                event_queue::state::virtual_event);
 
@@ -573,6 +576,7 @@ public:
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
+                               std::nullopt,
                                event,
                                event_queue::state::virtual_event);
 
@@ -590,6 +594,7 @@ public:
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
+                               std::nullopt,
                                event,
                                event_queue::state::virtual_event);
 
@@ -606,6 +611,7 @@ public:
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                event,
                                event_type::single,
+                               std::nullopt,
                                event,
                                event_queue::state::virtual_event);
 
@@ -688,6 +694,7 @@ private:
                                 e->get_event_time_stamp(),
                                 e->get_event(),
                                 e->get_event_type(),
+                                e->get_event_integer_value(),
                                 e->get_original_event(),
                                 e->get_state());
 
@@ -717,6 +724,7 @@ private:
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
+                             std::nullopt,
                              event,
                              event_queue::state::virtual_event);
 
@@ -731,6 +739,7 @@ private:
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
+                             std::nullopt,
                              event,
                              event_queue::state::virtual_event);
 
@@ -745,6 +754,7 @@ private:
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
+                             std::nullopt,
                              event,
                              event_queue::state::virtual_event);
 

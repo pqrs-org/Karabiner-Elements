@@ -60,6 +60,7 @@ static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<de
                                        event_time_stamp(*pointing_motion_time_stamp),
                                        event,
                                        event_type::single,
+                                       std::nullopt,
                                        event,
                                        state::original);
       result->push_back(e);
@@ -91,6 +92,7 @@ static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<de
                                            event_time_stamp(v.get_time_stamp()),
                                            event,
                                            v.get_integer_value() ? event_type::key_down : event_type::key_up,
+                                           event_integer_value::value_t(v.get_integer_value()),
                                            event,
                                            state::original);
           result->push_back(e);
@@ -140,6 +142,7 @@ static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<de
                                            event_time_stamp(v.get_time_stamp()),
                                            event,
                                            event_type::single,
+                                           std::nullopt,
                                            event,
                                            state::virtual_event);
           result->push_back(e);
@@ -156,6 +159,7 @@ static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<de
                                                event_time_stamp(v.get_time_stamp()),
                                                event,
                                                pair.second,
+                                               std::nullopt,
                                                event,
                                                state::original);
               result->push_back(e);
@@ -196,6 +200,7 @@ static inline not_null_entries_ptr_t insert_device_keys_and_pointing_buttons_are
                                                           entry->get_event_time_stamp(),
                                                           event,
                                                           event_type::single,
+                                                          std::nullopt,
                                                           event,
                                                           state::virtual_event);
             result->push_back(e);

@@ -184,6 +184,7 @@ private:
                                                t,
                                                event_queue::event(pointing_motion),
                                                event_type::single,
+                                               std::nullopt,
                                                original_event_,
                                                event_queue::state::manipulated);
       }

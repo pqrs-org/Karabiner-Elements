@@ -20,6 +20,7 @@ public:
         const event_time_stamp& event_time_stamp,
         const class event& event,
         event_type event_type,
+        std::optional<event_integer_value::value_t> event_integer_value,
         const class event& original_event,
         state state,
         bool lazy = false,
@@ -31,6 +32,7 @@ public:
         lazy_(lazy),
         event_(event),
         event_type_(event_type),
+        event_integer_value_(event_integer_value),
         original_event_(original_event) {
   }
 
@@ -42,6 +44,7 @@ public:
     lazy_ = other.lazy_;
     event_ = other.event_;
     event_type_ = other.event_type_;
+    event_integer_value_ = other.event_integer_value_;
     original_event_ = other.original_event_;
     return *this;
   }
@@ -55,6 +58,7 @@ public:
                  event_time_stamp(absolute_time_point(0)),
                  event(),
                  event_type::key_down,
+                 std::nullopt,
                  event(),
                  state::original);
 
@@ -85,6 +89,10 @@ public:
 
       if (auto v = pqrs::json::find_json(json, "event_type")) {
         result.event_type_ = v->value().get<event_type>();
+      }
+
+      if (auto v = pqrs::json::find_json(json, "event_integer_value")) {
+        result.event_integer_value_ = v->value().get<event_integer_value::value_t>();
       }
 
       if (auto v = pqrs::json::find_json(json, "original_event")) {
@@ -161,6 +169,12 @@ public:
     return event_type_;
   }
 
+  std::optional<event_integer_value::value_t> get_event_integer_value(void) const {
+    // We don't have to use mutex since there is not setter.
+
+    return event_integer_value_;
+  }
+
   const event& get_original_event(void) const {
     // We don't have to use mutex since there is not setter.
 
@@ -168,7 +182,7 @@ public:
   }
 
   nlohmann::json to_json(void) const {
-    return nlohmann::json({
+    auto json = nlohmann::json({
         {"device_id", type_safe::get(get_device_id())},
         {"event_time_stamp", get_event_time_stamp()},
         {"validity", static_cast<int>(get_validity())},
@@ -178,6 +192,10 @@ public:
         {"event_type", get_event_type()},
         {"original_event", get_original_event()},
     });
+    if (auto v = get_event_integer_value()) {
+      json["event_integer_value"] = get_event_integer_value();
+    }
+    return json;
   }
 
   bool operator==(const entry& other) const {
@@ -188,6 +206,7 @@ public:
            get_lazy() == other.get_lazy() &&
            get_event() == other.get_event() &&
            get_event_type() == other.get_event_type() &&
+           get_event_integer_value() == other.get_event_integer_value() &&
            get_original_event() == other.get_original_event();
   }
 
@@ -216,6 +235,16 @@ private:
   bool lazy_;
   event event_;
   event_type event_type_;
+
+  // For events sent by devices that have pqrs::hid::usage::consumer::programmable_buttons,
+  // the integer_value can have a meaningful value.
+  // For example, with the VEC USB Footpedal INFINITY USB-3, all three foot switches send `button75`,
+  // but the integer_value changes depending on which switches are pressed.
+  // Specifically, each switch is assigned 1, 2, or 4,
+  // and the integer_value becomes the sum of the numbers for the pressed foot switches.
+  // We store the integer_value in event_integer_value_;
+  std::optional<event_integer_value::value_t> event_integer_value_;
+
   event original_event_;
   mutable std::mutex mutex_;
 };
