@@ -224,6 +224,16 @@ public:
                 }
               }
 
+              // Check integer_value
+
+              if (is_target) {
+                if (auto iev = from_.get_event_integer_value()) {
+                  if (iev != front_input_event.get_event_integer_value()) {
+                    is_target = false;
+                  }
+                }
+              }
+
               if (is_target) {
                 if (!condition_manager_.is_fulfilled(front_input_event,
                                                      output_event_queue->get_manipulator_environment())) {

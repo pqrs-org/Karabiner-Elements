@@ -72,6 +72,16 @@
         "error": "`modifiers` error: json must be object, but is `null`"
     },
 
+    // from_event_definition.integer_value
+
+    {
+        "class": "from_event_definition",
+        "input": {
+            "integer_value": null
+        },
+        "error": "`integer_value` error: json must be number, but is `null`"
+    },
+
     // unknown key
 
     {

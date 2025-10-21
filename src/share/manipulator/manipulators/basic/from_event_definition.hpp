@@ -35,6 +35,14 @@ public:
     from_modifiers_definition_ = value;
   }
 
+  const std::optional<event_integer_value::value_t>& get_event_integer_value(void) const {
+    return event_integer_value_;
+  }
+
+  void set_event_integer_value(const std::optional<event_integer_value::value_t>& value) {
+    event_integer_value_ = value;
+  }
+
   const pqrs::not_null_shared_ptr_t<simultaneous_options>& get_simultaneous_options(void) const {
     return simultaneous_options_;
   }
@@ -144,6 +152,7 @@ public:
 private:
   std::vector<event_definition> event_definitions_;
   from_modifiers_definition from_modifiers_definition_;
+  std::optional<event_integer_value::value_t> event_integer_value_;
   pqrs::not_null_shared_ptr_t<simultaneous_options> simultaneous_options_;
 };
 
@@ -162,6 +171,13 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
     } else if (key == "modifiers") {
       try {
         d.set_from_modifiers_definition(value.get<from_modifiers_definition>());
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+      }
+
+    } else if (key == "integer_value") {
+      try {
+        d.set_event_integer_value(value.get<event_integer_value::value_t>());
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }

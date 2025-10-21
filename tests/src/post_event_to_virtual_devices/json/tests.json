@@ -874,5 +874,11 @@
         "rules": ["json/rules/vk_none.jsonc"],
         "input_event_queue": "json/input_event_queue/vk_none_1.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/vk_none_1.json"
+    },
+    {
+        "description": "integer_value",
+        "rules": ["json/rules/integer_value.jsonc"],
+        "input_event_queue": "json/input_event_queue/integer_value_1.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/integer_value_1.json"
     }
 ]

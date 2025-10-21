@@ -1,0 +1,29 @@
+[
+    {
+        "description": "button3 (integer_value:1) to f1",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button3",
+            "integer_value": 1
+        },
+        "to": [{ "key_code": "f1" }]
+    },
+    {
+        "description": "button3 (integer_value:2) to f2",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button3",
+            "integer_value": 2
+        },
+        "to": [{ "key_code": "f2" }]
+    },
+    {
+        "description": "button3 (integer_value:4) to f3",
+        "type": "basic",
+        "from": {
+            "pointing_button": "button3",
+            "integer_value": 4
+        },
+        "to": [{ "key_code": "f4" }]
+    }
+]
