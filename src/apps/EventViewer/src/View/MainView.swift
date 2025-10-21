@@ -63,7 +63,7 @@ struct MainView: View {
           } else {
             VStack(alignment: .leading, spacing: 0.0) {
               ForEach($eventHistory.entries) { $entry in
-                HStack(alignment: .center, spacing: 0) {
+                HStack(alignment: .center, spacing: 8.0) {
                   Text(entry.eventType)
                     .font(.title)
                     .frame(width: 70, alignment: .leading)
@@ -74,6 +74,25 @@ struct MainView: View {
                       .font(.caption)
                   }
                   .frame(maxWidth: .infinity, alignment: .leading)
+
+                  Divider()
+
+                  VStack(alignment: .trailing, spacing: 0) {
+                    HStack(alignment: .bottom, spacing: 0) {
+                      Text("integer value: ")
+                        .font(.caption)
+                      Text(entry.integerValue)
+                        .font(.callout)
+                        .monospaced()
+                    }
+
+                    Text("")
+                      .font(.callout)
+                      .monospaced()
+                  }
+                  .frame(alignment: .leading)
+
+                  Divider()
 
                   VStack(alignment: .trailing, spacing: 0) {
                     if entry.usagePage.count > 0 {

@@ -44,10 +44,23 @@ struct UnknownEventsView: View {
           } else {
             VStack(alignment: .leading, spacing: 0.0) {
               ForEach($eventHistory.unknownEventEntries) { $entry in
-                HStack(alignment: .center, spacing: 0) {
-                  Text(entry.eventType)
-                    .font(.title)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack(alignment: .center, spacing: 8) {
+                  VStack(alignment: .trailing, spacing: 0) {
+                    HStack(alignment: .bottom, spacing: 0) {
+                      Text("integer value: ")
+                        .font(.caption)
+                      Text("\(entry.integerValue)")
+                        .font(.callout)
+                        .monospaced()
+                    }
+
+                    Text("")
+                      .font(.callout)
+                      .monospaced()
+                  }
+                  .frame(alignment: .leading)
+
+                  Divider()
 
                   VStack(alignment: .trailing, spacing: 0) {
                     if entry.usagePage.count > 0 {
@@ -72,6 +85,7 @@ struct UnknownEventsView: View {
                   .frame(alignment: .leading)
                 }
                 .padding(.horizontal, 12.0)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 Divider().id("divider \(entry.id)")
               }

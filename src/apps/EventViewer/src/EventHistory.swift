@@ -112,20 +112,22 @@ private func callback(
     //
 
     entry.usagePage = String(
-      format: "%d (0x%04x)",
+      format: "%5d (0x%04x)",
       usagePage,
       usagePage)
     entry.usage = String(
-      format: "%d (0x%04x)",
+      format: "%5d (0x%04x)",
       usage,
       usage)
+    entry.integerValue = String(
+      format: "%5d",
+      integerValue)
 
     //
     // Handle unknown events
     //
 
     if !libkrbn_is_momentary_switch_event_target(usagePage, usage) {
-      entry.eventType = "\(integerValue)"
       EventHistory.shared.appendUnknownEvent(entry)
       return
     }
@@ -194,6 +196,7 @@ public class EventHistoryEntry: Identifiable, Equatable {
   public var eventType = ""
   public var usagePage = ""
   public var usage = ""
+  public var integerValue = ""
   public var name = ""
   public var misc = ""
 
