@@ -13,6 +13,7 @@
     -   Added [`set_variable.expression` and `set_variable.key_up_expression`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/set-variable/#expression-specification).
     -   Added [`expression_if` and `expression_unless`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/conditions/expression/).
     -   Added `system.now.milliseconds` to variables.
+    -   Added [`integer_value`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/from/integer-value/) to the from event definition.
 -   ⚡️ Improvements
     -   Updated the app icon for macOS 26.
     -   Added support for Liquid Glass.
