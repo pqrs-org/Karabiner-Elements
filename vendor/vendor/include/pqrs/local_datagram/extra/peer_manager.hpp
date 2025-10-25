@@ -85,12 +85,17 @@ public:
 
   peer_manager(const peer_manager&) = delete;
 
-  peer_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-               size_t buffer_size,
-               std::function<bool(std::optional<pid_t> peer_pid)> verify_peer)
+  peer_manager(
+      std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
+      size_t buffer_size,
+      std::function<bool(std::optional<pid_t> peer_pid,
+                         const std::filesystem::path& peer_socket_file_path)>
+          verify_peer = [](auto&&, auto&&) { return true; },
+      std::function<void(const std::filesystem::path& peer_socket_file_path)> peer_closed = [](auto&&) {})
       : dispatcher_client(weak_dispatcher),
         buffer_size_(buffer_size),
-        verify_peer_(verify_peer) {
+        verify_peer_(verify_peer),
+        peer_closed_(peer_closed) {
   }
 
   virtual ~peer_manager(void) {
@@ -112,10 +117,11 @@ public:
 
         std::weak_ptr<entry> weak_entry = make_weak(it->second);
 
-        it->second->get_client().connected.connect([this, weak_entry](auto&& peer_pid) {
+        it->second->get_client().connected.connect([this, peer_socket_file_path, weak_entry](auto&& peer_pid) {
           if (auto e = weak_entry.lock()) {
             e->set_connected(true);
-            e->set_verified(verify_peer_(peer_pid));
+            e->set_verified(verify_peer_(peer_pid,
+                                         peer_socket_file_path));
             e->flush();
           }
         });
@@ -125,7 +131,11 @@ public:
           error(peer_socket_file_path, error_code);
         });
 
-        it->second->get_client().closed.connect([this, peer_socket_file_path] {
+        it->second->get_client().closed.connect([this, weak_entry, peer_socket_file_path] {
+          if (auto e = weak_entry.lock()) {
+            peer_closed_(peer_socket_file_path);
+          }
+
           entries_.erase(peer_socket_file_path);
         });
 
@@ -146,7 +156,10 @@ public:
 
 private:
   size_t buffer_size_;
-  std::function<bool(std::optional<pid_t> peer_pid)> verify_peer_;
+  std::function<bool(std::optional<pid_t> peer_pid,
+                     const std::filesystem::path& peer_socket_file_path)>
+      verify_peer_;
+  std::function<void(const std::filesystem::path& peer_socket_file_path)> peer_closed_;
 
   std::unordered_map<std::filesystem::path, not_null_shared_ptr_t<entry>> entries_;
 };

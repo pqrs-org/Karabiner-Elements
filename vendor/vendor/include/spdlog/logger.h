@@ -363,14 +363,14 @@ protected:
     virtual void sink_it_(const details::log_msg &msg);
     virtual void flush_();
     void dump_backtrace_();
-    bool should_flush_(const details::log_msg &msg);
+    bool should_flush_(const details::log_msg &msg) const;
 
     // handle errors during logging.
     // default handler prints the error to stderr at max rate of 1 message/sec.
-    void err_handler_(const std::string &msg);
+    void err_handler_(const std::string &msg) const;
 };
 
-void swap(logger &a, logger &b);
+void swap(logger &a, logger &b) noexcept;
 
 }  // namespace spdlog
 
