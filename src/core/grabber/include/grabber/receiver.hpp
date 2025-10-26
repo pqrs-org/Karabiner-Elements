@@ -36,10 +36,30 @@ public:
       chmod(directory_path.c_str(), 0755);
     }
 
-    verified_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
+    event_viewer_temporarily_ignore_all_devices_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
         weak_dispatcher_,
         constants::local_datagram_buffer_size,
-        [](auto&& peer_pid) {
+        [](auto&& peer_pid,
+           auto&& peer_socket_file_path) {
+          return true;
+        });
+    event_viewer_temporarily_ignore_all_devices_peer_manager_->peer_closed.connect(
+        [this](auto&& peer_socket_file_path,
+               auto&& remaining_verified_peer_count) {
+          // Restore the flags when all clients have closed.
+          if (remaining_verified_peer_count == 0) {
+            if (device_grabber_) {
+              device_grabber_->async_set_temporarily_ignore_all_devices(false);
+            }
+          }
+        });
+
+    event_viewer_get_manipulator_environment_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
+        weak_dispatcher_,
+        constants::local_datagram_buffer_size,
+        [](auto&& peer_pid,
+           auto&& peer_socket_file_path) {
+          // Verify the peer's Team ID before sending manipulator environment information.
           if (get_shared_codesign_manager()->same_team_id(peer_pid)) {
             logger::get_logger()->info("verified peer connected");
             return true;
@@ -52,7 +72,8 @@ public:
     verification_exempt_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
         weak_dispatcher_,
         constants::local_datagram_buffer_size,
-        [](auto&& peer_pid) {
+        [](auto&& peer_pid,
+           auto&& peer_socket_file_path) {
           return true;
         });
 
@@ -150,17 +171,36 @@ public:
             }
             break;
 
+          case operation_type::temporarily_ignore_all_devices: {
+            auto value = json.at("value").get<bool>();
+
+            if (device_grabber_) {
+              device_grabber_->async_set_temporarily_ignore_all_devices(value);
+            }
+
+            if (event_viewer_temporarily_ignore_all_devices_peer_manager_) {
+              // Register the client with peer_manager so the flag is turned off when the client closes.
+              nlohmann::json json{
+                  {"operation_type", operation_type::none},
+              };
+              event_viewer_temporarily_ignore_all_devices_peer_manager_->async_send(sender_endpoint->path(),
+                                                                                    nlohmann::json::to_msgpack(json));
+            }
+
+            break;
+          }
+
           case operation_type::get_manipulator_environment:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_manipulator_environment(
                   [this, sender_endpoint](auto&& manipulator_environment) {
-                    if (verified_peer_manager_) {
+                    if (event_viewer_get_manipulator_environment_peer_manager_) {
                       nlohmann::json json{
                           {"operation_type", operation_type::manipulator_environment},
                           {"manipulator_environment", manipulator_environment.to_json()},
                       };
-                      verified_peer_manager_->async_send(sender_endpoint->path(),
-                                                         nlohmann::json::to_msgpack(json));
+                      event_viewer_get_manipulator_environment_peer_manager_->async_send(sender_endpoint->path(),
+                                                                                         nlohmann::json::to_msgpack(json));
                     }
                   });
             }
@@ -279,7 +319,8 @@ public:
       console_user_server_client_ = nullptr;
       multitouch_extension_client_ = nullptr;
       verification_exempt_peer_manager_ = nullptr;
-      verified_peer_manager_ = nullptr;
+      event_viewer_get_manipulator_environment_peer_manager_ = nullptr;
+      event_viewer_temporarily_ignore_all_devices_peer_manager_ = nullptr;
       stop_device_grabber();
     });
 
@@ -360,8 +401,8 @@ private:
   uid_t current_console_user_id_;
   std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer_;
 
-  // For operation_type::get_manipulator_environment
-  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verified_peer_manager_;
+  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_temporarily_ignore_all_devices_peer_manager_;
+  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_get_manipulator_environment_peer_manager_;
   // For operation_type::get_system_variables
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verification_exempt_peer_manager_;
   std::unique_ptr<pqrs::local_datagram::server> server_;
