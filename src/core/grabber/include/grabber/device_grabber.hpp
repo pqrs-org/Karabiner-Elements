@@ -47,6 +47,7 @@ public:
                  std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer)
       : dispatcher_client(),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
+        temporarily_ignore_all_devices_(false),
         system_sleeping_(false),
         logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>(
@@ -228,6 +229,8 @@ public:
                                                                      *device_ptr,
                                                                      core_configuration_);
         entries_[device_id] = entry;
+
+        entry->set_temporarily_ignore(temporarily_ignore_all_devices_);
 
         entry->hid_queue_values_arrived.connect([this](auto&& entry,
                                                        auto&& event_queue_entries) {
@@ -520,6 +523,18 @@ public:
       }
 
       logger::get_logger()->info("Connected devices are ungrabbed");
+    });
+  }
+
+  void async_set_temporarily_ignore_all_devices(bool value) {
+    enqueue_to_dispatcher([this, value] {
+      temporarily_ignore_all_devices_ = value;
+
+      for (auto&& e : entries_) {
+        e.second->set_temporarily_ignore(value);
+      }
+
+      async_grab_devices();
     });
   }
 
@@ -1022,6 +1037,7 @@ private:
   std::optional<bool> last_caps_lock_state_;
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<device_id, std::shared_ptr<device_grabber_details::entry>> entries_;
+  bool temporarily_ignore_all_devices_;
 
   std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;
   bool system_sleeping_;
