@@ -41,7 +41,8 @@ public:
         core_configuration_(core_configuration),
         device_properties_(device_properties::make_device_properties(device_id,
                                                                      device)),
-        disabled_(false) {
+        disabled_(false),
+        temporarily_ignore_(false) {
     probable_stuck_events_manager_ = std::make_shared<probable_stuck_events_manager>();
 
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
@@ -234,6 +235,14 @@ public:
     disabled_ = value;
   }
 
+  bool get_temporarily_ignore(void) const {
+    return temporarily_ignore_;
+  }
+
+  void set_temporarily_ignore(bool value) {
+    temporarily_ignore_ = value;
+  }
+
   bool is_disable_built_in_keyboard_if_exists(void) const {
     if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return false;
@@ -309,6 +318,10 @@ public:
       return false;
     }
 
+    if (temporarily_ignore_) {
+      return false;
+    }
+
     // We have to seize the device in order to discard all input events.
     if (disabled_) {
       return true;
@@ -349,7 +362,11 @@ private:
   std::string device_name_;
   std::string device_short_name_;
 
+  // For disabling the built in keyboard
   bool disabled_;
+
+  // For ignoring all devices via EventViewer
+  bool temporarily_ignore_;
 };
 } // namespace device_grabber_details
 } // namespace grabber
