@@ -181,6 +181,19 @@ public:
     });
   }
 
+  void async_temporarily_ignore_all_devices(bool value) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::temporarily_ignore_all_devices},
+          {"value", value},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
   void async_get_manipulator_environment(void) const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
