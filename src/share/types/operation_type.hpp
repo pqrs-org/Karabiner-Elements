@@ -13,6 +13,7 @@ enum class operation_type : uint8_t {
   frontmost_application_changed,
   input_source_changed,
   // event_viewer -> grabber
+  temporarily_ignore_all_devices,
   get_manipulator_environment, // The grabber responds only if the client is code-signed with the same Team ID.
   // grabber -> event_viewer
   manipulator_environment,
@@ -40,6 +41,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::input_source_changed, "input_source_changed"},
+        {operation_type::temporarily_ignore_all_devices, "temporarily_ignore_all_devices"},
         {operation_type::get_manipulator_environment, "get_manipulator_environment"},
         {operation_type::manipulator_environment, "manipulator_environment"},
         {operation_type::connect_multitouch_extension, "connect_multitouch_extension"},
