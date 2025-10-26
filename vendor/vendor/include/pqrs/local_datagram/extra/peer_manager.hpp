@@ -5,6 +5,7 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include "../client.hpp"
+#include <algorithm>
 #include <unordered_map>
 
 namespace pqrs {
@@ -20,6 +21,7 @@ public:
 
   nod::signal<void(const std::filesystem::path& peer_socket_file_path, const std::string&)> warning;
   nod::signal<void(const std::filesystem::path& peer_socket_file_path, const asio::error_code&)> error;
+  nod::signal<void(const std::filesystem::path& peer_socket_file_path, size_t remaining_verified_peer_count)> peer_closed;
 
   //
   // entry
@@ -29,13 +31,15 @@ public:
   public:
     entry(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
           const std::filesystem::path& peer_socket_file_path,
-          size_t buffer_size)
+          size_t buffer_size,
+          std::chrono::milliseconds server_check_interval = std::chrono::milliseconds(1000))
         : client_(weak_dispatcher,
                   peer_socket_file_path,
                   std::nullopt,
                   buffer_size),
           connected_(false),
           verified_(false) {
+      client_.set_server_check_interval(server_check_interval);
     }
 
     client& get_client(void) {
@@ -44,6 +48,10 @@ public:
 
     void set_connected(bool value) {
       connected_ = value;
+    }
+
+    bool get_verified(void) const {
+      return verified_;
     }
 
     void set_verified(bool value) {
@@ -90,12 +98,10 @@ public:
       size_t buffer_size,
       std::function<bool(std::optional<pid_t> peer_pid,
                          const std::filesystem::path& peer_socket_file_path)>
-          verify_peer = [](auto&&, auto&&) { return true; },
-      std::function<void(const std::filesystem::path& peer_socket_file_path)> peer_closed = [](auto&&) {})
+          verify_peer = [](auto&&, auto&&) { return true; })
       : dispatcher_client(weak_dispatcher),
         buffer_size_(buffer_size),
-        verify_peer_(verify_peer),
-        peer_closed_(peer_closed) {
+        verify_peer_(verify_peer) {
   }
 
   virtual ~peer_manager(void) {
@@ -128,15 +134,20 @@ public:
 
         it->second->get_client().connect_failed.connect([this, peer_socket_file_path](auto&& error_code) {
           entries_.erase(peer_socket_file_path);
+
           error(peer_socket_file_path, error_code);
         });
 
         it->second->get_client().closed.connect([this, weak_entry, peer_socket_file_path] {
-          if (auto e = weak_entry.lock()) {
-            peer_closed_(peer_socket_file_path);
-          }
-
           entries_.erase(peer_socket_file_path);
+
+          auto remaining_verified_peer_count = std::count_if(std::cbegin(entries_),
+                                                             std::cend(entries_),
+                                                             [](const auto& pair) {
+                                                               return pair.second->get_verified();
+                                                             });
+          peer_closed(peer_socket_file_path,
+                      remaining_verified_peer_count);
         });
 
         it->second->get_client().warning_reported.connect([this, peer_socket_file_path](auto&& message) {
@@ -159,7 +170,6 @@ private:
   std::function<bool(std::optional<pid_t> peer_pid,
                      const std::filesystem::path& peer_socket_file_path)>
       verify_peer_;
-  std::function<void(const std::filesystem::path& peer_socket_file_path)> peer_closed_;
 
   std::unordered_map<std::filesystem::path, not_null_shared_ptr_t<entry>> entries_;
 };
