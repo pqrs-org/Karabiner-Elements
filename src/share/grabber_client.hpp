@@ -182,7 +182,7 @@ public:
   }
 
   void async_temporarily_ignore_all_devices(bool value) const {
-    enqueue_to_dispatcher([this] {
+    enqueue_to_dispatcher([this, value] {
       nlohmann::json json{
           {"operation_type", operation_type::temporarily_ignore_all_devices},
           {"value", value},
