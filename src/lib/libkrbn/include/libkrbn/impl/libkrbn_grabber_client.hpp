@@ -79,6 +79,10 @@ public:
     return status_;
   }
 
+  void async_temporarily_ignore_all_devices(bool value) {
+    grabber_client_->async_temporarily_ignore_all_devices(value);
+  }
+
   void async_get_manipulator_environment(void) {
     grabber_client_->async_get_manipulator_environment();
   }

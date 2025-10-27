@@ -579,6 +579,8 @@ void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_c
 
 libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void);
 
+void libkrbn_grabber_client_async_temporarily_ignore_all_devices(bool value);
+
 void libkrbn_grabber_client_async_get_manipulator_environment(void);
 typedef void (*libkrbn_grabber_client_manipulator_environment_received_t)(const char* _Nonnull json_string);
 void libkrbn_register_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received_t _Nonnull callback);
