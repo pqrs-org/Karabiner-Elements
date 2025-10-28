@@ -718,6 +718,9 @@ constexpr value_t expose_desktop(0x0011);
 constexpr value_t brightness_up(0x0020);
 constexpr value_t brightness_down(0x0021);
 constexpr value_t language(0x0030);
+// EXPERIMENTAL: Try volume codes on apple_vendor page
+constexpr value_t volume_increment_experimental(0x0040);
+constexpr value_t volume_decrement_experimental(0x0041);
 } // namespace apple_vendor_keyboard
 
 //

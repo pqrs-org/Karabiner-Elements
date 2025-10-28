@@ -22,6 +22,9 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"brightness_up", pqrs::hid::usage::apple_vendor_keyboard::brightness_up},
     {"brightness_down", pqrs::hid::usage::apple_vendor_keyboard::brightness_down},
     {"language", pqrs::hid::usage::apple_vendor_keyboard::language},
+    // EXPERIMENTAL: Try volume on apple_vendor page
+    {"volume_increment_experimental", pqrs::hid::usage::apple_vendor_keyboard::volume_increment_experimental},
+    {"volume_decrement_experimental", pqrs::hid::usage::apple_vendor_keyboard::volume_decrement_experimental},
 };
 
 constexpr auto name_value_map = mapbox::eternal::hash_map<mapbox::eternal::string, pqrs::hid::usage::value_t>(name_value_pairs);
