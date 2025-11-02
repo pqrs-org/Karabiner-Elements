@@ -535,6 +535,14 @@ public:
       }
 
       async_grab_devices();
+
+      async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
+              "system.temporarily_ignore_all_devices",
+              manipulator_environment_variable_value(value),
+              nullptr,
+              std::nullopt,
+              nullptr));
     });
   }
 

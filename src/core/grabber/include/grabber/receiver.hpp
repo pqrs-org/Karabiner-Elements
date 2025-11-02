@@ -281,12 +281,20 @@ public:
                               "system_variables",
                               {
                                   {
-                                      "system.use_fkeys_as_standard_function_keys",
-                                      manipulator_environment.get_variable("system.use_fkeys_as_standard_function_keys"),
+                                      "system.now.milliseconds",
+                                      manipulator_environment.get_variable("system.now.milliseconds"),
                                   },
                                   {
                                       "system.scroll_direction_is_natural",
                                       manipulator_environment.get_variable("system.scroll_direction_is_natural"),
+                                  },
+                                  {
+                                      "system.temporarily_ignore_all_devices",
+                                      manipulator_environment.get_variable("system.temporarily_ignore_all_devices"),
+                                  },
+                                  {
+                                      "system.use_fkeys_as_standard_function_keys",
+                                      manipulator_environment.get_variable("system.use_fkeys_as_standard_function_keys"),
                                   },
                               },
                           }};

@@ -171,10 +171,10 @@ public:
       }
     }
     if (auto properties = event.get_if<pqrs::osx::system_preferences::properties>()) {
-      manipulator_environment_.set_variable("system.use_fkeys_as_standard_function_keys",
-                                            manipulator_environment_variable_value(properties->get_use_fkeys_as_standard_function_keys()));
       manipulator_environment_.set_variable("system.scroll_direction_is_natural",
                                             manipulator_environment_variable_value(properties->get_scroll_direction_is_natural()));
+      manipulator_environment_.set_variable("system.use_fkeys_as_standard_function_keys",
+                                            manipulator_environment_variable_value(properties->get_use_fkeys_as_standard_function_keys()));
     }
     if (auto state = event.get_if<virtual_hid_devices_state>()) {
       manipulator_environment_.set_virtual_hid_devices_state(*state);
