@@ -70,5 +70,6 @@ struct UpdateView: View {
       }
       .padding()
     }
+    .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
   }
 }

@@ -49,6 +49,7 @@ struct FunctionKeysView: View {
         FnFunctionKeysView(selectedDevice: contentViewStates.functionKeysViewSelectedDevice)
       }
     }
+    .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
     .onAppear {
       settingsGrabberClient.startSystemVariablesMonitoring()
     }

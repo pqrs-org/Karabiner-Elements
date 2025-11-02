@@ -12,6 +12,7 @@ struct SimpleModificationsView: View {
       SimpleModificationView(
         selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice)
     }
+    .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
     .onAppear {
       settings.appendSimpleModificationIfEmpty(
         device: contentViewStates.simpleModificationsViewSelectedDevice)
