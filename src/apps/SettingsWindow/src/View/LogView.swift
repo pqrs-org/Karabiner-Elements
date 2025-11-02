@@ -19,7 +19,6 @@ struct LogView: View {
             }
           }
           .padding()
-          .background(Color(NSColor.textBackgroundColor))
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
           .onChange(of: logMessages.entries.count) { _ in
             if let last = logMessages.entries.last {
@@ -28,6 +27,10 @@ struct LogView: View {
           }
         }
       }
+      // Setting a background color on the inner VStack triggers a bug in macOS 15 and earlier,
+      // where only the top-left corner renders until the logs finish loading,
+      // so the background needs to be applied directly to the ScrollView.
+      .background(Color(NSColor.textBackgroundColor))
       .border(Color(NSColor.separatorColor), width: 2)
 
       HStack {
