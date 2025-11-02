@@ -4,18 +4,38 @@ import Foundation
 
 private func systemVariablesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   struct SystemVariables: Decodable {
+    let temporarilyIgnoreAllDevices: Bool
     let useFkeysAsStandardFunctionKeys: Bool
 
     enum CodingKeys: String, CodingKey {
+      case temporarilyIgnoreAllDevices = "system.temporarily_ignore_all_devices"
       case useFkeysAsStandardFunctionKeys = "system.use_fkeys_as_standard_function_keys"
+    }
+
+    init(from decoder: Decoder) throws {
+      let container = try decoder.container(keyedBy: CodingKeys.self)
+
+      temporarilyIgnoreAllDevices = try container.decodeFlexibleBool(
+        forKey: .temporarilyIgnoreAllDevices)
+
+      useFkeysAsStandardFunctionKeys = try container.decodeFlexibleBool(
+        forKey: .useFkeysAsStandardFunctionKeys)
     }
   }
 
   let data = Data(bytes: jsonString, count: strlen(jsonString))
 
   let decoder = JSONDecoder()
-  if let systemVariables = try? decoder.decode(SystemVariables.self, from: data) {
+  do {
+    let systemVariables = try decoder.decode(SystemVariables.self, from: data)
     Task { @MainActor in
+      if SettingsGrabberClient.shared.temporarilyIgnoreAllDevices
+        != systemVariables.temporarilyIgnoreAllDevices
+      {
+        SettingsGrabberClient.shared.temporarilyIgnoreAllDevices =
+          systemVariables.temporarilyIgnoreAllDevices
+      }
+
       if SettingsGrabberClient.shared.useFkeysAsStandardFunctionKeys
         != systemVariables.useFkeysAsStandardFunctionKeys
       {
@@ -23,6 +43,28 @@ private func systemVariablesReceivedCallback(_ jsonString: UnsafePointer<CChar>)
           systemVariables.useFkeysAsStandardFunctionKeys
       }
     }
+  } catch let err {
+    print("Failed to decode system variables JSON: \(err)")
+  }
+}
+
+extension KeyedDecodingContainer {
+  fileprivate func decodeFlexibleBool(forKey key: Key) throws -> Bool {
+    if let value = try? decode(Bool.self, forKey: key) {
+      return value
+    }
+
+    if let value = try? decode(Int.self, forKey: key) {
+      return value != 0
+    }
+
+    throw DecodingError.typeMismatch(
+      Bool.self,
+      DecodingError.Context(
+        codingPath: codingPath + [key],
+        debugDescription: "Expected Bool or Int that can be coerced to Bool."
+      )
+    )
   }
 }
 
@@ -30,6 +72,7 @@ private func systemVariablesReceivedCallback(_ jsonString: UnsafePointer<CChar>)
 final class SettingsGrabberClient: ObservableObject {
   static let shared = SettingsGrabberClient()
 
+  @Published var temporarilyIgnoreAllDevices: Bool = false
   @Published var useFkeysAsStandardFunctionKeys: Bool = false
 
   private let systemVariablesTimer: AsyncTimerSequence<ContinuousClock>

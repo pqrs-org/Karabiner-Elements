@@ -25,6 +25,7 @@ struct KarabinerSettingsApp: App {
     ServicesMonitor.shared.start()
     SettingsChecker.shared.start()
     SettingsGrabberClient.shared.start()
+    SettingsGrabberClient.shared.startSystemVariablesMonitoring()
     StateJsonMonitor.shared.start()
     SystemPreferences.shared.start()
   }

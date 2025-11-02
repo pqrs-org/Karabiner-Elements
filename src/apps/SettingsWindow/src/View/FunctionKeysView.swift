@@ -50,12 +50,6 @@ struct FunctionKeysView: View {
       }
     }
     .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
-    .onAppear {
-      settingsGrabberClient.startSystemVariablesMonitoring()
-    }
-    .onDisappear {
-      settingsGrabberClient.stopSystemVariablesMonitoring()
-    }
   }
 
   struct FnFunctionKeysView: View {
