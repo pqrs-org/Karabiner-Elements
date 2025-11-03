@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 15.6.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.6.0/Karabiner-Elements-15.6.0.dmg)
+-   📅 Release date
+    -   Nov 3, 2025
 -   💥 Breaking changes
     -   The file `/Library/Application Support/org.pqrs/tmp/karabiner_grabber_manipulator_environment.json` is no longer updated.
         You can still use EventViewer to check current variable values.
