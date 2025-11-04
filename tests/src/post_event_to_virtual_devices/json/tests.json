@@ -330,7 +330,7 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_7.json"
     },
     {
-        "description": "to_if_alone_7 restore key down modifier flags (with from mandatory modifiers)",
+        "description": "to_if_alone_8 restore key down modifier flags (with from mandatory modifiers)",
         "rules": ["json/rules/to_if_alone.json"],
         "input_event_queue": "json/input_event_queue/to_if_alone_8.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_8.json"
