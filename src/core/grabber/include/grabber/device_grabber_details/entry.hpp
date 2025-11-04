@@ -152,9 +152,9 @@ public:
                                                                         .pointing_motion_wheels_multiplier = d->get_pointing_motion_wheels_multiplier(),
                                                                     });
 
-      event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue_entries,
-                                                                                       device_id_,
-                                                                                       pressed_keys_manager_);
+      event_queue_entries = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue_entries,
+                                                                                                             device_id_,
+                                                                                                             pressed_keys_manager_);
       hid_queue_values_arrived(*this,
                                event_queue_entries);
 
