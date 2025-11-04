@@ -57,8 +57,13 @@ struct ComplexModificationsEditView: View {
           } else {
             if let errorMessage = errorMessage {
               Label(
-                errorMessage,
-                systemImage: ErrorBorder.icon
+                title: {
+                  Text(errorMessage)
+                    .textSelection(.enabled)
+                },
+                icon: {
+                  Image(systemName: ErrorBorder.icon)
+                }
               )
               .modifier(ErrorBorder())
             }
