@@ -1,5 +1,12 @@
 # Changelog
 
+## Beta
+
+-   🐛 Bug Fixes
+    -   Fixed an issue where modifiers in a pending-release state under Complex Modifications were not being released when all keys were lifted.
+-   ⚡️ Improvements
+    -   The error message in the Complex Modification Editor is now copyable.
+
 ## Karabiner-Elements 15.6.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.6.0/Karabiner-Elements-15.6.0.dmg)
