@@ -8,8 +8,8 @@
 namespace krbn {
 // `probable_stuck_events_manager` manages events which may be stuck with ungrabbed device.
 //
-// On macOS, even after karabiner_grabber has seized a device, the original hardware key press status is retained.
-// Once the device is seized, karabiner_grabber emits events from a virtual HID keyboard,
+// On macOS, even after Karabiner-Core-Daemon has seized a device, the original hardware key press status is retained.
+// Once the device is seized, Karabiner-Core-Daemon emits events from a virtual HID keyboard,
 // so the status of the hardware keys does not change after being seized
 //
 // This behavior leads to several problems:

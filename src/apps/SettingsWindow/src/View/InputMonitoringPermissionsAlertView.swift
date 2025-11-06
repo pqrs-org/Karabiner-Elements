@@ -23,7 +23,7 @@ struct InputMonitoringPermissionsAlertView: View {
         .font(.system(size: 24))
 
         Text(
-          "karabiner_grabber requires Input Monitoring permission.\nPlease allow them on Privacy & Security System Settings."
+          "Karabiner-Core-Daemon requires Input Monitoring permission.\nPlease allow them on Privacy & Security System Settings."
         )
         .fixedSize(horizontal: false, vertical: true)
 

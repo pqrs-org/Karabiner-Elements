@@ -1,8 +1,9 @@
-name: karabiner_grabber
+name: Karabiner-Core-Daemon
 
 targets:
-  karabiner_grabber:
+  Karabiner-Core-Daemon:
     settings:
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Core-Daemon
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
@@ -15,7 +16,7 @@ targets:
         - ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../../vendor/vendor/include
       DEAD_CODE_STRIPPING: 'YES'
-    type: tool
+    type: application
     platform: macOS
     deploymentTarget: 13.0
     sources:
@@ -26,7 +27,9 @@ targets:
           - '-std=c++20'
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
-    dependencies:
-      - framework: CoreGraphics.framework
-      - framework: CoreServices.framework
-      - framework: IOKit.framework
+      - path: Resources
+        excludes:
+          - .gitignore
+          - '*.orig.png'
+          - '*.plist.in'
+      - path: ../../apps/share/Resources/app.icns

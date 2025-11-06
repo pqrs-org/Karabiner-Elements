@@ -29,7 +29,7 @@ chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabin
 # Relaunch karabiner processes
 #
 
-killall karabiner_grabber
+killall Karabiner-Core-Daemon
 killall karabiner_session_monitor
 killall karabiner_console_user_server
 killall Karabiner-Menu

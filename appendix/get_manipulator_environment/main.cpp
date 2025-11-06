@@ -37,8 +37,8 @@ int main(int argc, const char* argv[]) {
   std::cout << std::endl
             << "Type control-c to quit" << std::endl
             << std::endl
-            << "To receive manipulator_environment_json from karabiner_grabber," << std::endl
-            << "the process must be code-signed with the same Team ID as karabiner_grabber." << std::endl
+            << "To receive manipulator_environment_json from Karabiner-Core-Daemon.app," << std::endl
+            << "the process must be code-signed with the same Team ID as Karabiner-Core-Daemon.app." << std::endl
             << std::endl;
 
   libkrbn_initialize();
