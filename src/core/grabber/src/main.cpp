@@ -2,6 +2,7 @@
 #include "grabber/main/agent.hpp"
 #include "grabber/main/daemon.hpp"
 #include "run_loop_thread_utility.hpp"
+#include <IOKit/hidsystem/IOHIDLib.h>
 #include <pqrs/osx/process_info.hpp>
 
 int main(int argc, const char* argv[]) {
@@ -16,6 +17,24 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR2, SIG_IGN);
 
   pqrs::osx::process_info::enable_sudden_termination();
+
+  //
+  // Process arguments
+  //
+
+  for (int i = 1; i < argc; ++i) {
+    if (std::string_view(argv[1]) == "input_monitoring_granted") {
+      if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
+        std::cout << "granted" << std::endl;
+        return 0;
+      } else {
+        std::cout << "denied" << std::endl;
+        return 1;
+      }
+    } else {
+      std::cout << "unsupported argument: " << argv[i] << std::endl;
+    }
+  }
 
   //
   // Check euid
