@@ -6,11 +6,7 @@ struct InputMonitoringPermissionsAlertView: View {
   private let inputMonitoringImage: String
 
   init() {
-    if #available(macOS 26.0, *) {
-      inputMonitoringImage = "input-monitoring-macos26"
-    } else {
-      inputMonitoringImage = "input-monitoring-macos15"
-    }
+    inputMonitoringImage = "input-monitoring-macos26"
   }
 
   var body: some View {
