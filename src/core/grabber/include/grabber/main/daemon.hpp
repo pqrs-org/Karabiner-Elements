@@ -57,7 +57,7 @@ int daemon(void) {
     while (true) {
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-      if (services_utility::karabiner_cored_input_monitoring_granted()) {
+      if (services_utility::karabiner_core_service_input_monitoring_granted()) {
         return 0;
       }
     }

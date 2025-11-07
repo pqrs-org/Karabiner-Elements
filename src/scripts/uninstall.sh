@@ -3,8 +3,8 @@
 /bin/bash '/Library/Application Support/org.pqrs/Karabiner-Elements/uninstall_core.sh'
 /bin/bash '/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/scripts/uninstall/remove_files.sh'
 
-/usr/bin/killall Karabiner-Core-Daemon
-# karabiner_grabber is the former name of Karabiner-Core-Daemon.
+/usr/bin/killall Karabiner-Core-Service
+# karabiner_grabber is the former name of Karabiner-Core-Service.
 /usr/bin/killall karabiner_grabber
 /usr/bin/killall karabiner_console_user_server
 /usr/bin/killall Karabiner-Elements

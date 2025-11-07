@@ -1,9 +1,9 @@
-name: Karabiner-Core-Daemon
+name: Karabiner-Core-Service
 
 targets:
-  Karabiner-Core-Daemon:
+  Karabiner-Core-Service:
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Core-Daemon
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Core-Service
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual

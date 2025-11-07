@@ -11,7 +11,7 @@ run:
 	./build/Release/get_manipulator_environment
 
 codesign: all
-#	operation_type::get_manipulator_environment must be code-signed with the same Team ID as Karabiner-Core-Daemon.app.
+#	operation_type::get_manipulator_environment must be code-signed with the same Team ID as Karabiner-Core-Service.app.
 	bash ../../scripts/codesign.sh build/Release/get_manipulator_environment
 
 include ../Makefile.rules

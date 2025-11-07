@@ -814,7 +814,7 @@ private:
   // This method is executed in the shared dispatcher thread.
   grabbable_state::state make_grabbable_state(const device_grabber_details::entry& entry) const {
     // The device is always grabbable if it is observed device
-    // because Karabiner-Core-Daemon does not seize the device and do not affect existing hidd processing.
+    // because Karabiner-Core-Service does not seize the device and do not affect existing hidd processing.
     // (e.g. key repeat)
 
     if (entry.needs_to_observe_device()) {

@@ -54,14 +54,14 @@ public:
       prepare_grabber_client_socket_directory();
 
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                               find_karabiner_cored_socket_file_path(),
+                                                               find_karabiner_core_service_socket_file_path(),
                                                                grabber_client_socket_file_path(),
                                                                constants::local_datagram_buffer_size);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
       client_->set_server_socket_file_path_resolver([this] {
-        return find_karabiner_cored_socket_file_path();
+        return find_karabiner_core_service_socket_file_path();
       });
 
       client_->connected.connect([this](auto&& peer_pid) {
@@ -266,9 +266,9 @@ public:
   }
 
 private:
-  std::filesystem::path find_karabiner_cored_socket_file_path(void) const {
+  std::filesystem::path find_karabiner_core_service_socket_file_path(void) const {
     return filesystem_utility::find_socket_file_path(
-        constants::get_karabiner_cored_socket_directory_path());
+        constants::get_karabiner_core_service_socket_directory_path());
   }
 
   std::optional<std::filesystem::path> grabber_client_socket_directory_path(void) const {

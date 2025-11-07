@@ -10,7 +10,7 @@
     <string>Interactive</string>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Daemon.app/Contents/MacOS/Karabiner-Core-Daemon</string>
+      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service</string>
     </array>
   </dict>
 </plist>

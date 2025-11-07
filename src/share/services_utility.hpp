@@ -5,7 +5,7 @@ namespace services_utility {
 
 static constexpr const char* daemons_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons.app/Contents/MacOS/Karabiner-Elements Privileged Daemons";
 static constexpr const char* agents_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents";
-static constexpr const char* karabiner_cored_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Daemon.app/Contents/MacOS/Karabiner-Core-Daemon";
+static constexpr const char* karabiner_core_service_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service";
 
 //
 // core_daemons
@@ -172,9 +172,9 @@ inline bool core_agents_running(void) {
   return exit_code == 0;
 }
 
-inline bool karabiner_cored_input_monitoring_granted(void) {
+inline bool karabiner_core_service_input_monitoring_granted(void) {
   auto exit_code = system(fmt::format("'{0}' input-monitoring-granted",
-                                      karabiner_cored_path)
+                                      karabiner_core_service_path)
                               .c_str());
   return exit_code == 0;
 }

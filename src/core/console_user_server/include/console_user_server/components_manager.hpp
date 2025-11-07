@@ -246,7 +246,7 @@ private:
 
     // frontmost_application_monitor
     //
-    // `frontmost_application_monitor` does not work properly in Karabiner-Core-Daemon after fast user switching.
+    // `frontmost_application_monitor` does not work properly in Karabiner-Core-Service after fast user switching.
     // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
 
     pqrs::osx::frontmost_application_monitor::monitor::initialize_shared_monitor(weak_dispatcher_);
