@@ -6,7 +6,6 @@
 #include "filesystem_utility.hpp"
 #include "grabber/components_manager.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
-#include "iokit_hid_device_open_checker_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
@@ -49,20 +48,6 @@ int daemon(void) {
     }
   }
 
-  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) != kIOHIDAccessTypeGranted) {
-    logger::get_logger()->warn("Input Monitoring is not granted");
-
-    // IOHIDRequestAccess won't work correctly unless it's called from the agent.
-    // The daemon waits until Input Monitoring is allowed, then terminates so launchd can restart it.
-    while (true) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-      if (services_utility::karabiner_core_service_input_monitoring_granted()) {
-        return 0;
-      }
-    }
-  }
-
   //
   // Get codesign
   //
@@ -92,15 +77,24 @@ int daemon(void) {
   // Update karabiner_grabber_state.json
   //
 
-  if (!iokit_hid_device_open_checker_utility::run_checker()) {
+  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
+    grabber_state_json_writer->set_hid_device_open_permitted(true);
+  } else {
+    logger::get_logger()->warn("Input Monitoring is not granted");
+
     grabber_state_json_writer->set_hid_device_open_permitted(false);
 
-    // We have to restart this process in order to reflect the input monitoring approval.
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    return 0;
+    // IOHIDRequestAccess won't work correctly unless it's called from the agent.
+    // The daemon waits until Input Monitoring is allowed, then terminates so launchd can restart it.
+    while (true) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-  } else {
-    grabber_state_json_writer->set_hid_device_open_permitted(true);
+      if (services_utility::karabiner_core_service_input_monitoring_granted()) {
+        break;
+      }
+    }
+
+    return 0;
   }
 
   //
