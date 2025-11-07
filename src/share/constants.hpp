@@ -47,7 +47,7 @@ public:
     return get_system_user_directory() / fmt::format("{0}", uid);
   }
 
-  static const std::filesystem::path& get_core_daemon_socket_directory_path(void) {
+  static const std::filesystem::path& get_karabiner_cored_socket_directory_path(void) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
     // So we use the shorten name Karabiner-Core-Daemon -> krbn_cored.

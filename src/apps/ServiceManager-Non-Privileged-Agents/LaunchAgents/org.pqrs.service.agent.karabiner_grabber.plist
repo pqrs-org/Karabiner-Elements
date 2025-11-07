@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.service.agent.karabiner_grabber</string>
+    <string>org.pqrs.service.agent.karabiner_grabber3</string>
     <key>KeepAlive</key>
     <dict>
       <key>SuccessfulExit</key>
@@ -11,7 +11,7 @@
     </dict>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_grabber</string>
+      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Daemon.app/Contents/MacOS/Karabiner-Core-Daemon</string>
     </array>
   </dict>
 </plist>

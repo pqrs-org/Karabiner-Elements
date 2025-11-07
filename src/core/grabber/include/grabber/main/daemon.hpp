@@ -10,6 +10,8 @@
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
+#include "services_utility.hpp"
+#include <IOKit/hidsystem/IOHIDLib.h>
 #include <iostream>
 #include <mach/mach.h>
 #include <pqrs/osx/workspace.hpp>
@@ -44,6 +46,20 @@ int daemon(void) {
       logger::get_logger()->info(message);
       std::cerr << message << std::endl;
       return 1;
+    }
+  }
+
+  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) != kIOHIDAccessTypeGranted) {
+    logger::get_logger()->warn("Input Monitoring is not granted");
+
+    // IOHIDRequestAccess won't work correctly unless it's called from the agent.
+    // The daemon waits until Input Monitoring is allowed, then terminates so launchd can restart it.
+    while (true) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+      if (services_utility::karabiner_cored_input_monitoring_granted()) {
+        return 0;
+      }
     }
   }
 

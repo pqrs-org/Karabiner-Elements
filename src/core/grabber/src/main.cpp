@@ -23,7 +23,7 @@ int main(int argc, const char* argv[]) {
   //
 
   for (int i = 1; i < argc; ++i) {
-    if (std::string_view(argv[1]) == "input_monitoring_granted") {
+    if (std::string_view(argv[1]) == "input-monitoring-granted") {
       if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
         std::cout << "granted" << std::endl;
         return 0;

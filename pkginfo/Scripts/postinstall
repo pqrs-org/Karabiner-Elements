@@ -30,6 +30,8 @@ chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabin
 #
 
 killall Karabiner-Core-Daemon
+# karabiner_grabber is the former name of Karabiner-Core-Daemon.
+killall karabiner_grabber
 killall karabiner_session_monitor
 killall karabiner_console_user_server
 killall Karabiner-Menu
