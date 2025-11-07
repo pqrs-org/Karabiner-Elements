@@ -52,11 +52,11 @@ struct ServicesNotRunningAlertView: View {
 
             VStack(alignment: .leading, spacing: 0.0) {
               Label(
-                "Karabiner-Elements Non-Privileged Agents",
+                "Karabiner-Elements Non-Privileged Agents v2",
                 systemImage:
                   servicesMonitor.coreAgentsRunning ? "checkmark.circle.fill" : "circle")
               Label(
-                "Karabiner-Elements Privileged Daemons",
+                "Karabiner-Elements Privileged Daemons v2",
                 systemImage:
                   servicesMonitor.coreDaemonsRunning ? "checkmark.circle.fill" : "circle")
             }

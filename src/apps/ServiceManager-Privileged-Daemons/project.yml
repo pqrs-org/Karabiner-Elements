@@ -1,9 +1,9 @@
-name: Karabiner-Elements Privileged Daemons
+name: Karabiner-Elements Privileged Daemons v2
 
 targets:
-  Karabiner-Elements Privileged Daemons:
+  Karabiner-Elements Privileged Daemons v2:
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements-Privileged-Daemons
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements-Privileged-Daemons-v2
       # SMAppService requires codesigning
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: 'Apple Development'

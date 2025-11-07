@@ -32,8 +32,8 @@ cp -R "src/apps/AppIconSwitcher/build/Release/Karabiner-AppIconSwitcher.app" "$b
 cp -R "src/apps/Menu/build/Release/Karabiner-Menu.app" "$basedir"
 cp -R "src/apps/MultitouchExtension/build/Release/Karabiner-MultitouchExtension.app" "$basedir"
 cp -R "src/apps/NotificationWindow/build/Release/Karabiner-NotificationWindow.app" "$basedir"
-cp -R "src/apps/ServiceManager-Non-Privileged-Agents/build/Release/Karabiner-Elements Non-Privileged Agents.app" "$basedir"
-cp -R "src/apps/ServiceManager-Privileged-Daemons/build/Release/Karabiner-Elements Privileged Daemons.app" "$basedir"
+cp -R "src/apps/ServiceManager-Non-Privileged-Agents/build/Release/Karabiner-Elements Non-Privileged Agents v2.app" "$basedir"
+cp -R "src/apps/ServiceManager-Privileged-Daemons/build/Release/Karabiner-Elements Privileged Daemons v2.app" "$basedir"
 cp -R "src/apps/Updater/build/Release/Karabiner-Updater.app" "$basedir"
 cp -R "src/core/grabber/build/Release/Karabiner-Core-Service.app" "$basedir"
 
