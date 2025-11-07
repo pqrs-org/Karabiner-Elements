@@ -3,12 +3,11 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.service.agent.karabiner_grabber3</string>
+    <string>org.pqrs.service.daemon.Karabiner-Core-Service</string>
     <key>KeepAlive</key>
-    <dict>
-      <key>SuccessfulExit</key>
-      <false/>
-    </dict>
+    <true/>
+    <key>ProcessType</key>
+    <string>Interactive</string>
     <key>ProgramArguments</key>
     <array>
       <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service</string>
