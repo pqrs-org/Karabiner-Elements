@@ -23,13 +23,15 @@ struct ContentView: View {
         OverlayAlertView {
           SettingsAlertView()
         }
+      } else if contentViewStates.showServicesNotRunningAlert {
+        // Since showInputMonitoringPermissionsAlert never becomes false while Karabiner-Core-Service is not running,
+        // `ServicesNotRunningAlertView` needs to take priority over `InputMonitoringPermissionsAlertView`.
+        OverlayAlertView {
+          ServicesNotRunningAlertView()
+        }
       } else if contentViewStates.showInputMonitoringPermissionsAlert {
         OverlayAlertView {
           InputMonitoringPermissionsAlertView()
-        }
-      } else if contentViewStates.showServicesNotRunningAlert {
-        OverlayAlertView {
-          ServicesNotRunningAlertView()
         }
       } else if contentViewStates.showDriverVersionMismatchedAlert {
         OverlayAlertView {

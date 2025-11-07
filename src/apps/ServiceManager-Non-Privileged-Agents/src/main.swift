@@ -22,8 +22,8 @@ enum Subcommand: String {
 RunLoop.main.perform {
   let coreAgentServiceNames = [
     "org.pqrs.service.agent.karabiner_console_user_server",
-    "org.pqrs.service.agent.karabiner_grabber",
     "org.pqrs.service.agent.karabiner_session_monitor",
+    "org.pqrs.service.agent.Karabiner-Core-Service",
   ]
 
   let coreAgents = coreAgentServiceNames.map {
@@ -100,7 +100,7 @@ RunLoop.main.perform {
       var exitCode: Int32 = 0
       for n in coreAgentServiceNames {
         // A non-resident agent that runs only once
-        if n == "org.pqrs.service.agent.karabiner_grabber" {
+        if n == "org.pqrs.service.agent.Karabiner-Core-Service" {
           continue
         }
 
@@ -120,7 +120,7 @@ RunLoop.main.perform {
   }
 
   print("Usage:")
-  print("    'Karabiner-Elements Non-Privileged Agents' subcommand")
+  print("    'Karabiner-Elements Non-Privileged Agents v2' subcommand")
   print("")
   print("Subcommands:")
   print("    \(Subcommand.registerCoreAgents.rawValue)")

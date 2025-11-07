@@ -430,7 +430,7 @@ Therefore, separating them is preferable from a user experience perspective.
 First, run the following command:
 
 ```shell
-launchctl print system/org.pqrs.service.daemon.karabiner_grabber
+launchctl print system/org.pqrs.service.daemon.Karabiner-Core-Service
 ```
 
 If the output includes a line like `pid = 658`, this indicates the process ID, and the daemon is running if such a line is present.

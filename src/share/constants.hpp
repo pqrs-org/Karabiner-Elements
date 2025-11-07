@@ -47,15 +47,15 @@ public:
     return get_system_user_directory() / fmt::format("{0}", uid);
   }
 
-  static const std::filesystem::path& get_grabber_socket_directory_path(void) {
+  static const std::filesystem::path& get_karabiner_core_service_socket_directory_path(void) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name karabiner_grabber -> krbn_grabber.
+    // So we use the shorten name Karabiner-Core-Service -> krbn_core_service.
     //
     // Example:
-    // `/Library/Application Support/org.pqrs/tmp/krbn_grabber/17d52868a28b3858.sock`
+    // `/Library/Application Support/org.pqrs/tmp/krbn_core_service/17d52868a28b3858.sock`
 
-    static auto path = get_tmp_directory() / "krbn_grabber";
+    static auto path = get_tmp_directory() / "krbn_core_service";
     return path;
   }
 

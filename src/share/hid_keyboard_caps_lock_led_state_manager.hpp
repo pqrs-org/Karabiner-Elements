@@ -96,7 +96,7 @@ private:
 
     // macOS 10.12 sometimes synchronize caps lock LED to internal keyboard caps lock state.
     // The behavior causes LED state mismatch because
-    // the caps lock state of karabiner_grabber is independent from the hardware caps lock state.
+    // the caps lock state of Karabiner-Core-Service is independent from the hardware caps lock state.
     // Thus, we monitor the LED state and update it if needed.
 
     if (auto integer_value = make_integer_value()) {

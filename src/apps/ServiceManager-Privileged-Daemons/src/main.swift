@@ -13,7 +13,7 @@ enum Subcommand: String {
 RunLoop.main.perform {
   let coreDaemonServiceNames = [
     "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon",
-    "org.pqrs.service.daemon.karabiner_grabber",
+    "org.pqrs.service.daemon.Karabiner-Core-Service",
   ]
 
   let coreDaemons = coreDaemonServiceNames.map {
@@ -69,7 +69,7 @@ RunLoop.main.perform {
   }
 
   print("Usage:")
-  print("    'Karabiner-Elements Privileged Daemons' subcommand")
+  print("    'Karabiner-Elements Privileged Daemons v2' subcommand")
   print("")
   print("Subcommands:")
   print("    \(Subcommand.registerCoreDaemons.rawValue)")

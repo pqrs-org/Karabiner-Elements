@@ -6,11 +6,7 @@ struct InputMonitoringPermissionsAlertView: View {
   private let inputMonitoringImage: String
 
   init() {
-    if #available(macOS 26.0, *) {
-      inputMonitoringImage = "input-monitoring-macos26"
-    } else {
-      inputMonitoringImage = "input-monitoring-macos15"
-    }
+    inputMonitoringImage = "input-monitoring-macos26"
   }
 
   var body: some View {
@@ -23,7 +19,7 @@ struct InputMonitoringPermissionsAlertView: View {
         .font(.system(size: 24))
 
         Text(
-          "karabiner_grabber requires Input Monitoring permission.\nPlease allow them on Privacy & Security System Settings."
+          "Karabiner-Core-Service requires Input Monitoring permission.\nPlease allow them on Privacy & Security System Settings."
         )
         .fixedSize(horizontal: false, vertical: true)
 
