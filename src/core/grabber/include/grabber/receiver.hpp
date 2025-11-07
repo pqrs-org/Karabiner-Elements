@@ -27,14 +27,8 @@ public:
            std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
                                                                                       current_console_user_id_(current_console_user_id),
                                                                                       weak_grabber_state_json_writer_(weak_grabber_state_json_writer) {
-    // Remove old socket files.
-    {
-      auto directory_path = constants::get_karabiner_core_service_socket_directory_path();
-      std::error_code ec;
-      std::filesystem::remove_all(directory_path, ec);
-      std::filesystem::create_directory(directory_path, ec);
-      chmod(directory_path.c_str(), 0755);
-    }
+    // Remove old files and prepare a socket directory.
+    prepare_karabiner_core_service_socket_directory();
 
     event_viewer_temporarily_ignore_all_devices_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
         weak_dispatcher_,
@@ -94,8 +88,12 @@ public:
       chmod(socket_file_path.c_str(), 0600);
     });
 
-    server_->bind_failed.connect([](auto&& error_code) {
+    server_->bind_failed.connect([this](auto&& error_code) {
       logger::get_logger()->error("receiver: bind_failed");
+
+      // Even if the krbn_core_service directory is deleted for some reason,
+      // bind_failed will still be called, so recreate the directory each time.
+      prepare_karabiner_core_service_socket_directory();
     });
 
     server_->closed.connect([] {
@@ -338,6 +336,14 @@ public:
 private:
   std::filesystem::path karabiner_core_service_socket_file_path(void) const {
     return constants::get_karabiner_core_service_socket_directory_path() / filesystem_utility::make_socket_file_basename();
+  }
+
+  void prepare_karabiner_core_service_socket_directory(void) const {
+    auto directory_path = constants::get_karabiner_core_service_socket_directory_path();
+    std::error_code ec;
+    std::filesystem::remove_all(directory_path, ec);
+    std::filesystem::create_directory(directory_path, ec);
+    chmod(directory_path.c_str(), 0755);
   }
 
   void start_grabbing_if_system_core_configuration_file_exists(void) {
