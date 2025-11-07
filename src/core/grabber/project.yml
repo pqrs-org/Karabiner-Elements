@@ -16,6 +16,7 @@ targets:
         - ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../../vendor/vendor/include
       DEAD_CODE_STRIPPING: 'YES'
+    # It needs to be built as an application rather than a tool in order to appear in the Input Monitoring list in System Settings.
     type: application
     platform: macOS
     deploymentTarget: 13.0
