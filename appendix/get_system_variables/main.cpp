@@ -23,17 +23,17 @@ int main(int argc, const char* argv[]) {
     global_wait->notify();
   });
 
-  libkrbn_enable_grabber_client("appendix_get_sv");
+  libkrbn_enable_core_service_client("appendix_get_sv");
 
-  libkrbn_register_grabber_client_system_variables_received_callback(callback);
+  libkrbn_register_core_service_client_system_variables_received_callback(callback);
 
-  libkrbn_grabber_client_async_start();
+  libkrbn_core_service_client_async_start();
 
   std::jthread thread([](std::stop_token st) {
     while (!st.stop_requested()) {
       std::this_thread::sleep_for(std::chrono::seconds(1));
 
-      libkrbn_grabber_client_async_get_system_variables();
+      libkrbn_core_service_client_async_get_system_variables();
     }
   });
 

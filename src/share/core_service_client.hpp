@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::grabber_client` can be used safely in a multi-threaded environment.
+// `krbn::core_service_client` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
@@ -19,7 +19,7 @@
 #include <vector>
 
 namespace krbn {
-class grabber_client final : public pqrs::dispatcher::extra::dispatcher_client {
+class core_service_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -31,14 +31,14 @@ public:
 
   // Methods
 
-  grabber_client(const grabber_client&) = delete;
+  core_service_client(const core_service_client&) = delete;
 
-  grabber_client(std::optional<std::string> client_socket_directory_name)
+  core_service_client(std::optional<std::string> client_socket_directory_name)
       : dispatcher_client(),
         client_socket_directory_name_(client_socket_directory_name) {
   }
 
-  virtual ~grabber_client(void) {
+  virtual ~core_service_client(void) {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -47,15 +47,15 @@ public:
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       if (client_) {
-        logger::get_logger()->warn("grabber_client is already started.");
+        logger::get_logger()->warn("core_service_client is already started.");
         return;
       }
 
-      prepare_grabber_client_socket_directory();
+      prepare_core_service_client_socket_directory();
 
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                find_karabiner_core_service_socket_file_path(),
-                                                               grabber_client_socket_file_path(),
+                                                               core_service_client_socket_file_path(),
                                                                constants::local_datagram_buffer_size);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
@@ -65,7 +65,7 @@ public:
       });
 
       client_->connected.connect([this](auto&& peer_pid) {
-        logger::get_logger()->info("grabber_client is connected.");
+        logger::get_logger()->info("core_service_client is connected.");
 
         enqueue_to_dispatcher([this] {
           connected();
@@ -73,20 +73,20 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
-        logger::get_logger()->error("grabber_client connect_failed: {0}", error_code.message());
+        logger::get_logger()->error("core_service_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
         });
 
-        // connect_failed will be triggered if grabber_client_socket_directory does not exist
+        // connect_failed will be triggered if core_service_client_socket_directory does not exist
         // due to the parent directory (system_user_directory) is not ready.
-        // For this case, we have to create grabber_client_socket_directory each time.
-        prepare_grabber_client_socket_directory();
+        // For this case, we have to create core_service_client_socket_directory each time.
+        prepare_core_service_client_socket_directory();
       });
 
       client_->closed.connect([this] {
-        logger::get_logger()->info("grabber_client is closed.");
+        logger::get_logger()->info("core_service_client is closed.");
 
         enqueue_to_dispatcher([this] {
           closed();
@@ -94,7 +94,7 @@ public:
       });
 
       client_->error_occurred.connect([](auto&& error_code) {
-        logger::get_logger()->error("grabber_client error: {0}", error_code.message());
+        logger::get_logger()->error("core_service_client error: {0}", error_code.message());
       });
 
       client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
@@ -104,7 +104,7 @@ public:
       });
 
       client_->next_heartbeat_deadline_exceeded.connect([this](auto&& sender_endpoint) {
-        logger::get_logger()->info("grabber_client next heartbeat deadline exceeded");
+        logger::get_logger()->info("core_service_client next heartbeat deadline exceeded");
 
         enqueue_to_dispatcher([this] {
           next_heartbeat_deadline_exceeded();
@@ -113,7 +113,7 @@ public:
 
       client_->async_start();
 
-      logger::get_logger()->info("grabber_client is started.");
+      logger::get_logger()->info("core_service_client is started.");
     });
   }
 
@@ -271,7 +271,7 @@ private:
         constants::get_karabiner_core_service_socket_directory_path());
   }
 
-  std::optional<std::filesystem::path> grabber_client_socket_directory_path(void) const {
+  std::optional<std::filesystem::path> core_service_client_socket_directory_path(void) const {
     if (client_socket_directory_name_ != std::nullopt &&
         client_socket_directory_name_ != "") {
       return constants::get_system_user_directory(geteuid()) / *client_socket_directory_name_;
@@ -280,16 +280,16 @@ private:
     return std::nullopt;
   }
 
-  std::optional<std::filesystem::path> grabber_client_socket_file_path(void) const {
-    if (auto d = grabber_client_socket_directory_path()) {
+  std::optional<std::filesystem::path> core_service_client_socket_file_path(void) const {
+    if (auto d = core_service_client_socket_directory_path()) {
       return *d / filesystem_utility::make_socket_file_basename();
     }
 
     return std::nullopt;
   }
 
-  void prepare_grabber_client_socket_directory(void) {
-    if (auto d = grabber_client_socket_directory_path()) {
+  void prepare_core_service_client_socket_directory(void) {
+    if (auto d = core_service_client_socket_directory_path()) {
 
       //
       // Remove old socket files.
@@ -313,7 +313,7 @@ private:
 
     client_ = nullptr;
 
-    logger::get_logger()->info("grabber_client is stopped.");
+    logger::get_logger()->info("core_service_client is stopped.");
   }
 
   std::optional<std::string> client_socket_directory_name_;

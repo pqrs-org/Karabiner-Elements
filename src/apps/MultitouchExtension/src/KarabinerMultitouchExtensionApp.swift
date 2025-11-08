@@ -41,7 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
   public func applicationDidFinishLaunching(_: Notification) {
     //
-    // Enable grabber_client
+    // Enable core_service_client
     //
 
     MEGrabberClient.shared.start()

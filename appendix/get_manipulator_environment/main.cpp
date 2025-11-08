@@ -5,23 +5,23 @@
 
 namespace {
 void status_changed_callback(void) {
-  switch (libkrbn_grabber_client_get_status()) {
-    case libkrbn_grabber_client_status_connected:
-      std::cerr << "grabber_client connected" << std::endl;
+  switch (libkrbn_core_service_client_get_status()) {
+    case libkrbn_core_service_client_status_connected:
+      std::cerr << "core_service_client connected" << std::endl;
 
-      libkrbn_grabber_client_async_get_manipulator_environment();
+      libkrbn_core_service_client_async_get_manipulator_environment();
 
       break;
 
-    case libkrbn_grabber_client_status_connect_failed:
-      std::cerr << "grabber_client connect_failed" << std::endl;
+    case libkrbn_core_service_client_status_connect_failed:
+      std::cerr << "core_service_client connect_failed" << std::endl;
       break;
 
-    case libkrbn_grabber_client_status_closed:
-      std::cerr << "grabber_client closed" << std::endl;
+    case libkrbn_core_service_client_status_closed:
+      std::cerr << "core_service_client closed" << std::endl;
       break;
 
-    case libkrbn_grabber_client_status_none:
+    case libkrbn_core_service_client_status_none:
       break;
   }
 }
@@ -48,12 +48,12 @@ int main(int argc, const char* argv[]) {
     global_wait->notify();
   });
 
-  libkrbn_enable_grabber_client("appendix_get_me");
+  libkrbn_enable_core_service_client("appendix_get_me");
 
-  libkrbn_register_grabber_client_status_changed_callback(status_changed_callback);
-  libkrbn_register_grabber_client_manipulator_environment_received_callback(manipulator_environment_received_callback);
+  libkrbn_register_core_service_client_status_changed_callback(status_changed_callback);
+  libkrbn_register_core_service_client_manipulator_environment_received_callback(manipulator_environment_received_callback);
 
-  libkrbn_grabber_client_async_start();
+  libkrbn_core_service_client_async_start();
 
   std::this_thread::sleep_for(std::chrono::seconds(1));
 

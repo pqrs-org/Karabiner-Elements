@@ -5,10 +5,10 @@
 
 #include "complex_modifications_assets_file.hpp"
 #include "constants.hpp"
+#include "core_service_client.hpp"
 #include "dispatcher_utility.hpp"
 #include "duktape_utility.hpp"
 #include "environment_variable_utility.hpp"
-#include "grabber_client.hpp"
 #include "json_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -72,7 +72,7 @@ void set_variables(const std::string& variables) {
 
     auto wait = pqrs::make_thread_wait();
 
-    krbn::grabber_client client(std::nullopt);
+    krbn::core_service_client client(std::nullopt);
     client.async_start();
     client.async_set_variables(json, [&wait] {
       wait->notify();

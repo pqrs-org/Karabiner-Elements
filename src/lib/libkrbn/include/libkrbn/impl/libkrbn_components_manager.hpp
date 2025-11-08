@@ -3,10 +3,10 @@
 #include "libkrbn/impl/libkrbn_complex_modifications_assets_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_connected_devices_monitor.hpp"
+#include "libkrbn/impl/libkrbn_core_service_client.hpp"
 #include "libkrbn/impl/libkrbn_dispatcher_client.hpp"
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
 #include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
-#include "libkrbn/impl/libkrbn_grabber_client.hpp"
 #include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
 #include "libkrbn/impl/libkrbn_version_monitor.hpp"
@@ -194,21 +194,21 @@ public:
   }
 
   //
-  // grabber_client_
+  // core_service_client_
   //
 
-  void enable_grabber_client(std::optional<std::string> client_socket_directory_name) {
-    if (!grabber_client_) {
-      grabber_client_ = std::make_shared<libkrbn_grabber_client>(client_socket_directory_name);
+  void enable_core_service_client(std::optional<std::string> client_socket_directory_name) {
+    if (!core_service_client_) {
+      core_service_client_ = std::make_shared<libkrbn_core_service_client>(client_socket_directory_name);
     }
   }
 
-  void disable_grabber_client(void) {
-    grabber_client_ = nullptr;
+  void disable_core_service_client(void) {
+    core_service_client_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_grabber_client> get_libkrbn_grabber_client(void) const {
-    return grabber_client_;
+  std::shared_ptr<libkrbn_core_service_client> get_libkrbn_core_service_client(void) const {
+    return core_service_client_;
   }
 
 private:
@@ -221,5 +221,5 @@ private:
   std::shared_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::shared_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
-  std::shared_ptr<libkrbn_grabber_client> grabber_client_;
+  std::shared_ptr<libkrbn_core_service_client> core_service_client_;
 };

@@ -558,44 +558,44 @@ void libkrbn_unregister_hid_value_arrived_callback(libkrbn_hid_value_arrived_t _
 bool libkrbn_hid_value_monitor_observed(void);
 
 //
-// libkrbn_grabber_client
+// libkrbn_core_service_client
 //
 
 typedef enum {
-  libkrbn_grabber_client_status_none,
-  libkrbn_grabber_client_status_connected,
-  libkrbn_grabber_client_status_connect_failed,
-  libkrbn_grabber_client_status_closed,
-} libkrbn_grabber_client_status;
+  libkrbn_core_service_client_status_none,
+  libkrbn_core_service_client_status_connected,
+  libkrbn_core_service_client_status_connect_failed,
+  libkrbn_core_service_client_status_closed,
+} libkrbn_core_service_client_status;
 
-void libkrbn_enable_grabber_client(const char* _Nullable client_socket_directory_name);
-void libkrbn_disable_grabber_client(void);
+void libkrbn_enable_core_service_client(const char* _Nullable client_socket_directory_name);
+void libkrbn_disable_core_service_client(void);
 
-void libkrbn_grabber_client_async_start(void);
+void libkrbn_core_service_client_async_start(void);
 
-typedef void (*libkrbn_grabber_client_status_changed_t)(void);
-void libkrbn_register_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed_t _Nonnull callback);
-void libkrbn_unregister_grabber_client_status_changed_callback(libkrbn_grabber_client_status_changed_t _Nonnull callback);
+typedef void (*libkrbn_core_service_client_status_changed_t)(void);
+void libkrbn_register_core_service_client_status_changed_callback(libkrbn_core_service_client_status_changed_t _Nonnull callback);
+void libkrbn_unregister_core_service_client_status_changed_callback(libkrbn_core_service_client_status_changed_t _Nonnull callback);
 
-libkrbn_grabber_client_status libkrbn_grabber_client_get_status(void);
+libkrbn_core_service_client_status libkrbn_core_service_client_get_status(void);
 
-void libkrbn_grabber_client_async_temporarily_ignore_all_devices(bool value);
+void libkrbn_core_service_client_async_temporarily_ignore_all_devices(bool value);
 
-void libkrbn_grabber_client_async_get_manipulator_environment(void);
-typedef void (*libkrbn_grabber_client_manipulator_environment_received_t)(const char* _Nonnull json_string);
-void libkrbn_register_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received_t _Nonnull callback);
-void libkrbn_unregister_grabber_client_manipulator_environment_received_callback(libkrbn_grabber_client_manipulator_environment_received_t _Nonnull callback);
+void libkrbn_core_service_client_async_get_manipulator_environment(void);
+typedef void (*libkrbn_core_service_client_manipulator_environment_received_t)(const char* _Nonnull json_string);
+void libkrbn_register_core_service_client_manipulator_environment_received_callback(libkrbn_core_service_client_manipulator_environment_received_t _Nonnull callback);
+void libkrbn_unregister_core_service_client_manipulator_environment_received_callback(libkrbn_core_service_client_manipulator_environment_received_t _Nonnull callback);
 
-void libkrbn_grabber_client_async_get_system_variables(void);
-typedef void (*libkrbn_grabber_client_system_variables_received_t)(const char* _Nonnull json_string);
-void libkrbn_register_grabber_client_system_variables_received_callback(libkrbn_grabber_client_system_variables_received_t _Nonnull callback);
-void libkrbn_unregister_grabber_client_system_variables_received_callback(libkrbn_grabber_client_system_variables_received_t _Nonnull callback);
+void libkrbn_core_service_client_async_get_system_variables(void);
+typedef void (*libkrbn_core_service_client_system_variables_received_t)(const char* _Nonnull json_string);
+void libkrbn_register_core_service_client_system_variables_received_callback(libkrbn_core_service_client_system_variables_received_t _Nonnull callback);
+void libkrbn_unregister_core_service_client_system_variables_received_callback(libkrbn_core_service_client_system_variables_received_t _Nonnull callback);
 
-void libkrbn_grabber_client_async_connect_multitouch_extension(void);
+void libkrbn_core_service_client_async_connect_multitouch_extension(void);
 
-void libkrbn_grabber_client_async_set_app_icon(int number);
-void libkrbn_grabber_client_async_set_variable(const char* _Nonnull name,
-                                               int value);
+void libkrbn_core_service_client_async_set_app_icon(int number);
+void libkrbn_core_service_client_async_set_variable(const char* _Nonnull name,
+                                                    int value);
 
 #ifdef __cplusplus
 }

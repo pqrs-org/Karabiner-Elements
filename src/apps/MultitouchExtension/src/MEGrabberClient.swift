@@ -104,7 +104,7 @@ private func staticSetGrabberVariable(_ count: FingerCount) {
       previousValue: previousFingerCount.totalPalmCount
     ),
   ] where gv.previousValue.value != gv.value {
-    libkrbn_grabber_client_async_set_variable(gv.name, Int32(gv.value))
+    libkrbn_core_service_client_async_set_variable(gv.name, Int32(gv.value))
 
     gv.previousValue.value = gv.value
   }
@@ -116,11 +116,11 @@ private func callback() {
     try await Task.sleep(nanoseconds: NSEC_PER_SEC)
 
     Task { @MainActor in
-      let status = libkrbn_grabber_client_get_status()
+      let status = libkrbn_core_service_client_get_status()
 
-      if status == libkrbn_grabber_client_status_connected {
+      if status == libkrbn_core_service_client_status_connected {
         MultitouchDeviceManager.shared.setCallback(true)
-        libkrbn_grabber_client_async_connect_multitouch_extension()
+        libkrbn_core_service_client_async_connect_multitouch_extension()
       } else {
         MultitouchDeviceManager.shared.setCallback(false)
       }
@@ -151,15 +151,15 @@ final class MEGrabberClient {
   public func start() {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name multitouch_extension_grabber_client -> mt_ext_grb_clnt.
+    // So we use the shorten name multitouch_extension_core_service_client -> mt_ext_cs_clnt.
     //
     // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/mt_ext_grb_clnt/17d5344d2176c048.sock`
+    // `/Library/Application Support/org.pqrs/tmp/user/501/mt_ext_cs_clnt/17d5344d2176c048.sock`
 
-    libkrbn_enable_grabber_client("mt_ext_grb_clnt")
+    libkrbn_enable_core_service_client("mt_ext_cs_clnt")
 
-    libkrbn_register_grabber_client_status_changed_callback(callback)
+    libkrbn_register_core_service_client_status_changed_callback(callback)
 
-    libkrbn_grabber_client_async_start()
+    libkrbn_core_service_client_async_start()
   }
 }

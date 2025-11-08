@@ -6,8 +6,8 @@
 #include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
+#include "core_service_client.hpp"
 #include "filesystem_utility.hpp"
-#include "grabber_client.hpp"
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
@@ -61,14 +61,14 @@ public:
           constants::get_user_configuration_directory(),
           0700);
 
-      stop_grabber_client();
-      start_grabber_client();
+      stop_core_service_client();
+      start_core_service_client();
     });
   }
 
   virtual ~components_manager(void) {
     detach_from_dispatcher([this] {
-      stop_grabber_client();
+      stop_core_service_client();
 
       session_monitor_ = nullptr;
       version_monitor_ = nullptr;
@@ -83,8 +83,8 @@ public:
   }
 
 private:
-  void start_grabber_client(void) {
-    if (grabber_client_) {
+  void start_core_service_client(void) {
+    if (core_service_client_) {
       return;
     }
 
@@ -94,37 +94,37 @@ private:
 
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name console_user_server_grabber_client -> con_usr_srv_grb_clnt.
+    // So we use the shorten name console_user_server_core_service_client -> con_usr_srv_cs_clnt.
     //
     // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/con_usr_srv_grb_clnt/17d502ed0dd6f828.sock`
+    // `/Library/Application Support/org.pqrs/tmp/user/501/con_usr_srv_cs_clnt/17d502ed0dd6f828.sock`
 
-    grabber_client_ = std::make_shared<grabber_client>("con_usr_srv_grb_clnt");
+    core_service_client_ = std::make_shared<core_service_client>("con_usr_srv_cs_clnt");
 
-    grabber_client_->connected.connect([this] {
+    core_service_client_->connected.connect([this] {
       version_monitor_->async_manual_check();
 
-      if (grabber_client_) {
-        grabber_client_->async_connect_console_user_server();
+      if (core_service_client_) {
+        core_service_client_->async_connect_console_user_server();
       }
 
       stop_child_components();
       start_child_components();
     });
 
-    grabber_client_->connect_failed.connect([this](auto&& error_code) {
+    core_service_client_->connect_failed.connect([this](auto&& error_code) {
       version_monitor_->async_manual_check();
 
       stop_child_components();
     });
 
-    grabber_client_->closed.connect([this] {
+    core_service_client_->closed.connect([this] {
       version_monitor_->async_manual_check();
 
       stop_child_components();
     });
 
-    grabber_client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
+    core_service_client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
       if (buffer) {
         if (buffer->empty()) {
           return;
@@ -168,16 +168,16 @@ private:
       }
     });
 
-    grabber_client_->next_heartbeat_deadline_exceeded.connect([this] {
-      stop_grabber_client();
-      start_grabber_client();
+    core_service_client_->next_heartbeat_deadline_exceeded.connect([this] {
+      stop_core_service_client();
+      start_core_service_client();
     });
 
-    grabber_client_->async_start();
+    core_service_client_->async_start();
   }
 
-  void stop_grabber_client(void) {
-    grabber_client_ = nullptr;
+  void stop_core_service_client(void) {
+    core_service_client_ = nullptr;
     stop_child_components();
   }
 
@@ -237,8 +237,8 @@ private:
     system_preferences_monitor_ = std::make_unique<pqrs::osx::system_preferences_monitor>(weak_dispatcher_);
 
     system_preferences_monitor_->system_preferences_changed.connect([this](auto&& properties_ptr) {
-      if (grabber_client_) {
-        grabber_client_->async_system_preferences_updated(properties_ptr);
+      if (core_service_client_) {
+        core_service_client_->async_system_preferences_updated(properties_ptr);
       }
     });
 
@@ -267,8 +267,8 @@ private:
             return;
           }
 
-          if (grabber_client_) {
-            grabber_client_->async_frontmost_application_changed(application_ptr);
+          if (core_service_client_) {
+            core_service_client_->async_frontmost_application_changed(application_ptr);
           }
         }
       });
@@ -282,9 +282,9 @@ private:
         pqrs::dispatcher::extra::get_shared_dispatcher());
 
     input_source_monitor_->input_source_changed.connect([this](auto&& input_source_ptr) {
-      if (input_source_ptr && grabber_client_) {
+      if (input_source_ptr && core_service_client_) {
         auto properties = std::make_shared<pqrs::osx::input_source::properties>(*input_source_ptr);
-        grabber_client_->async_input_source_changed(properties);
+        core_service_client_->async_input_source_changed(properties);
       }
     });
 
@@ -325,7 +325,7 @@ private:
 
   std::optional<bool> on_console_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
-  std::shared_ptr<grabber_client> grabber_client_;
+  std::shared_ptr<core_service_client> core_service_client_;
 
   // Child components
 

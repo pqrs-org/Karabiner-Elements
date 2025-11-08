@@ -92,25 +92,25 @@ final class SettingsGrabberClient: ObservableObject {
   public func start() {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name settings_grabber_client -> settings_grb_clnt.
+    // So we use the shorten name settings_core_service_client -> settings_cs_clnt.
     //
     // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/settings_grb_clnt/18675138fbaed328.sock`
+    // `/Library/Application Support/org.pqrs/tmp/user/501/settings_cs_clnt/18675138fbaed328.sock`
 
-    libkrbn_enable_grabber_client("settings_grb_clnt")
+    libkrbn_enable_core_service_client("settings_cs_clnt")
 
-    libkrbn_register_grabber_client_system_variables_received_callback(
+    libkrbn_register_core_service_client_system_variables_received_callback(
       systemVariablesReceivedCallback)
 
-    libkrbn_grabber_client_async_start()
+    libkrbn_core_service_client_async_start()
   }
 
   public func startSystemVariablesMonitoring() {
     systemVariablesTimerTask = Task { @MainActor in
-      libkrbn_grabber_client_async_get_system_variables()
+      libkrbn_core_service_client_async_get_system_variables()
 
       for await _ in systemVariablesTimer {
-        libkrbn_grabber_client_async_get_system_variables()
+        libkrbn_core_service_client_async_get_system_variables()
       }
     }
   }
