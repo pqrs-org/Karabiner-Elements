@@ -2,10 +2,10 @@
 
 ## How to replace binaries without reinstalling package
 
-### Replace `karabiner_grabber`
+### Replace `Karabiner-Core-Service`
 
 ```shell
-cd src/core/grabber
+cd src/core/CoreService
 make install
 ```
 

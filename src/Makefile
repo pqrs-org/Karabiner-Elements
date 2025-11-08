@@ -10,7 +10,7 @@ all:
 	$(MAKE) -C apps/Updater
 	$(MAKE) -C bin/cli
 	$(MAKE) -C core/console_user_server
-	$(MAKE) -C core/grabber
+	$(MAKE) -C core/CoreService
 	$(MAKE) -C core/session_monitor
 	$(MAKE) -C lib/libkrbn
 
@@ -26,6 +26,6 @@ clean:
 	$(MAKE) -C apps/Updater clean
 	$(MAKE) -C bin/cli clean
 	$(MAKE) -C core/console_user_server clean
-	$(MAKE) -C core/grabber clean
+	$(MAKE) -C core/CoreService clean
 	$(MAKE) -C core/session_monitor clean
 	$(MAKE) -C lib/libkrbn clean

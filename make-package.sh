@@ -35,7 +35,7 @@ cp -R "src/apps/NotificationWindow/build/Release/Karabiner-NotificationWindow.ap
 cp -R "src/apps/ServiceManager-Non-Privileged-Agents/build/Release/Karabiner-Elements Non-Privileged Agents v2.app" "$basedir"
 cp -R "src/apps/ServiceManager-Privileged-Daemons/build/Release/Karabiner-Elements Privileged Daemons v2.app" "$basedir"
 cp -R "src/apps/Updater/build/Release/Karabiner-Updater.app" "$basedir"
-cp -R "src/core/grabber/build/Release/Karabiner-Core-Service.app" "$basedir"
+cp -R "src/core/CoreService/build/Release/Karabiner-Core-Service.app" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
 mkdir -p "$basedir"

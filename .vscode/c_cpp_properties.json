@@ -8,7 +8,7 @@
             },
             "defines": [],
             "includePath": [
-                "${workspaceFolder}/src/core/grabber/include",
+                "${workspaceFolder}/src/core/CoreService/include",
                 "${workspaceFolder}/src/lib/libkrbn/include",
                 "${workspaceFolder}/src/share",
                 "${workspaceFolder}/vendor/duktape-2.7.0/extras/console",
