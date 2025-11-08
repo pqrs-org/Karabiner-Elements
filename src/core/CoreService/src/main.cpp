@@ -38,7 +38,7 @@ int main(int argc, const char* argv[]) {
 
   //
   // Check euid
-  // (grabber is launched from LaunchDaemons (root) and LaunchAgents (user).)
+  // (core_service is launched from LaunchDaemons (root) and LaunchAgents (user).)
   //
 
   bool root = (geteuid() == 0);

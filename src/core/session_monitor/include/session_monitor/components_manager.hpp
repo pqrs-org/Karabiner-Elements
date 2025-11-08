@@ -78,7 +78,7 @@ public:
         session_monitor_->async_start(std::chrono::milliseconds(3000));
       }
 
-      // Call send_to_receiver periodically to ensure `grabber` receive the event.
+      // Call send_to_receiver periodically to ensure `core_service` receive the event.
 
       send_timer_.start(
           [this] {

@@ -23,14 +23,14 @@ namespace main {
 int daemon(void) {
   // Note:
   // Processes running as root should not rely on environment variables,
-  // so we do not load custom environment variables in the grabber daemon.
+  // so we do not load custom environment variables in the core_service daemon.
 
   //
   // Setup logger
   //
 
-  logger::set_async_rotating_logger("grabber",
-                                    "/var/log/karabiner/grabber.log",
+  logger::set_async_rotating_logger("core_service",
+                                    "/var/log/karabiner/core_service.log",
                                     pqrs::spdlog::filesystem::log_directory_perms_0755);
   logger::get_logger()->info("version {0}", karabiner_version);
 
@@ -39,7 +39,7 @@ int daemon(void) {
   //
 
   {
-    bool another_process_running = !process_utility::lock_single_application(constants::get_pid_directory() / "karabiner_grabber.pid");
+    bool another_process_running = !process_utility::lock_single_application(constants::get_pid_directory() / "karabiner_core_service.pid");
 
     if (another_process_running) {
       auto message = "Exit since another process is running.";
@@ -75,7 +75,7 @@ int daemon(void) {
   auto core_service_state_json_writer = std::make_shared<core_service::core_service_state_json_writer>();
 
   //
-  // Update karabiner_grabber_state.json
+  // Update karabiner_core_service_state.json
   //
 
   if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
@@ -157,7 +157,7 @@ int daemon(void) {
 
   core_service_state_json_writer = nullptr;
 
-  logger::get_logger()->info("karabiner_grabber is terminated.");
+  logger::get_logger()->info("Karabiner-Core-Service is terminated.");
 
   return 0;
 }

@@ -259,7 +259,7 @@ private:
           }
 
           //
-          // Notify the grabber of frontmost application changed.
+          // Notify the core_service of frontmost application changed.
           //
 
           if (application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner.EventViewer" ||
