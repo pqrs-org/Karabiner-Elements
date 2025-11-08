@@ -25,80 +25,80 @@ private class PreviousFingerCount {
 private var previousFingerCount = PreviousFingerCount()
 
 @MainActor
-private func staticSetGrabberVariable(_ count: FingerCount) {
-  struct GrabberVariable {
+private func staticSetCoreServiceVariable(_ count: FingerCount) {
+  struct CoreServiceVariable {
     var name: String
     var value: Int
     var previousValue: PreviousValue
   }
 
   for gv in [
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_upper_quarter_area",
       value: count.upperQuarterAreaCount,
       previousValue: previousFingerCount.upperQuarterAreaCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_lower_quarter_area",
       value: count.lowerQuarterAreaCount,
       previousValue: previousFingerCount.lowerQuarterAreaCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_left_quarter_area",
       value: count.leftQuarterAreaCount,
       previousValue: previousFingerCount.leftQuarterAreaCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_right_quarter_area",
       value: count.rightQuarterAreaCount,
       previousValue: previousFingerCount.rightQuarterAreaCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_upper_half_area",
       value: count.upperHalfAreaCount,
       previousValue: previousFingerCount.upperHalfAreaCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_lower_half_area",
       value: count.lowerHalfAreaCount,
       previousValue: previousFingerCount.lowerHalfAreaCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_left_half_area",
       value: count.leftHalfAreaCount,
       previousValue: previousFingerCount.leftHalfAreaCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_right_half_area",
       value: count.rightHalfAreaCount,
       previousValue: previousFingerCount.rightHalfAreaCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_finger_count_total",
       value: count.totalCount,
       previousValue: previousFingerCount.totalCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_palm_count_upper_half_area",
       value: count.upperHalfAreaPalmCount,
       previousValue: previousFingerCount.upperHalfAreaPalmCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_palm_count_lower_half_area",
       value: count.lowerHalfAreaPalmCount,
       previousValue: previousFingerCount.lowerHalfAreaPalmCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_palm_count_left_half_area",
       value: count.leftHalfAreaPalmCount,
       previousValue: previousFingerCount.leftHalfAreaPalmCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_palm_count_right_half_area",
       value: count.rightHalfAreaPalmCount,
       previousValue: previousFingerCount.rightHalfAreaPalmCount
     ),
-    GrabberVariable(
+    CoreServiceVariable(
       name: "multitouch_extension_palm_count_total",
       value: count.totalPalmCount,
       previousValue: previousFingerCount.totalPalmCount
@@ -125,7 +125,7 @@ private func callback() {
         MultitouchDeviceManager.shared.setCallback(false)
       }
 
-      staticSetGrabberVariable(FingerCount())
+      staticSetCoreServiceVariable(FingerCount())
     }
   }
 }
@@ -140,7 +140,7 @@ final class MECoreServiceClient {
     FingerManager.shared.$fingerCount
       .removeDuplicates()
       .sink { newValue in
-        staticSetGrabberVariable(newValue)
+        staticSetCoreServiceVariable(newValue)
       }
       .store(in: &cancellables)
   }
