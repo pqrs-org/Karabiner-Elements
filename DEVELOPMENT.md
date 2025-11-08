@@ -25,23 +25,23 @@ make install
 
 ## Core Processes
 
--   `karabiner_grabber`
+-   `Karabiner-Core-Service`
     -   Seize the input devices and modify events then post events using `Karabiner-DriverKit-VirtualHIDDevice`.
     -   It is run with root privileges which are required to seize the device and send events to the virtual driver.
 -   `karabiner_session_monitor`
-    -   It informs `karabiner_grabber` of the user currently using the console.
-        karabiner_grabber will change the owner of the Unix domain socket that `karabiner_grabber` provides for `karabiner_console_user_server`.
+    -   It informs `Karabiner-Core-Service` of the user currently using the console.
+        Karabiner-Core-Service will change the owner of the Unix domain socket that `Karabiner-Core-Service` provides for `karabiner_console_user_server`.
     -   The methods for accurately detecting the console user, including when multiple people are logged in through Screen Sharing, are very limited.
         Even in macOS 14, there is no alternative to using the Core Graphics API `CGSessionCopyCurrentDictionary`.
         To use this API, it must be launched from a GUI session. Specifically, it needs to be started from LaunchAgents.
-        Therefore, the function to detect the console user cannot be integrated into `karabiner_grabber` and is implemented as a separate process.
-    -   It is run with root privileges because if the notification of the console user to `karabiner_grabber` can be done by anyone, the console user could be spoofed.
-        This would allow a user who is not currently using the console to send requests to `karabiner_grabber` via `karabiner_console_user_server`.
+        Therefore, the function to detect the console user cannot be integrated into `Karabiner-Core-Service` and is implemented as a separate process.
+    -   It is run with root privileges because if the notification of the console user to `Karabiner-Core-Service` can be done by anyone, the console user could be spoofed.
+        This would allow a user who is not currently using the console to send requests to `Karabiner-Core-Service` via `karabiner_console_user_server`.
 -   `karabiner_console_user_server`
-    -   `karabiner_console_user_server` connects to the Unix domain socket provided by `karabiner_grabber` and requests the start of processing input events.
-        `karabiner_grabber` will not modify the input events until it receives a connection from `karabiner_console_user_server` (unless the system default configuration is enabled).
+    -   `karabiner_console_user_server` connects to the Unix domain socket provided by `Karabiner-Core-Service` and requests the start of processing input events.
+        `Karabiner-Core-Service` will not modify the input events until it receives a connection from `karabiner_console_user_server` (unless the system default configuration is enabled).
     -   The execution of `shell_command`, `software_function`, and `select_input_source` is carried out by karabiner_console_user_server.
-    -   It notifies `karabiner_grabber` of the information needed to reference the filter function when modifying input events, such as the active application and the current input source.
+    -   It notifies `Karabiner-Core-Service` of the information needed to reference the filter function when modifying input events, such as the active application and the current input source.
     -   Run with the console user privilege.
 
 ![processes](files/images/processes.svg)
@@ -50,29 +50,29 @@ make install
 
 #### start up
 
-`karabiner_grabber`
+`Karabiner-Core-Service`
 
-1.  Run `karabiner_grabber`.
-2.  `karabiner_grabber` opens session_monitor_receiver Unix domain socket which only root can access.
-3.  `karabiner_grabber` opens grabber server Unix domain socket.
-4.  When a window server session state is changed, `karabiner_grabber` changes the Unix domain socket owner to console user.
+1.  Run `Karabiner-Core-Service`.
+2.  `Karabiner-Core-Service` opens session_monitor_receiver Unix domain socket which only root can access.
+3.  `Karabiner-Core-Service` opens the Unix domain socket of server.
+4.  When a window server session state is changed, `Karabiner-Core-Service` changes the Unix domain socket owner to console user.
 
 `karabiner_session_monitor`
 
 1.  Run `karabiner_session_monitor`.
-2.  `karabiner_session_monitor` monitors a window server session state and notify it to `karabiner_grabber`.
-3.  `karabiner_grabber` changes the owner of Unix domain socket for `karabiner_console_user_server` when the console user is changed.
+2.  `karabiner_session_monitor` monitors a window server session state and notify it to `Karabiner-Core-Service`.
+3.  `Karabiner-Core-Service` changes the owner of Unix domain socket for `karabiner_console_user_server` when the console user is changed.
 
 #### device grabbing
 
 1.  Run `karabiner_console_user_server`.
 2.  Try to open console_user_server Unix domain socket.
-3.  grabber seizes input devices.
+3.  Karabiner-Core-Service seizes input devices.
 
 ### Other notes
 
 IOHIDSystem requires the process is running with the console user privilege.
-Thus, `karabiner_grabber` cannot send events to IOHIDSystem directly.
+Thus, `Karabiner-Core-Service` cannot send events to IOHIDSystem directly.
 
 ---
 
@@ -83,7 +83,7 @@ Thus, `karabiner_grabber` cannot send events to IOHIDSystem directly.
 IOKit allows you to read raw HID input events from kernel.<br />
 The highest layer is IOHIDQueue which provides us the HID values.
 
-`karabiner_grabber` uses this method.
+`Karabiner-Core-Service` uses this method.
 
 #### IOKit with Apple Trackpads
 
@@ -125,7 +125,7 @@ There is another problem with `CGEventTapCreate`.<br />
 `Shake mouse pointer to locate` feature will be stopped after we call `CGEventTapCreate` with `kCGEventTapOptionDefault`.<br />
 (We confirmed the problem at least on macOS 10.13.1.)<br />
 
-`karabiner_grabber` uses `CGEventTapCreate` with `kCGEventTapOptionListenOnly` in order to catch Apple mouse/trackpad events which we cannot catch in IOKit.
+`Karabiner-Core-Service` uses `CGEventTapCreate` with `kCGEventTapOptionListenOnly` in order to catch Apple mouse/trackpad events which we cannot catch in IOKit.
 (See above note.)
 
 ---
@@ -137,7 +137,7 @@ There is another problem with `CGEventTapCreate`.<br />
 It requires posting HID events.<br />
 The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 
-`karabiner_grabber` uses this method by using `Karabiner-DriverKit-VirtualHIDDevice`.
+`Karabiner-Core-Service` uses this method by using `Karabiner-DriverKit-VirtualHIDDevice`.
 
 Note: `handleReport` fails to treat events which usage page are `kHIDPage_AppleVendorKeyboard` or `kHIDPage_AppleVendorTopCase` on macOS 10.11 or earlier.
 
@@ -158,7 +158,7 @@ It requires posting coregraphics events.<br />
 -   Launchpad key
 -   Option-Command-Escape
 
-Thus, `karabiner_grabber` does not use `CGEventPost`.
+Thus, `Karabiner-Core-Service` does not use `CGEventPost`.
 
 ---
 
@@ -182,7 +182,7 @@ Thus, `IOHIDPostEvent` will be ignored in accessibility functions and mouse even
 We can get hid reports from devices via `IOHIDDeviceRegisterInputReportCallback`.<br />
 The hid report contains a list of pressed keys, so it seems suitable information to observe.
 
-But `karabiner_grabber` does not use it in order to reduce the device dependancy.
+But `Karabiner-Core-Service` does not use it in order to reduce the device dependancy.
 
 ### The limitation of device reports
 
@@ -278,12 +278,13 @@ The caps lock is quite different from the normal modifier.
 
 ### The flow of updating `modifier_flag_manager`
 
--   karabiner_grabber receives `hid::usage::keyboard_or_keypad::keyboard_caps_lock`.
+-   Karabiner-Core-Service receives `hid::usage::keyboard_or_keypad::keyboard_caps_lock`.
 -   Send the event via virtual hid keyboard.
 -   macOS update the caps lock LED of virtual hid keyboard.
 -   Virtual hid keyboard sends the LED updated event.
--   karabiner_grabber observes events from the virtual hid keyboard.
-    When an event {usage_page::leds, usage::led::caps_lock} is detected, karabiner_grabber generates an `event::type::caps_lock_state_changed` and adds it to the queue.
+-   Karabiner-Core-Service observes events from the virtual hid keyboard.
+    When an event {usage_page::leds, usage::led::caps_lock} is detected,
+    Karabiner-Core-Service generates an `event::type::caps_lock_state_changed` and adds it to the queue.
 -   The state of `modifier_flag_manager` is changed by `event::type::caps_lock_state_changed`.
 
 ### modifier state holders
@@ -321,7 +322,7 @@ Example:
     -   `key_event_dispatcher` is updated.
         -   `pressed_keys_.insert(caps_lock)`
     -   macOS update the caps lock LED state (on).
-    -   `event::type::caps_lock_state_changed (on)` is sent via `krbn::event_queue::utility::make_queue` in `karabiner_grabber`.
+    -   `event::type::caps_lock_state_changed (on)` is sent via `krbn::event_queue::utility::make_queue` in `Karabiner-Core-Service`.
         -   `modifier_flag_manager increase_led_lock (caps_lock)`
         -   `key_event_dispatcher` is updated.
             -   `pressed_modifier_flags_.insert(caps_lock)`
@@ -339,7 +340,7 @@ Example:
     -   `sticky_modifier caps_lock true` is sent by `modifiers.mandatory`.
         -   `modifier_flag_manager increase_sticky (caps_lock)`
     -   macOS update the caps lock LED state (off).
-    -   `event::type::caps_lock_state_changed (off)` is sent via `krbn::event_queue::utility::make_queue` in `karabiner_grabber`.
+    -   `event::type::caps_lock_state_changed (off)` is sent via `krbn::event_queue::utility::make_queue` in `Karabiner-Core-Service`.
         -   `modifier_flag_manager decrease_led_lock (caps_lock)`
             -   Note: led_lock will be ignored while other counter is active in modifier_flag_manager.
 -   Release `down_arrow` key.
