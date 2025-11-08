@@ -11,7 +11,7 @@ public:
   static void launch_app_icon_switcher(void) {
     // Note:
     // Updating the icon may trigger Spotlight index updates, so only call it when necessary.
-    // (Avoid calling it every time, such as during grabber startup.)
+    // (Avoid calling it every time, such as during core_service startup.)
     system("'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'");
   }
 

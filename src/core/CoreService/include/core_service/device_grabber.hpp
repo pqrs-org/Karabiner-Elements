@@ -3,7 +3,7 @@
 #include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
-#include "core_service/grabber_state_json_writer.hpp"
+#include "core_service/core_service_state_json_writer.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
@@ -44,7 +44,7 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
-                 std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer)
+                 std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
       : dispatcher_client(),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
         temporarily_ignore_all_devices_(false),
@@ -99,20 +99,20 @@ public:
       logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
     });
 
-    virtual_hid_device_service_client_->driver_activated.connect([weak_grabber_state_json_writer](auto&& driver_activated) {
-      if (auto writer = weak_grabber_state_json_writer.lock()) {
+    virtual_hid_device_service_client_->driver_activated.connect([weak_core_service_state_json_writer](auto&& driver_activated) {
+      if (auto writer = weak_core_service_state_json_writer.lock()) {
         writer->set_driver_activated(driver_activated);
       }
     });
 
-    virtual_hid_device_service_client_->driver_connected.connect([weak_grabber_state_json_writer](auto&& driver_connected) {
-      if (auto writer = weak_grabber_state_json_writer.lock()) {
+    virtual_hid_device_service_client_->driver_connected.connect([weak_core_service_state_json_writer](auto&& driver_connected) {
+      if (auto writer = weak_core_service_state_json_writer.lock()) {
         writer->set_driver_connected(driver_connected);
       }
     });
 
-    virtual_hid_device_service_client_->driver_version_mismatched.connect([weak_grabber_state_json_writer](auto&& driver_version_mismatched) {
-      if (auto writer = weak_grabber_state_json_writer.lock()) {
+    virtual_hid_device_service_client_->driver_version_mismatched.connect([weak_core_service_state_json_writer](auto&& driver_version_mismatched) {
+      if (auto writer = weak_core_service_state_json_writer.lock()) {
         writer->set_driver_version_mismatched(driver_version_mismatched);
       }
     });

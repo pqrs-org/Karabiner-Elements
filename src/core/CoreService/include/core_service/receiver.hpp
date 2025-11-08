@@ -6,7 +6,7 @@
 #include "application_launcher.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "core_service/grabber_state_json_writer.hpp"
+#include "core_service/core_service_state_json_writer.hpp"
 #include "device_grabber.hpp"
 #include "filesystem_utility.hpp"
 #include "types.hpp"
@@ -24,9 +24,10 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(uid_t current_console_user_id,
-           std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
-                                                                                      current_console_user_id_(current_console_user_id),
-                                                                                      weak_grabber_state_json_writer_(weak_grabber_state_json_writer) {
+           std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
+      : dispatcher_client(),
+        current_console_user_id_(current_console_user_id),
+        weak_core_service_state_json_writer_(weak_core_service_state_json_writer) {
     // Remove old files and prepare a socket directory.
     prepare_karabiner_core_service_socket_directory();
 
@@ -360,7 +361,7 @@ private:
     }
 
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_,
-                                                       weak_grabber_state_json_writer_);
+                                                       weak_core_service_state_json_writer_);
 
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
@@ -413,7 +414,7 @@ private:
   }
 
   uid_t current_console_user_id_;
-  std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer_;
+  std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer_;
 
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_temporarily_ignore_all_devices_peer_manager_;
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_get_manipulator_environment_peer_manager_;

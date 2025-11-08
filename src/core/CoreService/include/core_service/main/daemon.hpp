@@ -4,8 +4,8 @@
 #include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "core_service/components_manager.hpp"
+#include "core_service/core_service_state_json_writer.hpp"
 #include "core_service/core_service_utility.hpp"
-#include "core_service/grabber_state_json_writer.hpp"
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -72,18 +72,18 @@ int daemon(void) {
   // Prepare state_json_writer
   //
 
-  auto grabber_state_json_writer = std::make_shared<core_service::grabber_state_json_writer>();
+  auto core_service_state_json_writer = std::make_shared<core_service::core_service_state_json_writer>();
 
   //
   // Update karabiner_grabber_state.json
   //
 
   if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
-    grabber_state_json_writer->set_hid_device_open_permitted(true);
+    core_service_state_json_writer->set_hid_device_open_permitted(true);
   } else {
     logger::get_logger()->warn("Input Monitoring is not granted");
 
-    grabber_state_json_writer->set_hid_device_open_permitted(false);
+    core_service_state_json_writer->set_hid_device_open_permitted(false);
 
     // IOHIDRequestAccess won't work correctly unless it's called from the agent.
     // Therefore, the daemon does not call IOHIDRequestAccess and
@@ -148,14 +148,14 @@ int daemon(void) {
     });
   }
 
-  components_manager = new core_service::components_manager(grabber_state_json_writer);
+  components_manager = new core_service::components_manager(core_service_state_json_writer);
   components_manager->async_start();
 
   CFRunLoopRun();
 
   components_manager_killer::terminate_shared_components_manager_killer();
 
-  grabber_state_json_writer = nullptr;
+  core_service_state_json_writer = nullptr;
 
   logger::get_logger()->info("karabiner_grabber is terminated.");
 

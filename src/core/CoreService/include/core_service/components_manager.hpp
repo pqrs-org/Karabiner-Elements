@@ -5,7 +5,7 @@
 #include "components_manager_killer.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "core_service/grabber_state_json_writer.hpp"
+#include "core_service/core_service_state_json_writer.hpp"
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
@@ -20,8 +20,9 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer) : dispatcher_client(),
-                                                                                                weak_grabber_state_json_writer_(weak_grabber_state_json_writer) {
+  components_manager(std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
+      : dispatcher_client(),
+        weak_core_service_state_json_writer_(weak_core_service_state_json_writer) {
     //
     // version_monitor_
     //
@@ -86,10 +87,10 @@ private:
 
     receiver_ = nullptr;
     receiver_ = std::make_unique<receiver>(uid,
-                                           weak_grabber_state_json_writer_);
+                                           weak_core_service_state_json_writer_);
   }
 
-  std::weak_ptr<grabber_state_json_writer> weak_grabber_state_json_writer_;
+  std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer_;
 
   std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<session_monitor_receiver> session_monitor_receiver_;

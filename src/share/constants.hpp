@@ -87,8 +87,8 @@ public:
     return path;
   }
 
-  static const std::filesystem::path& get_grabber_state_json_file_path(void) {
-    static auto path = get_tmp_directory() / "karabiner_grabber_state.json";
+  static const std::filesystem::path& get_core_service_state_json_file_path(void) {
+    static auto path = get_tmp_directory() / "karabiner_core_service_state.json";
     return path;
   }
 

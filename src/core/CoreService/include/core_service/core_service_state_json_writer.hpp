@@ -1,6 +1,6 @@
 #pragma once
 
-// `grabber_state_json_writer` can be used safely in a multi-threaded environment.
+// `core_service_state_json_writer` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
 #include "state_json_writer.hpp"
@@ -8,9 +8,9 @@
 
 namespace krbn {
 namespace core_service {
-class grabber_state_json_writer final {
+class core_service_state_json_writer final {
 public:
-  grabber_state_json_writer(void) : state_json_writer_(constants::get_grabber_state_json_file_path()) {
+  core_service_state_json_writer(void) : state_json_writer_(constants::get_core_service_state_json_file_path()) {
     set_hid_device_open_permitted(std::nullopt);
     set_driver_activated(std::nullopt);
     set_driver_connected(std::nullopt);

@@ -23,7 +23,7 @@ private struct State: Codable {
 public class StateJsonMonitor {
   static let shared = StateJsonMonitor()
 
-  let grabberStateJsonFilePath = LibKrbn.grabberStateJsonFilePath()
+  let coreServiceStateJsonFilePath = LibKrbn.coreServiceStateJsonFilePath()
 
   private var state = State()
 
@@ -33,14 +33,14 @@ public class StateJsonMonitor {
   public func start() {
     libkrbn_enable_file_monitors()
 
-    if let cString = grabberStateJsonFilePath.cString(using: .utf8) {
+    if let cString = coreServiceStateJsonFilePath.cString(using: .utf8) {
       libkrbn_register_file_updated_callback(cString, callback)
       libkrbn_enqueue_callback(callback)
     }
   }
 
   public func stop() {
-    if let cString = grabberStateJsonFilePath.cString(using: .utf8) {
+    if let cString = coreServiceStateJsonFilePath.cString(using: .utf8) {
       libkrbn_unregister_file_updated_callback(cString, callback)
     }
 
@@ -48,7 +48,7 @@ public class StateJsonMonitor {
   }
 
   public func update() {
-    if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: grabberStateJsonFilePath)) {
+    if let jsonData = try? Data(contentsOf: URL(fileURLWithPath: coreServiceStateJsonFilePath)) {
       let decoder = JSONDecoder()
       decoder.keyDecodingStrategy = .convertFromSnakeCase
       if let s = try? decoder.decode(State.self, from: jsonData) {

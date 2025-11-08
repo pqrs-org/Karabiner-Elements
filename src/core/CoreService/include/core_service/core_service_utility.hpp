@@ -4,7 +4,7 @@
 #include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "core_service/components_manager.hpp"
-#include "core_service/grabber_state_json_writer.hpp"
+#include "core_service/core_service_state_json_writer.hpp"
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
