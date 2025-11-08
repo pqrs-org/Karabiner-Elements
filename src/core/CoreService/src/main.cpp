@@ -44,8 +44,8 @@ int main(int argc, const char* argv[]) {
   bool root = (geteuid() == 0);
 
   if (root) {
-    return krbn::grabber::main::daemon();
+    return krbn::core_service::main::daemon();
   } else {
-    return krbn::grabber::main::agent();
+    return krbn::core_service::main::agent();
   }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::grabber::receiver` can be used safely in a multi-threaded environment.
+// `krbn::core_service::receiver` can be used safely in a multi-threaded environment.
 
 #include "app_icon.hpp"
 #include "application_launcher.hpp"
@@ -18,7 +18,7 @@
 #include <vector>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
@@ -428,5 +428,5 @@ private:
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
 };
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

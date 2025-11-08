@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::grabber::session_monitor_receiver` can be used safely in a multi-threaded environment.
+// `krbn::core_service::session_monitor_receiver` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 class session_monitor_receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
@@ -162,5 +162,5 @@ private:
   std::optional<uid_t> current_console_user_id_;
   std::unordered_map<uid_t, std::shared_ptr<pqrs::local_datagram::client>> session_monitor_clients_;
 };
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

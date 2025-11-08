@@ -5,7 +5,7 @@
 #include <iostream>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 namespace main {
 int agent(void) {
   IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
@@ -15,5 +15,5 @@ int agent(void) {
   return 0;
 }
 } // namespace main
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

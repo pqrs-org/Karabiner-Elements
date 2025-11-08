@@ -28,7 +28,7 @@ int main(void) {
                                                                           pqrs::hid::usage::keyboard_or_keypad::keyboard_spacebar));
     auto released_event = krbn::event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
 
-    auto manager = std::make_shared<krbn::grabber::device_grabber_details::fn_function_keys_manipulator_manager>();
+    auto manager = std::make_shared<krbn::core_service::device_grabber_details::fn_function_keys_manipulator_manager>();
 
     auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
     auto notification_message_manager = std::make_shared<krbn::notification_message_manager>("tmp/notification_message.json");

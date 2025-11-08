@@ -17,7 +17,7 @@
 #include <pqrs/osx/workspace.hpp>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 namespace main {
 
 int daemon(void) {
@@ -72,7 +72,7 @@ int daemon(void) {
   // Prepare state_json_writer
   //
 
-  auto grabber_state_json_writer = std::make_shared<grabber::grabber_state_json_writer>();
+  auto grabber_state_json_writer = std::make_shared<core_service::grabber_state_json_writer>();
 
   //
   // Update karabiner_grabber_state.json
@@ -129,7 +129,7 @@ int daemon(void) {
   components_manager_killer::initialize_shared_components_manager_killer();
 
   // We have to use raw pointer (not smart pointer) to delete it in `dispatch_async`.
-  grabber::components_manager* components_manager = nullptr;
+  core_service::components_manager* components_manager = nullptr;
 
   if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
     killer->kill_called.connect([&components_manager] {
@@ -148,7 +148,7 @@ int daemon(void) {
     });
   }
 
-  components_manager = new grabber::components_manager(grabber_state_json_writer);
+  components_manager = new core_service::components_manager(grabber_state_json_writer);
   components_manager->async_start();
 
   CFRunLoopRun();
@@ -162,5 +162,5 @@ int daemon(void) {
   return 0;
 }
 } // namespace main
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

@@ -7,7 +7,7 @@
 #include <optional>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 class grabber_state_json_writer final {
 public:
   grabber_state_json_writer(void) : state_json_writer_(constants::get_grabber_state_json_file_path()) {
@@ -36,5 +36,5 @@ public:
 private:
   krbn::state_json_writer state_json_writer_;
 };
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

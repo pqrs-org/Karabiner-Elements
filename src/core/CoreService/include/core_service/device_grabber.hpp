@@ -38,7 +38,7 @@
 #include <time.h>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
@@ -1073,5 +1073,5 @@ private:
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;
 };
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

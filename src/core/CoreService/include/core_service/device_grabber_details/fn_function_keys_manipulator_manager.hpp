@@ -7,7 +7,7 @@
 #include "manipulator/manipulators/basic/basic.hpp"
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 namespace device_grabber_details {
 class fn_function_keys_manipulator_manager final {
 public:
@@ -331,5 +331,5 @@ private:
   std::shared_ptr<manipulator::manipulator_manager> manipulator_manager_;
 };
 } // namespace device_grabber_details
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

@@ -16,7 +16,7 @@
 #include <pqrs/osx/workspace.hpp>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 namespace core_service_utility {
 
 static constexpr const char* karabiner_core_service_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service";
@@ -35,5 +35,5 @@ inline void wait_until_input_monitoring_granted(void) {
 }
 
 } // namespace core_service_utility
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

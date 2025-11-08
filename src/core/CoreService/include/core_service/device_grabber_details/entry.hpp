@@ -15,7 +15,7 @@
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 namespace device_grabber_details {
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -369,5 +369,5 @@ private:
   bool temporarily_ignore_;
 };
 } // namespace device_grabber_details
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn

@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace krbn {
-namespace grabber {
+namespace core_service {
 namespace device_grabber_details {
 //
 // game_pad_stick_converter takes value_arrived data as input and outputs poinitng motion.
@@ -645,5 +645,5 @@ private:
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> horizontal_wheel_formula_;
 };
 } // namespace device_grabber_details
-} // namespace grabber
+} // namespace core_service
 } // namespace krbn
