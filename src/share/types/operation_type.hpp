@@ -5,27 +5,27 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
-  // session_monitor -> grabber
+  // session_monitor -> core_service
   console_user_id_changed,
-  // console_user_server -> grabber
+  // console_user_server -> core_service
   connect_console_user_server,
   system_preferences_updated,
   frontmost_application_changed,
   input_source_changed,
-  // event_viewer -> grabber
+  // event_viewer -> core_service
   temporarily_ignore_all_devices,
-  get_manipulator_environment, // The grabber responds only if the client is code-signed with the same Team ID.
-  // grabber -> event_viewer
+  get_manipulator_environment, // The core_service responds only if the client is code-signed with the same Team ID.
+  // core_service -> event_viewer
   manipulator_environment,
-  // multitouch_extension -> grabber
+  // multitouch_extension -> core_service
   connect_multitouch_extension,
-  // any -> grabber
+  // any -> core_service
   set_app_icon,
   set_variables,
-  // grabber -> any
+  // core_service -> any
   get_system_variables, // Return only the system.* entries from manipulator_environment.variables.
   system_variables,
-  // grabber -> console_user_server
+  // core_service -> console_user_server
   shell_command_execution,
   select_input_source,
   software_function,
