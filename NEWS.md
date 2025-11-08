@@ -3,7 +3,9 @@
 ## Beta
 
 -   🔔 Important Notes
-    -   After upgrading, you'll need to update the settings for App Background Activity and Input Monitoring in System Settings.
+    -   After upgrading, make the following changes in System Settings:
+         - Enable `Karabiner-Elements Privileged Daemons v2` under App Background Activity.
+         - Enable `Karabiner-Core-Service` under Input Monitoring.
 -   🐛 Bug Fixes
     -   Fixed an issue where modifiers in a pending-release state under Complex Modifications were not being released when all keys were lifted.
 -   ⚡️ Improvements
