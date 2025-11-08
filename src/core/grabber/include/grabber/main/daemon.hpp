@@ -5,6 +5,7 @@
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "grabber/components_manager.hpp"
+#include "grabber/core_service_utility.hpp"
 #include "grabber/grabber_state_json_writer.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -85,14 +86,10 @@ int daemon(void) {
     grabber_state_json_writer->set_hid_device_open_permitted(false);
 
     // IOHIDRequestAccess won't work correctly unless it's called from the agent.
-    // The daemon waits until Input Monitoring is allowed, then terminates so launchd can restart it.
-    while (true) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-      if (services_utility::karabiner_core_service_input_monitoring_granted()) {
-        break;
-      }
-    }
+    // Therefore, the daemon does not call IOHIDRequestAccess and
+    // simply waits until Input Monitoring permission is granted.
+    // The daemon exits once permission is granted, which triggers launchd to restart it.
+    core_service_utility::wait_until_input_monitoring_granted();
 
     return 0;
   }
