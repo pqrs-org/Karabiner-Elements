@@ -18,7 +18,7 @@ struct KarabinerEventViewerApp: App {
       InputMonitoringAlertData.shared.showing = true
     }
 
-    EVGrabberClient.shared.start()
+    EVCoreServiceClient.shared.start()
     FrontmostApplicationHistory.shared.start()
 
     NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event -> NSEvent? in

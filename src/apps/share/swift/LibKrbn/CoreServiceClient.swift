@@ -5,17 +5,17 @@ private func callback() {
 
   Task { @MainActor in
     if status == libkrbn_core_service_client_status_connected {
-      LibKrbn.GrabberClient.shared.connected = true
+      LibKrbn.CoreServiceClient.shared.connected = true
     } else {
-      LibKrbn.GrabberClient.shared.connected = false
+      LibKrbn.CoreServiceClient.shared.connected = false
     }
   }
 }
 
 extension LibKrbn {
   @MainActor
-  public class GrabberClient: ObservableObject {
-    public static let shared = GrabberClient()
+  public class CoreServiceClient: ObservableObject {
+    public static let shared = CoreServiceClient()
 
     @Published public fileprivate(set) var connected = false
 

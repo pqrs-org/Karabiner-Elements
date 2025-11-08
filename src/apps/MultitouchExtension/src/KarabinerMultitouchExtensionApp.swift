@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Enable core_service_client
     //
 
-    MEGrabberClient.shared.start()
+    MECoreServiceClient.shared.start()
     MultitouchDeviceManager.shared.observeIONotification()
 
     //

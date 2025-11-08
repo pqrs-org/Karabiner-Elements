@@ -2,13 +2,13 @@ import Combine
 
 private func callback() {
   Task { @MainActor in
-    EVGrabberClient.shared.temporarilyIgnoreAllDevices = false
+    EVCoreServiceClient.shared.temporarilyIgnoreAllDevices = false
   }
 }
 
 @MainActor
-final class EVGrabberClient: ObservableObject {
-  static let shared = EVGrabberClient()
+final class EVCoreServiceClient: ObservableObject {
+  static let shared = EVCoreServiceClient()
 
   // We register the callback in the `start` method rather than in `init`.
   // If libkrbn_register_*_callback is called within init,

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MainView: View {
   @ObservedObject var eventHistory = EventHistory.shared
-  @ObservedObject var evGrabberClient = EVGrabberClient.shared
+  @ObservedObject var evCoreServiceClient = EVCoreServiceClient.shared
   @State private var textInput: String = "This text input field is used to inspect key events."
   @State private var monitoring = true
 
@@ -46,10 +46,10 @@ struct MainView: View {
           VStack(alignment: .trailing) {
             Toggle(
               "Temporarily turns off all Karabiner-Elements modifications",
-              isOn: $evGrabberClient.temporarilyIgnoreAllDevices
+              isOn: $evCoreServiceClient.temporarilyIgnoreAllDevices
             )
             .switchToggleStyle()
-            .if(evGrabberClient.temporarilyIgnoreAllDevices) {
+            .if(evCoreServiceClient.temporarilyIgnoreAllDevices) {
               $0.foregroundColor(.red)
             }
 

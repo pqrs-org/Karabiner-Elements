@@ -131,8 +131,8 @@ private func callback() {
 }
 
 @MainActor
-final class MEGrabberClient {
-  static let shared = MEGrabberClient()
+final class MECoreServiceClient {
+  static let shared = MECoreServiceClient()
 
   private var cancellables: Set<AnyCancellable> = []
 

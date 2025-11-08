@@ -60,7 +60,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 struct ContentMainView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var settingsGrabberClient = SettingsGrabberClient.shared
+  @ObservedObject private var settingsCoreServiceClient = SettingsCoreServiceClient.shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared
 
   @State private var selectedSidebarItem: SidebarItem = .simpleModifications
@@ -161,7 +161,7 @@ struct ContentMainView: View {
             .foregroundColor(.white)
           }
 
-          if settingsGrabberClient.temporarilyIgnoreAllDevices {
+          if settingsCoreServiceClient.temporarilyIgnoreAllDevices {
             Label(
               "All Karabiner-Elements modifications are temporarily disabled by EventViewer.",
               systemImage: WarningBorder.icon

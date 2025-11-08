@@ -2,7 +2,7 @@ import SwiftUI
 
 struct FunctionKeysView: View {
   @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var settingsGrabberClient = SettingsGrabberClient.shared
+  @ObservedObject private var settingsCoreServiceClient = SettingsCoreServiceClient.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
@@ -16,7 +16,7 @@ struct FunctionKeysView: View {
         HStack {
           Text("Use all F1, F2, etc. keys as standard function keys:")
 
-          if settingsGrabberClient.useFkeysAsStandardFunctionKeys {
+          if settingsCoreServiceClient.useFkeysAsStandardFunctionKeys {
             Text("On").foregroundColor(.accentColor).bold()
           } else {
             Text("Off")
@@ -54,7 +54,7 @@ struct FunctionKeysView: View {
 
   struct FnFunctionKeysView: View {
     @ObservedObject private var settings = LibKrbn.Settings.shared
-    @ObservedObject private var settingsGrabberClient = SettingsGrabberClient.shared
+    @ObservedObject private var settingsCoreServiceClient = SettingsCoreServiceClient.shared
 
     private let selectedDevice: LibKrbn.ConnectedDevice?
     private let fnFunctionKeys: [LibKrbn.SimpleModification]
@@ -73,7 +73,7 @@ struct FunctionKeysView: View {
           ForEach(fnFunctionKeys) { fnFunctionKey in
             HStack {
               Text(
-                settingsGrabberClient.useFkeysAsStandardFunctionKeys
+                settingsCoreServiceClient.useFkeysAsStandardFunctionKeys
                   ? "fn + \(fnFunctionKey.fromEntry.label)"
                   : fnFunctionKey.fromEntry.label
               )

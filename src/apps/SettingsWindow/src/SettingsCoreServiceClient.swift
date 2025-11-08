@@ -29,17 +29,17 @@ private func systemVariablesReceivedCallback(_ jsonString: UnsafePointer<CChar>)
   do {
     let systemVariables = try decoder.decode(SystemVariables.self, from: data)
     Task { @MainActor in
-      if SettingsGrabberClient.shared.temporarilyIgnoreAllDevices
+      if SettingsCoreServiceClient.shared.temporarilyIgnoreAllDevices
         != systemVariables.temporarilyIgnoreAllDevices
       {
-        SettingsGrabberClient.shared.temporarilyIgnoreAllDevices =
+        SettingsCoreServiceClient.shared.temporarilyIgnoreAllDevices =
           systemVariables.temporarilyIgnoreAllDevices
       }
 
-      if SettingsGrabberClient.shared.useFkeysAsStandardFunctionKeys
+      if SettingsCoreServiceClient.shared.useFkeysAsStandardFunctionKeys
         != systemVariables.useFkeysAsStandardFunctionKeys
       {
-        SettingsGrabberClient.shared.useFkeysAsStandardFunctionKeys =
+        SettingsCoreServiceClient.shared.useFkeysAsStandardFunctionKeys =
           systemVariables.useFkeysAsStandardFunctionKeys
       }
     }
@@ -69,8 +69,8 @@ extension KeyedDecodingContainer {
 }
 
 @MainActor
-final class SettingsGrabberClient: ObservableObject {
-  static let shared = SettingsGrabberClient()
+final class SettingsCoreServiceClient: ObservableObject {
+  static let shared = SettingsCoreServiceClient()
 
   @Published var temporarilyIgnoreAllDevices: Bool = false
   @Published var useFkeysAsStandardFunctionKeys: Bool = false
