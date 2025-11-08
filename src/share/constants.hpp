@@ -59,7 +59,7 @@ public:
     return path;
   }
 
-  static const std::filesystem::path& get_grabber_session_monitor_receiver_socket_directory_path(void) {
+  static const std::filesystem::path& get_session_monitor_receiver_socket_directory_path(void) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
     // So we use the shorten name karabiner_session_monitor_receiver -> krbn_session.

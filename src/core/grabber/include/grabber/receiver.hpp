@@ -91,7 +91,7 @@ public:
     server_->bind_failed.connect([this](auto&& error_code) {
       logger::get_logger()->error("receiver: bind_failed");
 
-      // Even if the krbn_core_service directory is deleted for some reason,
+      // Even if the socket directory is deleted for some reason,
       // bind_failed will still be called, so recreate the directory each time.
       prepare_karabiner_core_service_socket_directory();
     });

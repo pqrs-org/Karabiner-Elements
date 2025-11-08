@@ -22,17 +22,13 @@ public:
   session_monitor_receiver(const session_monitor_receiver&) = delete;
 
   session_monitor_receiver(void) : dispatcher_client() {
-    // Remove old socket files.
-    auto socket_directory_path = constants::get_grabber_session_monitor_receiver_socket_directory_path();
-    {
-      std::error_code ec;
-      std::filesystem::remove_all(socket_directory_path, ec);
-      std::filesystem::create_directory(socket_directory_path, ec);
-      chmod(socket_directory_path.c_str(), 0700);
-    }
+    // Remove old files and prepare a socket directory.
+    prepare_session_monitor_receiver_socket_directory();
+
+    auto socket_file_path = constants::get_session_monitor_receiver_socket_directory_path() / filesystem_utility::make_socket_file_basename();
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
-                                                             socket_directory_path / filesystem_utility::make_socket_file_basename(),
+                                                             socket_file_path,
                                                              constants::local_datagram_buffer_size);
     server_->set_server_check_interval(std::chrono::milliseconds(3000));
     server_->set_reconnect_interval(std::chrono::milliseconds(1000));
@@ -41,8 +37,12 @@ public:
       logger::get_logger()->info("session_monitor_receiver: bound");
     });
 
-    server_->bind_failed.connect([](auto&& error_code) {
+    server_->bind_failed.connect([this](auto&& error_code) {
       logger::get_logger()->error("session_monitor_receiver: bind_failed");
+
+      // Even if the socket directory is deleted for some reason,
+      // bind_failed will still be called, so recreate the directory each time.
+      prepare_session_monitor_receiver_socket_directory();
     });
 
     server_->closed.connect([] {
@@ -118,6 +118,14 @@ public:
   }
 
 private:
+  void prepare_session_monitor_receiver_socket_directory(void) const {
+    auto directory_path = constants::get_session_monitor_receiver_socket_directory_path();
+    std::error_code ec;
+    std::filesystem::remove_all(directory_path, ec);
+    std::filesystem::create_directory(directory_path, ec);
+    chmod(directory_path.c_str(), 0700);
+  }
+
   void register_session_monitor_client(uid_t uid,
                                        const std::string& endpoint_path) {
     if (session_monitor_clients_.find(uid) == std::end(session_monitor_clients_)) {

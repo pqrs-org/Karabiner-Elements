@@ -49,14 +49,14 @@ public:
 
       client_ = std::make_unique<pqrs::local_datagram::client>(
           weak_dispatcher_,
-          get_grabber_session_monitor_receiver_socket_file_path(),
+          get_session_monitor_receiver_socket_file_path(),
           client_socket_directory_path / filesystem_utility::make_socket_file_basename(),
           constants::local_datagram_buffer_size);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
       client_->set_server_socket_file_path_resolver([this] {
-        return get_grabber_session_monitor_receiver_socket_file_path();
+        return get_session_monitor_receiver_socket_file_path();
       });
 
       client_->connected.connect([this](auto&& peer_pid) {
@@ -113,9 +113,9 @@ public:
   }
 
 private:
-  std::filesystem::path get_grabber_session_monitor_receiver_socket_file_path(void) const {
+  std::filesystem::path get_session_monitor_receiver_socket_file_path(void) const {
     return filesystem_utility::find_socket_file_path(
-        constants::get_grabber_session_monitor_receiver_socket_directory_path());
+        constants::get_session_monitor_receiver_socket_directory_path());
   }
 
   void stop(void) {
