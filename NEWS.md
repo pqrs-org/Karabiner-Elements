@@ -2,9 +2,13 @@
 
 ## Beta
 
+-   🔔 Important Notes
+    -   After upgrading, you'll need to update the settings for App Background Activity and Input Monitoring in System Settings.
 -   🐛 Bug Fixes
     -   Fixed an issue where modifiers in a pending-release state under Complex Modifications were not being released when all keys were lifted.
 -   ⚡️ Improvements
+    -   Fixed an issue on macOS 26.1 where karabiner_grabber was missing from the Input Monitoring list in System Settings.
+        Instead, Karabiner-Core-Service will now be shown.
     -   The error message in the Complex Modification Editor is now copyable.
 
 ## Karabiner-Elements 15.6.0
