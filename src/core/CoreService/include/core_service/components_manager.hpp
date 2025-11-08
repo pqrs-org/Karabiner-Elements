@@ -5,7 +5,7 @@
 #include "components_manager_killer.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "grabber/grabber_state_json_writer.hpp"
+#include "core_service/grabber_state_json_writer.hpp"
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"

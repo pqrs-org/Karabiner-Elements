@@ -1,4 +1,4 @@
-#include "../../../src/core/CoreService/include/grabber/device_grabber_details/fn_function_keys_manipulator_manager.hpp"
+#include "../../../src/core/CoreService/include/core_service/device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include <boost/ut.hpp>
