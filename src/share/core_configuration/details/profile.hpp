@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../configuration_json_helper.hpp"
-#include "connected_devices/connected_devices.hpp"
+#include "connected_devices.hpp"
 #include "profile/complex_modifications.hpp"
 #include "profile/device.hpp"
 #include "profile/parameters.hpp"
@@ -239,7 +239,7 @@ public:
     return devices_.back();
   }
 
-  size_t not_connected_devices_count(const connected_devices::connected_devices& connected_devices) const {
+  size_t not_connected_configured_devices_count(const connected_devices& connected_devices) const {
     return std::count_if(std::begin(devices_),
                          std::end(devices_),
                          [&](auto& d) {
@@ -248,7 +248,7 @@ public:
                          });
   }
 
-  void erase_not_connected_devices(const connected_devices::connected_devices& connected_devices) {
+  void erase_not_connected_configured_devices(const connected_devices& connected_devices) {
     devices_.erase(std::remove_if(std::begin(devices_),
                                   std::end(devices_),
                                   [&](auto& d) {
