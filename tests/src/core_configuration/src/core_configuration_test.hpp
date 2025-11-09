@@ -897,7 +897,7 @@ void run_core_configuration_test(void) {
     }
   };
 
-  "profile.erase_not_connected_devices"_test = [] {
+  "profile.erase_not_connected_configured_devices"_test = [] {
     auto json = R"(
 
 {
@@ -954,7 +954,7 @@ void run_core_configuration_test(void) {
     // Note: product_id:1003 is not counted because it remains in its default settings.
     expect(2 == profile.not_connected_configured_devices_count(connected_devices));
 
-    profile.erase_not_connected_devices(connected_devices);
+    profile.erase_not_connected_configured_devices(connected_devices);
 
     expect(2 == profile.get_devices().size());
     expect(pqrs::hid::product_id::value_t(1001) == profile.get_devices()[0]->get_identifiers().get_product_id());
