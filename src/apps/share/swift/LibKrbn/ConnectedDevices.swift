@@ -46,8 +46,9 @@ extension LibKrbn {
     private let timer: AsyncTimerSequence<ContinuousClock>
     private var timerTask: Task<Void, Never>?
 
-    var connectedDevicesJSONString = ""
+    private(set) var connectedDevicesJSONString = ""
     @Published var connectedDevices: [ConnectedDevice] = []
+    @Published var notConnectedConfiguredDevicesCount: UInt64 = 0
 
     init() {
       timer = AsyncTimerSequence(
@@ -130,6 +131,12 @@ extension LibKrbn {
             isBuiltInKeyboard: payload.isBuiltInKeyboard ?? false,
             isAppleDevice: payload.isApple ?? false
           )
+        }
+
+        connectedDevicesJSONString.withCString {
+          notConnectedConfiguredDevicesCount = UInt64(
+            libkrbn_core_configuration_get_selected_profile_not_connected_configured_devices_count(
+              $0))
         }
       } catch {
         print(error.localizedDescription)

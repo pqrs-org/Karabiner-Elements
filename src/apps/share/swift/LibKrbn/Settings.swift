@@ -530,7 +530,6 @@ extension LibKrbn {
     //
 
     @Published var connectedDeviceSettings: [ConnectedDeviceSetting] = []
-    @Published var notConnectedDeviceSettingsCount: Int = 0
 
     private func updateConnectedDeviceSettings() {
       var newConnectedDeviceSettings: [ConnectedDeviceSetting] = []
@@ -540,10 +539,6 @@ extension LibKrbn {
       }
 
       connectedDeviceSettings = newConnectedDeviceSettings
-
-      notConnectedDeviceSettingsCount =
-        libkrbn_core_configuration_get_selected_profile_not_connected_devices_count()
-
     }
 
     public func findConnectedDeviceSetting(_ connectedDevice: ConnectedDevice)
@@ -558,7 +553,11 @@ extension LibKrbn {
     }
 
     public func eraseNotConnectedDeviceSettings() {
-      libkrbn_core_configuration_erase_selected_profile_not_connected_devices()
+      connectedDevices.connectedDevicesJSONString.withCString {
+        libkrbn_core_configuration_erase_selected_profile_not_connected_configured_devices($0)
+      }
+
+      connectedDevices.notConnectedConfiguredDevicesCount = 0
 
       updateConnectedDeviceSettings()
 

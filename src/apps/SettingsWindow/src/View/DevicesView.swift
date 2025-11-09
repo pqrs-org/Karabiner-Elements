@@ -56,10 +56,10 @@ struct DevicesView: View {
       }
       .background(Color(NSColor.textBackgroundColor))
 
-      if settings.notConnectedDeviceSettingsCount > 0 {
+      if connectedDevices.notConnectedConfiguredDevicesCount > 0 {
         HStack {
           Label(
-            "There are \(settings.notConnectedDeviceSettingsCount) other settings for devices that are not currently connected",
+            "There are \(connectedDevices.notConnectedConfiguredDevicesCount) other settings for devices that are not currently connected",
             systemImage: InfoBorder.icon
           )
           .frame(maxWidth: .infinity, alignment: .leading)
@@ -82,7 +82,7 @@ struct DevicesView: View {
               },
               label: {
                 Label(
-                  "Remove settings for \(settings.notConnectedDeviceSettingsCount) devices",
+                  "Remove settings for \(connectedDevices.notConnectedConfiguredDevicesCount) devices",
                   systemImage: "trash"
                 )
                 .buttonLabelStyle()

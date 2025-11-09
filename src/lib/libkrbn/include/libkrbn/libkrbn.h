@@ -292,6 +292,9 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                  bool value);
 
+size_t libkrbn_core_configuration_get_selected_profile_not_connected_configured_devices_count(const char* _Nonnull connected_devices_json);
+void libkrbn_core_configuration_erase_selected_profile_not_connected_configured_devices(const char* _Nonnull connected_devices_json);
+
 // game_pad_xy_stick_deadzone
 
 double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* _Nullable device_identifiers);
