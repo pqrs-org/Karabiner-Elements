@@ -1,112 +1,140 @@
+import AsyncAlgorithms
 import Combine
 import Foundation
 import SwiftUI
 
-private func callback() {
+private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+  let s = String(cString: jsonString)
+
   Task { @MainActor in
-    LibKrbn.ConnectedDevices.shared.update()
+    LibKrbn.ConnectedDevices.shared.update(s)
   }
+}
+
+// device_properties.hpp
+private struct ConnectedDevicePayload: Decodable {
+  // device_identifiers.hpp
+  struct DeviceIdentifiers: Codable {
+    let vendorId: UInt64?
+    let productId: UInt64?
+    let isKeyboard: Bool?
+    let isPointingDevice: Bool?
+    let isGamePad: Bool?
+    let isConsumer: Bool?
+    let isVirtualDevice: Bool?
+    let deviceAddress: String?
+  }
+
+  let deviceId: UInt64
+  let deviceIdentifiers: DeviceIdentifiers
+  let locationId: UInt64?
+  let manufacturer: String?
+  let product: String?
+  let serialNumber: String?
+  let transport: String?
+  let isBuiltInKeyboard: Bool?
+  let isBuiltInPointingDevice: Bool?
+  let isBuiltInTouchBar: Bool?
+  let isApple: Bool?
 }
 
 extension LibKrbn {
   @MainActor
   final class ConnectedDevices: ObservableObject {
     static let shared = ConnectedDevices()
-    static let didConnectedDevicesUpdate = Notification.Name("didConnectedDevicesUpdate")
 
-    private var watching = false
+    private let timer: AsyncTimerSequence<ContinuousClock>
+    private var timerTask: Task<Void, Never>?
 
+    var connectedDevicesJSONString = ""
     @Published var connectedDevices: [ConnectedDevice] = []
 
-    // We register the callback in the `watch` method rather than in `init`.
-    // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
-
-    public func watch() {
-      if watching {
-        return
-      }
-      watching = true
-
-      libkrbn_enable_connected_devices_monitor()
-      libkrbn_register_connected_devices_updated_callback(callback)
-      libkrbn_enqueue_callback(callback)
+    init() {
+      timer = AsyncTimerSequence(
+        interval: .milliseconds(1000),
+        clock: .continuous
+      )
     }
 
-    public func update() {
-      var newConnectedDevices: [LibKrbn.ConnectedDevice] = []
+    // We register the callback in the `watch` method rather than in `init`.
+    // If libkrbn_register_*_callback is called within init,
+    // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
-      let size = libkrbn_connected_devices_get_size()
-      for i in 0..<size {
-        var buffer = [Int8](repeating: 0, count: 32 * 1024)
-        var uniqueIdenfitier = ""
-        var transport = ""
-        var manufacturerName = ""
-        var productName = ""
-        var deviceAddress = ""
-
-        if libkrbn_connected_devices_get_unique_identifier(i, &buffer, buffer.count) {
-          uniqueIdenfitier = String(utf8String: buffer) ?? ""
-        }
-
-        if libkrbn_connected_devices_get_transport(i, &buffer, buffer.count) {
-          transport = String(utf8String: buffer) ?? ""
-        }
-
-        if libkrbn_connected_devices_get_manufacturer(i, &buffer, buffer.count) {
-          manufacturerName =
-            String(utf8String: buffer)?
-            .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
-            ?? ""
-        }
-        if manufacturerName == "" {
-          manufacturerName = "No manufacturer name"
-        }
-
-        if libkrbn_connected_devices_get_product(i, &buffer, buffer.count) {
-          productName =
-            String(utf8String: buffer)?
-            .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
-            ?? ""
-        }
-        if productName == "" {
-          if transport == "FIFO" {
-            productName = "Apple Internal Keyboard / Trackpad"
-          } else {
-            productName = "No product name"
-          }
-        }
-
-        if libkrbn_connected_devices_get_device_address(i, &buffer, buffer.count) {
-          deviceAddress = String(utf8String: buffer) ?? ""
-        }
-
-        let connectedDevice = LibKrbn.ConnectedDevice(
-          id: uniqueIdenfitier,
-          index: i,
-          manufacturerName: manufacturerName,
-          productName: productName,
-          transport: transport,
-          vendorId: libkrbn_connected_devices_get_vendor_id(i),
-          productId: libkrbn_connected_devices_get_product_id(i),
-          deviceAddress: deviceAddress,
-          isKeyboard: libkrbn_connected_devices_get_is_keyboard(i),
-          isPointingDevice: libkrbn_connected_devices_get_is_pointing_device(i),
-          isGamePad: libkrbn_connected_devices_get_is_game_pad(i),
-          isConsumer: libkrbn_connected_devices_get_is_consumer(i),
-          isVirtualDevice: libkrbn_connected_devices_get_is_virtual_device(i),
-          isBuiltInKeyboard: libkrbn_connected_devices_get_is_built_in_keyboard(i),
-          isAppleDevice: libkrbn_connected_devices_is_apple(i)
-        )
-
-        newConnectedDevices.append(connectedDevice)
+    public func watch() {
+      if timerTask != nil {
+        return
       }
 
-      connectedDevices = newConnectedDevices
+      libkrbn_register_core_service_client_connected_devices_received_callback(
+        connectedDevicesReceivedCallback)
 
-      NotificationCenter.default.post(
-        name: ConnectedDevices.didConnectedDevicesUpdate,
-        object: nil
-      )
+      timerTask = Task { @MainActor in
+        libkrbn_core_service_client_async_get_connected_devices()
+
+        for await _ in timer {
+          libkrbn_core_service_client_async_get_connected_devices()
+        }
+      }
+    }
+
+    public func update(_ jsonString: String) {
+      if connectedDevicesJSONString == jsonString {
+        return
+      }
+      connectedDevicesJSONString = jsonString
+
+      guard let data = jsonString.data(using: .utf8) else { return }
+      let decoder = JSONDecoder()
+      decoder.keyDecodingStrategy = .convertFromSnakeCase
+      let encoder = JSONEncoder()
+      encoder.keyEncodingStrategy = .convertToSnakeCase
+
+      do {
+        let payloads = try decoder.decode([ConnectedDevicePayload].self, from: data)
+
+        connectedDevices = try payloads.enumerated().map { index, payload in
+          let deviceIdentifiersJSONData = try encoder.encode(payload.deviceIdentifiers)
+          let deviceIdentifiersJSONString =
+            String(data: deviceIdentifiersJSONData, encoding: .utf8) ?? ""
+
+          var manufacturer = (payload.manufacturer ?? "")
+            .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+          if manufacturer.isEmpty {
+            manufacturer = "No manufacturer name"
+          }
+
+          var product = (payload.product ?? "")
+            .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+          if product.isEmpty {
+            if payload.transport == "FIFO" {
+              product = "Apple Internal Keyboard / Trackpad"
+            } else {
+              product = "No product name"
+            }
+          }
+
+          return LibKrbn.ConnectedDevice(
+            id: deviceIdentifiersJSONString,
+            index: index,
+            manufacturerName: manufacturer,
+            productName: product,
+            transport: payload.transport ?? "",
+            vendorId: payload.deviceIdentifiers.vendorId ?? 0,
+            productId: payload.deviceIdentifiers.productId ?? 0,
+            deviceAddress: payload.deviceIdentifiers.deviceAddress ?? "",
+            isKeyboard: payload.deviceIdentifiers.isKeyboard ?? false,
+            isPointingDevice: payload.deviceIdentifiers.isPointingDevice ?? false,
+            isGamePad: payload.deviceIdentifiers.isGamePad ?? false,
+            isConsumer: payload.deviceIdentifiers.isConsumer ?? false,
+            isVirtualDevice: payload.deviceIdentifiers.isVirtualDevice ?? false,
+            isBuiltInKeyboard: payload.isBuiltInKeyboard ?? false,
+            isAppleDevice: payload.isApple ?? false
+          )
+        }
+      } catch {
+        print(error.localizedDescription)
+        return
+      }
     }
   }
 }

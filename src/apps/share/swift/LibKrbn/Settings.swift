@@ -1,4 +1,5 @@
 import AsyncAlgorithms
+import Combine
 import Foundation
 import SwiftUI
 
@@ -20,7 +21,8 @@ extension LibKrbn {
 
     static let didConfigurationLoad = Notification.Name("didConfigurationLoad")
 
-    private var notificationsTask: Task<Void, Never>?
+    @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
+    private var connectedDevicesCancellable: AnyCancellable?
     private var watching = false
     private var didSetEnabled = false
 
@@ -64,19 +66,13 @@ extension LibKrbn {
       libkrbn_register_core_configuration_updated_callback(callback)
       libkrbn_enqueue_callback(callback)
 
-      ConnectedDevices.shared.watch()
-
-      notificationsTask = Task {
-        await withTaskGroup(of: Void.self) { group in
-          group.addTask {
-            for await _ in await NotificationCenter.default.notifications(
-              named: ConnectedDevices.didConnectedDevicesUpdate)
-            {
-              await self.updateConnectedDeviceSettings()
-            }
+      connectedDevicesCancellable = connectedDevices.$connectedDevices
+        .sink { [weak self] _ in
+          Task { @MainActor in
+            self?.updateConnectedDeviceSettings()
           }
         }
-      }
+      connectedDevices.watch()
     }
 
     func save() {
@@ -539,7 +535,7 @@ extension LibKrbn {
     private func updateConnectedDeviceSettings() {
       var newConnectedDeviceSettings: [ConnectedDeviceSetting] = []
 
-      ConnectedDevices.shared.connectedDevices.forEach { connectedDevice in
+      connectedDevices.connectedDevices.forEach { connectedDevice in
         newConnectedDeviceSettings.append(ConnectedDeviceSetting(connectedDevice))
       }
 
@@ -547,6 +543,7 @@ extension LibKrbn {
 
       notConnectedDeviceSettingsCount =
         libkrbn_core_configuration_get_selected_profile_not_connected_devices_count()
+
     }
 
     public func findConnectedDeviceSetting(_ connectedDevice: ConnectedDevice)

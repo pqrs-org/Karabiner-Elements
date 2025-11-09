@@ -15,16 +15,20 @@ struct KarabinerSettingsApp: App {
     libkrbn_services_bootout_old_agents()
 
     //
+    // Setup CoreServiceClient
+    //
+
+    SettingsCoreServiceClient.shared.start()
+
+    //
     // Start components
     //
 
     KarabinerAppHelper.shared.observeVersionUpdated()
     Doctor.shared.start()
-    LibKrbn.ConnectedDevices.shared.watch()
     LibKrbn.Settings.shared.watch()
     ServicesMonitor.shared.start()
     SettingsChecker.shared.start()
-    SettingsCoreServiceClient.shared.start()
     SettingsCoreServiceClient.shared.startSystemVariablesMonitoring()
     StateJsonMonitor.shared.start()
     SystemPreferences.shared.start()
