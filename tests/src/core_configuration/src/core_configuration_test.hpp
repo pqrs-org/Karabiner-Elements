@@ -943,7 +943,7 @@ void run_core_configuration_test(void) {
 
     expect(4 == profile.get_devices().size());
 
-    krbn::connected_devices::connected_devices connected_devices;
+    krbn::connected_devices connected_devices;
 
     connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
         .vendor_id = pqrs::hid::vendor_id::value_t(1234),
@@ -952,7 +952,7 @@ void run_core_configuration_test(void) {
     }));
 
     // Note: product_id:1003 is not counted because it remains in its default settings.
-    expect(2 == profile.not_connected_devices_count(connected_devices));
+    expect(2 == profile.not_connected_configured_devices_count(connected_devices));
 
     profile.erase_not_connected_devices(connected_devices);
 

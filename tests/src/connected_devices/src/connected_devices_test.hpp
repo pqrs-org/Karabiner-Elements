@@ -1,4 +1,4 @@
-#include "connected_devices/connected_devices.hpp"
+#include "connected_devices.hpp"
 #include "json_utility.hpp"
 #include <boost/ut.hpp>
 
@@ -8,11 +8,11 @@ void run_connected_devices_test(void) {
 
   "connected_devices"_test = [] {
     {
-      krbn::connected_devices::connected_devices connected_devices;
-      expect(connected_devices.to_json() == nlohmann::json::array());
+      krbn::connected_devices connected_devices;
+      expect(nlohmann::json(connected_devices) == nlohmann::json::array());
     }
     {
-      krbn::connected_devices::connected_devices connected_devices;
+      krbn::connected_devices connected_devices;
 
       connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
           .device_id = krbn::device_id(1),
@@ -95,7 +95,6 @@ void run_connected_devices_test(void) {
           .is_keyboard = true,
       }));
 
-      expect(connected_devices.is_loaded() == false);
       expect(connected_devices.get_devices().size() == 6);
       expect(connected_devices.get_devices()[0]->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
       expect(connected_devices.get_devices()[0]->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
@@ -111,28 +110,14 @@ void run_connected_devices_test(void) {
 
       std::ifstream ifs("json/connected_devices.json");
 
-      expect(krbn::json_utility::parse_jsonc(ifs) == connected_devices.to_json());
+      expect(krbn::json_utility::parse_jsonc(ifs) == nlohmann::json(connected_devices));
     }
 
     {
-      krbn::connected_devices::connected_devices connected_devices("json/connected_devices.json");
+      std::ifstream ifs("json/connected_devices.json");
+      auto expected = krbn::connected_devices(krbn::json_utility::parse_jsonc(ifs));
 
-      expect(connected_devices.is_loaded() == true);
-      expect(connected_devices.get_devices().size() == 6);
-    }
-
-    {
-      krbn::connected_devices::connected_devices connected_devices("json/not_found.json");
-
-      expect(connected_devices.is_loaded() == false);
-      expect(connected_devices.get_devices().size() == 0);
-    }
-
-    {
-      krbn::connected_devices::connected_devices connected_devices("json/broken.json");
-
-      expect(connected_devices.is_loaded() == false);
-      expect(connected_devices.get_devices().size() == 0);
+      expect(expected.get_devices().size() == 6);
     }
   };
 
@@ -148,7 +133,7 @@ void run_connected_devices_test(void) {
         0,
     };
 
-    krbn::connected_devices::connected_devices connected_devices;
+    krbn::connected_devices connected_devices;
 
     {
       connected_devices.push_back_device(std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
@@ -163,7 +148,7 @@ void run_connected_devices_test(void) {
 
       // Check throw with `dump`
       try {
-        connected_devices.to_json().dump();
+        nlohmann::json(connected_devices).dump();
         expect(false);
       } catch (nlohmann::detail::type_error& ex) {
         expect(std::string_view("[json.exception.type_error.316] invalid UTF-8 byte at index 5: 0x80") == ex.what());
@@ -174,7 +159,7 @@ void run_connected_devices_test(void) {
       std::ifstream ifs("json/ill_formed_name_expected.json");
       auto expected = krbn::json_utility::parse_jsonc(ifs);
 
-      expect(krbn::json_utility::dump(connected_devices.to_json()) == krbn::json_utility::dump(expected));
+      expect(krbn::json_utility::dump(nlohmann::json(connected_devices)) == krbn::json_utility::dump(expected));
     }
   };
 }
