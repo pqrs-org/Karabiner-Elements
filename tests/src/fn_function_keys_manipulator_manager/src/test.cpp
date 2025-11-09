@@ -31,7 +31,7 @@ int main(void) {
     auto manager = std::make_shared<krbn::core_service::device_grabber_details::fn_function_keys_manipulator_manager>();
 
     auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
-    auto notification_message_manager = std::make_shared<krbn::notification_message_manager>("tmp/notification_message.json");
+    auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
     auto post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
         console_user_server_client,
         notification_message_manager);
