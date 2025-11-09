@@ -7,6 +7,14 @@ private func statusChangedCallback() {
   }
 }
 
+private func manipulatorEnvironmentReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+  let text = String(cString: jsonString)
+
+  Task { @MainActor in
+    EVCoreServiceClient.shared.manipulatorEnvironmentStream.setText(text)
+  }
+}
+
 private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   let text = String(cString: jsonString)
 
@@ -19,11 +27,20 @@ private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>
 final class EVCoreServiceClient: ObservableObject {
   static let shared = EVCoreServiceClient()
 
+  private let manipulatorEnvironmentTimer: AsyncTimerSequence<ContinuousClock>
+  private var manipulatorEnvironmentTimerTask: Task<Void, Never>?
+  let manipulatorEnvironmentStream = RealtimeTextStream()
+
   private let connectedDevicesTimer: AsyncTimerSequence<ContinuousClock>
   private var connectedDevicesTimerTask: Task<Void, Never>?
   let connectedDevicesStream = RealtimeTextStream()
 
   init() {
+    manipulatorEnvironmentTimer = AsyncTimerSequence(
+      interval: .milliseconds(500),
+      clock: .continuous
+    )
+
     connectedDevicesTimer = AsyncTimerSequence(
       interval: .milliseconds(1000),
       clock: .continuous
@@ -45,10 +62,28 @@ final class EVCoreServiceClient: ObservableObject {
     libkrbn_enable_core_service_client("ev_cs_clnt")
 
     libkrbn_register_core_service_client_status_changed_callback(statusChangedCallback)
+
+    libkrbn_register_core_service_client_manipulator_environment_received_callback(
+      manipulatorEnvironmentReceivedCallback)
+
     libkrbn_register_core_service_client_connected_devices_received_callback(
       connectedDevicesReceivedCallback)
 
     libkrbn_core_service_client_async_start()
+  }
+
+  public func manipulatorEnvironmentStart() {
+    manipulatorEnvironmentTimerTask = Task { @MainActor in
+      libkrbn_core_service_client_async_get_manipulator_environment()
+
+      for await _ in manipulatorEnvironmentTimer {
+        libkrbn_core_service_client_async_get_manipulator_environment()
+      }
+    }
+  }
+
+  public func manipulatorEnvironmentStop() {
+    manipulatorEnvironmentTimerTask?.cancel()
   }
 
   public func startConnectedDevices() {
