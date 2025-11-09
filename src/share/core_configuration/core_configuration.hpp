@@ -1,6 +1,6 @@
 #pragma once
 
-#include "connected_devices/connected_devices.hpp"
+#include "connected_devices.hpp"
 #include "constants.hpp"
 #include "details/global_configuration.hpp"
 #include "details/machine_specific.hpp"
