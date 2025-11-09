@@ -25,6 +25,8 @@ enum class operation_type : uint8_t {
   // core_service -> any
   get_connected_devices,
   connected_devices,
+  get_notification_message,
+  notification_message,
   get_system_variables, // Return only the system.* entries from manipulator_environment.variables.
   system_variables,
   // core_service -> console_user_server
@@ -51,6 +53,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::set_variables, "set_variables"},
         {operation_type::get_connected_devices, "get_connected_devices"},
         {operation_type::connected_devices, "connected_devices"},
+        {operation_type::get_notification_message, "get_notification_message"},
+        {operation_type::notification_message, "notification_message"},
         {operation_type::get_system_variables, "get_system_variables"},
         {operation_type::system_variables, "system_variables"},
         {operation_type::shell_command_execution, "shell_command_execution"},

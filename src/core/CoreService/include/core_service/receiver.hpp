@@ -285,6 +285,22 @@ public:
             }
             break;
 
+          case operation_type::get_notification_message:
+            if (device_grabber_) {
+              device_grabber_->async_invoke_with_notification_message(
+                  [this, sender_endpoint](auto&& message) {
+                    if (verification_exempt_peer_manager_) {
+                      nlohmann::json json{
+                          {"operation_type", operation_type::notification_message},
+                          {"notification_message", message},
+                      };
+                      verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
+                                                                    nlohmann::json::to_msgpack(json));
+                    }
+                  });
+            }
+            break;
+
           case operation_type::get_system_variables:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_manipulator_environment(
