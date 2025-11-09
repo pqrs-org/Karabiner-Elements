@@ -646,11 +646,12 @@ public:
 
   void async_invoke_with_connected_devices(std::function<void(const nlohmann::json&)> function) const {
     enqueue_to_dispatcher([this, function] {
-      connected_devices::connected_devices connected_devices;
+      connected_devices connected_devices;
       for (const auto& e : entries_) {
         connected_devices.push_back_device(e.second->get_device_properties());
       }
-      function(connected_devices.to_json());
+
+      function(nlohmann::json(connected_devices));
     });
   }
 
