@@ -26,7 +26,8 @@ public class VariablesJsonString {
   }
 
   // We register the callback in the `start` method rather than in `init`.
-  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+  // If libkrbn_register_*_callback is called within init,
+  // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
     libkrbn_register_core_service_client_manipulator_environment_received_callback(

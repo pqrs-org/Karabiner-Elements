@@ -45,6 +45,16 @@ public:
               break;
             }
 
+            case krbn::operation_type::connected_devices: {
+              auto json_dump = krbn::json_utility::dump(json.at("connected_devices"));
+
+              for (const auto& c : connected_devices_received_callback_manager_.get_callbacks()) {
+                c(json_dump.c_str());
+              }
+
+              break;
+            }
+
             case krbn::operation_type::system_variables: {
               auto json_dump = krbn::json_utility::dump(json.at("system_variables"));
 
@@ -85,6 +95,10 @@ public:
 
   void async_get_manipulator_environment(void) {
     core_service_client_->async_get_manipulator_environment();
+  }
+
+  void async_get_connected_devices(void) {
+    core_service_client_->async_get_connected_devices();
   }
 
   void async_get_system_variables(void) {
@@ -143,13 +157,25 @@ public:
     });
   }
 
-  void register_libkrbn_core_service_client_system_variables_received_callback(libkrbn_core_service_client_manipulator_environment_received_t callback) {
+  void register_libkrbn_core_service_client_connected_devices_received_callback(libkrbn_core_service_client_connected_devices_received_t callback) {
+    enqueue_to_dispatcher([this, callback] {
+      connected_devices_received_callback_manager_.register_callback(callback);
+    });
+  }
+
+  void unregister_libkrbn_core_service_client_connected_devices_received_callback(libkrbn_core_service_client_connected_devices_received_t callback) {
+    enqueue_to_dispatcher([this, callback] {
+      connected_devices_received_callback_manager_.unregister_callback(callback);
+    });
+  }
+
+  void register_libkrbn_core_service_client_system_variables_received_callback(libkrbn_core_service_client_system_variables_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       system_variables_received_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_core_service_client_system_variables_received_callback(libkrbn_core_service_client_manipulator_environment_received_t callback) {
+  void unregister_libkrbn_core_service_client_system_variables_received_callback(libkrbn_core_service_client_system_variables_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       system_variables_received_callback_manager_.unregister_callback(callback);
     });
@@ -169,5 +195,6 @@ private:
   libkrbn_core_service_client_status status_;
   libkrbn_callback_manager<libkrbn_core_service_client_status_changed_t> status_changed_callback_manager_;
   libkrbn_callback_manager<libkrbn_core_service_client_manipulator_environment_received_t> manipulator_environment_received_callback_manager_;
+  libkrbn_callback_manager<libkrbn_core_service_client_connected_devices_received_t> connected_devices_received_callback_manager_;
   libkrbn_callback_manager<libkrbn_core_service_client_system_variables_received_t> system_variables_received_callback_manager_;
 };

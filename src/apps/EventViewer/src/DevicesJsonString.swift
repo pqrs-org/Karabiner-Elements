@@ -1,14 +1,10 @@
+import AsyncAlgorithms
 import SwiftUI
 
-private func callback() {
-  Task { @MainActor in
-    guard
-      let text = try? String(
-        contentsOfFile: DevicesJsonString.shared.devicesJsonFilePath,
-        encoding: .utf8
-      )
-    else { return }
+private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+  let text = String(cString: jsonString)
 
+  Task { @MainActor in
     DevicesJsonString.shared.stream.setText(text)
   }
 }
@@ -17,27 +13,39 @@ private func callback() {
 public class DevicesJsonString {
   public static let shared = DevicesJsonString()
 
-  let devicesJsonFilePath = LibKrbn.devicesJsonFilePath()
+  private let timer: AsyncTimerSequence<ContinuousClock>
+  private var timerTask: Task<Void, Never>?
 
   let stream = RealtimeTextStream()
 
+  init() {
+    timer = AsyncTimerSequence(
+      interval: .milliseconds(1000),
+      clock: .continuous
+    )
+  }
+
   // We register the callback in the `start` method rather than in `init`.
-  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+  // If libkrbn_register_*_callback is called within init,
+  // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    libkrbn_enable_file_monitors()
+    libkrbn_register_core_service_client_connected_devices_received_callback(
+      connectedDevicesReceivedCallback)
 
-    if let cString = devicesJsonFilePath.cString(using: .utf8) {
-      libkrbn_register_file_updated_callback(cString, callback)
-      libkrbn_enqueue_callback(callback)
+    timerTask = Task { @MainActor in
+      libkrbn_core_service_client_async_get_connected_devices()
+
+      for await _ in timer {
+        libkrbn_core_service_client_async_get_connected_devices()
+      }
     }
   }
 
   public func stop() {
-    if let cString = devicesJsonFilePath.cString(using: .utf8) {
-      libkrbn_unregister_file_updated_callback(cString, callback)
-    }
+    libkrbn_unregister_core_service_client_connected_devices_received_callback(
+      connectedDevicesReceivedCallback)
 
-    // We don't call `libkrbn_disable_file_monitors` because the file monitors may be used elsewhere.
+    timerTask?.cancel()
   }
 }
