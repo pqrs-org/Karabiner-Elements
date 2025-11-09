@@ -4,8 +4,8 @@
 
 -   🔔 Important Notes
     -   After upgrading, make the following changes in System Settings:
-         - Enable `Karabiner-Elements Privileged Daemons v2` under App Background Activity.
-         - Enable `Karabiner-Core-Service` under Input Monitoring.
+        -   Enable `Karabiner-Elements Privileged Daemons v2` under App Background Activity.
+        -   Enable `Karabiner-Core-Service` under Input Monitoring.
 -   💥 Breaking changes
     -   The file `/Library/Application Support/org.pqrs/tmp/karabiner_grabber_devices.json` is no longer updated.
         You can still use EventViewer and karabiner_cli to check connected devices.
