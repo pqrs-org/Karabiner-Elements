@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct DevicesView: View {
+  @ObservedObject var evCoreServiceClient = EVCoreServiceClient.shared
+
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
@@ -8,7 +10,7 @@ struct DevicesView: View {
           action: {
             let pboard = NSPasteboard.general
             pboard.clearContents()
-            pboard.writeObjects([DevicesJsonString.shared.stream.text as NSString])
+            pboard.writeObjects([evCoreServiceClient.connectedDevicesStream.text as NSString])
           },
           label: {
             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
@@ -18,7 +20,7 @@ struct DevicesView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
 
       RealtimeText(
-        stream: DevicesJsonString.shared.stream,
+        stream: evCoreServiceClient.connectedDevicesStream,
         font: NSFont.monospacedSystemFont(
           ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
           weight: .regular)
@@ -29,10 +31,10 @@ struct DevicesView: View {
       .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
     }
     .onAppear {
-      DevicesJsonString.shared.start()
+      evCoreServiceClient.startConnectedDevices()
     }
     .onDisappear {
-      DevicesJsonString.shared.stop()
+      evCoreServiceClient.stopConnectedDevices()
     }
   }
 }
