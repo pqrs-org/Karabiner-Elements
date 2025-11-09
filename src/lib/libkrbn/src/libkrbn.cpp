@@ -829,6 +829,30 @@ void libkrbn_unregister_core_service_client_connected_devices_received_callback(
   }
 }
 
+void libkrbn_core_service_client_async_get_notification_message(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_core_service_client()) {
+      c->async_get_notification_message();
+    }
+  }
+}
+
+void libkrbn_register_core_service_client_notification_message_received_callback(libkrbn_core_service_client_notification_message_received_t _Nonnull callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_core_service_client()) {
+      c->register_libkrbn_core_service_client_notification_message_received_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_core_service_client_notification_message_received_callback(libkrbn_core_service_client_notification_message_received_t _Nonnull callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_core_service_client()) {
+      c->unregister_libkrbn_core_service_client_notification_message_received_callback(callback);
+    }
+  }
+}
+
 void libkrbn_core_service_client_async_get_system_variables(void) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_core_service_client()) {
