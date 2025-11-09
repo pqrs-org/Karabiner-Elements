@@ -585,10 +585,6 @@ void libkrbn_get_core_service_state_json_file_path(char* buffer, size_t length) 
   strlcpy(buffer, krbn::constants::get_core_service_state_json_file_path().c_str(), length);
 }
 
-void libkrbn_get_notification_message_json_file_path(char* buffer, size_t length) {
-  strlcpy(buffer, krbn::constants::get_notification_message_file_path().c_str(), length);
-}
-
 //
 // frontmost_application_monitor
 //

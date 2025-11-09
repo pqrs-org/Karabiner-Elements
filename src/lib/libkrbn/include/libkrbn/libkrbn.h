@@ -459,7 +459,6 @@ void libkrbn_unregister_file_updated_callback(const char* _Nonnull file_path,
                                               libkrbn_file_updated_t _Nonnull callback);
 
 void libkrbn_get_core_service_state_json_file_path(char* _Nonnull buffer, size_t length);
-void libkrbn_get_notification_message_json_file_path(char* _Nonnull buffer, size_t length);
 
 //
 // libkrbn_frontmost_application_monitor

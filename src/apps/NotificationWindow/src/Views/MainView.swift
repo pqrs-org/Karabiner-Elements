@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainView: View {
-  @ObservedObject var notificationMessage = NotificationMessage.shared
+  @ObservedObject var nwCoreServiceClient = NotificationWindowCoreServiceClient.shared
   @State var opacity = 1.0
 
   var body: some View {
@@ -10,7 +10,7 @@ struct MainView: View {
         .resizable()
         .frame(width: 48.0, height: 48.0)
         .padding(.leading, 2.0)
-      Text(notificationMessage.body)
+      Text(nwCoreServiceClient.message)
         .font(.body)
         .multilineTextAlignment(.leading)
         .fixedSize(horizontal: false, vertical: true)
