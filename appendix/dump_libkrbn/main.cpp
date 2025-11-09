@@ -28,10 +28,6 @@ void frontmost_application_changed_callback(void) {
   }
 }
 
-void connected_devices_updated_callback(void) {
-  std::cout << __func__ << std::endl;
-}
-
 auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
@@ -47,10 +43,6 @@ int main(int argc, const char* argv[]) {
 
   libkrbn_enable_version_monitor();
   libkrbn_register_version_updated_callback(version_updated_callback);
-
-  libkrbn_enable_connected_devices_monitor();
-  libkrbn_register_connected_devices_updated_callback(connected_devices_updated_callback);
-  connected_devices_updated_callback();
 
   libkrbn_enable_frontmost_application_monitor();
   libkrbn_register_frontmost_application_changed_callback(frontmost_application_changed_callback);
