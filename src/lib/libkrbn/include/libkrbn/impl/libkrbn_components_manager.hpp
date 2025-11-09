@@ -2,7 +2,6 @@
 
 #include "libkrbn/impl/libkrbn_complex_modifications_assets_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
-#include "libkrbn/impl/libkrbn_connected_devices_monitor.hpp"
 #include "libkrbn/impl/libkrbn_core_service_client.hpp"
 #include "libkrbn/impl/libkrbn_dispatcher_client.hpp"
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
@@ -87,31 +86,6 @@ public:
 
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> get_complex_modifications_assets_manager(void) const {
     return complex_modifications_assets_manager_;
-  }
-
-  //
-  // connected_devices_monitor_
-  //
-
-  void enable_connected_devices_monitor(void) {
-    if (!connected_devices_monitor_) {
-      connected_devices_monitor_ = std::make_shared<libkrbn_connected_devices_monitor>();
-    }
-  }
-
-  void disable_connected_devices_monitor(void) {
-    connected_devices_monitor_ = nullptr;
-  }
-
-  std::shared_ptr<libkrbn_connected_devices_monitor> get_libkrbn_connected_devices_monitor(void) const {
-    return connected_devices_monitor_;
-  }
-
-  std::shared_ptr<const krbn::connected_devices::connected_devices> get_current_connected_devices(void) const {
-    if (auto m = connected_devices_monitor_) {
-      return m->get_weak_connected_devices().lock();
-    }
-    return nullptr;
   }
 
   //
@@ -216,7 +190,6 @@ private:
   std::shared_ptr<libkrbn_version_monitor> version_monitor_;
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
-  std::shared_ptr<libkrbn_connected_devices_monitor> connected_devices_monitor_;
   std::shared_ptr<libkrbn_file_monitors> file_monitors_;
   std::shared_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;

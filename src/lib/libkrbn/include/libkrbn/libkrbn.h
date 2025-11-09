@@ -292,9 +292,6 @@ bool libkrbn_core_configuration_get_selected_profile_device_game_pad_swap_sticks
 void libkrbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(const libkrbn_device_identifiers* _Nullable device_identifiers,
                                                                                  bool value);
 
-size_t libkrbn_core_configuration_get_selected_profile_not_connected_devices_count(void);
-void libkrbn_core_configuration_erase_selected_profile_not_connected_devices(void);
-
 // game_pad_xy_stick_deadzone
 
 double libkrbn_core_configuration_get_selected_profile_device_game_pad_xy_stick_deadzone(const libkrbn_device_identifiers* _Nullable device_identifiers);
@@ -432,45 +429,6 @@ bool libkrbn_configuration_monitor_get_parse_error_message(char* _Nonnull buffer
                                                            size_t length);
 
 //
-// libkrbn_connected_devices
-//
-
-size_t libkrbn_connected_devices_get_size(void);
-bool libkrbn_connected_devices_get_unique_identifier(size_t index,
-                                                     char* _Nonnull buffer,
-                                                     size_t length);
-bool libkrbn_connected_devices_get_manufacturer(size_t index,
-                                                char* _Nonnull buffer,
-                                                size_t length);
-bool libkrbn_connected_devices_get_product(size_t index,
-                                           char* _Nonnull buffer,
-                                           size_t length);
-bool libkrbn_connected_devices_get_transport(size_t index,
-                                             char* _Nonnull buffer,
-                                             size_t length);
-uint64_t libkrbn_connected_devices_get_vendor_id(size_t index);
-uint64_t libkrbn_connected_devices_get_product_id(size_t index);
-bool libkrbn_connected_devices_get_device_address(size_t index,
-                                                  char* _Nonnull buffer,
-                                                  size_t length);
-bool libkrbn_connected_devices_get_is_keyboard(size_t index);
-bool libkrbn_connected_devices_get_is_pointing_device(size_t index);
-bool libkrbn_connected_devices_get_is_game_pad(size_t index);
-bool libkrbn_connected_devices_get_is_consumer(size_t index);
-bool libkrbn_connected_devices_get_is_virtual_device(size_t index);
-bool libkrbn_connected_devices_get_is_built_in_keyboard(size_t index);
-bool libkrbn_connected_devices_is_apple(size_t index);
-
-// connected_devices_monitor
-
-void libkrbn_enable_connected_devices_monitor(void);
-void libkrbn_disable_connected_devices_monitor(void);
-
-typedef void (*libkrbn_connected_devices_updated_t)(void);
-void libkrbn_register_connected_devices_updated_callback(libkrbn_connected_devices_updated_t _Nonnull callback);
-void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_devices_updated_t _Nonnull callback);
-
-//
 // libkrbn_version_monitor
 //
 
@@ -497,7 +455,6 @@ void libkrbn_register_file_updated_callback(const char* _Nonnull file_path,
 void libkrbn_unregister_file_updated_callback(const char* _Nonnull file_path,
                                               libkrbn_file_updated_t _Nonnull callback);
 
-void libkrbn_get_devices_json_file_path(char* _Nonnull buffer, size_t length);
 void libkrbn_get_core_service_state_json_file_path(char* _Nonnull buffer, size_t length);
 void libkrbn_get_notification_message_json_file_path(char* _Nonnull buffer, size_t length);
 

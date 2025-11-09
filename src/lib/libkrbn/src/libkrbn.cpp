@@ -548,38 +548,6 @@ void libkrbn_complex_modifications_assets_manager_erase_file(size_t index) {
 }
 
 //
-// connected_devices_monitor
-//
-
-void libkrbn_enable_connected_devices_monitor(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->enable_connected_devices_monitor();
-  }
-}
-
-void libkrbn_disable_connected_devices_monitor(void) {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->disable_connected_devices_monitor();
-  }
-}
-
-void libkrbn_register_connected_devices_updated_callback(libkrbn_connected_devices_updated_t callback) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_connected_devices_monitor()) {
-      m->register_libkrbn_connected_devices_updated_callback(callback);
-    }
-  }
-}
-
-void libkrbn_unregister_connected_devices_updated_callback(libkrbn_connected_devices_updated_t callback) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_connected_devices_monitor()) {
-      m->unregister_libkrbn_connected_devices_updated_callback(callback);
-    }
-  }
-}
-
-//
 // file_monitor
 //
 
@@ -611,10 +579,6 @@ void libkrbn_unregister_file_updated_callback(const char* file_path,
       m->unregister_libkrbn_file_updated_callback(file_path, callback);
     }
   }
-}
-
-void libkrbn_get_devices_json_file_path(char* buffer, size_t length) {
-  strlcpy(buffer, krbn::constants::get_devices_json_file_path().c_str(), length);
 }
 
 void libkrbn_get_core_service_state_json_file_path(char* buffer, size_t length) {
