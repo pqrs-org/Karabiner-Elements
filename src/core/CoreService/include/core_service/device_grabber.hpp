@@ -50,8 +50,7 @@ public:
         temporarily_ignore_all_devices_(false),
         system_sleeping_(false),
         logger_unique_filter_(logger::get_logger()) {
-    notification_message_manager_ = std::make_shared<notification_message_manager>(
-        constants::get_notification_message_file_path());
+    notification_message_manager_ = std::make_shared<notification_message_manager>();
 
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
@@ -652,6 +651,14 @@ public:
       }
 
       function(nlohmann::json(connected_devices));
+    });
+  }
+
+  void async_invoke_with_notification_message(std::function<void(const std::string&)> function) const {
+    enqueue_to_dispatcher([this, function] {
+      if (notification_message_manager_) {
+        function(notification_message_manager_->get_full_message());
+      }
     });
   }
 

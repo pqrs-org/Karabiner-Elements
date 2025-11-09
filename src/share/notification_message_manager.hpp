@@ -12,16 +12,16 @@
 namespace krbn {
 class notification_message_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  notification_message_manager(const std::filesystem::path& notification_message_file_path)
-      : dispatcher_client(),
-        notification_message_file_path_(notification_message_file_path) {
-    enqueue_to_dispatcher([this] {
-      save_message("");
-    });
+  notification_message_manager(void)
+      : dispatcher_client() {
   }
 
   virtual ~notification_message_manager(void) {
     detach_from_dispatcher();
+  }
+
+  const std::string& get_full_message(void) const {
+    return full_message_;
   }
 
   void async_set_device_ungrabbable_temporarily_message(device_id id,
@@ -29,7 +29,7 @@ public:
     enqueue_to_dispatcher([this, id, message] {
       device_ungrabbable_temporarily_messages_[id] = message;
 
-      save_message_if_needed();
+      update_full_message();
     });
   }
 
@@ -37,7 +37,7 @@ public:
     enqueue_to_dispatcher([this, id] {
       device_ungrabbable_temporarily_messages_.erase(id);
 
-      save_message_if_needed();
+      update_full_message();
     });
   }
 
@@ -69,7 +69,7 @@ public:
     }
 
     enqueue_to_dispatcher([this] {
-      save_message_if_needed();
+      update_full_message();
     });
   }
 
@@ -77,7 +77,7 @@ public:
     enqueue_to_dispatcher([this] {
       messages_["__system__sticky_modifiers"] = "";
 
-      save_message_if_needed();
+      update_full_message();
     });
   }
 
@@ -85,30 +85,12 @@ public:
     enqueue_to_dispatcher([this, notification_message] {
       messages_[fmt::format("__user__{0}", notification_message.get_id())] = notification_message.get_text();
 
-      save_message_if_needed();
+      update_full_message();
     });
   }
 
 private:
-  void save_message(const std::string& message) const {
-    json_writer::async_save_to_file(
-        nlohmann::json::object({
-            {"body", message},
-        }),
-        notification_message_file_path_.string(),
-        0755,
-        0644);
-  }
-
-  void save_message_if_needed(void) {
-    auto message = make_message();
-    if (previous_message_ != message) {
-      previous_message_ = message;
-      save_message(message);
-    }
-  }
-
-  std::string make_message(void) const {
+  void update_full_message(void) {
     std::stringstream ss;
 
     for (const auto& m : device_ungrabbable_temporarily_messages_) {
@@ -130,12 +112,11 @@ private:
       }
     }
 
-    return ss.str();
+    full_message_ = ss.str();
   }
 
-  std::filesystem::path notification_message_file_path_;
   std::map<device_id, std::string> device_ungrabbable_temporarily_messages_;
   std::map<std::string, std::string> messages_;
-  std::string previous_message_;
+  std::string full_message_;
 };
 } // namespace krbn

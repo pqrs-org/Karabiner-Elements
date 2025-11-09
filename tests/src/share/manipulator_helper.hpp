@@ -47,7 +47,7 @@ public:
 
       auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
       auto console_user_server_client = std::make_shared<krbn::console_user_server_client>();
-      auto notification_message_manager = std::make_shared<krbn::notification_message_manager>("tmp/notification_message.json");
+      auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
       auto connector = std::make_shared<manipulator::manipulator_managers_connector>();
       auto manipulator_managers = std::make_shared<std::vector<std::shared_ptr<manipulator::manipulator_manager>>>();
       auto event_queues = std::make_shared<std::vector<std::shared_ptr<event_queue::queue>>>();
