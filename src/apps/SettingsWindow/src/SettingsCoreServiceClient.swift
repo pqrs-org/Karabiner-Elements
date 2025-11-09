@@ -118,4 +118,8 @@ final class SettingsCoreServiceClient: ObservableObject {
   public func stopSystemVariablesMonitoring() {
     systemVariablesTimerTask?.cancel()
   }
+
+  public func setAppIcon(_ number: Int32) {
+    libkrbn_core_service_client_async_set_app_icon(number)
+  }
 }

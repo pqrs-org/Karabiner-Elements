@@ -28,15 +28,13 @@ public class AppIcons: ObservableObject {
   public static let shared = AppIcons()
 
   private var didSetEnabled = false
-  // Start CoreServiceClient when init
-  private var coreServiceClient = LibKrbn.CoreServiceClient.shared
 
   @Published var icons: [AppIcon] = []
 
   @Published var selectedAppIconNumber: Int32 = 0 {
     didSet {
       if didSetEnabled {
-        coreServiceClient.setAppIcon(selectedAppIconNumber)
+        SettingsCoreServiceClient.shared.setAppIcon(selectedAppIconNumber)
       }
     }
   }
