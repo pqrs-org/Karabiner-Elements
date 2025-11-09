@@ -269,6 +269,21 @@ public:
             }
             break;
 
+          case operation_type::get_connected_devices:
+            if (device_grabber_) {
+              device_grabber_->async_invoke_with_connected_devices(
+                  [this, sender_endpoint](auto&& connected_devices_json) {
+                    if (verification_exempt_peer_manager_) {
+                      nlohmann::json json{
+                          {"operation_type", operation_type::connected_devices},
+                          {"connected_devices", connected_devices_json}};
+                      verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
+                                                                    nlohmann::json::to_msgpack(json));
+                    }
+                  });
+            }
+            break;
+
           case operation_type::get_system_variables:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_manipulator_environment(

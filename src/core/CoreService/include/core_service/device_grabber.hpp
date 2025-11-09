@@ -278,8 +278,6 @@ public:
 
         // ----------------------------------------
 
-        output_devices_json();
-
         update_virtual_hid_pointing();
 
         // ----------------------------------------
@@ -323,10 +321,6 @@ public:
       }
 
       hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
-
-      // ----------------------------------------
-
-      output_devices_json();
 
       // ----------------------------------------
 
@@ -647,6 +641,16 @@ public:
   void async_invoke_with_manipulator_environment(std::function<void(const manipulator::manipulator_environment&)> function) const {
     enqueue_to_dispatcher([this, function] {
       function(complex_modifications_applied_event_queue_->get_manipulator_environment());
+    });
+  }
+
+  void async_invoke_with_connected_devices(std::function<void(const nlohmann::json&)> function) const {
+    enqueue_to_dispatcher([this, function] {
+      connected_devices::connected_devices connected_devices;
+      for (const auto& e : entries_) {
+        connected_devices.push_back_device(e.second->get_device_properties());
+      }
+      function(connected_devices.to_json());
     });
   }
 
@@ -986,16 +990,6 @@ private:
         e.second->set_disabled(false);
       }
     }
-  }
-
-  void output_devices_json(void) const {
-    connected_devices::connected_devices connected_devices;
-    for (const auto& e : entries_) {
-      connected_devices.push_back_device(e.second->get_device_properties());
-    }
-
-    auto file_path = constants::get_devices_json_file_path();
-    connected_devices.async_save_to_file(file_path);
   }
 
   void update_complex_modifications_manipulators(void) {
