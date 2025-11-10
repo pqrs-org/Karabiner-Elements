@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 15.7.0
 
+-   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.7.0/Karabiner-Elements-15.7.0.dmg)
+-   📅 Release date
+    -   Nov 10, 2025
 -   🔔 Important Notes
     -   After upgrading, make the following changes in System Settings:
         -   Enable `Karabiner-Elements Privileged Daemons v2` under App Background Activity.
