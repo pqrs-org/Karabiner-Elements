@@ -75,7 +75,22 @@ public:
 
   void async_clear_sticky_modifiers_message(void) {
     enqueue_to_dispatcher([this] {
-      messages_["__system__sticky_modifiers"] = "";
+      for (const auto& f : {
+               modifier_flag::left_control,
+               modifier_flag::left_shift,
+               modifier_flag::left_option,
+               modifier_flag::left_command,
+               modifier_flag::right_control,
+               modifier_flag::right_shift,
+               modifier_flag::right_option,
+               modifier_flag::right_command,
+               modifier_flag::fn,
+           }) {
+        if (auto name = get_modifier_flag_name(f)) {
+          auto id = fmt::format("__system__sticky_{0}", *name);
+          messages_[id] = "";
+        }
+      }
 
       update_full_message();
     });
