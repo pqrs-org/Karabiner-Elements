@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+-   🐛 Bug Fixes
+    -   Fixed an issue where sticky modifier notification messages would not disappear under certain conditions.
+
 ## Karabiner-Elements 15.7.0
 
 -   [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.7.0/Karabiner-Elements-15.7.0.dmg)
