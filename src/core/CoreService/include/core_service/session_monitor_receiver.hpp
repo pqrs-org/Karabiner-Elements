@@ -40,8 +40,8 @@ public:
     server_->bind_failed.connect([this](auto&& error_code) {
       logger::get_logger()->error("session_monitor_receiver: bind_failed");
 
-      // Even if the socket directory is deleted for some reason,
-      // bind_failed will still be called, so recreate the directory each time.
+      // If the socket directory is deleted for any reason,
+      // bind_failed will be triggered, so recreate the directory each time.
       prepare_session_monitor_receiver_socket_directory();
     });
 
