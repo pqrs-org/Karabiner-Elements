@@ -63,12 +63,25 @@ void run_software_function_test(void) {
     }
 
     {
-      auto json = nlohmann::json::object({
-          {"frontmost_application_history_index", 1},
-      });
+      auto json = R"(
 
+{
+  "frontmost_application_history_index": 1,
+  "frontmost_application_history_exclusion_conditions": [
+    {
+      "bundle_identifier": "com.apple.Terminal"
+    },
+    {
+      "bundle_identifier": "com.apple.Safari"
+    }
+  ]
+}
+
+)"_json;
       auto value = json.get<krbn::software_function_details::open_application>();
       expect(1 == value.get_frontmost_application_history_index());
+      expect(2 == value.get_frontmost_application_history_exclusion_conditions().size());
+      expect("com.apple.Terminal" == value.get_frontmost_application_history_exclusion_conditions()[0].get_bundle_identifier());
 
       expect(nlohmann::json(value) == json);
     }
