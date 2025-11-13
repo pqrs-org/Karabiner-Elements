@@ -22,6 +22,8 @@ int main(int argc, const char* argv[]) {
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
 
+  umask(0022);
+
   pqrs::osx::process_info::enable_sudden_termination();
 
   //

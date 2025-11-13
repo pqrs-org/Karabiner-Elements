@@ -206,6 +206,8 @@ int remove_system_default_profile(void) {
 } // namespace
 
 int main(int argc, char** argv) {
+  umask(0022);
+
   //
   // Initialize
   //
