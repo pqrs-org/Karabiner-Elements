@@ -35,22 +35,12 @@ public:
         return;
       }
 
-      // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
-      // (We have to make a socket file which includes the real user ID in the file path.)
-      auto client_socket_directory_path = constants::get_session_monitor_receiver_client_socket_directory_path(getuid());
-
-      // Remove old socket files.
-      {
-        std::error_code ec;
-        std::filesystem::remove_all(client_socket_directory_path, ec);
-        std::filesystem::create_directory(client_socket_directory_path, ec);
-        chmod(client_socket_directory_path.c_str(), 0700);
-      }
+      prepare_client_socket_directory();
 
       client_ = std::make_unique<pqrs::local_datagram::client>(
           weak_dispatcher_,
           get_session_monitor_receiver_socket_file_path(),
-          client_socket_directory_path / filesystem_utility::make_socket_file_basename(),
+          get_client_socket_directory() / filesystem_utility::make_socket_file_basename(),
           constants::local_datagram_buffer_size);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
@@ -68,6 +58,12 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
+        logger::get_logger()->info("session_monitor_receiver_client connect_failed: {0}", error_code.message());
+
+        // If the socket directory is deleted for any reason,
+        // connect_failed will be triggered, so recreate the directory each time.
+        prepare_client_socket_directory();
+
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
         });
@@ -113,6 +109,22 @@ public:
   }
 
 private:
+  void prepare_client_socket_directory(void) const {
+    auto directory_path = get_client_socket_directory();
+
+    // Remove old socket files.
+    std::error_code ec;
+    std::filesystem::remove_all(directory_path, ec);
+    std::filesystem::create_directory(directory_path, ec);
+    chmod(directory_path.c_str(), 0700);
+  }
+
+  std::filesystem::path get_client_socket_directory(void) const {
+    // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
+    // (We have to make a socket file which includes the real user ID in the file path.)
+    return constants::get_session_monitor_receiver_client_socket_directory_path(getuid());
+  }
+
   std::filesystem::path get_session_monitor_receiver_socket_file_path(void) const {
     return filesystem_utility::find_socket_file_path(
         constants::get_session_monitor_receiver_socket_directory_path());

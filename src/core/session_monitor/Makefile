@@ -8,6 +8,8 @@ clean:
 	rm -fr build
 
 install: all
+	bash ../../../scripts/codesign.sh build/Release/karabiner_session_monitor
+
 	# setuid
 	sudo install \
 		-m 4755 \
