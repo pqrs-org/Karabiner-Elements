@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#include <pqrs/regex.hpp>
 #include <regex>
 #include <string>
 #include <vector>
@@ -38,33 +39,19 @@ public:
       } else if (key == "bundle_identifiers") {
         pqrs::json::requires_array(value, "`bundle_identifiers`");
 
-        for (const auto& j : value) {
-          pqrs::json::requires_string(j, "bundle_identifiers entry");
-
-          auto s = j.get<std::string>();
-
-          try {
-            std::regex r(s);
-            bundle_identifiers_.push_back(r);
-          } catch (std::exception& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, pqrs::json::dump_for_error_message(value)));
-          }
+        try {
+          bundle_identifiers_ = value.get<std::vector<pqrs::regex>>();
+        } catch (std::exception& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
 
       } else if (key == "file_paths") {
         pqrs::json::requires_array(value, "`file_paths`");
 
-        for (const auto& j : value) {
-          pqrs::json::requires_string(j, "file_paths entry");
-
-          auto s = j.get<std::string>();
-
-          try {
-            std::regex r(s);
-            file_paths_.push_back(r);
-          } catch (std::exception& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("{0}: `{1}:{2}`", e.what(), key, pqrs::json::dump_for_error_message(value)));
-          }
+        try {
+          file_paths_ = value.get<std::vector<pqrs::regex>>();
+        } catch (std::exception& e) {
+          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
 
       } else if (key == "description") {
@@ -93,7 +80,7 @@ public:
       for (const auto& b : bundle_identifiers_) {
         if (regex_search(std::begin(*current_bundle_identifier),
                          std::end(*current_bundle_identifier),
-                         b)) {
+                         b.get_regex())) {
           switch (type_) {
             case type::frontmost_application_if:
               result = true;
@@ -112,7 +99,7 @@ public:
       for (const auto& f : file_paths_) {
         if (regex_search(std::begin(*current_file_path),
                          std::end(*current_file_path),
-                         f)) {
+                         f.get_regex())) {
           switch (type_) {
             case type::frontmost_application_if:
               result = true;
@@ -143,8 +130,8 @@ public:
 
 private:
   type type_;
-  std::vector<std::regex> bundle_identifiers_;
-  std::vector<std::regex> file_paths_;
+  std::vector<pqrs::regex> bundle_identifiers_;
+  std::vector<pqrs::regex> file_paths_;
 
   mutable std::optional<std::pair<pqrs::osx::frontmost_application_monitor::application, bool>> cached_result_;
 };
