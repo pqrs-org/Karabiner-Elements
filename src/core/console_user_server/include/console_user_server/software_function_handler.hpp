@@ -9,6 +9,7 @@
 #include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/workspace.hpp>
+#include <regex>
 
 namespace krbn {
 namespace console_user_server {
@@ -120,16 +121,21 @@ private:
       std::optional<pqrs::osx::frontmost_application_monitor::application> target_application;
 
       for (const auto& h : frontmost_application_history_) {
-        // Target only applications that are currently running.
+        if (excluded_frontmost_application_history(open_application,
+                                                   h)) {
+          continue;
+        }
 
         // Since there are cases where the bundle paths differ even if the bundle_identifier is the same, prioritize using the bundle path.
         if (auto bundle_path = h.get_bundle_path()) {
+          // Target only applications that are currently running.
           if (!pqrs::osx::workspace::application_running_by_file_path(*bundle_path)) {
             continue;
           }
           target_application = h;
 
         } else if (auto bundle_identifier = h.get_bundle_identifier()) {
+          // Target only applications that are currently running.
           if (!pqrs::osx::workspace::application_running_by_bundle_identifier(*bundle_identifier)) {
             continue;
           }
@@ -154,6 +160,31 @@ private:
         }
       }
     }
+  }
+
+  bool excluded_frontmost_application_history(const software_function_details::open_application& open_application,
+                                              const pqrs::osx::frontmost_application_monitor::application& application) {
+    if (auto bundle_identifier = application.get_bundle_identifier()) {
+      for (const auto& regex : open_application.get_frontmost_application_history_exclusion_bundle_identifiers()) {
+        if (std::regex_search(std::begin(*bundle_identifier),
+                              std::end(*bundle_identifier),
+                              regex.get_regex())) {
+          return true;
+        }
+      }
+    }
+
+    if (auto file_path = application.get_file_path()) {
+      for (const auto& regex : open_application.get_frontmost_application_history_exclusion_file_paths()) {
+        if (std::regex_search(std::begin(*file_path),
+                              std::end(*file_path),
+                              regex.get_regex())) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   void execute_set_mouse_cursor_position(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
