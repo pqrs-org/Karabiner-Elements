@@ -6,6 +6,7 @@
 #include <pqrs/json.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>
+#include <pqrs/regex.hpp>
 #include <regex>
 
 namespace krbn {
@@ -39,12 +40,20 @@ public:
     frontmost_application_history_index_ = value;
   }
 
-  const std::vector<pqrs::osx::frontmost_application_monitor::application>& get_frontmost_application_history_exclusion_conditions(void) const {
-    return frontmost_application_history_exclusion_conditions_;
+  const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_bundle_identifiers(void) const {
+    return frontmost_application_history_exclusion_bundle_identifiers_;
   }
 
-  void set_frontmost_application_history_exclusion_conditions(const std::vector<pqrs::osx::frontmost_application_monitor::application>& value) {
-    frontmost_application_history_exclusion_conditions_ = value;
+  void set_frontmost_application_history_exclusion_bundle_identifiers(const std::vector<pqrs::regex>& value) {
+    frontmost_application_history_exclusion_bundle_identifiers_ = value;
+  }
+
+  const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_file_paths(void) const {
+    return frontmost_application_history_exclusion_file_paths_;
+  }
+
+  void set_frontmost_application_history_exclusion_file_paths(const std::vector<pqrs::regex>& value) {
+    frontmost_application_history_exclusion_file_paths_ = value;
   }
 
   constexpr bool operator==(const open_application&) const = default;
@@ -53,7 +62,8 @@ private:
   std::optional<std::string> bundle_identifier_;
   std::optional<std::string> file_path_;
   std::optional<size_t> frontmost_application_history_index_;
-  std::vector<pqrs::osx::frontmost_application_monitor::application> frontmost_application_history_exclusion_conditions_;
+  std::vector<pqrs::regex> frontmost_application_history_exclusion_bundle_identifiers_;
+  std::vector<pqrs::regex> frontmost_application_history_exclusion_file_paths_;
 };
 
 inline void to_json(nlohmann::json& json, const open_application& value) {
@@ -66,8 +76,11 @@ inline void to_json(nlohmann::json& json, const open_application& value) {
   if (auto v = value.get_frontmost_application_history_index()) {
     json["frontmost_application_history_index"] = *v;
   }
-  if (!value.get_frontmost_application_history_exclusion_conditions().empty()) {
-    json["frontmost_application_history_exclusion_conditions"] = value.get_frontmost_application_history_exclusion_conditions();
+  if (!value.get_frontmost_application_history_exclusion_bundle_identifiers().empty()) {
+    json["frontmost_application_history_exclusion_bundle_identifiers"] = value.get_frontmost_application_history_exclusion_bundle_identifiers();
+  }
+  if (!value.get_frontmost_application_history_exclusion_file_paths().empty()) {
+    json["frontmost_application_history_exclusion_file_paths"] = value.get_frontmost_application_history_exclusion_file_paths();
   }
 }
 
@@ -84,10 +97,12 @@ inline void from_json(const nlohmann::json& json, open_application& value) {
     } else if (k == "frontmost_application_history_index") {
       pqrs::json::requires_number(v, "`" + k + "`");
       value.set_frontmost_application_history_index(v.get<size_t>());
-    } else if (k == "frontmost_application_history_exclusion_conditions") {
+    } else if (k == "frontmost_application_history_exclusion_bundle_identifiers") {
       pqrs::json::requires_array(v, "`" + k + "`");
-      value.set_frontmost_application_history_exclusion_conditions(
-          v.get<std::vector<pqrs::osx::frontmost_application_monitor::application>>());
+      value.set_frontmost_application_history_exclusion_bundle_identifiers(v.get<std::vector<pqrs::regex>>());
+    } else if (k == "frontmost_application_history_exclusion_file_paths") {
+      pqrs::json::requires_array(v, "`" + k + "`");
+      value.set_frontmost_application_history_exclusion_file_paths(v.get<std::vector<pqrs::regex>>());
     } else {
       throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));
     }
@@ -105,7 +120,10 @@ struct hash<krbn::software_function_details::open_application> final {
     pqrs::hash::combine(h, value.get_bundle_identifier());
     pqrs::hash::combine(h, value.get_file_path());
     pqrs::hash::combine(h, value.get_frontmost_application_history_index());
-    for (auto&& v : value.get_frontmost_application_history_exclusion_conditions()) {
+    for (auto&& v : value.get_frontmost_application_history_exclusion_bundle_identifiers()) {
+      pqrs::hash::combine(h, v);
+    }
+    for (auto&& v : value.get_frontmost_application_history_exclusion_file_paths()) {
       pqrs::hash::combine(h, v);
     }
 

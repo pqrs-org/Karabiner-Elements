@@ -4,6 +4,7 @@
 void run_software_function_test(void) {
   using namespace boost::ut;
   using namespace boost::ut::literals;
+  using namespace std::literals;
 
   "software_function"_test = [] {
     //
@@ -67,21 +68,25 @@ void run_software_function_test(void) {
 
 {
   "frontmost_application_history_index": 1,
-  "frontmost_application_history_exclusion_conditions": [
-    {
-      "bundle_identifier": "com.apple.Terminal"
-    },
-    {
-      "bundle_identifier": "com.apple.Safari"
-    }
+  "frontmost_application_history_exclusion_bundle_identifiers": [
+    "^com\\.apple\\.Terminal$",
+    "^com\\.apple\\.Safari$"
+  ],
+  "frontmost_application_history_exclusion_file_paths": [
+    "^/System/Applications/App Store\\.app/Contents/MacOS/App Store"
   ]
 }
 
 )"_json;
       auto value = json.get<krbn::software_function_details::open_application>();
       expect(1 == value.get_frontmost_application_history_index());
-      expect(2 == value.get_frontmost_application_history_exclusion_conditions().size());
-      expect("com.apple.Terminal" == value.get_frontmost_application_history_exclusion_conditions()[0].get_bundle_identifier());
+      auto bundle_identifiers = value.get_frontmost_application_history_exclusion_bundle_identifiers();
+      expect(2 == bundle_identifiers.size());
+      expect("^com\\.apple\\.Terminal$"sv == bundle_identifiers[0].get_string());
+      expect("^com\\.apple\\.Safari$"sv == bundle_identifiers[1].get_string());
+      auto file_paths = value.get_frontmost_application_history_exclusion_file_paths();
+      expect(1 == file_paths.size());
+      expect("^/System/Applications/App Store\\.app/Contents/MacOS/App Store"sv == file_paths[0].get_string());
 
       expect(nlohmann::json(value) == json);
     }

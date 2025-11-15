@@ -425,11 +425,22 @@
         "input": {
             "software_function": {
                 "open_application": {
-                    "frontmost_application_history_exclusion_conditions": null
+                    "frontmost_application_history_exclusion_bundle_identifiers": null
                 }
             }
         },
-        "error": "`software_function` error: `open_application` error: `frontmost_application_history_exclusion_conditions` must be array, but is `null`"
+        "error": "`software_function` error: `open_application` error: `frontmost_application_history_exclusion_bundle_identifiers` must be array, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "open_application": {
+                    "frontmost_application_history_exclusion_file_paths": null
+                }
+            }
+        },
+        "error": "`software_function` error: `open_application` error: `frontmost_application_history_exclusion_file_paths` must be array, but is `null`"
     },
     {
         "class": "event_definition",
