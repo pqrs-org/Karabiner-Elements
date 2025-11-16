@@ -121,11 +121,6 @@ private:
       std::optional<pqrs::osx::frontmost_application_monitor::application> target_application;
 
       for (const auto& h : frontmost_application_history_) {
-        if (excluded_frontmost_application_history(open_application,
-                                                   h)) {
-          continue;
-        }
-
         // Since there are cases where the bundle paths differ even if the bundle_identifier is the same, prioritize using the bundle path.
         if (auto bundle_path = h.get_bundle_path()) {
           // Target only applications that are currently running.
@@ -147,9 +142,20 @@ private:
 
         if (history_index > 0) {
           --history_index;
-        } else {
-          break;
+          continue;
         }
+
+        // Evaluating the exclusion conditions before decrementing history_index might skip the wrong entry.
+        // For example, when frontmost_application_history_index is 1, the expectation is to open the immediately previous app.
+        // If the current app matches an exclusion condition and is removed before history_index is decremented,
+        // the logic ends up selecting the application two steps back instead of the previous one.
+        // Therefore, exclusion conditions must be checked after history_index is decremented.
+        if (excluded_frontmost_application_history(open_application,
+                                                   h)) {
+          continue;
+        }
+
+        break;
       }
 
       if (target_application) {
