@@ -2,6 +2,7 @@
 
 #include "logger.hpp"
 #include <deque>
+#include <pqrs/cf/bundle.hpp>
 #include <pqrs/osx/accessibility.hpp>
 #include <pqrs/osx/cg_display.hpp>
 #include <pqrs/osx/cg_event.hpp>
@@ -37,6 +38,13 @@ public:
   }
 
   void add_frontmost_application_history(const pqrs::osx::frontmost_application_monitor::application& application) {
+    // Skip non-applications like "/System/Library/Frameworks/LocalAuthentication.framework/Support/coreautha.bundle".
+    if (auto v = application.get_bundle_path()) {
+      if (!pqrs::cf::bundle::application(*v)) {
+        return;
+      }
+    }
+
     //
     // Remove any identical entries that already exist.
     //
@@ -152,6 +160,7 @@ private:
         // Therefore, exclusion conditions must be checked after history_index is decremented.
         if (excluded_frontmost_application_history(open_application,
                                                    h)) {
+          target_application = std::nullopt;
           continue;
         }
 
