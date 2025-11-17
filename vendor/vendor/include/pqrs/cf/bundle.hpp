@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::bundle v1.0
+// pqrs::cf::bundle v2.0
 
 // (C) Copyright Takayama Fumihiko 2025.
 // Distributed under the Boost Software License, Version 1.0.
@@ -11,22 +11,23 @@
 #include <optional>
 #include <pqrs/cf/url.hpp>
 #include <string>
+#include <string_view>
 
 namespace pqrs {
 namespace cf {
 namespace bundle {
 
-constexpr const char* package_type_application = "APPL";
-constexpr const char* package_type_framework = "FMWK";
-constexpr const char* package_type_bundle = "BNDL";
+constexpr std::string_view package_type_application("APPL");
+constexpr std::string_view package_type_framework("FMWK");
+constexpr std::string_view package_type_bundle("BNDL");
 
 std::optional<std::string> get_package_type(const std::filesystem::path& bundle_path) {
-  if (auto url = pqrs::cf::make_url(bundle_path.string())) {
-    if (auto bundle = pqrs::cf::cf_ptr(CFBundleCreate(nullptr, *url))) {
+  if (auto url = make_file_path_url(bundle_path.string(), true)) {
+    if (auto bundle = cf_ptr(CFBundleCreate(nullptr, *url))) {
       if (auto info_dictionary = CFBundleGetInfoDictionary(*bundle)) {
         if (auto type = CFDictionaryGetValue(info_dictionary,
                                              CFSTR("CFBundlePackageType"))) {
-          return pqrs::cf::make_string(type);
+          return make_string(type);
         }
       }
     }

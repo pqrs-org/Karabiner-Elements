@@ -1,10 +1,10 @@
 #pragma once
 
-// pqrs::cf::url v1.0
+// pqrs::cf::url v1.1
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/cf/string.hpp>
@@ -13,7 +13,7 @@
 namespace pqrs {
 namespace cf {
 inline std::optional<std::string> make_string(CFURLRef url) {
-  return pqrs::cf::make_string(CFURLGetString(url));
+  return make_string(CFURLGetString(url));
 }
 
 inline cf_ptr<CFURLRef> make_url(const std::string& file_path) {
