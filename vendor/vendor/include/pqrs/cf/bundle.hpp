@@ -1,12 +1,14 @@
 #pragma once
 
-// pqrs::cf::bundle v2.0
+// pqrs::cf::bundle v2.1
 
 // (C) Copyright Takayama Fumihiko 2025.
 // Distributed under the Boost Software License, Version 1.0.
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <algorithm>
+#include <cctype>
 #include <filesystem>
 #include <optional>
 #include <pqrs/cf/url.hpp>
@@ -21,13 +23,32 @@ constexpr std::string_view package_type_application("APPL");
 constexpr std::string_view package_type_framework("FMWK");
 constexpr std::string_view package_type_bundle("BNDL");
 
-std::optional<std::string> get_package_type(const std::filesystem::path& bundle_path) {
+std::optional<std::string> get_package_type(const std::filesystem::path& bundle_path,
+                                            bool guess_if_missing_package_type = false) {
   if (auto url = make_file_path_url(bundle_path.string(), true)) {
     if (auto bundle = cf_ptr(CFBundleCreate(nullptr, *url))) {
       if (auto info_dictionary = CFBundleGetInfoDictionary(*bundle)) {
         if (auto type = CFDictionaryGetValue(info_dictionary,
                                              CFSTR("CFBundlePackageType"))) {
           return make_string(type);
+        }
+
+        if (guess_if_missing_package_type) {
+          auto extension = bundle_path.extension().string();
+          std::transform(std::cbegin(extension),
+                         std::cend(extension),
+                         std::begin(extension),
+                         [](unsigned char c) { return std::tolower(c); });
+
+          if (extension == ".app") {
+            return std::string(package_type_application);
+          }
+
+          if (extension == ".framework") {
+            return std::string(package_type_framework);
+          }
+
+          return std::string(package_type_bundle);
         }
       }
     }
@@ -37,7 +58,9 @@ std::optional<std::string> get_package_type(const std::filesystem::path& bundle_
 }
 
 bool application(const std::filesystem::path& bundle_path) {
-  return get_package_type(bundle_path) == package_type_application;
+  auto package_type = get_package_type(bundle_path,
+                                       true);
+  return package_type == package_type_application;
 }
 
 } // namespace bundle
