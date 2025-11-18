@@ -9,6 +9,7 @@
 -   ⚡️ Improvements
     -   Improved the automatic recovery behavior from inter-process communication failures.
     -   Improved `open_application` to exclude non-application bundles from `frontmost_application_history_index`.
+    -   Sparkle Framework has been updated.
 
 ## Karabiner-Elements 15.7.0
 
