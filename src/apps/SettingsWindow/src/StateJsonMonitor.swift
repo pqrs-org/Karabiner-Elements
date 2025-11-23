@@ -8,11 +8,13 @@ private func callback() {
 
 @MainActor
 private struct State: Codable {
+  var driverConnected: Bool?
   var driverActivated: Bool?
   var driverVersionMismatched: Bool?
   var hidDeviceOpenPermitted: Bool?
 
   public mutating func update(_ s: State) {
+    driverConnected = s.driverConnected ?? driverConnected
     driverActivated = s.driverActivated ?? driverActivated
     driverVersionMismatched = s.driverVersionMismatched ?? driverVersionMismatched
     hidDeviceOpenPermitted = s.hidDeviceOpenPermitted ?? hidDeviceOpenPermitted
@@ -60,6 +62,9 @@ public class StateJsonMonitor {
     // Update show alerts
     //
 
+    if let v = state.driverConnected {
+      print("driverConnected \(v)")
+    }
     if let v = state.driverActivated {
       print("driverActivated \(v)")
     }
@@ -71,6 +76,15 @@ public class StateJsonMonitor {
     }
 
     let contentViewStates = ContentViewStates.shared
+
+    switch state.driverConnected {
+    case true:
+      contentViewStates.showDriverNotConnectedAlert = false
+    case false:
+      contentViewStates.showDriverNotConnectedAlert = true
+    default:  // nil
+      break
+    }
 
     switch state.driverActivated {
     case true:
