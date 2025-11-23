@@ -20,6 +20,10 @@
     -   After upgrading, make the following changes in System Settings:
         -   Enable `Karabiner-Elements Privileged Daemons v2` under App Background Activity.
         -   Enable `Karabiner-Core-Service` under Input Monitoring.
+    -   karabiner_grabber has been renamed to Karabiner-Core-Service.
+        Full Disk Access isn't necessary if you're just using the standard setup.
+        However, if you’ve manually moved the karabiner.json configuration file to another location,
+        [you might need to grant Full Disk Access to Karabiner-Core-Service.](https://karabiner-elements.pqrs.org/docs/manual/misc/configuration-file-path/)
 -   💥 Breaking changes
     -   The file `/Library/Application Support/org.pqrs/tmp/karabiner_grabber_devices.json` is no longer updated.
         You can still use EventViewer and karabiner_cli to check connected devices.
