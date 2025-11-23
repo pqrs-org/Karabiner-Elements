@@ -13,6 +13,12 @@ struct DriverNotConnectedAlertView: View {
         .font(.system(size: 24))
 
         ProgressView()
+
+        Label(
+          "If the message remains visible, third-party security software may be blocking communication with Karabiner-VirtualHIDDevice-Daemon.",
+          systemImage: "lightbulb"
+        )
+        .fixedSize(horizontal: false, vertical: true)
       }
       .padding()
       .frame(width: 850)
