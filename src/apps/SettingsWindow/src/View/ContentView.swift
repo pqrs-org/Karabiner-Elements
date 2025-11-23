@@ -33,6 +33,10 @@ struct ContentView: View {
         OverlayAlertView {
           InputMonitoringPermissionsAlertView()
         }
+      } else if contentViewStates.showDriverNotConnectedAlert {
+        OverlayAlertView {
+          DriverNotConnectedAlertView()
+        }
       } else if contentViewStates.showDriverVersionMismatchedAlert {
         OverlayAlertView {
           DriverVersionMismatchedAlertView()
