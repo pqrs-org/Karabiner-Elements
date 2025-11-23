@@ -9,6 +9,7 @@ final class ContentViewStates: ObservableObject {
   //
 
   @Published public var showServicesNotRunningAlert = false
+  @Published public var showDriverNotConnectedAlert = false
   @Published public var showDriverNotActivatedAlert = false
   @Published public var showDriverVersionMismatchedAlert = false
   @Published public var showInputMonitoringPermissionsAlert = false
