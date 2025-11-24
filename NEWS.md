@@ -2,14 +2,13 @@
 
 ## Beta
 
--   🐛 Bug Fixes
-    -   Fixed an issue where the sticky modifier indicator could continue to be displayed even after being disabled in the settings.
 -   ✨ New Features
     -   Added [`open_application.frontmost_application_history_exclusion_bundle_identifiers` and `open_application.frontmost_application_history_exclusion_file_paths`.](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/software_function/open_application/)
     -   Added the following options to karabiner_cli:
         -   `--list-multitouch-extension-variables`
         -   `--watch-multitouch-extension-variables`
 -   🐛 Bug Fixes
+    -   Fixed an issue where the sticky modifier indicator could continue to be displayed even after being disabled in the settings.
     -   Fixed an issue where karabiner_machine_identifier was not set correctly during a clean install.
 -   ⚡️ Improvements
     -   Added an alert that appears if communication with Karabiner-VirtualHIDDevice-Daemon is not possible.
