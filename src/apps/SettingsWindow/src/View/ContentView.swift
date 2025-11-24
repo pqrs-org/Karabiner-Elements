@@ -33,9 +33,9 @@ struct ContentView: View {
         OverlayAlertView {
           InputMonitoringPermissionsAlertView()
         }
-      } else if contentViewStates.showDriverNotConnectedAlert {
+      } else if contentViewStates.showVirtualHidDeviceServiceClientNotConnectedAlert {
         OverlayAlertView {
-          DriverNotConnectedAlertView()
+          VirtualHidDeviceServiceClientNotConnectedAlertView()
         }
       } else if contentViewStates.showDriverVersionMismatchedAlert {
         OverlayAlertView {
@@ -50,6 +50,12 @@ struct ContentView: View {
           OverlayAlertView {
             DriverNotActivatedAlertViewMacOS14()
           }
+        }
+      } else if contentViewStates.showDriverNotConnectedAlert {
+        // Until the driver is activated, showDriverNotConnectedAlert is always true,
+        // so its priority needs to be lower than showDriverNotActivatedAlert.
+        OverlayAlertView {
+          DriverNotConnectedAlertView()
         }
       }
     }

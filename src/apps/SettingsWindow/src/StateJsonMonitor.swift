@@ -8,14 +8,17 @@ private func callback() {
 
 @MainActor
 private struct State: Codable {
-  var driverConnected: Bool?
+  var virtualHidDeviceServiceClientConnected: Bool?
   var driverActivated: Bool?
+  var driverConnected: Bool?
   var driverVersionMismatched: Bool?
   var hidDeviceOpenPermitted: Bool?
 
   public mutating func update(_ s: State) {
-    driverConnected = s.driverConnected ?? driverConnected
+    virtualHidDeviceServiceClientConnected =
+      s.virtualHidDeviceServiceClientConnected ?? virtualHidDeviceServiceClientConnected
     driverActivated = s.driverActivated ?? driverActivated
+    driverConnected = s.driverConnected ?? driverConnected
     driverVersionMismatched = s.driverVersionMismatched ?? driverVersionMismatched
     hidDeviceOpenPermitted = s.hidDeviceOpenPermitted ?? hidDeviceOpenPermitted
   }
@@ -62,11 +65,14 @@ public class StateJsonMonitor {
     // Update show alerts
     //
 
-    if let v = state.driverConnected {
-      print("driverConnected \(v)")
+    if let v = state.virtualHidDeviceServiceClientConnected {
+      print("virtualHidDeviceServiceClientConnected \(v)")
     }
     if let v = state.driverActivated {
       print("driverActivated \(v)")
+    }
+    if let v = state.driverConnected {
+      print("driverConnected \(v)")
     }
     if let v = state.driverVersionMismatched {
       print("driverVersionMismatched \(v)")
@@ -77,11 +83,11 @@ public class StateJsonMonitor {
 
     let contentViewStates = ContentViewStates.shared
 
-    switch state.driverConnected {
+    switch state.virtualHidDeviceServiceClientConnected {
     case true:
-      contentViewStates.showDriverNotConnectedAlert = false
+      contentViewStates.showVirtualHidDeviceServiceClientNotConnectedAlert = false
     case false:
-      contentViewStates.showDriverNotConnectedAlert = true
+      contentViewStates.showVirtualHidDeviceServiceClientNotConnectedAlert = true
     default:  // nil
       break
     }
@@ -91,6 +97,15 @@ public class StateJsonMonitor {
       contentViewStates.showDriverNotActivatedAlert = false
     case false:
       contentViewStates.showDriverNotActivatedAlert = true
+    default:  // nil
+      break
+    }
+
+    switch state.driverConnected {
+    case true:
+      contentViewStates.showDriverNotConnectedAlert = false
+    case false:
+      contentViewStates.showDriverNotConnectedAlert = true
     default:  // nil
       break
     }

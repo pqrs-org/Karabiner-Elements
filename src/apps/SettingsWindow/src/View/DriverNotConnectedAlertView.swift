@@ -7,18 +7,13 @@ struct DriverNotConnectedAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center) {
         Label(
-          "Waiting to connect to Karabiner-VirtualHIDDevice-Daemon",
+          "Waiting for a connection to the IOKit service",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))
+        .textSelection(.enabled)
 
         ProgressView()
-
-        Label(
-          "If the message remains visible, third-party security software may be blocking communication with Karabiner-VirtualHIDDevice-Daemon.",
-          systemImage: "lightbulb"
-        )
-        .fixedSize(horizontal: false, vertical: true)
       }
       .padding()
       .frame(width: 850)
