@@ -29,6 +29,8 @@ enum class operation_type : uint8_t {
   notification_message,
   get_system_variables, // Return only the system.* entries from manipulator_environment.variables.
   system_variables,
+  get_multitouch_extension_variables,
+  multitouch_extension_variables,
   // core_service -> console_user_server
   shell_command_execution,
   select_input_source,
@@ -57,6 +59,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::notification_message, "notification_message"},
         {operation_type::get_system_variables, "get_system_variables"},
         {operation_type::system_variables, "system_variables"},
+        {operation_type::get_multitouch_extension_variables, "get_multitouch_extension_variables"},
+        {operation_type::multitouch_extension_variables, "multitouch_extension_variables"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::select_input_source, "select_input_source"},
         {operation_type::software_function, "software_function"},

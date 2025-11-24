@@ -10,6 +10,7 @@
 #include "device_grabber.hpp"
 #include "filesystem_utility.hpp"
 #include "types.hpp"
+#include <array>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/session.hpp>
@@ -336,6 +337,26 @@ public:
             }
             break;
 
+          case operation_type::get_multitouch_extension_variables:
+            if (device_grabber_) {
+              device_grabber_->async_invoke_with_manipulator_environment(
+                  [this, sender_endpoint](auto&& manipulator_environment) {
+                    if (verification_exempt_peer_manager_) {
+                      std::unordered_map<std::string, manipulator_environment_variable_value> variables;
+                      for (const auto& name : multitouch_extension_environment_variable_names) {
+                        variables[name] = manipulator_environment.get_variable(name);
+                      }
+
+                      nlohmann::json json{
+                          {"operation_type", operation_type::multitouch_extension_variables},
+                          {"multitouch_extension_variables", variables}};
+                      verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
+                                                                    nlohmann::json::to_msgpack(json));
+                    }
+                  });
+            }
+            break;
+
           default:
             break;
         }
@@ -417,22 +438,7 @@ private:
 
   void clear_multitouch_extension_environment_variables(void) {
     if (device_grabber_) {
-      for (const auto& name : {
-               "multitouch_extension_finger_count_upper_quarter_area",
-               "multitouch_extension_finger_count_lower_quarter_area",
-               "multitouch_extension_finger_count_left_quarter_area",
-               "multitouch_extension_finger_count_right_quarter_area",
-               "multitouch_extension_finger_count_upper_half_area",
-               "multitouch_extension_finger_count_lower_half_area",
-               "multitouch_extension_finger_count_left_half_area",
-               "multitouch_extension_finger_count_right_half_area",
-               "multitouch_extension_finger_count_total",
-               "multitouch_extension_palm_count_upper_half_area",
-               "multitouch_extension_palm_count_lower_half_area",
-               "multitouch_extension_palm_count_left_half_area",
-               "multitouch_extension_palm_count_right_half_area",
-               "multitouch_extension_palm_count_total",
-           }) {
+      for (const auto& name : multitouch_extension_environment_variable_names) {
         device_grabber_->async_post_set_variable_event(
             manipulator_environment_variable_set_variable(
                 name,
@@ -444,6 +450,23 @@ private:
       }
     }
   }
+
+  static constexpr std::array multitouch_extension_environment_variable_names{
+      "multitouch_extension_finger_count_upper_quarter_area",
+      "multitouch_extension_finger_count_lower_quarter_area",
+      "multitouch_extension_finger_count_left_quarter_area",
+      "multitouch_extension_finger_count_right_quarter_area",
+      "multitouch_extension_finger_count_upper_half_area",
+      "multitouch_extension_finger_count_lower_half_area",
+      "multitouch_extension_finger_count_left_half_area",
+      "multitouch_extension_finger_count_right_half_area",
+      "multitouch_extension_finger_count_total",
+      "multitouch_extension_palm_count_upper_half_area",
+      "multitouch_extension_palm_count_lower_half_area",
+      "multitouch_extension_palm_count_left_half_area",
+      "multitouch_extension_palm_count_right_half_area",
+      "multitouch_extension_palm_count_total",
+  };
 
   uid_t current_console_user_id_;
   std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer_;

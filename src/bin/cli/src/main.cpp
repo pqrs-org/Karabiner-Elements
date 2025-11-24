@@ -160,6 +160,53 @@ void list_system_variables(void) {
   }
 }
 
+void list_multitouch_extension_variables(void) {
+  try {
+    auto wait = pqrs::make_thread_wait();
+
+    krbn::core_service_client client("cli_cs_clnt");
+
+    client.connect_failed.connect([&wait](auto&& error_code) {
+      std::cerr << "list-multitouch-extension-variables error:" << error_code << std::endl;
+      wait->notify();
+    });
+
+    client.received.connect([&wait](auto&& buffer,
+                                    auto&& sender_endpoint) {
+      if (buffer) {
+        if (buffer->empty()) {
+          return;
+        }
+
+        try {
+          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+          switch (json.at("operation_type").get<krbn::operation_type>()) {
+            case krbn::operation_type::multitouch_extension_variables: {
+              std::cout << krbn::json_utility::dump(json.at("multitouch_extension_variables")) << std::endl;
+              wait->notify();
+              break;
+            }
+
+            default:
+              break;
+          }
+        } catch (std::exception& e) {
+          std::cerr << "list-multitouch-extension-variables error:" << std::endl
+                    << e.what() << std::endl;
+        }
+      }
+    });
+
+    client.async_start();
+    client.async_get_multitouch_extension_variables();
+
+    wait->wait_notice();
+  } catch (std::exception& e) {
+    std::cerr << "list-multitouch-extension-variables error:" << std::endl
+              << e.what() << std::endl;
+  }
+}
+
 void set_variables(const std::string& variables) {
   try {
     auto json = krbn::json_utility::parse_jsonc(variables);
@@ -251,7 +298,10 @@ int main(int argc, char** argv) {
                         "Show all connected devices");
 
   options.add_options()("list-system-variables",
-                        "Show all system-variables");
+                        "Show all system variables");
+
+  options.add_options()("list-multitouch-extension-variables",
+                        "Show all multitouch extension variables");
 
   options.add_options()("set-variables",
                         "Json string: {[key: string]: number|boolean|string}",
@@ -344,6 +394,14 @@ int main(int argc, char** argv) {
       std::string key = "list-system-variables";
       if (parse_result.count(key)) {
         list_system_variables();
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "list-multitouch-extension-variables";
+      if (parse_result.count(key)) {
+        list_multitouch_extension_variables();
         goto finish;
       }
     }

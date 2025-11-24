@@ -242,6 +242,18 @@ public:
     });
   }
 
+  void async_get_multitouch_extension_variables(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::get_multitouch_extension_variables},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
   void async_connect_multitouch_extension(void) const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
