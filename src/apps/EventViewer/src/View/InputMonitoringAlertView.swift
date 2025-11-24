@@ -30,8 +30,8 @@ struct InputMonitoringAlertView: View {
           Text("Please allow on Privacy & Security System Settings.")
         }
 
-        Button(
-          action: { openSystemSettingsSecurity() },
+        OpenSystemSettingsButton(
+          url: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent",
           label: {
             Label(
               "Open Privacy & Security System Settings...",
@@ -56,13 +56,5 @@ struct InputMonitoringAlertView: View {
     .onAppear {
       focus = true
     }
-  }
-
-  func openSystemSettingsSecurity() {
-    libkrbn_killall_system_settings()
-
-    let url = URL(
-      string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
-    NSWorkspace.shared.open(url)
   }
 }

@@ -24,14 +24,8 @@ struct DriverNotActivatedAlertViewMacOS14: View {
                 )
               }
 
-              Button(
-                action: {
-                  libkrbn_killall_system_settings()
-
-                  let url = URL(
-                    string: "x-apple.systempreferences:com.apple.preference.security?General")!
-                  NSWorkspace.shared.open(url)
-                },
+              OpenSystemSettingsButton(
+                url: "x-apple.systempreferences:com.apple.preference.security?General",
                 label: {
                   Label(
                     "Open Privacy & Security System Settings...",
