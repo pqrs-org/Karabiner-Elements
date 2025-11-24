@@ -69,8 +69,12 @@ public:
 
     virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>();
 
-    virtual_hid_device_service_client_->connected.connect([this] {
+    virtual_hid_device_service_client_->connected.connect([this, weak_core_service_state_json_writer] {
       logger::get_logger()->info("virtual_hid_device_service_client_ connected");
+
+      if (auto writer = weak_core_service_state_json_writer.lock()) {
+        writer->set_virtual_hid_device_service_client_connected(true);
+      }
 
       update_virtual_hid_keyboard();
       update_virtual_hid_pointing();
@@ -79,12 +83,20 @@ public:
       async_grab_devices();
     });
 
-    virtual_hid_device_service_client_->connect_failed.connect([](auto&& error_code) {
+    virtual_hid_device_service_client_->connect_failed.connect([weak_core_service_state_json_writer](auto&& error_code) {
       logger::get_logger()->info("virtual_hid_device_service_client_ connect_failed: {0}", error_code.message());
+
+      if (auto writer = weak_core_service_state_json_writer.lock()) {
+        writer->set_virtual_hid_device_service_client_connected(false);
+      }
     });
 
-    virtual_hid_device_service_client_->closed.connect([] {
+    virtual_hid_device_service_client_->closed.connect([weak_core_service_state_json_writer] {
       logger::get_logger()->info("virtual_hid_device_service_client_ closed");
+
+      if (auto writer = weak_core_service_state_json_writer.lock()) {
+        writer->set_virtual_hid_device_service_client_connected(false);
+      }
 
       // Wait automatic reconnection.
       //

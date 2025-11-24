@@ -12,6 +12,7 @@ class core_service_state_json_writer final {
 public:
   core_service_state_json_writer(void) : state_json_writer_(constants::get_core_service_state_json_file_path()) {
     set_hid_device_open_permitted(std::nullopt);
+    set_virtual_hid_device_service_client_connected(std::nullopt);
     set_driver_activated(std::nullopt);
     set_driver_connected(std::nullopt);
     set_driver_version_mismatched(std::nullopt);
@@ -19,6 +20,10 @@ public:
 
   void set_hid_device_open_permitted(std::optional<bool> value) {
     state_json_writer_.set("hid_device_open_permitted", value);
+  }
+
+  void set_virtual_hid_device_service_client_connected(std::optional<bool> value) {
+    state_json_writer_.set("virtual_hid_device_service_client_connected", value);
   }
 
   void set_driver_activated(std::optional<bool> value) {
