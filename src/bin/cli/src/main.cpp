@@ -212,7 +212,7 @@ void watch_multitouch_extension_variables(int interval) {
     auto wait = pqrs::make_thread_wait();
     std::string json_string;
 
-    krbn::core_service_client client("cli_cs_clnt");
+    krbn::core_service_client client("cli_mev_watch");
 
     client.connect_failed.connect([](auto&& error_code) {
       std::cerr << "watch-multitouch-extension-variables error:" << error_code << std::endl;
