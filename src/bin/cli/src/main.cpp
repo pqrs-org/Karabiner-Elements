@@ -207,6 +207,59 @@ void list_multitouch_extension_variables(void) {
   }
 }
 
+void watch_multitouch_extension_variables(int interval) {
+  try {
+    auto wait = pqrs::make_thread_wait();
+    std::string json_string;
+
+    krbn::core_service_client client("cli_cs_clnt");
+
+    client.connect_failed.connect([](auto&& error_code) {
+      std::cerr << "watch-multitouch-extension-variables error:" << error_code << std::endl;
+      exit(1);
+    });
+
+    client.received.connect([&json_string](auto&& buffer,
+                                           auto&& sender_endpoint) {
+      if (buffer) {
+        if (buffer->empty()) {
+          return;
+        }
+
+        try {
+          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+          switch (json.at("operation_type").get<krbn::operation_type>()) {
+            case krbn::operation_type::multitouch_extension_variables: {
+              auto s = json.at("multitouch_extension_variables").dump();
+              if (json_string != s) {
+                json_string = s;
+                std::cout << s << std::endl;
+              }
+              break;
+            }
+
+            default:
+              break;
+          }
+        } catch (std::exception& e) {
+          std::cerr << "watch-multitouch-extension-variables error:" << std::endl
+                    << e.what() << std::endl;
+        }
+      }
+    });
+
+    client.async_start();
+
+    while (true) {
+      client.async_get_multitouch_extension_variables();
+      std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+    }
+  } catch (std::exception& e) {
+    std::cerr << "watch-multitouch-extension-variables error:" << std::endl
+              << e.what() << std::endl;
+  }
+}
+
 void set_variables(const std::string& variables) {
   try {
     auto json = krbn::json_utility::parse_jsonc(variables);
@@ -302,6 +355,11 @@ int main(int argc, char** argv) {
 
   options.add_options()("list-multitouch-extension-variables",
                         "Show all multitouch extension variables");
+
+  options.add_options()("watch-multitouch-extension-variables",
+                        "Watch multitouch extension variables and print all of them in one line whenever any variable changes",
+                        cxxopts::value<int>()->implicit_value("500"),
+                        "polling-interval-in-milliseconds");
 
   options.add_options()("set-variables",
                         "Json string: {[key: string]: number|boolean|string}",
@@ -402,6 +460,14 @@ int main(int argc, char** argv) {
       std::string key = "list-multitouch-extension-variables";
       if (parse_result.count(key)) {
         list_multitouch_extension_variables();
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "watch-multitouch-extension-variables";
+      if (parse_result.count(key)) {
+        watch_multitouch_extension_variables(parse_result[key].as<int>());
         goto finish;
       }
     }
