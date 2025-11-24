@@ -25,6 +25,8 @@ struct FunctionKeysView: View {
 
         Button(
           action: {
+            libkrbn_killall_system_settings()
+
             if let url = URL(
               string: "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?FunctionKeys"
             ) {

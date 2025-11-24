@@ -185,6 +185,8 @@ struct ContentMainView: View {
 
               Button(
                 action: {
+                  libkrbn_killall_system_settings()
+
                   if let url = URL(
                     string: "x-apple.systempreferences:com.apple.preference.keyboard"
                   ) {

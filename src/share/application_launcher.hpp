@@ -24,7 +24,11 @@ public:
   }
 
   static void killall_settings(void) {
-    system("killall Karabiner-Elements");
+    system("/usr/bin/killall Karabiner-Elements");
+  }
+
+  static void killall_system_settings(void) {
+    system("/usr/bin/killall 'System Settings'");
   }
 
   static void launch_uninstaller(void) {

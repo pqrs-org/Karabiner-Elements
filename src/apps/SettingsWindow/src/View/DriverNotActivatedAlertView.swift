@@ -35,6 +35,8 @@ struct DriverNotActivatedAlertView: View {
 
               Button(
                 action: {
+                  libkrbn_killall_system_settings()
+
                   let url = URL(
                     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension")!
                   NSWorkspace.shared.open(url)

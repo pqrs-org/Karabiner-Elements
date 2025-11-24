@@ -59,6 +59,8 @@ struct InputMonitoringAlertView: View {
   }
 
   func openSystemSettingsSecurity() {
+    libkrbn_killall_system_settings()
+
     let url = URL(
       string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
     NSWorkspace.shared.open(url)
