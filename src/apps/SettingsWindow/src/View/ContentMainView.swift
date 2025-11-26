@@ -15,6 +15,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case log
   case expert
   case action
+  case systemExtensions
 
   var id: Self { self }
 
@@ -34,6 +35,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .log: return "Log"
     case .expert: return "Expert"
     case .action: return "Quit, Restart"
+    case .systemExtensions: return "System Extensions"
     }
   }
 
@@ -53,6 +55,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .log: return "doc.plaintext"
     case .expert: return "flame"
     case .action: return "bolt.circle"
+    case .systemExtensions: return "puzzlepiece"
     }
   }
 }
@@ -105,6 +108,12 @@ struct ContentMainView: View {
         .log,
         .expert,
         .action,
+      ]
+    ),
+    SidebarSection(
+      title: "Diagnostic",
+      items: [
+        .systemExtensions
       ]
     ),
   ]
@@ -239,6 +248,8 @@ struct ContentMainView: View {
             ExpertView()
           case .action:
             ActionView()
+          case .systemExtensions:
+            SystemExtensionsView()
           }
         }
       }
