@@ -16,6 +16,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case expert
   case action
   case systemExtensions
+  case sysextdLogMessages
 
   var id: Self { self }
 
@@ -36,6 +37,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .expert: return "Expert"
     case .action: return "Quit, Restart"
     case .systemExtensions: return "System Extensions"
+    case .sysextdLogMessages: return "macOS Log Messages"
     }
   }
 
@@ -55,7 +57,8 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .log: return "doc.plaintext"
     case .expert: return "flame"
     case .action: return "bolt.circle"
-    case .systemExtensions: return "puzzlepiece"
+    case .systemExtensions: return "stethoscope"
+    case .sysextdLogMessages: return "waveform.path.ecg"
     }
   }
 }
@@ -113,7 +116,8 @@ struct ContentMainView: View {
     SidebarSection(
       title: "Diagnostic",
       items: [
-        .systemExtensions
+        .systemExtensions,
+        .sysextdLogMessages,
       ]
     ),
   ]
@@ -126,7 +130,7 @@ struct ContentMainView: View {
             Section {
               ForEach(sections[section].items) { item in
                 Label(item.title, systemImage: item.systemImage)
-                  .padding(.vertical, 4.0)
+                  .padding(.vertical, 2.0)
               }
             } header: {
               Text(sections[section].title)
@@ -250,6 +254,8 @@ struct ContentMainView: View {
             ActionView()
           case .systemExtensions:
             SystemExtensionsView()
+          case .sysextdLogMessages:
+            SysextdLogMessagesView()
           }
         }
       }

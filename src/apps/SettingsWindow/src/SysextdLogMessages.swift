@@ -9,6 +9,8 @@ public class SysextdLogMessages {
   var stream: RealtimeTextStream { streamer.stream }
 
   public func update() {
+    stream.clear()
+
     streamer.start(
       launchPath: "/usr/bin/log",
       arguments: [
