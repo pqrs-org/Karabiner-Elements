@@ -28,6 +28,14 @@ final class RealtimeTextStream {
       c.yield(())
     }
   }
+
+  func appendText(_ s: String) {
+    text += s
+
+    for c in continuations.values {
+      c.yield(())
+    }
+  }
 }
 
 // A view for displaying frequently updated text.
