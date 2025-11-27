@@ -2,7 +2,9 @@ import SwiftUI
 
 // A stream that emits the text displayed by RealtimeText.
 @MainActor
-final class RealtimeTextStream {
+final class RealtimeTextStream: ObservableObject {
+  @Published private(set) var isTextReady = false
+
   // Reusing a single AsyncStream across multiple views can cause new events to stop arriving.
   // (e.g., repeatedly creating/destroying a view)
   // To avoid the issue, we have to create an independent AsyncStream for each view.
@@ -23,14 +25,29 @@ final class RealtimeTextStream {
 
   func setText(_ s: String) {
     text = s
+    textUpdated()
+  }
+
+  func appendText(_ s: String) {
+    text += s
+    textUpdated()
+  }
+
+  private func textUpdated() {
+    // Even if the text is empty, calling setText or appendText should set isTextReady to true so that the ProgressView can be dismissed.
+    if !isTextReady {
+      isTextReady = true
+    }
 
     for c in continuations.values {
       c.yield(())
     }
   }
 
-  func appendText(_ s: String) {
-    text += s
+  func clear() {
+    text = ""
+
+    isTextReady = false
 
     for c in continuations.values {
       c.yield(())
@@ -117,6 +134,29 @@ struct RealtimeText: NSViewRepresentable {
 
     deinit {
       task?.cancel()
+    }
+  }
+}
+
+// A wrapper that displays the ProgressView until the stream receives text.
+struct RealtimeTextWithProgress: View {
+  @ObservedObject var stream: RealtimeTextStream
+  let font: NSFont
+
+  init(
+    stream: RealtimeTextStream,
+    font: NSFont,
+  ) {
+    self.stream = stream
+    self.font = font
+  }
+
+  var body: some View {
+    if !stream.isTextReady {
+      ProgressView()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+    } else {
+      RealtimeText(stream: stream, font: font)
     }
   }
 }
