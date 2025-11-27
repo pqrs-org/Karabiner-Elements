@@ -4,27 +4,18 @@ import SwiftUI
 public class SystemExtensions {
   public static let shared = SystemExtensions()
 
-  let stream = RealtimeTextStream()
+  let streamer = RealtimeCommandStreamer()
+  var stream: RealtimeTextStream { streamer.stream }
 
   public func update() {
-    let command = Process()
-    command.launchPath = "/usr/bin/systemextensionsctl"
-    command.arguments = [
-      "list"
-    ]
-
-    command.environment = [
-      "LC_ALL": "C"
-    ]
-
-    let pipe = Pipe()
-    command.standardOutput = pipe
-
-    command.launch()
-    command.waitUntilExit()
-
-    if let data = try? pipe.fileHandleForReading.readToEnd() {
-      stream.setText(String(data: data, encoding: .utf8) ?? "")
-    }
+    streamer.start(
+      launchPath: "/usr/bin/systemextensionsctl",
+      arguments: [
+        "list"
+      ],
+      environment: [
+        "LC_ALL": "C"
+      ]
+    )
   }
 }
