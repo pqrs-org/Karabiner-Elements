@@ -27,7 +27,7 @@ struct SystemExtensionsView: View {
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
 
-      RealtimeText(
+      RealtimeTextWithProgress(
         stream: SystemExtensions.shared.stream,
         font: NSFont.monospacedSystemFont(
           ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
