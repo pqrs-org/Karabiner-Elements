@@ -36,8 +36,11 @@ struct KarabinerMultitouchExtensionApp: App {
   }
 }
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
   private var activity: NSObjectProtocol?
+  private var sleepTask: Task<Void, Never>?
+  private var wakeTask: Task<Void, Never>?
 
   public func applicationDidFinishLaunching(_: Notification) {
     //
@@ -47,24 +50,72 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     MECoreServiceClient.shared.start()
     MultitouchDeviceManager.shared.observeIONotification()
 
+    startActivity()
+
+    observeSystemSleep()
+  }
+
+  public func applicationWillTerminate(_: Notification) {
+    cancelSystemSleepObservers()
+
+    stopActivity()
+
+    MultitouchDeviceManager.shared.setCallback(false)
+
+    libkrbn_terminate()
+  }
+
+  private func startActivity() {
+    print("startActivity")
+
     //
     // Disable App Nap
     //
 
     activity = ProcessInfo.processInfo.beginActivity(
-      options: .userInitiated,
+      options: .userInteractive,
       reason: "Disable App Nap in order to receive multitouch events even if this app is background"
     )
   }
 
-  public func applicationWillTerminate(_: Notification) {
+  private func stopActivity() {
+    print("stopActivity")
+
     if let a = activity {
       ProcessInfo.processInfo.endActivity(a)
       activity = nil
     }
+  }
 
-    MultitouchDeviceManager.shared.setCallback(false)
+  private func observeSystemSleep() {
+    sleepTask = Task { @MainActor in
+      let notifications = NSWorkspace.shared.notificationCenter.notifications(
+        named: NSWorkspace.willSleepNotification,
+        object: nil
+      )
 
-    libkrbn_terminate()
+      for await _ in notifications {
+        self.stopActivity()
+      }
+    }
+
+    wakeTask = Task { @MainActor in
+      let notifications = NSWorkspace.shared.notificationCenter.notifications(
+        named: NSWorkspace.didWakeNotification,
+        object: nil
+      )
+
+      for await _ in notifications {
+        self.startActivity()
+      }
+    }
+  }
+
+  private func cancelSystemSleepObservers() {
+    sleepTask?.cancel()
+    sleepTask = nil
+
+    wakeTask?.cancel()
+    wakeTask = nil
   }
 }
