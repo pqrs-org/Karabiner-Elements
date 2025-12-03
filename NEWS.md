@@ -16,6 +16,7 @@
     -   Improved the automatic recovery behavior from inter-process communication failures.
     -   Improved `open_application` to exclude non-application bundles from `frontmost_application_history_index`.
     -   Move system extensions viewer to Settings from EventViewer.
+    -   Updated EventViewer to properly display modifier flags for pointing button events.
     -   Improved MultitouchExtension to disable PreventUserIdleSystemSleep before the system goes to sleep.
     -   Sparkle Framework has been updated.
 
