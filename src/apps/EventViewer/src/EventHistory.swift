@@ -175,9 +175,13 @@ private func callback(
     // entry.misc
     //
 
-    if let set = EventHistory.shared.modifierFlags[deviceId] {
+    if usagePage == 0x9 {  // usage_page::button
+      if !EventHistory.shared.lastPointingButtonModifierFlags.isEmpty {
+        entry.misc = "flags \(EventHistory.shared.lastPointingButtonModifierFlags)"
+      }
+    } else if let set = EventHistory.shared.modifierFlags[deviceId] {
       if set.count > 0 {
-        let flags = set.sorted().joined(separator: ",")
+        let flags = set.sorted().joined(separator: ", ")
         entry.misc = "flags \(flags)"
       }
     }
@@ -215,6 +219,10 @@ public class EventHistory: ObservableObject {
   private var paused = false
   public var modifierFlags: [UInt64: Set<String>] = [:]
 
+  private var pointingButtonModifierFlagsLocalMonitor: Any?
+  private var pointingButtonModifierFlagsGlobalMonitor: Any?
+  public private(set) var lastPointingButtonModifierFlags: String = ""
+
   @Published var entries: [EventHistoryEntry] = []
   @Published var unknownEventEntries: [EventHistoryEntry] = []
 
@@ -228,6 +236,8 @@ public class EventHistory: ObservableObject {
 
       libkrbn_register_hid_value_arrived_callback(callback)
 
+      startPointingButtonModifierFlagsMonitor()
+
       paused = false
     }
   }
@@ -236,6 +246,8 @@ public class EventHistory: ObservableObject {
     startCount -= 1
     if startCount == 0 {
       libkrbn_disable_hid_value_monitor()
+
+      stopPointingButtonModifierFlagsMonitor()
     }
   }
 
@@ -290,10 +302,56 @@ public class EventHistory: ObservableObject {
   }
 
   //
-  // Mouse event handling
+  // NSEvent modifier flags handling
   //
 
-  func modifierFlagsString(_ flags: NSEvent.ModifierFlags) -> String {
+  private func startPointingButtonModifierFlagsMonitor() {
+    stopPointingButtonModifierFlagsMonitor()
+
+    pointingButtonModifierFlagsLocalMonitor = NSEvent.addLocalMonitorForEvents(
+      matching: .flagsChanged
+    ) { event in
+      Task { @MainActor in
+        self.handlePointingButtonModifierFlagsChanged(event)
+      }
+      return event
+    }
+
+    pointingButtonModifierFlagsGlobalMonitor = NSEvent.addGlobalMonitorForEvents(
+      matching: .flagsChanged
+    ) { event in
+      Task { @MainActor in
+        self.handlePointingButtonModifierFlagsChanged(event)
+      }
+    }
+  }
+
+  private func stopPointingButtonModifierFlagsMonitor() {
+    if let monitor = pointingButtonModifierFlagsLocalMonitor {
+      NSEvent.removeMonitor(monitor)
+      pointingButtonModifierFlagsLocalMonitor = nil
+    }
+
+    if let monitor = pointingButtonModifierFlagsGlobalMonitor {
+      NSEvent.removeMonitor(monitor)
+      pointingButtonModifierFlagsGlobalMonitor = nil
+    }
+
+    lastPointingButtonModifierFlags = ""
+  }
+
+  @MainActor
+  private func handlePointingButtonModifierFlagsChanged(_ event: NSEvent) {
+    let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+    let flagsString = modifierFlagsString(flags)
+    if lastPointingButtonModifierFlags == flagsString {
+      return
+    }
+
+    lastPointingButtonModifierFlags = flagsString
+  }
+
+  private func modifierFlagsString(_ flags: NSEvent.ModifierFlags) -> String {
     var names: [String] = []
     if flags.contains(.capsLock) {
       names.append("caps")
@@ -320,7 +378,7 @@ public class EventHistory: ObservableObject {
       names.append("fn")
     }
 
-    return names.joined(separator: ",")
+    return names.joined(separator: ", ")
   }
 
   //
