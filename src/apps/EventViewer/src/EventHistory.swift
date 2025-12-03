@@ -236,7 +236,7 @@ public class EventHistory: ObservableObject {
 
       libkrbn_register_hid_value_arrived_callback(callback)
 
-      startPointingButtonModifierFlagsMonitor()
+      startPointingButtonModifierFlagsMonitors()
 
       paused = false
     }
@@ -247,7 +247,7 @@ public class EventHistory: ObservableObject {
     if startCount == 0 {
       libkrbn_disable_hid_value_monitor()
 
-      stopPointingButtonModifierFlagsMonitor()
+      stopPointingButtonModifierFlagsMonitors()
     }
   }
 
@@ -305,8 +305,8 @@ public class EventHistory: ObservableObject {
   // NSEvent modifier flags handling
   //
 
-  private func startPointingButtonModifierFlagsMonitor() {
-    stopPointingButtonModifierFlagsMonitor()
+  private func startPointingButtonModifierFlagsMonitors() {
+    stopPointingButtonModifierFlagsMonitors()
 
     pointingButtonModifierFlagsLocalMonitor = NSEvent.addLocalMonitorForEvents(
       matching: .flagsChanged
@@ -326,7 +326,7 @@ public class EventHistory: ObservableObject {
     }
   }
 
-  private func stopPointingButtonModifierFlagsMonitor() {
+  private func stopPointingButtonModifierFlagsMonitors() {
     if let monitor = pointingButtonModifierFlagsLocalMonitor {
       NSEvent.removeMonitor(monitor)
       pointingButtonModifierFlagsLocalMonitor = nil
