@@ -24,15 +24,8 @@ public:
       // but consumer_key_code key_up events with time_stamp == 0.
       // (Sometimes, time_stamp is not zero, but a fixed value.)
       //
-      // We have to set properly time_stamp if the event has rewound time_stamp because
-      // `probable_stuck_events_manager` assumes time_stamp is not rewound on a device.
-      // Thus, we save last valid time_stamp for each devices, and use it if needed.
-      //
-      // Note:
-      // Do not use generated time_stamp (e.g., pqrs::osx::chrono::mach_absolute_time_point) since
-      // device_observer and device_grabber assume the same event has the same time_stamp.
-      // (If the time_stamp is set by device driver, the assumption is appropriate.)
-      // If device_observer and device_grabber use generated time_stamp, the time_stamp will be differ.
+      // To properly handle cases such as timeouts in to_if_alone,
+      // we correct the timestamp if any backward time drift is detected.
 
       auto t = hid_values.back().get_time_stamp();
       if (t < last_time_stamp_) {
