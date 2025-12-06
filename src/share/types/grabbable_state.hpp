@@ -11,8 +11,7 @@ public:
   enum class state : uint32_t {
     none,
     grabbable,
-    ungrabbable_temporarily,
-    ungrabbable_permanently,
+    ungrabbable,
     end_,
   };
 
@@ -76,8 +75,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {
         {grabbable_state::state::none, nullptr},
         {grabbable_state::state::grabbable, "grabbable"},
-        {grabbable_state::state::ungrabbable_temporarily, "ungrabbable_temporarily"},
-        {grabbable_state::state::ungrabbable_permanently, "ungrabbable_permanently"},
+        {grabbable_state::state::ungrabbable, "ungrabbable"},
         {grabbable_state::state::end_, "end_"},
     });
 

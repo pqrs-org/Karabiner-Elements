@@ -14,10 +14,10 @@ void run_grabbable_state_test(void) {
     }
     {
       krbn::grabbable_state grabbable_state(krbn::device_id(1234),
-                                            krbn::grabbable_state::state::ungrabbable_temporarily,
+                                            krbn::grabbable_state::state::ungrabbable,
                                             krbn::absolute_time_point(1000));
       expect(grabbable_state.get_device_id() == krbn::device_id(1234));
-      expect(grabbable_state.get_state() == krbn::grabbable_state::state::ungrabbable_temporarily);
+      expect(grabbable_state.get_state() == krbn::grabbable_state::state::ungrabbable);
       expect(grabbable_state.get_time_stamp() == krbn::absolute_time_point(1000));
     }
   };
@@ -25,13 +25,13 @@ void run_grabbable_state_test(void) {
   "grabbable_state::equals_except_time_stamp"_test = [] {
     {
       krbn::grabbable_state grabbable_state1(krbn::device_id(1234),
-                                             krbn::grabbable_state::state::ungrabbable_temporarily,
+                                             krbn::grabbable_state::state::ungrabbable,
                                              krbn::absolute_time_point(1000));
       krbn::grabbable_state grabbable_state2(krbn::device_id(1234),
-                                             krbn::grabbable_state::state::ungrabbable_temporarily,
+                                             krbn::grabbable_state::state::ungrabbable,
                                              krbn::absolute_time_point(2000));
       krbn::grabbable_state grabbable_state3(krbn::device_id(1234),
-                                             krbn::grabbable_state::state::ungrabbable_permanently,
+                                             krbn::grabbable_state::state::grabbable,
                                              krbn::absolute_time_point(3000));
       expect(grabbable_state1 != grabbable_state2);
       expect(grabbable_state1.equals_except_time_stamp(grabbable_state2));
@@ -51,7 +51,7 @@ void run_grabbable_state_test(void) {
 
     {
       krbn::grabbable_state grabbable_state1(krbn::device_id(1234),
-                                             krbn::grabbable_state::state::ungrabbable_temporarily,
+                                             krbn::grabbable_state::state::ungrabbable,
                                              krbn::absolute_time_point(1000));
       nlohmann::json json = grabbable_state1;
       auto grabbable_state2 = json.get<krbn::grabbable_state>();

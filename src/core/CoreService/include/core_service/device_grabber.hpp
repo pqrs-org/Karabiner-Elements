@@ -802,11 +802,10 @@ private:
     auto state = make_grabbable_state(entry);
     switch (state) {
       case grabbable_state::state::grabbable:
-      case grabbable_state::state::ungrabbable_temporarily:
         entry.async_start_queue_value_monitor(state);
         break;
 
-      case grabbable_state::state::ungrabbable_permanently:
+      case grabbable_state::state::ungrabbable:
       case grabbable_state::state::none:
       case grabbable_state::state::end_:
         entry.async_stop_queue_value_monitor();
@@ -824,16 +823,25 @@ private:
 
   // This method is executed in the shared dispatcher thread.
   grabbable_state::state make_grabbable_state(const device_grabber_details::entry& entry) const {
-    // The device is always grabbable if it is observed device
-    // because Karabiner-Core-Service does not seize the device and do not affect existing hidd processing.
-    // (e.g. key repeat)
+    //
+    // The device is always grabbable if it is observed device.
+    // Because Karabiner-Core-Service never takes exclusive control of a device,
+    // It doesn't cause side effects such as interfering with key input processing in hidd.
+    //
 
     if (entry.needs_to_observe_device()) {
       return grabbable_state::state::grabbable;
     }
 
+    //
+    // From here, we determine whether it's safe to take exclusive control of the device.
+    // If we take control before the virtual device is ready,
+    // input events will have nowhere to go and be dropped,
+    // so we must not grab the device until we're ready to send input events.
+    //
+
     if (!entry.needs_to_seize_device()) {
-      return grabbable_state::state::ungrabbable_permanently;
+      return grabbable_state::state::ungrabbable;
     }
 
     //
@@ -846,7 +854,7 @@ private:
     //
 
     if (system_sleeping_) {
-      return grabbable_state::state::ungrabbable_temporarily;
+      return grabbable_state::state::ungrabbable;
     }
 
     //
@@ -857,7 +865,7 @@ private:
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
       unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
-      return grabbable_state::state::ungrabbable_temporarily;
+      return grabbable_state::state::ungrabbable;
     }
 
     if (needs_prepare_virtual_hid_pointing_device()) {
@@ -865,7 +873,7 @@ private:
         std::string message = "virtual_hid_pointing is not ready. Please wait for a while.";
         logger_unique_filter_.warn(message);
         unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
-        return grabbable_state::state::ungrabbable_temporarily;
+        return grabbable_state::state::ungrabbable;
       }
     }
 
