@@ -24,23 +24,6 @@ public:
     return full_message_;
   }
 
-  void async_set_device_ungrabbable_temporarily_message(device_id id,
-                                                        const std::string& message) {
-    enqueue_to_dispatcher([this, id, message] {
-      device_ungrabbable_temporarily_messages_[id] = message;
-
-      update_full_message();
-    });
-  }
-
-  void async_erase_device(device_id id) {
-    enqueue_to_dispatcher([this, id] {
-      device_ungrabbable_temporarily_messages_.erase(id);
-
-      update_full_message();
-    });
-  }
-
   void async_update_sticky_modifiers_message(const modifier_flag_manager& modifier_flag_manager) {
     for (const auto& f : {
              modifier_flag::left_control,
@@ -108,16 +91,6 @@ private:
   void update_full_message(void) {
     std::stringstream ss;
 
-    for (const auto& m : device_ungrabbable_temporarily_messages_) {
-      if (!m.second.empty()) {
-        if (ss.tellp() > 0) {
-          ss << "\n";
-        }
-        ss << m.second;
-        break;
-      }
-    }
-
     for (const auto& m : messages_) {
       if (!m.second.empty()) {
         if (ss.tellp() > 0) {
@@ -130,7 +103,6 @@ private:
     full_message_ = ss.str();
   }
 
-  std::map<device_id, std::string> device_ungrabbable_temporarily_messages_;
   std::map<std::string, std::string> messages_;
   std::string full_message_;
 };

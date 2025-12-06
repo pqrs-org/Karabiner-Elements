@@ -327,10 +327,6 @@ public:
       // Unregister device
       //
 
-      if (notification_message_manager_) {
-        notification_message_manager_->async_erase_device(device_id);
-      }
-
       hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
 
       // ----------------------------------------
@@ -864,7 +860,6 @@ private:
     if (!virtual_hid_devices_state_.get_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
-      unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
       return grabbable_state::state::ungrabbable;
     }
 
@@ -872,22 +867,15 @@ private:
       if (!virtual_hid_devices_state_.get_virtual_hid_pointing_ready()) {
         std::string message = "virtual_hid_pointing is not ready. Please wait for a while.";
         logger_unique_filter_.warn(message);
-        unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
         return grabbable_state::state::ungrabbable;
       }
     }
 
-    // ----------------------------------------
-
-    unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
+    //
+    // It's okay to take exclusive control of the device.
+    //
 
     return grabbable_state::state::grabbable;
-  }
-
-  void unset_device_ungrabbable_temporarily_notification_message(device_id id) const {
-    if (notification_message_manager_) {
-      notification_message_manager_->async_set_device_ungrabbable_temporarily_message(id, "");
-    }
   }
 
   void update_caps_lock_led(void) {
