@@ -327,10 +327,6 @@ public:
       // Unregister device
       //
 
-      if (notification_message_manager_) {
-        notification_message_manager_->async_erase_device(device_id);
-      }
-
       hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
 
       // ----------------------------------------
@@ -724,18 +720,9 @@ private:
     } else {
       // Manipulate events
 
-      bool needs_regrab = false;
       bool notify = false;
 
       for (const auto& e : *event_queue_entries) {
-        if (auto ev = e->get_event().get_if<momentary_switch_event>()) {
-          needs_regrab |= entry.get_probable_stuck_events_manager()->update(
-              *ev,
-              e->get_event_type(),
-              entry.seized() ? device_state::seized
-                             : device_state::observed);
-        }
-
         if (!entry.get_disabled() && entry.seized()) {
           event_queue::entry qe(e->get_device_id(),
                                 e->get_event_time_stamp(),
@@ -753,10 +740,6 @@ private:
 
       if (core_configuration_->get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers()) {
         merged_input_event_queue_->sort_events();
-      }
-
-      if (needs_regrab) {
-        grab_device(entry);
       }
 
       if (notify) {
@@ -815,11 +798,10 @@ private:
     auto state = make_grabbable_state(entry);
     switch (state) {
       case grabbable_state::state::grabbable:
-      case grabbable_state::state::ungrabbable_temporarily:
         entry.async_start_queue_value_monitor(state);
         break;
 
-      case grabbable_state::state::ungrabbable_permanently:
+      case grabbable_state::state::ungrabbable:
       case grabbable_state::state::none:
       case grabbable_state::state::end_:
         entry.async_stop_queue_value_monitor();
@@ -837,16 +819,25 @@ private:
 
   // This method is executed in the shared dispatcher thread.
   grabbable_state::state make_grabbable_state(const device_grabber_details::entry& entry) const {
-    // The device is always grabbable if it is observed device
-    // because Karabiner-Core-Service does not seize the device and do not affect existing hidd processing.
-    // (e.g. key repeat)
+    //
+    // The device is always grabbable if it is observed device.
+    // Because Karabiner-Core-Service never takes exclusive control of a device,
+    // It doesn't cause side effects such as interfering with key input processing in hidd.
+    //
 
     if (entry.needs_to_observe_device()) {
       return grabbable_state::state::grabbable;
     }
 
+    //
+    // From here, we determine whether it's safe to take exclusive control of the device.
+    // If we take control before the virtual device is ready,
+    // input events will have nowhere to go and be dropped,
+    // so we must not grab the device until we're ready to send input events.
+    //
+
     if (!entry.needs_to_seize_device()) {
-      return grabbable_state::state::ungrabbable_permanently;
+      return grabbable_state::state::ungrabbable;
     }
 
     //
@@ -859,7 +850,7 @@ private:
     //
 
     if (system_sleeping_) {
-      return grabbable_state::state::ungrabbable_temporarily;
+      return grabbable_state::state::ungrabbable;
     }
 
     //
@@ -869,57 +860,22 @@ private:
     if (!virtual_hid_devices_state_.get_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
       logger_unique_filter_.warn(message);
-      unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
-      return grabbable_state::state::ungrabbable_temporarily;
+      return grabbable_state::state::ungrabbable;
     }
 
     if (needs_prepare_virtual_hid_pointing_device()) {
       if (!virtual_hid_devices_state_.get_virtual_hid_pointing_ready()) {
         std::string message = "virtual_hid_pointing is not ready. Please wait for a while.";
         logger_unique_filter_.warn(message);
-        unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
-        return grabbable_state::state::ungrabbable_temporarily;
+        return grabbable_state::state::ungrabbable;
       }
     }
 
     //
-    // Ungrabbable while probable stuck events exist
+    // It's okay to take exclusive control of the device.
     //
-
-    if (auto event = entry.get_probable_stuck_events_manager()->find_probable_stuck_event()) {
-      auto message = fmt::format("Probable stuck key detected! "
-                                 "{0} is ignored temporarily until {1} is pressed again. "
-                                 "Key may have been held when keyboard was grabbed. "
-                                 "Is the keyboard reconnecting while in use?",
-                                 entry.get_device_name(),
-                                 nlohmann::json(*event).dump());
-      logger_unique_filter_.warn(message);
-
-      if (notification_message_manager_) {
-        notification_message_manager_->async_set_device_ungrabbable_temporarily_message(
-            entry.get_device_id(),
-            fmt::format("Probable stuck key detected!\n\n"
-                        "{0} is ignored temporarily until {1} is pressed again.\n\n"
-                        "Key may have been held when keyboard was grabbed. "
-                        "Is the keyboard reconnecting while in use?",
-                        entry.get_device_short_name(),
-                        nlohmann::json(*event).dump()));
-      }
-
-      return grabbable_state::state::ungrabbable_temporarily;
-    }
-
-    // ----------------------------------------
-
-    unset_device_ungrabbable_temporarily_notification_message(entry.get_device_id());
 
     return grabbable_state::state::grabbable;
-  }
-
-  void unset_device_ungrabbable_temporarily_notification_message(device_id id) const {
-    if (notification_message_manager_) {
-      notification_message_manager_->async_set_device_ungrabbable_temporarily_message(id, "");
-    }
   }
 
   void update_caps_lock_led(void) {

@@ -9,7 +9,6 @@
 #include "hid_queue_values_converter.hpp"
 #include "iokit_utility.hpp"
 #include "pressed_keys_manager.hpp"
-#include "probable_stuck_events_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
@@ -43,8 +42,6 @@ public:
                                                                      device)),
         disabled_(false),
         temporarily_ignore_(false) {
-    probable_stuck_events_manager_ = std::make_shared<probable_stuck_events_manager>();
-
     pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
 
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
@@ -56,11 +53,6 @@ public:
       control_caps_lock_led_state_manager();
 
       if (seized()) {
-        logger::get_logger()->info("{0} probable_stuck_events_manager_->clear()",
-                                   device_name_);
-
-        probable_stuck_events_manager_->clear();
-
         if (device_properties_->get_device_identifiers().get_is_game_pad()) {
           game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
                                                                                  core_configuration_);
@@ -199,10 +191,6 @@ public:
     return device_properties_;
   }
 
-  std::shared_ptr<probable_stuck_events_manager> get_probable_stuck_events_manager(void) const {
-    return probable_stuck_events_manager_;
-  }
-
   std::shared_ptr<pressed_keys_manager> get_pressed_keys_manager(void) const {
     return pressed_keys_manager_;
   }
@@ -275,11 +263,7 @@ public:
           }
           break;
 
-        case grabbable_state::state::ungrabbable_temporarily:
-          options = kIOHIDOptionsTypeNone;
-          break;
-
-        case grabbable_state::state::ungrabbable_permanently:
+        case grabbable_state::state::ungrabbable:
         case grabbable_state::state::none:
         case grabbable_state::state::end_:
           // Do not start hid_queue_value_monitor_.
@@ -353,7 +337,6 @@ private:
   device_id device_id_;
   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
   pqrs::not_null_shared_ptr_t<device_properties> device_properties_;
-  std::shared_ptr<probable_stuck_events_manager> probable_stuck_events_manager_;
   std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
