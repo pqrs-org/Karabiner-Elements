@@ -12,6 +12,7 @@
     -   Fixed an issue where the sticky modifier indicator could continue to be displayed even after being disabled in the settings.
     -   Fixed an issue where karabiner_machine_identifier was not set correctly during a clean install.
 -   ⚡️ Improvements
+    -   Removed the probable stuck key detector since we've confirmed that, on supported versions of macOS, seizing the device while keys are held down no longer causes any issues.
     -   Added an alert that appears if communication with Karabiner-VirtualHIDDevice-Daemon is not possible.
     -   Improved the automatic recovery behavior from inter-process communication failures.
     -   Improved `open_application` to exclude non-application bundles from `frontmost_application_history_index`.
