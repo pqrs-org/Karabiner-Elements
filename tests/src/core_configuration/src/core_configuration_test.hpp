@@ -51,7 +51,7 @@ void run_core_configuration_test(void) {
                             nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "dictation"}})}).dump());
 
       expected.emplace_back(nlohmann::json::object({{"key_code", "f6"}}).dump(),
-                            nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})}).dump());
+                            nlohmann::json::array({nlohmann::json::object({{"generic_desktop", "do_not_disturb"}})}).dump());
 
       expected.emplace_back(nlohmann::json::object({{"key_code", "f7"}}).dump(),
                             nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "rewind"}})}).dump());
@@ -467,7 +467,7 @@ void run_core_configuration_test(void) {
                               nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "dictation"}})}).dump());
 
         expected.emplace_back(nlohmann::json::object({{"key_code", "f6"}}).dump(),
-                              nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})}).dump());
+                              nlohmann::json::array({nlohmann::json::object({{"generic_desktop", "do_not_disturb"}})}).dump());
 
         expected.emplace_back(nlohmann::json::object({{"key_code", "f7"}}).dump(),
                               nlohmann::json::array({nlohmann::json::object({{"consumer_key_code", "rewind"}})}).dump());
