@@ -62,6 +62,7 @@ constexpr value_t dpad_up(0x90);
 constexpr value_t dpad_down(0x91);
 constexpr value_t dpad_right(0x92);
 constexpr value_t dpad_left(0x93);
+constexpr value_t do_not_disturb(0x9b);
 } // namespace generic_desktop
 
 //
