@@ -2,6 +2,8 @@
 
 ## Beta
 
+-   💥 Breaking changes
+    -   Changed the default behavior of `f6` to the `Do Not Disturb` key.
 -   ✨ New Features
     -   Added [`open_application.frontmost_application_history_exclusion_bundle_identifiers` and `open_application.frontmost_application_history_exclusion_file_paths`.](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/software_function/open_application/)
     -   Added the following options to karabiner_cli:
@@ -19,6 +21,8 @@
     -   Move system extensions viewer to Settings from EventViewer.
     -   Updated EventViewer to properly display modifier flags for pointing button events.
     -   Improved MultitouchExtension to disable PreventUserIdleSystemSleep before the system goes to sleep.
+    -   Supported the following keys:
+        -   generic_desktop::do_not_disturb
     -   Sparkle Framework has been updated.
 
 ## Karabiner-Elements 15.7.0

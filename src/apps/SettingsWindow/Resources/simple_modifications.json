@@ -859,6 +859,15 @@
     },
     {
         "not_from": true,
+        "label": "do_not_disturb",
+        "data": [
+            {
+                "generic_desktop": "do_not_disturb"
+            }
+        ]
+    },
+    {
+        "not_from": true,
         "label": "launchpad",
         "data": [
             {

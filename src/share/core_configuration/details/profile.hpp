@@ -107,7 +107,7 @@ public:
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f6";
-    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"key_code", "f6"}})});
+    json.back()["to"] = nlohmann::json::array({nlohmann::json::object({{"generic_desktop", "do_not_disturb"}})});
 
     json.push_back(nlohmann::json::object());
     json.back()["from"]["key_code"] = "f7";

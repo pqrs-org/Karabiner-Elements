@@ -13,6 +13,8 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"dpad_down", pqrs::hid::usage::generic_desktop::dpad_down},
     {"dpad_right", pqrs::hid::usage::generic_desktop::dpad_right},
     {"dpad_left", pqrs::hid::usage::generic_desktop::dpad_left},
+    // The virtual keyboard's vendor_id and product_id must match Apple's keyboard to use the do_not_disturb key.
+    {"do_not_disturb", pqrs::hid::usage::generic_desktop::do_not_disturb},
 };
 
 constexpr auto name_value_map = mapbox::eternal::hash_map<mapbox::eternal::string, pqrs::hid::usage::value_t>(name_value_pairs);
