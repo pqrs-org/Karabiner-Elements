@@ -106,7 +106,7 @@ struct KarabinerMenuApp: App {
               quitFrom: .menu)
           },
           label: {
-            Label("Quit Karabiner-Elements", systemImage: "xmark.circle.fill")
+            Label("Quit Karabiner-Elements", systemImage: "xmark.rectangle")
               .labelStyle(.titleAndIcon)
           }
         )

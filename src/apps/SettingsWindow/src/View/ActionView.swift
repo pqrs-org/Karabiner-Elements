@@ -24,7 +24,7 @@ struct ActionView: View {
                   quitFrom: .settings)
               },
               label: {
-                Label("Quit Karabiner-Elements", systemImage: "xmark.circle.fill")
+                Label("Quit Karabiner-Elements", systemImage: "xmark.rectangle")
               })
           }
           .padding()
