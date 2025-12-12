@@ -22,7 +22,7 @@ struct KarabinerMultitouchExtensionApp: App {
       Divider()
 
       SettingsLink {
-        Label("Settings...", systemImage: "gearshape")
+        Label("Settings...", systemImage: "gear")
           .labelStyle(.titleAndIcon)
       } preAction: {
         NSApp.activate(ignoringOtherApps: true)

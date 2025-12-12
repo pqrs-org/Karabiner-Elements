@@ -50,7 +50,7 @@ struct KarabinerMenuApp: App {
             libkrbn_launch_settings()
           },
           label: {
-            Label("Settings...", systemImage: "gearshape")
+            Label("Settings...", systemImage: "gear")
               .labelStyle(.titleAndIcon)
           }
         )

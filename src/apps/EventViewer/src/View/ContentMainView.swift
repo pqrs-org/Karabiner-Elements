@@ -28,7 +28,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .variables: return "cube"
     case .devices: return "keyboard"
     case .unknownEvents: return "questionmark.square.dashed"
-    case .settings: return "gearshape"
+    case .settings: return "gear"
     }
   }
 }

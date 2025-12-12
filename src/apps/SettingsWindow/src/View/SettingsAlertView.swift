@@ -11,7 +11,7 @@ struct SettingsAlertView: View {
           VStack(alignment: .leading, spacing: 20.0) {
             Label(
               "Please select the keyboard type you'd like to use",
-              systemImage: "gearshape"
+              systemImage: "gear"
             )
             .font(.system(size: 24))
 
