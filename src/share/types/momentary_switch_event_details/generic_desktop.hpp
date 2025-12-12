@@ -14,6 +14,8 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"dpad_right", pqrs::hid::usage::generic_desktop::dpad_right},
     {"dpad_left", pqrs::hid::usage::generic_desktop::dpad_left},
     // The virtual keyboard's vendor_id and product_id must match Apple's keyboard to use the do_not_disturb key.
+    // Also, generic_desktop::do_not_disturb is handled correctly on the macOS side only on macOS 14 and later.
+    // On macOS 13, it is ignored by macOS.
     {"do_not_disturb", pqrs::hid::usage::generic_desktop::do_not_disturb},
 };
 

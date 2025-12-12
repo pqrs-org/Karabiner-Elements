@@ -859,7 +859,7 @@
     },
     {
         "not_from": true,
-        "label": "do_not_disturb",
+        "label": "do_not_disturb (available on macOS 14 and later)",
         "data": [
             {
                 "generic_desktop": "do_not_disturb"
