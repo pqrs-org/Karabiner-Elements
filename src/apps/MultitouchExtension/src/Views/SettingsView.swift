@@ -2,6 +2,7 @@ import SwiftUI
 
 enum TabTag: String {
   case main
+  case power
   case advanced
   case action
 }
@@ -16,6 +17,12 @@ struct SettingsView: View {
           Label("Main", systemImage: "gearshape")
         }
         .tag(TabTag.main)
+
+      SettingsPowerView()
+        .tabItem {
+          Label("Power", systemImage: "power")
+        }
+        .tag(TabTag.power)
 
       SettingsAdvancedView()
         .tabItem {

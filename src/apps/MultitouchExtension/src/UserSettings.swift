@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 @MainActor
@@ -13,6 +14,23 @@ final class UserSettings: ObservableObject {
   @AppStorage("kDelayBeforeTurnOff") var delayBeforeTurnOff = 0
   @AppStorage("kDelayBeforeTurnOn") var delayBeforeTurnOn = 0
   @AppStorage("kPalmThreshold") var palmThreshold = 2.0
+
+  //
+  // Power
+  //
+
+  @Published var allowUserInteractiveActivity =
+    UserDefaults.standard.bool(forKey: "allowUserInteractiveActivity")
+  {
+    didSet {
+      UserDefaults.standard.set(
+        allowUserInteractiveActivity, forKey: "allowUserInteractiveActivity")
+    }
+  }
+
+  //
+  // Methods
+  //
 
   var targetArea: NSRect {
     let top = Double(ignoredAreaTop) / 100

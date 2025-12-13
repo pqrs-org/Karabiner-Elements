@@ -1,3 +1,4 @@
+import Combine
 import SettingsAccess
 import SwiftUI
 
@@ -41,6 +42,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   private var activity: NSObjectProtocol?
   private var sleepTask: Task<Void, Never>?
   private var wakeTask: Task<Void, Never>?
+  private var userSettingsCancellable: AnyCancellable?
 
   public func applicationDidFinishLaunching(_: Notification) {
     //
@@ -50,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     MECoreServiceClient.shared.start()
     MultitouchDeviceManager.shared.observeIONotification()
 
-    startActivity()
+    observeUserInteractiveActivitySettings()
 
     observeSystemSleep()
   }
@@ -59,6 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     cancelSystemSleepObservers()
 
     stopActivity()
+    userSettingsCancellable = nil
 
     MultitouchDeviceManager.shared.setCallback(false)
 
@@ -66,25 +69,43 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   private func startActivity() {
-    print("startActivity")
-
     //
     // Disable App Nap
     //
 
-    activity = ProcessInfo.processInfo.beginActivity(
-      options: .userInteractive,
-      reason: "Disable App Nap in order to receive multitouch events even if this app is background"
-    )
+    if UserSettings.shared.allowUserInteractiveActivity {
+      print("beginActivity")
+
+      activity = ProcessInfo.processInfo.beginActivity(
+        options: .userInteractive,
+        reason:
+          "Disable App Nap in order to receive multitouch events even if this app is background"
+      )
+    }
   }
 
   private func stopActivity() {
-    print("stopActivity")
-
     if let a = activity {
+      print("endActivity")
+
       ProcessInfo.processInfo.endActivity(a)
       activity = nil
     }
+  }
+
+  private func observeUserInteractiveActivitySettings() {
+    userSettingsCancellable = UserSettings.shared.$allowUserInteractiveActivity
+      .sink { [weak self] isAllowed in
+        guard let self else { return }
+
+        Task { @MainActor in
+          if isAllowed {
+            self.startActivity()
+          } else {
+            self.stopActivity()
+          }
+        }
+      }
   }
 
   private func observeSystemSleep() {
