@@ -42,6 +42,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   private var activity: NSObjectProtocol?
   private var sleepTask: Task<Void, Never>?
   private var wakeTask: Task<Void, Never>?
+  private var displaySleepTask: Task<Void, Never>?
+  private var displayWakeTask: Task<Void, Never>?
   private var userSettingsCancellable: AnyCancellable?
 
   public func applicationDidFinishLaunching(_: Notification) {
@@ -55,10 +57,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     observeUserInteractiveActivitySettings()
 
     observeSystemSleep()
+    observeDisplaySleep()
   }
 
   public func applicationWillTerminate(_: Notification) {
     cancelSystemSleepObservers()
+    cancelDisplaySleepObservers()
 
     stopActivity()
     userSettingsCancellable = nil
@@ -116,13 +120,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       )
 
       for await _ in notifications {
-        self.stopActivity()
+        if UserSettings.shared.stopUserInteractiveActivityOnDisplaySleep {
+          self.stopActivity()
+        }
       }
     }
 
     wakeTask = Task { @MainActor in
       let notifications = NSWorkspace.shared.notificationCenter.notifications(
         named: NSWorkspace.didWakeNotification,
+        object: nil
+      )
+
+      for await _ in notifications {
+        if UserSettings.shared.stopUserInteractiveActivityOnDisplaySleep {
+          self.startActivity()
+        }
+      }
+    }
+  }
+
+  private func observeDisplaySleep() {
+    displaySleepTask = Task { @MainActor in
+      let notifications = NSWorkspace.shared.notificationCenter.notifications(
+        named: NSWorkspace.screensDidSleepNotification,
+        object: nil
+      )
+
+      for await _ in notifications {
+        self.stopActivity()
+      }
+    }
+
+    displayWakeTask = Task { @MainActor in
+      let notifications = NSWorkspace.shared.notificationCenter.notifications(
+        named: NSWorkspace.screensDidWakeNotification,
         object: nil
       )
 
@@ -138,5 +170,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     wakeTask?.cancel()
     wakeTask = nil
+  }
+
+  private func cancelDisplaySleepObservers() {
+    displaySleepTask?.cancel()
+    displaySleepTask = nil
+
+    displayWakeTask?.cancel()
+    displayWakeTask = nil
   }
 }

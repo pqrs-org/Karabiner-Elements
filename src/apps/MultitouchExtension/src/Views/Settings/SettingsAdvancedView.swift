@@ -74,7 +74,7 @@ struct SettingsAdvancedView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       }
 
-      GroupBox(label: Text("Palm Detection")) {
+      GroupBox(label: Text("Palm detection")) {
         VStack(alignment: .leading, spacing: 30.0) {
           VStack(alignment: .leading) {
             HStack {

@@ -20,8 +20,25 @@ struct SettingsPowerView: View {
             "(This setting consumes battery power and may prevent the system from sleeping)",
           )
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
+      }
+
+      if userSettings.allowUserInteractiveActivity {
+        GroupBox(label: Text("User interaction")) {
+          VStack(alignment: .leading, spacing: 10.0) {
+            HStack {
+              Toggle(isOn: $userSettings.stopUserInteractiveActivityOnDisplaySleep) {
+                Text("Stop the user interactive activity on display sleep")
+              }
+              .switchToggleStyle()
+
+              Text("(Default: on)")
+            }
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding()
+        }
       }
     }
   }

@@ -28,6 +28,9 @@ final class UserSettings: ObservableObject {
     }
   }
 
+  @AppStorage("stopUserInteractiveActivityOnDisplaySleep")
+  var stopUserInteractiveActivityOnDisplaySleep = true
+
   //
   // Methods
   //
