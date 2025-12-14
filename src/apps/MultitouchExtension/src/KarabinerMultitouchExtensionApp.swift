@@ -50,6 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   private var displaySleepTask: Task<Void, Never>?
   private var displayWakeTask: Task<Void, Never>?
   private var userSettingsCancellable: AnyCancellable?
+  private var isDisplaySleeping = false
 
   public func applicationDidFinishLaunching(_: Notification) {
     //
@@ -83,17 +84,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     //
 
     if UserSettings.shared.allowUserInteractiveActivity {
-      logger.info("beginActivity")
+      if activity == nil {
+        logger.info("beginActivity")
 
-      activity = ProcessInfo.processInfo.beginActivity(
-        options: .userInteractive,
-        reason:
-          "Disable App Nap in order to receive multitouch events even if this app is background"
-      )
+        activity = ProcessInfo.processInfo.beginActivity(
+          options: .userInteractive,
+          reason:
+            "Disable App Nap in order to receive multitouch events even if this app is background"
+        )
+      }
     }
   }
 
   private func stopActivity() {
+    if isDisplaySleeping && UserSettings.shared.keepUserInteractiveActivityDuringDisplaySleep {
+      return
+    }
+
     if let a = activity {
       logger.info("endActivity")
 
@@ -127,9 +134,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       for await _ in notifications {
         logger.info("NSWorkspace.willSleepNotification")
 
-        if UserSettings.shared.stopUserInteractiveActivityOnDisplaySleep {
-          self.stopActivity()
-        }
+        self.stopActivity()
       }
     }
 
@@ -142,9 +147,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       for await _ in notifications {
         logger.info("NSWorkspace.didWakeNotification")
 
-        if UserSettings.shared.stopUserInteractiveActivityOnDisplaySleep {
-          self.startActivity()
-        }
+        self.startActivity()
       }
     }
   }
@@ -159,6 +162,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       for await _ in notifications {
         logger.info("NSWorkspace.screensDidSleepNotification")
 
+        isDisplaySleeping = true
+
         self.stopActivity()
       }
     }
@@ -171,6 +176,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
       for await _ in notifications {
         logger.info("NSWorkspace.screensDidWakeNotification")
+
+        isDisplaySleeping = false
 
         self.startActivity()
       }

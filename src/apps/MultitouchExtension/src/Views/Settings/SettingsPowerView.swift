@@ -9,7 +9,9 @@ struct SettingsPowerView: View {
         VStack(alignment: .leading, spacing: 10.0) {
           HStack {
             Toggle(isOn: $userSettings.allowUserInteractiveActivity) {
-              Text("Enhance responsiveness to user interaction")
+              Text(
+                "Enable user-interactive activity for better responsiveness to user input"
+              )
             }
             .switchToggleStyle()
 
@@ -24,22 +26,21 @@ struct SettingsPowerView: View {
         .padding()
       }
 
-      if userSettings.allowUserInteractiveActivity {
-        GroupBox(label: Text("User interaction")) {
-          VStack(alignment: .leading, spacing: 10.0) {
-            HStack {
-              Toggle(isOn: $userSettings.stopUserInteractiveActivityOnDisplaySleep) {
-                Text("Stop the user interactive activity on display sleep")
-              }
-              .switchToggleStyle()
-
-              Text("(Default: on)")
+      GroupBox(label: Text("User-interactive activity options")) {
+        VStack(alignment: .leading, spacing: 10.0) {
+          HStack {
+            Toggle(isOn: $userSettings.keepUserInteractiveActivityDuringDisplaySleep) {
+              Text("Keep user-interactive activity running while the display sleeps")
             }
+            .switchToggleStyle()
+
+            Text("(Default: off)")
           }
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
       }
+      .disabled(!userSettings.allowUserInteractiveActivity)
     }
   }
 }
