@@ -13,7 +13,7 @@ xcode:
 
 run:
 	open ./build/Release/Karabiner-MultitouchExtension.app
-	/usr/bin/log stream --predicate 'subsystem == "org.pqrs.Karabiner-MultitouchExtension"' --info --debug
+	make log
 
 install:
 	bash ../../../scripts/codesign.sh build/Release
@@ -21,3 +21,6 @@ install:
 	sudo rsync -a --delete \
 		build/Release/Karabiner-MultitouchExtension.app \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements'
+
+log:
+	/usr/bin/log stream --predicate 'subsystem == "org.pqrs.Karabiner-MultitouchExtension"' --info --debug
