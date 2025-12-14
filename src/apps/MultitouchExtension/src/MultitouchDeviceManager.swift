@@ -1,3 +1,5 @@
+import OSLog
+
 func mtDeviceRegistryEntryID(of device: MTDevice?) -> UInt64? {
   let service = MTDeviceGetService(device)
   var entryID: UInt64 = 0
@@ -41,6 +43,10 @@ private func callback(
 class MultitouchDeviceManager {
   static let shared = MultitouchDeviceManager()
 
+  private let logger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "unknown",
+    category: String(describing: MultitouchDeviceManager.self))
+
   private var notificationsTask: Task<Void, Never>?
 
   private let notificationPort = IONotificationPortCreate(kIOMainPortDefault)
@@ -56,7 +62,7 @@ class MultitouchDeviceManager {
             named: NSWorkspace.didWakeNotification
           ) {
             Task { @MainActor in
-              print("didWakeNotification")
+              self.logger.info("didWakeNotification")
 
               do {
                 // Sleep until devices are settled.
@@ -72,7 +78,7 @@ class MultitouchDeviceManager {
 
                 MultitouchDeviceManager.shared.setCallback(true)
               } catch {
-                print(error.localizedDescription)
+                self.logger.error("\(error.localizedDescription)")
               }
             }
           }
@@ -82,7 +88,7 @@ class MultitouchDeviceManager {
   }
 
   func setCallback(_ register: Bool) {
-    print("setCallback \(register)")
+    logger.info("setCallback \(register)")
 
     //
     // Unset callback first
@@ -125,7 +131,7 @@ class MultitouchDeviceManager {
   }
 
   func observeIONotification() {
-    print("observeIONotification")
+    logger.info("observeIONotification")
 
     //
     // Relaunch if device is connected or disconnected
@@ -151,7 +157,7 @@ class MultitouchDeviceManager {
           nil,
           &it)
         if kr != kIOReturnSuccess {
-          print("IOServiceAddMatchingNotification error: \(kr)")
+          logger.error("IOServiceAddMatchingNotification error: \(kr)")
           return
         }
 

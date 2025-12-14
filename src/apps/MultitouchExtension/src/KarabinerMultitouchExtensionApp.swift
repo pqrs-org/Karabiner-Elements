@@ -1,4 +1,5 @@
 import Combine
+import OSLog
 import SettingsAccess
 import SwiftUI
 
@@ -39,6 +40,10 @@ struct KarabinerMultitouchExtensionApp: App {
 
 @MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
+  private let logger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "unknown",
+    category: String(describing: AppDelegate.self))
+
   private var activity: NSObjectProtocol?
   private var sleepTask: Task<Void, Never>?
   private var wakeTask: Task<Void, Never>?
@@ -78,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     //
 
     if UserSettings.shared.allowUserInteractiveActivity {
-      print("beginActivity")
+      logger.info("beginActivity")
 
       activity = ProcessInfo.processInfo.beginActivity(
         options: .userInteractive,
@@ -90,7 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
   private func stopActivity() {
     if let a = activity {
-      print("endActivity")
+      logger.info("endActivity")
 
       ProcessInfo.processInfo.endActivity(a)
       activity = nil
@@ -120,6 +125,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       )
 
       for await _ in notifications {
+        logger.info("NSWorkspace.willSleepNotification")
+
         if UserSettings.shared.stopUserInteractiveActivityOnDisplaySleep {
           self.stopActivity()
         }
@@ -133,6 +140,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       )
 
       for await _ in notifications {
+        logger.info("NSWorkspace.didWakeNotification")
+
         if UserSettings.shared.stopUserInteractiveActivityOnDisplaySleep {
           self.startActivity()
         }
@@ -148,6 +157,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       )
 
       for await _ in notifications {
+        logger.info("NSWorkspace.screensDidSleepNotification")
+
         self.stopActivity()
       }
     }
@@ -159,6 +170,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       )
 
       for await _ in notifications {
+        logger.info("NSWorkspace.screensDidWakeNotification")
+
         self.startActivity()
       }
     }

@@ -12,7 +12,8 @@ xcode:
 	open *.xcodeproj
 
 run:
-	./build/Release/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension
+	open ./build/Release/Karabiner-MultitouchExtension.app
+	/usr/bin/log stream --predicate 'subsystem == "org.pqrs.Karabiner-MultitouchExtension"' --info --debug
 
 install:
 	bash ../../../scripts/codesign.sh build/Release
