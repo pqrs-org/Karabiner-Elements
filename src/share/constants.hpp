@@ -82,6 +82,17 @@ public:
     return get_rootonly_directory() / fmt::format("krbn_session.{0}", uid);
   }
 
+  static std::filesystem::path get_console_user_server_socket_directory_path(uid_t uid) {
+    // Note:
+    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
+    // So we use the shorten name console_user_server -> con_usr_srv.
+    //
+    // Example:
+    // `/Library/Application Support/org.pqrs/tmp/user/501/con_usr_srv/1880fdaa305fe8f0.sock`
+
+    return constants::get_system_user_directory(uid) / std::filesystem::path("con_usr_srv");
+  }
+
   static const std::filesystem::path& get_karabiner_machine_identifier_json_file_path(void) {
     static auto path = get_tmp_directory() / "karabiner_machine_identifier.json";
     return path;
