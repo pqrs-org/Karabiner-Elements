@@ -567,6 +567,33 @@ void libkrbn_core_service_client_async_set_app_icon(int number);
 void libkrbn_core_service_client_async_set_variable(const char* _Nonnull name,
                                                     int value);
 
+//
+// libkrbn_console_user_server_client
+//
+
+typedef enum {
+  libkrbn_console_user_server_client_status_none,
+  libkrbn_console_user_server_client_status_connected,
+  libkrbn_console_user_server_client_status_connect_failed,
+  libkrbn_console_user_server_client_status_closed,
+} libkrbn_console_user_server_client_status;
+
+void libkrbn_enable_console_user_server_client(const char* _Nullable client_socket_directory_name);
+void libkrbn_disable_console_user_server_client(void);
+
+void libkrbn_console_user_server_client_async_start(void);
+
+typedef void (*libkrbn_console_user_server_client_status_changed_t)(void);
+void libkrbn_register_console_user_server_client_status_changed_callback(libkrbn_console_user_server_client_status_changed_t _Nonnull callback);
+void libkrbn_unregister_console_user_server_client_status_changed_callback(libkrbn_console_user_server_client_status_changed_t _Nonnull callback);
+
+libkrbn_console_user_server_client_status libkrbn_console_user_server_client_get_status(void);
+
+void libkrbn_console_user_server_client_async_get_frontmost_application_history(void);
+typedef void (*libkrbn_console_user_server_client_frontmost_application_history_received_t)(const char* _Nonnull json_string);
+void libkrbn_register_console_user_server_client_frontmost_application_history_received_callback(libkrbn_console_user_server_client_frontmost_application_history_received_t _Nonnull callback);
+void libkrbn_unregister_console_user_server_client_frontmost_application_history_received_callback(libkrbn_console_user_server_client_frontmost_application_history_received_t _Nonnull callback);
+
 #ifdef __cplusplus
 }
 #endif

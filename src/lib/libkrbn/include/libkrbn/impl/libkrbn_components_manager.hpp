@@ -2,6 +2,7 @@
 
 #include "libkrbn/impl/libkrbn_complex_modifications_assets_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
+#include "libkrbn/impl/libkrbn_console_user_server_client.hpp"
 #include "libkrbn/impl/libkrbn_core_service_client.hpp"
 #include "libkrbn/impl/libkrbn_dispatcher_client.hpp"
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
@@ -185,6 +186,24 @@ public:
     return core_service_client_;
   }
 
+  //
+  // console_user_server_client_
+  //
+
+  void enable_console_user_server_client(std::optional<std::string> client_socket_directory_name) {
+    if (!console_user_server_client_) {
+      console_user_server_client_ = std::make_shared<libkrbn_console_user_server_client>(client_socket_directory_name);
+    }
+  }
+
+  void disable_console_user_server_client(void) {
+    console_user_server_client_ = nullptr;
+  }
+
+  std::shared_ptr<libkrbn_console_user_server_client> get_libkrbn_console_user_server_client(void) const {
+    return console_user_server_client_;
+  }
+
 private:
   std::shared_ptr<libkrbn_dispatcher_client> dispatcher_client_;
   std::shared_ptr<libkrbn_version_monitor> version_monitor_;
@@ -195,4 +214,5 @@ private:
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::shared_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
   std::shared_ptr<libkrbn_core_service_client> core_service_client_;
+  std::shared_ptr<libkrbn_console_user_server_client> console_user_server_client_;
 };
