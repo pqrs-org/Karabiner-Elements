@@ -11,6 +11,7 @@
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
+#include "receiver.hpp"
 #include "services_utility.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
@@ -296,11 +297,15 @@ private:
 
     // software_function_handler_
 
-    software_function_handler_ = std::make_unique<software_function_handler>();
+    software_function_handler_ = std::make_shared<software_function_handler>();
 
     // shell_command_handler_
 
     shell_command_handler_ = std::make_unique<shell_command_handler>();
+
+    // receiver_
+
+    receiver_ = std::make_unique<receiver>(software_function_handler_);
 
     // Start configuration_monitor_
 
@@ -308,6 +313,8 @@ private:
   }
 
   void stop_child_components(void) {
+    receiver_ = nullptr;
+
     updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     pqrs::osx::frontmost_application_monitor::monitor::terminate_shared_monitor();
@@ -334,8 +341,9 @@ private:
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
-  std::unique_ptr<software_function_handler> software_function_handler_;
+  std::shared_ptr<software_function_handler> software_function_handler_;
   std::unique_ptr<shell_command_handler> shell_command_handler_;
+  std::unique_ptr<receiver> receiver_;
 };
 } // namespace console_user_server
 } // namespace krbn

@@ -92,6 +92,13 @@ public:
     }
   }
 
+  void async_invoke_with_frontmost_application_history(
+      std::function<void(const std::deque<pqrs::osx::frontmost_application_monitor::application>&)> function) const {
+    enqueue_to_dispatcher([this, function] {
+      function(frontmost_application_history_);
+    });
+  }
+
 private:
   void execute_cg_event_double_click(const software_function_details::cg_event_double_click& cg_event_double_click) {
     if (!check_trusted_) {
