@@ -76,7 +76,8 @@ public:
 
       try {
         nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-        switch (json.at("operation_type").get<operation_type>()) {
+        auto ot = json.at("operation_type").get<operation_type>();
+        switch (ot) {
           case operation_type::handshake:
             if (verified_peer_manager_) {
               std::vector<uint8_t> shared_secret(32);
@@ -94,38 +95,41 @@ public:
             }
             break;
 
-          case operation_type::select_input_source: {
+          case operation_type::select_input_source:
+          case operation_type::shell_command_execution:
+          case operation_type::software_function:
             if (verified_peer_manager_->verify_shared_secret(sender_endpoint->path(),
                                                              json.at("shared_secret").get<std::vector<uint8_t>>())) {
-              if (auto s = weak_input_source_selector_.lock()) {
-                using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
-                auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
-                s->async_select(std::make_shared<specifiers_t>(specifiers));
-              }
-            }
-            break;
-          }
+              switch (ot) {
+                case operation_type::select_input_source:
+                  if (auto s = weak_input_source_selector_.lock()) {
+                    using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
+                    auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
+                    s->async_select(std::make_shared<specifiers_t>(specifiers));
+                  }
+                  break;
 
-          case operation_type::shell_command_execution: {
-            if (verified_peer_manager_->verify_shared_secret(sender_endpoint->path(),
-                                                             json.at("shared_secret").get<std::vector<uint8_t>>())) {
-              if (auto h = weak_shell_command_handler_.lock()) {
-                auto shell_command = json.at("shell_command").get<std::string>();
-                h->run(shell_command);
-              }
-            }
-            break;
-          }
+                case operation_type::shell_command_execution:
+                  if (auto h = weak_shell_command_handler_.lock()) {
+                    auto shell_command = json.at("shell_command").get<std::string>();
+                    h->run(shell_command);
+                  }
+                  break;
 
-          case operation_type::software_function: {
-            if (verified_peer_manager_->verify_shared_secret(sender_endpoint->path(),
-                                                             json.at("shared_secret").get<std::vector<uint8_t>>())) {
-              if (auto h = weak_software_function_handler_.lock()) {
-                h->execute_software_function(json.at("software_function").get<software_function>());
+                case operation_type::software_function:
+                  if (auto h = weak_software_function_handler_.lock()) {
+                    h->execute_software_function(json.at("software_function").get<software_function>());
+                  }
+                  break;
+
+                default:
+                  break;
               }
+            } else {
+              logger::get_logger()->error("operation_type::{0} with invalid shared secret",
+                                          json.at("operation_type").get<std::string>());
             }
             break;
-          }
 
           case operation_type::get_frontmost_application_history:
             if (auto h = weak_software_function_handler_.lock()) {
@@ -145,7 +149,6 @@ public:
           default:
             break;
         }
-        return;
       } catch (std::exception& e) {
         logger::get_logger()->error("received data is corrupted");
       }
