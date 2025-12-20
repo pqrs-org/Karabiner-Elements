@@ -360,7 +360,6 @@ public:
           default:
             break;
         }
-        return;
       } catch (std::exception& e) {
         logger::get_logger()->error("received data is corrupted");
       }
