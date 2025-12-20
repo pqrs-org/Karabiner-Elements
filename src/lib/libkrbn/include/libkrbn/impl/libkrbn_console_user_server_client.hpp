@@ -25,32 +25,25 @@ public:
       set_status(libkrbn_console_user_server_client_status_closed);
     });
 
-    console_user_server_client_->received.connect([this](auto&& buffer,
-                                                         auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
+    console_user_server_client_->received.connect([this](auto&& operation_type,
+                                                         auto&& json) {
+      try {
+        switch (json.at("operation_type").template get<krbn::operation_type>()) {
+          case krbn::operation_type::frontmost_application_history: {
+            auto json_dump = krbn::json_utility::dump(json.at("frontmost_application_history"));
 
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<krbn::operation_type>()) {
-            case krbn::operation_type::frontmost_application_history: {
-              auto json_dump = krbn::json_utility::dump(json.at("frontmost_application_history"));
-
-              for (const auto& c : frontmost_application_history_received_callback_manager_.get_callbacks()) {
-                c(json_dump.c_str());
-              }
-
-              break;
+            for (const auto& c : frontmost_application_history_received_callback_manager_.get_callbacks()) {
+              c(json_dump.c_str());
             }
 
-            default:
-              break;
+            break;
           }
-        } catch (std::exception& e) {
-          krbn::logger::get_logger()->error("libkrbn_console_user_server_client received data is corrupted");
+
+          default:
+            break;
         }
+      } catch (std::exception& e) {
+        krbn::logger::get_logger()->error("libkrbn_console_user_server_client received data is corrupted");
       }
     });
   }

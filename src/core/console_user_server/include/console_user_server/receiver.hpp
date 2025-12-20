@@ -5,10 +5,13 @@
 #include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
+#include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include "types.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
+#include <pqrs/osx/input_source_selector.hpp>
+#include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 
 namespace krbn {
 namespace console_user_server {
@@ -16,13 +19,18 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<software_function_handler> weak_software_function_handler)
+  receiver(
+      std::weak_ptr<pqrs::osx::input_source_selector::selector> weak_input_source_selector,
+      std::weak_ptr<shell_command_handler> weak_shell_command_handler,
+      std::weak_ptr<software_function_handler> weak_software_function_handler)
       : dispatcher_client(),
+        weak_input_source_selector_(weak_input_source_selector),
+        weak_shell_command_handler_(weak_shell_command_handler),
         weak_software_function_handler_(weak_software_function_handler) {
     // Remove old files and prepare a socket directory.
     prepare_console_user_server_socket_directory();
 
-    event_viewer_get_frontmost_application_history_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
+    verified_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
         weak_dispatcher_,
         constants::local_datagram_buffer_size,
         [](auto&& peer_pid,
@@ -69,16 +77,66 @@ public:
       try {
         nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
         switch (json.at("operation_type").get<operation_type>()) {
+          case operation_type::handshake:
+            if (verified_peer_manager_) {
+              std::vector<uint8_t> shared_secret(32);
+              arc4random_buf(shared_secret.data(), shared_secret.size());
+
+              verified_peer_manager_->insert_shared_secret(sender_endpoint->path(),
+                                                           shared_secret);
+
+              nlohmann::json json{
+                  {"operation_type", operation_type::shared_secret},
+                  {"shared_secret", shared_secret},
+              };
+              verified_peer_manager_->async_send(sender_endpoint->path(),
+                                                 nlohmann::json::to_msgpack(json));
+            }
+            break;
+
+          case operation_type::select_input_source: {
+            if (verified_peer_manager_->verify_shared_secret(sender_endpoint->path(),
+                                                             json.at("shared_secret").get<std::vector<uint8_t>>())) {
+              if (auto s = weak_input_source_selector_.lock()) {
+                using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
+                auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
+                s->async_select(std::make_shared<specifiers_t>(specifiers));
+              }
+            }
+            break;
+          }
+
+          case operation_type::shell_command_execution: {
+            if (verified_peer_manager_->verify_shared_secret(sender_endpoint->path(),
+                                                             json.at("shared_secret").get<std::vector<uint8_t>>())) {
+              if (auto h = weak_shell_command_handler_.lock()) {
+                auto shell_command = json.at("shell_command").get<std::string>();
+                h->run(shell_command);
+              }
+            }
+            break;
+          }
+
+          case operation_type::software_function: {
+            if (verified_peer_manager_->verify_shared_secret(sender_endpoint->path(),
+                                                             json.at("shared_secret").get<std::vector<uint8_t>>())) {
+              if (auto h = weak_software_function_handler_.lock()) {
+                h->execute_software_function(json.at("software_function").get<software_function>());
+              }
+            }
+            break;
+          }
+
           case operation_type::get_frontmost_application_history:
             if (auto h = weak_software_function_handler_.lock()) {
               h->async_invoke_with_frontmost_application_history(
                   [this, sender_endpoint](auto&& frontmost_application_history) {
-                    if (event_viewer_get_frontmost_application_history_peer_manager_) {
+                    if (verified_peer_manager_) {
                       nlohmann::json json{
                           {"operation_type", operation_type::frontmost_application_history},
                           {"frontmost_application_history", frontmost_application_history}};
-                      event_viewer_get_frontmost_application_history_peer_manager_->async_send(sender_endpoint->path(),
-                                                                                               nlohmann::json::to_msgpack(json));
+                      verified_peer_manager_->async_send(sender_endpoint->path(),
+                                                         nlohmann::json::to_msgpack(json));
                     }
                   });
             }
@@ -101,7 +159,7 @@ public:
   virtual ~receiver(void) {
     detach_from_dispatcher([this] {
       server_ = nullptr;
-      event_viewer_get_frontmost_application_history_peer_manager_ = nullptr;
+      verified_peer_manager_ = nullptr;
     });
 
     logger::get_logger()->info("receiver is terminated");
@@ -131,9 +189,11 @@ private:
     chmod(directory_path.c_str(), 0755);
   }
 
+  std::weak_ptr<pqrs::osx::input_source_selector::selector> weak_input_source_selector_;
+  std::weak_ptr<shell_command_handler> weak_shell_command_handler_;
   std::weak_ptr<software_function_handler> weak_software_function_handler_;
 
-  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_get_frontmost_application_history_peer_manager_;
+  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verified_peer_manager_;
   std::unique_ptr<pqrs::local_datagram::server> server_;
 };
 } // namespace console_user_server

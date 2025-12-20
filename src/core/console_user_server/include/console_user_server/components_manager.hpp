@@ -293,19 +293,21 @@ private:
 
     // input_source_selector_
 
-    input_source_selector_ = std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_);
+    input_source_selector_ = std::make_shared<pqrs::osx::input_source_selector::selector>(weak_dispatcher_);
+
+    // shell_command_handler_
+
+    shell_command_handler_ = std::make_shared<shell_command_handler>();
 
     // software_function_handler_
 
     software_function_handler_ = std::make_shared<software_function_handler>();
 
-    // shell_command_handler_
-
-    shell_command_handler_ = std::make_unique<shell_command_handler>();
-
     // receiver_
 
-    receiver_ = std::make_unique<receiver>(software_function_handler_);
+    receiver_ = std::make_unique<receiver>(input_source_selector_,
+                                           shell_command_handler_,
+                                           software_function_handler_);
 
     // Start configuration_monitor_
 
@@ -320,8 +322,8 @@ private:
     pqrs::osx::frontmost_application_monitor::monitor::terminate_shared_monitor();
     input_source_monitor_ = nullptr;
     input_source_selector_ = nullptr;
-    software_function_handler_ = nullptr;
     shell_command_handler_ = nullptr;
+    software_function_handler_ = nullptr;
 
     configuration_monitor_ = nullptr;
   }
@@ -340,9 +342,11 @@ private:
   std::unique_ptr<updater_process_manager> updater_process_manager_;
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
-  std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
+
+  std::shared_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
+  std::shared_ptr<shell_command_handler> shell_command_handler_;
   std::shared_ptr<software_function_handler> software_function_handler_;
-  std::unique_ptr<shell_command_handler> shell_command_handler_;
+
   std::unique_ptr<receiver> receiver_;
 };
 } // namespace console_user_server

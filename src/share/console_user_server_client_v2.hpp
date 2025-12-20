@@ -26,7 +26,7 @@ public:
   nod::signal<void(void)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
-  nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint>)> received;
+  nod::signal<void(operation_type, const nlohmann::json&)> received;
   nod::signal<void(void)> next_heartbeat_deadline_exceeded;
 
   // Methods
@@ -98,9 +98,31 @@ public:
       });
 
       client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
-        enqueue_to_dispatcher([this, buffer, sender_endpoint] {
-          received(buffer, sender_endpoint);
-        });
+        if (buffer->empty()) {
+          return;
+        }
+
+        try {
+          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+          auto ot = json.at("operation_type").get<operation_type>();
+          switch (ot) {
+            case operation_type::shared_secret: {
+              shared_secret_ = json.at("shared_secret").get<std::vector<uint8_t>>();
+              break;
+            }
+
+            case operation_type::frontmost_application_history:
+              enqueue_to_dispatcher([this, ot, json] {
+                received(ot, json);
+              });
+              break;
+
+            default:
+              break;
+          }
+        } catch (std::exception& e) {
+          logger::get_logger()->error("received data is corrupted");
+        }
       });
 
       client_->next_heartbeat_deadline_exceeded.connect([this](auto&& sender_endpoint) {
@@ -123,6 +145,67 @@ public:
     });
   }
 
+  // core_service -> console_user_server
+  void async_handshake(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::handshake},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
+  // core_service -> console_user_server
+  void async_shell_command_execution(const std::string& shell_command) const {
+    enqueue_to_dispatcher([this, shell_command] {
+      nlohmann::json json{
+          {"operation_type", operation_type::shell_command_execution},
+          {"shared_secret", shared_secret_},
+          {"shell_command", shell_command},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
+  // core_service -> console_user_server
+  void async_select_input_source(std::shared_ptr<std::vector<pqrs::osx::input_source_selector::specifier>> input_source_specifiers) {
+    enqueue_to_dispatcher([this, input_source_specifiers] {
+      if (input_source_specifiers) {
+        nlohmann::json json{
+            {"operation_type", operation_type::select_input_source},
+            {"shared_secret", shared_secret_},
+            {"input_source_specifiers", *input_source_specifiers},
+        };
+
+        if (client_) {
+          client_->async_send(nlohmann::json::to_msgpack(json));
+        }
+      }
+    });
+  }
+
+  // core_service -> console_user_server
+  void async_software_function(const software_function& software_function) const {
+    enqueue_to_dispatcher([this, software_function] {
+      nlohmann::json json{
+          {"operation_type", operation_type::software_function},
+          {"shared_secret", shared_secret_},
+          {"software_function", software_function},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
+  // event_viewer -> console_user_server
   void async_get_frontmost_application_history(void) const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
@@ -188,5 +271,6 @@ private:
 
   std::optional<std::string> client_socket_directory_name_;
   std::unique_ptr<pqrs::local_datagram::client> client_;
+  std::vector<uint8_t> shared_secret_;
 };
 } // namespace krbn
