@@ -4,7 +4,6 @@
 
 #include "app_icon.hpp"
 #include "application_launcher.hpp"
-#include "console_user_server_client.hpp"
 #include "console_user_server_client_v2.hpp"
 #include "constants.hpp"
 #include "core_service/core_service_state_json_writer.hpp"
@@ -74,6 +73,10 @@ public:
           return true;
         });
 
+    //
+    // Setup server_
+    //
+
     auto socket_file_path = karabiner_core_service_socket_file_path();
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
@@ -111,42 +114,6 @@ public:
       try {
         nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
         switch (json.at("operation_type").get<operation_type>()) {
-          case operation_type::connect_console_user_server: {
-            auto user_core_configuration_file_path =
-                json.at("user_core_configuration_file_path").get<std::string>();
-
-            logger::get_logger()->info("karabiner_console_user_server is connected.");
-
-            console_user_server_client_ = nullptr;
-
-            if (!sender_endpoint->path().empty()) {
-              console_user_server_client_ = std::make_shared<console_user_server_client>();
-
-              console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
-                stop_device_grabber();
-                start_device_grabber(user_core_configuration_file_path);
-              });
-
-              console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
-                console_user_server_client_ = nullptr;
-
-                stop_device_grabber();
-                start_grabbing_if_system_core_configuration_file_exists();
-              });
-
-              console_user_server_client_->closed.connect([this] {
-                console_user_server_client_ = nullptr;
-
-                stop_device_grabber();
-                start_grabbing_if_system_core_configuration_file_exists();
-              });
-
-              console_user_server_client_->async_start(sender_endpoint->path());
-            }
-
-            break;
-          }
-
           case operation_type::system_preferences_updated:
             system_preferences_properties_ = json.at("system_preferences_properties")
                                                  .get<pqrs::osx::system_preferences::properties>();
@@ -368,9 +335,44 @@ public:
 
     server_->async_start();
 
+    //
+    // Setup console_user_server_client_v2_
+    //
+
     console_user_server_client_v2_ = std::make_unique<console_user_server_client_v2>(current_console_user_id_,
                                                                                      "cs_con_usr_srv_clnt");
+
+    console_user_server_client_v2_->connected.connect([this] {
+      console_user_server_client_v2_->async_get_user_core_configuration_file_path();
+    });
+
+    console_user_server_client_v2_->closed.connect([this] {
+      stop_device_grabber();
+      start_grabbing_if_system_core_configuration_file_exists();
+    });
+
+    console_user_server_client_v2_->received.connect([this](auto&& ot,
+                                                            auto&& json) {
+      try {
+        switch (ot) {
+          case operation_type::user_core_configuration_file_path:
+            stop_device_grabber();
+            start_device_grabber(json["user_core_configuration_file_path"].template get<std::string>());
+            break;
+
+          default:
+            break;
+        }
+      } catch (std::exception& e) {
+        logger::get_logger()->error("received data is corrupted");
+      }
+    });
+
     console_user_server_client_v2_->async_start();
+
+    //
+    // Start device_grabber
+    //
 
     start_grabbing_if_system_core_configuration_file_exists();
 
@@ -380,7 +382,7 @@ public:
   virtual ~receiver(void) {
     detach_from_dispatcher([this] {
       server_ = nullptr;
-      console_user_server_client_ = nullptr;
+      console_user_server_client_v2_ = nullptr;
       multitouch_extension_client_ = nullptr;
       verification_exempt_peer_manager_ = nullptr;
       event_viewer_get_manipulator_environment_peer_manager_ = nullptr;
@@ -480,7 +482,6 @@ private:
   // For operation_type::get_system_variables
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verification_exempt_peer_manager_;
   std::unique_ptr<pqrs::local_datagram::server> server_;
-  std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::shared_ptr<console_user_server_client_v2> console_user_server_client_v2_;
   std::unique_ptr<pqrs::local_datagram::client> multitouch_extension_client_;
   std::unique_ptr<device_grabber> device_grabber_;
