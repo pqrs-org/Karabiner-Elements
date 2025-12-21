@@ -82,54 +82,7 @@ public:
     });
   }
 
-  void async_shell_command_execution(const std::string& shell_command) const {
-    enqueue_to_dispatcher([this, shell_command] {
-      nlohmann::json json{
-          {"operation_type", operation_type::shell_command_execution},
-          {"shell_command", shell_command},
-      };
-
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
-    });
-  }
-
-  void async_select_input_source(std::shared_ptr<std::vector<pqrs::osx::input_source_selector::specifier>> input_source_specifiers) {
-    enqueue_to_dispatcher([this, input_source_specifiers] {
-      if (input_source_specifiers) {
-        nlohmann::json json{
-            {"operation_type", operation_type::select_input_source},
-            {"input_source_specifiers", *input_source_specifiers},
-        };
-
-        if (client_) {
-          client_->async_send(nlohmann::json::to_msgpack(json));
-        }
-      }
-    });
-  }
-
-  void async_software_function(const software_function& software_function) const {
-    enqueue_to_dispatcher([this, software_function] {
-      nlohmann::json json{
-          {"operation_type", operation_type::software_function},
-          {"software_function", software_function},
-      };
-
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
-    });
-  }
-
 private:
-  void async_send(const uint8_t* _Nonnull p, size_t length) const {
-    if (client_) {
-      client_->async_send(p, length);
-    }
-  }
-
   std::unique_ptr<pqrs::local_datagram::client> client_;
 };
 } // namespace krbn
