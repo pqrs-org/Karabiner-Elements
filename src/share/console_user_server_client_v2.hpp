@@ -123,6 +123,7 @@ public:
               break;
             }
 
+            case operation_type::user_core_configuration_file_path:
             case operation_type::frontmost_application_history:
               enqueue_to_dispatcher([this, ot, json] {
                 received(ot, json);
@@ -162,6 +163,20 @@ public:
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::handshake},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
+  void async_get_user_core_configuration_file_path(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::get_user_core_configuration_file_path},
+          // If the request is invalid client, no response is returned.
+          // So there's no need to protect it with shared_secret.
       };
 
       if (client_) {

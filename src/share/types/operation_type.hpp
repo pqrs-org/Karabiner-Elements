@@ -14,12 +14,13 @@ enum class operation_type : uint8_t {
   input_source_changed,
   // core_service -> console_user_server
   handshake,
-  // console_user_server -> core_service
-  shared_secret,
-  // core_service -> console_user_server
+  get_user_core_configuration_file_path,
   shell_command_execution,
   select_input_source,
   software_function,
+  // console_user_server -> core_service
+  shared_secret, // The response to the `handshake`
+  user_core_configuration_file_path,
   // event_viewer -> console_user_server
   get_frontmost_application_history,
   // console_user_server -> event_viewer
@@ -56,7 +57,9 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::input_source_changed, "input_source_changed"},
         {operation_type::handshake, "handshake"},
+        {operation_type::get_user_core_configuration_file_path, "get_user_core_configuration_file_path"},
         {operation_type::shared_secret, "shared_secret"},
+        {operation_type::user_core_configuration_file_path, "user_core_configuration_file_path"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::select_input_source, "select_input_source"},
         {operation_type::software_function, "software_function"},
