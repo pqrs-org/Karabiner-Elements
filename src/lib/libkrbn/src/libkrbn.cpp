@@ -908,14 +908,16 @@ void libkrbn_core_service_client_async_set_variable(const char* name,
 // console_user_server_client
 //
 
-void libkrbn_enable_console_user_server_client(const char* client_socket_directory_name) {
+void libkrbn_enable_console_user_server_client(uid_t uid,
+                                               const char* client_socket_directory_name) {
   if (auto manager = libkrbn_components_manager_) {
     std::optional<std::string> name;
     if (client_socket_directory_name) {
       name = client_socket_directory_name;
     }
 
-    manager->enable_console_user_server_client(name);
+    manager->enable_console_user_server_client(uid,
+                                               name);
   }
 }
 

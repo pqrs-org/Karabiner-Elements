@@ -578,7 +578,8 @@ typedef enum {
   libkrbn_console_user_server_client_status_closed,
 } libkrbn_console_user_server_client_status;
 
-void libkrbn_enable_console_user_server_client(const char* _Nullable client_socket_directory_name);
+void libkrbn_enable_console_user_server_client(uid_t uid,
+                                               const char* _Nullable client_socket_directory_name);
 void libkrbn_disable_console_user_server_client(void);
 
 void libkrbn_console_user_server_client_async_start(void);

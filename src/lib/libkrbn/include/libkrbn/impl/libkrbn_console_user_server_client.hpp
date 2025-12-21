@@ -8,10 +8,12 @@ class libkrbn_console_user_server_client final : public pqrs::dispatcher::extra:
 public:
   libkrbn_console_user_server_client(const libkrbn_console_user_server_client&) = delete;
 
-  libkrbn_console_user_server_client(std::optional<std::string> client_socket_directory_name)
+  libkrbn_console_user_server_client(uid_t uid,
+                                     std::optional<std::string> client_socket_directory_name)
       : dispatcher_client(),
         status_(libkrbn_console_user_server_client_status_none) {
-    console_user_server_client_ = std::make_unique<krbn::console_user_server_client_v2>(client_socket_directory_name);
+    console_user_server_client_ = std::make_unique<krbn::console_user_server_client_v2>(uid,
+                                                                                        client_socket_directory_name);
 
     console_user_server_client_->connected.connect([this] {
       set_status(libkrbn_console_user_server_client_status_connected);

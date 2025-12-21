@@ -15,7 +15,6 @@
 #include <pqrs/osx/iokit_types.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
-#include <unistd.h>
 #include <vector>
 
 namespace krbn {
@@ -33,8 +32,10 @@ public:
 
   console_user_server_client_v2(const console_user_server_client_v2&) = delete;
 
-  console_user_server_client_v2(std::optional<std::string> client_socket_directory_name)
+  console_user_server_client_v2(uid_t uid,
+                                std::optional<std::string> client_socket_directory_name)
       : dispatcher_client(),
+        uid_(uid),
         client_socket_directory_name_(client_socket_directory_name) {
   }
 
@@ -221,13 +222,13 @@ public:
 private:
   std::filesystem::path find_console_user_server_socket_file_path(void) const {
     return filesystem_utility::find_socket_file_path(
-        constants::get_console_user_server_socket_directory_path(geteuid()));
+        constants::get_console_user_server_socket_directory_path(uid_));
   }
 
   std::optional<std::filesystem::path> console_user_server_client_socket_directory_path(void) const {
     if (client_socket_directory_name_ != std::nullopt &&
         client_socket_directory_name_ != "") {
-      return constants::get_system_user_directory(geteuid()) / *client_socket_directory_name_;
+      return constants::get_system_user_directory(uid_) / *client_socket_directory_name_;
     }
 
     return std::nullopt;
@@ -269,7 +270,9 @@ private:
     logger::get_logger()->info("console_user_server_client_v2 is stopped.");
   }
 
+  uid_t uid_;
   std::optional<std::string> client_socket_directory_name_;
+
   std::unique_ptr<pqrs::local_datagram::client> client_;
   std::vector<uint8_t> shared_secret_;
 };

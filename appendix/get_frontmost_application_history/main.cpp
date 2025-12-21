@@ -2,6 +2,7 @@
 #include <iostream>
 #include <pqrs/thread_wait.hpp>
 #include <thread>
+#include <unistd.h>
 
 namespace {
 void status_changed_callback(void) {
@@ -48,7 +49,8 @@ int main(int argc, const char* argv[]) {
     global_wait->notify();
   });
 
-  libkrbn_enable_console_user_server_client("appendix_get_fah");
+  libkrbn_enable_console_user_server_client(geteuid(),
+                                            "appendix_get_fah");
 
   libkrbn_register_console_user_server_client_status_changed_callback(status_changed_callback);
   libkrbn_register_console_user_server_client_frontmost_application_history_received_callback(frontmost_application_history_received_callback);
