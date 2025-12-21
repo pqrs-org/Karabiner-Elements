@@ -2,7 +2,7 @@
 
 #include "../../types.hpp"
 #include "../base.hpp"
-#include "console_user_server_client.hpp"
+#include "console_user_server_client_v2.hpp"
 #include "key_event_dispatcher.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "krbn_notification_center.hpp"
@@ -18,7 +18,7 @@ namespace manipulators {
 namespace post_event_to_virtual_devices {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  post_event_to_virtual_devices(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
+  post_event_to_virtual_devices(std::weak_ptr<console_user_server_client_v2> weak_console_user_server_client,
                                 std::weak_ptr<notification_message_manager> weak_notification_message_manager)
       : base(),
         dispatcher_client(),
@@ -441,7 +441,7 @@ private:
     }
   }
 
-  std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
+  std::weak_ptr<console_user_server_client_v2> weak_console_user_server_client_;
   std::weak_ptr<notification_message_manager> weak_notification_message_manager_;
 
   queue queue_;

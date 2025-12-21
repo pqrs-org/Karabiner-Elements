@@ -15,6 +15,7 @@
 #include <pqrs/osx/iokit_types.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
+#include <unistd.h>
 #include <vector>
 
 namespace krbn {
@@ -54,9 +55,11 @@ public:
 
       prepare_console_user_server_client_socket_directory();
 
+      auto client_socket_file_path = console_user_server_client_socket_file_path();
+
       client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
                                                                find_console_user_server_socket_file_path(),
-                                                               console_user_server_client_socket_file_path(),
+                                                               client_socket_file_path,
                                                                constants::local_datagram_buffer_size);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
@@ -65,8 +68,16 @@ public:
         return find_console_user_server_socket_file_path();
       });
 
-      client_->connected.connect([this](auto&& peer_pid) {
+      client_->connected.connect([this, client_socket_file_path](auto&& peer_pid) {
         logger::get_logger()->info("console_user_server_client_v2 is connected.");
+
+        if (uid_ != geteuid()) {
+          if (auto p = client_socket_file_path) {
+            chown(p->c_str(), uid_, 0);
+          }
+        }
+
+        async_handshake();
 
         enqueue_to_dispatcher([this] {
           connected();
@@ -257,6 +268,10 @@ private:
       //
 
       std::filesystem::create_directory(*d, ec);
+
+      if (uid_ != geteuid()) {
+        chown(d->c_str(), uid_, 0);
+      }
     }
   }
 
