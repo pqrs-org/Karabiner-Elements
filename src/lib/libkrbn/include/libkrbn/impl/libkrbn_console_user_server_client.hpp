@@ -30,7 +30,7 @@ public:
     console_user_server_client_->received.connect([this](auto&& operation_type,
                                                          auto&& json) {
       try {
-        switch (json.at("operation_type").template get<krbn::operation_type>()) {
+        switch (operation_type) {
           case krbn::operation_type::frontmost_application_history: {
             auto json_dump = krbn::json_utility::dump(json.at("frontmost_application_history"));
 
