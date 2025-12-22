@@ -169,11 +169,6 @@ private:
       }
     });
 
-    core_service_client_->next_heartbeat_deadline_exceeded.connect([this] {
-      stop_core_service_client();
-      start_core_service_client();
-    });
-
     core_service_client_->async_start();
   }
 

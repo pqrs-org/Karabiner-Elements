@@ -182,7 +182,6 @@ public:
                                                                                           std::nullopt,
                                                                                           constants::local_datagram_buffer_size);
             multitouch_extension_client_->set_server_check_interval(std::chrono::milliseconds(3000));
-            multitouch_extension_client_->set_next_heartbeat_deadline(std::chrono::milliseconds(10000));
             multitouch_extension_client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
 
             multitouch_extension_client_->connected.connect([](auto&& peer_pid) {

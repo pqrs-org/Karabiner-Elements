@@ -27,7 +27,6 @@ public:
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
   nod::signal<void(operation_type, const nlohmann::json&)> received;
-  nod::signal<void(void)> next_heartbeat_deadline_exceeded;
 
   // Methods
 
@@ -136,14 +135,6 @@ public:
         } catch (std::exception& e) {
           logger::get_logger()->error("received data is corrupted");
         }
-      });
-
-      client_->next_heartbeat_deadline_exceeded.connect([this](auto&& sender_endpoint) {
-        logger::get_logger()->info("console_user_server_client next heartbeat deadline exceeded");
-
-        enqueue_to_dispatcher([this] {
-          next_heartbeat_deadline_exceeded();
-        });
       });
 
       client_->async_start();
