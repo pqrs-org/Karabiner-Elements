@@ -62,6 +62,12 @@ int main(int argc, const char* argv[]) {
   }
 
   //
+  // Get codesign
+  //
+
+  krbn::get_shared_codesign_manager()->log();
+
+  //
   // Migrate old configuration file
   //
 

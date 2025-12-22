@@ -3,7 +3,6 @@
 // `krbn::core_service::components_manager` can be used safely in a multi-threaded environment.
 
 #include "components_manager_killer.hpp"
-#include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "core_service/core_service_state_json_writer.hpp"
 #include "hid_event_system_monitor.hpp"

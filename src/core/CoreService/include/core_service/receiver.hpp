@@ -73,6 +73,10 @@ public:
           return true;
         });
 
+    //
+    // Setup server_
+    //
+
     auto socket_file_path = karabiner_core_service_socket_file_path();
 
     server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
@@ -110,42 +114,6 @@ public:
       try {
         nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
         switch (json.at("operation_type").get<operation_type>()) {
-          case operation_type::connect_console_user_server: {
-            auto user_core_configuration_file_path =
-                json.at("user_core_configuration_file_path").get<std::string>();
-
-            logger::get_logger()->info("karabiner_console_user_server is connected.");
-
-            console_user_server_client_ = nullptr;
-
-            if (!sender_endpoint->path().empty()) {
-              console_user_server_client_ = std::make_shared<console_user_server_client>();
-
-              console_user_server_client_->connected.connect([this, user_core_configuration_file_path] {
-                stop_device_grabber();
-                start_device_grabber(user_core_configuration_file_path);
-              });
-
-              console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
-                console_user_server_client_ = nullptr;
-
-                stop_device_grabber();
-                start_grabbing_if_system_core_configuration_file_exists();
-              });
-
-              console_user_server_client_->closed.connect([this] {
-                console_user_server_client_ = nullptr;
-
-                stop_device_grabber();
-                start_grabbing_if_system_core_configuration_file_exists();
-              });
-
-              console_user_server_client_->async_start(sender_endpoint->path());
-            }
-
-            break;
-          }
-
           case operation_type::system_preferences_updated:
             system_preferences_properties_ = json.at("system_preferences_properties")
                                                  .get<pqrs::osx::system_preferences::properties>();
@@ -214,7 +182,6 @@ public:
                                                                                           std::nullopt,
                                                                                           constants::local_datagram_buffer_size);
             multitouch_extension_client_->set_server_check_interval(std::chrono::milliseconds(3000));
-            multitouch_extension_client_->set_next_heartbeat_deadline(std::chrono::milliseconds(10000));
             multitouch_extension_client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
 
             multitouch_extension_client_->connected.connect([](auto&& peer_pid) {
@@ -360,13 +327,51 @@ public:
           default:
             break;
         }
-        return;
       } catch (std::exception& e) {
         logger::get_logger()->error("received data is corrupted");
       }
     });
 
     server_->async_start();
+
+    //
+    // Setup console_user_server_client_
+    //
+
+    console_user_server_client_ = std::make_unique<console_user_server_client>(current_console_user_id_,
+                                                                               "cs_con_usr_srv_clnt");
+
+    console_user_server_client_->connected.connect([this] {
+      console_user_server_client_->async_get_user_core_configuration_file_path();
+    });
+
+    console_user_server_client_->closed.connect([this] {
+      stop_device_grabber();
+      start_grabbing_if_system_core_configuration_file_exists();
+    });
+
+    console_user_server_client_->received.connect([this](auto&& ot,
+                                                         auto&& json) {
+      try {
+        switch (ot) {
+          case operation_type::user_core_configuration_file_path:
+            stop_device_grabber();
+            start_device_grabber(json["user_core_configuration_file_path"].template get<std::string>());
+            break;
+
+          default:
+            break;
+        }
+      } catch (std::exception& e) {
+        logger::get_logger()->error("received data is corrupted");
+      }
+    });
+
+    console_user_server_client_->async_start();
+
+    //
+    // Start device_grabber
+    //
 
     start_grabbing_if_system_core_configuration_file_exists();
 

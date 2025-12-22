@@ -6,6 +6,8 @@
 
 #include "../client.hpp"
 #include <algorithm>
+#include <cstdint>
+#include <thread>
 #include <unordered_map>
 
 namespace pqrs {
@@ -134,12 +136,14 @@ public:
 
         it->second->get_client().connect_failed.connect([this, peer_socket_file_path](auto&& error_code) {
           entries_.erase(peer_socket_file_path);
+          erase_shared_secret(peer_socket_file_path);
 
           error(peer_socket_file_path, error_code);
         });
 
         it->second->get_client().closed.connect([this, weak_entry, peer_socket_file_path] {
           entries_.erase(peer_socket_file_path);
+          erase_shared_secret(peer_socket_file_path);
 
           auto remaining_verified_peer_count = std::count_if(std::cbegin(entries_),
                                                              std::cend(entries_),
@@ -165,13 +169,56 @@ public:
     });
   }
 
+  void insert_shared_secret(const std::filesystem::path& peer_socket_file_path,
+                            const std::vector<uint8_t>& shared_secret) {
+    std::lock_guard<std::mutex> lock(shared_secrets_mutex_);
+
+    shared_secrets_[peer_socket_file_path] = shared_secret;
+  }
+
+  bool verify_shared_secret(const std::filesystem::path& peer_socket_file_path,
+                            const std::vector<uint8_t>& shared_secret) {
+    std::lock_guard<std::mutex> lock(shared_secrets_mutex_);
+
+    auto it = shared_secrets_.find(peer_socket_file_path);
+    if (it == std::end(shared_secrets_)) {
+      return false;
+    }
+
+    return constant_time_equal(it->second, shared_secret);
+  }
+
 private:
+  bool constant_time_equal(const std::vector<uint8_t>& a,
+                           const std::vector<uint8_t>& b) const {
+    if (a.size() != b.size()) {
+      return false;
+    }
+
+    uint8_t diff = 0;
+    for (size_t i = 0; i < a.size(); ++i) {
+      diff |= static_cast<uint8_t>(a[i] ^ b[i]);
+    }
+
+    return diff == 0;
+  }
+
+  void erase_shared_secret(const std::filesystem::path& peer_socket_file_path) {
+    std::lock_guard<std::mutex> lock(shared_secrets_mutex_);
+
+    shared_secrets_.erase(peer_socket_file_path);
+  }
+
   size_t buffer_size_;
   std::function<bool(std::optional<pid_t> peer_pid,
                      const std::filesystem::path& peer_socket_file_path)>
       verify_peer_;
 
   std::unordered_map<std::filesystem::path, not_null_shared_ptr_t<entry>> entries_;
+
+  // Optional: Use this to store shared secrets.
+  std::unordered_map<std::filesystem::path, std::vector<uint8_t>> shared_secrets_;
+  std::mutex shared_secrets_mutex_;
 };
 
 } // namespace extra

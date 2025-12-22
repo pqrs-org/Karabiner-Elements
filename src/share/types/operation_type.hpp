@@ -12,6 +12,19 @@ enum class operation_type : uint8_t {
   system_preferences_updated,
   frontmost_application_changed,
   input_source_changed,
+  // core_service -> console_user_server
+  handshake,
+  get_user_core_configuration_file_path,
+  shell_command_execution,
+  select_input_source,
+  software_function,
+  // console_user_server -> core_service
+  shared_secret, // The response to the `handshake`
+  user_core_configuration_file_path,
+  // event_viewer -> console_user_server
+  get_frontmost_application_history,
+  // console_user_server -> event_viewer
+  frontmost_application_history,
   // event_viewer -> core_service
   temporarily_ignore_all_devices,
   get_manipulator_environment, // The core_service responds only if the client is code-signed with the same Team ID.
@@ -31,10 +44,6 @@ enum class operation_type : uint8_t {
   system_variables,
   get_multitouch_extension_variables,
   multitouch_extension_variables,
-  // core_service -> console_user_server
-  shell_command_execution,
-  select_input_source,
-  software_function,
   end_,
 };
 
@@ -47,6 +56,15 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::input_source_changed, "input_source_changed"},
+        {operation_type::handshake, "handshake"},
+        {operation_type::get_user_core_configuration_file_path, "get_user_core_configuration_file_path"},
+        {operation_type::shared_secret, "shared_secret"},
+        {operation_type::user_core_configuration_file_path, "user_core_configuration_file_path"},
+        {operation_type::shell_command_execution, "shell_command_execution"},
+        {operation_type::select_input_source, "select_input_source"},
+        {operation_type::software_function, "software_function"},
+        {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},
+        {operation_type::frontmost_application_history, "frontmost_application_history"},
         {operation_type::temporarily_ignore_all_devices, "temporarily_ignore_all_devices"},
         {operation_type::get_manipulator_environment, "get_manipulator_environment"},
         {operation_type::manipulator_environment, "manipulator_environment"},
@@ -61,9 +79,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::system_variables, "system_variables"},
         {operation_type::get_multitouch_extension_variables, "get_multitouch_extension_variables"},
         {operation_type::multitouch_extension_variables, "multitouch_extension_variables"},
-        {operation_type::shell_command_execution, "shell_command_execution"},
-        {operation_type::select_input_source, "select_input_source"},
-        {operation_type::software_function, "software_function"},
         {operation_type::end_, "end_"},
     });
 } // namespace krbn

@@ -11,6 +11,7 @@
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
+#include "receiver.hpp"
 #include "services_utility.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
@@ -168,11 +169,6 @@ private:
       }
     });
 
-    core_service_client_->next_heartbeat_deadline_exceeded.connect([this] {
-      stop_core_service_client();
-      start_core_service_client();
-    });
-
     core_service_client_->async_start();
   }
 
@@ -292,15 +288,21 @@ private:
 
     // input_source_selector_
 
-    input_source_selector_ = std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_);
-
-    // software_function_handler_
-
-    software_function_handler_ = std::make_unique<software_function_handler>();
+    input_source_selector_ = std::make_shared<pqrs::osx::input_source_selector::selector>(weak_dispatcher_);
 
     // shell_command_handler_
 
-    shell_command_handler_ = std::make_unique<shell_command_handler>();
+    shell_command_handler_ = std::make_shared<shell_command_handler>();
+
+    // software_function_handler_
+
+    software_function_handler_ = std::make_shared<software_function_handler>();
+
+    // receiver_
+
+    receiver_ = std::make_unique<receiver>(input_source_selector_,
+                                           shell_command_handler_,
+                                           software_function_handler_);
 
     // Start configuration_monitor_
 
@@ -308,13 +310,15 @@ private:
   }
 
   void stop_child_components(void) {
+    receiver_ = nullptr;
+
     updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     pqrs::osx::frontmost_application_monitor::monitor::terminate_shared_monitor();
     input_source_monitor_ = nullptr;
     input_source_selector_ = nullptr;
-    software_function_handler_ = nullptr;
     shell_command_handler_ = nullptr;
+    software_function_handler_ = nullptr;
 
     configuration_monitor_ = nullptr;
   }
@@ -333,9 +337,12 @@ private:
   std::unique_ptr<updater_process_manager> updater_process_manager_;
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
-  std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
-  std::unique_ptr<software_function_handler> software_function_handler_;
-  std::unique_ptr<shell_command_handler> shell_command_handler_;
+
+  std::shared_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
+  std::shared_ptr<shell_command_handler> shell_command_handler_;
+  std::shared_ptr<software_function_handler> software_function_handler_;
+
+  std::unique_ptr<receiver> receiver_;
 };
 } // namespace console_user_server
 } // namespace krbn
