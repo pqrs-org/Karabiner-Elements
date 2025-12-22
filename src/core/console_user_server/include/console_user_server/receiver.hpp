@@ -182,23 +182,13 @@ public:
   }
 
 private:
-  std::filesystem::path console_user_server_socket_directory(void) const {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name console_user_server -> con_usr_srv.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/con_usr_srv/1880fdaa305fe8f0.sock`
-
-    return constants::get_system_user_directory(geteuid()) / std::filesystem::path("con_usr_srv");
-  }
-
   std::filesystem::path console_user_server_socket_file_path(void) const {
-    return console_user_server_socket_directory() / filesystem_utility::make_socket_file_basename();
+    return constants::get_console_user_server_socket_directory_path(geteuid()) / filesystem_utility::make_socket_file_basename();
   }
 
   void prepare_console_user_server_socket_directory(void) const {
-    auto directory_path = console_user_server_socket_directory();
+    auto directory_path = console_user_server_socket_file_path().parent_path();
+
     std::error_code ec;
     std::filesystem::remove_all(directory_path, ec);
     std::filesystem::create_directory(directory_path, ec);
