@@ -4,7 +4,7 @@
 
 #include "app_icon.hpp"
 #include "application_launcher.hpp"
-#include "console_user_server_client_v2.hpp"
+#include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "core_service/core_service_state_json_writer.hpp"
 #include "device_grabber.hpp"
@@ -336,23 +336,23 @@ public:
     server_->async_start();
 
     //
-    // Setup console_user_server_client_v2_
+    // Setup console_user_server_client_
     //
 
-    console_user_server_client_v2_ = std::make_unique<console_user_server_client_v2>(current_console_user_id_,
-                                                                                     "cs_con_usr_srv_clnt");
+    console_user_server_client_ = std::make_unique<console_user_server_client>(current_console_user_id_,
+                                                                               "cs_con_usr_srv_clnt");
 
-    console_user_server_client_v2_->connected.connect([this] {
-      console_user_server_client_v2_->async_get_user_core_configuration_file_path();
+    console_user_server_client_->connected.connect([this] {
+      console_user_server_client_->async_get_user_core_configuration_file_path();
     });
 
-    console_user_server_client_v2_->closed.connect([this] {
+    console_user_server_client_->closed.connect([this] {
       stop_device_grabber();
       start_grabbing_if_system_core_configuration_file_exists();
     });
 
-    console_user_server_client_v2_->received.connect([this](auto&& ot,
-                                                            auto&& json) {
+    console_user_server_client_->received.connect([this](auto&& ot,
+                                                         auto&& json) {
       try {
         switch (ot) {
           case operation_type::user_core_configuration_file_path:
@@ -368,7 +368,7 @@ public:
       }
     });
 
-    console_user_server_client_v2_->async_start();
+    console_user_server_client_->async_start();
 
     //
     // Start device_grabber
@@ -382,7 +382,7 @@ public:
   virtual ~receiver(void) {
     detach_from_dispatcher([this] {
       server_ = nullptr;
-      console_user_server_client_v2_ = nullptr;
+      console_user_server_client_ = nullptr;
       multitouch_extension_client_ = nullptr;
       verification_exempt_peer_manager_ = nullptr;
       event_viewer_get_manipulator_environment_peer_manager_ = nullptr;
@@ -419,7 +419,7 @@ private:
       return;
     }
 
-    device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_v2_,
+    device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_,
                                                        weak_core_service_state_json_writer_);
 
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
@@ -482,7 +482,7 @@ private:
   // For operation_type::get_system_variables
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verification_exempt_peer_manager_;
   std::unique_ptr<pqrs::local_datagram::server> server_;
-  std::shared_ptr<console_user_server_client_v2> console_user_server_client_v2_;
+  std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<pqrs::local_datagram::client> multitouch_extension_client_;
   std::unique_ptr<device_grabber> device_grabber_;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "console_user_server_client_v2.hpp"
+#include "console_user_server_client.hpp"
 #include "libkrbn/libkrbn.h"
 #include "libkrbn_callback_manager.hpp"
 
@@ -12,7 +12,7 @@ public:
                                      std::optional<std::string> client_socket_directory_name)
       : dispatcher_client(),
         status_(libkrbn_console_user_server_client_status_none) {
-    console_user_server_client_ = std::make_unique<krbn::console_user_server_client_v2>(uid,
+    console_user_server_client_ = std::make_unique<krbn::console_user_server_client>(uid,
                                                                                         client_socket_directory_name);
 
     console_user_server_client_->connected.connect([this] {
@@ -102,7 +102,7 @@ private:
     }
   }
 
-  std::unique_ptr<krbn::console_user_server_client_v2> console_user_server_client_;
+  std::unique_ptr<krbn::console_user_server_client> console_user_server_client_;
   libkrbn_console_user_server_client_status status_;
   libkrbn_callback_manager<libkrbn_console_user_server_client_status_changed_t> status_changed_callback_manager_;
   libkrbn_callback_manager<libkrbn_console_user_server_client_frontmost_application_history_received_t> frontmost_application_history_received_callback_manager_;

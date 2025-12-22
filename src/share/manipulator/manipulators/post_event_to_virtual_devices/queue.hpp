@@ -463,7 +463,7 @@ public:
   }
 
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client,
-                         std::weak_ptr<console_user_server_client_v2> weak_console_user_server_client) {
+                         std::weak_ptr<console_user_server_client> weak_console_user_server_client) {
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_service_client, weak_console_user_server_client] {
           auto now = pqrs::osx::chrono::mach_absolute_time_point();

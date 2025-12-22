@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::console_user_server_client_v2` can be used safely in a multi-threaded environment.
+// `krbn::console_user_server_client` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
@@ -19,7 +19,7 @@
 #include <vector>
 
 namespace krbn {
-class console_user_server_client_v2 final : public pqrs::dispatcher::extra::dispatcher_client {
+class console_user_server_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -31,16 +31,16 @@ public:
 
   // Methods
 
-  console_user_server_client_v2(const console_user_server_client_v2&) = delete;
+  console_user_server_client(const console_user_server_client&) = delete;
 
-  console_user_server_client_v2(uid_t uid,
-                                std::optional<std::string> client_socket_directory_name)
+  console_user_server_client(uid_t uid,
+                             std::optional<std::string> client_socket_directory_name)
       : dispatcher_client(),
         uid_(uid),
         client_socket_directory_name_(client_socket_directory_name) {
   }
 
-  virtual ~console_user_server_client_v2(void) {
+  virtual ~console_user_server_client(void) {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -49,7 +49,7 @@ public:
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       if (client_) {
-        logger::get_logger()->warn("console_user_server_client_v2 is already started.");
+        logger::get_logger()->warn("console_user_server_client is already started.");
         return;
       }
 
@@ -69,7 +69,7 @@ public:
       });
 
       client_->connected.connect([this, client_socket_file_path](auto&& peer_pid) {
-        logger::get_logger()->info("console_user_server_client_v2 is connected.");
+        logger::get_logger()->info("console_user_server_client is connected.");
 
         if (uid_ != geteuid()) {
           if (auto p = client_socket_file_path) {
@@ -85,7 +85,7 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
-        logger::get_logger()->error("console_user_server_client_v2 connect_failed: {0}", error_code.message());
+        logger::get_logger()->error("console_user_server_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
@@ -98,7 +98,7 @@ public:
       });
 
       client_->closed.connect([this] {
-        logger::get_logger()->info("console_user_server_client_v2 is closed.");
+        logger::get_logger()->info("console_user_server_client is closed.");
 
         enqueue_to_dispatcher([this] {
           closed();
@@ -106,7 +106,7 @@ public:
       });
 
       client_->error_occurred.connect([](auto&& error_code) {
-        logger::get_logger()->error("console_user_server_client_v2 error: {0}", error_code.message());
+        logger::get_logger()->error("console_user_server_client error: {0}", error_code.message());
       });
 
       client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
@@ -139,7 +139,7 @@ public:
       });
 
       client_->next_heartbeat_deadline_exceeded.connect([this](auto&& sender_endpoint) {
-        logger::get_logger()->info("console_user_server_client_v2 next heartbeat deadline exceeded");
+        logger::get_logger()->info("console_user_server_client next heartbeat deadline exceeded");
 
         enqueue_to_dispatcher([this] {
           next_heartbeat_deadline_exceeded();
@@ -148,7 +148,7 @@ public:
 
       client_->async_start();
 
-      logger::get_logger()->info("console_user_server_client_v2 is started.");
+      logger::get_logger()->info("console_user_server_client is started.");
     });
   }
 
@@ -297,7 +297,7 @@ private:
 
     client_ = nullptr;
 
-    logger::get_logger()->info("console_user_server_client_v2 is stopped.");
+    logger::get_logger()->info("console_user_server_client is stopped.");
   }
 
   uid_t uid_;

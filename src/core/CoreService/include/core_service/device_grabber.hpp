@@ -43,7 +43,7 @@ class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(std::weak_ptr<console_user_server_client_v2> weak_console_user_server_client,
+  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
                  std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
       : dispatcher_client(),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
