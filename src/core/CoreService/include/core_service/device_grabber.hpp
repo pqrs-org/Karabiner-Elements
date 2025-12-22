@@ -430,7 +430,7 @@ public:
   }
 
   void async_start(const std::string& user_core_configuration_file_path,
-                   uid_t expected_user_core_configuration_file_owner) {
+                   std::optional<uid_t> expected_user_core_configuration_file_owner) {
     enqueue_to_dispatcher([this,
                            user_core_configuration_file_path,
                            expected_user_core_configuration_file_owner] {
@@ -456,7 +456,7 @@ public:
       event_tap_monitor_->async_start();
 
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
-                                                                       expected_user_core_configuration_file_owner,
+                                                                       expected_user_core_configuration_file_owner.value_or(uid_t(0)),
                                                                        krbn::core_configuration::error_handling::loose);
 
       configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {

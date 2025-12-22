@@ -110,6 +110,10 @@ public:
 
 private:
   void prepare_client_socket_directory(void) const {
+    // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
+    // (We have to make a socket directory which includes the real user ID in the file path.)
+    filesystem_utility::create_base_directories(getuid());
+
     auto directory_path = get_client_socket_directory();
 
     // Remove old socket files.

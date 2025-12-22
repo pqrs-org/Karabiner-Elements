@@ -119,8 +119,7 @@ int daemon(void) {
   // Make directories.
   //
 
-  filesystem_utility::mkdir_tmp_directory();
-  filesystem_utility::mkdir_rootonly_directory();
+  filesystem_utility::create_base_directories(std::nullopt);
 
   //
   // Run components_manager

@@ -79,7 +79,7 @@ public:
   }
 
 private:
-  void start_receiver(uid_t uid) {
+  void start_receiver(std::optional<uid_t> uid) {
     version_monitor_->async_manual_check();
 
     // receiver_

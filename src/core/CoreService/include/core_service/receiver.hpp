@@ -24,7 +24,7 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(uid_t current_console_user_id,
+  receiver(std::optional<uid_t> current_console_user_id,
            std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
       : dispatcher_client(),
         current_console_user_id_(current_console_user_id),
@@ -88,8 +88,9 @@ public:
     server_->bound.connect([this, socket_file_path] {
       logger::get_logger()->info("receiver: bound");
 
-      logger::get_logger()->info("receiver: chown socket: {0}", current_console_user_id_);
-      chown(socket_file_path.c_str(), current_console_user_id_, 0);
+      auto chown_uid = current_console_user_id_.value_or(uid_t(0));
+      logger::get_logger()->info("receiver: chown socket: {0}", chown_uid);
+      chown(socket_file_path.c_str(), chown_uid, 0);
 
       chmod(socket_file_path.c_str(), 0600);
     });
@@ -338,36 +339,38 @@ public:
     // Setup console_user_server_client_
     //
 
-    console_user_server_client_ = std::make_unique<console_user_server_client>(current_console_user_id_,
-                                                                               "cs_con_usr_srv_clnt");
+    if (current_console_user_id_) {
+      console_user_server_client_ = std::make_unique<console_user_server_client>(*current_console_user_id_,
+                                                                                 "cs_con_usr_srv_clnt");
 
-    console_user_server_client_->connected.connect([this] {
-      console_user_server_client_->async_get_user_core_configuration_file_path();
-    });
+      console_user_server_client_->connected.connect([this] {
+        console_user_server_client_->async_get_user_core_configuration_file_path();
+      });
 
-    console_user_server_client_->closed.connect([this] {
-      stop_device_grabber();
-      start_grabbing_if_system_core_configuration_file_exists();
-    });
+      console_user_server_client_->closed.connect([this] {
+        stop_device_grabber();
+        start_grabbing_if_system_core_configuration_file_exists();
+      });
 
-    console_user_server_client_->received.connect([this](auto&& ot,
-                                                         auto&& json) {
-      try {
-        switch (ot) {
-          case operation_type::user_core_configuration_file_path:
-            stop_device_grabber();
-            start_device_grabber(json["user_core_configuration_file_path"].template get<std::string>());
-            break;
+      console_user_server_client_->received.connect([this](auto&& ot,
+                                                           auto&& json) {
+        try {
+          switch (ot) {
+            case operation_type::user_core_configuration_file_path:
+              stop_device_grabber();
+              start_device_grabber(json["user_core_configuration_file_path"].template get<std::string>());
+              break;
 
-          default:
-            break;
+            default:
+              break;
+          }
+        } catch (std::exception& e) {
+          logger::get_logger()->error("received data is corrupted");
         }
-      } catch (std::exception& e) {
-        logger::get_logger()->error("received data is corrupted");
-      }
-    });
+      });
 
-    console_user_server_client_->async_start();
+      console_user_server_client_->async_start();
+    }
 
     //
     // Start device_grabber
@@ -398,6 +401,8 @@ private:
   }
 
   void prepare_karabiner_core_service_socket_directory(void) const {
+    filesystem_utility::create_base_directories(current_console_user_id_);
+
     auto directory_path = constants::get_karabiner_core_service_socket_directory_path();
     std::error_code ec;
     std::filesystem::remove_all(directory_path, ec);
@@ -473,7 +478,7 @@ private:
       "multitouch_extension_palm_count_total",
   };
 
-  uid_t current_console_user_id_;
+  std::optional<uid_t> current_console_user_id_;
   std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer_;
 
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_temporarily_ignore_all_devices_peer_manager_;

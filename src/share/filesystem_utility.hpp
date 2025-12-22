@@ -59,6 +59,14 @@ inline void mkdir_system_user_directory(uid_t uid) {
   }
 }
 
+inline void create_base_directories(std::optional<uid_t> uid) {
+  filesystem_utility::mkdir_tmp_directory();
+  filesystem_utility::mkdir_rootonly_directory();
+  if (uid) {
+    filesystem_utility::mkdir_system_user_directory(*uid);
+  }
+}
+
 inline std::filesystem::path make_socket_file_basename(void) {
   std::stringstream ss;
   ss << std::hex

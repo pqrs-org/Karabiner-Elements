@@ -73,9 +73,7 @@ public:
             if (current_console_user_id_ != new_value) {
               current_console_user_id_ = new_value;
 
-              if (new_value) {
-                filesystem_utility::mkdir_system_user_directory(*new_value);
-              }
+              filesystem_utility::create_base_directories(new_value);
 
               enqueue_to_dispatcher([this, new_value] {
                 current_console_user_id_changed(new_value);
@@ -119,6 +117,8 @@ public:
 
 private:
   void prepare_session_monitor_receiver_socket_directory(void) const {
+    filesystem_utility::create_base_directories(current_console_user_id_);
+
     auto directory_path = constants::get_session_monitor_receiver_socket_directory_path();
     std::error_code ec;
     std::filesystem::remove_all(directory_path, ec);
