@@ -347,6 +347,12 @@ public:
         console_user_server_client_->async_get_user_core_configuration_file_path();
       });
 
+      // If the console_user_server isn't running (i.e., operating under system_core_configuration),
+      // connect_failed will keep being called, so we won't perform any operations on the device_grabber.
+      console_user_server_client_->connect_failed.connect([this](auto&& error_code) {
+        filesystem_utility::create_base_directories(current_console_user_id_);
+      });
+
       console_user_server_client_->closed.connect([this] {
         stop_device_grabber();
         start_grabbing_if_system_core_configuration_file_exists();
