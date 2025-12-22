@@ -41,16 +41,13 @@ public:
     session_monitor_receiver_ = std::make_unique<session_monitor_receiver>();
 
     session_monitor_receiver_->current_console_user_id_changed.connect([this](auto&& uid) {
-      uid_t console_user_server_socket_uid = 0;
-
       if (uid) {
         logger::get_logger()->info("current_console_user_id: {0}", *uid);
-        console_user_server_socket_uid = *uid;
       } else {
         logger::get_logger()->info("current_console_user_id: none");
       }
 
-      start_receiver(console_user_server_socket_uid);
+      start_receiver(uid);
     });
 
     //
@@ -72,7 +69,7 @@ public:
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
 
-      start_receiver(0);
+      start_receiver(std::nullopt);
 
       session_monitor_receiver_->async_start();
     });
