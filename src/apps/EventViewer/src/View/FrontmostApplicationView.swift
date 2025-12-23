@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FrontmostApplicationView: View {
-  @ObservedObject var frontmostApplicationHistory = FrontmostApplicationHistory.shared
+  @ObservedObject var frontmostApplicationHistory = LibKrbn.FrontmostApplicationHistory.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
@@ -11,14 +11,6 @@ struct FrontmostApplicationView: View {
           systemImage: InfoBorder.icon
         )
         .modifier(InfoBorder())
-
-        Button(
-          action: {
-            frontmostApplicationHistory.clear()
-          },
-          label: {
-            Label("Clear", systemImage: "clear")
-          })
       }
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -47,15 +39,28 @@ struct FrontmostApplicationView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                if entry.bundleIdentifier.count > 0 || entry.filePath.count > 0 {
-                  Button(
-                    action: {
-                      entry.copyToPasteboard()
-                    },
-                    label: {
-                      Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-                    })
-                }
+                Button(
+                  action: {
+                    let string =
+                      "\(entry.bundleIdentifier)\n" + "\(entry.filePath)\n"
+
+                    let pboard = NSPasteboard.general
+                    pboard.clearContents()
+                    pboard.writeObjects([string as NSString])
+                  },
+                  label: {
+                    Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                  })
+              }
+              .if(entry == frontmostApplicationHistory.entries.last) {
+                $0.overlay(
+                  RoundedRectangle(cornerRadius: 2)
+                    .inset(by: -4)
+                    .stroke(
+                      Color.accentColor,
+                      lineWidth: 2
+                    )
+                )
               }
               .padding(.vertical, 6.0)
               .padding(.horizontal, 12.0)

@@ -19,7 +19,8 @@ struct KarabinerEventViewerApp: App {
     }
 
     EVCoreServiceClient.shared.start()
-    FrontmostApplicationHistory.shared.start()
+    EVConsoleUserServerClient.shared.start()
+    LibKrbn.FrontmostApplicationHistory.shared.watch()
 
     NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event -> NSEvent? in
       if event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command {
