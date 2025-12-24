@@ -94,7 +94,7 @@ public:
 
     frontmost_application_history_.push_front(application);
 
-    size_t max_size = 20;
+    size_t max_size = 100;
     while (frontmost_application_history_.size() > max_size) {
       frontmost_application_history_.pop_back();
     }
