@@ -78,7 +78,15 @@ public:
     // resulting in a smoother and more intuitive user experience.
     //
 
-    std::erase(frontmost_application_history_, application);
+    std::erase_if(frontmost_application_history_,
+                  [application](const auto& h) {
+                    // `application` also includes bundle_path and pid,
+                    // but we ignore those and delete history entries that match
+                    // bundle_identifier and file_path, so that users can remove
+                    // entries they consider to be duplicates.
+                    return h.get_bundle_identifier() == application.get_bundle_identifier() &&
+                           h.get_file_path() == application.get_file_path();
+                  });
 
     //
     // Add to history
