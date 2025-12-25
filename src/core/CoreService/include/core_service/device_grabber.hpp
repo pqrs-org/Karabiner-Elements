@@ -46,6 +46,7 @@ public:
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
                  std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
       : dispatcher_client(),
+        weak_console_user_server_client_(weak_console_user_server_client),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
         temporarily_ignore_all_devices_(false),
         system_sleeping_(false),
@@ -470,6 +471,12 @@ public:
           manipulator_managers_connector_.set_manipulator_environment_core_configuration(core_configuration);
 
           logger_unique_filter_.reset();
+
+          if (core_configuration_->get_global_configuration().get_check_for_updates_on_startup()) {
+            if (auto c = weak_console_user_server_client_.lock()) {
+              c->async_check_for_updates_on_startup();
+            }
+          }
 
           //
           // Reflect profile changes
@@ -1001,6 +1008,8 @@ private:
     update_devices_disabled();
     async_grab_devices();
   }
+
+  std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
 
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
 

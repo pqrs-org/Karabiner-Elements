@@ -15,7 +15,6 @@
 #include "services_utility.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
-#include "updater_process_manager.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
@@ -224,10 +223,6 @@ private:
       }
     });
 
-    // updater_process_manager_
-
-    updater_process_manager_ = std::make_unique<updater_process_manager>(configuration_monitor_);
-
     // system_preferences_monitor_
 
     system_preferences_monitor_ = std::make_unique<pqrs::osx::system_preferences_monitor>(weak_dispatcher_);
@@ -312,7 +307,6 @@ private:
   void stop_child_components(void) {
     receiver_ = nullptr;
 
-    updater_process_manager_ = nullptr;
     system_preferences_monitor_ = nullptr;
     pqrs::osx::frontmost_application_monitor::monitor::terminate_shared_monitor();
     input_source_monitor_ = nullptr;
@@ -334,7 +328,6 @@ private:
   // Child components
 
   std::shared_ptr<configuration_monitor> configuration_monitor_;
-  std::unique_ptr<updater_process_manager> updater_process_manager_;
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
 

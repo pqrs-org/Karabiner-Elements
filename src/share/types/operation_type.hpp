@@ -15,6 +15,7 @@ enum class operation_type : uint8_t {
   // core_service -> console_user_server
   handshake,
   get_user_core_configuration_file_path,
+  check_for_updates_on_startup,
   shell_command_execution,
   select_input_source,
   software_function,
@@ -64,6 +65,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::select_input_source, "select_input_source"},
         {operation_type::software_function, "software_function"},
         {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},
+        {operation_type::check_for_updates_on_startup, "check_for_updates_on_startup"},
         {operation_type::frontmost_application_history, "frontmost_application_history"},
         {operation_type::temporarily_ignore_all_devices, "temporarily_ignore_all_devices"},
         {operation_type::get_manipulator_environment, "get_manipulator_environment"},
