@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::bundle v2.1
+// pqrs::cf::bundle v2.2
 
 // (C) Copyright Takayama Fumihiko 2025.
 // Distributed under the Boost Software License, Version 1.0.
@@ -22,6 +22,7 @@ namespace bundle {
 constexpr std::string_view package_type_application("APPL");
 constexpr std::string_view package_type_framework("FMWK");
 constexpr std::string_view package_type_bundle("BNDL");
+constexpr std::string_view package_type_finder("FNDR");
 
 std::optional<std::string> get_package_type(const std::filesystem::path& bundle_path,
                                             bool guess_if_missing_package_type = false) {
@@ -60,7 +61,8 @@ std::optional<std::string> get_package_type(const std::filesystem::path& bundle_
 bool application(const std::filesystem::path& bundle_path) {
   auto package_type = get_package_type(bundle_path,
                                        true);
-  return package_type == package_type_application;
+  return package_type == package_type_application ||
+         package_type == package_type_finder;
 }
 
 } // namespace bundle
