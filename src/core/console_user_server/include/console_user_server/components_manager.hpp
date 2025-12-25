@@ -9,7 +9,6 @@
 #include "core_service_client.hpp"
 #include "filesystem_utility.hpp"
 #include "logger.hpp"
-#include "monitor/configuration_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "services_utility.hpp"
@@ -177,21 +176,6 @@ private:
   }
 
   void start_child_components(void) {
-    configuration_monitor_ = std::make_shared<configuration_monitor>(constants::get_user_core_configuration_file_path(),
-                                                                     geteuid(),
-                                                                     krbn::core_configuration::error_handling::loose);
-    configuration_monitor_->core_configuration_updated.connect([](auto&& weak_core_configuration) {
-      if (auto c = weak_core_configuration.lock()) {
-        //
-        // settings alert
-        //
-
-        if (c->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2() == "") {
-          application_launcher::launch_settings();
-        }
-      }
-    });
-
     // system_preferences_monitor_
 
     system_preferences_monitor_ = std::make_unique<pqrs::osx::system_preferences_monitor>(weak_dispatcher_);
@@ -267,10 +251,6 @@ private:
     receiver_ = std::make_unique<receiver>(input_source_selector_,
                                            shell_command_handler_,
                                            software_function_handler_);
-
-    // Start configuration_monitor_
-
-    configuration_monitor_->async_start();
   }
 
   void stop_child_components(void) {
@@ -282,8 +262,6 @@ private:
     input_source_selector_ = nullptr;
     shell_command_handler_ = nullptr;
     software_function_handler_ = nullptr;
-
-    configuration_monitor_ = nullptr;
   }
 
   // Core components
@@ -296,7 +274,6 @@ private:
 
   // Child components
 
-  std::shared_ptr<configuration_monitor> configuration_monitor_;
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
 

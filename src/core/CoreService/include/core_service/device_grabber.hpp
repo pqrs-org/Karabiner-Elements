@@ -473,9 +473,17 @@ public:
           logger_unique_filter_.reset();
 
           if (auto c = weak_console_user_server_client_.lock()) {
+            //
+            // Check for updates
+            //
+
             if (core_configuration_->get_global_configuration().get_check_for_updates_on_startup()) {
               c->async_check_for_updates_on_startup();
             }
+
+            //
+            // Manage agents
+            //
 
             if (core_configuration_->get_global_configuration().get_show_in_menu_bar() ||
                 core_configuration_->get_global_configuration().get_show_profile_name_in_menu_bar()) {
@@ -494,6 +502,20 @@ public:
               c->async_register_notification_window_agent();
             } else {
               c->async_unregister_notification_window_agent();
+            }
+
+            //
+            // Open Settings if needed
+            //
+
+            if (core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2() == "") {
+              software_function_details::open_application a;
+              a.set_file_path("/Applications/Karabiner-Elements.app");
+
+              software_function f;
+              f.set_value(a);
+
+              c->async_software_function(f);
             }
           }
 
