@@ -183,16 +183,6 @@ private:
     configuration_monitor_->core_configuration_updated.connect([](auto&& weak_core_configuration) {
       if (auto c = weak_core_configuration.lock()) {
         //
-        // multitouch_extension
-        //
-
-        if (c->get_machine_specific().get_entry().get_enable_multitouch_extension()) {
-          services_utility::register_multitouch_extension_agent();
-        } else {
-          services_utility::unregister_multitouch_extension_agent();
-        }
-
-        //
         // notification_window
         //
 

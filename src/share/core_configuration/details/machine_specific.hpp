@@ -77,7 +77,11 @@ public:
     return json;
   }
 
-  entry& get_entry(const karabiner_machine_identifier& identifier = constants::get_karabiner_machine_identifier()) {
+  const entry& get_entry(void) const {
+    return get_entry(constants::get_karabiner_machine_identifier());
+  }
+
+  const entry& get_entry(const karabiner_machine_identifier& identifier) const {
     if (!entries_.contains(identifier)) {
       entries_[identifier] = std::make_shared<entry>(nlohmann::json::object(),
                                                      error_handling_);
@@ -86,10 +90,18 @@ public:
     return *(entries_[identifier]);
   }
 
+  entry& get_entry(void) {
+    return const_cast<entry&>(static_cast<const machine_specific&>(*this).get_entry());
+  }
+
+  entry& get_entry(const karabiner_machine_identifier& identifier) {
+    return const_cast<entry&>(static_cast<const machine_specific&>(*this).get_entry(identifier));
+  }
+
 private:
   nlohmann::json json_;
   error_handling error_handling_;
-  std::unordered_map<karabiner_machine_identifier, std::shared_ptr<entry>> entries_;
+  mutable std::unordered_map<karabiner_machine_identifier, std::shared_ptr<entry>> entries_;
 };
 
 inline void to_json(nlohmann::json& json, const machine_specific& value) {

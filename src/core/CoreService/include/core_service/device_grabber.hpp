@@ -483,6 +483,12 @@ public:
             } else {
               c->async_unregister_menu_agent();
             }
+
+            if (core_configuration_->get_machine_specific().get_entry().get_enable_multitouch_extension()) {
+              c->async_register_multitouch_extension_agent();
+            } else {
+              c->async_unregister_multitouch_extension_agent();
+            }
           }
 
           //

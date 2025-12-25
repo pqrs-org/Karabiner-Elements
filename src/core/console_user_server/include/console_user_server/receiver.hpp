@@ -111,6 +111,8 @@ public:
           case operation_type::check_for_updates_on_startup:
           case operation_type::register_menu_agent:
           case operation_type::unregister_menu_agent:
+          case operation_type::register_multitouch_extension_agent:
+          case operation_type::unregister_multitouch_extension_agent:
           case operation_type::select_input_source:
           case operation_type::shell_command_execution:
           case operation_type::software_function:
@@ -151,6 +153,14 @@ public:
 
                   case operation_type::unregister_menu_agent:
                     services_utility::unregister_menu_agent();
+                    break;
+
+                  case operation_type::register_multitouch_extension_agent:
+                    services_utility::register_multitouch_extension_agent();
+                    break;
+
+                  case operation_type::unregister_multitouch_extension_agent:
+                    services_utility::unregister_multitouch_extension_agent();
                     break;
 
                   case operation_type::select_input_source:
