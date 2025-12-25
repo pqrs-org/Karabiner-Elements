@@ -183,16 +183,6 @@ private:
     configuration_monitor_->core_configuration_updated.connect([](auto&& weak_core_configuration) {
       if (auto c = weak_core_configuration.lock()) {
         //
-        // notification_window
-        //
-
-        if (c->get_global_configuration().get_enable_notification_window()) {
-          services_utility::register_notification_window_agent();
-        } else {
-          services_utility::unregister_notification_window_agent();
-        }
-
-        //
         // settings alert
         //
 

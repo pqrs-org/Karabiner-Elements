@@ -241,6 +241,32 @@ public:
     });
   }
 
+  void async_register_notification_window_agent(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::register_notification_window_agent},
+          {"shared_secret", shared_secret_},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
+  void async_unregister_notification_window_agent(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::unregister_notification_window_agent},
+          {"shared_secret", shared_secret_},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
   // core_service -> console_user_server
   void async_shell_command_execution(const std::string& shell_command) const {
     enqueue_to_dispatcher([this, shell_command] {

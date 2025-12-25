@@ -489,6 +489,12 @@ public:
             } else {
               c->async_unregister_multitouch_extension_agent();
             }
+
+            if (core_configuration_->get_global_configuration().get_enable_notification_window()) {
+              c->async_register_notification_window_agent();
+            } else {
+              c->async_unregister_notification_window_agent();
+            }
           }
 
           //

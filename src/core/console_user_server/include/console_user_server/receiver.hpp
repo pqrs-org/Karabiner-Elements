@@ -113,6 +113,8 @@ public:
           case operation_type::unregister_menu_agent:
           case operation_type::register_multitouch_extension_agent:
           case operation_type::unregister_multitouch_extension_agent:
+          case operation_type::register_notification_window_agent:
+          case operation_type::unregister_notification_window_agent:
           case operation_type::select_input_source:
           case operation_type::shell_command_execution:
           case operation_type::software_function:
@@ -161,6 +163,14 @@ public:
 
                   case operation_type::unregister_multitouch_extension_agent:
                     services_utility::unregister_multitouch_extension_agent();
+                    break;
+
+                  case operation_type::register_notification_window_agent:
+                    services_utility::register_notification_window_agent();
+                    break;
+
+                  case operation_type::unregister_notification_window_agent:
+                    services_utility::unregister_notification_window_agent();
                     break;
 
                   case operation_type::select_input_source:
