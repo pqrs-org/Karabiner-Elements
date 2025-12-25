@@ -5,6 +5,7 @@
 #include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
+#include "services_utility.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include "types.hpp"
@@ -108,6 +109,8 @@ public:
             break;
 
           case operation_type::check_for_updates_on_startup:
+          case operation_type::register_menu_agent:
+          case operation_type::unregister_menu_agent:
           case operation_type::select_input_source:
           case operation_type::shell_command_execution:
           case operation_type::software_function:
@@ -141,6 +144,14 @@ public:
 
                     break;
                   }
+
+                  case operation_type::register_menu_agent:
+                    services_utility::register_menu_agent();
+                    break;
+
+                  case operation_type::unregister_menu_agent:
+                    services_utility::unregister_menu_agent();
+                    break;
 
                   case operation_type::select_input_source:
                     if (auto s = weak_input_source_selector_.lock()) {

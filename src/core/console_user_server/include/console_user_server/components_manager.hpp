@@ -183,17 +183,6 @@ private:
     configuration_monitor_->core_configuration_updated.connect([](auto&& weak_core_configuration) {
       if (auto c = weak_core_configuration.lock()) {
         //
-        // menu
-        //
-
-        if (c->get_global_configuration().get_show_in_menu_bar() ||
-            c->get_global_configuration().get_show_profile_name_in_menu_bar()) {
-          services_utility::register_menu_agent();
-        } else {
-          services_utility::unregister_menu_agent();
-        }
-
-        //
         // multitouch_extension
         //
 

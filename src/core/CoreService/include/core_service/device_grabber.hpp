@@ -472,9 +472,16 @@ public:
 
           logger_unique_filter_.reset();
 
-          if (core_configuration_->get_global_configuration().get_check_for_updates_on_startup()) {
-            if (auto c = weak_console_user_server_client_.lock()) {
+          if (auto c = weak_console_user_server_client_.lock()) {
+            if (core_configuration_->get_global_configuration().get_check_for_updates_on_startup()) {
               c->async_check_for_updates_on_startup();
+            }
+
+            if (core_configuration_->get_global_configuration().get_show_in_menu_bar() ||
+                core_configuration_->get_global_configuration().get_show_profile_name_in_menu_bar()) {
+              c->async_register_menu_agent();
+            } else {
+              c->async_unregister_menu_agent();
             }
           }
 
