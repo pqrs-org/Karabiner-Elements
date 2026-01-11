@@ -14,13 +14,15 @@ public:
   }
 
   void log(void) {
+    auto team_id = current_process_signing_information_.get_verified_team_id().value_or(pqrs::osx::codesign::team_id("empty"));
+
     logger::get_logger()->info("signing_information team_id: {0}",
-                               current_process_signing_information_.get_team_id().value_or("empty"));
+                               type_safe::get(team_id));
   }
 
   bool same_team_id(std::optional<pid_t> pid) {
     // If the binary is not code-signed (e.g., a self-build from source), always return true.
-    auto current_team_id = current_process_signing_information_.get_team_id();
+    auto current_team_id = current_process_signing_information_.get_verified_team_id();
     if (current_team_id == std::nullopt) {
       return true;
     }
@@ -30,7 +32,7 @@ public:
     }
 
     auto signing_information = pqrs::osx::codesign::get_signing_information_of_process(*pid);
-    return current_team_id == signing_information.get_team_id();
+    return current_team_id == signing_information.get_verified_team_id();
   }
 
 private:
