@@ -47,10 +47,8 @@ DEALINGS IN THE SOFTWARE.
 #else // C++ 98/03
     #define UTF_CPP_OVERRIDE
     #define UTF_CPP_NOEXCEPT throw()
-    // Simulate static_assert:
-    template <bool Condition> struct StaticAssert {static void utf8_static_assert() {char static_assert_impl[Condition ? 1 : 0]; } };
-    template <> struct StaticAssert<true> {static void utf8_static_assert() {}};
-    #define UTF_CPP_STATIC_ASSERT(condition) StaticAssert<condition>::utf8_static_assert();
+    // Not worth simulating static_assert:
+    #define UTF_CPP_STATIC_ASSERT(condition) (void)(condition);
 #endif // C++ 11 or later
 
 

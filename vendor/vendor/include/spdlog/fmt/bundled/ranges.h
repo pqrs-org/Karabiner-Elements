@@ -18,6 +18,13 @@
 
 #include "format.h"
 
+#if FMT_HAS_CPP_ATTRIBUTE(clang::lifetimebound)
+#  define FMT_LIFETIMEBOUND [[clang::lifetimebound]]
+#else
+#  define FMT_LIFETIMEBOUND
+#endif
+FMT_PRAGMA_CLANG(diagnostic error "-Wreturn-stack-address")
+
 FMT_BEGIN_NAMESPACE
 
 FMT_EXPORT
@@ -233,14 +240,6 @@ using range_reference_type =
 // reference type, with cv-ref stripped.
 template <typename Range>
 using uncvref_type = remove_cvref_t<range_reference_type<Range>>;
-
-template <typename Formatter>
-FMT_CONSTEXPR auto maybe_set_debug_format(Formatter& f, bool set)
-    -> decltype(f.set_debug_format(set)) {
-  f.set_debug_format(set);
-}
-template <typename Formatter>
-FMT_CONSTEXPR void maybe_set_debug_format(Formatter&, ...) {}
 
 template <typename T>
 struct range_format_kind_
@@ -821,12 +820,12 @@ auto join(Range&& r, string_view sep)
  *
  * **Example**:
  *
- *     auto t = std::tuple<int, char>{1, 'a'};
+ *     auto t = std::tuple<int, char>(1, 'a');
  *     fmt::print("{}", fmt::join(t, ", "));
  *     // Output: 1, a
  */
 template <typename Tuple, FMT_ENABLE_IF(is_tuple_like<Tuple>::value)>
-FMT_CONSTEXPR auto join(const Tuple& tuple, string_view sep)
+FMT_CONSTEXPR auto join(const Tuple& tuple FMT_LIFETIMEBOUND, string_view sep)
     -> tuple_join_view<Tuple, char> {
   return {tuple, sep};
 }

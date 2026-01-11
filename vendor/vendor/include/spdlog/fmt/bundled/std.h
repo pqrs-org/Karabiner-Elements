@@ -111,12 +111,17 @@ void write_escaped_path(basic_memory_buffer<Char>& quoted,
 #endif  // FMT_CPP_LIB_FILESYSTEM
 
 #if defined(__cpp_lib_expected) || FMT_CPP_LIB_VARIANT
-template <typename Char, typename OutputIt, typename T>
-auto write_escaped_alternative(OutputIt out, const T& v) -> OutputIt {
+
+template <typename Char, typename OutputIt, typename T, typename FormatContext>
+auto write_escaped_alternative(OutputIt out, const T& v, FormatContext& ctx)
+    -> OutputIt {
   if constexpr (has_to_string_view<T>::value)
     return write_escaped_string<Char>(out, detail::to_string_view(v));
   if constexpr (std::is_same_v<T, Char>) return write_escaped_char(out, v);
-  return write<Char>(out, v);
+
+  formatter<std::remove_cv_t<T>, Char> underlying;
+  maybe_set_debug_format(underlying, true);
+  return underlying.format(v, ctx);
 }
 #endif
 
@@ -139,50 +144,39 @@ template <typename Variant, typename Char> class is_variant_formattable {
 #endif  // FMT_CPP_LIB_VARIANT
 
 #if FMT_USE_RTTI
-
-template <typename OutputIt>
-auto write_demangled_name(OutputIt out, const std::type_info& ti) -> OutputIt {
-#  ifdef FMT_HAS_ABI_CXA_DEMANGLE
-  int status = 0;
-  size_t size = 0;
-  std::unique_ptr<char, void (*)(void*)> demangled_name_ptr(
-      abi::__cxa_demangle(ti.name(), nullptr, &size, &status), &std::free);
-
-  string_view demangled_name_view;
-  if (demangled_name_ptr) {
-    demangled_name_view = demangled_name_ptr.get();
-
-    // Normalization of stdlib inline namespace names.
-    // libc++ inline namespaces.
-    //  std::__1::*       -> std::*
-    //  std::__1::__fs::* -> std::*
-    // libstdc++ inline namespaces.
-    //  std::__cxx11::*             -> std::*
-    //  std::filesystem::__cxx11::* -> std::filesystem::*
-    if (demangled_name_view.starts_with("std::")) {
-      char* begin = demangled_name_ptr.get();
-      char* to = begin + 5;  // std::
-      for (char *from = to, *end = begin + demangled_name_view.size();
-           from < end;) {
-        // This is safe, because demangled_name is NUL-terminated.
-        if (from[0] == '_' && from[1] == '_') {
-          char* next = from + 1;
-          while (next < end && *next != ':') next++;
-          if (next[0] == ':' && next[1] == ':') {
-            from = next + 2;
-            continue;
-          }
+inline auto normalize_libcxx_inline_namespaces(string_view demangled_name_view,
+                                               char* begin) -> string_view {
+  // Normalization of stdlib inline namespace names.
+  // libc++ inline namespaces.
+  //  std::__1::*       -> std::*
+  //  std::__1::__fs::* -> std::*
+  // libstdc++ inline namespaces.
+  //  std::__cxx11::*             -> std::*
+  //  std::filesystem::__cxx11::* -> std::filesystem::*
+  if (demangled_name_view.starts_with("std::")) {
+    char* to = begin + 5;  // std::
+    for (const char *from = to, *end = begin + demangled_name_view.size();
+         from < end;) {
+      // This is safe, because demangled_name is NUL-terminated.
+      if (from[0] == '_' && from[1] == '_') {
+        const char* next = from + 1;
+        while (next < end && *next != ':') next++;
+        if (next[0] == ':' && next[1] == ':') {
+          from = next + 2;
+          continue;
         }
-        *to++ = *from++;
       }
-      demangled_name_view = {begin, detail::to_unsigned(to - begin)};
+      *to++ = *from++;
     }
-  } else {
-    demangled_name_view = string_view(ti.name());
+    demangled_name_view = {begin, detail::to_unsigned(to - begin)};
   }
-  return detail::write_bytes<char>(out, demangled_name_view);
-#  elif FMT_MSC_VERSION
-  const string_view demangled_name(ti.name());
+  return demangled_name_view;
+}
+
+template <class OutputIt>
+auto normalize_msvc_abi_name(string_view abi_name_view, OutputIt out)
+    -> OutputIt {
+  const string_view demangled_name(abi_name_view);
   for (size_t i = 0; i < demangled_name.size(); ++i) {
     auto sub = demangled_name;
     sub.remove_prefix(i);
@@ -201,6 +195,39 @@ auto write_demangled_name(OutputIt out, const std::type_info& ti) -> OutputIt {
     if (*sub.begin() != ' ') *out++ = *sub.begin();
   }
   return out;
+}
+
+template <typename OutputIt>
+auto write_demangled_name(OutputIt out, const std::type_info& ti) -> OutputIt {
+#  ifdef FMT_HAS_ABI_CXA_DEMANGLE
+  int status = 0;
+  size_t size = 0;
+  std::unique_ptr<char, void (*)(void*)> demangled_name_ptr(
+      abi::__cxa_demangle(ti.name(), nullptr, &size, &status), &free);
+
+  string_view demangled_name_view;
+  if (demangled_name_ptr) {
+    demangled_name_view = normalize_libcxx_inline_namespaces(
+        demangled_name_ptr.get(), demangled_name_ptr.get());
+  } else {
+    demangled_name_view = string_view(ti.name());
+  }
+  return detail::write_bytes<char>(out, demangled_name_view);
+#  elif FMT_MSC_VERSION && defined(_MSVC_STL_UPDATE)
+  return normalize_msvc_abi_name(ti.name(), out);
+#  elif FMT_MSC_VERSION && defined(_LIBCPP_VERSION)
+  const string_view demangled_name = ti.name();
+  std::string name_copy(demangled_name.size(), '\0');
+  // normalize_msvc_abi_name removes class, struct, union etc that MSVC has in
+  // front of types
+  name_copy.erase(normalize_msvc_abi_name(demangled_name, name_copy.begin()),
+                  name_copy.end());
+  // normalize_libcxx_inline_namespaces removes the inline __1, __2, etc
+  // namespaces libc++ uses for ABI versioning On MSVC ABI + libc++
+  // environments, we need to eliminate both of them.
+  const string_view normalized_name =
+      normalize_libcxx_inline_namespaces(name_copy, name_copy.data());
+  return detail::write_bytes<char>(out, normalized_name);
 #  else
   return detail::write_bytes<char>(out, string_view(ti.name()));
 #  endif
@@ -255,21 +282,6 @@ template <typename T> auto ptr(const std::shared_ptr<T>& p) -> const void* {
 
 #if FMT_CPP_LIB_FILESYSTEM
 
-class path : public std::filesystem::path {
- public:
-  auto display_string() const -> std::string {
-    const std::filesystem::path& base = *this;
-    return fmt::format(FMT_STRING("{}"), base);
-  }
-  auto system_string() const -> std::string { return string(); }
-
-  auto generic_display_string() const -> std::string {
-    const std::filesystem::path& base = *this;
-    return fmt::format(FMT_STRING("{:g}"), base);
-  }
-  auto generic_system_string() const -> std::string { return generic_string(); }
-};
-
 template <typename Char> struct formatter<std::filesystem::path, Char> {
  private:
   format_specs specs_;
@@ -319,6 +331,21 @@ template <typename Char> struct formatter<std::filesystem::path, Char> {
   }
 };
 
+class path : public std::filesystem::path {
+ public:
+  auto display_string() const -> std::string {
+    const std::filesystem::path& base = *this;
+    return fmt::format(FMT_STRING("{}"), base);
+  }
+  auto system_string() const -> std::string { return string(); }
+
+  auto generic_display_string() const -> std::string {
+    const std::filesystem::path& base = *this;
+    return fmt::format(FMT_STRING("{:g}"), base);
+  }
+  auto generic_system_string() const -> std::string { return generic_string(); }
+};
+
 #endif  // FMT_CPP_LIB_FILESYSTEM
 
 template <size_t N, typename Char>
@@ -353,25 +380,16 @@ template <typename T, typename Char>
 struct formatter<std::optional<T>, Char,
                  std::enable_if_t<is_formattable<T, Char>::value>> {
  private:
-  formatter<T, Char> underlying_;
+  formatter<std::remove_cv_t<T>, Char> underlying_;
   static constexpr basic_string_view<Char> optional =
       detail::string_literal<Char, 'o', 'p', 't', 'i', 'o', 'n', 'a', 'l',
                              '('>{};
   static constexpr basic_string_view<Char> none =
       detail::string_literal<Char, 'n', 'o', 'n', 'e'>{};
 
-  template <class U>
-  FMT_CONSTEXPR static auto maybe_set_debug_format(U& u, bool set)
-      -> decltype(u.set_debug_format(set)) {
-    u.set_debug_format(set);
-  }
-
-  template <class U>
-  FMT_CONSTEXPR static void maybe_set_debug_format(U&, ...) {}
-
  public:
   FMT_CONSTEXPR auto parse(parse_context<Char>& ctx) {
-    maybe_set_debug_format(underlying_, true);
+    detail::maybe_set_debug_format(underlying_, true);
     return underlying_.parse(ctx);
   }
 
@@ -407,10 +425,10 @@ struct formatter<std::expected<T, E>, Char,
     if (value.has_value()) {
       out = detail::write<Char>(out, "expected(");
       if constexpr (!std::is_void<T>::value)
-        out = detail::write_escaped_alternative<Char>(out, *value);
+        out = detail::write_escaped_alternative<Char>(out, *value, ctx);
     } else {
       out = detail::write<Char>(out, "unexpected(");
-      out = detail::write_escaped_alternative<Char>(out, value.error());
+      out = detail::write_escaped_alternative<Char>(out, value.error(), ctx);
     }
     *out++ = ')';
     return out;
@@ -474,7 +492,7 @@ struct formatter<Variant, Char,
     FMT_TRY {
       std::visit(
           [&](const auto& v) {
-            out = detail::write_escaped_alternative<Char>(out, v);
+            out = detail::write_escaped_alternative<Char>(out, v, ctx);
           },
           value);
     }
@@ -495,6 +513,8 @@ template <> struct formatter<std::error_code> {
   bool debug_ = false;
 
  public:
+  FMT_CONSTEXPR void set_debug_format(bool set = true) { debug_ = set; }
+
   FMT_CONSTEXPR auto parse(parse_context<>& ctx) -> const char* {
     auto it = ctx.begin(), end = ctx.end();
     if (it == end) return it;
