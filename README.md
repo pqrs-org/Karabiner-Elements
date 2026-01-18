@@ -17,14 +17,14 @@ You can download previous versions of Karabiner-Elements from [Release notes](ht
 
 ## Supported systems
 
--   macOS 26 Tahoe
-    -   Both Intel-based Macs and Apple Silicon Macs
--   macOS 15 Sequoia
-    -   Both Intel-based Macs and Apple Silicon Macs
--   macOS 14 Sonoma
-    -   Both Intel-based Macs and Apple Silicon Macs
--   macOS 13 Ventura
-    -   Both Intel-based Macs and Apple Silicon Macs
+- macOS 26 Tahoe
+    - Both Intel-based Macs and Apple Silicon Macs
+- macOS 15 Sequoia
+    - Both Intel-based Macs and Apple Silicon Macs
+- macOS 14 Sonoma
+    - Both Intel-based Macs and Apple Silicon Macs
+- macOS 13 Ventura
+    - Both Intel-based Macs and Apple Silicon Macs
 
 ## Usage
 
@@ -42,12 +42,12 @@ If you would like to contribute financially to the development of Karabiner-Elem
 
 System requirements to build Karabiner-Elements:
 
--   macOS 15+
--   Xcode 26+
--   Command Line Tools for Xcode (`xcode-select --install`)
--   xz (`brew install xz`)
--   [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
--   CMake (`brew install cmake`)
+- macOS 15+
+- Xcode 26+
+- Command Line Tools for Xcode (`xcode-select --install`)
+- xz (`brew install xz`)
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
+- CMake (`brew install cmake`)
 
 #### Steps
 
@@ -60,7 +60,6 @@ System requirements to build Karabiner-Elements:
     ```
 
 2.  (Optional) If you have a codesign identity:
-
     1.  Find your codesign identity.
 
         ```shell
@@ -113,8 +112,8 @@ System requirements to build Karabiner-Elements:
 
 Karabiner-Elements uses some pre-built binaries in the source tree.
 
--   `vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg` (the latest one)
--   `Sparkle.framework` in `src/apps/SettingsWindow/`
+- `vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg` (the latest one)
+- `Sparkle.framework` in `src/apps/SettingsWindow/`
 
 The above `make package` command does not rebuild these binaries.<br/>
 (These binaries will be copied in the distributed package.)

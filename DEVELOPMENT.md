@@ -25,24 +25,24 @@ make install
 
 ## Core Processes
 
--   `Karabiner-Core-Service`
-    -   Seize the input devices and modify events then post events using `Karabiner-DriverKit-VirtualHIDDevice`.
-    -   It is run with root privileges which are required to seize the device and send events to the virtual driver.
--   `karabiner_session_monitor`
-    -   It informs `Karabiner-Core-Service` of the user currently using the console.
-        Karabiner-Core-Service will change the owner of the Unix domain socket that `Karabiner-Core-Service` provides for `karabiner_console_user_server`.
-    -   The methods for accurately detecting the console user, including when multiple people are logged in through Screen Sharing, are very limited.
-        Even in macOS 14, there is no alternative to using the Core Graphics API `CGSessionCopyCurrentDictionary`.
-        To use this API, it must be launched from a GUI session. Specifically, it needs to be started from LaunchAgents.
-        Therefore, the function to detect the console user cannot be integrated into `Karabiner-Core-Service` and is implemented as a separate process.
-    -   It is run with root privileges because if the notification of the console user to `Karabiner-Core-Service` can be done by anyone, the console user could be spoofed.
-        This would allow a user who is not currently using the console to send requests to `Karabiner-Core-Service` via `karabiner_console_user_server`.
--   `karabiner_console_user_server`
-    -   `karabiner_console_user_server` connects to the Unix domain socket provided by `Karabiner-Core-Service` and requests the start of processing input events.
-        `Karabiner-Core-Service` will not modify the input events until it receives a connection from `karabiner_console_user_server` (unless the system default configuration is enabled).
-    -   The execution of `shell_command`, `software_function`, and `select_input_source` is carried out by karabiner_console_user_server.
-    -   It notifies `Karabiner-Core-Service` of the information needed to reference the filter function when modifying input events, such as the active application and the current input source.
-    -   Run with the console user privilege.
+- `Karabiner-Core-Service`
+    - Seize the input devices and modify events then post events using `Karabiner-DriverKit-VirtualHIDDevice`.
+    - It is run with root privileges which are required to seize the device and send events to the virtual driver.
+- `karabiner_session_monitor`
+    - It informs `Karabiner-Core-Service` of the user currently using the console.
+      Karabiner-Core-Service will change the owner of the Unix domain socket that `Karabiner-Core-Service` provides for `karabiner_console_user_server`.
+    - The methods for accurately detecting the console user, including when multiple people are logged in through Screen Sharing, are very limited.
+      Even in macOS 14, there is no alternative to using the Core Graphics API `CGSessionCopyCurrentDictionary`.
+      To use this API, it must be launched from a GUI session. Specifically, it needs to be started from LaunchAgents.
+      Therefore, the function to detect the console user cannot be integrated into `Karabiner-Core-Service` and is implemented as a separate process.
+    - It is run with root privileges because if the notification of the console user to `Karabiner-Core-Service` can be done by anyone, the console user could be spoofed.
+      This would allow a user who is not currently using the console to send requests to `Karabiner-Core-Service` via `karabiner_console_user_server`.
+- `karabiner_console_user_server`
+    - `karabiner_console_user_server` connects to the Unix domain socket provided by `Karabiner-Core-Service` and requests the start of processing input events.
+      `Karabiner-Core-Service` will not modify the input events until it receives a connection from `karabiner_console_user_server` (unless the system default configuration is enabled).
+    - The execution of `shell_command`, `software_function`, and `select_input_source` is carried out by karabiner_console_user_server.
+    - It notifies `Karabiner-Core-Service` of the information needed to reference the filter function when modifying input events, such as the active application and the current input source.
+    - Run with the console user privilege.
 
 ![processes](files/images/processes.svg)
 
@@ -154,9 +154,9 @@ It requires posting coregraphics events.<br />
 
 `CGEventPost` does not support some key events in OS X 10.12.
 
--   Mission Control key
--   Launchpad key
--   Option-Command-Escape
+- Mission Control key
+- Launchpad key
+- Option-Command-Escape
 
 Thus, `Karabiner-Core-Service` does not use `CGEventPost`.
 
@@ -230,20 +230,20 @@ uint8_t extra_modifiers; // fn
 
 There are several way to get the session information, however, the reliable way is limited.
 
--   The owner of `/dev/console`
-    -   The owner of `/dev/console` becomes wrong value after remote user is logged in via Screen Sharing.<br />
-        How to reproduce the problem.
+- The owner of `/dev/console`
+    - The owner of `/dev/console` becomes wrong value after remote user is logged in via Screen Sharing.<br />
+      How to reproduce the problem.
         1.  Restart macOS.
         2.  Log in from console as Guest user.
         3.  Log in from Screen Sharing as another user.
         4.  The owner of `/dev/console` is changed to another user even the console user is Guest.
--   `SCDynamicStoreCopyConsoleUser`
-    -   `SCDynamicStoreCopyConsoleUser` has same problem of `/dev/console`.
--   `SessionGetInfo`
-    -   `SessionGetInfo` cannot get uid of session.
-        Thus, `SessionGetInfo` cannot determine the console user.
--   `CGSessionCopyCurrentDictionary`
-    -   `karabiner_session_monitor` uses it to avoid the above problems.
+- `SCDynamicStoreCopyConsoleUser`
+    - `SCDynamicStoreCopyConsoleUser` has same problem of `/dev/console`.
+- `SessionGetInfo`
+    - `SessionGetInfo` cannot get uid of session.
+      Thus, `SessionGetInfo` cannot determine the console user.
+- `CGSessionCopyCurrentDictionary`
+    - `karabiner_session_monitor` uses it to avoid the above problems.
 
 ---
 
@@ -251,48 +251,48 @@ There are several way to get the session information, however, the reliable way 
 
 The caps lock is quite different from the normal modifier.
 
--   The caps lock might be used another purpose. (e.g., switch input source)
-    -   We should refer the caps lock LED to determine caps lock is on/off.
--   The caps lock modifier is not synchronized with the physical state of key down/up.
-    -   We should send key_down and key_up event to change the caps lock state.
--   The caps lock will be treated as both generic key event and modifier key event due to the above reasons.
-    -   If the caps lock is specified as "to.key_code: caps_lock", the caps lock event is treated as generic key event.
-        -   For example, `key_event_dispatcher` manages in `key_event_dispatcher::pressed_keys_`.
-    -   If the caps lock is specified as "from.modifiers" or "to.modifiers", the caps lock event is treated as modifier key event.
-        -   For example, `key_event_dispatcher` manages in `key_event_dispatcher::pressed_modifier_flags_`.
+- The caps lock might be used another purpose. (e.g., switch input source)
+    - We should refer the caps lock LED to determine caps lock is on/off.
+- The caps lock modifier is not synchronized with the physical state of key down/up.
+    - We should send key_down and key_up event to change the caps lock state.
+- The caps lock will be treated as both generic key event and modifier key event due to the above reasons.
+    - If the caps lock is specified as "to.key_code: caps_lock", the caps lock event is treated as generic key event.
+        - For example, `key_event_dispatcher` manages in `key_event_dispatcher::pressed_keys_`.
+    - If the caps lock is specified as "from.modifiers" or "to.modifiers", the caps lock event is treated as modifier key event.
+        - For example, `key_event_dispatcher` manages in `key_event_dispatcher::pressed_modifier_flags_`.
 
 ### Events related with caps lock in Karabiner-Elements
 
--   `hid::usage::keyboard_or_keypad::keyboard_caps_lock`
-    -   The event is sent when the physical caps lock key is pressed.
-    -   The event does not change the state of `modifier_flag_manager` because the event might be used another purpose.
-    -   `event::type::caps_lock_state_changed` might be sent due to the LED state change.
--   `event::type::caps_lock_state_changed`
-    -   This event happens when the caps lock LED is changed.
-    -   The event changes the state of `modifier_flag_manager`.
-        -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` might be sent due to the `modifier_flag_manager` state change.
--   `event::type::sticky_modifier`
-    -   `basic > from.modifiers.mandatory` and `basic > to.modifiers` also send this event in order to change the state of `modifier_flag_manager`,
-    -   The event changes the state of `modifier_flag_manager`.
-        -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` might be sent due to the `modifier_flag_manager` state change.
+- `hid::usage::keyboard_or_keypad::keyboard_caps_lock`
+    - The event is sent when the physical caps lock key is pressed.
+    - The event does not change the state of `modifier_flag_manager` because the event might be used another purpose.
+    - `event::type::caps_lock_state_changed` might be sent due to the LED state change.
+- `event::type::caps_lock_state_changed`
+    - This event happens when the caps lock LED is changed.
+    - The event changes the state of `modifier_flag_manager`.
+        - `hid::usage::keyboard_or_keypad::keyboard_caps_lock` might be sent due to the `modifier_flag_manager` state change.
+- `event::type::sticky_modifier`
+    - `basic > from.modifiers.mandatory` and `basic > to.modifiers` also send this event in order to change the state of `modifier_flag_manager`,
+    - The event changes the state of `modifier_flag_manager`.
+        - `hid::usage::keyboard_or_keypad::keyboard_caps_lock` might be sent due to the `modifier_flag_manager` state change.
 
 ### The flow of updating `modifier_flag_manager`
 
--   Karabiner-Core-Service receives `hid::usage::keyboard_or_keypad::keyboard_caps_lock`.
--   Send the event via virtual hid keyboard.
--   macOS update the caps lock LED of virtual hid keyboard.
--   Virtual hid keyboard sends the LED updated event.
--   Karabiner-Core-Service observes events from the virtual hid keyboard.
-    When an event {usage_page::leds, usage::led::caps_lock} is detected,
-    Karabiner-Core-Service generates an `event::type::caps_lock_state_changed` and adds it to the queue.
--   The state of `modifier_flag_manager` is changed by `event::type::caps_lock_state_changed`.
+- Karabiner-Core-Service receives `hid::usage::keyboard_or_keypad::keyboard_caps_lock`.
+- Send the event via virtual hid keyboard.
+- macOS update the caps lock LED of virtual hid keyboard.
+- Virtual hid keyboard sends the LED updated event.
+- Karabiner-Core-Service observes events from the virtual hid keyboard.
+  When an event {usage_page::leds, usage::led::caps_lock} is detected,
+  Karabiner-Core-Service generates an `event::type::caps_lock_state_changed` and adds it to the queue.
+- The state of `modifier_flag_manager` is changed by `event::type::caps_lock_state_changed`.
 
 ### modifier state holders
 
--   `modifier_flag_manager`
-    -   Keep ideal modifiers state for event modification.
--   `key_event_dispatcher`
-    -   Keep actually sent modifiers.
+- `modifier_flag_manager`
+    - Keep ideal modifiers state for event modification.
+- `key_event_dispatcher`
+    - Keep actually sent modifiers.
 
 For example, `modifier_flag_manager` contains the lazy modifiers, but `key_event_dispatcher` does not.
 
@@ -318,37 +318,37 @@ Example:
 }
 ```
 
--   Press the physical caps_lock key (`hid::usage::keyboard_or_keypad::keyboard_caps_lock`)
-    -   `key_event_dispatcher` is updated.
-        -   `pressed_keys_.insert(caps_lock)`
-    -   macOS update the caps lock LED state (on).
-    -   `event::type::caps_lock_state_changed (on)` is sent via `krbn::event_queue::utility::make_queue` in `Karabiner-Core-Service`.
-        -   `modifier_flag_manager increase_led_lock (caps_lock)`
-        -   `key_event_dispatcher` is updated.
-            -   `pressed_modifier_flags_.insert(caps_lock)`
--   Release the physical caps_lock key (`hid::usage::keyboard_or_keypad::keyboard_caps_lock`)
-    -   `key_event_dispatcher` is updated.
-        -   `pressed_keys_.erase(caps_lock)`
--   Press `down_arrow` key.j
-    -   `sticky_modifier caps_lock false` is sent by `modifiers.mandatory`.
-        -   `modifier_flag_manager decrease_sticky (caps_lock)`
-    -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard.
-    -   `key_event_dispatcher` is updated.
-        -   `pressed_modifier_flags_.erase(caps_lock)`
-    -   `d` is sent via virtual hid keyboard.
-    -   sticky_modifiers are erased.
-    -   `sticky_modifier caps_lock true` is sent by `modifiers.mandatory`.
-        -   `modifier_flag_manager increase_sticky (caps_lock)`
-    -   macOS update the caps lock LED state (off).
-    -   `event::type::caps_lock_state_changed (off)` is sent via `krbn::event_queue::utility::make_queue` in `Karabiner-Core-Service`.
-        -   `modifier_flag_manager decrease_led_lock (caps_lock)`
-            -   Note: led_lock will be ignored while other counter is active in modifier_flag_manager.
--   Release `down_arrow` key.
-    -   `d` is sent via virtual hid keyboard.
--   Press `tab` key.
-    -   `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard by sticky_modifier.
-    -   sticky_modifiers are erased.
-    -   `tab` is sent via virtual hid keyboard.
+- Press the physical caps_lock key (`hid::usage::keyboard_or_keypad::keyboard_caps_lock`)
+    - `key_event_dispatcher` is updated.
+        - `pressed_keys_.insert(caps_lock)`
+    - macOS update the caps lock LED state (on).
+    - `event::type::caps_lock_state_changed (on)` is sent via `krbn::event_queue::utility::make_queue` in `Karabiner-Core-Service`.
+        - `modifier_flag_manager increase_led_lock (caps_lock)`
+        - `key_event_dispatcher` is updated.
+            - `pressed_modifier_flags_.insert(caps_lock)`
+- Release the physical caps_lock key (`hid::usage::keyboard_or_keypad::keyboard_caps_lock`)
+    - `key_event_dispatcher` is updated.
+        - `pressed_keys_.erase(caps_lock)`
+- Press `down_arrow` key.j
+    - `sticky_modifier caps_lock false` is sent by `modifiers.mandatory`.
+        - `modifier_flag_manager decrease_sticky (caps_lock)`
+    - `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard.
+    - `key_event_dispatcher` is updated.
+        - `pressed_modifier_flags_.erase(caps_lock)`
+    - `d` is sent via virtual hid keyboard.
+    - sticky_modifiers are erased.
+    - `sticky_modifier caps_lock true` is sent by `modifiers.mandatory`.
+        - `modifier_flag_manager increase_sticky (caps_lock)`
+    - macOS update the caps lock LED state (off).
+    - `event::type::caps_lock_state_changed (off)` is sent via `krbn::event_queue::utility::make_queue` in `Karabiner-Core-Service`.
+        - `modifier_flag_manager decrease_led_lock (caps_lock)`
+            - Note: led_lock will be ignored while other counter is active in modifier_flag_manager.
+- Release `down_arrow` key.
+    - `d` is sent via virtual hid keyboard.
+- Press `tab` key.
+    - `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard by sticky_modifier.
+    - sticky_modifiers are erased.
+    - `tab` is sent via virtual hid keyboard.
 
 ---
 
@@ -356,59 +356,59 @@ Example:
 
 The elements related to managing services on macOS are as follows:
 
--   `SMAppService`:
-    -   Register `LaunchDaemons/*.plist` and `LaunchAgents/*.plist`.
--   `launchd`:
-    -   Starts processes according to the contents of plist files.
--   `sfltool`:
-    -   A command to reset approval settings for LaunchDaemons.
+- `SMAppService`:
+    - Register `LaunchDaemons/*.plist` and `LaunchAgents/*.plist`.
+- `launchd`:
+    - Starts processes according to the contents of plist files.
+- `sfltool`:
+    - A command to reset approval settings for LaunchDaemons.
 
 There are two types of background processes: `daemon` and `agent`. Their characteristics are as follows:
 
--   `daemon`:
-    -   Runs with root privileges.
-    -   Executes with the startup of macOS, even before the user logs in.
-    -   After the plist is registered by `SMAppService`, it is executed only after being approved by the user from `System Settings > General > Login Items & Extensions`.
--   `agent`:
-    -   Runs with user privileges.
-    -   Executes when the user logs in.
-    -   Executes as soon as the plist is registered by `SMAppService`.
+- `daemon`:
+    - Runs with root privileges.
+    - Executes with the startup of macOS, even before the user logs in.
+    - After the plist is registered by `SMAppService`, it is executed only after being approved by the user from `System Settings > General > Login Items & Extensions`.
+- `agent`:
+    - Runs with user privileges.
+    - Executes when the user logs in.
+    - Executes as soon as the plist is registered by `SMAppService`.
 
 The behavior of agents is straightforward, and they operate as expected.
 However, daemons require user approval, which can easily lead to configuration inconsistencies on macOS.
 Specifically, the following issues occur on macOS 13:
 
--   The daemon does not automatically start after user approval if the following steps are taken:
-    -   Reproduction steps:
+- The daemon does not automatically start after user approval if the following steps are taken:
+    - Reproduction steps:
         1.  Register a daemon using `SMAppService.register`.
         2.  Approve the daemon in System Settings > General > Login Items & Extensions.
         3.  Revoke the approval.
         4.  Restart macOS.
         5.  Re-approve the daemon.
-    -   Workaround:
-        -   After re-approving the daemon, register it using `SMAppService.register` to start the daemon.
-        -   Alternatively, restarting macOS also resolves the issue.
--   The following steps can lead to various issues:
-    -   Reproduction steps:
+    - Workaround:
+        - After re-approving the daemon, register it using `SMAppService.register` to start the daemon.
+        - Alternatively, restarting macOS also resolves the issue.
+- The following steps can lead to various issues:
+    - Reproduction steps:
         1.  Register a daemon using `SMAppService.register`.
         2.  Approve the daemon in System Settings > General > Login Items & Extensions.
         3.  Reset the Login Items settings with `sfltool resetbtm`.
         4.  Restart macOS.
         5.  Register the daemon with SMAppService.register.
-            -   Problem #1: Although the user has not approved the daemon, it appears as if it is approved in System Settings > General > Login Items & Extensions.
-                The status of SMAppService correctly shows requiresApproval.
-                This is a problem with the System Settings UI.
-            -   Problem #2: In this state, even if the user re-approves the daemon, it will not start.
-                Restarting macOS will not start the daemon either.
-                To get it running, you need to call `SMAppService.unregister` once before `SMAppService.register`.
+            - Problem #1: Although the user has not approved the daemon, it appears as if it is approved in System Settings > General > Login Items & Extensions.
+              The status of SMAppService correctly shows requiresApproval.
+              This is a problem with the System Settings UI.
+            - Problem #2: In this state, even if the user re-approves the daemon, it will not start.
+              Restarting macOS will not start the daemon either.
+              To get it running, you need to call `SMAppService.unregister` once before `SMAppService.register`.
 
 To avoid these issues, the application should adhere to the following:
 
--   To avoid an issue after `sfltool resetbtm`, if the status of SMAppService is `.notFound`, call `unregister` before calling `register`.
--   To avoid an issue of the daemon not starting, periodically check if the daemon is running using `launchctl print` command.
-    If the process is not running, call `SMAppService.register` to start the daemon.
--   To avoid an issue with the System Settings UI, prompt the user to approve the daemon if it is not running.
-    Inform them that it may already appear as approved and, if it does not work correctly, guide them to revoke and re-approve the daemon.
+- To avoid an issue after `sfltool resetbtm`, if the status of SMAppService is `.notFound`, call `unregister` before calling `register`.
+- To avoid an issue of the daemon not starting, periodically check if the daemon is running using `launchctl print` command.
+  If the process is not running, call `SMAppService.register` to start the daemon.
+- To avoid an issue with the System Settings UI, prompt the user to approve the daemon if it is not running.
+  Inform them that it may already appear as approved and, if it does not work correctly, guide them to revoke and re-approve the daemon.
 
 ### Separate the applications that manage daemons and agents
 
