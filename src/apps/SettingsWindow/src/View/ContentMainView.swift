@@ -12,11 +12,10 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case update
   case misc
   case uninstall
-  case log
   case expert
   case action
+  case log
   case systemExtensions
-  case sysextdLogMessages
 
   var id: Self { self }
 
@@ -33,11 +32,10 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .update: return "Update"
     case .misc: return "Misc"
     case .uninstall: return "Uninstall"
-    case .log: return "Log"
     case .expert: return "Expert"
     case .action: return "Quit, Restart"
+    case .log: return "Log"
     case .systemExtensions: return "System Extensions"
-    case .sysextdLogMessages: return "macOS Log Messages"
     }
   }
 
@@ -54,11 +52,10 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .update: return "network"
     case .misc: return "leaf"
     case .uninstall: return "trash"
-    case .log: return "doc.plaintext"
     case .expert: return "flame"
     case .action: return "xmark.rectangle"
-    case .systemExtensions: return "stethoscope"
-    case .sysextdLogMessages: return "waveform.path.ecg"
+    case .log: return "doc.plaintext"
+    case .systemExtensions: return "puzzlepiece.extension"
     }
   }
 }
@@ -103,12 +100,6 @@ struct ContentMainView: View {
         .update,
         .misc,
         .uninstall,
-      ]
-    ),
-    SidebarSection(
-      title: "Tools",
-      items: [
-        .log,
         .expert,
         .action,
       ]
@@ -116,8 +107,8 @@ struct ContentMainView: View {
     SidebarSection(
       title: "Diagnostic",
       items: [
+        .log,
         .systemExtensions,
-        .sysextdLogMessages,
       ]
     ),
   ]
@@ -246,16 +237,14 @@ struct ContentMainView: View {
             MiscView()
           case .uninstall:
             UninstallView()
-          case .log:
-            LogView()
           case .expert:
             ExpertView()
           case .action:
             ActionView()
+          case .log:
+            LogView()
           case .systemExtensions:
             SystemExtensionsView()
-          case .sysextdLogMessages:
-            SysextdLogMessagesView()
           }
         }
       }
