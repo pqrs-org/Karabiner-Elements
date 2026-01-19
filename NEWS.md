@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+- 🐛 Bug Fixes
+    - Fixed an issue in v15.8.0 where the update notification window was not shown when updates were checked in the background.
+
 ## Karabiner-Elements 15.8.0
 
 - [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.8.0/Karabiner-Elements-15.8.0.dmg)
