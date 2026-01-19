@@ -1,4 +1,5 @@
 import AppKit
+import OSLog
 
 #if USE_SPARKLE
   import Sparkle
@@ -47,6 +48,10 @@ final class Updater: ObservableObject {
 
   #if USE_SPARKLE
     private class SparkleDelegate: NSObject, SPUUpdaterDelegate {
+      private let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "unknown",
+        category: String(describing: SparkleDelegate.self))
+
       var includingBetaVersions = false
 
       func feedURLString(for updater: SPUUpdater) -> String? {
@@ -55,7 +60,7 @@ final class Updater: ObservableObject {
           url = "https://appcast.pqrs.org/karabiner-elements-appcast-devel.xml"
         }
 
-        print("feedURLString \(url)")
+        logger.info("feedURLString \(url, privacy: .public)")
 
         return url
       }
@@ -72,7 +77,15 @@ final class Updater: ObservableObject {
 
       func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
         Task { @MainActor in
+          // Just in case, wait until the update notification window is shown.
+          try await Task.sleep(for: .seconds(1))
+
           NSApp.activate(ignoringOtherApps: true)
+
+          // When the updater is launched in the background,
+          // the update notification window isn't shown.
+          // So we need to bring it to the front explicitly.
+          NSApp.windows.forEach { $0.makeKeyAndOrderFront(nil) }
         }
       }
 

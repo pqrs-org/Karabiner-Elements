@@ -12,13 +12,13 @@ purge-swift-package-manager-cache:
 	rm -fr ~/Library/Caches/org.swift.swiftpm/repositories/Sparkle-*
 
 run-checkForUpdatesInBackground:
-	./build/Release/Karabiner-Updater.app/Contents/MacOS/Karabiner-Updater checkForUpdatesInBackground
+	open ./build/Release/Karabiner-Updater.app -g --args checkForUpdatesInBackground
 
 run-checkForUpdatesStableOnly:
-	./build/Release/Karabiner-Updater.app/Contents/MacOS/Karabiner-Updater checkForUpdatesStableOnly
+	open ./build/Release/Karabiner-Updater.app --args checkForUpdatesStableOnly
 
 run-checkForUpdatesWithBetaVersion:
-	./build/Release/Karabiner-Updater.app/Contents/MacOS/Karabiner-Updater checkForUpdatesWithBetaVersion
+	open ./build/Release/Karabiner-Updater.app --args checkForUpdatesWithBetaVersion
 
 xcode:
 	open *.xcodeproj
@@ -29,3 +29,6 @@ install:
 		build/Release/Karabiner-Updater.app \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements'
 	sudo chown -R root:wheel '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app'
+
+log:
+	/usr/bin/log stream --predicate 'subsystem:^org.pqrs.Karabiner-Updater' --info --debug
