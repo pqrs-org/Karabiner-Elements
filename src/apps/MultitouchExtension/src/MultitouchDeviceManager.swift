@@ -78,7 +78,7 @@ class MultitouchDeviceManager {
 
                 MultitouchDeviceManager.shared.setCallback(true)
               } catch {
-                self.logger.error("\(error.localizedDescription)")
+                self.logger.error("\(error.localizedDescription, privacy: .public)")
               }
             }
           }
