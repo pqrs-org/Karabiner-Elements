@@ -2,13 +2,13 @@ name: Mark stale issues
 
 on:
   schedule:
-    - cron: "30 1 * * *"
+    - cron: '30 1 * * *'
   workflow_dispatch:
     inputs:
       operations-per-run:
-        description: "Max operations per run (actions/stale)"
+        description: 'Max operations per run (actions/stale)'
         required: false
-        default: "30"
+        default: '30'
 
 concurrency:
   group: stale-${{ github.repository }}
@@ -30,7 +30,7 @@ jobs:
           days-before-close: 7
           days-before-pr-stale: -1
           days-before-pr-close: -1
-          exempt-issue-labels: "bug,enhancement,help wanted,needs to be addressed,question"
+          exempt-issue-labels: 'bug,enhancement,help wanted,needs to be addressed,question'
           stale-issue-label: stale
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
