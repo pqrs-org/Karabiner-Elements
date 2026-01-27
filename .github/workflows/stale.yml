@@ -10,6 +10,10 @@ on:
         required: false
         default: "30"
 
+concurrency:
+  group: stale-${{ github.repository }}
+  cancel-in-progress: false
+
 permissions:
   issues: write
 
