@@ -15,6 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
+  actions: write
   issues: write
 
 jobs:
