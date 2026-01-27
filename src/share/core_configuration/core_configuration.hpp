@@ -56,40 +56,24 @@ public:
 
     helper_values_.push_back_array<details::profile>("profiles",
                                                      profiles_);
+    if (is_valid_file(file_path, expected_file_owner)) {
 
-    bool valid_file_owner = false;
+      std::ifstream input(file_path);
+      if (input) {
+        try {
+          json_ = json_utility::parse_jsonc(input);
 
-    // Load karabiner.json only when the owner is root or current session user.
-    if (pqrs::filesystem::exists(file_path)) {
-      if (pqrs::filesystem::is_owned(file_path, 0)) {
-        valid_file_owner = true;
-      } else {
-        if (pqrs::filesystem::is_owned(file_path, expected_file_owner)) {
-          valid_file_owner = true;
+          helper_values_.update_value(json_,
+                                      error_handling);
+
+          loaded_ = true;
+
+        } catch (std::exception& e) {
+          logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
+          parse_error_message_ = e.what();
         }
-      }
-
-      if (!valid_file_owner) {
-        logger::get_logger()->warn("{0} is not owned by a valid user.", file_path);
-
       } else {
-        std::ifstream input(file_path);
-        if (input) {
-          try {
-            json_ = json_utility::parse_jsonc(input);
-
-            helper_values_.update_value(json_,
-                                        error_handling);
-
-            loaded_ = true;
-
-          } catch (std::exception& e) {
-            logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
-            parse_error_message_ = e.what();
-          }
-        } else {
-          logger::get_logger()->error("failed to open {0}", file_path);
-        }
+        logger::get_logger()->error("failed to open {0}", file_path);
       }
     }
 
@@ -210,6 +194,22 @@ public:
   }
 
 private:
+  // Only load config files if:
+  // 1. They exist, AND
+  // 2. They are owned by root or the current user
+  static bool is_valid_file(const std::filesystem::path& file_path, uid_t expected_owner) {
+    if (not pqrs::filesystem::exists(file_path)) {
+      return false;
+    }
+    if (not(
+            pqrs::filesystem::is_owned(file_path, 0) or
+            pqrs::filesystem::is_owned(file_path, expected_owner))) {
+      logger::get_logger()->warn("{0} is not owned by a valid user.", file_path);
+      return false;
+    }
+
+    return true;
+  }
   void make_backup_file(void) {
     auto file_path = constants::get_user_core_configuration_file_path();
 
