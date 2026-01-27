@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "30 1 * * *"
   workflow_dispatch:
+    inputs:
+      operations-per-run:
+        description: "Max operations per run (actions/stale)"
+        required: false
+        default: "30"
 
 permissions:
   issues: write
@@ -15,6 +20,7 @@ jobs:
       - name: Run stale
         uses: actions/stale@v10
         with:
+          operations-per-run: ${{ github.event.inputs.operations-per-run || 30 }}
           days-before-stale: 180
           days-before-close: 7
           days-before-pr-stale: -1
