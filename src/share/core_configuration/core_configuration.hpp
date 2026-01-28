@@ -181,7 +181,7 @@ private:
   // Only load config files if:
   // 1. They exist, AND
   // 2. They are owned by root or the current user
-  static bool is_valid_file(const std::filesystem::path& file_path, uid_t expected_owner) {
+  static bool is_valid_file(const std::string& file_path, uid_t expected_owner) {
     if (not pqrs::filesystem::exists(file_path)) {
       return false;
     }
