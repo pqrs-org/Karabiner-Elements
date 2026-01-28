@@ -57,7 +57,9 @@ public:
     helper_values_.push_back_array<details::profile>("profiles",
                                                      profiles_);
 
-    try_read_json(file_path, expected_file_owner, error_handling);
+    if (not try_read_jsonnet(file_path, expected_file_owner, error_handling)) {
+      try_read_json(file_path, expected_file_owner, error_handling);
+    }
 
     // Fallbacks
     if (profiles_.empty()) {
@@ -192,13 +194,36 @@ private:
 
     return true;
   }
-  bool try_read_json(const std::string& file_path, uid_t expected_file_owner, error_handling error_handling) {
-    if (not is_valid_file(file_path, expected_file_owner)) {
+  bool try_read_jsonnet(const std::filesystem::path& json_cfg_path, uid_t expected_file_owner, error_handling error_handling) {
+    auto jsonnet_path = json_cfg_path;
+    jsonnet_path.replace_extension("jsonnet");
+    if (not is_valid_file(json_cfg_path, expected_file_owner)) {
       return false;
     }
-    std::ifstream input(file_path);
+    auto cmd = fmt::format("jsonnet {}", jsonnet_path.string());
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) {
+      logger::get_logger()->error("failed to run {0}", cmd);
+      return false;
+    }
+    try {
+      json_ = json_utility::parse_jsonc(pipe);
+      helper_values_.update_value(json_, error_handling);
+      loaded_ = true;
+    } catch (std::exception& e) {
+      logger::get_logger()->error("parse error in {0}: {1}", json_cfg_path, e.what());
+      parse_error_message_ = e.what();
+      return false;
+    }
+    return true;
+  }
+  bool try_read_json(const std::string& json_cfg_path, uid_t expected_file_owner, error_handling error_handling) {
+    if (not is_valid_file(json_cfg_path, expected_file_owner)) {
+      return false;
+    }
+    std::ifstream input(json_cfg_path);
     if (not input) {
-      logger::get_logger()->error("failed to open {0}", file_path);
+      logger::get_logger()->error("failed to open {0}", json_cfg_path);
       return false;
     }
     try {
@@ -210,7 +235,7 @@ private:
       loaded_ = true;
 
     } catch (std::exception& e) {
-      logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
+      logger::get_logger()->error("parse error in {0}: {1}", json_cfg_path, e.what());
       parse_error_message_ = e.what();
       return false;
     }
