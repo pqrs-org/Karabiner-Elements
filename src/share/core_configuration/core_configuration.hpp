@@ -56,26 +56,8 @@ public:
 
     helper_values_.push_back_array<details::profile>("profiles",
                                                      profiles_);
-    if (is_valid_file(file_path, expected_file_owner)) {
 
-      std::ifstream input(file_path);
-      if (input) {
-        try {
-          json_ = json_utility::parse_jsonc(input);
-
-          helper_values_.update_value(json_,
-                                      error_handling);
-
-          loaded_ = true;
-
-        } catch (std::exception& e) {
-          logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
-          parse_error_message_ = e.what();
-        }
-      } else {
-        logger::get_logger()->error("failed to open {0}", file_path);
-      }
-    }
+    try_read_json(file_path, expected_file_owner, error_handling);
 
     // Fallbacks
     if (profiles_.empty()) {
@@ -208,6 +190,30 @@ private:
       return false;
     }
 
+    return true;
+  }
+  bool try_read_json(const std::string& file_path, uid_t expected_file_owner, error_handling error_handling) {
+    if (not is_valid_file(file_path, expected_file_owner)) {
+      return false;
+    }
+    std::ifstream input(file_path);
+    if (not input) {
+      logger::get_logger()->error("failed to open {0}", file_path);
+      return false;
+    }
+    try {
+      json_ = json_utility::parse_jsonc(input);
+
+      helper_values_.update_value(json_,
+                                  error_handling);
+
+      loaded_ = true;
+
+    } catch (std::exception& e) {
+      logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
+      parse_error_message_ = e.what();
+      return false;
+    }
     return true;
   }
   void make_backup_file(void) {
