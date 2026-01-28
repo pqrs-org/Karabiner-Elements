@@ -211,7 +211,7 @@ private:
       helper_values_.update_value(json_, error_handling);
       loaded_ = true;
     } catch (std::exception& e) {
-      logger::get_logger()->error("parse error in {0}: {1}", json_cfg_path, e.what());
+      logger::get_logger()->error("parse error in {0}: {1}", jsonnet_path.string(), e.what());
       parse_error_message_ = e.what();
       return false;
     }
