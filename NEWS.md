@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+- ✨ New Features
+    - Added a "Clear variables" button to EventViewer. (Thanks to @BarakXYZ)
+
 ## Karabiner-Elements 15.9.0
 
 - [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v15.9.0/Karabiner-Elements-15.9.0.dmg)
