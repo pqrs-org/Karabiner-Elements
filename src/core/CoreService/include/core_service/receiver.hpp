@@ -238,6 +238,28 @@ public:
             }
             break;
 
+          case operation_type::clear_user_variables:
+            if (device_grabber_) {
+              device_grabber_->async_invoke_with_manipulator_environment(
+                  [this, sender_endpoint](auto&& manipulator_environment) {
+                    for (const auto& name : manipulator_environment.get_variable_names()) {
+                      if (name.starts_with("system.")) {
+                        continue;
+                      }
+
+                      device_grabber_->async_post_set_variable_event(
+                          manipulator_environment_variable_set_variable(
+                              name,
+                              std::nullopt,
+                              nullptr,
+                              std::nullopt,
+                              nullptr,
+                              manipulator_environment_variable_set_variable::type::unset));
+                    }
+                  });
+            }
+            break;
+
           case operation_type::get_connected_devices:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_connected_devices(

@@ -4,6 +4,7 @@
 #include "device_properties_manager.hpp"
 #include "json_writer.hpp"
 #include "logger.hpp"
+#include <algorithm>
 #include <fstream>
 #include <gsl/gsl>
 #include <iostream>
@@ -14,6 +15,7 @@
 #include <pqrs/osx/input_source.hpp>
 #include <pqrs/osx/input_source/extra/nlohmann_json.hpp>
 #include <string>
+#include <vector>
 
 namespace krbn {
 namespace manipulator {
@@ -103,6 +105,19 @@ public:
 
   void unset_variable(const std::string& name) {
     variables_.erase(name);
+  }
+
+  std::vector<std::string> get_variable_names(void) const {
+    std::vector<std::string> names;
+
+    names.reserve(variables_.size());
+    for (const auto& [name, value] : variables_) {
+      names.push_back(name);
+    }
+
+    std::sort(std::begin(names), std::end(names));
+
+    return names;
   }
 
   void set_variable_system_now_milliseconds(void) {
