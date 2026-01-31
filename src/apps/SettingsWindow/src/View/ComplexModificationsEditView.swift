@@ -8,6 +8,7 @@ struct ComplexModificationsEditView: View {
   @State private var disabled = true
   @State private var jsonString = ""
   @State private var errorMessage: String?
+  @StateObject private var externalEditorController = ExternalEditorController()
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @Environment(\.colorScheme) var colorScheme
 
@@ -22,6 +23,35 @@ struct ComplexModificationsEditView: View {
               .frame(maxWidth: .infinity, alignment: .leading)
 
             if !disabled {
+              Button(
+                action: {
+                  externalEditorController.chooseEditor()
+                },
+                label: {
+                  Label("Choose editor", systemImage: "app.badge.checkmark")
+                    .buttonLabelStyle()
+                }
+              )
+              .padding(.leading, 8.0)
+
+              Button(
+                action: {
+                  externalEditorController.openEditor(
+                    with: jsonString,
+                    onError: { errorMessage = $0 },
+                    onReload: {
+                      jsonString = $0
+                      errorMessage = nil
+                    }
+                  )
+                },
+                label: {
+                  Label(externalEditorController.openTitle(), systemImage: "arrow.up.right.square")
+                    .buttonLabelStyle()
+                }
+              )
+              .padding(.leading, 8.0)
+
               Button(
                 action: {
                   if rule!.index < 0 {
@@ -94,6 +124,17 @@ struct ComplexModificationsEditView: View {
         disabled = true
         jsonString = ""
       }
+
+      externalEditorController.reset()
+    }
+    .onDisappear {
+      externalEditorController.stopMonitoring()
+    }
+    .onChange(of: jsonString) { newValue in
+      externalEditorController.syncFromAppEditor(
+        text: newValue,
+        onError: { errorMessage = $0 }
+      )
     }
   }
 }
