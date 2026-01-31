@@ -42,6 +42,7 @@ enum class operation_type : uint8_t {
   // any -> core_service
   set_app_icon,
   set_variables,
+  clear_user_variables,
   // core_service -> any
   get_connected_devices,
   connected_devices,
@@ -85,6 +86,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::connect_multitouch_extension, "connect_multitouch_extension"},
         {operation_type::set_app_icon, "set_app_icon"},
         {operation_type::set_variables, "set_variables"},
+        {operation_type::clear_user_variables, "clear_user_variables"},
         {operation_type::get_connected_devices, "get_connected_devices"},
         {operation_type::connected_devices, "connected_devices"},
         {operation_type::get_notification_message, "get_notification_message"},

@@ -566,6 +566,7 @@ void libkrbn_core_service_client_async_connect_multitouch_extension(void);
 void libkrbn_core_service_client_async_set_app_icon(int number);
 void libkrbn_core_service_client_async_set_variable(const char* _Nonnull name,
                                                     int value);
+void libkrbn_core_service_client_async_clear_user_variables(void);
 
 //
 // libkrbn_console_user_server_client

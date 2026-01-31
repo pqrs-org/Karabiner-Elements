@@ -904,6 +904,14 @@ void libkrbn_core_service_client_async_set_variable(const char* name,
   }
 }
 
+void libkrbn_core_service_client_async_clear_user_variables(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_core_service_client()) {
+      c->async_clear_user_variables();
+    }
+  }
+}
+
 //
 // console_user_server_client
 //

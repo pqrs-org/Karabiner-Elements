@@ -6,15 +6,27 @@ struct VariablesView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
-        Button(
-          action: {
-            let pboard = NSPasteboard.general
-            pboard.clearContents()
-            pboard.writeObjects([evCoreServiceClient.manipulatorEnvironmentStream.text as NSString])
-          },
-          label: {
-            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-          })
+        HStack(alignment: .center, spacing: 12.0) {
+          Button(
+            action: {
+              let pboard = NSPasteboard.general
+              pboard.clearContents()
+              pboard.writeObjects([
+                evCoreServiceClient.manipulatorEnvironmentStream.text as NSString
+              ])
+            },
+            label: {
+              Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+            })
+
+          Button(
+            action: {
+              libkrbn_core_service_client_async_clear_user_variables()
+            },
+            label: {
+              Label("Clear variables", systemImage: "clear")
+            })
+        }
       }
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)

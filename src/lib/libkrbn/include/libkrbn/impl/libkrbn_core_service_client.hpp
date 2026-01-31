@@ -133,6 +133,10 @@ public:
     core_service_client_->async_set_variables(json);
   }
 
+  void async_clear_user_variables(void) const {
+    core_service_client_->async_clear_user_variables();
+  }
+
   void sync_set_variable(const std::string& name, int value) const {
     auto wait = pqrs::make_thread_wait();
 

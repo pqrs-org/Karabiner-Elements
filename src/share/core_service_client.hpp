@@ -292,6 +292,18 @@ public:
     });
   }
 
+  void async_clear_user_variables(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::clear_user_variables},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
 private:
   std::filesystem::path find_karabiner_core_service_socket_file_path(void) const {
     return filesystem_utility::find_socket_file_path(
