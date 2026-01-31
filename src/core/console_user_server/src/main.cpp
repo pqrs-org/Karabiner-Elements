@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
+#include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_utility.hpp"
@@ -91,8 +92,7 @@ int main(int argc, const char* argv[]) {
   // Create directories
   //
 
-  pqrs::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_user_configuration_directory(), 0700);
-  pqrs::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_user_complex_modifications_assets_directory(), 0700);
+  krbn::filesystem_utility::mkdir_user_directories();
 
   //
   // Run components_manager

@@ -265,6 +265,24 @@ public:
     return directory;
   }
 
+  static const std::filesystem::path& get_user_tmp_directory(void) {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
+
+    static bool once = false;
+    static std::filesystem::path directory;
+
+    if (!once) {
+      once = true;
+      auto d = get_user_data_directory();
+      if (!d.empty()) {
+        directory = d / "tmp";
+      }
+    }
+
+    return directory;
+  }
+
   static const karabiner_machine_identifier& get_karabiner_machine_identifier(void) {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
