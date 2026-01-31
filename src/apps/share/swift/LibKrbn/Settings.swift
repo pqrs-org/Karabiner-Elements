@@ -430,7 +430,22 @@ extension LibKrbn {
         destinationIndex
       )
 
-      reflectComplexModificationsRuleChanges()
+      // Avoid reflectComplexModificationsRuleChanges here because rebuilding the array can reset List scroll state.
+      var rules = complexModificationsRules
+      if sourceIndex >= 0 && sourceIndex < rules.count {
+        let item = rules.remove(at: sourceIndex)
+        var destination = destinationIndex
+        if sourceIndex < destination {
+          destination -= 1
+        }
+        destination = max(0, min(destination, rules.count))
+        rules.insert(item, at: destination)
+
+        for (index, rule) in rules.enumerated() {
+          rule.index = index
+        }
+        complexModificationsRules = rules
+      }
 
       save()
     }
