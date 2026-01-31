@@ -4,6 +4,8 @@
 
 - ✨ New Features
     - Added a "Clear user variables" button to EventViewer. (Thanks to @BarakXYZ)
+- 🐛 Bug Fixes
+    - Fixed an issue where reordering in Complex Modifications and Profiles didn't work properly when dragging while scrolling.
 
 ## Karabiner-Elements 15.9.0
 
