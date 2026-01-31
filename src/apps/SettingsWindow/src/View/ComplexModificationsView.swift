@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 enum ComplexModificationsSheetView: String {

@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct ProfilesView: View {
@@ -46,7 +47,11 @@ struct ProfilesView: View {
                 .frame(width: 16.0, height: 16.0)
                 .padding(.trailing, 6.0)
                 .onHover { hovering in
-                  moveDisabled = !hovering
+                  if hovering {
+                    moveDisabled = false
+                  } else if NSEvent.pressedMouseButtons == 0 {
+                    moveDisabled = true
+                  }
                 }
             }
 

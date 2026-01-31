@@ -707,7 +707,22 @@ extension LibKrbn {
         destinationIndex
       )
 
-      reflectProfileChanges()
+      // Avoid reflectProfileChanges here because rebuilding the array can reset List scroll state.
+      var nextProfiles = profiles
+      if sourceIndex >= 0 && sourceIndex < nextProfiles.count {
+        let item = nextProfiles.remove(at: sourceIndex)
+        var destination = destinationIndex
+        if sourceIndex < destination {
+          destination -= 1
+        }
+        destination = max(0, min(destination, nextProfiles.count))
+        nextProfiles.insert(item, at: destination)
+
+        for index in nextProfiles.indices {
+          nextProfiles[index].index = index
+        }
+        profiles = nextProfiles
+      }
 
       save()
     }
