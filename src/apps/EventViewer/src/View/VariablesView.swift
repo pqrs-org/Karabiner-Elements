@@ -24,7 +24,7 @@ struct VariablesView: View {
               libkrbn_core_service_client_async_clear_user_variables()
             },
             label: {
-              Label("Clear variables", systemImage: "clear")
+              Label("Clear user variables", systemImage: "clear")
             })
         }
       }
