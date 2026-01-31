@@ -242,6 +242,8 @@ void run_core_configuration_test(void) {
       {
         auto& e = configuration.get_machine_specific().get_entry(krbn::karabiner_machine_identifier("krbn-identifier1"));
         expect(true == e.get_enable_multitouch_extension());
+        expect(std::string("/Applications/Visual Studio Code.app") ==
+               e.get_external_editor_path());
       }
 
       auto json = configuration.to_json();
@@ -261,12 +263,14 @@ void run_core_configuration_test(void) {
       {
         auto& e = configuration.get_machine_specific().get_entry(krbn::karabiner_machine_identifier("krbn-identifier1"));
         e.set_enable_multitouch_extension(true);
+        e.set_external_editor_path("/Applications/CotEditor.app");
       }
 
       json = configuration.to_json();
       expect(nlohmann::json::object({
                  {"krbn-identifier1", nlohmann::json::object({
                                           {"enable_multitouch_extension", true},
+                                          {"external_editor_path", "/Applications/CotEditor.app"},
                                       })},
              }) == json["machine_specific"]);
 
@@ -274,6 +278,7 @@ void run_core_configuration_test(void) {
       {
         auto& e = configuration.get_machine_specific().get_entry(krbn::karabiner_machine_identifier("krbn-identifier1"));
         e.set_enable_multitouch_extension(false);
+        e.set_external_editor_path("/System/Applications/TextEdit.app");
       }
 
       json = configuration.to_json();

@@ -2,6 +2,7 @@
 
 #include "../configuration_json_helper.hpp"
 #include <pqrs/json.hpp>
+#include <string>
 #include <unordered_map>
 
 namespace krbn {
@@ -19,6 +20,9 @@ public:
       helper_values_.push_back_value<bool>("enable_multitouch_extension",
                                            enable_multitouch_extension_,
                                            false);
+      helper_values_.push_back_value<std::string>("external_editor_path",
+                                                  external_editor_path_,
+                                                  "/System/Applications/TextEdit.app");
 
       pqrs::json::requires_object(json, "json");
 
@@ -40,9 +44,17 @@ public:
       enable_multitouch_extension_ = value;
     }
 
+    const std::string& get_external_editor_path(void) const {
+      return external_editor_path_;
+    }
+    void set_external_editor_path(const std::string& value) {
+      external_editor_path_ = value;
+    }
+
   private:
     nlohmann::json json_;
     bool enable_multitouch_extension_;
+    std::string external_editor_path_;
     configuration_json_helper::helper_values helper_values_;
   };
 
