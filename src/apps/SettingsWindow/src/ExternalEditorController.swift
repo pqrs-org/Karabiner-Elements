@@ -1,11 +1,9 @@
 import AppKit
 import Foundation
-import SwiftUI
 import UniformTypeIdentifiers
 
 @MainActor
 final class ExternalEditorController: ObservableObject {
-  @AppStorage("complexModificationsExternalEditorPath") private var externalEditorPath = ""
 
   private var fileURL: URL?
   private var fileMonitor: DispatchSourceFileSystemObject?
@@ -37,7 +35,7 @@ final class ExternalEditorController: ObservableObject {
       guard response == .OK, let url = panel.url else {
         return
       }
-      self.externalEditorPath = url.path
+      LibKrbn.Settings.shared.externalEditorPath = url.path
     }
   }
 
@@ -163,6 +161,7 @@ final class ExternalEditorController: ObservableObject {
   }
 
   private func externalEditorURL() -> URL? {
+    let externalEditorPath = LibKrbn.Settings.shared.externalEditorPath
     if externalEditorPath.isEmpty {
       return nil
     }
