@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filesystem_utility.hpp"
+#include "json_utility.hpp"
 #include <duk_console.h>
 #include <duk_module_node.h>
 #include <duktape.h>
@@ -17,6 +18,11 @@ public:
 };
 
 namespace duktape_utility {
+struct eval_string_to_json_result {
+  nlohmann::json json;
+  std::string log_messages;
+};
+
 inline void eval_file(const std::filesystem::path& path) noexcept(false) {
   if (auto code = filesystem_utility::read_file(path)) {
     duk_context* ctx = duk_create_heap_default();
@@ -106,6 +112,91 @@ inline void eval_file(const std::filesystem::path& path) noexcept(false) {
 
     duk_destroy_heap(ctx);
   }
+}
+
+inline eval_string_to_json_result eval_string_to_json(const std::string& code) noexcept(false) {
+  duk_context* ctx = duk_create_heap_default();
+  auto log_messages = std::make_shared<std::string>();
+
+  //
+  // console
+  //
+
+  duk_console_init(ctx, DUK_CONSOLE_FLUSH);
+
+  {
+    duk_push_heap_stash(ctx);
+    duk_push_pointer(ctx, log_messages.get());
+    duk_put_prop_string(ctx, -2, "krbn_console_log_messages");
+    duk_pop(ctx);
+  }
+
+  duk_push_object(ctx);
+  duk_push_c_function(
+      ctx,
+      [](duk_context* ctx) -> duk_ret_t {
+        std::string* log_messages = nullptr;
+        duk_push_heap_stash(ctx);
+        duk_get_prop_string(ctx, -1, "krbn_console_log_messages");
+        log_messages = static_cast<std::string*>(duk_get_pointer(ctx, -1));
+        duk_pop_2(ctx);
+
+        if (!log_messages) {
+          return 0;
+        }
+
+        auto n = duk_get_top(ctx);
+        std::string message;
+        for (duk_idx_t i = 0; i < n; ++i) {
+          if (!message.empty()) {
+            message += " ";
+          }
+          message += duk_safe_to_string(ctx, i);
+        }
+        if (!log_messages->empty()) {
+          log_messages->append("\n");
+        }
+        log_messages->append(message);
+        return 0;
+      },
+      DUK_VARARGS);
+  duk_put_prop_string(ctx, -2, "log");
+  duk_put_global_string(ctx, "console");
+
+  //
+  // eval
+  //
+
+  if (duk_peval_string(ctx, code.c_str()) != 0) {
+    auto message = fmt::format("javascript error: {0}",
+                               duk_safe_to_string(ctx, -1));
+    duk_destroy_heap(ctx);
+    throw duktape_eval_error(message);
+  }
+
+  auto json_encode = [](duk_context* ctx, void*) -> duk_ret_t {
+    duk_json_encode(ctx, -1);
+    return 1;
+  };
+
+  if (duk_safe_call(ctx, json_encode, nullptr, 1, 1) != DUK_EXEC_SUCCESS) {
+    auto message = fmt::format("javascript error: {0}",
+                               duk_safe_to_string(ctx, -1));
+    duk_destroy_heap(ctx);
+    throw duktape_eval_error(message);
+  }
+
+  if (!duk_is_string(ctx, -1)) {
+    duk_destroy_heap(ctx);
+    throw duktape_eval_error("javascript error: result is not a JSON string");
+  }
+
+  std::string json(duk_get_string(ctx, -1));
+  duk_destroy_heap(ctx);
+  return {
+      .json = json_utility::parse_jsonc(json),
+      .log_messages = std::move(*log_messages),
+  };
 }
 } // namespace duktape_utility
 } // namespace krbn
