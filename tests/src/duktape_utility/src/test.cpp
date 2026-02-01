@@ -71,6 +71,13 @@ main();
     } catch (krbn::duktape_eval_error& ex) {
       expect("javascript error: result is not a JSON string"sv == ex.what());
     }
+
+    try {
+      krbn::duktape_utility::eval_string_to_json(R"(while (true) {})");
+      expect(false);
+    } catch (krbn::duktape_eval_error& ex) {
+      expect("javascript error: execution timed out"sv == ex.what());
+    }
   };
 
   return 0;

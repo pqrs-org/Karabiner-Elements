@@ -2,6 +2,7 @@
 
 #include "filesystem_utility.hpp"
 #include "json_utility.hpp"
+#include <duk_config.h>
 #include <duk_console.h>
 #include <duk_module_node.h>
 #include <duktape.h>
@@ -115,7 +116,12 @@ inline void eval_file(const std::filesystem::path& path) noexcept(false) {
 }
 
 inline eval_string_to_json_result eval_string_to_json(const std::string& code) noexcept(false) {
-  duk_context* ctx = duk_create_heap_default();
+  krbn_duktape_timeout_state timeout_state{
+      // 1-second timeout for JavaScript evaluation.
+      .deadline_ns = krbn_duktape_get_monotonic_ns() + 1000000000ULL,
+      .timed_out = 0,
+  };
+  duk_context* ctx = duk_create_heap(nullptr, nullptr, nullptr, &timeout_state, nullptr);
   auto log_messages = std::make_shared<std::string>();
 
   //
@@ -168,8 +174,9 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
   //
 
   if (duk_peval_string(ctx, code.c_str()) != 0) {
-    auto message = fmt::format("javascript error: {0}",
-                               duk_safe_to_string(ctx, -1));
+    auto message = timeout_state.timed_out ? "javascript error: execution timed out"
+                                           : fmt::format("javascript error: {0}",
+                                                         duk_safe_to_string(ctx, -1));
     duk_destroy_heap(ctx);
     throw duktape_eval_error(message);
   }
