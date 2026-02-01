@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <spdlog/fmt/fmt.h>
 
 namespace krbn {
@@ -152,13 +153,14 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
         }
 
         auto n = duk_get_top(ctx);
-        std::string message;
+        std::ostringstream ss;
         for (duk_idx_t i = 0; i < n; ++i) {
-          if (!message.empty()) {
-            message += " ";
+          if (i > 0) {
+            ss << ' ';
           }
-          message += duk_safe_to_string(ctx, i);
+          ss << duk_safe_to_string(ctx, i);
         }
+        auto message = ss.str();
         if (!log_messages->empty()) {
           log_messages->append("\n");
         }
