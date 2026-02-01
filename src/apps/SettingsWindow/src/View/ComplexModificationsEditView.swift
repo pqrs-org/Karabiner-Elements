@@ -16,64 +16,70 @@ struct ComplexModificationsEditView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 12.0) {
         if rule != nil {
-          HStack(alignment: .center) {
+          VStack(alignment: .leading, spacing: 12.0) {
             Text(description)
               .padding(.leading, 32)
               .font(.system(size: 24))
               .frame(maxWidth: .infinity, alignment: .leading)
 
-            if !disabled {
-              Button(
-                action: {
-                  externalEditorController.chooseEditor()
-                },
-                label: {
-                  Label("Choose editor", systemImage: "app.badge.checkmark")
+            HStack(alignment: .center) {
+              if !disabled {
+                Button(
+                  action: {
+                    externalEditorController.openEditor(
+                      with: jsonString,
+                      onError: { errorMessage = $0 },
+                      onReload: {
+                        jsonString = $0
+                        errorMessage = nil
+                      }
+                    )
+                  },
+                  label: {
+                    Label(
+                      externalEditorController.openTitle(), systemImage: "arrow.up.right.square"
+                    )
                     .buttonLabelStyle()
-                }
-              )
-              .padding(.leading, 8.0)
-
-              Button(
-                action: {
-                  externalEditorController.openEditor(
-                    with: jsonString,
-                    onError: { errorMessage = $0 },
-                    onReload: {
-                      jsonString = $0
-                      errorMessage = nil
-                    }
-                  )
-                },
-                label: {
-                  Label(externalEditorController.openTitle(), systemImage: "arrow.up.right.square")
-                    .buttonLabelStyle()
-                }
-              )
-              .padding(.leading, 8.0)
-
-              Button(
-                action: {
-                  if rule!.index < 0 {
-                    errorMessage = settings.pushFrontComplexModificationsRule(jsonString)
-                    if errorMessage == nil {
-                      showing = false
-                    }
-                  } else {
-                    errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
-                    if errorMessage == nil {
-                      showing = false
-                    }
                   }
-                },
-                label: {
-                  Label("Save", systemImage: "checkmark")
-                    .buttonLabelStyle()
-                }
-              )
-              .buttonStyle(BorderedProminentButtonStyle())
-              .padding(.leading, 24.0)
-              .keyboardShortcut("s")
+                )
+                .padding(.leading, 8.0)
+
+                Button(
+                  action: {
+                    externalEditorController.chooseEditor()
+                  },
+                  label: {
+                    Label("Choose editor", systemImage: "filemenu.and.selection")
+                      .buttonLabelStyle()
+                  }
+                )
+                .padding(.leading, 8.0)
+
+                Spacer()
+
+                Button(
+                  action: {
+                    if rule!.index < 0 {
+                      errorMessage = settings.pushFrontComplexModificationsRule(jsonString)
+                      if errorMessage == nil {
+                        showing = false
+                      }
+                    } else {
+                      errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
+                      if errorMessage == nil {
+                        showing = false
+                      }
+                    }
+                  },
+                  label: {
+                    Label("Save", systemImage: "checkmark")
+                      .buttonLabelStyle()
+                  }
+                )
+                .buttonStyle(BorderedProminentButtonStyle())
+                .padding(.leading, 24.0)
+                .keyboardShortcut("s")
+              }
             }
           }
           .frame(maxWidth: .infinity, alignment: .leading)
