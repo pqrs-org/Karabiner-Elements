@@ -588,7 +588,10 @@ int main(int argc, char** argv) {
         for (const auto& glob_pattern : glob_patterns) {
           for (const auto& file_path : glob::glob(glob_pattern)) {
             try {
-              krbn::duktape_utility::eval_file(file_path);
+              auto log_messages = krbn::duktape_utility::eval_file_with_fs_access(file_path);
+              if (!log_messages.empty()) {
+                std::cout << log_messages << std::endl;
+              }
             } catch (std::exception& e) {
               exit_code = 1;
               std::cerr << e.what() << std::endl;
