@@ -8,7 +8,7 @@ struct ComplexModificationsEditView: View {
   @State private var disabled = true
   @State private var jsonString = ""
   @State private var errorMessage: String?
-  @StateObject private var externalEditorController = ExternalEditorController()
+  @StateObject private var externalEditorController = ExternalEditorController.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @Environment(\.colorScheme) var colorScheme
 
@@ -134,7 +134,7 @@ struct ComplexModificationsEditView: View {
       externalEditorController.reset()
     }
     .onDisappear {
-      externalEditorController.stopMonitoring()
+      externalEditorController.reset()
     }
     .onChange(of: jsonString) { newValue in
       externalEditorController.syncFromAppEditor(

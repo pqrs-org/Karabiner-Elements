@@ -4,12 +4,13 @@ import UniformTypeIdentifiers
 
 private func externalEditorFileUpdatedCallback() {
   Task { @MainActor in
-    ExternalEditorController.handleFileUpdated()
+    ExternalEditorController.shared.handleFileUpdated()
   }
 }
 
 @MainActor
 final class ExternalEditorController: ObservableObject {
+  static let shared = ExternalEditorController()
 
   private typealias ReloadHandler = (String) -> Void
 
@@ -17,13 +18,6 @@ final class ExternalEditorController: ObservableObject {
   private var monitoredFileURL: URL?
   private var lastSyncedText: String?
   private var onReloadHandler: ReloadHandler?
-  private static var activeMonitor: ExternalEditorController?
-
-  @MainActor
-  deinit {
-    stopMonitoring()
-    removeTemporaryFile()
-  }
 
   private func chooseEditorURLAsync() async -> URL? {
     await withCheckedContinuation { continuation in
@@ -108,38 +102,6 @@ final class ExternalEditorController: ObservableObject {
     }
   }
 
-  func reload(
-    onError: @escaping (String) -> Void,
-    onReload: @escaping (String) -> Void
-  ) {
-    guard let url = fileURL else {
-      return
-    }
-
-    Task { [weak self, url] in
-      let errorHandler = onError
-      let reloadHandler = onReload
-
-      let readResult: Result<String, Error> = await Task.detached(priority: .utility) {
-        do {
-          let text = try String(contentsOf: url, encoding: .utf8)
-          return .success(text)
-        } catch {
-          return .failure(error)
-        }
-      }.value
-
-      switch readResult {
-      case .success(let text):
-        self?.lastSyncedText = text
-        reloadHandler(text)
-        self?.startMonitoring(url: url, onError: errorHandler, onReload: reloadHandler)
-      case .failure(let error):
-        errorHandler(error.localizedDescription)
-      }
-    }
-  }
-
   func stopMonitoring() {
     if let monitoredFileURL,
       let cString = monitoredFileURL.path.cString(using: .utf8)
@@ -148,10 +110,6 @@ final class ExternalEditorController: ObservableObject {
     }
     monitoredFileURL = nil
     onReloadHandler = nil
-
-    if Self.activeMonitor === self {
-      Self.activeMonitor = nil
-    }
   }
 
   func syncFromAppEditor(
@@ -257,14 +215,9 @@ final class ExternalEditorController: ObservableObject {
     if fileURL != url || monitoredFileURL == nil {
       stopMonitoring()
 
-      if let active = Self.activeMonitor, active !== self {
-        active.stopMonitoring()
-      }
-
       fileURL = url
       onReloadHandler = onReload
       monitoredFileURL = url
-      Self.activeMonitor = self
 
       libkrbn_enable_file_monitors()
 
@@ -276,24 +229,7 @@ final class ExternalEditorController: ObservableObject {
     }
   }
 
-  private func handleExternalEditorText(
-    _ text: String,
-    onReload: @escaping (String) -> Void
-  ) {
-    if text != lastSyncedText {
-      lastSyncedText = text
-      onReload(text)
-    }
-  }
-
-  fileprivate static func handleFileUpdated() {
-    guard let monitor = activeMonitor else {
-      return
-    }
-    monitor.handleFileUpdated()
-  }
-
-  private func handleFileUpdated() {
+  func handleFileUpdated() {
     guard let url = fileURL else {
       return
     }
@@ -317,7 +253,11 @@ final class ExternalEditorController: ObservableObject {
         guard let self else { return }
         let handler = self.onReloadHandler
         guard self.monitoredFileURL != nil, let handler else { return }
-        self.handleExternalEditorText(text, onReload: handler)
+
+        if text != lastSyncedText {
+          lastSyncedText = text
+          handler(text)
+        }
       }
     }
   }
