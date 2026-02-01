@@ -2,15 +2,22 @@ import AppKit
 import Foundation
 import UniformTypeIdentifiers
 
+private func externalEditorFileUpdatedCallback() {
+  Task { @MainActor in
+    ExternalEditorController.handleFileUpdated()
+  }
+}
+
 @MainActor
 final class ExternalEditorController: ObservableObject {
 
+  private typealias ReloadHandler = (String) -> Void
+
   private var fileURL: URL?
-  private var fileMonitor: DispatchSourceFileSystemObject?
-  private var fileDescriptor: Int32 = -1
-  private var directoryMonitor: DispatchSourceFileSystemObject?
-  private var directoryDescriptor: Int32 = -1
+  private var monitoredFileURL: URL?
   private var lastSyncedText: String?
+  private var onReloadHandler: ReloadHandler?
+  private static var activeMonitor: ExternalEditorController?
 
   @MainActor
   deinit {
@@ -18,27 +25,38 @@ final class ExternalEditorController: ObservableObject {
     removeTemporaryFile()
   }
 
+  private func chooseEditorURLAsync() async -> URL? {
+    await withCheckedContinuation { continuation in
+      let panel = NSOpenPanel()
+      panel.allowsMultipleSelection = false
+      panel.canChooseDirectories = false
+      panel.canChooseFiles = true
+      panel.allowedContentTypes = [UTType.application]
+      panel.prompt = "Choose"
+      panel.begin { response in
+        guard response == .OK, let url = panel.url else {
+          continuation.resume(returning: nil)
+          return
+        }
+        continuation.resume(returning: url)
+      }
+    }
+  }
+
+  func chooseEditor() {
+    Task { @MainActor in
+      if let url = await chooseEditorURLAsync() {
+        LibKrbn.Settings.shared.externalEditorPath = url.path
+      }
+    }
+  }
+
   func reset() {
     stopMonitoring()
     removeTemporaryFile()
     fileURL = nil
     lastSyncedText = nil
-  }
-
-  func chooseEditor() {
-    let panel = NSOpenPanel()
-    panel.allowsMultipleSelection = false
-    panel.canChooseDirectories = false
-    panel.canChooseFiles = true
-    panel.allowedContentTypes = [UTType.application]
-    panel.prompt = "Choose"
-
-    panel.begin { response in
-      guard response == .OK, let url = panel.url else {
-        return
-      }
-      LibKrbn.Settings.shared.externalEditorPath = url.path
-    }
+    onReloadHandler = nil
   }
 
   func openTitle() -> String {
@@ -58,22 +76,35 @@ final class ExternalEditorController: ObservableObject {
       return
     }
 
-    do {
-      try text.write(to: url, atomically: true, encoding: .utf8)
-      lastSyncedText = text
-      startMonitoring(url: url, onError: onError, onReload: onReload)
+    Task { [weak self, url, text] in
+      let errorHandler = onError
+      let reloadHandler = onReload
 
-      if let editorURL = externalEditorURL() {
-        NSWorkspace.shared.open(
-          [url],
-          withApplicationAt: editorURL,
-          configuration: NSWorkspace.OpenConfiguration(),
-          completionHandler: nil)
-      } else {
-        NSWorkspace.shared.open(url)
+      let writeResult: Result<Void, Error> = await Task.detached(priority: .utility) {
+        do {
+          try text.write(to: url, atomically: true, encoding: .utf8)
+          return .success(())
+        } catch {
+          return .failure(error)
+        }
+      }.value
+
+      switch writeResult {
+      case .success:
+        self?.lastSyncedText = text
+        self?.startMonitoring(url: url, onError: errorHandler, onReload: reloadHandler)
+        if let editorURL = self?.externalEditorURL() {
+          NSWorkspace.shared.open(
+            [url],
+            withApplicationAt: editorURL,
+            configuration: NSWorkspace.OpenConfiguration(),
+            completionHandler: nil)
+        } else {
+          NSWorkspace.shared.open(url)
+        }
+      case .failure(let error):
+        errorHandler(error.localizedDescription)
       }
-    } catch {
-      onError(error.localizedDescription)
     }
   }
 
@@ -85,35 +116,41 @@ final class ExternalEditorController: ObservableObject {
       return
     }
 
-    do {
-      let text = try String(contentsOf: url, encoding: .utf8)
-      lastSyncedText = text
-      onReload(text)
-      startMonitoring(url: url, onError: onError, onReload: onReload)
-    } catch {
-      onError(error.localizedDescription)
+    Task { [weak self, url] in
+      let errorHandler = onError
+      let reloadHandler = onReload
+
+      let readResult: Result<String, Error> = await Task.detached(priority: .utility) {
+        do {
+          let text = try String(contentsOf: url, encoding: .utf8)
+          return .success(text)
+        } catch {
+          return .failure(error)
+        }
+      }.value
+
+      switch readResult {
+      case .success(let text):
+        self?.lastSyncedText = text
+        reloadHandler(text)
+        self?.startMonitoring(url: url, onError: errorHandler, onReload: reloadHandler)
+      case .failure(let error):
+        errorHandler(error.localizedDescription)
+      }
     }
   }
 
   func stopMonitoring() {
-    if let monitor = fileMonitor {
-      fileDescriptor = -1
-      monitor.cancel()
-      fileMonitor = nil
+    if let monitoredFileURL,
+      let cString = monitoredFileURL.path.cString(using: .utf8)
+    {
+      libkrbn_unregister_file_updated_callback(cString, externalEditorFileUpdatedCallback)
     }
-    if fileDescriptor >= 0 {
-      close(fileDescriptor)
-      fileDescriptor = -1
-    }
+    monitoredFileURL = nil
+    onReloadHandler = nil
 
-    if let monitor = directoryMonitor {
-      directoryDescriptor = -1
-      monitor.cancel()
-      directoryMonitor = nil
-    }
-    if directoryDescriptor >= 0 {
-      close(directoryDescriptor)
-      directoryDescriptor = -1
+    if Self.activeMonitor === self {
+      Self.activeMonitor = nil
     }
   }
 
@@ -129,11 +166,24 @@ final class ExternalEditorController: ObservableObject {
       return
     }
 
-    do {
-      try text.write(to: url, atomically: true, encoding: .utf8)
-      lastSyncedText = text
-    } catch {
-      onError(error.localizedDescription)
+    Task { [weak self, url, text] in
+      let errorHandler = onError
+
+      let writeResult: Result<Void, Error> = await Task.detached(priority: .utility) {
+        do {
+          try text.write(to: url, atomically: true, encoding: .utf8)
+          return .success(())
+        } catch {
+          return .failure(error)
+        }
+      }.value
+
+      switch writeResult {
+      case .success:
+        self?.lastSyncedText = text
+      case .failure(let error):
+        errorHandler(error.localizedDescription)
+      }
     }
   }
 
@@ -199,125 +249,31 @@ final class ExternalEditorController: ObservableObject {
     onError: @escaping (String) -> Void,
     onReload: @escaping (String) -> Void
   ) {
-    if fileURL != url || fileMonitor == nil {
-      stopMonitoring()
-
-      fileURL = url
-
-      let fd = open(url.path, O_EVTONLY)
-      fileDescriptor = fd
-      if fd < 0 {
-        onError("Failed to watch file changes.")
-        return
-      }
-
-      let deliver: (String) -> Void = { [weak self] text in
-        DispatchQueue.main.async {
-          guard let self else {
-            return
-          }
-          self.handleExternalEditorText(text, onReload: onReload)
-        }
-      }
-
-      self.fileMonitor = Self.makeFileMonitor(
-        url: url,
-        fileDescriptor: fd,
-        deliver: deliver
-      )
-      self.fileMonitor?.resume()
-
-      startDirectoryMonitoring(url: url, onError: onError, onReload: onReload, deliver: deliver)
-    }
-  }
-
-  private nonisolated static func makeFileMonitor(
-    url: URL,
-    fileDescriptor: Int32,
-    deliver: @escaping (String) -> Void
-  ) -> DispatchSourceFileSystemObject {
-    let fileMonitor = DispatchSource.makeFileSystemObjectSource(
-      fileDescriptor: fileDescriptor,
-      eventMask: [.write, .extend, .attrib, .rename, .delete],
-      queue: DispatchQueue.global(qos: .utility)
-    )
-    fileMonitor.setEventHandler {
-      // Some editors save via atomic rename; allow brief retry if the file is temporarily unavailable.
-      let attempts = 3
-      for i in 0..<attempts {
-        if let text = try? String(contentsOf: url, encoding: .utf8) {
-          deliver(text)
-          break
-        } else {
-          // backoff ~50ms between attempts
-          if i < attempts - 1 {
-            usleep(50_000)
-          }
-        }
-      }
-    }
-    fileMonitor.setCancelHandler {
-      if fileDescriptor >= 0 {
-        close(fileDescriptor)
-      }
-    }
-    return fileMonitor
-  }
-
-  private func startDirectoryMonitoring(
-    url: URL,
-    onError: @escaping (String) -> Void,
-    onReload: @escaping (String) -> Void,
-    deliver: @escaping (String) -> Void
-  ) {
-    let directoryURL = url.deletingLastPathComponent()
-    let fd = open(directoryURL.path, O_EVTONLY)
-    directoryDescriptor = fd
-    if fd < 0 {
-      onError("Failed to watch directory changes.")
+    if fileURL == url, monitoredFileURL != nil {
+      onReloadHandler = onReload
       return
     }
 
-    let monitor = Self.makeDirectoryMonitor(
-      url: url,
-      fileDescriptor: fd,
-      deliver: deliver
-    )
-    directoryMonitor = monitor
-    monitor.resume()
-  }
+    if fileURL != url || monitoredFileURL == nil {
+      stopMonitoring()
 
-  private nonisolated static func makeDirectoryMonitor(
-    url: URL,
-    fileDescriptor: Int32,
-    deliver: @escaping (String) -> Void
-  ) -> DispatchSourceFileSystemObject {
-    let monitor = DispatchSource.makeFileSystemObjectSource(
-      fileDescriptor: fileDescriptor,
-      eventMask: [.write, .rename, .delete, .attrib],
-      queue: DispatchQueue.global(qos: .utility)
-    )
-    monitor.setEventHandler {
-      // Directory changes may indicate the file was replaced via atomic save.
-      // Try reading the target URL; if it exists, deliver its content.
-      let attempts = 3
-      for i in 0..<attempts {
-        if let text = try? String(contentsOf: url, encoding: .utf8) {
-          deliver(text)
-          break
-        } else {
-          if i < attempts - 1 {
-            usleep(50_000)
-          }
-        }
+      if let active = Self.activeMonitor, active !== self {
+        active.stopMonitoring()
+      }
+
+      fileURL = url
+      onReloadHandler = onReload
+      monitoredFileURL = url
+      Self.activeMonitor = self
+
+      libkrbn_enable_file_monitors()
+
+      if let cString = url.path.cString(using: .utf8) {
+        libkrbn_register_file_updated_callback(cString, externalEditorFileUpdatedCallback)
+      } else {
+        onError("Failed to watch file changes.")
       }
     }
-    monitor.setCancelHandler {
-      if fileDescriptor >= 0 {
-        close(fileDescriptor)
-      }
-    }
-    return monitor
   }
 
   private func handleExternalEditorText(
@@ -328,5 +284,57 @@ final class ExternalEditorController: ObservableObject {
       lastSyncedText = text
       onReload(text)
     }
+  }
+
+  fileprivate static func handleFileUpdated() {
+    guard let monitor = activeMonitor else {
+      return
+    }
+    monitor.handleFileUpdated()
+  }
+
+  private func handleFileUpdated() {
+    guard let url = fileURL else {
+      return
+    }
+
+    // Capture the current handler and monitored state on the main actor to avoid
+    // capturing non-Sendable values in a @Sendable closure.
+    let currentHandler: ReloadHandler? = onReloadHandler
+    let isMonitoring = (monitoredFileURL != nil)
+
+    // If there's no handler or we're not monitoring anymore, nothing to do.
+    guard currentHandler != nil, isMonitoring else {
+      return
+    }
+
+    Task { [url] in
+      guard let text = await Self.readFileWithRetry(url: url) else {
+        return
+      }
+
+      await MainActor.run { [weak self] in
+        guard let self else { return }
+        let handler = self.onReloadHandler
+        guard self.monitoredFileURL != nil, let handler else { return }
+        self.handleExternalEditorText(text, onReload: handler)
+      }
+    }
+  }
+
+  private nonisolated static func readFileWithRetry(url: URL) async -> String? {
+    // Some editors save via atomic rename; allow brief retry if the file is temporarily unavailable.
+    let attempts = 3
+    for i in 0..<attempts {
+      if let text = try? String(contentsOf: url, encoding: .utf8) {
+        return text
+      }
+
+      if i < attempts - 1 {
+        try? await Task.sleep(nanoseconds: 50_000_000)
+      }
+    }
+
+    return nil
   }
 }
