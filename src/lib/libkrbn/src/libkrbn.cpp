@@ -82,10 +82,15 @@ void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
   strlcpy(buffer, krbn::constants::get_user_complex_modifications_assets_directory().c_str(), length);
 }
 
+void libkrbn_get_user_tmp_directory(char* buffer,
+                                    size_t length) {
+  strlcpy(buffer, krbn::constants::get_user_tmp_directory().c_str(), length);
+}
+
 bool libkrbn_user_pid_directory_writable(void) {
   auto pid_directory = krbn::constants::get_user_pid_directory();
 
-  pqrs::filesystem::create_directory_with_intermediate_directories(pid_directory, 0755);
+  pqrs::filesystem::create_directory_with_intermediate_directories(pid_directory, 0700);
   if (!pqrs::filesystem::is_directory(pid_directory)) {
     return false;
   }

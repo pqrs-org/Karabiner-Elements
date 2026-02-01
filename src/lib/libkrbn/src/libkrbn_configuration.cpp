@@ -165,6 +165,24 @@ void libkrbn_core_configuration_set_machine_specific_enable_multitouch_extension
   c->get_machine_specific().get_entry().set_enable_multitouch_extension(value);
 }
 
+void libkrbn_core_configuration_get_machine_specific_external_editor_path(char* buffer,
+                                                                          size_t length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+
+  auto c = get_current_core_configuration();
+  const auto& value = c->get_machine_specific().get_entry().get_external_editor_path();
+  strlcpy(buffer, value.c_str(), length);
+}
+
+void libkrbn_core_configuration_set_machine_specific_external_editor_path(const char* value) {
+  if (value) {
+    auto c = get_current_core_configuration();
+    c->get_machine_specific().get_entry().set_external_editor_path(value);
+  }
+}
+
 size_t libkrbn_core_configuration_get_profiles_size(void) {
   auto c = get_current_core_configuration();
   return c->get_profiles().size();

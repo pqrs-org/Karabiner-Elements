@@ -26,6 +26,7 @@ void run_machine_specific_test(void) {
           {"unknown_key1", "unknown_value1"},
           {type_safe::get(id1), nlohmann::json::object({
                                     {"enable_multitouch_extension", true},
+                                    {"external_editor_path", "/Applications/Visual Studio Code.app"},
                                 })},
           {type_safe::get(id3), nlohmann::json::object({
                                     {"unknown_key2", "unknown_value2"},
@@ -35,9 +36,17 @@ void run_machine_specific_test(void) {
       krbn::core_configuration::details::machine_specific machine_specific(json,
                                                                            krbn::core_configuration::error_handling::strict);
       expect(true == machine_specific.get_entry(id1).get_enable_multitouch_extension());
+      expect(std::string("/Applications/Visual Studio Code.app") ==
+             machine_specific.get_entry(id1).get_external_editor_path());
+
       // new entry
       expect(false == machine_specific.get_entry(id2).get_enable_multitouch_extension());
+      expect(std::string("/System/Applications/TextEdit.app") ==
+             machine_specific.get_entry(id2).get_external_editor_path());
+
       expect(true == machine_specific.get_entry(id3).get_enable_multitouch_extension());
+      expect(std::string("/System/Applications/TextEdit.app") ==
+             machine_specific.get_entry(id3).get_external_editor_path());
 
       {
         nlohmann::json j(machine_specific);
@@ -49,13 +58,18 @@ void run_machine_specific_test(void) {
       //
 
       machine_specific.get_entry(id1).set_enable_multitouch_extension(false);
+      machine_specific.get_entry(id1).set_external_editor_path("/System/Applications/TextEdit.app");
       machine_specific.get_entry(id2).set_enable_multitouch_extension(true);
+      machine_specific.get_entry(id2).set_external_editor_path("/Applications/CotEditor.app");
+      machine_specific.get_entry(id3).set_external_editor_path("/System/Applications/TextEdit.app");
 
       // reflect changes to json
       json.erase(type_safe::get(id1));
       json[type_safe::get(id2)] = nlohmann::json::object({
           {"enable_multitouch_extension", true},
+          {"external_editor_path", "/Applications/CotEditor.app"},
       });
+      json[type_safe::get(id3)].erase("external_editor_path");
 
       {
         nlohmann::json j(machine_specific);
@@ -68,11 +82,14 @@ void run_machine_specific_test(void) {
       auto json = nlohmann::json::object({
           {type_safe::get(id1), nlohmann::json::object({
                                     {"enable_multitouch_extension", 42},
+                                    {"external_editor_path", 42},
                                 })},
       });
       krbn::core_configuration::details::machine_specific machine_specific(json,
                                                                            krbn::core_configuration::error_handling::loose);
       expect(false == machine_specific.get_entry(id1).get_enable_multitouch_extension());
+      expect(std::string("/System/Applications/TextEdit.app") ==
+             machine_specific.get_entry(id1).get_external_editor_path());
     }
   };
 }

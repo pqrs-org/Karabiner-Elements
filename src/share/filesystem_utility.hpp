@@ -59,6 +59,28 @@ inline void mkdir_system_user_directory(uid_t uid) {
   }
 }
 
+inline void mkdir_user_directories(void) {
+  pqrs::filesystem::create_directory_with_intermediate_directories(
+      constants::get_user_configuration_directory(),
+      0700);
+
+  pqrs::filesystem::create_directory_with_intermediate_directories(
+      constants::get_user_complex_modifications_assets_directory(),
+      0700);
+
+  pqrs::filesystem::create_directory_with_intermediate_directories(
+      constants::get_user_log_directory(),
+      0700);
+
+  pqrs::filesystem::create_directory_with_intermediate_directories(
+      constants::get_user_pid_directory(),
+      0700);
+
+  pqrs::filesystem::create_directory_with_intermediate_directories(
+      constants::get_user_tmp_directory(),
+      0700);
+}
+
 inline void create_base_directories(std::optional<uid_t> uid) {
   filesystem_utility::mkdir_tmp_directory();
   filesystem_utility::mkdir_rootonly_directory();

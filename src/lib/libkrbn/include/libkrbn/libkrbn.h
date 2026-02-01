@@ -35,6 +35,8 @@ void libkrbn_get_user_configuration_directory(char* _Nonnull buffer,
                                               size_t length);
 void libkrbn_get_user_complex_modifications_assets_directory(char* _Nonnull buffer,
                                                              size_t length);
+void libkrbn_get_user_tmp_directory(char* _Nonnull buffer,
+                                    size_t length);
 
 bool libkrbn_user_pid_directory_writable(void);
 
@@ -124,6 +126,9 @@ void libkrbn_core_configuration_set_global_configuration_reorder_same_timestamp_
 
 bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension(void);
 void libkrbn_core_configuration_set_machine_specific_enable_multitouch_extension(bool value);
+void libkrbn_core_configuration_get_machine_specific_external_editor_path(char* _Nonnull buffer,
+                                                                          size_t length);
+void libkrbn_core_configuration_set_machine_specific_external_editor_path(const char* _Nonnull value);
 
 // profiles
 

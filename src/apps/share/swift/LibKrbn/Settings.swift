@@ -135,6 +135,13 @@ extension LibKrbn {
         libkrbn_core_configuration_get_global_configuration_enable_notification_window()
       enableMultitouchExtension =
         libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension()
+      do {
+        var buffer = [Int8](repeating: 0, count: 4 * 1024)
+        libkrbn_core_configuration_get_machine_specific_external_editor_path(
+          &buffer, buffer.count
+        )
+        externalEditorPath = String(utf8String: buffer) ?? ""
+      }
       askForConfirmationBeforeQuitting =
         libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting()
       unsafeUI = libkrbn_core_configuration_get_global_configuration_unsafe_ui()
@@ -799,6 +806,17 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_machine_specific_enable_multitouch_extension(
             enableMultitouchExtension
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var externalEditorPath: String = "" {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_machine_specific_external_editor_path(
+            externalEditorPath
           )
           save()
         }
