@@ -14,6 +14,13 @@ typedef struct krbn_duktape_timeout_state {
   int timed_out;
 } krbn_duktape_timeout_state;
 
+typedef struct krbn_duktape_heap_state {
+  krbn_duktape_timeout_state timeout;
+  uint64_t memory_limit_bytes;
+  uint64_t memory_used_bytes;
+  int memory_exceeded;
+} krbn_duktape_heap_state;
+
 static inline uint64_t krbn_duktape_get_monotonic_ns(void) {
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -35,4 +42,4 @@ static inline int krbn_duktape_exec_timeout_check(krbn_duktape_timeout_state* st
 #undef DUK_USE_EXEC_TIMEOUT_CHECK
 #endif
 #define DUK_USE_EXEC_TIMEOUT_CHECK(udata) \
-  krbn_duktape_exec_timeout_check((krbn_duktape_timeout_state*)(udata))
+  krbn_duktape_exec_timeout_check(&((krbn_duktape_heap_state*)(udata))->timeout)

@@ -2,6 +2,7 @@
 
 #include "filesystem_utility.hpp"
 #include "json_utility.hpp"
+#include <cstdlib>
 #include <duk_config.h>
 #include <duk_console.h>
 #include <duk_module_node.h>
@@ -9,8 +10,8 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <spdlog/fmt/fmt.h>
+#include <sstream>
 
 namespace krbn {
 class duktape_eval_error : public std::runtime_error {
@@ -20,6 +21,84 @@ public:
 };
 
 namespace duktape_utility {
+struct eval_heap_state {
+  krbn_duktape_heap_state base;
+};
+
+namespace impl {
+inline void* alloc(void* udata, duk_size_t size) {
+  if (size == 0) {
+    return nullptr;
+  }
+  auto state = static_cast<eval_heap_state*>(udata);
+  if (!state) {
+    return nullptr;
+  }
+  if (state->base.memory_used_bytes + size > state->base.memory_limit_bytes) {
+    state->base.memory_exceeded = 1;
+    return nullptr;
+  }
+
+  auto total = size + sizeof(size_t);
+  void* raw = std::malloc(total);
+  if (!raw) {
+    return nullptr;
+  }
+  *static_cast<size_t*>(raw) = size;
+  state->base.memory_used_bytes += size;
+  return static_cast<unsigned char*>(raw) + sizeof(size_t);
+}
+
+inline void* realloc(void* udata, void* ptr, duk_size_t size) {
+  auto state = static_cast<eval_heap_state*>(udata);
+  if (!state) {
+    return nullptr;
+  }
+
+  if (!ptr) {
+    return alloc(udata, size);
+  }
+
+  if (size == 0) {
+    auto raw = static_cast<unsigned char*>(ptr) - sizeof(size_t);
+    auto old_size = *reinterpret_cast<size_t*>(raw);
+    state->base.memory_used_bytes -= old_size;
+    std::free(raw);
+    return nullptr;
+  }
+
+  auto raw = static_cast<unsigned char*>(ptr) - sizeof(size_t);
+  auto old_size = *reinterpret_cast<size_t*>(raw);
+
+  if (state->base.memory_used_bytes - old_size + size > state->base.memory_limit_bytes) {
+    state->base.memory_exceeded = 1;
+    return nullptr;
+  }
+
+  auto total = size + sizeof(size_t);
+  void* new_raw = std::realloc(raw, total);
+  if (!new_raw) {
+    return nullptr;
+  }
+  *static_cast<size_t*>(new_raw) = size;
+  state->base.memory_used_bytes = state->base.memory_used_bytes - old_size + size;
+  return static_cast<unsigned char*>(new_raw) + sizeof(size_t);
+}
+
+inline void free(void* udata, void* ptr) {
+  if (!ptr) {
+    return;
+  }
+  auto state = static_cast<eval_heap_state*>(udata);
+  auto raw = static_cast<unsigned char*>(ptr) - sizeof(size_t);
+  auto old_size = *reinterpret_cast<size_t*>(raw);
+  if (state) {
+    state->base.memory_used_bytes -= old_size;
+  }
+  std::free(raw);
+}
+} // namespace impl
+
 struct eval_string_to_json_result {
   nlohmann::json json;
   std::string log_messages;
@@ -117,12 +196,26 @@ inline void eval_file(const std::filesystem::path& path) noexcept(false) {
 }
 
 inline eval_string_to_json_result eval_string_to_json(const std::string& code) noexcept(false) {
-  krbn_duktape_timeout_state timeout_state{
-      // 1-second timeout for JavaScript evaluation.
-      .deadline_ns = krbn_duktape_get_monotonic_ns() + 1000000000ULL,
-      .timed_out = 0,
+  eval_heap_state heap_state{
+      .base = {
+          // 1-second timeout for JavaScript evaluation.
+          .timeout = {
+              .deadline_ns = krbn_duktape_get_monotonic_ns() + 1000000000ULL,
+              .timed_out = 0,
+          },
+          // 32MB soft cap; actual allocations add sizeof(size_t) per block,
+          // so worst-case overhead can be ~8MB with many small allocations.
+          .memory_limit_bytes = 32ULL * 1024ULL * 1024ULL,
+          .memory_used_bytes = 0,
+          .memory_exceeded = 0,
+      },
   };
-  duk_context* ctx = duk_create_heap(nullptr, nullptr, nullptr, &timeout_state, nullptr);
+
+  duk_context* ctx = duk_create_heap(impl::alloc,
+                                     impl::realloc,
+                                     impl::free,
+                                     &heap_state,
+                                     nullptr);
   auto log_messages = std::make_shared<std::string>();
 
   //
@@ -176,9 +269,10 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
   //
 
   if (duk_peval_string(ctx, code.c_str()) != 0) {
-    auto message = timeout_state.timed_out ? "javascript error: execution timed out"
-                                           : fmt::format("javascript error: {0}",
-                                                         duk_safe_to_string(ctx, -1));
+    auto message = heap_state.base.memory_exceeded     ? "javascript error: max memory exceeded"
+                   : heap_state.base.timeout.timed_out ? "javascript error: execution timed out"
+                                                       : fmt::format("javascript error: {0}",
+                                                                     duk_safe_to_string(ctx, -1));
     duk_destroy_heap(ctx);
     throw duktape_eval_error(message);
   }
@@ -189,8 +283,9 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
   };
 
   if (duk_safe_call(ctx, json_encode, nullptr, 1, 1) != DUK_EXEC_SUCCESS) {
-    auto message = fmt::format("javascript error: {0}",
-                               duk_safe_to_string(ctx, -1));
+    auto message = heap_state.base.memory_exceeded ? "javascript error: max memory exceeded"
+                                                   : fmt::format("javascript error: {0}",
+                                                                 duk_safe_to_string(ctx, -1));
     duk_destroy_heap(ctx);
     throw duktape_eval_error(message);
   }

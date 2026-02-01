@@ -78,6 +78,20 @@ main();
     } catch (krbn::duktape_eval_error& ex) {
       expect("javascript error: execution timed out"sv == ex.what());
     }
+
+    try {
+      krbn::duktape_utility::eval_string_to_json(R"(
+var a = [];
+var i = 0;
+while (true) {
+  a.push('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+  i += 1;
+}
+)");
+      expect(false);
+    } catch (krbn::duktape_eval_error& ex) {
+      expect("javascript error: max memory exceeded"sv == ex.what());
+    }
   };
 
   return 0;
