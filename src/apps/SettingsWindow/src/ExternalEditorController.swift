@@ -15,10 +15,12 @@ final class ExternalEditorController: ObservableObject {
   @MainActor
   deinit {
     stopMonitoring()
+    removeTemporaryFile()
   }
 
   func reset() {
     stopMonitoring()
+    removeTemporaryFile()
     fileURL = nil
     lastSyncedText = nil
   }
@@ -140,9 +142,9 @@ final class ExternalEditorController: ObservableObject {
       return url
     }
 
-    let directoryURL = FileManager.default.temporaryDirectory
-      .appendingPathComponent("karabiner-elements", isDirectory: true)
-      .appendingPathComponent("complex-modifications", isDirectory: true)
+    guard let directoryURL = userTmpDirectoryURL(onError: onError) else {
+      return nil
+    }
 
     do {
       try FileManager.default.createDirectory(
@@ -154,10 +156,34 @@ final class ExternalEditorController: ObservableObject {
       return nil
     }
 
-    let url = directoryURL.appendingPathComponent(UUID().uuidString)
-      .appendingPathExtension("json")
+    let url = directoryURL.appendingPathComponent("editor_\(UUID().uuidString).json")
     fileURL = url
     return url
+  }
+
+  private func userTmpDirectoryURL(onError: (String) -> Void) -> URL? {
+    var buffer = [Int8](repeating: 0, count: 4 * 1024)
+    libkrbn_get_user_tmp_directory(&buffer, buffer.count)
+    let path = String(utf8String: buffer) ?? ""
+    guard !path.isEmpty else {
+      onError("Failed to get user tmp directory.")
+      return nil
+    }
+    return URL(fileURLWithPath: path, isDirectory: true)
+  }
+
+  private func removeTemporaryFile() {
+    guard let url = fileURL else {
+      return
+    }
+
+    if FileManager.default.fileExists(atPath: url.path) {
+      do {
+        try FileManager.default.removeItem(at: url)
+      } catch {
+        // Best-effort cleanup for temp files.
+      }
+    }
   }
 
   private func externalEditorURL() -> URL? {

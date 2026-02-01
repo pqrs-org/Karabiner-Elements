@@ -82,6 +82,11 @@ void libkrbn_get_user_complex_modifications_assets_directory(char* buffer,
   strlcpy(buffer, krbn::constants::get_user_complex_modifications_assets_directory().c_str(), length);
 }
 
+void libkrbn_get_user_tmp_directory(char* buffer,
+                                    size_t length) {
+  strlcpy(buffer, krbn::constants::get_user_tmp_directory().c_str(), length);
+}
+
 bool libkrbn_user_pid_directory_writable(void) {
   auto pid_directory = krbn::constants::get_user_pid_directory();
 

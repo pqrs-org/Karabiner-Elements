@@ -35,6 +35,8 @@ void libkrbn_get_user_configuration_directory(char* _Nonnull buffer,
                                               size_t length);
 void libkrbn_get_user_complex_modifications_assets_directory(char* _Nonnull buffer,
                                                              size_t length);
+void libkrbn_get_user_tmp_directory(char* _Nonnull buffer,
+                                    size_t length);
 
 bool libkrbn_user_pid_directory_writable(void);
 
