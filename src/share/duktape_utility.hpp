@@ -196,6 +196,11 @@ inline void eval_file(const std::filesystem::path& path) noexcept(false) {
 }
 
 inline eval_string_to_json_result eval_string_to_json(const std::string& code) noexcept(false) {
+  constexpr size_t max_input_bytes = 1ULL * 1024ULL * 1024ULL; // 1MB
+  if (code.size() > max_input_bytes) {
+    throw duktape_eval_error("javascript error: input too large");
+  }
+
   eval_heap_state heap_state{
       .base = {
           // 1-second timeout for JavaScript evaluation.

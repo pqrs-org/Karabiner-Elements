@@ -92,6 +92,30 @@ while (true) {
     } catch (krbn::duktape_eval_error& ex) {
       expect("javascript error: max memory exceeded"sv == ex.what());
     }
+
+    try {
+      krbn::duktape_utility::eval_string_to_json(R"(
+function recurse(n) {
+  if (n === 0) {
+    return 0;
+  }
+  return 1 + recurse(n - 1);
+}
+
+recurse(2000);
+)");
+      expect(false);
+    } catch (krbn::duktape_eval_error& ex) {
+      expect("javascript error: RangeError: callstack limit"sv == ex.what());
+    }
+
+    try {
+      std::string large_input(1024 * 1024 + 1, 'x');
+      krbn::duktape_utility::eval_string_to_json(large_input);
+      expect(false);
+    } catch (krbn::duktape_eval_error& ex) {
+      expect("javascript error: input too large"sv == ex.what());
+    }
   };
 
   return 0;

@@ -9,6 +9,11 @@
 #define DUK_USE_INTERRUPT_COUNTER
 #endif
 
+#ifdef DUK_USE_CALLSTACK_LIMIT
+#undef DUK_USE_CALLSTACK_LIMIT
+#endif
+#define DUK_USE_CALLSTACK_LIMIT 1000
+
 typedef struct krbn_duktape_timeout_state {
   uint64_t deadline_ns;
   int timed_out;
