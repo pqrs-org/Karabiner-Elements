@@ -1,5 +1,6 @@
 #include "complex_modifications_utility.hpp"
 #include "connected_devices.hpp"
+#include "duktape_utility.hpp"
 #include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
@@ -612,6 +613,56 @@ void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(c
                                                                                size_t length) {
   auto json_string = krbn::complex_modifications_utility::get_new_rule_json_string();
   strlcpy(buffer, json_string.c_str(), length);
+}
+
+void libkrbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(char* buffer,
+                                                                                  size_t length) {
+  auto json_string = krbn::complex_modifications_utility::get_new_rule_eval_js_string();
+  strlcpy(buffer, json_string.c_str(), length);
+}
+
+bool libkrbn_eval_js_to_json_string(const char* code,
+                                    char* buffer,
+                                    size_t length,
+                                    char* log_message_buffer,
+                                    size_t log_message_buffer_length,
+                                    char* error_message_buffer,
+                                    size_t error_message_buffer_length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+  if (log_message_buffer && log_message_buffer_length > 0) {
+    log_message_buffer[0] = '\0';
+  }
+  if (error_message_buffer && error_message_buffer_length > 0) {
+    error_message_buffer[0] = '\0';
+  }
+
+  if (!code) {
+    strlcpy(error_message_buffer, "error: invalid javascript code", error_message_buffer_length);
+    return false;
+  }
+
+  try {
+    auto result = krbn::duktape_utility::eval_string_to_json(std::string(code));
+
+    strlcpy(log_message_buffer, result.log_messages.c_str(), log_message_buffer_length);
+
+    auto json_string = krbn::json_utility::dump(result.json);
+    if (json_string.length() < length) {
+      strlcpy(buffer, json_string.c_str(), length);
+      return true;
+    }
+
+    strlcpy(error_message_buffer,
+            "error: output buffer is too small",
+            error_message_buffer_length);
+  } catch (const std::exception& e) {
+    auto message = fmt::format("error: {0}", e.what());
+    strlcpy(error_message_buffer, message.c_str(), error_message_buffer_length);
+  }
+
+  return false;
 }
 
 void libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(char* buffer,
