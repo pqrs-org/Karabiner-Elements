@@ -1,0 +1,28 @@
+name: duktape
+
+targets:
+  duktape:
+    settings:
+      CODE_SIGN_ENTITLEMENTS: ''
+      CODE_SIGN_IDENTITY: '-'
+      CODE_SIGN_STYLE: Manual
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - .
+        - ../duktape-2.7.0/extras/console
+        - ../duktape-2.7.0/extras/module-node
+      DEAD_CODE_STRIPPING: 'YES'
+    type: library.static
+    platform: macOS
+    deploymentTarget: 13.0
+    sources:
+      - path: duktape.c
+        compilerFlags: &cflags
+          - -Wall
+          - -Werror
+          - -Wno-deprecated-declarations
+          - -Wno-unused-but-set-variable
+          - -Wno-shorten-64-to-32
+      - path: ../duktape-2.7.0/extras/console/duk_console.c
+        compilerFlags: *cflags
+      - path: ../duktape-2.7.0/extras/module-node/duk_module_node.c
+        compilerFlags: *cflags
