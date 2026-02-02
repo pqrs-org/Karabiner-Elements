@@ -11,6 +11,8 @@ targets:
         - ../../../vendor/duktape-src
         - ../../../vendor/duktape-2.7.0/extras/console
         - ../../../vendor/duktape-2.7.0/extras/module-node
+      OTHER_LDFLAGS:
+        - ../../../vendor/duktape-src/build/Release/libduktape.a
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER:
         - src/Bridging-Header.h
@@ -27,8 +29,5 @@ targets:
           - -Wall
           - -Werror
           - '-std=c++20'
-      - path: ../../../vendor/duktape-src/duktape.c
-      - path: ../../../vendor/duktape-2.7.0/extras/console/duk_console.c
-      - path: ../../../vendor/duktape-2.7.0/extras/module-node/duk_module_node.c
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace

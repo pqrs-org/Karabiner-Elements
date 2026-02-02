@@ -9,8 +9,7 @@ targets:
       HEADER_SEARCH_PATHS:
         - ../../src/lib/libkrbn/include
       OTHER_LDFLAGS:
-        - -L../../src/lib/libkrbn/build/Release
-        - -lkrbn
+        - ../../src/lib/libkrbn/build/Release/libkrbn.a
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
