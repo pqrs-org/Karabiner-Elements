@@ -16,6 +16,7 @@ public:
     from_event,
     any,
     shell_command,
+    socket_command,
     select_input_source,
     set_variable,
     set_notification_message,
@@ -66,6 +67,34 @@ public:
     return std::get_if<T>(&value_);
   }
 
+  std::optional<std::string> get_shell_command(void) const {
+    if (type_ == type::shell_command) {
+      return std::get<std::string>(value_);
+    }
+    return std::nullopt;
+  }
+
+  std::optional<std::string> get_socket_command(void) const {
+    if (type_ == type::socket_command) {
+      return std::get<std::string>(value_);
+    }
+    return std::nullopt;
+  }
+
+  std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
+    if (type_ == type::select_input_source) {
+      return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
+    }
+    return std::nullopt;
+  }
+
+  std::optional<manipulator_environment_variable_set_variable> get_set_variable(void) const {
+    if (type_ == type::set_variable) {
+      return std::get<manipulator_environment_variable_set_variable>(value_);
+    }
+    return std::nullopt;
+  }
+
   std::optional<event_queue::event> to_event(void) const {
     switch (type_) {
       case type::none:
@@ -78,6 +107,8 @@ public:
         return std::nullopt;
       case type::shell_command:
         return event_queue::event::make_shell_command_event(std::get<std::string>(value_));
+      case type::socket_command:
+        return event_queue::event::make_socket_command_event(std::get<std::string>(value_));
       case type::select_input_source:
         return event_queue::event::make_select_input_source_event(std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_));
       case type::set_variable:
@@ -179,6 +210,21 @@ public:
 
       type_ = type::shell_command;
       value_ = value.get<std::string>();
+
+      return true;
+    }
+
+    //
+    // socket_command
+    //
+
+    if (key == "socket_command") {
+      check_type(json);
+
+      pqrs::json::requires_object(value, "`" + key + "`");
+
+      type_ = type::socket_command;
+      value_ = value.dump();  // Store as JSON string
 
       return true;
     }

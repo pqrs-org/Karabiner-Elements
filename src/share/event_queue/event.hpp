@@ -24,6 +24,7 @@ public:
     pointing_motion,
     // virtual events
     shell_command,
+    socket_command,
     select_input_source,
     set_variable,
     set_notification_message,
@@ -79,6 +80,8 @@ public:
           } else if (key == "caps_lock_state_changed") {
             result.value_ = value.get<int64_t>();
           } else if (key == "shell_command") {
+            result.value_ = value.get<std::string>();
+          } else if (key == "socket_command") {
             result.value_ = value.get<std::string>();
           } else if (key == "input_source_specifiers") {
             result.value_ = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
@@ -138,6 +141,12 @@ public:
       case type::shell_command:
         if (auto v = get_shell_command()) {
           json["shell_command"] = *v;
+        }
+        break;
+
+      case type::socket_command:
+        if (auto v = get_socket_command()) {
+          json["socket_command"] = *v;
         }
         break;
 
@@ -224,6 +233,13 @@ public:
     event e;
     e.type_ = type::shell_command;
     e.value_ = shell_command;
+    return e;
+  }
+
+  static event make_socket_command_event(const std::string& socket_command_json) {
+    event e;
+    e.type_ = type::socket_command;
+    e.value_ = socket_command_json;
     return e;
   }
 
@@ -374,6 +390,16 @@ public:
     return std::nullopt;
   }
 
+  std::optional<std::string> get_socket_command(void) const {
+    try {
+      if (type_ == type::socket_command) {
+        return std::get<std::string>(value_);
+      }
+    } catch (std::bad_variant_access&) {
+    }
+    return std::nullopt;
+  }
+
   std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
     try {
       if (type_ == type::select_input_source) {
@@ -457,6 +483,7 @@ private:
       TO_C_STRING(momentary_switch_event);
       TO_C_STRING(pointing_motion);
       TO_C_STRING(shell_command);
+      TO_C_STRING(socket_command);
       TO_C_STRING(select_input_source);
       TO_C_STRING(set_variable);
       TO_C_STRING(set_notification_message);
@@ -491,6 +518,7 @@ private:
     TO_TYPE(momentary_switch_event);
     TO_TYPE(pointing_motion);
     TO_TYPE(shell_command);
+    TO_TYPE(socket_command);
     TO_TYPE(select_input_source);
     TO_TYPE(set_variable);
     TO_TYPE(set_notification_message);

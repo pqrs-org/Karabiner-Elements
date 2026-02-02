@@ -1,0 +1,64 @@
+1770969525925455 [trace] trace init: seq
+1770969755525645 [trace] trace init: seq
+1770969755547275 [trace] trace init: seq
+1770969755568709 [trace] trace init: seq
+1770969755587483 [trace] trace init: seq
+1770969755608270 [trace] trace init: seq
+1770969755629219 [trace] trace init: seq
+1770969755649731 [trace] trace init: seq
+1770969755649743 [event] cli.run open Safari new tab
+1770969755650863 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969755650882 [event] cli.run.local open Safari new tab
+1770969755651048 [event] open_url app=Safari	url=about:blank
+1770969755653481 [event] open_url.activate_app app=Safari	ok=1
+1770969755693062 [trace] trace init: seq
+1770969755693074 [event] cli.run open Safari new tab
+1770969755693449 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969755693459 [event] cli.run.local open Safari new tab
+1770969755693471 [event] open_url app=Safari	url=about:blank
+1770969755696100 [event] open_url.activate_app app=Safari	ok=1
+1770969755710023 [trace] trace init: seq
+1770969755710034 [event] cli.run open Safari new tab
+1770969755710394 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969755710403 [event] cli.run.local open Safari new tab
+1770969755710415 [event] open_url app=Safari	url=about:blank
+1770969755721503 [event] open_url.activate_app app=Safari	ok=1
+1770969755751554 [trace] trace init: seq
+1770969755751587 [event] cli.run open Safari new tab
+1770969755752821 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969755752869 [event] cli.run.local open Safari new tab
+1770969755752890 [event] open_url app=Safari	url=about:blank
+1770969755756858 [event] open_url.activate_app app=Safari	ok=1
+1770969755788259 [trace] trace init: seq
+1770969755788271 [event] cli.run open Safari new tab
+1770969755788787 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969755788800 [event] cli.run.local open Safari new tab
+1770969755788811 [event] open_url app=Safari	url=about:blank
+1770969755791061 [event] open_url.activate_app app=Safari	ok=1
+1770969755807940 [trace] trace init: seq
+1770969755807951 [event] cli.run open Safari new tab
+1770969755808340 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969755808352 [event] cli.run.local open Safari new tab
+1770969755808364 [event] open_url app=Safari	url=about:blank
+1770969755810941 [event] open_url.activate_app app=Safari	ok=1
+1770969896488482 [trace] trace init: seq
+1770969896508679 [trace] trace init: seq
+1770969896529342 [trace] trace init: seq
+1770969896545997 [trace] trace init: seq
+1770969896546008 [event] cli.run open Safari new tab
+1770969896546834 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969896546844 [event] cli.run.local open Safari new tab
+1770969896546857 [event] open_url app=Safari	url=about:blank
+1770969896548587 [event] open_url.activate_app app=Safari	ok=1
+1770969896565590 [trace] trace init: seq
+1770969896565602 [event] cli.run open Safari new tab
+1770969896565977 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969896565987 [event] cli.run.local open Safari new tab
+1770969896565998 [event] open_url app=Safari	url=about:blank
+1770969896569158 [event] open_url.activate_app app=Safari	ok=1
+1770969896584820 [trace] trace init: seq
+1770969896584831 [event] cli.run open Safari new tab
+1770969896585204 [event] macros.user_app.loaded /Users/nikiv/.config/seq/apps/safari/macros.yaml
+1770969896585215 [event] cli.run.local open Safari new tab
+1770969896585226 [event] open_url app=Safari	url=about:blank
+1770969896593279 [event] open_url.activate_app app=Safari	ok=1

@@ -13,6 +13,7 @@
 #include "receiver.hpp"
 #include "services_utility.hpp"
 #include "shell_command_handler.hpp"
+#include "socket_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
@@ -149,6 +150,14 @@ private:
               break;
             }
 
+            case operation_type::socket_command_execution: {
+              auto socket_command = json.at("socket_command").get<std::string>();
+              if (socket_command_handler_) {
+                socket_command_handler_->run(socket_command);
+              }
+              break;
+            }
+
             case operation_type::software_function: {
               if (software_function_handler_) {
                 software_function_handler_->execute_software_function(
@@ -242,6 +251,10 @@ private:
 
     shell_command_handler_ = std::make_shared<shell_command_handler>();
 
+    // socket_command_handler_
+
+    socket_command_handler_ = std::make_shared<socket_command_handler>();
+
     // software_function_handler_
 
     software_function_handler_ = std::make_shared<software_function_handler>();
@@ -250,6 +263,7 @@ private:
 
     receiver_ = std::make_unique<receiver>(input_source_selector_,
                                            shell_command_handler_,
+                                           socket_command_handler_,
                                            software_function_handler_);
   }
 
@@ -261,6 +275,7 @@ private:
     input_source_monitor_ = nullptr;
     input_source_selector_ = nullptr;
     shell_command_handler_ = nullptr;
+    socket_command_handler_ = nullptr;
     software_function_handler_ = nullptr;
   }
 
@@ -279,6 +294,7 @@ private:
 
   std::shared_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::shared_ptr<shell_command_handler> shell_command_handler_;
+  std::shared_ptr<socket_command_handler> socket_command_handler_;
   std::shared_ptr<software_function_handler> software_function_handler_;
 
   std::unique_ptr<receiver> receiver_;

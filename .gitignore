@@ -8,3 +8,4 @@ a.out
 pkgroot/
 build/
 tmp/
+.ai/internal/
