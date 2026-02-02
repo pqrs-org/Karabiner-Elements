@@ -80,5 +80,49 @@ inline std::string get_new_rule_json_string(void) {
 
   return json_utility::dump(json);
 }
+
+inline std::string get_new_rule_eval_js_string(void) {
+  auto js = R"(// JavaScript must be written in ECMAScript 5.1.
+
+function main() {
+  const apps = [
+    { key_code: "1", app: "com.apple.Safari" },
+    { key_code: "2", app: "com.apple.TextEdit" },
+    { key_code: "3", app: "com.apple.ActivityMonitor" },
+  ];
+
+  const manipulators = [];
+  for (var i = 0; i < apps.length; ++i) {
+    const app = apps[i];
+    manipulators.push({
+      type: "basic",
+      from: {
+        key_code: app.key_code,
+        modifiers: {
+          mandatory: ["right_shift"],
+        },
+      },
+      to: [
+        {
+          software_function: {
+            open_application: { bundle_identifier: app.app },
+          },
+        },
+      ],
+    });
+  }
+
+  return {
+    description: "Open apps with right_shift+1/2/3",
+    manipulators: manipulators,
+  };
+}
+
+main();
+)";
+
+  nlohmann::json json({{"eval_js", js}});
+  return json_utility::dump(json);
+}
 }; // namespace complex_modifications_utility
 } // namespace krbn
