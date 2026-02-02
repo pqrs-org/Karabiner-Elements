@@ -9,7 +9,9 @@
 #include "mouse_key_handler.hpp"
 #include "notification_message_manager.hpp"
 #include "queue.hpp"
+#include "socket_sender.hpp"
 #include "types.hpp"
+#include <nlohmann/json.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
 namespace krbn {
@@ -172,6 +174,27 @@ public:
             if (front_input_event.get_event_type() == event_type::key_down) {
               queue_.push_back_shell_command_event(*shell_command,
                                                    front_input_event.get_event_time_stamp().get_time_stamp());
+            }
+          }
+          break;
+
+        case event_queue::event::type::socket_command:
+          // Fast path: send directly to the target daemon socket, bypassing
+          // console_user_server IPC entirely. This eliminates msgpack
+          // serialization, the local datagram hop, and two dispatcher queue hops.
+          //
+          // Fallback chain: direct → console_user_server IPC → queue
+          if (auto socket_command = front_input_event.get_event().get_socket_command()) {
+            if (front_input_event.get_event_type() == event_type::key_down) {
+              if (!try_direct_socket_send(*socket_command)) {
+                if (auto client = weak_console_user_server_client_.lock();
+                    client && client->is_started()) {
+                  client->async_socket_command_execution(*socket_command);
+                } else {
+                  queue_.push_back_socket_command_event(*socket_command,
+                                                        front_input_event.get_event_time_stamp().get_time_stamp());
+                }
+              }
             }
           }
           break;
@@ -430,6 +453,25 @@ private:
     pressed_buttons_ = report.buttons;
   }
 
+  bool try_direct_socket_send(const std::string& socket_command_json) {
+    try {
+      auto json = nlohmann::json::parse(socket_command_json);
+      if (!json.contains("endpoint") || !json.contains("command")) {
+        return false;
+      }
+      auto endpoint = json.at("endpoint").get<std::string>();
+      auto command = json.at("command").get<std::string>();
+      // Try DGRAM first (fire-and-forget, no connection overhead).
+      // Falls back to STREAM if DGRAM socket doesn't exist.
+      if (socket_sender_.send_dgram(endpoint, command)) {
+        return true;
+      }
+      return socket_sender_.send(endpoint, command);
+    } catch (...) {
+      return false;
+    }
+  }
+
   void update_sticky_modifiers_notification_message(const event_queue::queue& output_event_queue) {
     if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
       auto c = output_event_queue.get_manipulator_environment().get_core_configuration();
@@ -444,6 +486,7 @@ private:
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
   std::weak_ptr<notification_message_manager> weak_notification_message_manager_;
 
+  socket_sender socket_sender_;
   queue queue_;
   key_event_dispatcher key_event_dispatcher_;
   std::unique_ptr<mouse_key_handler> mouse_key_handler_;

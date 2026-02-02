@@ -23,6 +23,7 @@ public:
       generic_desktop_input,
       pointing_input,
       shell_command,
+      socket_command,
       select_input_source,
       software_function,
     };
@@ -68,6 +69,15 @@ public:
       event e;
       e.type_ = type::shell_command;
       e.value_ = shell_command;
+      e.time_stamp_ = time_stamp;
+      return e;
+    }
+
+    static event make_socket_command_event(const std::string& socket_command_json,
+                                           absolute_time_point time_stamp) {
+      event e;
+      e.type_ = type::socket_command;
+      e.value_ = socket_command_json;
       e.time_stamp_ = time_stamp;
       return e;
     }
@@ -148,6 +158,12 @@ public:
           }
           break;
 
+        case type::socket_command:
+          if (auto v = get_socket_command()) {
+            json["socket_command"] = *v;
+          }
+          break;
+
         case type::select_input_source:
           if (auto v = get_input_source_specifiers()) {
             json["input_source_specifiers"] = *v;
@@ -217,6 +233,13 @@ public:
       return std::nullopt;
     }
 
+    std::optional<std::string> get_socket_command(void) const {
+      if (type_ == type::socket_command) {
+        return std::get<std::string>(value_);
+      }
+      return std::nullopt;
+    }
+
     std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
       if (type_ == type::select_input_source) {
         return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
@@ -258,6 +281,7 @@ public:
         TO_C_STRING(generic_desktop_input);
         TO_C_STRING(pointing_input);
         TO_C_STRING(shell_command);
+        TO_C_STRING(socket_command);
         TO_C_STRING(select_input_source);
         TO_C_STRING(software_function);
       }
@@ -440,6 +464,15 @@ public:
     events_.push_back(e);
   }
 
+  void push_back_socket_command_event(const std::string& socket_command_json,
+                                      absolute_time_point time_stamp) {
+    // Do not call adjust_time_stamp.
+    auto e = event::make_socket_command_event(socket_command_json,
+                                              time_stamp);
+
+    events_.push_back(e);
+  }
+
   void push_back_select_input_source_event(const std::vector<pqrs::osx::input_source_selector::specifier>& input_source_specifiers,
                                            absolute_time_point time_stamp) {
     // Do not call adjust_time_stamp.
@@ -522,6 +555,11 @@ public:
             if (auto shell_command = e.get_shell_command()) {
               if (auto client = weak_console_user_server_client.lock()) {
                 client->async_shell_command_execution(*shell_command);
+              }
+            }
+            if (auto socket_command = e.get_socket_command()) {
+              if (auto client = weak_console_user_server_client.lock()) {
+                client->async_socket_command_execution(*socket_command);
               }
             }
             if (auto input_source_specifiers = e.get_input_source_specifiers()) {

@@ -23,6 +23,7 @@ enum class operation_type : uint8_t {
   register_notification_window_agent,
   unregister_notification_window_agent,
   shell_command_execution,
+  socket_command_execution,
   select_input_source,
   software_function,
   // console_user_server -> core_service
@@ -69,6 +70,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::shared_secret, "shared_secret"},
         {operation_type::user_core_configuration_file_path, "user_core_configuration_file_path"},
         {operation_type::shell_command_execution, "shell_command_execution"},
+        {operation_type::socket_command_execution, "socket_command_execution"},
         {operation_type::select_input_source, "select_input_source"},
         {operation_type::software_function, "software_function"},
         {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},

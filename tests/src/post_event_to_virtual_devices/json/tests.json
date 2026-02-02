@@ -6,6 +6,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/generic_1.json"
     },
     {
+        "description": "socket_command_1 (queue fallback when console_user_server_client is not started)",
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue": "json/input_event_queue/socket_command_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/socket_command_1.json"
+    },
+    {
         "description": "same_modifier_twice_from_different_devices_1",
         "rules": ["json/rules/empty.json"],
         "input_event_queue": "json/input_event_queue/same_modifier_twice_from_different_devices_1.json",

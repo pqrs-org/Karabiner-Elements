@@ -7,6 +7,7 @@
 #include "filesystem_utility.hpp"
 #include "services_utility.hpp"
 #include "shell_command_handler.hpp"
+#include "socket_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
@@ -24,10 +25,12 @@ public:
   receiver(
       std::weak_ptr<pqrs::osx::input_source_selector::selector> weak_input_source_selector,
       std::weak_ptr<shell_command_handler> weak_shell_command_handler,
+      std::weak_ptr<socket_command_handler> weak_socket_command_handler,
       std::weak_ptr<software_function_handler> weak_software_function_handler)
       : dispatcher_client(),
         weak_input_source_selector_(weak_input_source_selector),
         weak_shell_command_handler_(weak_shell_command_handler),
+        weak_socket_command_handler_(weak_socket_command_handler),
         weak_software_function_handler_(weak_software_function_handler) {
     // Remove old files and prepare a socket directory.
     prepare_console_user_server_socket_directory();
@@ -117,6 +120,7 @@ public:
           case operation_type::unregister_notification_window_agent:
           case operation_type::select_input_source:
           case operation_type::shell_command_execution:
+          case operation_type::socket_command_execution:
           case operation_type::software_function:
             if (verified_peer_manager_) {
               if (verified_peer_manager_->verify_shared_secret(sender_endpoint->path(),
@@ -185,6 +189,13 @@ public:
                     if (auto h = weak_shell_command_handler_.lock()) {
                       auto shell_command = json.at("shell_command").get<std::string>();
                       h->run(shell_command);
+                    }
+                    break;
+
+                  case operation_type::socket_command_execution:
+                    if (auto h = weak_socket_command_handler_.lock()) {
+                      auto socket_command = json.at("socket_command").get<std::string>();
+                      h->run(socket_command);
                     }
                     break;
 
@@ -257,6 +268,7 @@ private:
 
   std::weak_ptr<pqrs::osx::input_source_selector::selector> weak_input_source_selector_;
   std::weak_ptr<shell_command_handler> weak_shell_command_handler_;
+  std::weak_ptr<socket_command_handler> weak_socket_command_handler_;
   std::weak_ptr<software_function_handler> weak_software_function_handler_;
 
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verified_peer_manager_;
