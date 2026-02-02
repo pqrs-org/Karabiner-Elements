@@ -1,4 +1,5 @@
-build_libs:
+.PHONY: build
+build:
 	xcodegen generate
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 

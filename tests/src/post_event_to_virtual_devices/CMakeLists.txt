@@ -12,7 +12,7 @@ add_executable(
 
 target_link_libraries(
   karabiner_test
-  duktape_lib
+  libduktape
   "-framework CoreFoundation"
 )
 
@@ -23,6 +23,6 @@ add_executable(
 
 target_link_libraries(
   overwrite_expected_results
-  duktape_lib
+  libduktape
   "-framework CoreFoundation"
 )
