@@ -1,5 +1,6 @@
 all:
 	/usr/bin/python3 ../../../scripts/update_version.py
+	$(MAKE) -C ../../../vendor build
 	xcodegen generate
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 

@@ -1,6 +1,7 @@
 all:
 	/usr/bin/python3 ../../../scripts/update_version.py
-	make -C ../../lib/libkrbn
+	$(MAKE) -C ../../../vendor build
+	$(MAKE) -C ../../lib/libkrbn
 	xcodegen generate
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 

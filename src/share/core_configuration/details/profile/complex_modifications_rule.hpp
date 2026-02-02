@@ -1,6 +1,7 @@
 #pragma once
 
 #include "complex_modifications_parameters.hpp"
+#include "duktape_utility.hpp"
 #include <pqrs/json.hpp>
 
 namespace krbn {
@@ -84,15 +85,17 @@ public:
                              pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
                              error_handling error_handling)
       : json_(json) {
+    auto resolved_json = resolve_eval_js(json, error_handling);
+
     helper_values_.push_back_value<bool>("enabled",
                                          enabled_,
                                          true);
 
-    pqrs::json::requires_object(json, "json");
+    pqrs::json::requires_object(resolved_json, "json");
 
-    helper_values_.update_value(json, error_handling);
+    helper_values_.update_value(resolved_json, error_handling);
 
-    for (const auto& [key, value] : json.items()) {
+    for (const auto& [key, value] : resolved_json.items()) {
       if (key == "manipulators") {
         pqrs::json::requires_array(value, "`" + key + "`");
 
@@ -122,7 +125,7 @@ public:
     }
 
     if (manipulators_.empty()) {
-      throw pqrs::json::unmarshal_error(fmt::format("`manipulators` is missing or empty in {0}", pqrs::json::dump_for_error_message(json)));
+      throw pqrs::json::unmarshal_error(fmt::format("`manipulators` is missing or empty in {0}", pqrs::json::dump_for_error_message(resolved_json)));
     }
 
     // Use manipulators_'s description if needed.
@@ -161,6 +164,23 @@ public:
   }
 
 private:
+  nlohmann::json resolve_eval_js(const nlohmann::json& json,
+                                 error_handling error_handling) {
+    if (json.is_object() && json.size() == 1 && json.contains("eval_js")) {
+      const auto& value = json.at("eval_js");
+      pqrs::json::requires_string(value, "`eval_js`");
+
+      try {
+        auto result = krbn::duktape_utility::eval_string_to_json(value.get<std::string>());
+        return result.json;
+      } catch (const std::exception& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`eval_js` error: {0}", e.what()));
+      }
+    }
+
+    return json;
+  }
+
   nlohmann::json json_;
   std::vector<pqrs::not_null_shared_ptr_t<manipulator>> manipulators_;
   bool enabled_;

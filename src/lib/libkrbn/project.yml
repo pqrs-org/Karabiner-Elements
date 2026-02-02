@@ -9,6 +9,9 @@ targets:
       HEADER_SEARCH_PATHS:
         - include
         - ../../share
+        - ../../../vendor/duktape-src
+        - ../../../vendor/duktape-2.7.0/extras/console
+        - ../../../vendor/duktape-2.7.0/extras/module-node
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER:
         - ../../../vendor/vendor/include/pqrs/osx/frontmost_application_monitor/impl/Bridging-Header.h

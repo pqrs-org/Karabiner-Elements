@@ -5,3 +5,8 @@ all:
 
 clean:
 	rm -fr build vendor
+	$(MAKE) -C duktape-src clean
+
+.PHONY: build
+build:
+	$(MAKE) -C duktape-src

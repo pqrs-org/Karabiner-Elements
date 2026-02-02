@@ -1,5 +1,5 @@
-.PHONY: build_make
-build_make:
+∑.PHONY: build_make
+build_make: build_vendor
 	mkdir -p build \
 		&& cd build \
 		&& cmake .. \
@@ -8,3 +8,7 @@ build_make:
 .PHONY: clean_builds
 clean_builds:
 	rm -rf build
+
+.PHONY: build_vendor
+build_vendor:
+	$(MAKE) -C $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/../../vendor build
