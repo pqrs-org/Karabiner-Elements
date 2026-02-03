@@ -1,3 +1,4 @@
+import AsyncAlgorithms
 import CodeEditor
 import SwiftUI
 
@@ -6,11 +7,18 @@ struct ComplexModificationsEditView: View {
   @Binding var showing: Bool
   @State private var description = ""
   @State private var disabled = true
-  @State private var jsonString = ""
+  @State private var codeString = ""
+  @State private var codeType = libkrbn_complex_modifications_rule_code_type_json
   @State private var errorMessage: String?
   @StateObject private var externalEditorController = ExternalEditorController.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @Environment(\.colorScheme) var colorScheme
+
+  @State private var evalResultString = ""
+  @State private var evalLogMessages = ""
+  @State private var evalErrorMessage: String?
+  @State private var evalContinuation: AsyncStream<String>.Continuation?
+  @State private var evalStreamTask: Task<Void, Never>?
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -27,10 +35,14 @@ struct ComplexModificationsEditView: View {
                 Button(
                   action: {
                     externalEditorController.openEditor(
-                      with: jsonString,
+                      with: codeString,
+                      fileExtension:
+                        codeType == libkrbn_complex_modifications_rule_code_type_javascript
+                        ? "js"
+                        : "json",
                       onError: { errorMessage = $0 },
                       onReload: {
-                        jsonString = $0
+                        codeString = $0
                         errorMessage = nil
                       }
                     )
@@ -60,12 +72,14 @@ struct ComplexModificationsEditView: View {
                 Button(
                   action: {
                     if rule!.index < 0 {
-                      errorMessage = settings.pushFrontComplexModificationsRule(jsonString)
+                      errorMessage = settings.pushFrontComplexModificationsRule(
+                        codeString, codeType)
                       if errorMessage == nil {
                         showing = false
                       }
                     } else {
-                      errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
+                      errorMessage = settings.replaceComplexModificationsRule(
+                        rule!, codeString, codeType)
                       if errorMessage == nil {
                         showing = false
                       }
@@ -105,11 +119,60 @@ struct ComplexModificationsEditView: View {
             }
 
             CodeEditor(
-              source: $jsonString, language: .json,
+              source: $codeString, language: .json,
               theme: CodeEditor.ThemeName(
                 rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light")
             )
             .border(Color(NSColor.separatorColor), width: 2)
+
+            if codeType == libkrbn_complex_modifications_rule_code_type_javascript {
+              if let evalErrorMessage = evalErrorMessage {
+                Label(
+                  title: {
+                    Text(evalErrorMessage)
+                      .textSelection(.enabled)
+                  },
+                  icon: {
+                    Image(systemName: ErrorBorder.icon)
+                  }
+                )
+                .modifier(ErrorBorder())
+              }
+
+              VStack(alignment: .leading, spacing: 6) {
+                Text("JavaScript Result")
+                  .font(.headline)
+
+                ScrollView {
+                  Text(evalResultString)
+                    .font(.callout)
+                    .monospaced()
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .padding(8)
+                }
+                .frame(maxWidth: .infinity, minHeight: 120, maxHeight: 120)
+                .background(Color(NSColor.textBackgroundColor))
+                .border(Color(NSColor.separatorColor), width: 2)
+              }
+
+              VStack(alignment: .leading, spacing: 6) {
+                Text("Console Log")
+                  .font(.headline)
+
+                ScrollView {
+                  Text(evalLogMessages.isEmpty ? "(no log output)" : evalLogMessages)
+                    .font(.callout)
+                    .monospaced()
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .padding(8)
+                }
+                .frame(maxWidth: .infinity, minHeight: 60, maxHeight: 60)
+                .background(Color(NSColor.textBackgroundColor))
+                .border(Color(NSColor.separatorColor), width: 2)
+              }
+            }
           }
         }
       }
@@ -123,24 +186,99 @@ struct ComplexModificationsEditView: View {
     .onAppear {
       description = rule?.description ?? ""
 
-      if let s = rule?.jsonString {
+      if let s = rule?.codeString {
         disabled = false
-        jsonString = s
+        codeString = s
       } else {
         disabled = true
-        jsonString = ""
+        codeString = ""
       }
 
+      codeType = rule?.codeType ?? libkrbn_complex_modifications_rule_code_type_json
+
       externalEditorController.reset()
+
+      if evalContinuation == nil {
+        let stream = AsyncStream<String> { continuation in
+          evalContinuation = continuation
+        }
+
+        evalStreamTask = Task {
+          for await code in stream.debounce(for: .milliseconds(500)) {
+            if Task.isCancelled {
+              break
+            }
+
+            if disabled || codeType != libkrbn_complex_modifications_rule_code_type_javascript {
+              await MainActor.run {
+                evalResultString = ""
+                evalLogMessages = ""
+                evalErrorMessage = nil
+              }
+              continue
+            }
+
+            let result = evaluateJavascript(code: code)
+            await MainActor.run {
+              if codeString != code {
+                return
+              }
+
+              evalResultString = result.jsonString
+              evalLogMessages = result.logMessages
+              evalErrorMessage = result.errorMessage
+            }
+          }
+        }
+      }
+
+      evalContinuation?.yield(codeString)
     }
     .onDisappear {
       externalEditorController.reset()
+      evalContinuation?.finish()
+      evalContinuation = nil
+      evalStreamTask?.cancel()
+      evalStreamTask = nil
     }
-    .onChange(of: jsonString) { newValue in
+    .onChange(of: codeString) { newValue in
       externalEditorController.syncFromAppEditor(
         text: newValue,
         onError: { errorMessage = $0 }
       )
+
+      evalContinuation?.yield(newValue)
     }
+    .onChange(of: codeType) { _ in
+      evalContinuation?.yield(codeString)
+    }
+  }
+
+  private func evaluateJavascript(code: String) -> (
+    jsonString: String, logMessages: String, errorMessage: String?
+  ) {
+    let bufferSize = 256 * 1024
+    let logBufferSize = 256 * 1024
+    var jsonBuffer = [Int8](repeating: 0, count: bufferSize)
+    var logBuffer = [Int8](repeating: 0, count: logBufferSize)
+    var errorBuffer = [Int8](repeating: 0, count: 4 * 1024)
+
+    let ok = code.withCString { codeCString in
+      libkrbn_eval_js_to_json_string(
+        codeCString,
+        &jsonBuffer,
+        jsonBuffer.count,
+        &logBuffer,
+        logBuffer.count,
+        &errorBuffer,
+        errorBuffer.count
+      )
+    }
+
+    let jsonString = String(utf8String: jsonBuffer) ?? ""
+    let logMessages = String(utf8String: logBuffer) ?? ""
+    let errorMessage = ok ? nil : String(utf8String: errorBuffer) ?? ""
+
+    return (jsonString, logMessages, errorMessage?.isEmpty == true ? nil : errorMessage)
   }
 }

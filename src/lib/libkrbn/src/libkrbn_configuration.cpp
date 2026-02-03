@@ -1,5 +1,6 @@
 #include "complex_modifications_utility.hpp"
 #include "connected_devices.hpp"
+#include "duktape_utility.hpp"
 #include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
@@ -436,20 +437,34 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(size_t index,
-                                                                                            char* buffer,
-                                                                                            size_t length) {
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(size_t index,
+                                                                                            char* _Nonnull buffer,
+                                                                                            size_t length,
+                                                                                            libkrbn_complex_modifications_rule_code_type* _Nonnull code_type) {
   if (buffer && length > 0) {
     buffer[0] = '\0';
+  }
+  if (code_type) {
+    *code_type = libkrbn_complex_modifications_rule_code_type_json;
   }
 
   auto c = get_current_core_configuration();
   const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
   if (index < rules.size()) {
-    auto json_string = krbn::json_utility::dump(rules[index]->to_json());
-    // Return false if no enough space.
-    if (json_string.length() < length) {
-      strlcpy(buffer, json_string.c_str(), length);
+    if (code_type) {
+      switch (rules[index]->get_code_type()) {
+        case krbn::core_configuration::details::complex_modifications_rule::code_type::json:
+          *code_type = libkrbn_complex_modifications_rule_code_type_json;
+          break;
+        case krbn::core_configuration::details::complex_modifications_rule::code_type::javascript:
+          *code_type = libkrbn_complex_modifications_rule_code_type_javascript;
+          break;
+      }
+    }
+
+    auto code_string = rules[index]->get_code_string();
+    if (code_string.length() < length) {
+      strlcpy(buffer, code_string.c_str(), length);
       return true;
     }
   }
@@ -457,8 +472,20 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
   return false;
 }
 
+namespace {
+krbn::core_configuration::details::complex_modifications_rule::code_type to_code_type(libkrbn_complex_modifications_rule_code_type type) {
+  switch (type) {
+    case libkrbn_complex_modifications_rule_code_type_javascript:
+      return krbn::core_configuration::details::complex_modifications_rule::code_type::javascript;
+    default:
+      return krbn::core_configuration::details::complex_modifications_rule::code_type::json;
+  }
+}
+} // namespace
+
 void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(size_t index,
-                                                                                    const char* json_string,
+                                                                                    const char* code_string,
+                                                                                    libkrbn_complex_modifications_rule_code_type code_type,
                                                                                     char* error_message_buffer,
                                                                                     size_t error_message_buffer_length) {
   if (error_message_buffer && error_message_buffer_length > 0) {
@@ -469,7 +496,8 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
     auto c = get_current_core_configuration();
     auto m = c->get_selected_profile().get_complex_modifications();
     auto r = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
-        krbn::json_utility::parse_jsonc(std::string(json_string)),
+        code_string,
+        to_code_type(code_type),
         m->get_parameters(),
         krbn::core_configuration::error_handling::strict);
 
@@ -493,7 +521,8 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
   }
 }
 
-void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* json_string,
+void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* code_string,
+                                                                                       libkrbn_complex_modifications_rule_code_type code_type,
                                                                                        char* error_message_buffer,
                                                                                        size_t error_message_buffer_length) {
   if (error_message_buffer && error_message_buffer_length > 0) {
@@ -503,8 +532,10 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
   try {
     auto c = get_current_core_configuration();
     auto m = c->get_selected_profile().get_complex_modifications();
+
     auto r = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
-        krbn::json_utility::parse_jsonc(std::string(json_string)),
+        code_string,
+        to_code_type(code_type),
         m->get_parameters(),
         krbn::core_configuration::error_handling::strict);
 
@@ -612,6 +643,56 @@ void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(c
                                                                                size_t length) {
   auto json_string = krbn::complex_modifications_utility::get_new_rule_json_string();
   strlcpy(buffer, json_string.c_str(), length);
+}
+
+void libkrbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(char* buffer,
+                                                                                  size_t length) {
+  auto code_string = krbn::complex_modifications_utility::get_new_rule_eval_js_string();
+  strlcpy(buffer, code_string.c_str(), length);
+}
+
+bool libkrbn_eval_js_to_json_string(const char* code,
+                                    char* buffer,
+                                    size_t length,
+                                    char* log_message_buffer,
+                                    size_t log_message_buffer_length,
+                                    char* error_message_buffer,
+                                    size_t error_message_buffer_length) {
+  if (buffer && length > 0) {
+    buffer[0] = '\0';
+  }
+  if (log_message_buffer && log_message_buffer_length > 0) {
+    log_message_buffer[0] = '\0';
+  }
+  if (error_message_buffer && error_message_buffer_length > 0) {
+    error_message_buffer[0] = '\0';
+  }
+
+  if (!code) {
+    strlcpy(error_message_buffer, "error: invalid javascript code", error_message_buffer_length);
+    return false;
+  }
+
+  try {
+    auto result = krbn::duktape_utility::eval_string_to_json(std::string(code));
+
+    strlcpy(log_message_buffer, result.log_messages.c_str(), log_message_buffer_length);
+
+    auto json_string = krbn::json_utility::dump(result.json);
+    if (json_string.length() < length) {
+      strlcpy(buffer, json_string.c_str(), length);
+      return true;
+    }
+
+    strlcpy(error_message_buffer,
+            "error: output buffer is too small",
+            error_message_buffer_length);
+  } catch (const std::exception& e) {
+    auto message = fmt::format("error: {0}", e.what());
+    strlcpy(error_message_buffer, message.c_str(), error_message_buffer_length);
+  }
+
+  return false;
 }
 
 void libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(char* buffer,

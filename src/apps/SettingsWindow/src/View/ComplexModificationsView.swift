@@ -16,7 +16,7 @@ struct ComplexModificationsView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
-      HStack {
+      HStack(alignment: .bottom) {
         Button(
           action: {
             contentViewStates.complexModificationsViewSheetView =
@@ -37,7 +37,8 @@ struct ComplexModificationsView: View {
               index: -1,
               description: "Edit the following setting and press the Save button.",
               enabled: true,
-              jsonString: String(utf8String: buffer) ?? ""
+              codeString: String(utf8String: buffer) ?? "",
+              codeType: libkrbn_complex_modifications_rule_code_type_json,
             )
             showingEditSheet = true
           },
@@ -45,20 +46,41 @@ struct ComplexModificationsView: View {
             AccentColorIconLabel(title: "Add your own rule", systemImage: "sparkles")
           })
 
-        if settings.complexModificationsRules.count > 1 {
-          Spacer()
+        Button(
+          action: {
+            var buffer = [Int8](repeating: 0, count: 32 * 1024)
+            libkrbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(
+              &buffer, buffer.count)
 
-          HStack {
-            Text("You can reorder list by dragging")
-            Image(systemName: "arrow.up.arrow.down.square.fill")
-              .resizable(resizingMode: .stretch)
-              .frame(width: 16.0, height: 16.0)
-            Text("icon")
+            editingRule = LibKrbn.ComplexModificationsRule(
+              index: -1,
+              description: "Edit the following script and press the Save button.",
+              enabled: true,
+              codeString: String(utf8String: buffer) ?? "",
+              codeType: libkrbn_complex_modifications_rule_code_type_javascript,
+            )
+            showingEditSheet = true
+          },
+          label: {
+            AccentColorIconLabel(
+              title: "For expert: Add your own rule using JavaScript", systemImage: "wand.and.rays")
           }
-        }
+        )
+        .controlSize(.small)
+        .padding(.leading, 40.0)
       }
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
+
+      if settings.complexModificationsRules.count > 1 {
+        HStack {
+          Text("You can reorder list by dragging")
+          Image(systemName: "arrow.up.arrow.down.square.fill")
+            .resizable(resizingMode: .stretch)
+            .frame(width: 16.0, height: 16.0)
+          Text("icon")
+        }
+      }
 
       List {
         ForEach($settings.complexModificationsRules) { $complexModificationRule in

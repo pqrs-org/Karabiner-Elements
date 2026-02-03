@@ -2,6 +2,7 @@
 
 #include "complex_modifications_parameters.hpp"
 #include "duktape_utility.hpp"
+#include "json_utility.hpp"
 #include <pqrs/json.hpp>
 
 namespace krbn {
@@ -9,6 +10,11 @@ namespace core_configuration {
 namespace details {
 class complex_modifications_rule final {
 public:
+  enum class code_type {
+    json,
+    javascript,
+  };
+
   class manipulator {
   public:
     class condition {
@@ -84,8 +90,9 @@ public:
   complex_modifications_rule(const nlohmann::json& json,
                              pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
                              error_handling error_handling)
-      : json_(json) {
-    auto resolved_json = resolve_eval_js(json, error_handling);
+      : json_(json),
+        code_type_(code_type::json) {
+    auto resolved_json = resolve_code(json, error_handling);
 
     helper_values_.push_back_value<bool>("enabled",
                                          enabled_,
@@ -139,6 +146,20 @@ public:
     }
   }
 
+  complex_modifications_rule(const std::string& code_string,
+                             code_type type,
+                             pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
+                             error_handling error_handling)
+      : complex_modifications_rule(
+            type == code_type::json
+                ? krbn::json_utility::parse_jsonc(code_string)
+                : nlohmann::json::object({
+                      {"eval_js", code_string},
+                  }),
+            parameters,
+            error_handling) {
+  }
+
   nlohmann::json to_json(void) const {
     auto j = json_;
 
@@ -163,21 +184,33 @@ public:
     return description_;
   }
 
+  const code_type get_code_type(void) const {
+    return code_type_;
+  }
+
+  const std::string get_code_string(void) const {
+    return code_string_;
+  }
+
 private:
-  nlohmann::json resolve_eval_js(const nlohmann::json& json,
-                                 error_handling error_handling) {
+  nlohmann::json resolve_code(const nlohmann::json& json,
+                              error_handling error_handling) {
     if (json.is_object() && json.size() == 1 && json.contains("eval_js")) {
       const auto& value = json.at("eval_js");
       pqrs::json::requires_string(value, "`eval_js`");
 
       try {
-        auto result = krbn::duktape_utility::eval_string_to_json(value.get<std::string>());
+        code_type_ = code_type::javascript;
+        code_string_ = value.get<std::string>();
+
+        auto result = krbn::duktape_utility::eval_string_to_json(code_string_);
         return result.json;
       } catch (const std::exception& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`eval_js` error: {0}", e.what()));
       }
     }
 
+    code_string_ = krbn::json_utility::dump(json);
     return json;
   }
 
@@ -185,6 +218,8 @@ private:
   std::vector<pqrs::not_null_shared_ptr_t<manipulator>> manipulators_;
   bool enabled_;
   std::string description_;
+  code_type code_type_;
+  std::string code_string_;
   configuration_json_helper::helper_values helper_values_;
 };
 } // namespace details

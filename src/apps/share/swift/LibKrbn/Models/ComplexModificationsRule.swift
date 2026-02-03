@@ -3,21 +3,29 @@ import Foundation
 extension LibKrbn {
   @MainActor
   class ComplexModificationsRule: Identifiable, Equatable, ObservableObject {
+    enum CodeType {
+      case json
+      case javascript
+    }
+
     nonisolated let id = UUID()
     var index: Int
     var description: String
-    var jsonString: String?
+    var codeString: String?
+    var codeType: libkrbn_complex_modifications_rule_code_type
 
     init(
       index: Int,
       description: String,
       enabled: Bool,
-      jsonString: String?
+      codeString: String?,
+      codeType: libkrbn_complex_modifications_rule_code_type
     ) {
       self.index = index
       self.description = description
       self.enabled = enabled
-      self.jsonString = jsonString
+      self.codeString = codeString
+      self.codeType = codeType
     }
 
     nonisolated public static func == (lhs: ComplexModificationsRule, rhs: ComplexModificationsRule)
