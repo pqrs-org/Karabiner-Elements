@@ -63,10 +63,11 @@ final class ExternalEditorController: ObservableObject {
 
   func openEditor(
     with text: String,
+    fileExtension: String,
     onError: @escaping (String) -> Void,
     onReload: @escaping (String) -> Void
   ) {
-    guard let url = ensureFileURL(onError: onError) else {
+    guard let url = ensureFileURL(fileExtension: fileExtension, onError: onError) else {
       return
     }
 
@@ -145,7 +146,7 @@ final class ExternalEditorController: ObservableObject {
     }
   }
 
-  private func ensureFileURL(onError: (String) -> Void) -> URL? {
+  private func ensureFileURL(fileExtension: String, onError: (String) -> Void) -> URL? {
     if let url = fileURL {
       return url
     }
@@ -164,7 +165,7 @@ final class ExternalEditorController: ObservableObject {
       return nil
     }
 
-    let url = directoryURL.appendingPathComponent("editor_\(UUID().uuidString).json")
+    let url = directoryURL.appendingPathComponent("editor_\(UUID().uuidString).\(fileExtension)")
     fileURL = url
     return url
   }

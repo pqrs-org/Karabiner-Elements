@@ -29,6 +29,10 @@ struct ComplexModificationsEditView: View {
                   action: {
                     externalEditorController.openEditor(
                       with: codeString,
+                      fileExtension:
+                        codeType == libkrbn_complex_modifications_rule_code_type_javascript
+                        ? "js"
+                        : "json",
                       onError: { errorMessage = $0 },
                       onReload: {
                         codeString = $0
