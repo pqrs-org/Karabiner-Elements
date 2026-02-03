@@ -195,7 +195,7 @@ public:
 private:
   nlohmann::json resolve_code(const nlohmann::json& json,
                               error_handling error_handling) {
-    if (json.is_object() && json.size() == 1 && json.contains("eval_js")) {
+    if (json.is_object() && json.contains("eval_js")) {
       const auto& value = json.at("eval_js");
       pqrs::json::requires_string(value, "`eval_js`");
 
@@ -204,6 +204,11 @@ private:
         code_string_ = value.get<std::string>();
 
         auto result = krbn::duktape_utility::eval_string_to_json(code_string_);
+
+        if (json.contains("enabled")) {
+          result.json["enabled"] = json["enabled"];
+        }
+
         return result.json;
       } catch (const std::exception& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`eval_js` error: {0}", e.what()));

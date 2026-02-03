@@ -148,17 +148,18 @@ main();
 
 )"s;
 
-      auto json = nlohmann::json::object({
-          {"eval_js", js},
-      });
-
       {
+        auto json = nlohmann::json::object({
+            {"eval_js", js},
+        });
+
         auto parameters = std::make_shared<parameters_t>();
         rule_t rule(json,
                     parameters,
                     krbn::core_configuration::error_handling::strict);
         expect(3 == rule.get_manipulators().size());
         expect("example"s == rule.get_description());
+        expect(true == rule.get_enabled());
         expect(rule_t::code_type::javascript == rule.get_code_type());
         expect(js == rule.get_code_string());
         expect(json == rule.to_json());
@@ -173,6 +174,28 @@ main();
                     krbn::core_configuration::error_handling::strict);
         expect(3 == rule.get_manipulators().size());
         expect("example"s == rule.get_description());
+        expect(true == rule.get_enabled());
+        expect(rule_t::code_type::javascript == rule.get_code_type());
+        expect(js == rule.get_code_string());
+        expect(nlohmann::json::object({
+                   {"eval_js", js},
+               }) == rule.to_json());
+      }
+
+      // enabled
+      {
+        auto json = nlohmann::json::object({
+            {"eval_js", js},
+            {"enabled", false},
+        });
+
+        auto parameters = std::make_shared<parameters_t>();
+        rule_t rule(json,
+                    parameters,
+                    krbn::core_configuration::error_handling::strict);
+        expect(3 == rule.get_manipulators().size());
+        expect("example"s == rule.get_description());
+        expect(false == rule.get_enabled());
         expect(rule_t::code_type::javascript == rule.get_code_type());
         expect(js == rule.get_code_string());
         expect(json == rule.to_json());
