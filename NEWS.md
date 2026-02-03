@@ -3,6 +3,8 @@
 ## Beta
 
 - ✨ New Features
+    - You can now generate JSON for Complex Modifications rules by writing JavaScript.
+    - Added an "Add your own rule using JavaScript" button to the complex modifications viewer.
     - Added an "Open in external editor" button to the complex modifications editor.
     - Added a "Clear user variables" button to EventViewer. (Thanks to @BarakXYZ)
 - 🐛 Bug Fixes
