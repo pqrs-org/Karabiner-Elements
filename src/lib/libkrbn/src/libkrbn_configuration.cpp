@@ -437,20 +437,34 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_
   }
 }
 
-bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(size_t index,
-                                                                                            char* buffer,
-                                                                                            size_t length) {
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(size_t index,
+                                                                                            char* _Nonnull buffer,
+                                                                                            size_t length,
+                                                                                            libkrbn_complex_modifications_rule_type* _Nonnull code_type) {
   if (buffer && length > 0) {
     buffer[0] = '\0';
+  }
+  if (code_type) {
+    *code_type = libkrbn_complex_modifications_rule_type_json;
   }
 
   auto c = get_current_core_configuration();
   const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
   if (index < rules.size()) {
-    auto json_string = krbn::json_utility::dump(rules[index]->to_json());
-    // Return false if no enough space.
-    if (json_string.length() < length) {
-      strlcpy(buffer, json_string.c_str(), length);
+    if (code_type) {
+      switch (rules[index]->get_code_type()) {
+        case krbn::core_configuration::details::complex_modifications_rule::code_type::json:
+          *code_type = libkrbn_complex_modifications_rule_type_json;
+          break;
+        case krbn::core_configuration::details::complex_modifications_rule::code_type::javascript:
+          *code_type = libkrbn_complex_modifications_rule_type_javascript;
+          break;
+      }
+    }
+
+    auto code_string = rules[index]->get_code_string();
+    if (code_string.length() < length) {
+      strlcpy(buffer, code_string.c_str(), length);
       return true;
     }
   }

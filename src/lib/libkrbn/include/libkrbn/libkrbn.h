@@ -194,9 +194,15 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
                                                                                             size_t length);
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(size_t index);
 void libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(size_t index, bool value);
-bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_json_string(size_t index,
+
+typedef enum {
+  libkrbn_complex_modifications_rule_type_json,
+  libkrbn_complex_modifications_rule_type_javascript,
+} libkrbn_complex_modifications_rule_type;
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(size_t index,
                                                                                             char* _Nonnull buffer,
-                                                                                            size_t length);
+                                                                                            size_t length,
+                                                                                            libkrbn_complex_modifications_rule_type* _Nonnull code_type);
 void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(size_t index,
                                                                                     const char* _Nonnull json_string,
                                                                                     char* _Nonnull error_message_buffer,
