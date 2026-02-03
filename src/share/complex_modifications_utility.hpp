@@ -94,6 +94,9 @@ function main() {
   const manipulators = [];
   for (var i = 0; i < apps.length; ++i) {
     const app = apps[i];
+
+    console.log(app.key_code + " to " + app.app);
+
     manipulators.push({
       type: "basic",
       from: {
