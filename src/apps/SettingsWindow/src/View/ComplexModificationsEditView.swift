@@ -6,7 +6,7 @@ struct ComplexModificationsEditView: View {
   @Binding var showing: Bool
   @State private var description = ""
   @State private var disabled = true
-  @State private var jsonString = ""
+  @State private var codeString = ""
   @State private var errorMessage: String?
   @StateObject private var externalEditorController = ExternalEditorController.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
@@ -27,10 +27,10 @@ struct ComplexModificationsEditView: View {
                 Button(
                   action: {
                     externalEditorController.openEditor(
-                      with: jsonString,
+                      with: codeString,
                       onError: { errorMessage = $0 },
                       onReload: {
-                        jsonString = $0
+                        codeString = $0
                         errorMessage = nil
                       }
                     )
@@ -60,12 +60,12 @@ struct ComplexModificationsEditView: View {
                 Button(
                   action: {
                     if rule!.index < 0 {
-                      errorMessage = settings.pushFrontComplexModificationsRule(jsonString)
+                      errorMessage = settings.pushFrontComplexModificationsRule(codeString)
                       if errorMessage == nil {
                         showing = false
                       }
                     } else {
-                      errorMessage = settings.replaceComplexModificationsRule(rule!, jsonString)
+                      errorMessage = settings.replaceComplexModificationsRule(rule!, codeString)
                       if errorMessage == nil {
                         showing = false
                       }
@@ -105,7 +105,7 @@ struct ComplexModificationsEditView: View {
             }
 
             CodeEditor(
-              source: $jsonString, language: .json,
+              source: $codeString, language: .json,
               theme: CodeEditor.ThemeName(
                 rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light")
             )
@@ -123,12 +123,12 @@ struct ComplexModificationsEditView: View {
     .onAppear {
       description = rule?.description ?? ""
 
-      if let s = rule?.jsonString {
+      if let s = rule?.codeString {
         disabled = false
-        jsonString = s
+        codeString = s
       } else {
         disabled = true
-        jsonString = ""
+        codeString = ""
       }
 
       externalEditorController.reset()
@@ -136,7 +136,7 @@ struct ComplexModificationsEditView: View {
     .onDisappear {
       externalEditorController.reset()
     }
-    .onChange(of: jsonString) { newValue in
+    .onChange(of: codeString) { newValue in
       externalEditorController.syncFromAppEditor(
         text: newValue,
         onError: { errorMessage = $0 }

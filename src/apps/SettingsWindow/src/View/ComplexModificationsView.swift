@@ -37,7 +37,8 @@ struct ComplexModificationsView: View {
               index: -1,
               description: "Edit the following setting and press the Save button.",
               enabled: true,
-              jsonString: String(utf8String: buffer) ?? ""
+              codeString: String(utf8String: buffer) ?? "",
+              codeType: libkrbn_complex_modifications_rule_type_json,
             )
             showingEditSheet = true
           },
