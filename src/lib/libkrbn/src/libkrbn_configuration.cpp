@@ -440,12 +440,12 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(size_t index,
                                                                                             char* _Nonnull buffer,
                                                                                             size_t length,
-                                                                                            libkrbn_complex_modifications_rule_type* _Nonnull code_type) {
+                                                                                            libkrbn_complex_modifications_rule_code_type* _Nonnull code_type) {
   if (buffer && length > 0) {
     buffer[0] = '\0';
   }
   if (code_type) {
-    *code_type = libkrbn_complex_modifications_rule_type_json;
+    *code_type = libkrbn_complex_modifications_rule_code_type_json;
   }
 
   auto c = get_current_core_configuration();
@@ -454,10 +454,10 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
     if (code_type) {
       switch (rules[index]->get_code_type()) {
         case krbn::core_configuration::details::complex_modifications_rule::code_type::json:
-          *code_type = libkrbn_complex_modifications_rule_type_json;
+          *code_type = libkrbn_complex_modifications_rule_code_type_json;
           break;
         case krbn::core_configuration::details::complex_modifications_rule::code_type::javascript:
-          *code_type = libkrbn_complex_modifications_rule_type_javascript;
+          *code_type = libkrbn_complex_modifications_rule_code_type_javascript;
           break;
       }
     }
@@ -472,8 +472,20 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
   return false;
 }
 
+namespace {
+krbn::core_configuration::details::complex_modifications_rule::code_type to_code_type(libkrbn_complex_modifications_rule_code_type type) {
+  switch (type) {
+    case libkrbn_complex_modifications_rule_code_type_javascript:
+      return krbn::core_configuration::details::complex_modifications_rule::code_type::javascript;
+    default:
+      return krbn::core_configuration::details::complex_modifications_rule::code_type::json;
+  }
+}
+} // namespace
+
 void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(size_t index,
-                                                                                    const char* json_string,
+                                                                                    const char* code_string,
+                                                                                    libkrbn_complex_modifications_rule_code_type code_type,
                                                                                     char* error_message_buffer,
                                                                                     size_t error_message_buffer_length) {
   if (error_message_buffer && error_message_buffer_length > 0) {
@@ -484,7 +496,8 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
     auto c = get_current_core_configuration();
     auto m = c->get_selected_profile().get_complex_modifications();
     auto r = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
-        krbn::json_utility::parse_jsonc(std::string(json_string)),
+        code_string,
+        to_code_type(code_type),
         m->get_parameters(),
         krbn::core_configuration::error_handling::strict);
 
@@ -508,7 +521,8 @@ void libkrbn_core_configuration_replace_selected_profile_complex_modifications_r
   }
 }
 
-void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* json_string,
+void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* code_string,
+                                                                                       libkrbn_complex_modifications_rule_code_type code_type,
                                                                                        char* error_message_buffer,
                                                                                        size_t error_message_buffer_length) {
   if (error_message_buffer && error_message_buffer_length > 0) {
@@ -518,8 +532,10 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
   try {
     auto c = get_current_core_configuration();
     auto m = c->get_selected_profile().get_complex_modifications();
+
     auto r = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
-        krbn::json_utility::parse_jsonc(std::string(json_string)),
+        code_string,
+        to_code_type(code_type),
         m->get_parameters(),
         krbn::core_configuration::error_handling::strict);
 

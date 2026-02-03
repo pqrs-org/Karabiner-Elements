@@ -12,14 +12,14 @@ extension LibKrbn {
     var index: Int
     var description: String
     var codeString: String?
-    var codeType: libkrbn_complex_modifications_rule_type
+    var codeType: libkrbn_complex_modifications_rule_code_type
 
     init(
       index: Int,
       description: String,
       enabled: Bool,
       codeString: String?,
-      codeType: libkrbn_complex_modifications_rule_type
+      codeType: libkrbn_complex_modifications_rule_code_type
     ) {
       self.index = index
       self.description = description

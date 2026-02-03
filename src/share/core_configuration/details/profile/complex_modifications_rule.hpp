@@ -146,6 +146,20 @@ public:
     }
   }
 
+  complex_modifications_rule(const std::string& code_string,
+                             code_type type,
+                             pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
+                             error_handling error_handling)
+      : complex_modifications_rule(
+            type == code_type::json
+                ? krbn::json_utility::parse_jsonc(code_string)
+                : nlohmann::json::object({
+                      {"eval_js", code_string},
+                  }),
+            parameters,
+            error_handling) {
+  }
+
   nlohmann::json to_json(void) const {
     auto j = json_;
 

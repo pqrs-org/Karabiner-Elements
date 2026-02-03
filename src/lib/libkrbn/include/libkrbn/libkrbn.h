@@ -196,18 +196,20 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
 void libkrbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(size_t index, bool value);
 
 typedef enum {
-  libkrbn_complex_modifications_rule_type_json,
-  libkrbn_complex_modifications_rule_type_javascript,
-} libkrbn_complex_modifications_rule_type;
+  libkrbn_complex_modifications_rule_code_type_json,
+  libkrbn_complex_modifications_rule_code_type_javascript,
+} libkrbn_complex_modifications_rule_code_type;
 bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(size_t index,
                                                                                             char* _Nonnull buffer,
                                                                                             size_t length,
-                                                                                            libkrbn_complex_modifications_rule_type* _Nonnull code_type);
+                                                                                            libkrbn_complex_modifications_rule_code_type* _Nonnull code_type);
 void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(size_t index,
-                                                                                    const char* _Nonnull json_string,
+                                                                                    const char* _Nonnull code_string,
+                                                                                    libkrbn_complex_modifications_rule_code_type code_type,
                                                                                     char* _Nonnull error_message_buffer,
                                                                                     size_t error_message_buffer_length);
-void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* _Nonnull json_string,
+void libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(const char* _Nonnull code_string,
+                                                                                       libkrbn_complex_modifications_rule_code_type code_type,
                                                                                        char* _Nonnull error_message_buffer,
                                                                                        size_t error_message_buffer_length);
 void libkrbn_core_configuration_erase_selected_profile_complex_modifications_rule(size_t index);

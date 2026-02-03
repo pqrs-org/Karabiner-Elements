@@ -350,7 +350,7 @@ extension LibKrbn {
       let size = libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size()
       for i in 0..<size {
         var codeString: String?
-        var codeType = libkrbn_complex_modifications_rule_type_json
+        var codeType = libkrbn_complex_modifications_rule_code_type_json
         var buffer = [Int8](repeating: 0, count: 1024 * 1024)  // 1MB
         if libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(
           i, &buffer, buffer.count, &codeType)

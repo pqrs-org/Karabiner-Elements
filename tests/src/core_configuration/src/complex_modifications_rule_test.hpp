@@ -32,15 +32,32 @@ void run_complex_modifications_rule_test(void) {
 
 )"_json;
       auto parameters = std::make_shared<parameters_t>();
-      rule_t rule(json,
-                  parameters,
-                  krbn::core_configuration::error_handling::strict);
-      expect(1 == rule.get_manipulators().size());
-      expect(rule.get_enabled());
-      expect("example"s == rule.get_description());
-      expect(rule_t::code_type::json == rule.get_code_type());
-      expect(krbn::json_utility::dump(json) == rule.get_code_string());
-      expect(json == rule.to_json());
+
+      {
+        rule_t rule(json,
+                    parameters,
+                    krbn::core_configuration::error_handling::strict);
+        expect(1 == rule.get_manipulators().size());
+        expect(rule.get_enabled());
+        expect("example"s == rule.get_description());
+        expect(rule_t::code_type::json == rule.get_code_type());
+        expect(krbn::json_utility::dump(json) == rule.get_code_string());
+        expect(json == rule.to_json());
+      }
+
+      // with code_type
+      {
+        rule_t rule(json.dump(),
+                    rule_t::code_type::json,
+                    parameters,
+                    krbn::core_configuration::error_handling::strict);
+        expect(1 == rule.get_manipulators().size());
+        expect(rule.get_enabled());
+        expect("example"s == rule.get_description());
+        expect(rule_t::code_type::json == rule.get_code_type());
+        expect(krbn::json_utility::dump(json) == rule.get_code_string());
+        expect(json == rule.to_json());
+      }
     }
 
     // enabled
@@ -135,15 +152,31 @@ main();
           {"eval_js", js},
       });
 
-      auto parameters = std::make_shared<parameters_t>();
-      rule_t rule(json,
-                  parameters,
-                  krbn::core_configuration::error_handling::strict);
-      expect(3 == rule.get_manipulators().size());
-      expect("example"s == rule.get_description());
-      expect(rule_t::code_type::javascript == rule.get_code_type());
-      expect(js == rule.get_code_string());
-      expect(json == rule.to_json());
+      {
+        auto parameters = std::make_shared<parameters_t>();
+        rule_t rule(json,
+                    parameters,
+                    krbn::core_configuration::error_handling::strict);
+        expect(3 == rule.get_manipulators().size());
+        expect("example"s == rule.get_description());
+        expect(rule_t::code_type::javascript == rule.get_code_type());
+        expect(js == rule.get_code_string());
+        expect(json == rule.to_json());
+      }
+
+      // with code_type
+      {
+        auto parameters = std::make_shared<parameters_t>();
+        rule_t rule(js,
+                    rule_t::code_type::javascript,
+                    parameters,
+                    krbn::core_configuration::error_handling::strict);
+        expect(3 == rule.get_manipulators().size());
+        expect("example"s == rule.get_description());
+        expect(rule_t::code_type::javascript == rule.get_code_type());
+        expect(js == rule.get_code_string());
+        expect(json == rule.to_json());
+      }
     }
 
     // error
