@@ -11,6 +11,7 @@ struct ComplexModificationsEditView: View {
   @State private var codeType = libkrbn_complex_modifications_rule_code_type_json
   @State private var errorMessage: String?
   @StateObject private var externalEditorController = ExternalEditorController.shared
+  @State private var didOpenExternalEditor = false
   @ObservedObject private var settings = LibKrbn.Settings.shared
   @Environment(\.colorScheme) var colorScheme
 
@@ -43,9 +44,11 @@ struct ComplexModificationsEditView: View {
                       onError: { errorMessage = $0 },
                       onReload: {
                         codeString = $0
-                        errorMessage = nil
+                        _ = save()
                       }
                     )
+
+                    didOpenExternalEditor = true
                   },
                   label: {
                     Label(
@@ -71,18 +74,8 @@ struct ComplexModificationsEditView: View {
 
                 Button(
                   action: {
-                    if rule!.index < 0 {
-                      errorMessage = settings.pushFrontComplexModificationsRule(
-                        codeString, codeType)
-                      if errorMessage == nil {
-                        showing = false
-                      }
-                    } else {
-                      errorMessage = settings.replaceComplexModificationsRule(
-                        rule!, codeString, codeType)
-                      if errorMessage == nil {
-                        showing = false
-                      }
+                    if save() {
+                      showing = false
                     }
                   },
                   label: {
@@ -116,6 +109,21 @@ struct ComplexModificationsEditView: View {
                 }
               )
               .modifier(ErrorBorder())
+            }
+
+            if didOpenExternalEditor {
+              Label(
+                title: {
+                  Text(
+                    "Changes saved in the external editor are automatically reflected while this window is open."
+                  )
+                  .textSelection(.enabled)
+                },
+                icon: {
+                  Image(systemName: InfoBorder.icon)
+                }
+              )
+              .modifier(InfoBorder())
             }
 
             CodeEditor(
@@ -252,6 +260,24 @@ struct ComplexModificationsEditView: View {
     .onChange(of: codeType) { _ in
       evalContinuation?.yield(codeString)
     }
+  }
+
+  private func save() -> Bool {
+    if rule!.index < 0 {
+      errorMessage = settings.pushFrontComplexModificationsRule(
+        codeString, codeType)
+      if errorMessage == nil {
+        return true
+      }
+    } else {
+      errorMessage = settings.replaceComplexModificationsRule(
+        rule!, codeString, codeType)
+      if errorMessage == nil {
+        return true
+      }
+    }
+
+    return false
   }
 
   private func evaluateJavascript(code: String) -> (
