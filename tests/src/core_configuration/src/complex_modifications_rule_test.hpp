@@ -8,6 +8,9 @@ void run_complex_modifications_rule_test(void) {
   using namespace std::string_literals;
   using namespace std::literals::string_view_literals;
 
+  using rule_t = krbn::core_configuration::details::complex_modifications_rule;
+  using parameters_t = krbn::core_configuration::details::complex_modifications_parameters;
+
   "complex_modifications_rule"_test = [] {
     // `parameters` in `manipulators` are not omitted in to_json.
     {
@@ -28,13 +31,15 @@ void run_complex_modifications_rule_test(void) {
 }
 
 )"_json;
-      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
-      krbn::core_configuration::details::complex_modifications_rule rule(json,
-                                                                         parameters,
-                                                                         krbn::core_configuration::error_handling::strict);
+      auto parameters = std::make_shared<parameters_t>();
+      rule_t rule(json,
+                  parameters,
+                  krbn::core_configuration::error_handling::strict);
       expect(1 == rule.get_manipulators().size());
       expect(rule.get_enabled());
       expect("example"s == rule.get_description());
+      expect(rule_t::code_type::json == rule.get_code_type());
+      expect(krbn::json_utility::dump(json) == rule.get_code_string());
       expect(json == rule.to_json());
     }
 
@@ -56,10 +61,10 @@ void run_complex_modifications_rule_test(void) {
 
 )"_json;
 
-      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
-      krbn::core_configuration::details::complex_modifications_rule rule(json,
-                                                                         parameters,
-                                                                         krbn::core_configuration::error_handling::strict);
+      auto parameters = std::make_shared<parameters_t>();
+      rule_t rule(json,
+                  parameters,
+                  krbn::core_configuration::error_handling::strict);
       expect(1 == rule.get_manipulators().size());
       expect(!rule.get_enabled());
       expect("enabled"s == rule.get_description());
@@ -130,12 +135,14 @@ main();
           {"eval_js", js},
       });
 
-      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
-      krbn::core_configuration::details::complex_modifications_rule rule(json,
-                                                                         parameters,
-                                                                         krbn::core_configuration::error_handling::strict);
+      auto parameters = std::make_shared<parameters_t>();
+      rule_t rule(json,
+                  parameters,
+                  krbn::core_configuration::error_handling::strict);
       expect(3 == rule.get_manipulators().size());
       expect("example"s == rule.get_description());
+      expect(rule_t::code_type::javascript == rule.get_code_type());
+      expect(js == rule.get_code_string());
       expect(json == rule.to_json());
     }
 
@@ -151,11 +158,11 @@ main();
           {"eval_js", js},
       });
 
-      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
+      auto parameters = std::make_shared<parameters_t>();
       try {
-        krbn::core_configuration::details::complex_modifications_rule rule(json,
-                                                                           parameters,
-                                                                           krbn::core_configuration::error_handling::strict);
+        rule_t rule(json,
+                    parameters,
+                    krbn::core_configuration::error_handling::strict);
         expect(false);
       } catch (pqrs::json::unmarshal_error& ex) {
         expect("`eval_js` error: javascript error: SyntaxError: parse error (line 5, end of input)"sv == ex.what());
