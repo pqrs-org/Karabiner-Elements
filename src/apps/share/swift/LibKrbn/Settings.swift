@@ -385,13 +385,15 @@ extension LibKrbn {
 
     public func replaceComplexModificationsRule(
       _ complexModificationRule: ComplexModificationsRule,
-      _ jsonString: String
+      _ codeString: String,
+      _ codeType: libkrbn_complex_modifications_rule_code_type,
     ) -> String? {
       var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-      if let cString = jsonString.cString(using: .utf8) {
+      if let cString = codeString.cString(using: .utf8) {
         libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(
           complexModificationRule.index,
           cString,
+          codeType,
           &errorMessageBuffer,
           errorMessageBuffer.count
         )
@@ -410,12 +412,14 @@ extension LibKrbn {
     }
 
     public func pushFrontComplexModificationsRule(
-      _ jsonString: String
+      _ codeString: String,
+      _ codeType: libkrbn_complex_modifications_rule_code_type,
     ) -> String? {
       var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-      if let cString = jsonString.cString(using: .utf8) {
+      if let cString = codeString.cString(using: .utf8) {
         libkrbn_core_configuration_push_front_selected_profile_complex_modifications_rule(
           cString,
+          codeType,
           &errorMessageBuffer,
           errorMessageBuffer.count
         )

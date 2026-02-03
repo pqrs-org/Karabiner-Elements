@@ -647,8 +647,8 @@ void libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(c
 
 void libkrbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(char* buffer,
                                                                                   size_t length) {
-  auto json_string = krbn::complex_modifications_utility::get_new_rule_eval_js_string();
-  strlcpy(buffer, json_string.c_str(), length);
+  auto code_string = krbn::complex_modifications_utility::get_new_rule_eval_js_string();
+  strlcpy(buffer, code_string.c_str(), length);
 }
 
 bool libkrbn_eval_js_to_json_string(const char* code,

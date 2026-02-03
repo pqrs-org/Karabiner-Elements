@@ -7,6 +7,7 @@ struct ComplexModificationsEditView: View {
   @State private var description = ""
   @State private var disabled = true
   @State private var codeString = ""
+  @State private var codeType = libkrbn_complex_modifications_rule_code_type_json
   @State private var errorMessage: String?
   @StateObject private var externalEditorController = ExternalEditorController.shared
   @ObservedObject private var settings = LibKrbn.Settings.shared
@@ -60,12 +61,14 @@ struct ComplexModificationsEditView: View {
                 Button(
                   action: {
                     if rule!.index < 0 {
-                      errorMessage = settings.pushFrontComplexModificationsRule(codeString)
+                      errorMessage = settings.pushFrontComplexModificationsRule(
+                        codeString, codeType)
                       if errorMessage == nil {
                         showing = false
                       }
                     } else {
-                      errorMessage = settings.replaceComplexModificationsRule(rule!, codeString)
+                      errorMessage = settings.replaceComplexModificationsRule(
+                        rule!, codeString, codeType)
                       if errorMessage == nil {
                         showing = false
                       }
@@ -130,6 +133,8 @@ struct ComplexModificationsEditView: View {
         disabled = true
         codeString = ""
       }
+
+      codeType = rule?.codeType ?? libkrbn_complex_modifications_rule_code_type_json
 
       externalEditorController.reset()
     }

@@ -82,7 +82,7 @@ inline std::string get_new_rule_json_string(void) {
 }
 
 inline std::string get_new_rule_eval_js_string(void) {
-  auto js = R"(// JavaScript must be written in ECMAScript 5.1.
+  return R"(// JavaScript must be written in ECMAScript 5.1.
 
 function main() {
   const apps = [
@@ -120,9 +120,6 @@ function main() {
 
 main();
 )";
-
-  nlohmann::json json({{"eval_js", js}});
-  return json_utility::dump(json);
 }
 }; // namespace complex_modifications_utility
 } // namespace krbn
