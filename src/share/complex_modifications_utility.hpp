@@ -97,7 +97,7 @@ function main() {
   for (var i = 0; i < apps.length; ++i) {
     const app = apps[i]
 
-    console.log(app.key_code + ' to ' + app.app)
+    console.log('right_shift+' + app.key_code + ' to ' + app.app)
 
     manipulators.push({
       type: 'basic',
