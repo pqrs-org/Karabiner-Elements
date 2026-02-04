@@ -88,23 +88,23 @@ inline std::string get_new_rule_eval_js_string(void) {
 
 function main() {
   const apps = [
-    { key_code: "1", app: "com.apple.Safari" },
-    { key_code: "2", app: "com.apple.TextEdit" },
-    { key_code: "3", app: "com.apple.ActivityMonitor" },
-  ];
+    { key_code: '1', app: 'com.apple.Safari' },
+    { key_code: '2', app: 'com.apple.TextEdit' },
+    { key_code: '3', app: 'com.apple.ActivityMonitor' },
+  ]
 
-  const manipulators = [];
+  const manipulators = []
   for (var i = 0; i < apps.length; ++i) {
-    const app = apps[i];
+    const app = apps[i]
 
-    console.log(app.key_code + " to " + app.app);
+    console.log(app.key_code + ' to ' + app.app)
 
     manipulators.push({
-      type: "basic",
+      type: 'basic',
       from: {
         key_code: app.key_code,
         modifiers: {
-          mandatory: ["right_shift"],
+          mandatory: ['right_shift'],
         },
       },
       to: [
@@ -114,16 +114,16 @@ function main() {
           },
         },
       ],
-    });
+    })
   }
 
   return {
-    description: "Open apps with right_shift+1/2/3",
+    description: 'Open apps with right_shift+1/2/3',
     manipulators: manipulators,
-  };
+  }
 }
 
-main();
+main()
 )";
 }
 
