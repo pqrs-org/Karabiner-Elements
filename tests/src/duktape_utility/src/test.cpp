@@ -65,6 +65,17 @@ main();
       expect(log_messages == result.log_messages);
     }
 
+    // Unicode
+    {
+      auto result = krbn::duktape_utility::eval_string_to_json(R"(
+console.log('✅🔥👍')
+'✅🔥👍'
+)");
+      expect(nlohmann::json("✅🔥👍") == result.json);
+      expect("✅🔥👍"sv == result.log_messages);
+    }
+
+    // Return value that cannot be converted to JSON.
     {
       auto result = krbn::duktape_utility::eval_string_to_json("undefined");
       expect(nlohmann::json() == result.json);

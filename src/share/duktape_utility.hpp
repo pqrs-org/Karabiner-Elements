@@ -13,6 +13,7 @@
 #include <memory>
 #include <spdlog/fmt/fmt.h>
 #include <sstream>
+#include <utf8cpp/utf8.h>
 
 namespace krbn {
 class duktape_eval_error : public std::runtime_error {
@@ -28,6 +29,29 @@ struct eval_heap_state {
 
 namespace impl {
 constexpr size_t max_input_bytes = 1ULL * 1024ULL * 1024ULL; // 1MB
+
+inline std::string cesu8_to_utf8(std::string_view s) {
+  std::u16string u16;
+  u16.reserve(s.size());
+
+  auto it = s.begin();
+  auto end = s.end();
+  while (it != end) {
+    auto cp = utf8::unchecked::next(it);
+    if (cp <= 0xFFFF) {
+      u16.push_back(static_cast<char16_t>(cp));
+    } else {
+      cp -= 0x10000;
+      u16.push_back(static_cast<char16_t>(0xD800 + (cp >> 10)));
+      u16.push_back(static_cast<char16_t>(0xDC00 + (cp & 0x3FF)));
+    }
+  }
+
+  std::string out;
+  out.reserve(s.size());
+  utf8::unchecked::utf16to8(u16.begin(), u16.end(), std::back_inserter(out));
+  return out;
+}
 
 inline void* alloc(void* udata, duk_size_t size) {
   if (size == 0) {
@@ -134,7 +158,7 @@ inline void setup_console(duk_context* ctx,
           }
           ss << duk_safe_to_string(ctx, i);
         }
-        auto message = ss.str();
+        auto message = cesu8_to_utf8(ss.str());
         if (!log_messages->empty()) {
           log_messages->append("\n");
         }
@@ -320,7 +344,13 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
   nlohmann::json json;
   if (duk_safe_call(ctx, json_encode, nullptr, 1, 1) == DUK_EXEC_SUCCESS) {
     try {
-      json = json_utility::parse_jsonc(duk_get_string(ctx, -1));
+      duk_size_t len = 0;
+      auto s = duk_get_lstring(ctx, -1, &len);
+      if (s && len > 0) {
+        json = json_utility::parse_jsonc(impl::cesu8_to_utf8(std::string_view(s, len)));
+      } else {
+        json = json_utility::parse_jsonc("");
+      }
     } catch (std::exception& e) {
     }
   }
