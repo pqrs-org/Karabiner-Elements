@@ -16,7 +16,7 @@ struct ComplexModificationsView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
-      HStack(alignment: .bottom) {
+      HStack {
         Button(
           action: {
             contentViewStates.complexModificationsViewSheetView =
@@ -46,6 +46,10 @@ struct ComplexModificationsView: View {
             AccentColorIconLabel(title: "Add your own rule", systemImage: "sparkles")
           })
 
+        Spacer()
+
+        Label("For export", systemImage: "flame")
+
         Button(
           action: {
             var buffer = [Int8](repeating: 0, count: 32 * 1024)
@@ -63,14 +67,15 @@ struct ComplexModificationsView: View {
           },
           label: {
             AccentColorIconLabel(
-              title: "For expert: Add your own rule using JavaScript", systemImage: "wand.and.rays")
+              title: "Add your own rule using JavaScript", systemImage: "wand.and.rays")
           }
         )
-        .controlSize(.small)
-        .padding(.leading, 40.0)
       }
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
+
+      Divider()
+        .padding(.bottom)
 
       if settings.complexModificationsRules.count > 1 {
         HStack {
@@ -80,6 +85,7 @@ struct ComplexModificationsView: View {
             .frame(width: 16.0, height: 16.0)
           Text("icon")
         }
+        .padding(.horizontal)
       }
 
       List {
