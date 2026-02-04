@@ -98,7 +98,7 @@ struct ComplexModificationsEditView: View {
             )
             .modifier(ErrorBorder())
           } else {
-            if let errorMessage = errorMessage {
+            if let errorMessage = errorMessage, evalErrorMessage == nil {
               Label(
                 title: {
                   Text(errorMessage)
