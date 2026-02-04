@@ -1,7 +1,9 @@
 #pragma once
 
+#include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
+#include "json_writer.hpp"
 #include "manipulator/condition_factory.hpp"
 #include "manipulator/manipulator_factory.hpp"
 
@@ -123,6 +125,38 @@ function main() {
 
 main();
 )";
+}
+
+// Save .prettierrc.json to ~/.local/share/karabiner for external editors.
+void save_prettierrc(void) {
+  auto directory = constants::get_user_data_directory();
+  if (!directory.empty()) {
+    auto json = nlohmann::ordered_json::object({
+        {"semi", false},
+        {"singleQuote", true},
+        {"tabWidth", 2},
+        {"printWidth", 200},
+        {"trailingComma", "es5"},
+        {
+            "overrides",
+            nlohmann::json::array(
+                {nlohmann::ordered_json::object({
+                    {"files", "*.js"},
+                    {"options", nlohmann::ordered_json::object({
+                                    {"tabWidth", 2},
+                                })},
+                })}),
+        },
+    });
+
+    // Note: The actual json and js files are placed in ~/.local/share/karabiner/tmp/XXXX.json, but
+    // to allow users to override with ~/.local/share/karabiner/tmp/.prettierrc.json,
+    // place the default .prettierrc.json in the parent directory.
+    json_writer::sync_save_to_file(json,
+                                   directory / ".prettierrc.json",
+                                   0700,
+                                   0600);
+  }
 }
 }; // namespace complex_modifications_utility
 } // namespace krbn

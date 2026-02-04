@@ -245,6 +245,10 @@ int librkbn_get_app_icon_number(void) {
   return icon.get_number();
 }
 
+void libkrbn_save_prettierrc(void) {
+  krbn::complex_modifications_utility::save_prettierrc();
+}
+
 bool libkrbn_is_momentary_switch_event_target(int32_t usage_page,
                                               int32_t usage) {
   return krbn::momentary_switch_event::target(

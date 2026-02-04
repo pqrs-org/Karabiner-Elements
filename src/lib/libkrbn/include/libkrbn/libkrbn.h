@@ -73,6 +73,8 @@ bool libkrbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists(vo
 
 int librkbn_get_app_icon_number(void);
 
+void libkrbn_save_prettierrc(void);
+
 // types
 
 bool libkrbn_is_momentary_switch_event_target(int32_t usage_page, int32_t usage);

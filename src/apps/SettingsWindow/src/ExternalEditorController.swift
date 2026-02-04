@@ -75,6 +75,9 @@ final class ExternalEditorController: ObservableObject {
       let errorHandler = onError
       let reloadHandler = onReload
 
+      // Prepare .prettierrc.json for external editors.
+      libkrbn_save_prettierrc()
+
       let writeResult: Result<Void, Error> = await Task.detached(priority: .utility) {
         do {
           try text.write(to: url, atomically: true, encoding: .utf8)
