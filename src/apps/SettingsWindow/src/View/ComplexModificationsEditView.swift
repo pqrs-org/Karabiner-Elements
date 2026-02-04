@@ -148,7 +148,7 @@ struct ComplexModificationsEditView: View {
               }
 
               VStack(alignment: .leading, spacing: 6) {
-                Text("JavaScript Result")
+                Text("Result")
                   .font(.headline)
 
                 ScrollView {
@@ -165,7 +165,7 @@ struct ComplexModificationsEditView: View {
               }
 
               VStack(alignment: .leading, spacing: 6) {
-                Text("Console Log")
+                Text("Log")
                   .font(.headline)
 
                 ScrollView {
