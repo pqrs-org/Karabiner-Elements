@@ -267,6 +267,8 @@ struct ComplexModificationsEditView: View {
       errorMessage = settings.pushFrontComplexModificationsRule(
         codeString, codeType)
       if errorMessage == nil {
+        // Set index to call replaceComplexModificationsRule on the next save.
+        rule!.index = 0
         return true
       }
     } else {
