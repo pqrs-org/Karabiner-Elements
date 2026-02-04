@@ -317,23 +317,18 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
     return 1;
   };
 
-  if (duk_safe_call(ctx, json_encode, nullptr, 1, 1) != DUK_EXEC_SUCCESS) {
-    auto message = context.heap_state.base.memory_exceeded ? "javascript error: max memory exceeded"
-                                                           : fmt::format("javascript error: {0}",
-                                                                         duk_safe_to_string(ctx, -1));
-    duk_destroy_heap(ctx);
-    throw duktape_eval_error(message);
+  nlohmann::json json;
+  if (duk_safe_call(ctx, json_encode, nullptr, 1, 1) == DUK_EXEC_SUCCESS) {
+    try {
+      json = json_utility::parse_jsonc(duk_get_string(ctx, -1));
+    } catch (std::exception& e) {
+    }
   }
 
-  if (!duk_is_string(ctx, -1)) {
-    duk_destroy_heap(ctx);
-    throw duktape_eval_error("javascript error: result is not a JSON string");
-  }
-
-  std::string json(duk_get_string(ctx, -1));
   duk_destroy_heap(ctx);
+
   return {
-      .json = json_utility::parse_jsonc(json),
+      .json = json,
       .log_messages = std::move(*context.log_messages),
   };
 }

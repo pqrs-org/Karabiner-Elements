@@ -65,11 +65,16 @@ main();
       expect(log_messages == result.log_messages);
     }
 
+    {
+      auto result = krbn::duktape_utility::eval_string_to_json("undefined");
+      expect(nlohmann::json() == result.json);
+    }
+
     try {
-      krbn::duktape_utility::eval_string_to_json("undefined");
+      krbn::duktape_utility::eval_string_to_json("[");
       expect(false);
     } catch (krbn::duktape_eval_error& ex) {
-      expect("javascript error: result is not a JSON string"sv == ex.what());
+      expect("javascript error: SyntaxError: parse error (line 1, end of input)"sv == ex.what());
     }
 
     try {
