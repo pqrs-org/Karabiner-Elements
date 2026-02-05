@@ -13,11 +13,11 @@
 
 class shared_run_loop_thread final {
 public:
-  void initialize(void) {
+  void initialize(failure_policy policy = failure_policy::abort) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (!run_loop_thread_) {
-      run_loop_thread_ = std::make_shared<run_loop_thread>();
+      run_loop_thread_ = std::make_shared<run_loop_thread>(policy);
     }
   }
 

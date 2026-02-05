@@ -1,13 +1,14 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v2.5
+// pqrs::cf::run_loop_thread v2.7
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 // `pqrs::cf::run_loop_thread` can be used safely in a multi-threaded environment.
 
+#include <cstdlib>
 #include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <thread>
@@ -16,6 +17,11 @@ namespace pqrs {
 namespace cf {
 class run_loop_thread final {
 public:
+  enum class failure_policy {
+    abort,
+    exit,
+  };
+
   class extra {
   public:
 #include "run_loop_thread/extra/shared_run_loop_thread.hpp"
@@ -23,7 +29,8 @@ public:
 
   run_loop_thread(const run_loop_thread&) = delete;
 
-  run_loop_thread(void) {
+  run_loop_thread(failure_policy policy = failure_policy::abort)
+      : failure_policy_(policy) {
     std::atomic<bool> ready = false;
 
     thread_ = std::thread([this, &ready] {
@@ -70,7 +77,11 @@ public:
       if (now - since > std::chrono::milliseconds(3000)) {
         // Although this does not usually happen, it is reached when CFRunLoop processing does not start due to a problem with CFRunLoop.
         // Abort because it is irrecoverable.
-        abort();
+        if (failure_policy_ == failure_policy::exit) {
+          std::exit(EXIT_FAILURE);
+        } else {
+          abort();
+        }
       }
 
       {
@@ -151,6 +162,7 @@ private:
 
   cf_ptr<CFRunLoopSourceRef> initial_source_;
   std::mutex initial_source_mutex_;
+  failure_policy failure_policy_;
 };
 } // namespace cf
 } // namespace pqrs
