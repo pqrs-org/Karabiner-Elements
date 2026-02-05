@@ -51,9 +51,9 @@ private:
   mutable std::mutex mutex_;
 };
 
-static void initialize_shared_run_loop_thread(void) {
+static void initialize_shared_run_loop_thread(failure_policy policy = failure_policy::abort) {
   auto p = shared_run_loop_thread::get_shared_run_loop_thread();
-  p->initialize();
+  p->initialize(policy);
 }
 
 static void terminate_shared_run_loop_thread(void) {
