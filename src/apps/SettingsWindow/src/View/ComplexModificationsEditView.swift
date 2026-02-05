@@ -127,7 +127,10 @@ struct ComplexModificationsEditView: View {
             }
 
             CodeEditor(
-              source: $codeString, language: .json,
+              source: $codeString,
+              language: codeType == libkrbn_complex_modifications_rule_code_type_javascript
+                ? .javascript
+                : .json,
               theme: CodeEditor.ThemeName(
                 rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light")
             )
