@@ -7,10 +7,10 @@ class run_loop_thread_utility {
 public:
   class scoped_run_loop_thread_manager final {
   public:
-    scoped_run_loop_thread_manager(void) {
-      pqrs::cf::run_loop_thread::extra::initialize_shared_run_loop_thread();
+    scoped_run_loop_thread_manager(pqrs::cf::run_loop_thread::failure_policy failure_policy) {
+      pqrs::cf::run_loop_thread::extra::initialize_shared_run_loop_thread(failure_policy);
 
-      get_power_management_run_loop_thread() = std::make_shared<pqrs::cf::run_loop_thread>();
+      get_power_management_run_loop_thread() = std::make_shared<pqrs::cf::run_loop_thread>(failure_policy);
     }
 
     ~scoped_run_loop_thread_manager(void) {
@@ -23,8 +23,8 @@ public:
     }
   };
 
-  static std::shared_ptr<scoped_run_loop_thread_manager> initialize_shared_run_loop_thread(void) {
-    return std::make_shared<scoped_run_loop_thread_manager>();
+  static std::shared_ptr<scoped_run_loop_thread_manager> initialize_scoped_run_loop_thread_manager(pqrs::cf::run_loop_thread::failure_policy failure_policy) {
+    return std::make_shared<scoped_run_loop_thread_manager>(failure_policy);
   }
 
   // pqrs::osx::iokit_power_management::monitor blocks in the system_will_sleep process until ready to sleep.

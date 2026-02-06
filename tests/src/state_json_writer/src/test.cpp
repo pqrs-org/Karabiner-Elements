@@ -9,7 +9,8 @@ int main(void) {
   using namespace boost::ut::literals;
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
-  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
+      pqrs::cf::run_loop_thread::failure_policy::abort);
 
   "state_json_writer"_test = [] {
     system("rm -rf tmp");

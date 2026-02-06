@@ -22,7 +22,7 @@ public:
   event_tap_monitor(void) : dispatcher_client(),
                             event_tap_(nullptr),
                             run_loop_source_(nullptr) {
-    cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>();
+    cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>(pqrs::cf::run_loop_thread::failure_policy::exit);
   }
 
   ~event_tap_monitor(void) {

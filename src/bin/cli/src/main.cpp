@@ -313,7 +313,8 @@ int main(int argc, char** argv) {
   //
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
-  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
+      pqrs::cf::run_loop_thread::failure_policy::exit);
 
   //
   // Load custom environment variables

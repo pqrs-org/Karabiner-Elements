@@ -43,7 +43,8 @@ void libkrbn_initialize(void) {
   }
 
   if (!scoped_run_loop_thread_manager_) {
-    scoped_run_loop_thread_manager_ = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
+    scoped_run_loop_thread_manager_ = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
+        pqrs::cf::run_loop_thread::failure_policy::exit);
   }
 
   if (!libkrbn_components_manager_) {

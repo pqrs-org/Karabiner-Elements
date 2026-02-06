@@ -18,7 +18,8 @@ int main(int argc, const char* argv[]) {
   //
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
-  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_shared_run_loop_thread();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
+      pqrs::cf::run_loop_thread::failure_policy::exit);
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
