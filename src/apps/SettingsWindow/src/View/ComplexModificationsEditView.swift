@@ -252,14 +252,16 @@ struct ComplexModificationsEditView: View {
 
       evalContinuation?.yield(codeString)
     }
-    .onDisappear {
-      restoreWindowLevelIfNeeded()
+    .onChange(of: showing) { newValue in
+      if !newValue {
+        restoreWindowLevelIfNeeded()
 
-      externalEditorController.reset()
-      evalContinuation?.finish()
-      evalContinuation = nil
-      evalStreamTask?.cancel()
-      evalStreamTask = nil
+        externalEditorController.reset()
+        evalContinuation?.finish()
+        evalContinuation = nil
+        evalStreamTask?.cancel()
+        evalStreamTask = nil
+      }
     }
     .onChange(of: codeString) { newValue in
       externalEditorController.syncFromAppEditor(
