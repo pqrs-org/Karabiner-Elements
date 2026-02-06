@@ -9,6 +9,8 @@
     - Added a "Clear user variables" button to EventViewer. (Thanks to @BarakXYZ)
 - 🐛 Bug Fixes
     - Fixed an issue where reordering in Complex Modifications and Profiles didn't work properly when dragging while scrolling.
+- ⚡️ Improvements
+    - Changed to call `exit` instead of `abort` to suppress crash reports when a fatal error prevents CFRunLoop from running in background processes.
 
 ## Karabiner-Elements 15.9.0
 
