@@ -31,8 +31,10 @@ struct ComplexModificationsEditView: View {
               .font(.system(size: 24))
               .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack(alignment: .center) {
-              if !disabled {
+            if !disabled {
+              HStack(alignment: .center) {
+                Spacer()
+
                 Button(
                   action: {
                     externalEditorController.openEditor(
@@ -57,20 +59,16 @@ struct ComplexModificationsEditView: View {
                     .buttonLabelStyle()
                   }
                 )
-                .padding(.leading, 8.0)
 
                 Button(
                   action: {
                     externalEditorController.chooseEditor()
                   },
                   label: {
-                    Label("Choose editor", systemImage: "filemenu.and.selection")
+                    Label("Choose editor", systemImage: "gear")
                       .buttonLabelStyle()
                   }
                 )
-                .padding(.leading, 8.0)
-
-                Spacer()
 
                 Button(
                   action: {
@@ -84,7 +82,7 @@ struct ComplexModificationsEditView: View {
                   }
                 )
                 .buttonStyle(BorderedProminentButtonStyle())
-                .padding(.leading, 24.0)
+                .padding(.leading, 36.0)
                 .keyboardShortcut("s")
               }
             }
