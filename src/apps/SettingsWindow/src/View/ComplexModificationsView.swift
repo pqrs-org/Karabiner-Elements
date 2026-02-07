@@ -75,7 +75,6 @@ struct ComplexModificationsView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
 
       Divider()
-        .padding(.bottom)
 
       if settings.complexModificationsRules.count > 1 {
         HStack {
@@ -85,7 +84,7 @@ struct ComplexModificationsView: View {
             .frame(width: 16.0, height: 16.0)
           Text("icon")
         }
-        .padding(.horizontal)
+        .padding()
       }
 
       List {
