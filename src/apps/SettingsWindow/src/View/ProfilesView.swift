@@ -139,7 +139,6 @@ struct ProfilesView: View {
       }
       .background(Color(NSColor.textBackgroundColor))
     }
-    .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
     .sheet(isPresented: $showingSheet) {
       ProfileEditView(profile: $editingProfile, showing: $showingSheet)
     }

@@ -82,7 +82,6 @@ struct FrontmostApplicationView: View {
         }
       }
       .border(Color(NSColor.separatorColor), width: 2)
-      .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
   }

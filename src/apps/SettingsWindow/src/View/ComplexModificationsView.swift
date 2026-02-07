@@ -198,7 +198,6 @@ struct ComplexModificationsView: View {
       }
       .background(Color(NSColor.textBackgroundColor))
     }
-    .padding(.leading, 2)  // Prevent the header underline from disappearing in NavigationSplitView.
     .sheet(isPresented: $contentViewStates.complexModificationsViewSheetPresented) {
       if let sheetView = contentViewStates.complexModificationsViewSheetView {
         switch sheetView {
