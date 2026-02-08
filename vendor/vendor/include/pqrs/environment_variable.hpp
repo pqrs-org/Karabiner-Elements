@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::environment_variable v1.1
+// pqrs::environment_variable v1.2
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <optional>
 #include <string>
 

@@ -10,6 +10,7 @@
 #include "time_source.hpp"
 #include <deque>
 #include <exception>
+#include <functional>
 #include <mutex>
 #include <optional>
 #include <pqrs/thread_wait.hpp>
