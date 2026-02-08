@@ -1,0 +1,20 @@
+name: spdlog
+
+targets:
+  spdlog:
+    settings:
+      CODE_SIGN_ENTITLEMENTS: ""
+      CODE_SIGN_IDENTITY: "-"
+      CODE_SIGN_STYLE: Manual
+      SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../include
+      DEAD_CODE_STRIPPING: "YES"
+    type: library.static
+    platform: macOS
+    deploymentTarget: 13.0
+    sources:
+      - path: ../spdlog
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - -DSPDLOG_COMPILED_LIB
