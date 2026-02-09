@@ -28,7 +28,7 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
-          - '-std=c++20'
+          - '-std=c++23'
       - path: ../../../vendor/vendor/src/pqrs/osx/frontmost_application_monitor
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
