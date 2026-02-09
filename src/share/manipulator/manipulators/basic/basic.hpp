@@ -243,7 +243,7 @@ public:
 
               // Check all from_events_ are pressed
 
-              std::unordered_set<manipulated_original_event::from_event> from_events;
+              std::vector<manipulated_original_event::from_event> from_events;
 
               {
                 std::vector<event_queue::event> ordered_key_down_events;
@@ -279,7 +279,7 @@ public:
                                          [&](auto& e) {
                                            return fe.get_event() == e.get_event();
                                          })) {
-                          from_events.insert(fe);
+                          from_events.push_back(fe);
                           ordered_key_down_events.push_back(entry.get_event());
                         }
 
@@ -298,7 +298,7 @@ public:
                     case event_type::key_up:
                       // Do not manipulate if pressed key is released before all from events are pressed.
 
-                      if (from_events.find(fe) != std::end(from_events)) {
+                      if (std::ranges::contains(from_events, fe)) {
                         if (!all_from_events_found(from_events)) {
                           is_target = false;
                         }
@@ -711,13 +711,12 @@ public:
   }
 
 private:
-  bool all_from_events_found(const std::unordered_set<manipulated_original_event::from_event>& from_events) const {
+  bool all_from_events_found(const std::vector<manipulated_original_event::from_event>& from_events) const {
     for (const auto& d : from_.get_event_definitions()) {
-      if (std::none_of(std::begin(from_events),
-                       std::end(from_events),
-                       [&](auto& e) {
-                         return from_event_definition::test_event(e.get_event(), d);
-                       })) {
+      if (std::ranges::none_of(from_events,
+                               [&](auto& e) {
+                                 return from_event_definition::test_event(e.get_event(), d);
+                               })) {
         return false;
       }
     }

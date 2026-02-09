@@ -3,6 +3,7 @@
 #include "../../../types.hpp"
 #include "events_at_key_up.hpp"
 #include "from_event.hpp"
+#include <algorithm>
 #include <unordered_set>
 #include <vector>
 
@@ -13,7 +14,7 @@ namespace basic {
 namespace manipulated_original_event {
 class manipulated_original_event final {
 public:
-  manipulated_original_event(const std::unordered_set<from_event>& from_events,
+  manipulated_original_event(const std::vector<from_event>& from_events,
                              const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
                              absolute_time_point key_down_time_stamp,
                              std::unordered_set<modifier_flag> key_down_modifier_flags)
@@ -26,7 +27,7 @@ public:
         key_up_posted_(false) {
   }
 
-  const std::unordered_set<from_event>& get_from_events(void) const {
+  const std::vector<from_event>& get_from_events(void) const {
     return from_events_;
   }
 
@@ -78,35 +79,29 @@ public:
   }
 
   bool from_event_exists(const from_event& from_event) const {
-    return from_events_.find(from_event) != std::end(from_events_);
+    return std::ranges::contains(from_events_, from_event);
   }
 
   void erase_from_event(const from_event& from_event) {
-    from_events_.erase(from_event);
+    std::erase(from_events_, from_event);
   }
 
   void erase_from_events_by_device_id(device_id device_id) {
-    for (auto it = std::begin(from_events_); it != std::end(from_events_);) {
-      if (it->get_device_id() == device_id) {
-        it = from_events_.erase(it);
-      } else {
-        std::advance(it, 1);
-      }
-    }
+    std::erase_if(from_events_,
+                  [&](const auto& from_event) {
+                    return from_event.get_device_id() == device_id;
+                  });
   }
 
   void erase_from_events_by_event(const event_queue::event& event) {
-    for (auto it = std::begin(from_events_); it != std::end(from_events_);) {
-      if (it->get_event() == event) {
-        it = from_events_.erase(it);
-      } else {
-        std::advance(it, 1);
-      }
-    }
+    std::erase_if(from_events_,
+                  [&](const auto& from_event) {
+                    return from_event.get_event() == event;
+                  });
   }
 
 private:
-  std::unordered_set<from_event> from_events_;
+  std::vector<from_event> from_events_;
   std::unordered_set<modifier_flag> from_mandatory_modifiers_;
   std::unordered_set<modifier_flag> key_up_posted_from_mandatory_modifiers_;
   absolute_time_point key_down_time_stamp_;
