@@ -50,6 +50,13 @@ public:
   ~event_definition(void) {
   }
 
+  static event_definition make_from_momentary_switch_event(const momentary_switch_event& value) {
+    event_definition result;
+    result.type_ = type::momentary_switch_event;
+    result.value_ = value;
+    return result;
+  }
+
   type get_type(void) const {
     return type_;
   }
