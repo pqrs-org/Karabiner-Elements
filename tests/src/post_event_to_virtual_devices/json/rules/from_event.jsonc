@@ -22,7 +22,7 @@
         "type": "basic"
     },
 
-    // shift+any key_codes to option+from_event if pass_through_flag2 == true
+    // shift+any key_codes to left_option+from_event if pass_through_flag2 == true
     {
         "from": {
             "any": "key_code",
