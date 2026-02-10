@@ -1,0 +1,95 @@
+[
+    //
+    // from_event rules
+    //
+
+    // Pass through any key_codes if pass_through_flag1 == true
+    {
+        "from": {
+            "any": "key_code",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [{ "from_event": true }],
+        "conditions": [
+            {
+                "name": "pass_through_flag1",
+                "type": "variable_if",
+                "value": true
+            }
+        ],
+        "type": "basic"
+    },
+
+    // shift+any key_codes to option+from_event if pass_through_flag2 == true
+    {
+        "from": {
+            "any": "key_code",
+            "modifiers": {
+                "mandatory": ["shift"],
+                "optional": ["any"]
+            }
+        },
+        "to": [{ "from_event": true, "modifiers": ["left_option"] }],
+        "conditions": [
+            {
+                "name": "pass_through_flag2",
+                "type": "variable_if",
+                "value": true
+            }
+        ],
+        "type": "basic"
+    },
+
+    //
+    // Set flags
+    //
+
+    // Set pass_through_flag1 by f1
+    {
+        "from": { "key_code": "f1" },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "pass_through_flag1",
+                    "value": true,
+                    "key_up_value": false
+                }
+            }
+        ],
+        "type": "basic"
+    },
+
+    // Set pass_through_flag1 by f2
+    {
+        "from": { "key_code": "f2" },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "pass_through_flag2",
+                    "value": true,
+                    "key_up_value": false
+                }
+            }
+        ],
+        "type": "basic"
+    },
+
+    //
+    // Change keys
+    //
+
+    // a -> 1
+    {
+        "from": { "key_code": "a", "modifiers": { "optional": ["any"] } },
+        "to": [{ "key_code": "1" }],
+        "type": "basic"
+    },
+    // b -> 2
+    {
+        "from": { "key_code": "b", "modifiers": { "optional": ["any"] } },
+        "to": [{ "key_code": "2" }],
+        "type": "basic"
+    }
+]
