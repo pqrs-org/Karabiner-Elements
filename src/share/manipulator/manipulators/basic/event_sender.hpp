@@ -11,16 +11,38 @@ namespace manipulators {
 namespace basic {
 namespace event_sender {
 
-inline to_event_definitions filter_by_conditions(const to_event_definitions& to_events,
-                                                 const event_queue::entry& entry,
-                                                 manipulator_environment& manipulator_environment) {
+inline to_event_definitions filter_and_replace_events(const to_event_definitions& to_events,
+                                                      const event_queue::entry& entry,
+                                                      manipulator_environment& manipulator_environment,
+                                                      manipulated_original_event::manipulated_original_event& current_manipulated_original_event) {
   to_event_definitions result;
-  std::copy_if(to_events.begin(),
-               to_events.end(),
-               std::back_inserter(result),
-               [&entry, &manipulator_environment](auto&& e) {
-                 return e->get_condition_manager().is_fulfilled(entry, manipulator_environment);
-               });
+
+  for (const auto& to : to_events) {
+    //
+    // Filter
+    //
+
+    if (!to->get_condition_manager().is_fulfilled(entry, manipulator_environment)) {
+      continue;
+    }
+
+    //
+    // Replace
+    //
+
+    // If no replacement is needed, copy it as-is.
+    if (to->get_event_definition().get_type() != event_definition::type::from_event) {
+      result.push_back(to);
+      continue;
+    }
+
+    for (const auto& from_event : current_manipulated_original_event.get_from_events()) {
+      if (auto e = from_event.get_event().get_if<momentary_switch_event>()) {
+        result.push_back(to_event_definition::make_from_momentary_switch_event(*e, *to));
+      }
+    }
+  }
+
   return result;
 }
 
@@ -131,9 +153,10 @@ inline void post_events_at_key_down(const event_queue::entry& front_input_event,
     return;
   }
 
-  auto filtered_to_events = filter_by_conditions(to_events,
-                                                 front_input_event,
-                                                 output_event_queue.get_manipulator_environment());
+  auto filtered_to_events = filter_and_replace_events(to_events,
+                                                      front_input_event,
+                                                      output_event_queue.get_manipulator_environment(),
+                                                      current_manipulated_original_event);
 
   for (auto it = std::begin(filtered_to_events); it != std::end(filtered_to_events); std::advance(it, 1)) {
     auto to = *it;
@@ -262,9 +285,10 @@ inline void post_extra_to_events(const event_queue::entry& front_input_event,
     return;
   }
 
-  auto filtered_to_events = filter_by_conditions(to_events,
-                                                 front_input_event,
-                                                 output_event_queue.get_manipulator_environment());
+  auto filtered_to_events = filter_and_replace_events(to_events,
+                                                      front_input_event,
+                                                      output_event_queue.get_manipulator_environment(),
+                                                      current_manipulated_original_event);
 
   for (auto it = std::begin(filtered_to_events); it != std::end(filtered_to_events); std::advance(it, 1)) {
     auto to = *it;
