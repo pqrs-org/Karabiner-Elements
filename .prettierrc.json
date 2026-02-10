@@ -5,6 +5,12 @@
 
     "overrides": [
         {
+            "files": "*.jsonc",
+            "options": {
+                "trailingComma": "none"
+            }
+        },
+        {
             "files": "*.yml",
             "options": {
                 "tabWidth": 2

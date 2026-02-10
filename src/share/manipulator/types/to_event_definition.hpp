@@ -72,6 +72,7 @@ public:
 
     switch (event_definition_.get_type()) {
       case event_definition::type::momentary_switch_event:
+      case event_definition::type::from_event:
       case event_definition::type::shell_command:
       case event_definition::type::select_input_source:
       case event_definition::type::set_variable:

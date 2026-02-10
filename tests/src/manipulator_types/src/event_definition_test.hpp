@@ -69,6 +69,21 @@ void run_event_definition_test(void) {
              }));
     }
 
+    // from_event
+    {
+      nlohmann::json json({
+          {"from_event", true},
+          {"modifiers", {
+                            "left_option",
+                        }},
+      });
+      krbn::manipulator::to_event_definition event_definition(json);
+      expect(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::from_event);
+      expect(event_definition.get_modifiers() == std::set<krbn::manipulator::modifier_definition::modifier>({
+                                                     krbn::manipulator::modifier_definition::modifier::left_option,
+                                                 }));
+    }
+
     {
       std::string shell_command = "open /Applications/Safari.app";
       nlohmann::json json({
@@ -77,8 +92,7 @@ void run_event_definition_test(void) {
       krbn::manipulator::to_event_definition event_definition(json);
       expect(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::shell_command);
       expect(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>() == nullptr);
-      expect(event_definition.get_event_definition().get_shell_command() == shell_command);
-      expect(event_definition.get_event_definition().get_input_source_specifiers() == std::nullopt);
+      expect(*(event_definition.get_event_definition().get_if<std::string>()) == shell_command);
     }
     // select_input_source
     {
@@ -91,8 +105,7 @@ void run_event_definition_test(void) {
       krbn::manipulator::to_event_definition event_definition(json);
       expect(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::select_input_source);
       expect(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>() == nullptr);
-      expect(event_definition.get_event_definition().get_shell_command() == std::nullopt);
-      expect(event_definition.get_event_definition().get_input_source_specifiers() == std::vector<pqrs::osx::input_source_selector::specifier>({s}));
+      expect(*(event_definition.get_event_definition().get_if<std::vector<pqrs::osx::input_source_selector::specifier>>()) == std::vector<pqrs::osx::input_source_selector::specifier>({s}));
     }
     // select_input_source (array)
     {
@@ -112,8 +125,7 @@ void run_event_definition_test(void) {
       krbn::manipulator::to_event_definition event_definition(json);
       expect(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::select_input_source);
       expect(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>() == nullptr);
-      expect(event_definition.get_event_definition().get_shell_command() == std::nullopt);
-      expect(event_definition.get_event_definition().get_input_source_specifiers() == specifiers);
+      expect(*(event_definition.get_event_definition().get_if<std::vector<pqrs::osx::input_source_selector::specifier>>()) == specifiers);
     }
     // lazy
     {
@@ -176,8 +188,8 @@ void run_event_definition_test(void) {
       });
 
       krbn::manipulator::to_event_definition event_definition(json);
-      auto pair = event_definition.get_event_definition().get_set_variable();
-      expect(pair != std::nullopt);
+      auto pair = event_definition.get_event_definition().get_if<krbn::manipulator_environment_variable_set_variable>();
+      expect(pair != nullptr);
       expect("variable1"sv == pair->get_name());
       expect(krbn::manipulator_environment_variable_value(42) == pair->get_value());
     }
@@ -190,8 +202,8 @@ void run_event_definition_test(void) {
       });
 
       krbn::manipulator::to_event_definition event_definition(json);
-      auto pair = event_definition.get_event_definition().get_set_variable();
-      expect(pair != std::nullopt);
+      auto pair = event_definition.get_event_definition().get_if<krbn::manipulator_environment_variable_set_variable>();
+      expect(pair != nullptr);
       expect("variable2"sv == pair->get_name());
       expect(krbn::manipulator_environment_variable_value(true) == pair->get_value());
     }
@@ -204,8 +216,8 @@ void run_event_definition_test(void) {
       });
 
       krbn::manipulator::to_event_definition event_definition(json);
-      auto pair = event_definition.get_event_definition().get_set_variable();
-      expect(pair != std::nullopt);
+      auto pair = event_definition.get_event_definition().get_if<krbn::manipulator_environment_variable_set_variable>();
+      expect(pair != nullptr);
       expect("variable3"sv == pair->get_name());
       expect(krbn::manipulator_environment_variable_value("on") == pair->get_value());
     }
@@ -219,8 +231,8 @@ void run_event_definition_test(void) {
       });
 
       krbn::manipulator::to_event_definition event_definition(json);
-      auto pair = event_definition.get_event_definition().get_set_variable();
-      expect(pair != std::nullopt);
+      auto pair = event_definition.get_event_definition().get_if<krbn::manipulator_environment_variable_set_variable>();
+      expect(pair != nullptr);
       expect("variable4"sv == pair->get_name());
       expect(krbn::manipulator_environment_variable_value("up") == pair->get_key_up_value());
     }
@@ -234,8 +246,8 @@ void run_event_definition_test(void) {
       });
 
       krbn::manipulator::to_event_definition event_definition(json);
-      auto pair = event_definition.get_event_definition().get_set_variable();
-      expect(pair != std::nullopt);
+      auto pair = event_definition.get_event_definition().get_if<krbn::manipulator_environment_variable_set_variable>();
+      expect(pair != nullptr);
       expect("variable5"sv == pair->get_name());
       expect(krbn::manipulator_environment_variable_set_variable::type::unset == pair->get_type());
     }

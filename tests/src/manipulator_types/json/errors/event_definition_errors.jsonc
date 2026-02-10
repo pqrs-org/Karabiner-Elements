@@ -59,6 +59,15 @@
         "error": "`pointing_button` error: unknown pointing_button: `\"unknown_pointing_button\"`"
     },
 
+    // from_event
+    {
+        "class": "event_definition",
+        "input": {
+            "from_event": null
+        },
+        "error": "`from_event` must be boolean, but is `null`"
+    },
+
     // any
 
     {

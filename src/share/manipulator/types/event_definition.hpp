@@ -13,6 +13,7 @@ public:
   enum class type {
     none,
     momentary_switch_event,
+    from_event,
     any,
     shell_command,
     select_input_source,
@@ -40,7 +41,7 @@ public:
                                mouse_key,                                                // For type::mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For type::sticky_modifier
                                software_function,                                        // For type::software_function
-                               std::monostate>;                                          // For type::none
+                               std::monostate>;                                          // For type::from_event, type::none
 
   event_definition(void) : type_(type::none),
                            value_(std::monostate()) {
@@ -53,34 +54,9 @@ public:
     return type_;
   }
 
-  const value_t& get_value(void) const {
-    return value_;
-  }
-
   template <typename T>
   const T* get_if(void) const {
     return std::get_if<T>(&value_);
-  }
-
-  std::optional<std::string> get_shell_command(void) const {
-    if (type_ == type::shell_command) {
-      return std::get<std::string>(value_);
-    }
-    return std::nullopt;
-  }
-
-  std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
-    if (type_ == type::select_input_source) {
-      return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
-    }
-    return std::nullopt;
-  }
-
-  std::optional<manipulator_environment_variable_set_variable> get_set_variable(void) const {
-    if (type_ == type::set_variable) {
-      return std::get<manipulator_environment_variable_set_variable>(value_);
-    }
-    return std::nullopt;
   }
 
   std::optional<event_queue::event> to_event(void) const {
@@ -89,6 +65,8 @@ public:
         return std::nullopt;
       case type::momentary_switch_event:
         return event_queue::event(std::get<momentary_switch_event>(value_));
+      case type::from_event:
+        return std::nullopt;
       case type::any:
         return std::nullopt;
       case type::shell_command:
@@ -161,6 +139,23 @@ public:
         value_ = any_type::pointing_button;
       } else {
         throw pqrs::json::unmarshal_error(fmt::format("unknown `{0}`: `{1}`", key, pqrs::json::dump_for_error_message(value)));
+      }
+
+      return true;
+    }
+
+    //
+    // from_event
+    //
+
+    if (key == "from_event") {
+      check_type(json);
+
+      pqrs::json::requires_boolean(value, "`" + key + "`");
+
+      if (value.get<bool>()) {
+        type_ = type::from_event;
+        value_ = std::monostate();
       }
 
       return true;
