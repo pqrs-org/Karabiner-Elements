@@ -7,6 +7,7 @@
     - Added an "Add your own rule using JavaScript" button to the complex modifications viewer.
     - Added an "Open in external editor" button to the complex modifications editor.
     - Added a "Clear user variables" button to EventViewer. (Thanks to @BarakXYZ)
+    - Added `to.from_event`, allowing pressed events to be passed through as-is.
 - 🐛 Bug Fixes
     - Fixed an issue where reordering in Complex Modifications and Profiles didn't work properly when dragging while scrolling.
 - ⚡️ Improvements
