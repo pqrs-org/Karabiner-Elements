@@ -91,6 +91,23 @@ public:
   virtual ~to_event_definition(void) {
   }
 
+  static pqrs::not_null_shared_ptr_t<to_event_definition> make_from_momentary_switch_event(const momentary_switch_event& value,
+                                                                                           const to_event_definition& base) {
+    auto result = pqrs::not_null_shared_ptr_t<to_event_definition>(std::make_shared<to_event_definition>());
+
+    result->event_definition_ = event_definition::make_from_momentary_switch_event(value);
+    result->set_modifiers(base.get_modifiers());
+    result->set_lazy(base.get_lazy());
+    result->set_repeat(base.get_repeat());
+    result->set_halt(base.get_halt());
+    result->set_hold_down_milliseconds(base.get_hold_down_milliseconds());
+    for (const auto& condition : base.get_condition_manager().get_conditions()) {
+      result->get_condition_manager().push_back_condition(condition);
+    }
+
+    return result;
+  }
+
   const event_definition& get_event_definition(void) const {
     return event_definition_;
   }
@@ -142,6 +159,9 @@ public:
 
   const condition_manager& get_condition_manager(void) const {
     return condition_manager_;
+  }
+  condition_manager& get_condition_manager(void) {
+    return const_cast<condition_manager&>(static_cast<const to_event_definition&>(*this).get_condition_manager());
   }
 
   bool needs_virtual_hid_pointing(void) const {
