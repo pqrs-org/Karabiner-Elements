@@ -1,0 +1,62 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "4"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 6,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 11,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "tab"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 16,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 21,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "4"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 26,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 31,
+        "type": "keyboard_input"
+    }
+]

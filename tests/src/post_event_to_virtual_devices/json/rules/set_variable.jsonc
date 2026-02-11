@@ -2,32 +2,16 @@
     {
         "description": "a -> flag_a (old style)",
         "type": "basic",
-        "from": {
-            "key_code": "a"
-        },
-        "to": [
-            {
-                "set_variable": {
-                    "name": "flag_a",
-                    "value": 1
-                }
-            }
-        ],
+        "from": { "key_code": "a" },
+        "to": [{ "set_variable": { "name": "flag_a", "value": 1 } }],
         "to_after_key_up": [
-            {
-                "set_variable": {
-                    "name": "flag_a",
-                    "value": 0
-                }
-            }
+            { "set_variable": { "name": "flag_a", "value": 0 } }
         ]
     },
     {
         "description": "b -> flag_b (new style)",
         "type": "basic",
-        "from": {
-            "key_code": "b"
-        },
+        "from": { "key_code": "b" },
         "to": [
             {
                 "set_variable": {
@@ -41,9 +25,7 @@
     {
         "description": "c -> flag_c (expression)",
         "type": "basic",
-        "from": {
-            "key_code": "c"
-        },
+        "from": { "key_code": "c" },
         "to": [
             {
                 "set_variable": {
@@ -80,99 +62,74 @@
             }
         ]
     },
+    // f -> ++flag_shared (expression)
+    {
+        "type": "basic",
+        "from": { "key_code": "f" },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "flag_shared",
+                    "expression": "flag_shared + 1"
+                }
+            }
+        ]
+    },
+    // g -> reset flag_shared (expression)
+    {
+        "type": "basic",
+        "from": { "key_code": "g" },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "flag_shared",
+                    "expression": "flag_shared - 1"
+                }
+            }
+        ]
+    },
     {
         "description": "tab -> escape if flag_a on",
         "type": "basic",
-        "from": {
-            "key_code": "tab"
-        },
-        "to": [
-            {
-                "key_code": "escape"
-            }
-        ],
-        "conditions": [
-            {
-                "name": "flag_a",
-                "type": "variable_if",
-                "value": 1
-            }
-        ]
+        "from": { "key_code": "tab" },
+        "to": [{ "key_code": "escape" }],
+        "conditions": [{ "name": "flag_a", "type": "variable_if", "value": 1 }]
     },
     {
         "description": "tab -> spacebar if flag_b on",
         "type": "basic",
-        "from": {
-            "key_code": "tab"
-        },
-        "to": [
-            {
-                "key_code": "spacebar"
-            }
-        ],
-        "conditions": [
-            {
-                "name": "flag_b",
-                "type": "variable_if",
-                "value": 1
-            }
-        ]
+        "from": { "key_code": "tab" },
+        "to": [{ "key_code": "spacebar" }],
+        "conditions": [{ "name": "flag_b", "type": "variable_if", "value": 1 }]
     },
     {
         "description": "tab -> 1 if flag_c is 10",
         "type": "basic",
-        "from": {
-            "key_code": "tab"
-        },
-        "to": [
-            {
-                "key_code": "1"
-            }
-        ],
-        "conditions": [
-            {
-                "name": "flag_c",
-                "type": "variable_if",
-                "value": 10
-            }
-        ]
+        "from": { "key_code": "tab" },
+        "to": [{ "key_code": "1" }],
+        "conditions": [{ "name": "flag_c", "type": "variable_if", "value": 10 }]
     },
     {
         "description": "tab -> 2 if flag_c is 5",
         "type": "basic",
-        "from": {
-            "key_code": "tab"
-        },
-        "to": [
-            {
-                "key_code": "2"
-            }
-        ],
-        "conditions": [
-            {
-                "name": "flag_c",
-                "type": "variable_if",
-                "value": 5
-            }
-        ]
+        "from": { "key_code": "tab" },
+        "to": [{ "key_code": "2" }],
+        "conditions": [{ "name": "flag_c", "type": "variable_if", "value": 5 }]
     },
     {
         "description": "tab -> 3 if flag_d is 1",
         "type": "basic",
-        "from": {
-            "key_code": "tab"
-        },
-        "to": [
-            {
-                "key_code": "3"
-            }
-        ],
+        "from": { "key_code": "tab" },
+        "to": [{ "key_code": "3" }],
+        "conditions": [{ "name": "flag_d", "type": "variable_if", "value": 1 }]
+    },
+    {
+        "description": "tab -> 4 if flag_shared is 1",
+        "type": "basic",
+        "from": { "key_code": "tab" },
+        "to": [{ "key_code": "4" }],
         "conditions": [
-            {
-                "name": "flag_d",
-                "type": "variable_if",
-                "value": 1
-            }
+            { "name": "flag_shared", "type": "variable_if", "value": 1 }
         ]
     }
 ]

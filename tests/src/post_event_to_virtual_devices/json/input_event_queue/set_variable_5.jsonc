@@ -1,0 +1,195 @@
+[
+    // a variable shared between two expressions
+
+    // ++flag_shared
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "f" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 2 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "f" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "f" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 4 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "f" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // tab -> 4 because flag_shared == 1
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 6 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 8 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // ++flag_shared
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "f" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 10 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "f" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "f" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 12 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "f" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // Keep tab because flag_shared == 2
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 14 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 16 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // --flag_shared
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "g" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 18 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "g" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "g" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 20 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "g" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // tab -> 4 because flag_shared == 1
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 22 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 24 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    }
+]

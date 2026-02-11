@@ -870,6 +870,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_4.json"
     },
     {
+        "description": "set_variable (a variable shared between two expressions)",
+        "rules": ["json/rules/set_variable.jsonc"],
+        "input_event_queue": "json/input_event_queue/set_variable_5.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_5.json"
+    },
+    {
         "description": "mouse_basic_1",
         "rules": ["json/rules/mouse_basic.jsonc"],
         "input_event_queue": "json/input_event_queue/mouse_basic_1.jsonc",
