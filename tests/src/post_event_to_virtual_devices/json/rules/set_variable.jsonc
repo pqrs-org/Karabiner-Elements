@@ -54,6 +54,32 @@
             }
         ]
     },
+    // d -> flag_d (expression toggle)
+    {
+        "type": "basic",
+        "from": { "key_code": "d" },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "flag_d",
+                    "expression": "flag_d == 0 ? 1 : 0"
+                }
+            }
+        ]
+    },
+    // e -> unset flag_d
+    {
+        "type": "basic",
+        "from": { "key_code": "e" },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "flag_d",
+                    "type": "unset"
+                }
+            }
+        ]
+    },
     {
         "description": "tab -> escape if flag_a on",
         "type": "basic",
@@ -127,6 +153,25 @@
                 "name": "flag_c",
                 "type": "variable_if",
                 "value": 5
+            }
+        ]
+    },
+    {
+        "description": "tab -> 3 if flag_d is 1",
+        "type": "basic",
+        "from": {
+            "key_code": "tab"
+        },
+        "to": [
+            {
+                "key_code": "3"
+            }
+        ],
+        "conditions": [
+            {
+                "name": "flag_d",
+                "type": "variable_if",
+                "value": 1
             }
         ]
     }
