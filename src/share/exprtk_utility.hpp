@@ -112,6 +112,19 @@ public:
     return true;
   }
 
+  bool unset_variable(const std::string& name) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    // Do not use remove_variable after compile; set the same initial values as zeroing_unknown_symbol_resolver instead.
+    if (is_string_variable_name(name)) {
+      set_string_variable_(name, "");
+    } else {
+      set_variable_(name, 0.0);
+    }
+
+    return true;
+  }
+
   double value(void) const noexcept {
     std::lock_guard<std::mutex> lock(mutex_);
 

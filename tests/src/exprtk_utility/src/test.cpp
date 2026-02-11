@@ -113,6 +113,28 @@ sin(radian) * m;
     expect(6.28_d == expression->value());
   };
 
+  "unset_variable (double)"_test = [] {
+    auto expression = krbn::exprtk_utility::compile("example_variable");
+    expect(0_i64 == expression->value<int64_t>());
+
+    expression->set_variable("example_variable", 42.0);
+    expect(42_i64 == expression->value<int64_t>());
+
+    expression->unset_variable("example_variable");
+    expect(0_i64 == expression->value<int64_t>());
+  };
+
+  "unset_variable (string)"_test = [] {
+    auto expression = krbn::exprtk_utility::compile("example_string like 'hello*'");
+    expect(0.0_d == expression->value());
+
+    expect(true == expression->set_variable("example_string", "hello world"));
+    expect(1.0_d == expression->value());
+
+    expression->unset_variable("example_string");
+    expect(0.0_d == expression->value());
+  };
+
   "value<int64_t>"_test = [] {
     auto expression = krbn::exprtk_utility::compile("42");
     expect(42_i64 == expression->value<int64_t>());
