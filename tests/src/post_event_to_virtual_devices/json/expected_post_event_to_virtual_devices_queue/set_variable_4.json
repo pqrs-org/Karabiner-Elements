@@ -63,7 +63,7 @@
         "keyboard_input": {
             "keys": [
                 {
-                    "key_code": "3"
+                    "key_code": "tab"
                 }
             ],
             "modifiers": []
@@ -83,7 +83,7 @@
         "keyboard_input": {
             "keys": [
                 {
-                    "key_code": "tab"
+                    "key_code": "3"
                 }
             ],
             "modifiers": []
@@ -97,26 +97,6 @@
             "modifiers": []
         },
         "time_stamp": 50,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "3"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 55,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 60,
         "type": "keyboard_input"
     }
 ]

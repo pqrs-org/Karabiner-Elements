@@ -10,6 +10,7 @@
     - Added `to.from_event`, allowing pressed events to be passed through as-is.
 - 🐛 Bug Fixes
     - Fixed an issue where reordering in Complex Modifications and Profiles didn't work properly when dragging while scrolling.
+    - Fixed an issue where variables in expressions were not properly initialized when unset.
 - ⚡️ Improvements
     - Changed to call `exit` instead of `abort` to suppress crash reports when a fatal error prevents CFRunLoop from running in background processes.
 

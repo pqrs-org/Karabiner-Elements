@@ -101,10 +101,12 @@ public:
   void set_variable(const std::string& name, const manipulator_environment_variable_value& value) {
     // logger::get_logger()->info("set_variable {0} {1}", name, value);
     variables_[name] = value;
+    unset_variable_names_.erase(name);
   }
 
   void unset_variable(const std::string& name) {
     variables_.erase(name);
+    unset_variable_names_.insert(name);
   }
 
   std::vector<std::string> get_variable_names(void) const {
@@ -124,10 +126,14 @@ public:
     auto now = std::chrono::system_clock::now();
     auto now_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
     auto now_int64 = static_cast<int64_t>(now_milliseconds.count());
-    variables_["system.now.milliseconds"] = manipulator_environment_variable_value(now_int64);
+    set_variable("system.now.milliseconds", manipulator_environment_variable_value(now_int64));
   }
 
   void apply_to_expression_variable(pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> expression) const {
+    for (const auto& name : unset_variable_names_) {
+      expression->unset_variable(name);
+    }
+
     for (const auto& [name, value] : variables_) {
       value.apply_to_expression_variable(name, expression);
     }
@@ -151,6 +157,8 @@ private:
   pqrs::osx::frontmost_application_monitor::application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, manipulator_environment_variable_value> variables_;
+  // Used to remove unset variables from expression_wrapper.
+  std::unordered_set<std::string> unset_variable_names_;
   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
   virtual_hid_devices_state virtual_hid_devices_state_;
 };

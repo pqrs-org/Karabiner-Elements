@@ -1,7 +1,7 @@
 [
     // expression and unset
 
-    // Keep tab
+    // Keep tab (flag_d == 0)
     {
         "device_id": 1,
         "event": {
@@ -65,7 +65,7 @@
         "validity": true
     },
 
-    // tab -> 3
+    // tab -> 3 (flag_d == 1)
     {
         "device_id": 1,
         "event": {
@@ -129,7 +129,7 @@
         "validity": true
     },
 
-    // Keep tab
+    // Keep tab (flag_d == 0)
     {
         "device_id": 1,
         "event": {
@@ -152,70 +152,6 @@
             "type": "momentary_switch_event"
         },
         "event_time_stamp": { "time_stamp": 20 },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": { "key_code": "tab" },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
-    },
-
-    // Set flag_d before unset
-    {
-        "device_id": 1,
-        "event": {
-            "momentary_switch_event": { "key_code": "d" },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": { "time_stamp": 22 },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": { "key_code": "d" },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "momentary_switch_event": { "key_code": "d" },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": { "time_stamp": 24 },
-        "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": { "key_code": "d" },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
-    },
-
-    // tab -> 3
-    {
-        "device_id": 1,
-        "event": {
-            "momentary_switch_event": { "key_code": "tab" },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": { "time_stamp": 26 },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": { "key_code": "tab" },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "momentary_switch_event": { "key_code": "tab" },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": { "time_stamp": 28 },
         "event_type": "key_up",
         "lazy": false,
         "original_event": {
@@ -257,7 +193,7 @@
         "validity": true
     },
 
-    // Keep tab
+    // Keep tab (flag_d == 0)
     {
         "device_id": 1,
         "event": {
@@ -289,7 +225,7 @@
         "validity": true
     },
 
-    // flag_d was unset, so it is 0 in expression_wrapper, and toggling makes it 1.
+    // Toggle flag_d. flag_d was unset, so it is 0 in expression_wrapper, and toggling makes it 1.
     {
         "device_id": 1,
         "event": {
@@ -321,7 +257,7 @@
         "validity": true
     },
 
-    // tab -> 3
+    // tab -> 3 (flag_d == 1)
     {
         "device_id": 1,
         "event": {
