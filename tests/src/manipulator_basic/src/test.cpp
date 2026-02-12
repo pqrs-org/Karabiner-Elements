@@ -5,6 +5,7 @@
 #include "to_delayed_action_test.hpp"
 #include "to_if_alone_test.hpp"
 #include "to_if_held_down_test.hpp"
+#include "to_if_other_key_pressed_test.hpp"
 
 int main(void) {
   run_errors_test();
@@ -14,5 +15,6 @@ int main(void) {
   run_to_delayed_action_test();
   run_to_if_alone_test();
   run_to_if_held_down_test();
+  run_to_if_other_key_pressed_test();
   return 0;
 }
