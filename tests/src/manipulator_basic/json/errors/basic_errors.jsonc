@@ -113,6 +113,59 @@
         "error": "`to_if_held_down` error: json must be object, but is `null`"
     },
 
+    // basic.to_if_other_key_pressed
+
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": null
+        },
+        "error": "`to_if_other_key_pressed` error: json must be object or array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": [null]
+        },
+        "error": "`to_if_other_key_pressed` error: entry error: json must be object, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": {
+                "other_keys": null
+            }
+        },
+        "error": "`to_if_other_key_pressed` error: `other_keys` must be object or array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": {
+                "other_keys": {}
+            }
+        },
+        "error": "`to_if_other_key_pressed` error: `other_keys` entry error: event is not specified: `{}`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": {
+                "to": null
+            }
+        },
+        "error": "`to_if_other_key_pressed` error: `to` must be object or array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": {
+                "to": {}
+            }
+        },
+        "error": "`to_if_other_key_pressed` error: `to` error: event type is invalid: `{}`"
+    },
+
     // basic.to_delayed_action
 
     {

@@ -9,6 +9,7 @@
 #include "manipulated_original_event/manipulated_original_event.hpp"
 #include "to_delayed_action.hpp"
 #include "to_if_held_down.hpp"
+#include "to_if_other_key_pressed.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <unordered_set>
@@ -106,6 +107,13 @@ public:
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
           }
 
+        } else if (key == "to_if_other_key_pressed") {
+          try {
+            to_if_other_key_pressed_ = std::make_shared<to_if_other_key_pressed>(value);
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+          }
+
         } else if (key == "to_delayed_action") {
           try {
             to_delayed_action_ = std::make_shared<to_delayed_action>(value);
@@ -189,6 +197,12 @@ public:
 
       if (front_input_event.get_validity() == validity::invalid) {
         return manipulate_result::passed;
+      }
+
+      // ----------------------------------------
+
+      if (to_if_other_key_pressed_) {
+        to_if_other_key_pressed_->handle_other_key_pressed(front_input_event);
       }
 
       // ----------------------------------------
@@ -606,6 +620,23 @@ public:
                                     std::chrono::milliseconds(parameters_->get_basic_to_if_held_down_threshold_milliseconds()));
           }
 
+          // to_if_other_key_pressed_
+
+          if (to_if_other_key_pressed_) {
+            switch (front_input_event.get_event_type()) {
+              case event_type::key_down:
+                to_if_other_key_pressed_->setup(front_input_event,
+                                                current_manipulated_original_event,
+                                                output_event_queue);
+                break;
+              case event_type::key_up:
+                to_if_other_key_pressed_->reset_if_needed(current_manipulated_original_event);
+                break;
+              case event_type::single:
+                break;
+            }
+          }
+
           // to_delayed_action_
 
           if (to_delayed_action_) {
@@ -648,6 +679,12 @@ public:
 
     if (to_if_held_down_) {
       if (to_if_held_down_->needs_virtual_hid_pointing()) {
+        return true;
+      }
+    }
+
+    if (to_if_other_key_pressed_) {
+      if (to_if_other_key_pressed_->needs_virtual_hid_pointing()) {
         return true;
       }
     }
@@ -706,6 +743,10 @@ public:
     return to_if_held_down_;
   }
 
+  std::shared_ptr<to_if_other_key_pressed> get_to_if_other_key_pressed(void) const {
+    return to_if_other_key_pressed_;
+  }
+
   std::shared_ptr<to_delayed_action> get_to_delayed_action(void) const {
     return to_delayed_action_;
   }
@@ -754,6 +795,7 @@ private:
   to_event_definitions to_after_key_up_;
   to_event_definitions to_if_alone_;
   std::shared_ptr<to_if_held_down> to_if_held_down_;
+  std::shared_ptr<to_if_other_key_pressed> to_if_other_key_pressed_;
   std::shared_ptr<to_delayed_action> to_delayed_action_;
 
   std::vector<pqrs::not_null_shared_ptr_t<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
