@@ -9,3 +9,9 @@ pkgroot/
 build/
 tmp/
 .ai/internal/
+
+.ai/todos/*.bike
+
+.beads/
+
+.rise/
