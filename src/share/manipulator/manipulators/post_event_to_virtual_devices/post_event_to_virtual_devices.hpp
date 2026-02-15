@@ -10,7 +10,6 @@
 #include "notification_message_manager.hpp"
 #include "queue.hpp"
 #include "types.hpp"
-#include <nlohmann/json.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
 namespace krbn {
