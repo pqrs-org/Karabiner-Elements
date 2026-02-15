@@ -176,6 +176,15 @@ public:
           }
           break;
 
+        case event_queue::event::type::send_user_command:
+          if (auto user_command = front_input_event.get_event().get_user_command()) {
+            if (front_input_event.get_event_type() == event_type::key_down) {
+              queue_.push_back_send_user_command_event(*user_command,
+                                                       front_input_event.get_event_time_stamp().get_time_stamp());
+            }
+          }
+          break;
+
         case event_queue::event::type::select_input_source:
           if (auto input_source_specifiers = front_input_event.get_event().get_input_source_specifiers()) {
             if (front_input_event.get_event_type() == event_type::key_down) {

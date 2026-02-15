@@ -239,6 +239,7 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
       case event_definition::type::none:
       case event_definition::type::from_event:
       case event_definition::type::shell_command:
+      case event_definition::type::send_user_command:
       case event_definition::type::select_input_source:
       case event_definition::type::set_variable:
       case event_definition::type::set_notification_message:

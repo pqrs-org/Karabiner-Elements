@@ -283,6 +283,21 @@ public:
   }
 
   // core_service -> console_user_server
+  void async_send_user_command(const nlohmann::json& user_command) const {
+    enqueue_to_dispatcher([this, user_command] {
+      nlohmann::json json{
+          {"operation_type", operation_type::send_user_command},
+          {"shared_secret", shared_secret_},
+          {"user_command", user_command},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
+  // core_service -> console_user_server
   void async_select_input_source(std::shared_ptr<std::vector<pqrs::osx::input_source_selector::specifier>> input_source_specifiers) {
     enqueue_to_dispatcher([this, input_source_specifiers] {
       if (input_source_specifiers) {

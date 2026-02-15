@@ -105,6 +105,7 @@ public:
             case event_queue::event::type::momentary_switch_event:
             case event_queue::event::type::pointing_motion:
             case event_queue::event::type::shell_command:
+            case event_queue::event::type::send_user_command:
             case event_queue::event::type::select_input_source:
             case event_queue::event::type::set_notification_message:
             case event_queue::event::type::mouse_key:

@@ -24,6 +24,7 @@ public:
     pointing_motion,
     // virtual events
     shell_command,
+    send_user_command,
     select_input_source,
     set_variable,
     set_notification_message,
@@ -47,6 +48,7 @@ public:
                                pointing_motion,                                          // For type::pointing_motion
                                int64_t,                                                  // For type::caps_lock_state_changed
                                std::string,                                              // For shell_command
+                               nlohmann::json,                                           // For send_user_command
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                manipulator_environment_variable_set_variable,            // For set_variable
                                notification_message,                                     // For set_notification_message
@@ -80,6 +82,8 @@ public:
             result.value_ = value.get<int64_t>();
           } else if (key == "shell_command") {
             result.value_ = value.get<std::string>();
+          } else if (key == "user_command") {
+            result.value_ = value.get<nlohmann::json>();
           } else if (key == "input_source_specifiers") {
             result.value_ = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
           } else if (key == "set_variable") {
@@ -138,6 +142,12 @@ public:
       case type::shell_command:
         if (auto v = get_shell_command()) {
           json["shell_command"] = *v;
+        }
+        break;
+
+      case type::send_user_command:
+        if (auto v = get_user_command()) {
+          json["user_command"] = *v;
         }
         break;
 
@@ -224,6 +234,13 @@ public:
     event e;
     e.type_ = type::shell_command;
     e.value_ = shell_command;
+    return e;
+  }
+
+  static event make_send_user_command_event(const nlohmann::json& user_command) {
+    event e;
+    e.type_ = type::send_user_command;
+    e.value_ = user_command;
     return e;
   }
 
@@ -374,6 +391,16 @@ public:
     return std::nullopt;
   }
 
+  std::optional<nlohmann::json> get_user_command(void) const {
+    try {
+      if (type_ == type::send_user_command) {
+        return std::get<nlohmann::json>(value_);
+      }
+    } catch (std::bad_variant_access&) {
+    }
+    return std::nullopt;
+  }
+
   std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
     try {
       if (type_ == type::select_input_source) {
@@ -457,6 +484,7 @@ private:
       TO_C_STRING(momentary_switch_event);
       TO_C_STRING(pointing_motion);
       TO_C_STRING(shell_command);
+      TO_C_STRING(send_user_command);
       TO_C_STRING(select_input_source);
       TO_C_STRING(set_variable);
       TO_C_STRING(set_notification_message);
@@ -491,6 +519,7 @@ private:
     TO_TYPE(momentary_switch_event);
     TO_TYPE(pointing_motion);
     TO_TYPE(shell_command);
+    TO_TYPE(send_user_command);
     TO_TYPE(select_input_source);
     TO_TYPE(set_variable);
     TO_TYPE(set_notification_message);

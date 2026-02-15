@@ -95,6 +95,16 @@
         "error": "`shell_command` must be string, but is `null`"
     },
 
+    // send_user_command
+
+    {
+        "class": "event_definition",
+        "input": {
+            "send_user_command": null
+        },
+        "error": "`send_user_command` must be object, but is `null`"
+    },
+
     // select_input_source
 
     {

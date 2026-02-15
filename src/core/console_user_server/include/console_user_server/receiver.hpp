@@ -5,6 +5,7 @@
 #include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
+#include "send_user_command_handler.hpp"
 #include "services_utility.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
@@ -21,14 +22,12 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(
-      std::weak_ptr<pqrs::osx::input_source_selector::selector> weak_input_source_selector,
-      std::weak_ptr<shell_command_handler> weak_shell_command_handler,
-      std::weak_ptr<software_function_handler> weak_software_function_handler)
+  receiver(std::weak_ptr<software_function_handler> weak_software_function_handler)
       : dispatcher_client(),
-        weak_input_source_selector_(weak_input_source_selector),
-        weak_shell_command_handler_(weak_shell_command_handler),
-        weak_software_function_handler_(weak_software_function_handler) {
+        weak_software_function_handler_(weak_software_function_handler),
+        input_source_selector_(std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_)),
+        shell_command_handler_(std::make_unique<shell_command_handler>()),
+        send_user_command_handler_(std::make_unique<send_user_command_handler>()) {
     // Remove old files and prepare a socket directory.
     prepare_console_user_server_socket_directory();
 
@@ -117,6 +116,7 @@ public:
           case operation_type::unregister_notification_window_agent:
           case operation_type::select_input_source:
           case operation_type::shell_command_execution:
+          case operation_type::send_user_command:
           case operation_type::software_function:
             if (verified_peer_manager_) {
               if (verified_peer_manager_->verify_shared_secret(sender_endpoint->path(),
@@ -174,17 +174,24 @@ public:
                     break;
 
                   case operation_type::select_input_source:
-                    if (auto s = weak_input_source_selector_.lock()) {
+                    if (input_source_selector_) {
                       using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
                       auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
-                      s->async_select(std::make_shared<specifiers_t>(specifiers));
+                      input_source_selector_->async_select(std::make_shared<specifiers_t>(specifiers));
                     }
                     break;
 
                   case operation_type::shell_command_execution:
-                    if (auto h = weak_shell_command_handler_.lock()) {
+                    if (shell_command_handler_) {
                       auto shell_command = json.at("shell_command").get<std::string>();
-                      h->run(shell_command);
+                      shell_command_handler_->run(shell_command);
+                    }
+                    break;
+
+                  case operation_type::send_user_command:
+                    if (send_user_command_handler_) {
+                      auto user_command = json.at("user_command").get<nlohmann::json>();
+                      send_user_command_handler_->run(user_command);
                     }
                     break;
 
@@ -234,6 +241,10 @@ public:
 
   virtual ~receiver(void) {
     detach_from_dispatcher([this] {
+      input_source_selector_ = nullptr;
+      shell_command_handler_ = nullptr;
+      send_user_command_handler_ = nullptr;
+
       server_ = nullptr;
       verified_peer_manager_ = nullptr;
     });
@@ -255,9 +266,10 @@ private:
     chmod(directory_path.c_str(), 0755);
   }
 
-  std::weak_ptr<pqrs::osx::input_source_selector::selector> weak_input_source_selector_;
-  std::weak_ptr<shell_command_handler> weak_shell_command_handler_;
   std::weak_ptr<software_function_handler> weak_software_function_handler_;
+  std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
+  std::unique_ptr<shell_command_handler> shell_command_handler_;
+  std::unique_ptr<send_user_command_handler> send_user_command_handler_;
 
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verified_peer_manager_;
   std::unique_ptr<pqrs::local_datagram::server> server_;

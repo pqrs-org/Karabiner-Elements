@@ -147,6 +147,19 @@ void run_event_queue_test(void) {
     }
     {
       nlohmann::json expected;
+      auto user_command = nlohmann::json::object({
+          {"endpoint", "/tmp/user_command_receiver.sock"},
+          {"payload", nlohmann::json({"hello", "world"})},
+      });
+      expected["type"] = "send_user_command";
+      expected["user_command"] = user_command;
+      auto json = krbn::event_queue::event::make_send_user_command_event(user_command).to_json();
+      expect(json == expected);
+      auto event_from_json = krbn::event_queue::event::make_from_json(json);
+      expect(json == event_from_json.to_json());
+    }
+    {
+      nlohmann::json expected;
       expected["type"] = "select_input_source";
       expected["input_source_specifiers"] = nlohmann::json::array();
       expected["input_source_specifiers"].push_back(nlohmann::json::object());

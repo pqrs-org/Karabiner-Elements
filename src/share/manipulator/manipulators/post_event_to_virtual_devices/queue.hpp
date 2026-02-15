@@ -23,6 +23,7 @@ public:
       generic_desktop_input,
       pointing_input,
       shell_command,
+      send_user_command,
       select_input_source,
       software_function,
     };
@@ -68,6 +69,15 @@ public:
       event e;
       e.type_ = type::shell_command;
       e.value_ = shell_command;
+      e.time_stamp_ = time_stamp;
+      return e;
+    }
+
+    static event make_send_user_command_event(const nlohmann::json& user_command,
+                                              absolute_time_point time_stamp) {
+      event e;
+      e.type_ = type::send_user_command;
+      e.value_ = user_command;
       e.time_stamp_ = time_stamp;
       return e;
     }
@@ -148,6 +158,12 @@ public:
           }
           break;
 
+        case type::send_user_command:
+          if (auto v = get_user_command()) {
+            json["user_command"] = *v;
+          }
+          break;
+
         case type::select_input_source:
           if (auto v = get_input_source_specifiers()) {
             json["input_source_specifiers"] = *v;
@@ -217,6 +233,13 @@ public:
       return std::nullopt;
     }
 
+    std::optional<nlohmann::json> get_user_command(void) const {
+      if (type_ == type::send_user_command) {
+        return std::get<nlohmann::json>(value_);
+      }
+      return std::nullopt;
+    }
+
     std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
       if (type_ == type::select_input_source) {
         return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
@@ -258,6 +281,7 @@ public:
         TO_C_STRING(generic_desktop_input);
         TO_C_STRING(pointing_input);
         TO_C_STRING(shell_command);
+        TO_C_STRING(send_user_command);
         TO_C_STRING(select_input_source);
         TO_C_STRING(software_function);
       }
@@ -273,6 +297,7 @@ public:
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input,
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input,
                  std::string,                                              // For shell_command
+                 nlohmann::json,                                           // For send_user_command
                  std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                  software_function                                         // For software_function
                  >
@@ -440,6 +465,15 @@ public:
     events_.push_back(e);
   }
 
+  void push_back_send_user_command_event(const nlohmann::json& user_command,
+                                         absolute_time_point time_stamp) {
+    // Do not call adjust_time_stamp.
+    auto e = event::make_send_user_command_event(user_command,
+                                                 time_stamp);
+
+    events_.push_back(e);
+  }
+
   void push_back_select_input_source_event(const std::vector<pqrs::osx::input_source_selector::specifier>& input_source_specifiers,
                                            absolute_time_point time_stamp) {
     // Do not call adjust_time_stamp.
@@ -522,6 +556,11 @@ public:
             if (auto shell_command = e.get_shell_command()) {
               if (auto client = weak_console_user_server_client.lock()) {
                 client->async_shell_command_execution(*shell_command);
+              }
+            }
+            if (auto user_command = e.get_user_command()) {
+              if (auto client = weak_console_user_server_client.lock()) {
+                client->async_send_user_command(*user_command);
               }
             }
             if (auto input_source_specifiers = e.get_input_source_specifiers()) {
