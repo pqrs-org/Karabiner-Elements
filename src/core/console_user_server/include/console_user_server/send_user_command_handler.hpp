@@ -61,9 +61,7 @@ public:
         auto payload_ptr = std::make_shared<std::string>(std::move(payload));
         asio::post(io_context_, [this, endpoint, payload_ptr] {
           if (!send_datagram(endpoint, *payload_ptr)) {
-            logger::get_logger()->error("send_user_command: send failed to {}", endpoint);
-          } else {
-            logger::get_logger()->info("send_user_command: sent to {}", endpoint);
+            logger::get_logger()->warn("send_user_command: send failed to {}", endpoint);
           }
         });
 
@@ -82,7 +80,7 @@ private:
     asio::error_code error_code;
     socket_.open(asio::local::datagram_protocol(), error_code);
     if (error_code) {
-      logger::get_logger()->error("send_user_command: socket.open failed: {}", error_code.message());
+      logger::get_logger()->warn("send_user_command: socket.open failed: {}", error_code.message());
       return false;
     }
 
@@ -95,7 +93,7 @@ private:
     asio::local::datagram_protocol::endpoint local_endpoint(path.string());
     socket_.bind(local_endpoint, error_code);
     if (error_code) {
-      logger::get_logger()->error("send_user_command: socket.bind failed: {}", error_code.message());
+      logger::get_logger()->warn("send_user_command: socket.bind failed: {}", error_code.message());
       socket_.close();
       return false;
     }
@@ -106,7 +104,7 @@ private:
   bool send_datagram(const std::string& endpoint,
                      const std::string& payload) {
     if (endpoint.size() >= sizeof(((struct sockaddr_un*)nullptr)->sun_path)) {
-      logger::get_logger()->error("send_user_command: endpoint path too long: {}", endpoint);
+      logger::get_logger()->warn("send_user_command: endpoint path too long: {}", endpoint);
       return false;
     }
 
@@ -118,7 +116,7 @@ private:
     asio::local::datagram_protocol::endpoint destination(endpoint);
     auto bytes_sent = socket_.send_to(asio::buffer(payload), destination, 0, error_code);
     if (error_code) {
-      logger::get_logger()->error("send_user_command: send_to failed: {}", error_code.message());
+      logger::get_logger()->warn("send_user_command: send_to failed: {}", error_code.message());
       return false;
     }
 
