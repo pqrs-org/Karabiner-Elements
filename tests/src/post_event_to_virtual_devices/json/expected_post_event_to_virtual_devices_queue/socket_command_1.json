@@ -1,8 +1,0 @@
-[
-    {
-        "socket_command": "{\"endpoint\":\"/tmp/krbn_test_nonexistent_socket_endpoint.sock\",\"command\":\"RUN open-app-toggle:Safari\"}",
-        "time_stamp": 1000,
-        "type": "socket_command"
-    }
-]
-
