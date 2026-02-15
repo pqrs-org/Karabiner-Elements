@@ -16,7 +16,6 @@
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 #include <unistd.h>
-#include <atomic>
 #include <vector>
 
 namespace krbn {
@@ -46,10 +45,6 @@ public:
     });
   }
 
-  bool is_started(void) const noexcept {
-    return started_.load(std::memory_order_relaxed);
-  }
-
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       if (client_) {
@@ -65,7 +60,6 @@ public:
                                                                find_console_user_server_socket_file_path(),
                                                                client_socket_file_path,
                                                                constants::local_datagram_buffer_size);
-      started_.store(true, std::memory_order_relaxed);
       client_->set_server_check_interval(std::chrono::milliseconds(3000));
       client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
       client_->set_reconnect_interval(std::chrono::milliseconds(1000));
@@ -289,12 +283,12 @@ public:
   }
 
   // core_service -> console_user_server
-  void async_socket_command_execution(const std::string& socket_command_json) const {
-    enqueue_to_dispatcher([this, socket_command_json] {
+  void async_send_user_command(const nlohmann::json& user_command) const {
+    enqueue_to_dispatcher([this, user_command] {
       nlohmann::json json{
-          {"operation_type", operation_type::socket_command_execution},
+          {"operation_type", operation_type::send_user_command},
           {"shared_secret", shared_secret_},
-          {"socket_command", socket_command_json},
+          {"user_command", user_command},
       };
 
       if (client_) {
@@ -395,12 +389,10 @@ private:
 
   void stop(void) {
     if (!client_) {
-      started_.store(false, std::memory_order_relaxed);
       return;
     }
 
     client_ = nullptr;
-    started_.store(false, std::memory_order_relaxed);
 
     logger::get_logger()->info("console_user_server_client is stopped.");
   }
@@ -409,7 +401,6 @@ private:
   std::optional<std::string> client_socket_directory_name_;
 
   std::unique_ptr<pqrs::local_datagram::client> client_;
-  std::atomic<bool> started_{false};
   std::vector<uint8_t> shared_secret_;
 };
 } // namespace krbn

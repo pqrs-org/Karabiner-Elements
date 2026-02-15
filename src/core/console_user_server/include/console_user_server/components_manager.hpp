@@ -12,14 +12,10 @@
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "services_utility.hpp"
-#include "shell_command_handler.hpp"
-#include "socket_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
-#include <pqrs/osx/input_source_selector.hpp>
-#include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <pqrs/osx/json_file_monitor.hpp>
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences_monitor.hpp>
@@ -124,58 +120,6 @@ private:
       stop_child_components();
     });
 
-    core_service_client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
-
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<operation_type>()) {
-            case operation_type::select_input_source: {
-              using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
-              auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
-              if (input_source_selector_) {
-                input_source_selector_->async_select(std::make_shared<specifiers_t>(specifiers));
-              }
-              break;
-            }
-
-            case operation_type::shell_command_execution: {
-              auto shell_command = json.at("shell_command").get<std::string>();
-              if (shell_command_handler_) {
-                shell_command_handler_->run(shell_command);
-              }
-              break;
-            }
-
-            case operation_type::socket_command_execution: {
-              auto socket_command = json.at("socket_command").get<std::string>();
-              if (socket_command_handler_) {
-                socket_command_handler_->run(socket_command);
-              }
-              break;
-            }
-
-            case operation_type::software_function: {
-              if (software_function_handler_) {
-                software_function_handler_->execute_software_function(
-                    json.at("software_function").get<software_function>());
-              }
-              break;
-            }
-
-            default:
-              break;
-          }
-          return;
-        } catch (std::exception& e) {
-          logger::get_logger()->error("received data is corrupted");
-        }
-      }
-    });
-
     core_service_client_->async_start();
   }
 
@@ -243,28 +187,13 @@ private:
 
     input_source_monitor_->async_start();
 
-    // input_source_selector_
-
-    input_source_selector_ = std::make_shared<pqrs::osx::input_source_selector::selector>(weak_dispatcher_);
-
-    // shell_command_handler_
-
-    shell_command_handler_ = std::make_shared<shell_command_handler>();
-
-    // socket_command_handler_
-
-    socket_command_handler_ = std::make_shared<socket_command_handler>();
-
     // software_function_handler_
 
     software_function_handler_ = std::make_shared<software_function_handler>();
 
     // receiver_
 
-    receiver_ = std::make_unique<receiver>(input_source_selector_,
-                                           shell_command_handler_,
-                                           socket_command_handler_,
-                                           software_function_handler_);
+    receiver_ = std::make_unique<receiver>(software_function_handler_);
   }
 
   void stop_child_components(void) {
@@ -273,9 +202,6 @@ private:
     system_preferences_monitor_ = nullptr;
     pqrs::osx::frontmost_application_monitor::monitor::terminate_shared_monitor();
     input_source_monitor_ = nullptr;
-    input_source_selector_ = nullptr;
-    shell_command_handler_ = nullptr;
-    socket_command_handler_ = nullptr;
     software_function_handler_ = nullptr;
   }
 
@@ -291,10 +217,6 @@ private:
 
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
-
-  std::shared_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
-  std::shared_ptr<shell_command_handler> shell_command_handler_;
-  std::shared_ptr<socket_command_handler> socket_command_handler_;
   std::shared_ptr<software_function_handler> software_function_handler_;
 
   std::unique_ptr<receiver> receiver_;
