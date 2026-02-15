@@ -47,7 +47,7 @@ public:
   void run(const nlohmann::json& user_command) {
     enqueue_to_dispatcher([this, user_command] {
       try {
-        auto endpoint = constants::get_system_user_directory(geteuid()) / "user_command_receiver.sock";
+        auto endpoint = (constants::get_system_user_directory(geteuid()) / "user_command_receiver.sock").string();
         if (user_command.contains("endpoint")) {
           endpoint = user_command.at("endpoint").get<std::string>();
         }
