@@ -82,7 +82,7 @@ public:
             result.value_ = value.get<int64_t>();
           } else if (key == "shell_command") {
             result.value_ = value.get<std::string>();
-          } else if (key == "send_user_command") {
+          } else if (key == "user_command") {
             result.value_ = value.get<nlohmann::json>();
           } else if (key == "input_source_specifiers") {
             result.value_ = value.get<std::vector<pqrs::osx::input_source_selector::specifier>>();
@@ -391,10 +391,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::string> get_user_command(void) const {
+  std::optional<nlohmann::json> get_user_command(void) const {
     try {
       if (type_ == type::send_user_command) {
-        return std::get<std::string>(value_);
+        return std::get<nlohmann::json>(value_);
       }
     } catch (std::bad_variant_access&) {
     }

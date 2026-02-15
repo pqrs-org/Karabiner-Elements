@@ -84,6 +84,7 @@ void run_event_definition_test(void) {
                                                  }));
     }
 
+    // shell_command
     {
       std::string shell_command = "open /Applications/Safari.app";
       nlohmann::json json({
@@ -93,6 +94,36 @@ void run_event_definition_test(void) {
       expect(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::shell_command);
       expect(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>() == nullptr);
       expect(*(event_definition.get_event_definition().get_if<std::string>()) == shell_command);
+    }
+    // send_user_command
+    {
+      nlohmann::json json({
+          {"send_user_command", nlohmann::json::object({
+                                    {"payload", nlohmann::json::object({
+                                                    {"command", "set_window_frame"},
+                                                    {"frames", nlohmann::json::array({
+                                                                   nlohmann::json::object({
+                                                                       {"bundle_identifier", "com.apple.Safari"},
+                                                                       {"width", 1200},
+                                                                       {"height", 900},
+                                                                       {"x", "center"},
+                                                                       {"y", 31},
+                                                                   }),
+                                                                   nlohmann::json::object({
+                                                                       {"bundle_identifier", "com.apple.Terminal"},
+                                                                       {"width", 1130},
+                                                                       {"height", 900},
+                                                                       {"x", "center"},
+                                                                       {"y", 31},
+                                                                   }),
+                                                               })},
+                                                })},
+                                })},
+      });
+      krbn::manipulator::to_event_definition event_definition(json);
+      expect(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::send_user_command);
+      expect(event_definition.get_event_definition().get_if<krbn::momentary_switch_event>() == nullptr);
+      expect(*(event_definition.get_event_definition().get_if<nlohmann::json>()) == json.at("send_user_command"));
     }
     // select_input_source
     {
