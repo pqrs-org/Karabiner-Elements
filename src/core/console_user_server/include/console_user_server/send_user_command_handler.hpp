@@ -84,6 +84,14 @@ private:
       return false;
     }
 
+    socket_.set_option(asio::socket_base::send_buffer_size(static_cast<int>(constants::local_datagram_buffer_size)),
+                       error_code);
+    if (error_code) {
+      logger::get_logger()->warn("send_user_command: set_option(send_buffer_size) failed: {}", error_code.message());
+      socket_.close();
+      return false;
+    }
+
     auto path = constants::get_user_tmp_directory() / filesystem_utility::make_socket_file_basename();
     socket_file_path_ = path;
 
