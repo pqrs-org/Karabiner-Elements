@@ -7,10 +7,11 @@
     - Added an "Add your own rule using JavaScript" button to the complex modifications viewer.
     - Added an "Open in external editor" button to the complex modifications editor.
     - Added a "Clear user variables" button to EventViewer. (Thanks to @BarakXYZ)
-    - Added `to.send_user_command`.
+    - Added [`to.send_user_command`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/send-user-command/).
       By using it together with an external server built with Karabiner-Elements-user-command-receiver,
       you can execute any action from Karabiner-Elements with low latency. (Thanks to @nikivdev)
-    - Added `to.from_event`, allowing pressed events to be passed through as-is.
+    - Added [`to.from_event`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/from-event/),
+      allowing pressed events to be passed through as-is.
 - 🐛 Bug Fixes
     - Fixed an issue where reordering in Complex Modifications and Profiles didn't work properly when dragging while scrolling.
     - Fixed an issue where variables in expressions were not properly initialized when unset.
