@@ -1,0 +1,177 @@
+[
+    // right_shift (device1)
+
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "right_shift" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 2 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "right_shift" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+
+    // right_shift+a (device2)
+    {
+        "device_id": 2,
+        "event": {
+            "momentary_switch_event": { "key_code": "a" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 4 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "a" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 2,
+        "event": {
+            "momentary_switch_event": { "key_code": "a" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 6 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "a" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 2,
+        "event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "event_time_stamp": {
+            "time_stamp": 8
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "validity": true
+    },
+
+    // right_shift+tab (device2)
+    {
+        "device_id": 2,
+        "event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 10 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 2,
+        "event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 12 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "tab" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 2,
+        "event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "event_time_stamp": {
+            "time_stamp": 14
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "validity": true
+    },
+
+    // a (device2)
+    {
+        "device_id": 2,
+        "event": {
+            "momentary_switch_event": { "key_code": "a" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 16 },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "a" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 2,
+        "event": {
+            "momentary_switch_event": { "key_code": "a" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 18 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "a" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 2,
+        "event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "event_time_stamp": {
+            "time_stamp": 20
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "validity": true
+    },
+
+    // release right_shift (device1)
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "right_shift" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 22 },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "momentary_switch_event": { "key_code": "right_shift" },
+            "type": "momentary_switch_event"
+        },
+        "validity": true
+    }
+]

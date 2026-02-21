@@ -910,5 +910,11 @@
         "rules": ["json/rules/to_if_other_key_pressed.jsonc"],
         "input_event_queue": "json/input_event_queue/to_if_other_key_pressed_1.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_other_key_pressed_1.json"
+    },
+    {
+        "description": "to_if_other_key_pressed_2 (multiple devices)",
+        "rules": ["json/rules/to_if_other_key_pressed.jsonc"],
+        "input_event_queue": "json/input_event_queue/to_if_other_key_pressed_2.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_other_key_pressed_2.json"
     }
 ]

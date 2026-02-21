@@ -91,6 +91,7 @@ public:
 
                 event_sender::post_from_mandatory_modifiers_key_up(*front_input_event_,
                                                                    *cmoe,
+                                                                   front_input_event_->get_event_time_stamp(),
                                                                    time_stamp_delay,
                                                                    *oeq);
 

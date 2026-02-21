@@ -479,6 +479,7 @@ public:
 
               event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
                                                                  *current_manipulated_original_event,
+                                                                 front_input_event.get_event_time_stamp(),
                                                                  time_stamp_delay,
                                                                  *output_event_queue);
 
@@ -544,6 +545,7 @@ public:
 
                       event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
                                                                          *current_manipulated_original_event,
+                                                                         front_input_event.get_event_time_stamp(),
                                                                          time_stamp_delay,
                                                                          *output_event_queue);
 
@@ -565,6 +567,7 @@ public:
                   if (!to_after_key_up_.empty()) {
                     event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
                                                                        *current_manipulated_original_event,
+                                                                       front_input_event.get_event_time_stamp(),
                                                                        time_stamp_delay,
                                                                        *output_event_queue);
 
@@ -587,6 +590,7 @@ public:
                   if (current_manipulated_original_event->get_from_events().empty()) {
                     event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
                                                                        *current_manipulated_original_event,
+                                                                       front_input_event.get_event_time_stamp(),
                                                                        time_stamp_delay,
                                                                        *output_event_queue);
 

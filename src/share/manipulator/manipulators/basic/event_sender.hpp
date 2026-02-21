@@ -62,6 +62,7 @@ inline bool is_last_to_event_modifier_key_event(const to_event_definitions& to_e
 
 inline void post_from_mandatory_modifiers_key_up(const event_queue::entry& front_input_event,
                                                  manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
+                                                 const event_queue::event_time_stamp& event_time_stamp,
                                                  absolute_time_duration& time_stamp_delay,
                                                  event_queue::queue& output_event_queue) {
   // ----------------------------------------
@@ -107,7 +108,7 @@ inline void post_from_mandatory_modifiers_key_up(const event_queue::entry& front
   base::post_lazy_modifier_key_events(modifiers,
                                       event_type::key_up,
                                       front_input_event.get_device_id(),
-                                      front_input_event.get_event_time_stamp(),
+                                      event_time_stamp,
                                       time_stamp_delay,
                                       front_input_event.get_original_event(),
                                       output_event_queue);

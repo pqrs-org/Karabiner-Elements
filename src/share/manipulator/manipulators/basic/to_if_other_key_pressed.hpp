@@ -80,6 +80,7 @@ public:
     reset();
 
     from_manipulated_original_event_ = from_manipulated_original_event;
+    from_front_input_event_ = front_input_event;
     output_event_queue_ = output_event_queue;
   }
 
@@ -148,42 +149,45 @@ public:
         // Replace to_ events
 
         if (auto fmoe = from_manipulated_original_event_.lock()) {
-          absolute_time_duration time_stamp_delay(0);
+          if (from_front_input_event_) {
+            absolute_time_duration time_stamp_delay(0);
 
-          //
-          // Release from events
-          //
+            //
+            // Release from events
+            //
 
-          event_sender::post_events_at_key_up(front_input_event,
-                                              *fmoe,
-                                              time_stamp_delay,
-                                              *oeq);
-
-          event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                               *fmoe,
-                                                               time_stamp_delay,
-                                                               *oeq);
-
-          //
-          // Press other_key_from_event_definition.to
-          //
-
-          event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                             *other_key_manipulated_original_event_,
-                                                             time_stamp_delay,
-                                                             *oeq);
-
-          event_sender::post_events_at_key_down(front_input_event,
-                                                entry->get_to(),
-                                                *other_key_manipulated_original_event_,
+            event_sender::post_events_at_key_up(*from_front_input_event_,
+                                                *fmoe,
                                                 time_stamp_delay,
                                                 *oeq);
 
-          if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
-            event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                 *other_key_manipulated_original_event_,
+            event_sender::post_from_mandatory_modifiers_key_down(*from_front_input_event_,
+                                                                 *fmoe,
                                                                  time_stamp_delay,
                                                                  *oeq);
+
+            //
+            // Press other_key_from_event_definition.to
+            //
+
+            event_sender::post_from_mandatory_modifiers_key_up(*from_front_input_event_,
+                                                               *other_key_manipulated_original_event_,
+                                                               front_input_event.get_event_time_stamp(),
+                                                               time_stamp_delay,
+                                                               *oeq);
+
+            event_sender::post_events_at_key_down(*from_front_input_event_,
+                                                  entry->get_to(),
+                                                  *other_key_manipulated_original_event_,
+                                                  time_stamp_delay,
+                                                  *oeq);
+
+            if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
+              event_sender::post_from_mandatory_modifiers_key_down(*from_front_input_event_,
+                                                                   *other_key_manipulated_original_event_,
+                                                                   time_stamp_delay,
+                                                                   *oeq);
+            }
           }
         }
 
@@ -207,12 +211,14 @@ public:
 private:
   void reset(void) {
     from_manipulated_original_event_.reset();
+    from_front_input_event_ = std::nullopt;
     output_event_queue_.reset();
     other_key_manipulated_original_event_.reset();
   }
 
   std::vector<pqrs::not_null_shared_ptr_t<entry>> entries_;
   std::weak_ptr<manipulated_original_event::manipulated_original_event> from_manipulated_original_event_;
+  std::optional<event_queue::entry> from_front_input_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
   std::shared_ptr<manipulated_original_event::manipulated_original_event> other_key_manipulated_original_event_;
 };
