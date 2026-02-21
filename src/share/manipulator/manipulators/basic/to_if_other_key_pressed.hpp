@@ -15,7 +15,33 @@ class to_if_other_key_pressed final {
 public:
   class entry final {
   public:
-    const std::vector<from_event_definition>& get_other_keys(void) const {
+    explicit entry(const nlohmann::json& json) {
+      pqrs::json::requires_object(json, "json");
+
+      for (const auto& [key, value] : json.items()) {
+        if (key == "other_keys") {
+          pqrs::json::requires_array(value, "`" + key + "`");
+
+          for (const auto& j : value) {
+            other_keys_.push_back(std::make_shared<from_event_definition>(j));
+          }
+
+        } else if (key == "to") {
+          pqrs::json::requires_array(value, "`" + key + "`");
+
+          for (const auto& j : value) {
+            to_.push_back(std::make_shared<to_event_definition>(j));
+          }
+
+        } else {
+          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`",
+                                                        key,
+                                                        pqrs::json::dump_for_error_message(json)));
+        }
+      }
+    }
+
+    const std::vector<pqrs::not_null_shared_ptr_t<from_event_definition>>& get_other_keys(void) const {
       return other_keys_;
     }
 
@@ -25,30 +51,22 @@ public:
 
   private:
     friend class to_if_other_key_pressed;
-    std::vector<from_event_definition> other_keys_;
+    std::vector<pqrs::not_null_shared_ptr_t<from_event_definition>> other_keys_;
     to_event_definitions to_;
   };
 
-  to_if_other_key_pressed(const nlohmann::json& json) : triggered_(false) {
-    if (json.is_object()) {
-      entries_.push_back(parse_entry(json));
-    } else if (json.is_array()) {
-      for (const auto& j : json) {
-        try {
-          entries_.push_back(parse_entry(j));
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("entry error: {0}", e.what()));
-        }
-      }
-    } else {
-      throw pqrs::json::unmarshal_error(fmt::format("json must be object or array, but is `{0}`", pqrs::json::dump_for_error_message(json)));
+  explicit to_if_other_key_pressed(const nlohmann::json& json) : triggered_(false) {
+    pqrs::json::requires_array(json, "json");
+
+    for (const auto& j : json) {
+      entries_.push_back(std::make_shared<entry>(j));
     }
   }
 
   virtual ~to_if_other_key_pressed(void) {
   }
 
-  const std::vector<entry>& get_entries(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<entry>>& get_entries(void) const {
     return entries_;
   }
 
@@ -99,11 +117,12 @@ public:
     }
 
     for (const auto& entry : entries_) {
-      if (entry.get_other_keys().empty() || entry.get_to().empty()) {
+      if (entry->get_other_keys().empty()) {
         continue;
       }
 
-      if (!matches_other_keys(front_input_event.get_event(), entry.get_other_keys())) {
+      if (!matches_other_keys(front_input_event.get_event(),
+                              entry->get_other_keys())) {
         continue;
       }
 
@@ -138,12 +157,12 @@ public:
                                                            *oeq);
 
         event_sender::post_events_at_key_down(front_input_event,
-                                              entry.get_to(),
+                                              entry->get_to(),
                                               *cmoe,
                                               time_stamp_delay,
                                               *oeq);
 
-        if (!event_sender::is_last_to_event_modifier_key_event(entry.get_to())) {
+        if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
           event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
                                                                *cmoe,
                                                                time_stamp_delay,
@@ -158,11 +177,10 @@ public:
 
   bool needs_virtual_hid_pointing(void) const {
     for (const auto& entry : entries_) {
-      if (std::any_of(std::begin(entry.get_to()),
-                      std::end(entry.get_to()),
-                      [](auto& e) {
-                        return e->needs_virtual_hid_pointing();
-                      })) {
+      if (std::ranges::any_of(entry->get_to(),
+                              [](auto& e) {
+                                return e->needs_virtual_hid_pointing();
+                              })) {
         return true;
       }
     }
@@ -170,67 +188,10 @@ public:
   }
 
 private:
-  entry parse_entry(const nlohmann::json& json) {
-    pqrs::json::requires_object(json, "json");
-
-    entry result;
-
-    for (const auto& [key, value] : json.items()) {
-      if (key == "other_keys") {
-        if (value.is_object()) {
-          add_other_key(result.other_keys_, value);
-
-        } else if (value.is_array()) {
-          for (const auto& j : value) {
-            add_other_key(result.other_keys_, j);
-          }
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
-        }
-
-      } else if (key == "to") {
-        if (value.is_object()) {
-          try {
-            result.to_.push_back(std::make_shared<to_event_definition>(value));
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-          }
-
-        } else if (value.is_array()) {
-          try {
-            for (const auto& j : value) {
-              result.to_.push_back(std::make_shared<to_event_definition>(j));
-            }
-          } catch (const pqrs::json::unmarshal_error& e) {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
-          }
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
-        }
-
-      } else {
-        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
-      }
-    }
-
-    return result;
-  }
-
-  void add_other_key(std::vector<from_event_definition>& other_keys,
-                     const nlohmann::json& json) {
-    try {
-      other_keys.push_back(json.get<from_event_definition>());
-    } catch (const pqrs::json::unmarshal_error& e) {
-      throw pqrs::json::unmarshal_error(fmt::format("`other_keys` entry error: {0}", e.what()));
-    }
-  }
-
   bool matches_other_keys(const event_queue::event& event,
-                          const std::vector<from_event_definition>& other_keys) const {
+                          const std::vector<pqrs::not_null_shared_ptr_t<from_event_definition>>& other_keys) const {
     for (const auto& d : other_keys) {
-      if (from_event_definition::test_event(event, d)) {
+      if (from_event_definition::test_event(event, *d)) {
         return true;
       }
     }
@@ -244,7 +205,7 @@ private:
     output_event_queue_.reset();
   }
 
-  std::vector<entry> entries_;
+  std::vector<pqrs::not_null_shared_ptr_t<entry>> entries_;
   std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
   bool triggered_;
