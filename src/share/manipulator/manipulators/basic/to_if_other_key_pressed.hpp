@@ -55,7 +55,7 @@ public:
     to_event_definitions to_;
   };
 
-  explicit to_if_other_key_pressed(const nlohmann::json& json) : triggered_(false) {
+  explicit to_if_other_key_pressed(const nlohmann::json& json) {
     pqrs::json::requires_array(json, "json");
 
     for (const auto& j : json) {
@@ -71,25 +71,30 @@ public:
   }
 
   void setup(const event_queue::entry& front_input_event,
-             std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event,
+             std::shared_ptr<manipulated_original_event::manipulated_original_event> from_manipulated_original_event,
              std::shared_ptr<event_queue::queue> output_event_queue) {
     if (front_input_event.get_event_type() != event_type::key_down) {
       return;
     }
 
-    triggered_ = false;
-    current_manipulated_original_event_ = current_manipulated_original_event;
+    from_manipulated_original_event_ = from_manipulated_original_event;
     output_event_queue_ = output_event_queue;
   }
 
-  void reset_if_needed(const std::shared_ptr<manipulated_original_event::manipulated_original_event>& current_manipulated_original_event) {
-    if (auto cmoe = current_manipulated_original_event_.lock()) {
-      if (cmoe.get() != current_manipulated_original_event.get()) {
-        return;
-      }
+  void handle_from_key_up(const event_queue::entry& front_input_event) {
+    if (other_key_manipulated_original_event_) {
+      if (auto oeq = output_event_queue_.lock()) {
+        absolute_time_duration time_stamp_delay(0);
 
-      if (!cmoe->get_from_events().empty()) {
-        return;
+        event_sender::post_events_at_key_up(front_input_event,
+                                            *other_key_manipulated_original_event_,
+                                            time_stamp_delay,
+                                            *oeq);
+
+        event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
+                                                             *other_key_manipulated_original_event_,
+                                                             time_stamp_delay,
+                                                             *oeq);
       }
     }
 
@@ -101,77 +106,87 @@ public:
       return;
     }
 
-    if (triggered_) {
+    // Skip if already triggered.
+    if (other_key_manipulated_original_event_) {
       return;
     }
 
-    auto cmoe = current_manipulated_original_event_.lock();
-    if (!cmoe) {
-      reset();
-      return;
-    }
+    if (auto oeq = output_event_queue_.lock()) {
+      for (const auto& entry : entries_) {
+        auto other_key_from_event_definition = std::ranges::find_if(
+            entry->get_other_keys(),
+            [&](auto&& d) {
+              return from_event_definition::test_event(front_input_event.get_event(), *d);
+            });
 
-    if (cmoe->get_from_events().empty()) {
-      reset();
-      return;
-    }
-
-    for (const auto& entry : entries_) {
-      if (entry->get_other_keys().empty()) {
-        continue;
-      }
-
-      if (!matches_other_keys(front_input_event.get_event(),
-                              entry->get_other_keys())) {
-        continue;
-      }
-
-      {
-        manipulated_original_event::from_event fe(front_input_event.get_device_id(),
-                                                  front_input_event.get_event(),
-                                                  front_input_event.get_original_event());
-        if (cmoe->from_event_exists(fe)) {
-          return;
+        if (other_key_from_event_definition == std::end(entry->get_other_keys())) {
+          continue;
         }
-      }
 
-      if (auto oeq = output_event_queue_.lock()) {
-        absolute_time_duration time_stamp_delay(0);
+        std::shared_ptr<std::unordered_set<modifier_flag>> other_key_from_mandatory_modifiers;
+        if (auto modifiers = (*other_key_from_event_definition)->get_from_modifiers_definition().test_modifiers(oeq->get_modifier_flag_manager())) {
+          other_key_from_mandatory_modifiers = modifiers;
+        } else {
+          continue;
+        }
+
+        manipulated_original_event::from_event other_key_fe(front_input_event.get_device_id(),
+                                                            front_input_event.get_event(),
+                                                            front_input_event.get_original_event());
+        std::vector<manipulated_original_event::from_event> other_key_from_events;
+
+        other_key_manipulated_original_event_ =
+            std::make_shared<manipulated_original_event::manipulated_original_event>(
+                other_key_from_events,
+                *other_key_from_mandatory_modifiers,
+                front_input_event.get_event_time_stamp().get_time_stamp(),
+                oeq->get_modifier_flag_manager().make_modifier_flags());
 
         // ----------------------------------------
         // Replace to_ events
 
-        event_sender::post_events_at_key_up(front_input_event,
-                                            *cmoe,
-                                            time_stamp_delay,
-                                            *oeq);
+        if (auto fmoe = from_manipulated_original_event_.lock()) {
+          absolute_time_duration time_stamp_delay(0);
 
-        event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                             *cmoe,
-                                                             time_stamp_delay,
-                                                             *oeq);
+          //
+          // Release from events
+          //
 
-        event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                           *cmoe,
-                                                           time_stamp_delay,
-                                                           *oeq);
-
-        event_sender::post_events_at_key_down(front_input_event,
-                                              entry->get_to(),
-                                              *cmoe,
+          event_sender::post_events_at_key_up(front_input_event,
+                                              *fmoe,
                                               time_stamp_delay,
                                               *oeq);
 
-        if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
           event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                               *cmoe,
+                                                               *fmoe,
                                                                time_stamp_delay,
                                                                *oeq);
-        }
-      }
 
-      triggered_ = true;
-      return;
+          //
+          // Press other_key_from_event_definition.to
+          //
+
+          event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
+                                                             *other_key_manipulated_original_event_,
+                                                             time_stamp_delay,
+                                                             *oeq);
+
+          event_sender::post_events_at_key_down(front_input_event,
+                                                entry->get_to(),
+                                                *other_key_manipulated_original_event_,
+                                                time_stamp_delay,
+                                                *oeq);
+
+          if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
+            event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
+                                                                 *other_key_manipulated_original_event_,
+                                                                 time_stamp_delay,
+                                                                 *oeq);
+          }
+        }
+
+        break;
+      }
     }
   }
 
@@ -188,27 +203,16 @@ public:
   }
 
 private:
-  bool matches_other_keys(const event_queue::event& event,
-                          const std::vector<pqrs::not_null_shared_ptr_t<from_event_definition>>& other_keys) const {
-    for (const auto& d : other_keys) {
-      if (from_event_definition::test_event(event, *d)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   void reset(void) {
-    triggered_ = false;
-    current_manipulated_original_event_.reset();
+    from_manipulated_original_event_.reset();
     output_event_queue_.reset();
+    other_key_manipulated_original_event_.reset();
   }
 
   std::vector<pqrs::not_null_shared_ptr_t<entry>> entries_;
-  std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
+  std::weak_ptr<manipulated_original_event::manipulated_original_event> from_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
-  bool triggered_;
+  std::shared_ptr<manipulated_original_event::manipulated_original_event> other_key_manipulated_original_event_;
 };
 } // namespace basic
 } // namespace manipulators

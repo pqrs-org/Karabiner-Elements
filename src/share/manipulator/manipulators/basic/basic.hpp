@@ -630,7 +630,7 @@ public:
                                                 output_event_queue);
                 break;
               case event_type::key_up:
-                to_if_other_key_pressed_->reset_if_needed(current_manipulated_original_event);
+                to_if_other_key_pressed_->handle_from_key_up(front_input_event);
                 break;
               case event_type::single:
                 break;
