@@ -55,21 +55,21 @@ public:
   virtual ~event_changed(void) {
   }
 
-  virtual bool is_fulfilled(const event_queue::entry& entry,
+  virtual bool is_fulfilled(const condition_context& condition_context,
                             const manipulator_environment& manipulator_environment) const {
     if (value_) {
       switch (type_) {
         case type::event_changed_if:
           if (*value_) {
-            return entry.get_state() == event_queue::state::manipulated;
+            return condition_context.state == event_queue::state::manipulated;
           } else {
-            return entry.get_state() != event_queue::state::manipulated;
+            return condition_context.state != event_queue::state::manipulated;
           }
         case type::event_changed_unless:
           if (*value_) {
-            return entry.get_state() == event_queue::state::original;
+            return condition_context.state == event_queue::state::original;
           } else {
-            return entry.get_state() != event_queue::state::original;
+            return condition_context.state != event_queue::state::original;
           }
       }
     }

@@ -62,13 +62,13 @@ public:
   virtual ~device(void) {
   }
 
-  virtual bool is_fulfilled(const event_queue::entry& entry,
+  virtual bool is_fulfilled(const condition_context& condition_context,
                             const manipulator_environment& manipulator_environment) const {
     if (!definitions_.empty()) {
       switch (type_) {
         case type::device_if:
         case type::device_unless:
-          if (auto dp = manipulator_environment.find_device_properties(entry.get_device_id())) {
+          if (auto dp = manipulator_environment.find_device_properties(condition_context.device_id)) {
             for (const auto& d : definitions_) {
               if (d.fulfilled(*dp, manipulator_environment)) {
                 switch (type_) {

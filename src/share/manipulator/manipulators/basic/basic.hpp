@@ -249,7 +249,11 @@ public:
               }
 
               if (is_target) {
-                if (!condition_manager_.is_fulfilled(front_input_event,
+                manipulator::conditions::condition_context condition_context{
+                    .device_id = front_input_event.get_device_id(),
+                    .state = front_input_event.get_state(),
+                };
+                if (!condition_manager_.is_fulfilled(condition_context,
                                                      output_event_queue->get_manipulator_environment())) {
                   is_target = false;
                 }
@@ -477,22 +481,31 @@ public:
             case event_type::key_down:
               // Release from_mandatory_modifiers
 
-              event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                                 *current_manipulated_original_event,
+              event_sender::post_from_mandatory_modifiers_key_up(*current_manipulated_original_event,
+                                                                 front_input_event.get_device_id(),
                                                                  front_input_event.get_event_time_stamp(),
                                                                  time_stamp_delay,
+                                                                 front_input_event.get_original_event(),
                                                                  *output_event_queue);
 
-              event_sender::post_events_at_key_down(front_input_event,
-                                                    to_,
+              event_sender::post_events_at_key_down(to_,
                                                     *current_manipulated_original_event,
+                                                    manipulator::conditions::condition_context{
+                                                        .device_id = front_input_event.get_device_id(),
+                                                        .state = front_input_event.get_state(),
+                                                    },
+                                                    front_input_event.get_device_id(),
+                                                    front_input_event.get_event_time_stamp(),
                                                     time_stamp_delay,
+                                                    front_input_event.get_original_event(),
                                                     *output_event_queue);
 
               if (!event_sender::is_last_to_event_modifier_key_event(to_)) {
-                event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                     *current_manipulated_original_event,
+                event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                     front_input_event.get_device_id(),
+                                                                     front_input_event.get_event_time_stamp(),
                                                                      time_stamp_delay,
+                                                                     front_input_event.get_original_event(),
                                                                      *output_event_queue);
               }
 
@@ -518,14 +531,16 @@ public:
 
                   // to_
 
-                  event_sender::post_events_at_key_up(front_input_event,
-                                                      *current_manipulated_original_event,
+                  event_sender::post_events_at_key_up(*current_manipulated_original_event,
+                                                      front_input_event.get_event_time_stamp(),
                                                       time_stamp_delay,
                                                       *output_event_queue);
 
-                  event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                       *current_manipulated_original_event,
+                  event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                       front_input_event.get_device_id(),
+                                                                       front_input_event.get_event_time_stamp(),
                                                                        time_stamp_delay,
+                                                                       front_input_event.get_original_event(),
                                                                        *output_event_queue);
 
                   // to_if_alone_
@@ -534,30 +549,40 @@ public:
                     auto duration = pqrs::osx::chrono::make_milliseconds(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                     if (current_manipulated_original_event->get_alone() &&
                         duration < std::chrono::milliseconds(parameters_->get_basic_to_if_alone_timeout_milliseconds())) {
-                      event_sender::scoped_from_key_modifier_flags_state_restorer restorer(front_input_event,
-                                                                                           *current_manipulated_original_event,
+                      event_sender::scoped_from_key_modifier_flags_state_restorer restorer(*current_manipulated_original_event,
+                                                                                           front_input_event.get_event_time_stamp(),
                                                                                            time_stamp_delay,
+                                                                                           front_input_event.get_original_event(),
                                                                                            *output_event_queue);
 
                       //
                       // Send to_if_alone events
                       //
 
-                      event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                                         *current_manipulated_original_event,
+                      event_sender::post_from_mandatory_modifiers_key_up(*current_manipulated_original_event,
+                                                                         front_input_event.get_device_id(),
                                                                          front_input_event.get_event_time_stamp(),
                                                                          time_stamp_delay,
+                                                                         front_input_event.get_original_event(),
                                                                          *output_event_queue);
 
-                      event_sender::post_extra_to_events(front_input_event,
-                                                         to_if_alone_,
+                      event_sender::post_extra_to_events(to_if_alone_,
                                                          *current_manipulated_original_event,
+                                                         manipulator::conditions::condition_context{
+                                                             .device_id = front_input_event.get_device_id(),
+                                                             .state = front_input_event.get_state(),
+                                                         },
+                                                         front_input_event.get_device_id(),
+                                                         front_input_event.get_event_time_stamp(),
                                                          time_stamp_delay,
+                                                         front_input_event.get_original_event(),
                                                          *output_event_queue);
 
-                      event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                           *current_manipulated_original_event,
+                      event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                           front_input_event.get_device_id(),
+                                                                           front_input_event.get_event_time_stamp(),
                                                                            time_stamp_delay,
+                                                                           front_input_event.get_original_event(),
                                                                            *output_event_queue);
                     }
                   }
@@ -565,21 +590,30 @@ public:
                   // to_after_key_up_
 
                   if (!to_after_key_up_.empty()) {
-                    event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                                       *current_manipulated_original_event,
+                    event_sender::post_from_mandatory_modifiers_key_up(*current_manipulated_original_event,
+                                                                       front_input_event.get_device_id(),
                                                                        front_input_event.get_event_time_stamp(),
                                                                        time_stamp_delay,
+                                                                       front_input_event.get_original_event(),
                                                                        *output_event_queue);
 
-                    event_sender::post_extra_to_events(front_input_event,
-                                                       to_after_key_up_,
+                    event_sender::post_extra_to_events(to_after_key_up_,
                                                        *current_manipulated_original_event,
+                                                       manipulator::conditions::condition_context{
+                                                           .device_id = front_input_event.get_device_id(),
+                                                           .state = front_input_event.get_state(),
+                                                       },
+                                                       front_input_event.get_device_id(),
+                                                       front_input_event.get_event_time_stamp(),
                                                        time_stamp_delay,
+                                                       front_input_event.get_original_event(),
                                                        *output_event_queue);
 
-                    event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                         *current_manipulated_original_event,
+                    event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                         front_input_event.get_device_id(),
+                                                                         front_input_event.get_event_time_stamp(),
                                                                          time_stamp_delay,
+                                                                         front_input_event.get_original_event(),
                                                                          *output_event_queue);
                   }
                 }
@@ -588,21 +622,30 @@ public:
 
                 if (!from_.get_simultaneous_options()->get_to_after_key_up().empty()) {
                   if (current_manipulated_original_event->get_from_events().empty()) {
-                    event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                                       *current_manipulated_original_event,
+                    event_sender::post_from_mandatory_modifiers_key_up(*current_manipulated_original_event,
+                                                                       front_input_event.get_device_id(),
                                                                        front_input_event.get_event_time_stamp(),
                                                                        time_stamp_delay,
+                                                                       front_input_event.get_original_event(),
                                                                        *output_event_queue);
 
-                    event_sender::post_extra_to_events(front_input_event,
-                                                       from_.get_simultaneous_options()->get_to_after_key_up(),
+                    event_sender::post_extra_to_events(from_.get_simultaneous_options()->get_to_after_key_up(),
                                                        *current_manipulated_original_event,
+                                                       manipulator::conditions::condition_context{
+                                                           .device_id = front_input_event.get_device_id(),
+                                                           .state = front_input_event.get_state(),
+                                                       },
+                                                       front_input_event.get_device_id(),
+                                                       front_input_event.get_event_time_stamp(),
                                                        time_stamp_delay,
+                                                       front_input_event.get_original_event(),
                                                        *output_event_queue);
 
-                    event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                         *current_manipulated_original_event,
+                    event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                         front_input_event.get_device_id(),
+                                                                         front_input_event.get_event_time_stamp(),
                                                                          time_stamp_delay,
+                                                                         front_input_event.get_original_event(),
                                                                          *output_event_queue);
                   }
                 }

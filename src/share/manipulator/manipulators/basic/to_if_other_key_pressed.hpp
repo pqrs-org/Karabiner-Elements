@@ -80,24 +80,28 @@ public:
     reset();
 
     from_manipulated_original_event_ = from_manipulated_original_event;
-    from_front_input_event_ = front_input_event;
+    from_device_id_ = front_input_event.get_device_id();
     output_event_queue_ = output_event_queue;
   }
 
   void handle_from_key_up(const event_queue::entry& front_input_event) {
     if (other_key_manipulated_original_event_) {
       if (auto oeq = output_event_queue_.lock()) {
-        absolute_time_duration time_stamp_delay(0);
+        if (from_device_id_) {
+          absolute_time_duration time_stamp_delay(0);
 
-        event_sender::post_events_at_key_up(front_input_event,
-                                            *other_key_manipulated_original_event_,
-                                            time_stamp_delay,
-                                            *oeq);
+          event_sender::post_events_at_key_up(*other_key_manipulated_original_event_,
+                                              front_input_event.get_event_time_stamp(),
+                                              time_stamp_delay,
+                                              *oeq);
 
-        event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                             *other_key_manipulated_original_event_,
-                                                             time_stamp_delay,
-                                                             *oeq);
+          event_sender::post_from_mandatory_modifiers_key_down(*other_key_manipulated_original_event_,
+                                                               *from_device_id_,
+                                                               front_input_event.get_event_time_stamp(),
+                                                               time_stamp_delay,
+                                                               front_input_event.get_original_event(),
+                                                               *oeq);
+        }
       }
     }
 
@@ -136,7 +140,7 @@ public:
         manipulated_original_event::from_event other_key_fe(front_input_event.get_device_id(),
                                                             front_input_event.get_event(),
                                                             front_input_event.get_original_event());
-        std::vector<manipulated_original_event::from_event> other_key_from_events;
+        std::vector<manipulated_original_event::from_event> other_key_from_events{other_key_fe};
 
         other_key_manipulated_original_event_ =
             std::make_shared<manipulated_original_event::manipulated_original_event>(
@@ -149,43 +153,54 @@ public:
         // Replace to_ events
 
         if (auto fmoe = from_manipulated_original_event_.lock()) {
-          if (from_front_input_event_) {
+          if (from_device_id_) {
             absolute_time_duration time_stamp_delay(0);
 
             //
             // Release from events
             //
 
-            event_sender::post_events_at_key_up(*from_front_input_event_,
-                                                *fmoe,
+            event_sender::post_events_at_key_up(*fmoe,
+                                                front_input_event.get_event_time_stamp(),
                                                 time_stamp_delay,
                                                 *oeq);
 
-            event_sender::post_from_mandatory_modifiers_key_down(*from_front_input_event_,
-                                                                 *fmoe,
+            event_sender::post_from_mandatory_modifiers_key_down(*fmoe,
+                                                                 *from_device_id_,
+                                                                 front_input_event.get_event_time_stamp(),
                                                                  time_stamp_delay,
+                                                                 front_input_event.get_original_event(),
                                                                  *oeq);
 
             //
             // Press other_key_from_event_definition.to
             //
 
-            event_sender::post_from_mandatory_modifiers_key_up(*from_front_input_event_,
-                                                               *other_key_manipulated_original_event_,
+            event_sender::post_from_mandatory_modifiers_key_up(*other_key_manipulated_original_event_,
+                                                               *from_device_id_,
                                                                front_input_event.get_event_time_stamp(),
                                                                time_stamp_delay,
+                                                               front_input_event.get_original_event(),
                                                                *oeq);
 
-            event_sender::post_events_at_key_down(*from_front_input_event_,
-                                                  entry->get_to(),
+            event_sender::post_events_at_key_down(entry->get_to(),
                                                   *other_key_manipulated_original_event_,
+                                                  manipulator::conditions::condition_context{
+                                                      .device_id = *from_device_id_,
+                                                      .state = front_input_event.get_state(),
+                                                  },
+                                                  *from_device_id_,
+                                                  front_input_event.get_event_time_stamp(),
                                                   time_stamp_delay,
+                                                  front_input_event.get_original_event(),
                                                   *oeq);
 
             if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
-              event_sender::post_from_mandatory_modifiers_key_down(*from_front_input_event_,
-                                                                   *other_key_manipulated_original_event_,
+              event_sender::post_from_mandatory_modifiers_key_down(*other_key_manipulated_original_event_,
+                                                                   *from_device_id_,
+                                                                   front_input_event.get_event_time_stamp(),
                                                                    time_stamp_delay,
+                                                                   front_input_event.get_original_event(),
                                                                    *oeq);
             }
           }
@@ -211,14 +226,14 @@ public:
 private:
   void reset(void) {
     from_manipulated_original_event_.reset();
-    from_front_input_event_ = std::nullopt;
+    from_device_id_ = std::nullopt;
     output_event_queue_.reset();
     other_key_manipulated_original_event_.reset();
   }
 
   std::vector<pqrs::not_null_shared_ptr_t<entry>> entries_;
   std::weak_ptr<manipulated_original_event::manipulated_original_event> from_manipulated_original_event_;
-  std::optional<event_queue::entry> from_front_input_event_;
+  std::optional<device_id> from_device_id_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
   std::shared_ptr<manipulated_original_event::manipulated_original_event> other_key_manipulated_original_event_;
 };

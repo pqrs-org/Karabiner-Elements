@@ -57,7 +57,7 @@ public:
   virtual ~input_source(void) {
   }
 
-  virtual bool is_fulfilled(const event_queue::entry& entry,
+  virtual bool is_fulfilled(const condition_context& condition_context,
                             const manipulator_environment& manipulator_environment) const {
     if (cached_result_ && cached_result_->first == manipulator_environment.get_input_source_properties()) {
       return cached_result_->second;
