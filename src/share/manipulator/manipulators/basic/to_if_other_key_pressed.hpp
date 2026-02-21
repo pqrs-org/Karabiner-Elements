@@ -77,6 +77,8 @@ public:
       return;
     }
 
+    reset();
+
     from_manipulated_original_event_ = from_manipulated_original_event;
     output_event_queue_ = output_event_queue;
   }
