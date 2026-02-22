@@ -113,6 +113,45 @@
         "error": "`to_if_held_down` error: json must be object, but is `null`"
     },
 
+    // basic.to_if_other_key_pressed
+
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": null
+        },
+        "error": "`to_if_other_key_pressed` error: json must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": [null]
+        },
+        "error": "`to_if_other_key_pressed` error: json must be object, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": [
+                {
+                    "other_keys": null
+                }
+            ]
+        },
+        "error": "`to_if_other_key_pressed` error: `other_keys` must be array, but is `null`"
+    },
+    {
+        "class": "basic",
+        "input": {
+            "to_if_other_key_pressed": [
+                {
+                    "to": null
+                }
+            ]
+        },
+        "error": "`to_if_other_key_pressed` error: `to` must be array, but is `null`"
+    },
+
     // basic.to_delayed_action
 
     {

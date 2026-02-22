@@ -50,7 +50,7 @@ public:
   virtual ~expression(void) {
   }
 
-  virtual bool is_fulfilled(const event_queue::entry& entry,
+  virtual bool is_fulfilled(const condition_context& condition_context,
                             const manipulator_environment& manipulator_environment) const {
     if (expression_) {
       auto value = expression_->value();

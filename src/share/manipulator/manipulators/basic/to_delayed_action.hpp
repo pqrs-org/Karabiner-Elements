@@ -147,9 +147,10 @@ private:
           absolute_time_duration time_stamp_delay(0);
 
           {
-            event_sender::scoped_from_key_modifier_flags_state_restorer restorer(*front_input_event_,
-                                                                                 *current_manipulated_original_event_,
+            event_sender::scoped_from_key_modifier_flags_state_restorer restorer(*current_manipulated_original_event_,
+                                                                                 front_input_event_->get_event_time_stamp(),
                                                                                  time_stamp_delay,
+                                                                                 front_input_event_->get_original_event(),
                                                                                  *oeq);
 
             //
@@ -168,10 +169,16 @@ private:
 
             // Post events
 
-            event_sender::post_extra_to_events(*front_input_event_,
-                                               events,
+            event_sender::post_extra_to_events(events,
                                                *current_manipulated_original_event_,
+                                               manipulator::conditions::condition_context{
+                                                   .device_id = front_input_event_->get_device_id(),
+                                                   .state = front_input_event_->get_state(),
+                                               },
+                                               front_input_event_->get_device_id(),
+                                               front_input_event_->get_event_time_stamp(),
                                                time_stamp_delay,
+                                               front_input_event_->get_original_event(),
                                                *oeq);
 
             // Restore from_mandatory_modifiers

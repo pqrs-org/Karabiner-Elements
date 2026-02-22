@@ -19,11 +19,13 @@ void run_device_exists_test(void) {
         .product_id = pqrs::hid::product_id::value_t(9999),
         .is_keyboard = true,
     });
+    krbn::manipulator::conditions::condition_context condition_context{
+        .device_id = device_id_8888_9999,
+        .state = krbn::event_queue::state::original,
+    };
 
-    {
-      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
-      expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
-    }
+    expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                       environment) == false);
 
     manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
         .vendor_id = pqrs::hid::vendor_id::value_t(1000),
@@ -31,10 +33,8 @@ void run_device_exists_test(void) {
         .is_keyboard = true,
     });
 
-    {
-      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
-      expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
-    }
+    expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                       environment) == true);
   };
 
   "device_exists_unless"_test = [] {
@@ -49,11 +49,13 @@ void run_device_exists_test(void) {
         .product_id = pqrs::hid::product_id::value_t(9999),
         .is_keyboard = true,
     });
+    krbn::manipulator::conditions::condition_context condition_context{
+        .device_id = device_id_8888_9999,
+        .state = krbn::event_queue::state::original,
+    };
 
-    {
-      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
-      expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
-    }
+    expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                       environment) == true);
 
     manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
         .vendor_id = pqrs::hid::vendor_id::value_t(1000),
@@ -61,9 +63,7 @@ void run_device_exists_test(void) {
         .is_keyboard = true,
     });
 
-    {
-      auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
-      expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
-    }
+    expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                       environment) == false);
   };
 }

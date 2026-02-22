@@ -55,7 +55,7 @@ public:
   virtual ~keyboard_type(void) {
   }
 
-  virtual bool is_fulfilled(const event_queue::entry& entry,
+  virtual bool is_fulfilled(const condition_context& condition_context,
                             const manipulator_environment& manipulator_environment) const {
     auto c = manipulator_environment.get_core_configuration();
     auto&& current_keyboard_type = c->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2();

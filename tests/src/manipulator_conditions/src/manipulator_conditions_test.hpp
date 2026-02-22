@@ -103,16 +103,11 @@ void run_manipulator_conditions_test(void) {
   };
 
   "conditions.expression"_test = [] {
+    krbn::manipulator::conditions::condition_context condition_context{
+        .device_id = krbn::device_id(1),
+        .state = krbn::event_queue::state::original,
+    };
     krbn::manipulator::manipulator_environment manipulator_environment;
-    krbn::event_queue::entry entry(krbn::device_id(1),
-                                   krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_type::key_down,
-                                   krbn::event_integer_value::value_t(1),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_queue::state::original);
 
     //
     // expression_if
@@ -127,7 +122,8 @@ void run_manipulator_conditions_test(void) {
 
 )"_json);
 
-      expect(condition.is_fulfilled(entry, manipulator_environment));
+      expect(condition.is_fulfilled(condition_context,
+                                    manipulator_environment));
     }
 
     // nan
@@ -155,7 +151,8 @@ void run_manipulator_conditions_test(void) {
 
 )"_json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+      expect(!condition.is_fulfilled(condition_context,
+                                     manipulator_environment));
     }
 
     //
@@ -171,7 +168,8 @@ void run_manipulator_conditions_test(void) {
 
 )"_json);
 
-      expect(condition.is_fulfilled(entry, manipulator_environment));
+      expect(condition.is_fulfilled(condition_context,
+                                    manipulator_environment));
     }
 
     // nan
@@ -199,22 +197,18 @@ void run_manipulator_conditions_test(void) {
 
 )"_json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+      expect(!condition.is_fulfilled(condition_context,
+                                     manipulator_environment));
     }
   };
 
   "conditions.frontmost_application"_test = [] {
     actual_examples_helper helper("frontmost_application.json");
+    krbn::manipulator::conditions::condition_context condition_context{
+        .device_id = krbn::device_id(1),
+        .state = krbn::event_queue::state::original,
+    };
     krbn::manipulator::manipulator_environment manipulator_environment;
-    krbn::event_queue::entry entry(krbn::device_id(1),
-                                   krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_type::key_down,
-                                   krbn::event_integer_value::value_t(1),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_queue::state::original);
 
     // bundle_identifiers matching
     {
@@ -222,10 +216,10 @@ void run_manipulator_conditions_test(void) {
       application.set_bundle_identifier("com.apple.Terminal");
       application.set_file_path("/not_found");
       manipulator_environment.set_frontmost_application(application);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
       // use cache
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
     }
 
@@ -236,10 +230,10 @@ void run_manipulator_conditions_test(void) {
       application.set_file_path("/not_found");
       manipulator_environment.set_frontmost_application(application);
 
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == false);
       // use cache
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == false);
     }
 
@@ -250,7 +244,7 @@ void run_manipulator_conditions_test(void) {
       application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
       manipulator_environment.set_frontmost_application(application);
 
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
     }
 
@@ -261,7 +255,7 @@ void run_manipulator_conditions_test(void) {
       application.set_file_path("/Applications/iTerm.app");
       manipulator_environment.set_frontmost_application(application);
 
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
     }
 
@@ -271,23 +265,18 @@ void run_manipulator_conditions_test(void) {
       application.set_file_path("/Users/tekezo/Applications/iTerm.app");
       manipulator_environment.set_frontmost_application(application);
 
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == false);
     }
   };
 
   "conditions.input_source"_test = [] {
     actual_examples_helper helper("input_source.json");
+    krbn::manipulator::conditions::condition_context condition_context{
+        .device_id = krbn::device_id(1),
+        .state = krbn::event_queue::state::original,
+    };
     krbn::manipulator::manipulator_environment manipulator_environment;
-    krbn::event_queue::entry entry(krbn::device_id(1),
-                                   krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_type::key_down,
-                                   krbn::event_integer_value::value_t(1),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_queue::state::original);
 
     // language matching
     {
@@ -295,10 +284,10 @@ void run_manipulator_conditions_test(void) {
       properties.set_first_language("en");
       properties.set_input_source_id("com.apple.keylayout.Australian");
       manipulator_environment.set_input_source_properties(properties);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
       // use cache
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
     }
 
@@ -308,10 +297,10 @@ void run_manipulator_conditions_test(void) {
       properties.set_first_language("ja");
       properties.set_input_source_id("com/apple/keylayout/Australian");
       manipulator_environment.set_input_source_properties(properties);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == false);
       // use cache
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == false);
     }
 
@@ -321,7 +310,7 @@ void run_manipulator_conditions_test(void) {
       properties.set_first_language("ja");
       properties.set_input_source_id("com.apple.keylayout.US");
       manipulator_environment.set_input_source_properties(properties);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
     }
 
@@ -332,7 +321,7 @@ void run_manipulator_conditions_test(void) {
       properties.set_input_source_id("com.apple.keylayout.Australian");
       properties.set_input_mode_id("com.apple.inputmethod.Japanese.FullWidthRoman");
       manipulator_environment.set_input_source_properties(properties);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
     }
 
@@ -342,63 +331,48 @@ void run_manipulator_conditions_test(void) {
       properties.set_first_language("fr");
       properties.set_input_source_id("com.apple.keylayout.US");
       manipulator_environment.set_input_source_properties(properties);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == false);
     }
   };
 
   "conditions.event_changed"_test = [] {
     krbn::manipulator::manipulator_environment manipulator_environment;
-    krbn::event_queue::entry original_entry(krbn::device_id(1),
-                                            krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                            krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                            krbn::event_type::key_down,
-                                            krbn::event_integer_value::value_t(1),
-                                            krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                                  pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                            krbn::event_queue::state::original);
-    krbn::event_queue::entry manipulated_entry(krbn::device_id(1),
-                                               krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                               krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                               krbn::event_type::key_down,
-                                               krbn::event_integer_value::value_t(1),
-                                               krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                                     pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                               krbn::event_queue::state::manipulated);
+    krbn::manipulator::conditions::condition_context original_condition_context{
+        .device_id = krbn::device_id(1),
+        .state = krbn::event_queue::state::original,
+    };
+    krbn::manipulator::conditions::condition_context manipulated_condition_context{
+        .device_id = krbn::device_id(1),
+        .state = krbn::event_queue::state::manipulated,
+    };
 
     {
       actual_examples_helper helper("event_changed_if.json");
 
-      expect(helper.get_condition_manager().is_fulfilled(original_entry,
+      expect(helper.get_condition_manager().is_fulfilled(original_condition_context,
                                                          manipulator_environment) == true);
 
-      expect(helper.get_condition_manager().is_fulfilled(manipulated_entry,
+      expect(helper.get_condition_manager().is_fulfilled(manipulated_condition_context,
                                                          manipulator_environment) == false);
     }
     {
       actual_examples_helper helper("event_changed_unless.json");
 
-      expect(helper.get_condition_manager().is_fulfilled(original_entry,
+      expect(helper.get_condition_manager().is_fulfilled(original_condition_context,
                                                          manipulator_environment) == true);
 
-      expect(helper.get_condition_manager().is_fulfilled(manipulated_entry,
+      expect(helper.get_condition_manager().is_fulfilled(manipulated_condition_context,
                                                          manipulator_environment) == false);
     }
   };
 
   "conditions.keyboard_type"_test = [] {
+    krbn::manipulator::conditions::condition_context condition_context{
+        .device_id = krbn::device_id(1),
+        .state = krbn::event_queue::state::original,
+    };
     krbn::manipulator::manipulator_environment manipulator_environment;
-    krbn::event_queue::entry entry(krbn::device_id(1),
-                                   krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_type::key_down,
-                                   krbn::event_integer_value::value_t(1),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_queue::state::original);
 
     auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
     manipulator_environment.set_core_configuration(core_configuration);
@@ -408,13 +382,13 @@ void run_manipulator_conditions_test(void) {
 
       // iso
       core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("iso");
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
 
       // ansi
       core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("ansi");
       manipulator_environment.set_core_configuration(core_configuration);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == false);
     }
     {
@@ -423,28 +397,23 @@ void run_manipulator_conditions_test(void) {
       // iso
       core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("iso");
       manipulator_environment.set_core_configuration(core_configuration);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == false);
 
       // ansi
       core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("ansi");
       manipulator_environment.set_core_configuration(core_configuration);
-      expect(helper.get_condition_manager().is_fulfilled(entry,
+      expect(helper.get_condition_manager().is_fulfilled(condition_context,
                                                          manipulator_environment) == true);
     }
   };
 
   "conditions.variable"_test = [] {
+    krbn::manipulator::conditions::condition_context condition_context{
+        .device_id = krbn::device_id(1),
+        .state = krbn::event_queue::state::original,
+    };
     krbn::manipulator::manipulator_environment manipulator_environment;
-    krbn::event_queue::entry entry(krbn::device_id(1),
-                                   krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_type::key_down,
-                                   krbn::event_integer_value::value_t(1),
-                                   krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                         pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                   krbn::event_queue::state::original);
 
     manipulator_environment.set_variable("variable_name", krbn::manipulator_environment_variable_value(123));
     manipulator_environment.set_variable("variable_bool", krbn::manipulator_environment_variable_value(true));
@@ -461,7 +430,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 123;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(condition.is_fulfilled(entry, manipulator_environment));
+      expect(condition.is_fulfilled(condition_context,
+                                    manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -470,7 +440,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 1234;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+      expect(!condition.is_fulfilled(condition_context,
+                                     manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -479,7 +450,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 0;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(condition.is_fulfilled(entry, manipulator_environment));
+      expect(condition.is_fulfilled(condition_context,
+                                    manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -488,7 +460,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 1;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+      expect(!condition.is_fulfilled(condition_context,
+                                     manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -497,7 +470,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 1234;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+      expect(!condition.is_fulfilled(condition_context,
+                                     manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -506,7 +480,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = true;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(condition.is_fulfilled(entry, manipulator_environment));
+      expect(condition.is_fulfilled(condition_context,
+                                    manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -515,7 +490,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = true;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+      expect(!condition.is_fulfilled(condition_context,
+                                     manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -524,7 +500,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = "hello";
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(condition.is_fulfilled(entry, manipulator_environment));
+      expect(condition.is_fulfilled(condition_context,
+                                    manipulator_environment));
     }
 
     //
@@ -538,7 +515,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 123;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+      expect(!condition.is_fulfilled(condition_context,
+                                     manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -547,7 +525,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 1234;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(condition.is_fulfilled(entry, manipulator_environment));
+      expect(condition.is_fulfilled(condition_context,
+                                    manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -556,7 +535,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 0;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(!condition.is_fulfilled(entry, manipulator_environment));
+      expect(!condition.is_fulfilled(condition_context,
+                                     manipulator_environment));
     }
     {
       nlohmann::json json;
@@ -565,7 +545,8 @@ void run_manipulator_conditions_test(void) {
       json["value"] = 1;
       krbn::manipulator::conditions::variable condition(json);
 
-      expect(condition.is_fulfilled(entry, manipulator_environment));
+      expect(condition.is_fulfilled(condition_context,
+                                    manipulator_environment));
     }
   };
 }

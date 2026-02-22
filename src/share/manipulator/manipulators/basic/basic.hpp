@@ -9,6 +9,7 @@
 #include "manipulated_original_event/manipulated_original_event.hpp"
 #include "to_delayed_action.hpp"
 #include "to_if_held_down.hpp"
+#include "to_if_other_key_pressed.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <unordered_set>
@@ -106,6 +107,13 @@ public:
             throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
           }
 
+        } else if (key == "to_if_other_key_pressed") {
+          try {
+            to_if_other_key_pressed_ = std::make_shared<to_if_other_key_pressed>(value);
+          } catch (const pqrs::json::unmarshal_error& e) {
+            throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+          }
+
         } else if (key == "to_delayed_action") {
           try {
             to_delayed_action_ = std::make_shared<to_delayed_action>(value);
@@ -193,6 +201,12 @@ public:
 
       // ----------------------------------------
 
+      if (to_if_other_key_pressed_) {
+        to_if_other_key_pressed_->handle_other_key_pressed(front_input_event);
+      }
+
+      // ----------------------------------------
+
       bool is_target = from_event_definition::test_event(front_input_event.get_event(), from_);
 
       if (is_target) {
@@ -235,7 +249,11 @@ public:
               }
 
               if (is_target) {
-                if (!condition_manager_.is_fulfilled(front_input_event,
+                manipulator::conditions::condition_context condition_context{
+                    .device_id = front_input_event.get_device_id(),
+                    .state = front_input_event.get_state(),
+                };
+                if (!condition_manager_.is_fulfilled(condition_context,
                                                      output_event_queue->get_manipulator_environment())) {
                   is_target = false;
                 }
@@ -463,21 +481,31 @@ public:
             case event_type::key_down:
               // Release from_mandatory_modifiers
 
-              event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                                 *current_manipulated_original_event,
+              event_sender::post_from_mandatory_modifiers_key_up(*current_manipulated_original_event,
+                                                                 front_input_event.get_device_id(),
+                                                                 front_input_event.get_event_time_stamp(),
                                                                  time_stamp_delay,
+                                                                 front_input_event.get_original_event(),
                                                                  *output_event_queue);
 
-              event_sender::post_events_at_key_down(front_input_event,
-                                                    to_,
+              event_sender::post_events_at_key_down(to_,
                                                     *current_manipulated_original_event,
+                                                    manipulator::conditions::condition_context{
+                                                        .device_id = front_input_event.get_device_id(),
+                                                        .state = front_input_event.get_state(),
+                                                    },
+                                                    front_input_event.get_device_id(),
+                                                    front_input_event.get_event_time_stamp(),
                                                     time_stamp_delay,
+                                                    front_input_event.get_original_event(),
                                                     *output_event_queue);
 
               if (!event_sender::is_last_to_event_modifier_key_event(to_)) {
-                event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                     *current_manipulated_original_event,
+                event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                     front_input_event.get_device_id(),
+                                                                     front_input_event.get_event_time_stamp(),
                                                                      time_stamp_delay,
+                                                                     front_input_event.get_original_event(),
                                                                      *output_event_queue);
               }
 
@@ -503,14 +531,16 @@ public:
 
                   // to_
 
-                  event_sender::post_events_at_key_up(front_input_event,
-                                                      *current_manipulated_original_event,
+                  event_sender::post_events_at_key_up(*current_manipulated_original_event,
+                                                      front_input_event.get_event_time_stamp(),
                                                       time_stamp_delay,
                                                       *output_event_queue);
 
-                  event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                       *current_manipulated_original_event,
+                  event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                       front_input_event.get_device_id(),
+                                                                       front_input_event.get_event_time_stamp(),
                                                                        time_stamp_delay,
+                                                                       front_input_event.get_original_event(),
                                                                        *output_event_queue);
 
                   // to_if_alone_
@@ -519,29 +549,40 @@ public:
                     auto duration = pqrs::osx::chrono::make_milliseconds(front_input_event.get_event_time_stamp().get_time_stamp() - current_manipulated_original_event->get_key_down_time_stamp());
                     if (current_manipulated_original_event->get_alone() &&
                         duration < std::chrono::milliseconds(parameters_->get_basic_to_if_alone_timeout_milliseconds())) {
-                      event_sender::scoped_from_key_modifier_flags_state_restorer restorer(front_input_event,
-                                                                                           *current_manipulated_original_event,
+                      event_sender::scoped_from_key_modifier_flags_state_restorer restorer(*current_manipulated_original_event,
+                                                                                           front_input_event.get_event_time_stamp(),
                                                                                            time_stamp_delay,
+                                                                                           front_input_event.get_original_event(),
                                                                                            *output_event_queue);
 
                       //
                       // Send to_if_alone events
                       //
 
-                      event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                                         *current_manipulated_original_event,
+                      event_sender::post_from_mandatory_modifiers_key_up(*current_manipulated_original_event,
+                                                                         front_input_event.get_device_id(),
+                                                                         front_input_event.get_event_time_stamp(),
                                                                          time_stamp_delay,
+                                                                         front_input_event.get_original_event(),
                                                                          *output_event_queue);
 
-                      event_sender::post_extra_to_events(front_input_event,
-                                                         to_if_alone_,
+                      event_sender::post_extra_to_events(to_if_alone_,
                                                          *current_manipulated_original_event,
+                                                         manipulator::conditions::condition_context{
+                                                             .device_id = front_input_event.get_device_id(),
+                                                             .state = front_input_event.get_state(),
+                                                         },
+                                                         front_input_event.get_device_id(),
+                                                         front_input_event.get_event_time_stamp(),
                                                          time_stamp_delay,
+                                                         front_input_event.get_original_event(),
                                                          *output_event_queue);
 
-                      event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                           *current_manipulated_original_event,
+                      event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                           front_input_event.get_device_id(),
+                                                                           front_input_event.get_event_time_stamp(),
                                                                            time_stamp_delay,
+                                                                           front_input_event.get_original_event(),
                                                                            *output_event_queue);
                     }
                   }
@@ -549,20 +590,30 @@ public:
                   // to_after_key_up_
 
                   if (!to_after_key_up_.empty()) {
-                    event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                                       *current_manipulated_original_event,
+                    event_sender::post_from_mandatory_modifiers_key_up(*current_manipulated_original_event,
+                                                                       front_input_event.get_device_id(),
+                                                                       front_input_event.get_event_time_stamp(),
                                                                        time_stamp_delay,
+                                                                       front_input_event.get_original_event(),
                                                                        *output_event_queue);
 
-                    event_sender::post_extra_to_events(front_input_event,
-                                                       to_after_key_up_,
+                    event_sender::post_extra_to_events(to_after_key_up_,
                                                        *current_manipulated_original_event,
+                                                       manipulator::conditions::condition_context{
+                                                           .device_id = front_input_event.get_device_id(),
+                                                           .state = front_input_event.get_state(),
+                                                       },
+                                                       front_input_event.get_device_id(),
+                                                       front_input_event.get_event_time_stamp(),
                                                        time_stamp_delay,
+                                                       front_input_event.get_original_event(),
                                                        *output_event_queue);
 
-                    event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                         *current_manipulated_original_event,
+                    event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                         front_input_event.get_device_id(),
+                                                                         front_input_event.get_event_time_stamp(),
                                                                          time_stamp_delay,
+                                                                         front_input_event.get_original_event(),
                                                                          *output_event_queue);
                   }
                 }
@@ -571,20 +622,30 @@ public:
 
                 if (!from_.get_simultaneous_options()->get_to_after_key_up().empty()) {
                   if (current_manipulated_original_event->get_from_events().empty()) {
-                    event_sender::post_from_mandatory_modifiers_key_up(front_input_event,
-                                                                       *current_manipulated_original_event,
+                    event_sender::post_from_mandatory_modifiers_key_up(*current_manipulated_original_event,
+                                                                       front_input_event.get_device_id(),
+                                                                       front_input_event.get_event_time_stamp(),
                                                                        time_stamp_delay,
+                                                                       front_input_event.get_original_event(),
                                                                        *output_event_queue);
 
-                    event_sender::post_extra_to_events(front_input_event,
-                                                       from_.get_simultaneous_options()->get_to_after_key_up(),
+                    event_sender::post_extra_to_events(from_.get_simultaneous_options()->get_to_after_key_up(),
                                                        *current_manipulated_original_event,
+                                                       manipulator::conditions::condition_context{
+                                                           .device_id = front_input_event.get_device_id(),
+                                                           .state = front_input_event.get_state(),
+                                                       },
+                                                       front_input_event.get_device_id(),
+                                                       front_input_event.get_event_time_stamp(),
                                                        time_stamp_delay,
+                                                       front_input_event.get_original_event(),
                                                        *output_event_queue);
 
-                    event_sender::post_from_mandatory_modifiers_key_down(front_input_event,
-                                                                         *current_manipulated_original_event,
+                    event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
+                                                                         front_input_event.get_device_id(),
+                                                                         front_input_event.get_event_time_stamp(),
                                                                          time_stamp_delay,
+                                                                         front_input_event.get_original_event(),
                                                                          *output_event_queue);
                   }
                 }
@@ -604,6 +665,23 @@ public:
                                     current_manipulated_original_event,
                                     output_event_queue,
                                     std::chrono::milliseconds(parameters_->get_basic_to_if_held_down_threshold_milliseconds()));
+          }
+
+          // to_if_other_key_pressed_
+
+          if (to_if_other_key_pressed_) {
+            switch (front_input_event.get_event_type()) {
+              case event_type::key_down:
+                to_if_other_key_pressed_->setup(front_input_event,
+                                                current_manipulated_original_event,
+                                                output_event_queue);
+                break;
+              case event_type::key_up:
+                to_if_other_key_pressed_->handle_from_key_up(front_input_event);
+                break;
+              case event_type::single:
+                break;
+            }
           }
 
           // to_delayed_action_
@@ -648,6 +726,12 @@ public:
 
     if (to_if_held_down_) {
       if (to_if_held_down_->needs_virtual_hid_pointing()) {
+        return true;
+      }
+    }
+
+    if (to_if_other_key_pressed_) {
+      if (to_if_other_key_pressed_->needs_virtual_hid_pointing()) {
         return true;
       }
     }
@@ -706,6 +790,10 @@ public:
     return to_if_held_down_;
   }
 
+  std::shared_ptr<to_if_other_key_pressed> get_to_if_other_key_pressed(void) const {
+    return to_if_other_key_pressed_;
+  }
+
   std::shared_ptr<to_delayed_action> get_to_delayed_action(void) const {
     return to_delayed_action_;
   }
@@ -754,6 +842,7 @@ private:
   to_event_definitions to_after_key_up_;
   to_event_definitions to_if_alone_;
   std::shared_ptr<to_if_held_down> to_if_held_down_;
+  std::shared_ptr<to_if_other_key_pressed> to_if_other_key_pressed_;
   std::shared_ptr<to_delayed_action> to_delayed_action_;
 
   std::vector<pqrs::not_null_shared_ptr_t<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;

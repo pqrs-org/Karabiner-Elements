@@ -1,0 +1,28 @@
+[
+    {
+        "from": {
+            "key_code": "right_shift",
+            "modifiers": { "optional": ["any"] }
+        },
+        "to": [
+            {
+                "key_code": "right_shift",
+                "modifiers": []
+            }
+        ],
+        "to_if_other_key_pressed": [
+            {
+                "other_keys": [
+                    {
+                        "key_code": "tab",
+                        "modifiers": {
+                            "optional": "any"
+                        }
+                    }
+                ],
+                "to": [{ "key_code": "left_command" }]
+            }
+        ],
+        "type": "basic"
+    }
+]

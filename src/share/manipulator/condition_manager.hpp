@@ -19,7 +19,7 @@ public:
     conditions_.push_back(condition);
   }
 
-  bool is_fulfilled(const event_queue::entry& entry,
+  bool is_fulfilled(const manipulator::conditions::condition_context& condition_context,
                     manipulator_environment& manipulator_environment) const {
     bool result = true;
 
@@ -35,7 +35,7 @@ public:
     //
 
     for (const auto& c : conditions_) {
-      if (!c->is_fulfilled(entry,
+      if (!c->is_fulfilled(condition_context,
                            manipulator_environment)) {
         result = false;
       }

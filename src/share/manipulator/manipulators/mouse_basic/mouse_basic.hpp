@@ -108,7 +108,11 @@ public:
         return manipulate_result::passed;
       }
 
-      if (!condition_manager_.is_fulfilled(front_input_event,
+      manipulator::conditions::condition_context condition_context{
+          .device_id = front_input_event.get_device_id(),
+          .state = front_input_event.get_state(),
+      };
+      if (!condition_manager_.is_fulfilled(condition_context,
                                            output_event_queue->get_manipulator_environment())) {
         return manipulate_result::passed;
       }

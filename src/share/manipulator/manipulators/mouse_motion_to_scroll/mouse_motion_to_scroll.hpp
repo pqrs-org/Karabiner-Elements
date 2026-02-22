@@ -149,7 +149,11 @@ public:
 private:
   std::shared_ptr<std::unordered_set<modifier_flag>> test_conditions(const event_queue::entry& front_input_event,
                                                                      std::shared_ptr<event_queue::queue> output_event_queue) const {
-    if (!condition_manager_.is_fulfilled(front_input_event,
+    manipulator::conditions::condition_context condition_context{
+        .device_id = front_input_event.get_device_id(),
+        .state = front_input_event.get_state(),
+    };
+    if (!condition_manager_.is_fulfilled(condition_context,
                                          output_event_queue->get_manipulator_environment())) {
       return nullptr;
     }

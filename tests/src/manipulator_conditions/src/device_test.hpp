@@ -99,60 +99,112 @@ void run_device_test(void) {
       actual_examples_helper helper("device_if.jsonc");
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_8888_9999,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == false);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2001);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2001,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == false);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1001_2000);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1001_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == false);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1001_2001);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1001_2001,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1099_9999);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1099_9999,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_0000_0000);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_0000_0000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == true);
       }
     }
     {
       actual_examples_helper helper("device_unless.jsonc");
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_8888_9999);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_8888_9999,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == false);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2001);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2001,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1001_2000);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1001_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1001_2001);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1001_2001,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == false);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1099_9999);
-        expect(helper.get_condition_manager().is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1099_9999,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(helper.get_condition_manager().is_fulfilled(condition_context,
+                                                           environment) == false);
       }
     }
 
@@ -168,29 +220,53 @@ void run_device_test(void) {
       krbn::manipulator::conditions::device condition(json);
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(condition.is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2001);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2001,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_tf);
-        expect(condition.is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000_tf,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_ff);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000_ff,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_tt);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000_tt,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_ft);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000_ft,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
     }
 
@@ -205,16 +281,28 @@ void run_device_test(void) {
       krbn::manipulator::conditions::device condition(json);
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_3000);
-        expect(condition.is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000_3000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_none);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000_none,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000_4000);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000_4000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
     }
 
@@ -229,12 +317,20 @@ void run_device_test(void) {
       krbn::manipulator::conditions::device condition(json);
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_0000_0000);
-        expect(condition.is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_0000_0000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == true);
       }
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
     }
 
@@ -248,8 +344,12 @@ void run_device_test(void) {
       krbn::manipulator::conditions::device condition(json);
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
       {
         auto d = manipulator_conditions_helper.get_core_configuration()->get_selected_profile().get_device(
@@ -263,8 +363,12 @@ void run_device_test(void) {
                                      ""     // device_address
                                      ));
         d->set_treat_as_built_in_keyboard(true);
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(condition.is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == true);
       }
       {
         auto d = manipulator_conditions_helper.get_core_configuration()->get_selected_profile().get_device(
@@ -278,8 +382,12 @@ void run_device_test(void) {
                                      ""     // device_address
                                      ));
         d->set_treat_as_built_in_keyboard(false);
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
     }
 
@@ -293,8 +401,12 @@ void run_device_test(void) {
       krbn::manipulator::conditions::device condition(json);
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
       {
         auto d = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
@@ -303,8 +415,12 @@ void run_device_test(void) {
             .is_game_pad = true,
         });
 
-        auto e = manipulator_conditions_helper.make_event_queue_entry(d);
-        expect(condition.is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = d,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == true);
       }
     }
 
@@ -318,8 +434,12 @@ void run_device_test(void) {
       krbn::manipulator::conditions::device condition(json);
 
       {
-        auto e = manipulator_conditions_helper.make_event_queue_entry(device_id_1000_2000);
-        expect(condition.is_fulfilled(e, environment) == false);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = device_id_1000_2000,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == false);
       }
       {
         auto d = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
@@ -328,8 +448,12 @@ void run_device_test(void) {
             .is_consumer = true,
         });
 
-        auto e = manipulator_conditions_helper.make_event_queue_entry(d);
-        expect(condition.is_fulfilled(e, environment) == true);
+        krbn::manipulator::conditions::condition_context condition_context{
+            .device_id = d,
+            .state = krbn::event_queue::state::original,
+        };
+        expect(condition.is_fulfilled(condition_context,
+                                      environment) == true);
       }
     }
   };
