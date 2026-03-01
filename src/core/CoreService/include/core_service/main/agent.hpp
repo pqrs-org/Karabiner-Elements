@@ -3,6 +3,7 @@
 #include "core_service/core_service_utility.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <iostream>
+#include <pqrs/osx/accessibility.hpp>
 
 namespace krbn {
 namespace core_service {
@@ -13,6 +14,8 @@ int agent(void) {
   std::ifstream input(krbn::constants::get_user_core_configuration_file_path());
 
   IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
+
+  pqrs::osx::accessibility::is_process_trusted_with_prompt();
 
   core_service_utility::wait_until_input_monitoring_granted();
 

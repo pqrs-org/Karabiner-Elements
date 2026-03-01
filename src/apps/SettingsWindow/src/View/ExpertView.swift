@@ -27,6 +27,58 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
+        GroupBox(label: Text("Input event source backend")) {
+          VStack(alignment: .leading, spacing: 20.0) {
+            VStack(alignment: .leading, spacing: 4.0) {
+              Picker("Input event source backend", selection: $settings.eventInputSourceBackend) {
+                Text("hid").tag(libkrbn_event_input_source_backend_hid)
+                Text("cgeventtap").tag(libkrbn_event_input_source_backend_cgeventtap)
+              }
+              .pickerStyle(.menu)
+
+              Label(
+                "Choose input capture backend for Karabiner-Core-Service.\n"
+                  + "- hid: current default behavior.\n"
+                  + "- cgeventtap: fallback mode for environments where HID input capture is unavailable.",
+                systemImage: InfoBorder.icon
+              )
+              .modifier(InfoBorder())
+              .fixedSize(horizontal: false, vertical: true)
+            }
+
+            VStack(alignment: .leading, spacing: 4.0) {
+              HStack {
+                IntTextField(
+                  value: $settings.cgeventDoubleClickIntervalMilliseconds,
+                  range: 1...2000,
+                  step: 10,
+                  width: 50)
+
+                Text("CGEvent double click interval milliseconds (Default: 500)")
+              }
+
+              HStack {
+                IntTextField(
+                  value: $settings.cgeventDoubleClickDistance,
+                  range: 0...32,
+                  step: 1,
+                  width: 50)
+
+                Text("CGEvent double click distance in pixels (Default: 4)")
+              }
+
+              Label(
+                "These values are used only when the input event source backend is cgeventtap.",
+                systemImage: InfoBorder.icon
+              )
+              .modifier(InfoBorder())
+              .fixedSize(horizontal: false, vertical: true)
+            }
+          }
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
+        }
+
         GroupBox(label: Text("Options")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {

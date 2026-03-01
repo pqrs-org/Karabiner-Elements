@@ -39,3 +39,5 @@ targets:
           - '*.orig.png'
           - '*.plist.in'
       - path: ../../apps/share/Resources/app.icns
+    dependencies:
+      - sdk: Carbon.framework

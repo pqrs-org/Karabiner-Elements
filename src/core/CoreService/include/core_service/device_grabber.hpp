@@ -21,14 +21,19 @@
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
 #include "notification_message_manager.hpp"
+#include "pressed_keys_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
+#include <array>
 #include <deque>
+#include <dlfcn.h>
 #include <fstream>
 #include <gsl/gsl>
+#include <mutex>
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
+#include <pqrs/osx/hitoolbox/secure_event_input_monitor.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/iokit_power_management.hpp>
 #include <pqrs/osx/system_preferences.hpp>
@@ -36,6 +41,9 @@
 #include <string_view>
 #include <thread>
 #include <time.h>
+#include <unistd.h>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace krbn {
 namespace core_service {
@@ -63,6 +71,7 @@ public:
     complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
     fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>();
     posted_event_queue_ = std::make_shared<event_queue::queue>();
+    virtual_hid_posted_pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
 
     //
     // virtual_hid_device_service_client_
@@ -171,6 +180,29 @@ public:
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
             weak_console_user_server_client,
             notification_message_manager_);
+    post_event_to_virtual_devices_manipulator_->set_virtual_hid_keyboard_event_posted_callback(
+        [this](const momentary_switch_event& event, event_type event_type) {
+          if (!is_cgeventtap_input_enabled()) {
+            return;
+          }
+
+          if (event.valid()) {
+            switch (event_type) {
+              case event_type::key_down:
+                virtual_hid_posted_pressed_keys_manager_->insert(event);
+                break;
+              case event_type::key_up:
+                virtual_hid_posted_pressed_keys_manager_->erase(event);
+                break;
+              case event_type::single:
+                break;
+            }
+          }
+
+          enqueue_keyboard_suppression_entry(event,
+                                             event_type,
+                                             pqrs::osx::chrono::mach_absolute_time_point());
+        });
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
     // Connect manipulator_managers
@@ -404,6 +436,26 @@ public:
     });
 
     power_management_monitor_->async_start();
+
+    //
+    // secure_event_input_monitor_
+    //
+
+    secure_event_input_monitor_ = std::make_unique<pqrs::osx::hitoolbox::secure_event_input_monitor>(weak_dispatcher_,
+                                                                                                     std::chrono::milliseconds(50));
+    secure_event_input_monitor_->secure_event_input_enabled_changed.connect([this](auto&& enabled) {
+      if (!is_cgeventtap_input_enabled()) {
+        return;
+      }
+
+      if (enabled) {
+        logger::get_logger()->info("secure event input is enabled: release all pressed keys");
+        release_virtual_hid_posted_pressed_keys();
+        post_device_keys_and_pointing_buttons_are_released_event();
+        reset_pressed_modifiers_state();
+        physical_pressed_modifier_flags_.clear();
+      }
+    });
   }
 
   virtual ~device_grabber(void) {
@@ -435,26 +487,13 @@ public:
     enqueue_to_dispatcher([this,
                            user_core_configuration_file_path,
                            expected_user_core_configuration_file_owner] {
+      if (secure_event_input_monitor_) {
+        secure_event_input_monitor_->async_start();
+      }
+
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_monitor here.
-      event_tap_monitor_ = std::make_unique<event_tap_monitor>();
-
-      event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
-        auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
-        event_queue::entry entry(device_id(0),
-                                 event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                                 e,
-                                 event_type,
-                                 std::nullopt,
-                                 event,
-                                 event_queue::state::virtual_event);
-
-        merged_input_event_queue_->push_back_entry(entry);
-
-        krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-      });
-
-      event_tap_monitor_->async_start();
+      setup_event_tap_monitor(false, false);
 
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
                                                                        expected_user_core_configuration_file_owner.value_or(uid_t(0)),
@@ -524,6 +563,9 @@ public:
           //
 
           auto& profile = core_configuration_->get_selected_profile();
+          auto configured_event_input_source_backend =
+              core_configuration_->get_global_configuration().get_event_input_source_backend();
+          set_configured_event_input_source_backend(configured_event_input_source_backend);
 
           if (hid_manager_) {
             hid_manager_->async_set_device_matched_delay(
@@ -720,6 +762,10 @@ public:
 
 private:
   void stop(void) {
+    if (secure_event_input_monitor_) {
+      secure_event_input_monitor_->async_stop();
+    }
+
     configuration_monitor_ = nullptr;
 
     async_ungrab_devices();
@@ -731,6 +777,11 @@ private:
 
   // This method is executed in the shared dispatcher thread.
   void manipulate(absolute_time_point now) {
+    auto post_backend = is_cgeventtap_input_enabled()
+                            ? manipulator::manipulators::post_event_to_virtual_devices::queue::post_backend::cgevent
+                            : manipulator::manipulators::post_event_to_virtual_devices::queue::post_backend::virtual_hid_device;
+    post_event_to_virtual_devices_manipulator_->set_post_backend(post_backend);
+
     manipulator_managers_connector_.manipulate(now,
                                                core_configuration_);
 
@@ -766,12 +817,29 @@ private:
         }
       }
     } else {
+      if (is_cgeventtap_input_enabled()) {
+        return;
+      }
+
       // Manipulate events
 
       bool notify = false;
 
       for (const auto& e : *event_queue_entries) {
         if (!entry.get_disabled() && entry.seized()) {
+          auto& pressed_modifiers = physical_pressed_modifier_flags_[e->get_device_id()];
+          if (filter_unmatched_modifier_key_up(pressed_modifiers,
+                                               e->get_event(),
+                                               e->get_event_type())) {
+            continue;
+          }
+          if (pressed_modifiers.empty()) {
+            if (e->get_event_type() == event_type::key_up ||
+                e->get_event_type() == event_type::single) {
+              physical_pressed_modifier_flags_.erase(e->get_device_id());
+            }
+          }
+
           event_queue::entry qe(e->get_device_id(),
                                 e->get_event_time_stamp(),
                                 e->get_event(),
@@ -779,6 +847,16 @@ private:
                                 e->get_event_integer_value(),
                                 e->get_original_event(),
                                 e->get_state());
+
+          switch (qe.get_event().get_type()) {
+            case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
+            case event_queue::event::type::device_ungrabbed:
+              physical_pressed_modifier_flags_.erase(qe.get_device_id());
+              break;
+
+            default:
+              break;
+          }
 
           merged_input_event_queue_->push_back_entry(qe);
 
@@ -814,6 +892,21 @@ private:
   void post_device_ungrabbed_event(device_id device_id) {
     auto event = event_queue::event::make_device_ungrabbed_event();
     event_queue::entry entry(device_id,
+                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                             event,
+                             event_type::single,
+                             std::nullopt,
+                             event,
+                             event_queue::state::virtual_event);
+
+    merged_input_event_queue_->push_back_entry(entry);
+
+    krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+  }
+
+  void post_device_keys_and_pointing_buttons_are_released_event(void) {
+    auto event = event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
+    event_queue::entry entry(device_id(0),
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                              event,
                              event_type::single,
@@ -885,6 +978,10 @@ private:
     //
 
     if (!entry.needs_to_seize_device()) {
+      return grabbable_state::state::ungrabbable;
+    }
+
+    if (is_cgeventtap_input_enabled()) {
       return grabbable_state::state::ungrabbable;
     }
 
@@ -1070,6 +1167,8 @@ private:
   std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;
   bool system_sleeping_;
 
+  std::unique_ptr<pqrs::osx::hitoolbox::secure_event_input_monitor> secure_event_input_monitor_;
+
   pqrs::osx::system_preferences::properties system_preferences_properties_;
 
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
@@ -1090,8 +1189,316 @@ private:
   std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
+  std::shared_ptr<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
+  static constexpr device_id event_tap_tracking_device_id_ = device_id(0);
+  std::unordered_map<device_id, std::unordered_set<modifier_flag>> physical_pressed_modifier_flags_;
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;
+
+  void set_configured_event_input_source_backend(event_input_source_backend value) {
+    configured_event_input_source_backend_ = value;
+
+    auto resolved = value;
+
+    if (effective_event_input_source_backend_ == resolved) {
+      logger::get_logger()->info("event_input_source_backend unchanged: effective={0}",
+                                 nlohmann::json(effective_event_input_source_backend_).get<std::string>());
+      return;
+    }
+
+    effective_event_input_source_backend_ = resolved;
+
+    logger::get_logger()->info("event_input_source_backend: configured={0}, effective={1}",
+                               nlohmann::json(configured_event_input_source_backend_).get<std::string>(),
+                               nlohmann::json(effective_event_input_source_backend_).get<std::string>());
+
+    if (event_tap_monitor_) {
+      setup_event_tap_monitor(is_cgeventtap_input_enabled(),
+                              is_cgeventtap_input_enabled());
+    }
+
+    async_grab_devices();
+  }
+
+  bool is_cgeventtap_input_enabled(void) const {
+    return effective_event_input_source_backend_ == event_input_source_backend::cgeventtap;
+  }
+
+  void setup_event_tap_monitor(bool capture_keyboard_events,
+                               bool manipulate_events) {
+    logger::get_logger()->info("setup_event_tap_monitor (capture_keyboard_events={0}, manipulate_events={1})",
+                               capture_keyboard_events,
+                               manipulate_events);
+
+    event_tap_monitor_ = std::make_unique<event_tap_monitor>(
+        capture_keyboard_events,
+        manipulate_events,
+        [this](auto&& type, auto&& event) {
+          return cgeventtap_manipulate_keyboard_event(type, event);
+        },
+        [this](auto&& type, auto&& event, const auto& normalized_keyboard_event) {
+          if (!event) {
+            return false;
+          }
+
+          switch (type) {
+            case kCGEventKeyDown:
+            case kCGEventKeyUp:
+            case kCGEventFlagsChanged:
+            case kCGEventLeftMouseDown:
+            case kCGEventLeftMouseUp:
+            case kCGEventRightMouseDown:
+            case kCGEventRightMouseUp:
+            case kCGEventMouseMoved:
+            case kCGEventLeftMouseDragged:
+            case kCGEventRightMouseDragged:
+            case kCGEventOtherMouseDown:
+            case kCGEventOtherMouseUp:
+            case kCGEventOtherMouseDragged:
+              break;
+
+            default:
+              return false;
+          }
+
+          auto source_process_id = static_cast<pid_t>(
+              CGEventGetIntegerValueField(event, kCGEventSourceUnixProcessID));
+          auto source_user_data = CGEventGetIntegerValueField(event, kCGEventSourceUserData);
+          if (source_process_id == getpid() &&
+              source_user_data == manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices::cgevent_source_user_data) {
+            return true;
+          }
+
+          // In cgeventtap mode, keyboard events emitted from virtual HID should
+          // bypass Karabiner processing and pass through to apps.
+          if (is_cgeventtap_input_enabled()) {
+            if (normalized_keyboard_event) {
+              if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
+                return consume_keyboard_suppression_entry(*m, normalized_keyboard_event->first);
+              }
+            } else if (auto pair = event_tap_utility::make_event(type, event)) {
+              if (auto m = pair->second.template get_if<momentary_switch_event>()) {
+                return consume_keyboard_suppression_entry(*m, pair->first);
+              }
+            }
+          }
+
+          return false;
+        });
+
+    event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
+      event_queue::event e = event_queue::event::make_pointing_device_event_from_event_tap_event();
+      auto state = event_queue::state::virtual_event;
+
+      if (is_cgeventtap_input_enabled()) {
+        if (auto m = event.get_pointing_motion();
+            m && (m->get_vertical_wheel() != 0 || m->get_horizontal_wheel() != 0)) {
+          // Keep physical scroll events as pass-through in cgeventtap mode.
+          return;
+        }
+
+        // In cgeventtap mode, non-scroll pointing events carry actual information.
+        e = event;
+        state = event_queue::state::original;
+      }
+
+      event_queue::entry entry(device_id(0),
+                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                               e,
+                               event_type,
+                               std::nullopt,
+                               event,
+                               state);
+
+      merged_input_event_queue_->push_back_entry(entry);
+
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+    });
+
+    event_tap_monitor_->keyboard_event_arrived.connect([this](auto&& event_type, auto&& event) {
+      if (!is_cgeventtap_input_enabled()) {
+        return;
+      }
+
+      auto& pressed_modifiers = physical_pressed_modifier_flags_[event_tap_tracking_device_id_];
+      if (filter_unmatched_modifier_key_up(pressed_modifiers,
+                                           event,
+                                           event_type)) {
+        return;
+      }
+      if (pressed_modifiers.empty() &&
+          (event_type == event_type::key_up ||
+           event_type == event_type::single)) {
+        physical_pressed_modifier_flags_.erase(event_tap_tracking_device_id_);
+      }
+
+      event_queue::entry entry(device_id(0),
+                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                               event,
+                               event_type,
+                               std::nullopt,
+                               event,
+                               event_queue::state::original);
+
+      merged_input_event_queue_->push_back_entry(entry);
+
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+    });
+
+    event_tap_monitor_->async_start();
+  }
+
+  event_input_source_backend configured_event_input_source_backend_ = event_input_source_backend::hid;
+  event_input_source_backend effective_event_input_source_backend_ = event_input_source_backend::hid;
+  struct keyboard_suppression_entry final {
+    momentary_switch_event event;
+    event_type event_type;
+    absolute_time_point expires_at;
+  };
+  mutable std::mutex keyboard_suppression_entries_mutex_;
+  std::deque<keyboard_suppression_entry> keyboard_suppression_entries_;
+  static constexpr auto keyboard_suppression_ttl_ = std::chrono::milliseconds(50);
+  static constexpr size_t keyboard_suppression_max_size_ = 1024;
+
+  void purge_expired_keyboard_suppression_entries_unlocked(absolute_time_point now) {
+    size_t expired_count = 0;
+
+    while (!keyboard_suppression_entries_.empty() &&
+           keyboard_suppression_entries_.front().expires_at <= now) {
+      keyboard_suppression_entries_.pop_front();
+      ++expired_count;
+    }
+
+    if (expired_count > 0) {
+      logger::get_logger()->warn("keyboard suppression expired before matching event ({0} entries)", expired_count);
+    }
+  }
+
+  void purge_expired_keyboard_suppression_entries(absolute_time_point now) {
+    std::lock_guard<std::mutex> lock(keyboard_suppression_entries_mutex_);
+    purge_expired_keyboard_suppression_entries_unlocked(now);
+  }
+
+  void enqueue_keyboard_suppression_entry(const momentary_switch_event& event,
+                                          event_type event_type,
+                                          absolute_time_point now) {
+    if (!event.valid() || event.pointing_button()) {
+      return;
+    }
+
+    std::lock_guard<std::mutex> lock(keyboard_suppression_entries_mutex_);
+    purge_expired_keyboard_suppression_entries_unlocked(now);
+
+    auto expires_at = now + pqrs::osx::chrono::make_absolute_time_duration(keyboard_suppression_ttl_);
+    keyboard_suppression_entries_.push_back(keyboard_suppression_entry{
+        .event = event,
+        .event_type = event_type,
+        .expires_at = expires_at,
+    });
+
+    while (keyboard_suppression_entries_.size() > keyboard_suppression_max_size_) {
+      keyboard_suppression_entries_.pop_front();
+    }
+  }
+
+  bool consume_keyboard_suppression_entry(const momentary_switch_event& event,
+                                          event_type event_type) {
+    std::lock_guard<std::mutex> lock(keyboard_suppression_entries_mutex_);
+    auto now = pqrs::osx::chrono::mach_absolute_time_point();
+    purge_expired_keyboard_suppression_entries_unlocked(now);
+
+    auto it = std::ranges::find_if(keyboard_suppression_entries_,
+                                   [&](const auto& entry) {
+                                     return entry.event == event &&
+                                            entry.event_type == event_type;
+                                   });
+    if (it != std::end(keyboard_suppression_entries_)) {
+      keyboard_suppression_entries_.erase(it);
+      return true;
+    }
+
+    return false;
+  }
+
+  bool filter_unmatched_modifier_key_up(std::unordered_set<modifier_flag>& pressed_modifiers,
+                                        const event_queue::event& event,
+                                        event_type event_type) {
+    // Some input paths (for example around secure event input transitions) can
+    // deliver a modifier key_up without a corresponding key_down.
+    // If we push such unmatched key_up into merged_input_event_queue_,
+    // queue::push_back_entry updates modifier_flag_manager and can leave
+    // modifier state inconsistent (causing stuck/ignored modifier behavior).
+    // Therefore we drop only unmatched modifier key_up before queue insertion.
+    if (auto mse = event.template get_if<momentary_switch_event>()) {
+      if (auto modifier = mse->make_modifier_flag()) {
+        switch (event_type) {
+          case event_type::key_down:
+            if (pressed_modifiers.contains(*modifier)) {
+              logger::get_logger()->warn("drop duplicated modifier key_down before merged_input_event_queue insertion");
+              return true;
+            }
+            pressed_modifiers.insert(*modifier);
+            break;
+
+          case event_type::key_up:
+            if (!pressed_modifiers.contains(*modifier)) {
+              logger::get_logger()->warn("drop unmatched physical modifier key_up");
+              return true;
+            }
+            pressed_modifiers.erase(*modifier);
+            break;
+
+          case event_type::single:
+            break;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  void reset_pressed_modifiers_state(void) {
+    if (!post_event_to_virtual_devices_manipulator_) {
+      return;
+    }
+
+    post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().set_pressed_modifier_flags({});
+  }
+
+  void release_virtual_hid_posted_pressed_keys(void) {
+    if (!post_event_to_virtual_devices_manipulator_ ||
+        !virtual_hid_posted_pressed_keys_manager_) {
+      return;
+    }
+
+    auto pressed_keys = virtual_hid_posted_pressed_keys_manager_->make_entries_and_clear();
+    if (pressed_keys.empty()) {
+      return;
+    }
+
+    post_event_to_virtual_devices_manipulator_->async_release_virtual_hid_pressed_keys(
+        pressed_keys,
+        virtual_hid_device_service_client_);
+  }
+
+  CGEventRef cgeventtap_manipulate_keyboard_event(CGEventType type,
+                                                  CGEventRef event) {
+    if (!is_cgeventtap_input_enabled() || !event) {
+      return event;
+    }
+
+    switch (type) {
+      case kCGEventKeyDown:
+      case kCGEventKeyUp:
+      case kCGEventFlagsChanged:
+        break;
+
+      default:
+        return event;
+    }
+
+    return event;
+  }
 };
 } // namespace core_service
 } // namespace krbn

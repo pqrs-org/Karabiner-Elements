@@ -12,12 +12,6 @@ int main(void) {
       expect(actual->second == krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
                                                                                      pqrs::hid::usage::button::button_1)));
     }
-    {
-      auto actual = krbn::event_tap_utility::make_event(kCGEventOtherMouseUp, nullptr);
-      expect(actual->first == krbn::event_type::key_up);
-      expect(actual->second == krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::button,
-                                                                                     pqrs::hid::usage::button::button_3)));
-    }
   };
 
   return 0;

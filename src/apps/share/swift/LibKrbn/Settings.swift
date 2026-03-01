@@ -149,6 +149,14 @@ extension LibKrbn {
         libkrbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices()
       reorderSameTimestampInputEventsToPrioritizeModifiers =
         libkrbn_core_configuration_get_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers()
+      cgeventDoubleClickIntervalMilliseconds = Int(
+        libkrbn_core_configuration_get_global_configuration_cgevent_double_click_interval_milliseconds()
+      )
+      cgeventDoubleClickDistance = Int(
+        libkrbn_core_configuration_get_global_configuration_cgevent_double_click_distance()
+      )
+      eventInputSourceBackend =
+        libkrbn_core_configuration_get_global_configuration_event_input_source_backend()
 
       updateSystemDefaultProfileExists()
 
@@ -867,6 +875,41 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers(
             reorderSameTimestampInputEventsToPrioritizeModifiers
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var cgeventDoubleClickIntervalMilliseconds: Int = 500 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_cgevent_double_click_interval_milliseconds(
+            Int32(cgeventDoubleClickIntervalMilliseconds)
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var cgeventDoubleClickDistance: Int = 4 {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_cgevent_double_click_distance(
+            Int32(cgeventDoubleClickDistance)
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var eventInputSourceBackend: libkrbn_event_input_source_backend =
+      libkrbn_event_input_source_backend_hid
+    {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_event_input_source_backend(
+            eventInputSourceBackend
           )
           save()
         }

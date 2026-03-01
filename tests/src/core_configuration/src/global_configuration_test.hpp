@@ -20,6 +20,8 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_unsafe_ui() == false);
       expect(global_configuration.get_filter_useless_events_from_specific_devices() == true);
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
+      expect(global_configuration.get_cgevent_double_click_interval_milliseconds() == 500);
+      expect(global_configuration.get_cgevent_double_click_distance() == 4);
     }
 
     // load values from json
@@ -34,6 +36,8 @@ void run_global_configuration_test(void) {
           {"unsafe_ui", true},
           {"filter_useless_events_from_specific_devices", false},
           {"reorder_same_timestamp_input_events_to_prioritize_modifiers", false},
+          {"cgevent_double_click_interval_milliseconds", 250},
+          {"cgevent_double_click_distance", 8},
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::strict);
@@ -46,6 +50,8 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_unsafe_ui() == true);
       expect(global_configuration.get_filter_useless_events_from_specific_devices() == false);
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == false);
+      expect(global_configuration.get_cgevent_double_click_interval_milliseconds() == 250);
+      expect(global_configuration.get_cgevent_double_click_distance() == 8);
 
       //
       // Set default values
@@ -60,6 +66,8 @@ void run_global_configuration_test(void) {
       global_configuration.set_unsafe_ui(false);
       global_configuration.set_filter_useless_events_from_specific_devices(true);
       global_configuration.set_reorder_same_timestamp_input_events_to_prioritize_modifiers(true);
+      global_configuration.set_cgevent_double_click_interval_milliseconds(500);
+      global_configuration.set_cgevent_double_click_distance(4);
       nlohmann::json j(global_configuration);
       expect(j.empty());
     }
@@ -75,6 +83,8 @@ void run_global_configuration_test(void) {
           {"unsafe_ui", nlohmann::json::object()},
           {"filter_useless_events_from_specific_devices", nlohmann::json::object()},
           {"reorder_same_timestamp_input_events_to_prioritize_modifiers", nlohmann::json::object()},
+          {"cgevent_double_click_interval_milliseconds", nlohmann::json::object()},
+          {"cgevent_double_click_distance", nlohmann::json::object()},
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::loose);
@@ -87,6 +97,8 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_unsafe_ui() == false);
       expect(global_configuration.get_filter_useless_events_from_specific_devices() == true);
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
+      expect(global_configuration.get_cgevent_double_click_interval_milliseconds() == 500);
+      expect(global_configuration.get_cgevent_double_click_distance() == 4);
     }
   };
 }
