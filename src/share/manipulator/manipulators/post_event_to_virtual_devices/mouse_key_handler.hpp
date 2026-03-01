@@ -171,9 +171,9 @@ private:
         report.vertical_wheel = vertical_wheel_count_converter_.update(static_cast<int>(total.get_vertical_wheel() * total.get_speed_multiplier()));
         report.horizontal_wheel = horizontal_wheel_count_converter_.update(static_cast<int>(total.get_horizontal_wheel() * total.get_speed_multiplier()));
 
-        queue_.emplace_back_pointing_input(report,
-                                           event_type::single,
-                                           time_stamp);
+        queue_.emplace_back_virtual_hid_pointing_input(report,
+                                                       event_type::single,
+                                                       time_stamp);
 
         return true;
       }

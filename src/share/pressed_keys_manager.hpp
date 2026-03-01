@@ -3,6 +3,7 @@
 // `krbn::pressed_keys_manager` can be used safely in a multi-threaded environment.
 
 #include "types.hpp"
+#include <vector>
 #include <unordered_set>
 
 namespace krbn {
@@ -24,6 +25,21 @@ public:
     std::lock_guard<std::mutex> lock(mutex_);
 
     return entries_.empty();
+  }
+
+  std::vector<momentary_switch_event> make_entries_and_clear(void) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    std::vector<momentary_switch_event> result;
+    result.reserve(entries_.size());
+
+    for (const auto& e : entries_) {
+      result.push_back(e);
+    }
+
+    entries_.clear();
+
+    return result;
   }
 
 private:

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../configuration_json_helper.hpp"
+#include "types/event_input_source_backend.hpp"
 #include <pqrs/json.hpp>
 
 namespace krbn {
@@ -48,6 +49,18 @@ public:
     helper_values_.push_back_value<bool>("reorder_same_timestamp_input_events_to_prioritize_modifiers",
                                          reorder_same_timestamp_input_events_to_prioritize_modifiers_,
                                          true);
+
+    helper_values_.push_back_value<event_input_source_backend>("event_input_source_backend",
+                                                               event_input_source_backend_,
+                                                               event_input_source_backend::hid);
+
+    helper_values_.push_back_value<int>("cgevent_double_click_interval_milliseconds",
+                                        cgevent_double_click_interval_milliseconds_,
+                                        500);
+
+    helper_values_.push_back_value<int>("cgevent_double_click_distance",
+                                        cgevent_double_click_distance_,
+                                        4);
 
     pqrs::json::requires_object(json, "json");
 
@@ -125,6 +138,27 @@ public:
     reorder_same_timestamp_input_events_to_prioritize_modifiers_ = value;
   }
 
+  const event_input_source_backend& get_event_input_source_backend(void) const {
+    return event_input_source_backend_;
+  }
+  void set_event_input_source_backend(event_input_source_backend value) {
+    event_input_source_backend_ = value;
+  }
+
+  const int& get_cgevent_double_click_interval_milliseconds(void) const {
+    return cgevent_double_click_interval_milliseconds_;
+  }
+  void set_cgevent_double_click_interval_milliseconds(int value) {
+    cgevent_double_click_interval_milliseconds_ = value;
+  }
+
+  const int& get_cgevent_double_click_distance(void) const {
+    return cgevent_double_click_distance_;
+  }
+  void set_cgevent_double_click_distance(int value) {
+    cgevent_double_click_distance_ = value;
+  }
+
 private:
   nlohmann::json json_;
   bool check_for_updates_on_startup_;
@@ -136,6 +170,9 @@ private:
   bool unsafe_ui_;
   bool filter_useless_events_from_specific_devices_;
   bool reorder_same_timestamp_input_events_to_prioritize_modifiers_;
+  event_input_source_backend event_input_source_backend_;
+  int cgevent_double_click_interval_milliseconds_;
+  int cgevent_double_click_distance_;
   configuration_json_helper::helper_values helper_values_;
 };
 

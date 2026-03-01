@@ -113,6 +113,8 @@ void run_core_configuration_test(void) {
     expect(configuration.get_global_configuration().get_unsafe_ui() == true);
     expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == false);
     expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == false);
+    expect(configuration.get_global_configuration().get_cgevent_double_click_interval_milliseconds() == 500);
+    expect(configuration.get_global_configuration().get_cgevent_double_click_distance() == 4);
 
     expect(configuration.is_loaded() == true);
 
@@ -151,6 +153,8 @@ void run_core_configuration_test(void) {
       expect(configuration.get_global_configuration().get_unsafe_ui() == false);
       expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == true);
       expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
+      expect(configuration.get_global_configuration().get_cgevent_double_click_interval_milliseconds() == 500);
+      expect(configuration.get_global_configuration().get_cgevent_double_click_distance() == 4);
       expect(configuration.get_profiles().size() == 1);
       expect((configuration.get_profiles())[0]->get_name() == "Default profile");
       expect((configuration.get_profiles())[0]->get_selected() == true);
@@ -215,6 +219,8 @@ void run_core_configuration_test(void) {
       global_configuration.set_unsafe_ui(true);
       global_configuration.set_filter_useless_events_from_specific_devices(false);
       global_configuration.set_reorder_same_timestamp_input_events_to_prioritize_modifiers(false);
+      global_configuration.set_cgevent_double_click_interval_milliseconds(250);
+      global_configuration.set_cgevent_double_click_distance(8);
       nlohmann::json expected({
           {"check_for_updates_on_startup", false},
           {"dummy", {{"keep_me", true}}},
@@ -225,6 +231,8 @@ void run_core_configuration_test(void) {
           {"unsafe_ui", true},
           {"filter_useless_events_from_specific_devices", false},
           {"reorder_same_timestamp_input_events_to_prioritize_modifiers", false},
+          {"cgevent_double_click_interval_milliseconds", 250},
+          {"cgevent_double_click_distance", 8},
       });
       expect(global_configuration.to_json() == expected);
     }

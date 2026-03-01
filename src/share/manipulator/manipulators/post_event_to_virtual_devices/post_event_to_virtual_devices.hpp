@@ -10,6 +10,7 @@
 #include "notification_message_manager.hpp"
 #include "queue.hpp"
 #include "types.hpp"
+#include <algorithm>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
 namespace krbn {
@@ -398,9 +399,42 @@ public:
     // This manipulator is always valid.
   }
 
+  static constexpr int64_t cgevent_source_user_data = queue::cgevent_source_user_data;
+
+  void set_post_backend(queue::post_backend backend) {
+    queue_.set_post_backend(backend);
+  }
+
+  void set_virtual_hid_keyboard_event_posted_callback(queue::virtual_hid_keyboard_event_posted_callback callback) {
+    queue_.set_virtual_hid_keyboard_event_posted_callback(callback);
+  }
+
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_service_client] {
+          queue_.async_post_events(weak_virtual_hid_device_service_client,
+                                   weak_console_user_server_client_);
+        });
+  }
+
+  void async_release_virtual_hid_pressed_keys(const std::vector<momentary_switch_event>& pressed_keys,
+                                              std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
+    enqueue_to_dispatcher(
+        [this, pressed_keys, weak_virtual_hid_device_service_client] {
+          auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
+
+          for (const auto& e : pressed_keys) {
+            if (!e.valid() || e.pointing_button()) {
+              continue;
+            }
+
+            queue_.emplace_back_key_event(e.get_usage_pair(),
+                                          event_type::key_up,
+                                          time_stamp);
+          }
+
+          key_event_dispatcher_.clear();
+
           queue_.async_post_events(weak_virtual_hid_device_service_client,
                                    weak_console_user_server_client_);
         });
@@ -418,25 +452,56 @@ public:
     return key_event_dispatcher_;
   }
 
+  key_event_dispatcher& get_key_event_dispatcher(void) {
+    return key_event_dispatcher_;
+  }
+
 private:
+  static int clamp_pointing_value(int value) {
+    return std::min(127, std::max(-127, value));
+  }
+
   void post_pointing_input_report(event_queue::entry& front_input_event,
                                   std::shared_ptr<event_queue::queue> output_event_queue) {
-    pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
-    report.buttons = output_event_queue->get_pointing_button_manager().make_hid_report_buttons();
+    auto buttons = output_event_queue->get_pointing_button_manager().make_hid_report_buttons();
+    const auto& global_configuration =
+        output_event_queue->get_manipulator_environment().get_core_configuration()->get_global_configuration();
+    queue_.set_cgevent_double_click_settings(
+        global_configuration.get_cgevent_double_click_interval_milliseconds(),
+        global_configuration.get_cgevent_double_click_distance());
 
-    if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
-      report.x = pointing_motion->get_x();
-      report.y = pointing_motion->get_y();
-      report.vertical_wheel = pointing_motion->get_vertical_wheel();
-      report.horizontal_wheel = pointing_motion->get_horizontal_wheel();
+    if (queue_.get_post_backend() == queue::post_backend::cgevent) {
+      queue::cgevent_pointing_input report;
+      report.buttons = buttons;
+
+      if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
+        report.x = pointing_motion->get_x();
+        report.y = pointing_motion->get_y();
+        report.vertical_wheel = pointing_motion->get_vertical_wheel();
+        report.horizontal_wheel = pointing_motion->get_horizontal_wheel();
+      }
+
+      queue_.emplace_back_cgevent_pointing_input(report,
+                                                 front_input_event.get_event_type(),
+                                                 front_input_event.get_event_time_stamp().get_time_stamp());
+    } else {
+      pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
+      report.buttons = buttons;
+
+      if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
+        report.x = static_cast<uint8_t>(static_cast<int8_t>(clamp_pointing_value(pointing_motion->get_x())));
+        report.y = static_cast<uint8_t>(static_cast<int8_t>(clamp_pointing_value(pointing_motion->get_y())));
+        report.vertical_wheel = static_cast<uint8_t>(static_cast<int8_t>(clamp_pointing_value(pointing_motion->get_vertical_wheel())));
+        report.horizontal_wheel = static_cast<uint8_t>(static_cast<int8_t>(clamp_pointing_value(pointing_motion->get_horizontal_wheel())));
+      }
+
+      queue_.emplace_back_pointing_input(report,
+                                         front_input_event.get_event_type(),
+                                         front_input_event.get_event_time_stamp().get_time_stamp());
     }
 
-    queue_.emplace_back_pointing_input(report,
-                                       front_input_event.get_event_type(),
-                                       front_input_event.get_event_time_stamp().get_time_stamp());
-
     // Save buttons for `handle_device_ungrabbed_event`.
-    pressed_buttons_ = report.buttons;
+    pressed_buttons_ = buttons;
   }
 
   void update_sticky_modifiers_notification_message(const event_queue::queue& output_event_queue) {

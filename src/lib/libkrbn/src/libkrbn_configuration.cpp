@@ -156,6 +156,52 @@ void libkrbn_core_configuration_set_global_configuration_reorder_same_timestamp_
   c->get_global_configuration().set_reorder_same_timestamp_input_events_to_prioritize_modifiers(value);
 }
 
+int libkrbn_core_configuration_get_global_configuration_cgevent_double_click_interval_milliseconds(void) {
+  auto c = get_current_core_configuration();
+  return c->get_global_configuration().get_cgevent_double_click_interval_milliseconds();
+}
+
+void libkrbn_core_configuration_set_global_configuration_cgevent_double_click_interval_milliseconds(int value) {
+  auto c = get_current_core_configuration();
+  c->get_global_configuration().set_cgevent_double_click_interval_milliseconds(value);
+}
+
+int libkrbn_core_configuration_get_global_configuration_cgevent_double_click_distance(void) {
+  auto c = get_current_core_configuration();
+  return c->get_global_configuration().get_cgevent_double_click_distance();
+}
+
+void libkrbn_core_configuration_set_global_configuration_cgevent_double_click_distance(int value) {
+  auto c = get_current_core_configuration();
+  c->get_global_configuration().set_cgevent_double_click_distance(value);
+}
+
+libkrbn_event_input_source_backend libkrbn_core_configuration_get_global_configuration_event_input_source_backend(void) {
+  auto c = get_current_core_configuration();
+
+  switch (c->get_global_configuration().get_event_input_source_backend()) {
+    case krbn::event_input_source_backend::cgeventtap:
+      return libkrbn_event_input_source_backend_cgeventtap;
+    case krbn::event_input_source_backend::hid:
+    default:
+      return libkrbn_event_input_source_backend_hid;
+  }
+}
+
+void libkrbn_core_configuration_set_global_configuration_event_input_source_backend(libkrbn_event_input_source_backend value) {
+  auto c = get_current_core_configuration();
+
+  switch (value) {
+    case libkrbn_event_input_source_backend_cgeventtap:
+      c->get_global_configuration().set_event_input_source_backend(krbn::event_input_source_backend::cgeventtap);
+      break;
+    case libkrbn_event_input_source_backend_hid:
+    default:
+      c->get_global_configuration().set_event_input_source_backend(krbn::event_input_source_backend::hid);
+      break;
+  }
+}
+
 bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension(void) {
   auto c = get_current_core_configuration();
   return c->get_machine_specific().get_entry().get_enable_multitouch_extension();

@@ -143,6 +143,19 @@ public:
     pressed_modifier_flags_.erase(modifier_flag);
   }
 
+  void set_pressed_modifier_flags(const std::unordered_set<modifier_flag>& modifier_flags) {
+    pressed_modifier_flags_ = modifier_flags;
+  }
+
+  const std::vector<std::pair<device_id, pqrs::hid::usage_pair>>& get_pressed_keys(void) const {
+    return pressed_keys_;
+  }
+
+  void clear(void) {
+    pressed_keys_.clear();
+    pressed_modifier_flags_.clear();
+  }
+
 private:
   bool key_event_exists(const pqrs::hid::usage_pair& usage_pair) const {
     auto it = std::find_if(std::begin(pressed_keys_),
