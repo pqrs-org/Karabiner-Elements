@@ -78,7 +78,8 @@ int daemon(void) {
   // Update karabiner_core_service_state.json
   //
 
-  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
+  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted &&
+      pqrs::osx::accessibility::is_process_trusted()) {
     core_service_state_json_writer->set_hid_device_open_permitted(true);
   } else {
     logger::get_logger()->warn("Input Monitoring is not granted");
