@@ -10,7 +10,6 @@
 #include <functional>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
-#include <pqrs/osx/iokit_hid_system/key_code.hpp>
 #include <chrono>
 #include <variant>
 
@@ -39,14 +38,6 @@ public:
     constexpr bool operator==(const cgevent_pointing_input&) const = default;
   };
 
-  struct cgevent_key_code_event final {
-    pqrs::osx::iokit_hid_system::key_code::value_t key_code;
-    bool key_down;
-    CGEventFlags flags;
-
-    constexpr bool operator==(const cgevent_key_code_event&) const = default;
-  };
-
   class event final {
   public:
     enum class type {
@@ -56,7 +47,6 @@ public:
       apple_vendor_keyboard_input,
       generic_desktop_input,
       pointing_input,
-      cgevent_key_code_event,
       cgevent_pointing_input,
       shell_command,
       send_user_command,
@@ -92,15 +82,6 @@ public:
           absolute_time_point time_stamp) : type_(type::generic_desktop_input),
                                             value_(value),
                                             time_stamp_(time_stamp) {
-    }
-
-    static event make_cgevent_key_code_event(const cgevent_key_code_event& value,
-                                             absolute_time_point time_stamp) {
-      event e;
-      e.type_ = type::cgevent_key_code_event;
-      e.value_ = value;
-      e.time_stamp_ = time_stamp;
-      return e;
     }
 
     event(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input& value,
@@ -189,14 +170,6 @@ public:
           }
           break;
 
-        case type::cgevent_key_code_event:
-          if (auto v = get_cgevent_key_code_event()) {
-            json["cgevent_key_code_event"]["key_code"] = type_safe::get(v->key_code);
-            json["cgevent_key_code_event"]["key_down"] = v->key_down;
-            json["cgevent_key_code_event"]["flags"] = static_cast<uint64_t>(v->flags);
-          }
-          break;
-
         case type::generic_desktop_input:
           if (auto v = get_generic_desktop_input()) {
             json["generic_desktop_input"]["keys"] = virtual_hid_device_utility::to_json(v->keys,
@@ -281,12 +254,6 @@ public:
       return std::nullopt;
     }
 
-    std::optional<cgevent_key_code_event> get_cgevent_key_code_event(void) const {
-      if (type_ == type::cgevent_key_code_event) {
-        return std::get<cgevent_key_code_event>(value_);
-      }
-      return std::nullopt;
-    }
     std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input> get_generic_desktop_input(void) const {
       if (type_ == type::generic_desktop_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input>(value_);
@@ -362,7 +329,6 @@ public:
         TO_C_STRING(apple_vendor_keyboard_input);
         TO_C_STRING(generic_desktop_input);
         TO_C_STRING(pointing_input);
-        TO_C_STRING(cgevent_key_code_event);
         TO_C_STRING(cgevent_pointing_input);
         TO_C_STRING(shell_command);
         TO_C_STRING(send_user_command);
@@ -380,7 +346,6 @@ public:
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input,
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input,
                  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input,
-                 cgevent_key_code_event,
                  cgevent_pointing_input,
                  std::string,                                              // For shell_command
                  nlohmann::json,                                           // For send_user_command
@@ -690,9 +655,6 @@ public:
                 client->async_post_report(*input);
               }
             }
-            if (auto input = e.get_cgevent_key_code_event()) {
-              post_key_code_to_cgevent(*input);
-            }
             if (auto input = e.get_generic_desktop_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
                 client->async_post_report(*input);
@@ -756,45 +718,6 @@ public:
   }
 
 private:
-  static CGEventFlags make_cg_event_flags(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers& modifiers) {
-    namespace hid_report = pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report;
-
-    CGEventFlags flags = 0;
-
-    if (modifiers.exists(hid_report::modifier::left_shift) ||
-        modifiers.exists(hid_report::modifier::right_shift)) {
-      flags |= kCGEventFlagMaskShift;
-    }
-    if (modifiers.exists(hid_report::modifier::left_control) ||
-        modifiers.exists(hid_report::modifier::right_control)) {
-      flags |= kCGEventFlagMaskControl;
-    }
-    if (modifiers.exists(hid_report::modifier::left_option) ||
-        modifiers.exists(hid_report::modifier::right_option)) {
-      flags |= kCGEventFlagMaskAlternate;
-    }
-    if (modifiers.exists(hid_report::modifier::left_command) ||
-        modifiers.exists(hid_report::modifier::right_command)) {
-      flags |= kCGEventFlagMaskCommand;
-    }
-
-    return flags;
-  }
-
-  void post_key_code_to_cgevent(const cgevent_key_code_event& input) {
-    if (cgevent_source_) {
-      if (auto event = CGEventCreateKeyboardEvent(cgevent_source_,
-                                                  type_safe::get(input.key_code),
-                                                  input.key_down)) {
-        CGEventSetFlags(event, input.flags);
-        CGEventSetIntegerValueField(event,
-                                    kCGEventSourceUserData,
-                                    cgevent_source_user_data);
-        CGEventPost(kCGHIDEventTap, event);
-        CFRelease(event);
-      }
-    }
-  }
 
   static CGMouseButton make_mouse_button(uint8_t button) {
     switch (button) {
