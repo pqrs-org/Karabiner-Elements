@@ -3,10 +3,10 @@
 #include "keyboard_repeat_detector.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_utility.hpp"
+#include <chrono>
 #include <functional>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
-#include <chrono>
 #include <variant>
 
 namespace krbn {
@@ -272,7 +272,7 @@ public:
     event(void) {
     }
 
-    static const char* _Nullable to_c_string(type t) {
+    static const char* to_c_string(type t) {
 #define TO_C_STRING(TYPE) \
   case type::TYPE:        \
     return #TYPE;
@@ -315,7 +315,7 @@ public:
   }
 
   virtual ~queue(void) {
-    detach_from_dispatcher([] {});
+    detach_from_dispatcher();
   }
 
   const std::vector<event>& get_events(void) const {
@@ -381,7 +381,7 @@ public:
         }
       }
 
-      events_.push_back(event(keyboard_input_, time_stamp));
+      events_.emplace_back(keyboard_input_, time_stamp);
 
     } else if (usage_page == pqrs::hid::usage_page::consumer) {
       switch (event_type) {
@@ -398,7 +398,7 @@ public:
           break;
       }
 
-      events_.push_back(event(consumer_input_, time_stamp));
+      events_.emplace_back(consumer_input_, time_stamp);
 
     } else if (usage_page == pqrs::hid::usage_page::apple_vendor_top_case) {
       switch (event_type) {
@@ -415,7 +415,7 @@ public:
           break;
       }
 
-      events_.push_back(event(apple_vendor_top_case_input_, time_stamp));
+      events_.emplace_back(apple_vendor_top_case_input_, time_stamp);
 
     } else if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard) {
       switch (event_type) {
@@ -432,7 +432,7 @@ public:
           break;
       }
 
-      events_.push_back(event(apple_vendor_keyboard_input_, time_stamp));
+      events_.emplace_back(apple_vendor_keyboard_input_, time_stamp);
 
     } else if (usage_page == pqrs::hid::usage_page::generic_desktop) {
       switch (event_type) {
@@ -449,7 +449,7 @@ public:
           break;
       }
 
-      events_.push_back(event(generic_desktop_input_, time_stamp));
+      events_.emplace_back(generic_desktop_input_, time_stamp);
     }
 
     keyboard_repeat_detector_.set(mse, event_type);
@@ -460,17 +460,8 @@ public:
                                    absolute_time_point time_stamp) {
     adjust_time_stamp(time_stamp, event_type);
 
-    events_.push_back(event(pointing_input,
-                            time_stamp));
-  }
-
-  void emplace_back_virtual_hid_pointing_input(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input& pointing_input,
-                                               event_type event_type,
-                                               absolute_time_point time_stamp) {
-    adjust_time_stamp(time_stamp, event_type);
-
-    events_.push_back(event(pointing_input,
-                            time_stamp));
+    events_.emplace_back(pointing_input,
+                         time_stamp);
   }
 
   void push_back_shell_command_event(const std::string& shell_command,
@@ -667,63 +658,6 @@ private:
     }
   }
 
-  std::vector<event> events_;
-  virtual_hid_keyboard_event_posted_callback virtual_hid_keyboard_event_posted_callback_;
-
-  keyboard_repeat_detector keyboard_repeat_detector_;
-
-  // We should add a wait before `key_down` and `key_up just after key_down` in order to
-  // ensure window system handles events by properly order.
-  //
-  // Example:
-  //
-  //   01. left_shift key_down
-  //   02. [wait]
-  //       left_control key_down
-  //   03. [wait]
-  //       a key_down
-  //   04. [wait]
-  //       a key_up
-  //   05. [wait]
-  //       b key_down
-  //   06. [wait]
-  //       b key_up
-  //   07. left_shift key_up
-  //   08. left_control key_up
-  //   09. [wait]
-  //       button1 down
-  //   10. [wait]
-  //       button1 up
-  //
-  // Without wait, window system sometimes reorder modifier flag event.
-  // it causes improperly event order such as `a,shift,control,b,button1`.
-  //
-  // You can confirm the actual problem in Google Chrome.
-  // When sending return_or_enter when right_control is pressed alone by the following manipulator,
-  // Google Chrome treats return_or_enter as right_control-return_or_enter in omnibox unless we put a wait around a modifier event.
-  // (open www.<entered url>.com)
-  //
-  //   "from": <%= from("right_control", [], ["any"]) %>,
-  //   "to": <%= to([["right_control"]]) %>,
-  //   "to_if_alone": <%= to([["return_or_enter"]]) %>
-  //
-  //
-  // We also should add a wait before `key_up of modifier key`.
-  // Without wait, control-space (Select the previous input source) does not work properly.
-
-  event_type last_event_type_;
-  absolute_time_point last_event_time_stamp_;
-
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input keyboard_input_;
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input previous_posted_keyboard_input_;
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input consumer_input_;
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input previous_posted_consumer_input_;
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input apple_vendor_top_case_input_;
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input previous_posted_apple_vendor_top_case_input_;
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input apple_vendor_keyboard_input_;
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input previous_posted_apple_vendor_keyboard_input_;
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input generic_desktop_input_;
-
   std::optional<momentary_switch_event> make_momentary_switch_event_from_modifier(
       pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifier modifier) const {
     using hid_report_modifier = pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifier;
@@ -875,7 +809,7 @@ private:
   }
 
   void emit_virtual_hid_apple_vendor_top_case_events(const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input& previous,
-                                                      const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input& current) {
+                                                     const pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input& current) {
     if (!virtual_hid_keyboard_event_posted_callback_) {
       return;
     }
@@ -906,6 +840,63 @@ private:
       }
     }
   }
+
+  std::vector<event> events_;
+  virtual_hid_keyboard_event_posted_callback virtual_hid_keyboard_event_posted_callback_;
+
+  keyboard_repeat_detector keyboard_repeat_detector_;
+
+  // We should add a wait before `key_down` and `key_up just after key_down` in order to
+  // ensure window system handles events by properly order.
+  //
+  // Example:
+  //
+  //   01. left_shift key_down
+  //   02. [wait]
+  //       left_control key_down
+  //   03. [wait]
+  //       a key_down
+  //   04. [wait]
+  //       a key_up
+  //   05. [wait]
+  //       b key_down
+  //   06. [wait]
+  //       b key_up
+  //   07. left_shift key_up
+  //   08. left_control key_up
+  //   09. [wait]
+  //       button1 down
+  //   10. [wait]
+  //       button1 up
+  //
+  // Without wait, window system sometimes reorder modifier flag event.
+  // it causes improperly event order such as `a,shift,control,b,button1`.
+  //
+  // You can confirm the actual problem in Google Chrome.
+  // When sending return_or_enter when right_control is pressed alone by the following manipulator,
+  // Google Chrome treats return_or_enter as right_control-return_or_enter in omnibox unless we put a wait around a modifier event.
+  // (open www.<entered url>.com)
+  //
+  //   "from": <%= from("right_control", [], ["any"]) %>,
+  //   "to": <%= to([["right_control"]]) %>,
+  //   "to_if_alone": <%= to([["return_or_enter"]]) %>
+  //
+  //
+  // We also should add a wait before `key_up of modifier key`.
+  // Without wait, control-space (Select the previous input source) does not work properly.
+
+  event_type last_event_type_;
+  absolute_time_point last_event_time_stamp_;
+
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input keyboard_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input previous_posted_keyboard_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input consumer_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input previous_posted_consumer_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input apple_vendor_top_case_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input previous_posted_apple_vendor_top_case_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input apple_vendor_keyboard_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input previous_posted_apple_vendor_keyboard_input_;
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input generic_desktop_input_;
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const queue::event& event) {

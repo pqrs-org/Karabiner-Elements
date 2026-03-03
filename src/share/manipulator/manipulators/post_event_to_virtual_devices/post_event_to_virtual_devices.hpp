@@ -451,21 +451,16 @@ public:
   }
 
 private:
-  static int clamp_pointing_value(int value) {
-    return std::min(127, std::max(-127, value));
-  }
-
   void post_pointing_input_report(event_queue::entry& front_input_event,
                                   std::shared_ptr<event_queue::queue> output_event_queue) {
-    auto buttons = output_event_queue->get_pointing_button_manager().make_hid_report_buttons();
     pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
-    report.buttons = buttons;
+    report.buttons = output_event_queue->get_pointing_button_manager().make_hid_report_buttons();
 
     if (auto pointing_motion = front_input_event.get_event().get_pointing_motion()) {
-      report.x = static_cast<uint8_t>(static_cast<int8_t>(clamp_pointing_value(pointing_motion->get_x())));
-      report.y = static_cast<uint8_t>(static_cast<int8_t>(clamp_pointing_value(pointing_motion->get_y())));
-      report.vertical_wheel = static_cast<uint8_t>(static_cast<int8_t>(clamp_pointing_value(pointing_motion->get_vertical_wheel())));
-      report.horizontal_wheel = static_cast<uint8_t>(static_cast<int8_t>(clamp_pointing_value(pointing_motion->get_horizontal_wheel())));
+      report.x = pointing_motion->get_x();
+      report.y = pointing_motion->get_y();
+      report.vertical_wheel = pointing_motion->get_vertical_wheel();
+      report.horizontal_wheel = pointing_motion->get_horizontal_wheel();
     }
 
     queue_.emplace_back_pointing_input(report,
@@ -473,7 +468,7 @@ private:
                                        front_input_event.get_event_time_stamp().get_time_stamp());
 
     // Save buttons for `handle_device_ungrabbed_event`.
-    pressed_buttons_ = buttons;
+    pressed_buttons_ = report.buttons;
   }
 
   void update_sticky_modifiers_notification_message(const event_queue::queue& output_event_queue) {
