@@ -156,26 +156,6 @@ void libkrbn_core_configuration_set_global_configuration_reorder_same_timestamp_
   c->get_global_configuration().set_reorder_same_timestamp_input_events_to_prioritize_modifiers(value);
 }
 
-int libkrbn_core_configuration_get_global_configuration_cgevent_double_click_interval_milliseconds(void) {
-  auto c = get_current_core_configuration();
-  return c->get_global_configuration().get_cgevent_double_click_interval_milliseconds();
-}
-
-void libkrbn_core_configuration_set_global_configuration_cgevent_double_click_interval_milliseconds(int value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_cgevent_double_click_interval_milliseconds(value);
-}
-
-int libkrbn_core_configuration_get_global_configuration_cgevent_double_click_distance(void) {
-  auto c = get_current_core_configuration();
-  return c->get_global_configuration().get_cgevent_double_click_distance();
-}
-
-void libkrbn_core_configuration_set_global_configuration_cgevent_double_click_distance(int value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_cgevent_double_click_distance(value);
-}
-
 libkrbn_event_input_source_backend libkrbn_core_configuration_get_global_configuration_event_input_source_backend(void) {
   auto c = get_current_core_configuration();
 

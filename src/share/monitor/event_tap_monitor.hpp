@@ -24,17 +24,11 @@ public:
 
   event_tap_monitor(const event_tap_monitor&) = delete;
 
-  event_tap_monitor(bool capture_keyboard_events,
-                    bool manipulate_events,
-                    std::function<CGEventRef _Nullable(CGEventType, CGEventRef _Nullable)> keyboard_event_manipulator = nullptr,
-                    std::function<bool(CGEventType, CGEventRef _Nullable, const std::optional<std::pair<event_type, event_queue::event>>&)> should_skip_event = nullptr,
-                    CGEventTapLocation tap_location = kCGHIDEventTap)
+  event_tap_monitor(bool manipulate_keyboard_events,
+                    std::function<bool(CGEventType, CGEventRef _Nullable, const std::optional<std::pair<event_type, event_queue::event>>&)> should_skip_event = nullptr)
       : dispatcher_client(),
-        capture_keyboard_events_(capture_keyboard_events),
-        manipulate_events_(manipulate_events),
-        keyboard_event_manipulator_(keyboard_event_manipulator),
+        manipulate_keyboard_events_(manipulate_keyboard_events),
         should_skip_event_(should_skip_event),
-        tap_location_(tap_location),
         event_tap_(nullptr),
         run_loop_source_(nullptr) {
     cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>(pqrs::cf::run_loop_thread::failure_policy::exit);
@@ -88,19 +82,17 @@ public:
                   CGEventMaskBit(kCGEventOtherMouseDown) |
                   CGEventMaskBit(kCGEventOtherMouseUp) |
                   CGEventMaskBit(kCGEventOtherMouseDragged);
-      if (capture_keyboard_events_) {
+      if (manipulate_keyboard_events_) {
         mask |= CGEventMaskBit(kCGEventKeyDown) |
                 CGEventMaskBit(kCGEventKeyUp);
       }
 
-      logger::get_logger()->info("event_tap_monitor start (capture_keyboard_events={0}, manipulate_events={1}, tap_location={2})",
-                                 capture_keyboard_events_,
-                                 manipulate_events_,
-                                 static_cast<int>(tap_location_));
+      logger::get_logger()->info("event_tap_monitor start (manipulate_keyboard_events={0})",
+                                 manipulate_keyboard_events_);
 
-      event_tap_ = CGEventTapCreate(tap_location_,
+      event_tap_ = CGEventTapCreate(kCGHIDEventTap,
                                     kCGTailAppendEventTap,
-                                    manipulate_events_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
+                                    manipulate_keyboard_events_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
                                     mask,
                                     event_tap_monitor::static_callback,
                                     this);
@@ -123,9 +115,8 @@ public:
           event_tap_ = nullptr;
         }
       } else {
-        logger::get_logger()->error("event_tap_monitor failed to create event tap (capture_keyboard_events={0}, manipulate_events={1})",
-                                    capture_keyboard_events_,
-                                    manipulate_events_);
+        logger::get_logger()->error("event_tap_monitor failed to create event tap (manipulate_keyboard_events={0})",
+                                    manipulate_keyboard_events_);
       }
     });
   }
@@ -236,44 +227,6 @@ private:
   }
 
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
-    std::optional<std::pair<event_type, event_queue::event>> normalized_keyboard_event;
-    switch (type) {
-      case kCGEventKeyDown:
-      case kCGEventKeyUp:
-      case kCGEventFlagsChanged:
-        if (auto pair = event_tap_utility::make_event(type, event)) {
-          normalized_keyboard_event = normalize_fn_modified_navigation_event(*pair);
-        }
-        break;
-
-      default:
-        break;
-    }
-
-    switch (type) {
-      case kCGEventLeftMouseDown:
-      case kCGEventLeftMouseUp:
-      case kCGEventRightMouseDown:
-      case kCGEventRightMouseUp:
-      case kCGEventMouseMoved:
-      case kCGEventLeftMouseDragged:
-      case kCGEventRightMouseDragged:
-      case kCGEventScrollWheel:
-      case kCGEventOtherMouseDown:
-      case kCGEventOtherMouseUp:
-      case kCGEventOtherMouseDragged:
-        event_tap_utility::update_latest_pointing_location(event);
-        break;
-
-      default:
-        break;
-    }
-
-    if (should_skip_event_ &&
-        should_skip_event_(type, event, normalized_keyboard_event)) {
-      return event;
-    }
-
     switch (type) {
       case kCGEventTapDisabledByTimeout:
       case kCGEventTapDisabledByUserInput:
@@ -291,24 +244,27 @@ private:
       case kCGEventScrollWheel:
       case kCGEventOtherMouseDown:
       case kCGEventOtherMouseUp:
-      case kCGEventOtherMouseDragged: {
+      case kCGEventOtherMouseDragged:
         if (auto pair = event_tap_utility::make_event(type, event)) {
           enqueue_to_dispatcher([this, pair] {
             pointing_device_event_arrived(pair->first, pair->second);
           });
         }
-        // Keep physical scroll events in the original CGEvent stream.
-        // In cgeventtap mode scroll is pass-through (not re-injected by Karabiner).
-        if (manipulate_events_ &&
-            type != kCGEventScrollWheel) {
-          return nullptr;
-        }
         break;
-      }
 
       case kCGEventKeyDown:
       case kCGEventKeyUp:
-      case kCGEventFlagsChanged:
+      case kCGEventFlagsChanged: {
+        std::optional<std::pair<event_type, event_queue::event>> normalized_keyboard_event;
+        if (auto pair = event_tap_utility::make_event(type, event)) {
+          normalized_keyboard_event = normalize_fn_modified_navigation_event(*pair);
+        }
+
+        if (should_skip_event_ &&
+            should_skip_event_(type, event, normalized_keyboard_event)) {
+          return event;
+        }
+
         // Do not suppress auto-repeat key_down events.
         // They are generated by the system while a key is held and should pass through.
         if (type == kCGEventKeyDown &&
@@ -317,25 +273,18 @@ private:
           return event;
         }
 
-        if (manipulate_events_ &&
-            keyboard_event_manipulator_) {
-          event = keyboard_event_manipulator_(type, event);
-          if (!event) {
-            return nullptr;
-          }
-        }
-
         if (normalized_keyboard_event) {
-          if (capture_keyboard_events_) {
+          if (manipulate_keyboard_events_) {
             enqueue_to_dispatcher([this, normalized_keyboard_event] {
               keyboard_event_arrived(normalized_keyboard_event->first, normalized_keyboard_event->second);
             });
           }
-          if (manipulate_events_) {
+          if (manipulate_keyboard_events_) {
             return nullptr;
           }
         }
         break;
+      }
 
       case kCGEventNull:
       case kCGEventTabletPointer:
@@ -348,11 +297,8 @@ private:
   }
 
   std::unique_ptr<pqrs::cf::run_loop_thread> cf_run_loop_thread_;
-  bool capture_keyboard_events_;
-  bool manipulate_events_;
-  std::function<CGEventRef _Nullable(CGEventType, CGEventRef _Nullable)> keyboard_event_manipulator_;
+  bool manipulate_keyboard_events_;
   std::function<bool(CGEventType, CGEventRef _Nullable, const std::optional<std::pair<event_type, event_queue::event>>&)> should_skip_event_;
-  CGEventTapLocation tap_location_;
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;
   bool fn_pressed_{false};

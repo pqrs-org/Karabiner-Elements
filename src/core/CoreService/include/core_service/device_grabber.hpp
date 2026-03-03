@@ -493,7 +493,7 @@ public:
 
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_monitor here.
-      setup_event_tap_monitor(false, false);
+      setup_event_tap_monitor(false);
 
       configuration_monitor_ = std::make_unique<configuration_monitor>(user_core_configuration_file_path,
                                                                        expected_user_core_configuration_file_owner.value_or(uid_t(0)),
@@ -777,11 +777,6 @@ private:
 
   // This method is executed in the shared dispatcher thread.
   void manipulate(absolute_time_point now) {
-    auto post_backend = is_cgeventtap_input_enabled()
-                            ? manipulator::manipulators::post_event_to_virtual_devices::queue::post_backend::cgevent
-                            : manipulator::manipulators::post_event_to_virtual_devices::queue::post_backend::virtual_hid_device;
-    post_event_to_virtual_devices_manipulator_->set_post_backend(post_backend);
-
     manipulator_managers_connector_.manipulate(now,
                                                core_configuration_);
 
@@ -817,15 +812,16 @@ private:
         }
       }
     } else {
-      if (is_cgeventtap_input_enabled()) {
-        return;
-      }
-
       // Manipulate events
 
       bool notify = false;
 
       for (const auto& e : *event_queue_entries) {
+        if (is_cgeventtap_input_enabled() &&
+            !is_hid_pointing_related_event(e->get_event())) {
+          continue;
+        }
+
         if (!entry.get_disabled() && entry.seized()) {
           auto& pressed_modifiers = physical_pressed_modifier_flags_[e->get_device_id()];
           if (filter_unmatched_modifier_key_up(pressed_modifiers,
@@ -982,7 +978,15 @@ private:
     }
 
     if (is_cgeventtap_input_enabled()) {
-      return grabbable_state::state::ungrabbable;
+      auto device_identifiers = entry.get_device_properties()->get_device_identifiers();
+
+      // In cgeventtap mode, keyboard input is handled in EventTap path.
+      // Keep pure pointing devices in HID path.
+      if (device_identifiers.get_is_keyboard() ||
+          (!device_identifiers.get_is_pointing_device() &&
+           !device_identifiers.get_is_game_pad())) {
+        return grabbable_state::state::ungrabbable;
+      }
     }
 
     //
@@ -1213,8 +1217,7 @@ private:
                                nlohmann::json(effective_event_input_source_backend_).get<std::string>());
 
     if (event_tap_monitor_) {
-      setup_event_tap_monitor(is_cgeventtap_input_enabled(),
-                              is_cgeventtap_input_enabled());
+      setup_event_tap_monitor(is_cgeventtap_input_enabled());
     }
 
     async_grab_devices();
@@ -1224,54 +1227,39 @@ private:
     return effective_event_input_source_backend_ == event_input_source_backend::cgeventtap;
   }
 
-  void setup_event_tap_monitor(bool capture_keyboard_events,
-                               bool manipulate_events) {
-    logger::get_logger()->info("setup_event_tap_monitor (capture_keyboard_events={0}, manipulate_events={1})",
-                               capture_keyboard_events,
-                               manipulate_events);
+  bool is_hid_pointing_related_event(const event_queue::event& event) const {
+    switch (event.get_type()) {
+      case event_queue::event::type::momentary_switch_event:
+        if (auto e = event.get_if<momentary_switch_event>()) {
+          return e->pointing_button();
+        }
+        return false;
+
+      case event_queue::event::type::pointing_motion:
+      case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
+      case event_queue::event::type::device_ungrabbed:
+        return true;
+
+      default:
+        return false;
+    }
+  }
+
+  void setup_event_tap_monitor(bool manipulate_keyboard_events) {
+    logger::get_logger()->info("setup_event_tap_monitor (manipulate_keyboard_events={0})",
+                               manipulate_keyboard_events);
 
     event_tap_monitor_ = std::make_unique<event_tap_monitor>(
-        capture_keyboard_events,
-        manipulate_events,
-        [this](auto&& type, auto&& event) {
-          return cgeventtap_manipulate_keyboard_event(type, event);
-        },
+        manipulate_keyboard_events,
+        // should_skip_event
         [this](auto&& type, auto&& event, const auto& normalized_keyboard_event) {
           if (!event) {
             return false;
           }
 
-          switch (type) {
-            case kCGEventKeyDown:
-            case kCGEventKeyUp:
-            case kCGEventFlagsChanged:
-            case kCGEventLeftMouseDown:
-            case kCGEventLeftMouseUp:
-            case kCGEventRightMouseDown:
-            case kCGEventRightMouseUp:
-            case kCGEventMouseMoved:
-            case kCGEventLeftMouseDragged:
-            case kCGEventRightMouseDragged:
-            case kCGEventOtherMouseDown:
-            case kCGEventOtherMouseUp:
-            case kCGEventOtherMouseDragged:
-              break;
-
-            default:
-              return false;
-          }
-
-          auto source_process_id = static_cast<pid_t>(
-              CGEventGetIntegerValueField(event, kCGEventSourceUnixProcessID));
-          auto source_user_data = CGEventGetIntegerValueField(event, kCGEventSourceUserData);
-          if (source_process_id == getpid() &&
-              source_user_data == manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices::cgevent_source_user_data) {
-            return true;
-          }
-
-          // In cgeventtap mode, keyboard events emitted from virtual HID should
-          // bypass Karabiner processing and pass through to apps.
           if (is_cgeventtap_input_enabled()) {
+            // In cgeventtap mode, keyboard events emitted from virtual HID should
+            // bypass Karabiner processing and pass through to apps.
             if (normalized_keyboard_event) {
               if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
                 return consume_keyboard_suppression_entry(*m, normalized_keyboard_event->first);
@@ -1481,24 +1469,6 @@ private:
         virtual_hid_device_service_client_);
   }
 
-  CGEventRef cgeventtap_manipulate_keyboard_event(CGEventType type,
-                                                  CGEventRef event) {
-    if (!is_cgeventtap_input_enabled() || !event) {
-      return event;
-    }
-
-    switch (type) {
-      case kCGEventKeyDown:
-      case kCGEventKeyUp:
-      case kCGEventFlagsChanged:
-        break;
-
-      default:
-        return event;
-    }
-
-    return event;
-  }
 };
 } // namespace core_service
 } // namespace krbn

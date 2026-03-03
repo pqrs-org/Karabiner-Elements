@@ -45,35 +45,6 @@ struct ExpertView: View {
               .modifier(InfoBorder())
               .fixedSize(horizontal: false, vertical: true)
             }
-
-            VStack(alignment: .leading, spacing: 4.0) {
-              HStack {
-                IntTextField(
-                  value: $settings.cgeventDoubleClickIntervalMilliseconds,
-                  range: 1...2000,
-                  step: 10,
-                  width: 50)
-
-                Text("CGEvent double click interval milliseconds (Default: 500)")
-              }
-
-              HStack {
-                IntTextField(
-                  value: $settings.cgeventDoubleClickDistance,
-                  range: 0...32,
-                  step: 1,
-                  width: 50)
-
-                Text("CGEvent double click distance in pixels (Default: 4)")
-              }
-
-              Label(
-                "These values are used only when the input event source backend is cgeventtap.",
-                systemImage: InfoBorder.icon
-              )
-              .modifier(InfoBorder())
-              .fixedSize(horizontal: false, vertical: true)
-            }
           }
           .padding()
           .frame(maxWidth: .infinity, alignment: .leading)

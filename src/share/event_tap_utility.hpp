@@ -4,33 +4,12 @@
 
 #include "event_queue.hpp"
 #include <CoreGraphics/CoreGraphics.h>
-#include <atomic>
 #include <optional>
 #include <pqrs/osx/iokit_hid_system/key_code.hpp>
 
 namespace krbn {
 class event_tap_utility final {
 public:
-  static void update_latest_pointing_location(CGEventRef event) {
-    if (!event) {
-      return;
-    }
-
-    auto p = CGEventGetLocation(event);
-    latest_pointing_location_x_.store(p.x, std::memory_order_relaxed);
-    latest_pointing_location_y_.store(p.y, std::memory_order_relaxed);
-    has_latest_pointing_location_.store(true, std::memory_order_relaxed);
-  }
-
-  static std::optional<CGPoint> get_latest_pointing_location(void) {
-    if (!has_latest_pointing_location_.load(std::memory_order_relaxed)) {
-      return std::nullopt;
-    }
-
-    return CGPointMake(latest_pointing_location_x_.load(std::memory_order_relaxed),
-                       latest_pointing_location_y_.load(std::memory_order_relaxed));
-  }
-
   static std::optional<event_queue::event> make_momentary_switch_event_from_key_code(CGEventRef event) {
     if (!event) {
       return std::nullopt;
@@ -106,23 +85,28 @@ public:
                                                                         pqrs::hid::usage::button::button_2)));
 
       case kCGEventOtherMouseDown:
-        return make_pointing_button_event(event_type::key_down,
-                                          event);
+        return std::make_pair(event_type::key_down,
+                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                        pqrs::hid::usage::button::button_3)));
 
       case kCGEventOtherMouseUp:
-        return make_pointing_button_event(event_type::key_up,
-                                          event);
+        return std::make_pair(event_type::key_up,
+                              event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
+                                                                        pqrs::hid::usage::button::button_3)));
 
       case kCGEventMouseMoved:
       case kCGEventLeftMouseDragged:
       case kCGEventRightMouseDragged:
       case kCGEventOtherMouseDragged:
-        return make_pointing_motion_event(event,
-                                          false);
+        return std::make_pair(event_type::single,
+                              event_queue::event(pointing_motion()));
 
       case kCGEventScrollWheel: {
-        return make_pointing_motion_event(event,
-                                          true);
+        // Set non-zero value for `manipulator::manipulators::base::unset_alone_if_needed`.
+        pointing_motion pointing_motion;
+        pointing_motion.set_vertical_wheel(1);
+        return std::make_pair(event_type::single,
+                              event_queue::event(pointing_motion));
       }
 
       case kCGEventNull:
@@ -137,10 +121,6 @@ public:
   }
 
 private:
-  inline static std::atomic<double> latest_pointing_location_x_{0.0};
-  inline static std::atomic<double> latest_pointing_location_y_{0.0};
-  inline static std::atomic<bool> has_latest_pointing_location_{false};
-
   template <typename Map>
   static std::optional<pqrs::hid::usage::value_t> find_usage(pqrs::osx::iokit_hid_system::key_code::value_t key_code,
                                                              const Map& map) {
@@ -151,48 +131,6 @@ private:
     }
 
     return std::nullopt;
-  }
-
-  static std::optional<std::pair<event_type, event_queue::event>> make_pointing_button_event(event_type event_type,
-                                                                                             CGEventRef event) {
-    if (!event) {
-      return std::nullopt;
-    }
-
-    auto button_number = static_cast<int>(CGEventGetIntegerValueField(event, kCGMouseEventButtonNumber)) + 1;
-    button_number = std::clamp(button_number, 1, 32);
-
-    auto usage = pqrs::hid::usage::value_t(type_safe::get(pqrs::hid::usage::button::button_1) +
-                                           static_cast<uint32_t>(button_number - 1));
-
-    return std::make_pair(event_type,
-                          event_queue::event(momentary_switch_event(pqrs::hid::usage_page::button,
-                                                                    usage)));
-  }
-
-  static std::optional<std::pair<event_type, event_queue::event>> make_pointing_motion_event(CGEventRef event,
-                                                                                             bool scroll_wheel) {
-    if (!event) {
-      return std::nullopt;
-    }
-
-    auto x = static_cast<int>(CGEventGetIntegerValueField(event, kCGMouseEventDeltaX));
-    auto y = static_cast<int>(CGEventGetIntegerValueField(event, kCGMouseEventDeltaY));
-    auto vertical_wheel = static_cast<int>(CGEventGetIntegerValueField(event, kCGScrollWheelEventDeltaAxis1));
-    auto horizontal_wheel = static_cast<int>(CGEventGetIntegerValueField(event, kCGScrollWheelEventDeltaAxis2));
-
-    if (scroll_wheel &&
-        vertical_wheel == 0 &&
-        horizontal_wheel == 0) {
-      // Keep existing behavior for `unset_alone_if_needed` when wheel delta cannot be obtained.
-      vertical_wheel = 1;
-    }
-
-    return std::make_pair(event_type::single,
-                          event_queue::event(pointing_motion(x,
-                                                             y,
-                                                             vertical_wheel,
-                                                             horizontal_wheel)));
   }
 
   static std::optional<event_type> get_modifier_event_type(const event_queue::event& event,
