@@ -278,8 +278,8 @@ public:
 
         entry->hid_queue_values_arrived.connect([this](auto&& entry,
                                                        auto&& event_queue_entries) {
-          values_arrived(entry,
-                         event_queue_entries);
+          hid_queue_values_arrived(entry,
+                                   event_queue_entries);
         });
 
         entry->get_hid_queue_value_monitor()->started.connect([this, device_id] {
@@ -797,8 +797,8 @@ private:
   }
 
   // This method is executed in the shared dispatcher thread.
-  void values_arrived(device_grabber_details::entry& entry,
-                      event_queue::not_null_entries_ptr_t event_queue_entries) {
+  void hid_queue_values_arrived(device_grabber_details::entry& entry,
+                                event_queue::not_null_entries_ptr_t event_queue_entries) {
     if (entry.get_device_properties()->get_device_identifiers().get_is_virtual_device()) {
       // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
       for (const auto& e : *event_queue_entries) {
@@ -816,11 +816,6 @@ private:
       bool notify = false;
 
       for (const auto& e : *event_queue_entries) {
-        if (is_cgeventtap_input_enabled() &&
-            !is_hid_pointing_related_event(e->get_event())) {
-          continue;
-        }
-
         if (!entry.get_disabled() && entry.seized()) {
           auto& pressed_modifiers = physical_pressed_modifier_flags_[e->get_device_id()];
           if (filter_unmatched_modifier_key_up(pressed_modifiers,
@@ -974,18 +969,6 @@ private:
 
     if (!entry.needs_to_seize_device()) {
       return grabbable_state::state::ungrabbable;
-    }
-
-    if (is_cgeventtap_input_enabled()) {
-      auto device_identifiers = entry.get_device_properties()->get_device_identifiers();
-
-      // In cgeventtap mode, keyboard input is handled in EventTap path.
-      // Keep pure pointing devices in HID path.
-      if (device_identifiers.get_is_keyboard() ||
-          (!device_identifiers.get_is_pointing_device() &&
-           !device_identifiers.get_is_game_pad())) {
-        return grabbable_state::state::ungrabbable;
-      }
     }
 
     //
@@ -1171,24 +1154,6 @@ private:
 
   bool is_cgeventtap_input_enabled(void) const {
     return effective_event_input_source_backend_ == event_input_source_backend::cgeventtap;
-  }
-
-  bool is_hid_pointing_related_event(const event_queue::event& event) const {
-    switch (event.get_type()) {
-      case event_queue::event::type::momentary_switch_event:
-        if (auto e = event.get_if<momentary_switch_event>()) {
-          return e->pointing_button();
-        }
-        return false;
-
-      case event_queue::event::type::pointing_motion:
-      case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
-      case event_queue::event::type::device_ungrabbed:
-        return true;
-
-      default:
-        return false;
-    }
   }
 
   void setup_event_tap_monitor(bool manipulate_keyboard_events) {
