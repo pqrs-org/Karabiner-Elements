@@ -817,17 +817,10 @@ private:
 
       for (const auto& e : *event_queue_entries) {
         if (!entry.get_disabled() && entry.seized()) {
-          auto& pressed_modifiers = physical_pressed_modifier_flags_[e->get_device_id()];
-          if (filter_unmatched_modifier_key_up(pressed_modifiers,
-                                               e->get_event(),
-                                               e->get_event_type())) {
+          if (unbalanced_modifier_key(e->get_device_id(),
+                                      e->get_event(),
+                                      e->get_event_type())) {
             continue;
-          }
-          if (pressed_modifiers.empty()) {
-            if (e->get_event_type() == event_type::key_up ||
-                e->get_event_type() == event_type::single) {
-              physical_pressed_modifier_flags_.erase(e->get_device_id());
-            }
           }
 
           event_queue::entry qe(e->get_device_id(),
@@ -862,6 +855,26 @@ private:
         krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
       }
     }
+  }
+
+  void event_tap_keyboard_event_arrived(event_type event_type, const event_queue::event& event) {
+    if (unbalanced_modifier_key(device_id(0),
+                                event,
+                                event_type)) {
+      return;
+    }
+
+    event_queue::entry entry(device_id(0),
+                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+                             event,
+                             event_type,
+                             std::nullopt,
+                             event,
+                             event_queue::state::original);
+
+    merged_input_event_queue_->push_back_entry(entry);
+
+    krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
   }
 
   void post_device_grabbed_event(pqrs::not_null_shared_ptr_t<device_properties> device_properties) {
@@ -1181,47 +1194,23 @@ private:
     });
 
     event_tap_monitor_->keyboard_event_arrived.connect([this](auto&& event_type, auto&& event) {
-      if (!is_cgeventtap_input_enabled()) {
-        return;
-      }
-
-      auto& pressed_modifiers = physical_pressed_modifier_flags_[event_tap_tracking_device_id_];
-      if (filter_unmatched_modifier_key_up(pressed_modifiers,
-                                           event,
-                                           event_type)) {
-        return;
-      }
-      if (pressed_modifiers.empty() &&
-          (event_type == event_type::key_up ||
-           event_type == event_type::single)) {
-        physical_pressed_modifier_flags_.erase(event_tap_tracking_device_id_);
-      }
-
-      event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                               event,
-                               event_type,
-                               std::nullopt,
-                               event,
-                               event_queue::state::original);
-
-      merged_input_event_queue_->push_back_entry(entry);
-
-      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+      event_tap_keyboard_event_arrived(event_type, event);
     });
 
     event_tap_monitor_->async_start();
   }
 
-  bool filter_unmatched_modifier_key_up(std::unordered_set<modifier_flag>& pressed_modifiers,
-                                        const event_queue::event& event,
-                                        event_type event_type) {
-    // Some input paths (for example around secure event input transitions) can
-    // deliver a modifier key_up without a corresponding key_down.
-    // If we push such unmatched key_up into merged_input_event_queue_,
-    // queue::push_back_entry updates modifier_flag_manager and can leave
-    // modifier state inconsistent (causing stuck/ignored modifier behavior).
-    // Therefore we drop only unmatched modifier key_up before queue insertion.
+  // Some input paths (for example around secure event input transitions) can
+  // deliver a modifier key_up without a corresponding key_down.
+  // If we push such unmatched key_up into merged_input_event_queue_,
+  // queue::push_back_entry updates modifier_flag_manager and can leave
+  // modifier state inconsistent (causing stuck/ignored modifier behavior).
+  // Therefore we have to drop unbalanced modifier keys before queue insertion.
+  bool unbalanced_modifier_key(device_id device_id,
+                               const event_queue::event& event,
+                               event_type event_type) {
+    auto& pressed_modifiers = physical_pressed_modifier_flags_[device_id];
+
     if (auto mse = event.template get_if<momentary_switch_event>()) {
       if (auto modifier = mse->make_modifier_flag()) {
         switch (event_type) {
@@ -1245,6 +1234,12 @@ private:
             break;
         }
       }
+    }
+
+    if (pressed_modifiers.empty() &&
+        (event_type == event_type::key_up ||
+         event_type == event_type::single)) {
+      physical_pressed_modifier_flags_.erase(device_id);
     }
 
     return false;
@@ -1316,7 +1311,6 @@ private:
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
-  static constexpr device_id event_tap_tracking_device_id_ = device_id(0);
   std::unordered_map<device_id, std::unordered_set<modifier_flag>> physical_pressed_modifier_flags_;
 
   event_input_source_backend effective_event_input_source_backend_ = event_input_source_backend::hid;
