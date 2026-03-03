@@ -12,6 +12,7 @@
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
 #include "json_writer.hpp"
+#include "keyboard_suppression.hpp"
 #include "krbn_notification_center.hpp"
 #include "logger.hpp"
 #include "manipulator/condition_factory.hpp"
@@ -25,11 +26,9 @@
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include <array>
-#include <deque>
 #include <dlfcn.h>
 #include <fstream>
 #include <gsl/gsl>
-#include <mutex>
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
@@ -199,9 +198,9 @@ public:
             }
           }
 
-          enqueue_keyboard_suppression_entry(event,
-                                             event_type,
-                                             pqrs::osx::chrono::mach_absolute_time_point());
+          keyboard_suppression_.enqueue(event,
+                                        event_type,
+                                        pqrs::osx::chrono::mach_absolute_time_point());
         });
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
@@ -1276,11 +1275,15 @@ private:
             // bypass Karabiner processing and pass through to apps.
             if (normalized_keyboard_event) {
               if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
-                return consume_keyboard_suppression_entry(*m, normalized_keyboard_event->first);
+                return keyboard_suppression_.consume(*m,
+                                                     normalized_keyboard_event->first,
+                                                     pqrs::osx::chrono::mach_absolute_time_point());
               }
             } else if (auto pair = event_tap_utility::make_event(type, event)) {
               if (auto m = pair->second.template get_if<momentary_switch_event>()) {
-                return consume_keyboard_suppression_entry(*m, pair->first);
+                return keyboard_suppression_.consume(*m,
+                                                     pair->first,
+                                                     pqrs::osx::chrono::mach_absolute_time_point());
               }
             }
           }
@@ -1352,75 +1355,7 @@ private:
 
   event_input_source_backend configured_event_input_source_backend_ = event_input_source_backend::hid;
   event_input_source_backend effective_event_input_source_backend_ = event_input_source_backend::hid;
-  struct keyboard_suppression_entry final {
-    momentary_switch_event event;
-    event_type event_type;
-    absolute_time_point expires_at;
-  };
-  mutable std::mutex keyboard_suppression_entries_mutex_;
-  std::deque<keyboard_suppression_entry> keyboard_suppression_entries_;
-  static constexpr auto keyboard_suppression_ttl_ = std::chrono::milliseconds(50);
-  static constexpr size_t keyboard_suppression_max_size_ = 1024;
-
-  void purge_expired_keyboard_suppression_entries_unlocked(absolute_time_point now) {
-    size_t expired_count = 0;
-
-    while (!keyboard_suppression_entries_.empty() &&
-           keyboard_suppression_entries_.front().expires_at <= now) {
-      keyboard_suppression_entries_.pop_front();
-      ++expired_count;
-    }
-
-    if (expired_count > 0) {
-      logger::get_logger()->warn("keyboard suppression expired before matching event ({0} entries)", expired_count);
-    }
-  }
-
-  void purge_expired_keyboard_suppression_entries(absolute_time_point now) {
-    std::lock_guard<std::mutex> lock(keyboard_suppression_entries_mutex_);
-    purge_expired_keyboard_suppression_entries_unlocked(now);
-  }
-
-  void enqueue_keyboard_suppression_entry(const momentary_switch_event& event,
-                                          event_type event_type,
-                                          absolute_time_point now) {
-    if (!event.valid() || event.pointing_button()) {
-      return;
-    }
-
-    std::lock_guard<std::mutex> lock(keyboard_suppression_entries_mutex_);
-    purge_expired_keyboard_suppression_entries_unlocked(now);
-
-    auto expires_at = now + pqrs::osx::chrono::make_absolute_time_duration(keyboard_suppression_ttl_);
-    keyboard_suppression_entries_.push_back(keyboard_suppression_entry{
-        .event = event,
-        .event_type = event_type,
-        .expires_at = expires_at,
-    });
-
-    while (keyboard_suppression_entries_.size() > keyboard_suppression_max_size_) {
-      keyboard_suppression_entries_.pop_front();
-    }
-  }
-
-  bool consume_keyboard_suppression_entry(const momentary_switch_event& event,
-                                          event_type event_type) {
-    std::lock_guard<std::mutex> lock(keyboard_suppression_entries_mutex_);
-    auto now = pqrs::osx::chrono::mach_absolute_time_point();
-    purge_expired_keyboard_suppression_entries_unlocked(now);
-
-    auto it = std::ranges::find_if(keyboard_suppression_entries_,
-                                   [&](const auto& entry) {
-                                     return entry.event == event &&
-                                            entry.event_type == event_type;
-                                   });
-    if (it != std::end(keyboard_suppression_entries_)) {
-      keyboard_suppression_entries_.erase(it);
-      return true;
-    }
-
-    return false;
-  }
+  keyboard_suppression keyboard_suppression_;
 
   bool filter_unmatched_modifier_key_up(std::unordered_set<modifier_flag>& pressed_modifiers,
                                         const event_queue::event& event,
