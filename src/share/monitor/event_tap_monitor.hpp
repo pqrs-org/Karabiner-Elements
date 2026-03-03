@@ -27,8 +27,8 @@ public:
   event_tap_monitor(const event_tap_monitor&) = delete;
 
   event_tap_monitor(bool manipulate_keyboard_events,
-                    std::shared_ptr<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager = nullptr,
-                    std::shared_ptr<keyboard_suppression> keyboard_suppression = nullptr)
+                    pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager,
+                    pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression)
       : dispatcher_client(),
         manipulate_keyboard_events_(manipulate_keyboard_events),
         virtual_hid_posted_pressed_keys_manager_(virtual_hid_posted_pressed_keys_manager),
@@ -305,17 +305,11 @@ private:
         CGEventGetIntegerValueField(event, kCGKeyboardEventAutorepeat) != 0) {
       if (normalized_keyboard_event) {
         if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
-          if (virtual_hid_posted_pressed_keys_manager_) {
-            return virtual_hid_posted_pressed_keys_manager_->contains(*m);
-          }
+          return virtual_hid_posted_pressed_keys_manager_->contains(*m);
         }
       }
 
       return true;
-    }
-
-    if (!keyboard_suppression_) {
-      return false;
     }
 
     auto now = pqrs::osx::chrono::mach_absolute_time_point();
@@ -341,8 +335,8 @@ private:
 
   std::unique_ptr<pqrs::cf::run_loop_thread> cf_run_loop_thread_;
   bool manipulate_keyboard_events_;
-  std::shared_ptr<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
-  std::shared_ptr<keyboard_suppression> keyboard_suppression_;
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
+  pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;
   bool fn_pressed_{false};
