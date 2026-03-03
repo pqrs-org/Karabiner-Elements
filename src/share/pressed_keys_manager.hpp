@@ -27,6 +27,12 @@ public:
     return entries_.empty();
   }
 
+  bool contains(const momentary_switch_event& value) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    return entries_.contains(value);
+  }
+
   std::vector<momentary_switch_event> make_entries_and_clear(void) {
     std::lock_guard<std::mutex> lock(mutex_);
 

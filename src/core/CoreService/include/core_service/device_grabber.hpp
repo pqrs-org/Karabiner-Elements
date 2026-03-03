@@ -1258,6 +1258,20 @@ private:
           }
 
           if (is_cgeventtap_input_enabled()) {
+            // Pass through auto-repeat only if the same key is being held
+            // by virtual HID. (e.g., do not pass through physical escape
+            // repeat when escape is remapped to left_shift.)
+            if (type == kCGEventKeyDown &&
+                CGEventGetIntegerValueField(event, kCGKeyboardEventAutorepeat) != 0) {
+              if (normalized_keyboard_event) {
+                if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
+                  return virtual_hid_posted_pressed_keys_manager_->contains(*m);
+                }
+              }
+
+              return true;
+            }
+
             // In cgeventtap mode, keyboard events emitted from virtual HID should
             // bypass Karabiner processing and pass through to apps.
             if (normalized_keyboard_event) {
