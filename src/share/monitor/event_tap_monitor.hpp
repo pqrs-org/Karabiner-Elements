@@ -3,13 +3,15 @@
 // `krbn::event_tap_monitor` can be used safely in a multi-threaded environment.
 
 #include "event_tap_utility.hpp"
+#include "keyboard_suppression.hpp"
 #include "logger.hpp"
+#include "pressed_keys_manager.hpp"
 #include <chrono>
 #include <deque>
-#include <functional>
 #include <nod/nod.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/chrono.hpp>
 #include <unordered_map>
 
 namespace krbn {
@@ -25,10 +27,12 @@ public:
   event_tap_monitor(const event_tap_monitor&) = delete;
 
   event_tap_monitor(bool manipulate_keyboard_events,
-                    std::function<bool(CGEventType, CGEventRef _Nullable, const std::optional<std::pair<event_type, event_queue::event>>&)> should_skip_event = nullptr)
+                    std::shared_ptr<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager = nullptr,
+                    std::shared_ptr<keyboard_suppression> keyboard_suppression = nullptr)
       : dispatcher_client(),
         manipulate_keyboard_events_(manipulate_keyboard_events),
-        should_skip_event_(should_skip_event),
+        virtual_hid_posted_pressed_keys_manager_(virtual_hid_posted_pressed_keys_manager),
+        keyboard_suppression_(keyboard_suppression),
         event_tap_(nullptr),
         run_loop_source_(nullptr) {
     cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>(pqrs::cf::run_loop_thread::failure_policy::exit);
@@ -260,8 +264,7 @@ private:
           normalized_keyboard_event = normalize_fn_modified_navigation_event(*pair);
         }
 
-        if (should_skip_event_ &&
-            should_skip_event_(type, event, normalized_keyboard_event)) {
+        if (should_skip_keyboard_event(type, event, normalized_keyboard_event)) {
           return event;
         }
 
@@ -288,9 +291,58 @@ private:
     return event;
   }
 
+  bool should_skip_keyboard_event(CGEventType type,
+                                  CGEventRef _Nullable event,
+                                  const std::optional<std::pair<event_type, event_queue::event>>& normalized_keyboard_event) {
+    if (!manipulate_keyboard_events_ ||
+        !event) {
+      return false;
+    }
+
+    // Pass through auto-repeat only if the same key is being held by virtual HID.
+    // (e.g., do not pass through physical escape repeat when escape is remapped to left_shift.)
+    if (type == kCGEventKeyDown &&
+        CGEventGetIntegerValueField(event, kCGKeyboardEventAutorepeat) != 0) {
+      if (normalized_keyboard_event) {
+        if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
+          if (virtual_hid_posted_pressed_keys_manager_) {
+            return virtual_hid_posted_pressed_keys_manager_->contains(*m);
+          }
+        }
+      }
+
+      return true;
+    }
+
+    if (!keyboard_suppression_) {
+      return false;
+    }
+
+    auto now = pqrs::osx::chrono::mach_absolute_time_point();
+
+    // Skip keyboard events emitted from virtual HID so they bypass Karabiner
+    // processing and pass through to apps.
+    if (normalized_keyboard_event) {
+      if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
+        return keyboard_suppression_->consume(*m,
+                                              normalized_keyboard_event->first,
+                                              now);
+      }
+    } else if (auto pair = event_tap_utility::make_event(type, event)) {
+      if (auto m = pair->second.template get_if<momentary_switch_event>()) {
+        return keyboard_suppression_->consume(*m,
+                                              pair->first,
+                                              now);
+      }
+    }
+
+    return false;
+  }
+
   std::unique_ptr<pqrs::cf::run_loop_thread> cf_run_loop_thread_;
   bool manipulate_keyboard_events_;
-  std::function<bool(CGEventType, CGEventRef _Nullable, const std::optional<std::pair<event_type, event_queue::event>>&)> should_skip_event_;
+  std::shared_ptr<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
+  std::shared_ptr<keyboard_suppression> keyboard_suppression_;
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;
   bool fn_pressed_{false};
