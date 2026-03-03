@@ -1201,28 +1201,14 @@ private:
         keyboard_suppression_);
 
     event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
-      event_queue::event e = event_queue::event::make_pointing_device_event_from_event_tap_event();
-      auto state = event_queue::state::virtual_event;
-
-      if (is_cgeventtap_input_enabled()) {
-        if (auto m = event.get_pointing_motion();
-            m && (m->get_vertical_wheel() != 0 || m->get_horizontal_wheel() != 0)) {
-          // Keep physical scroll events as pass-through in cgeventtap mode.
-          return;
-        }
-
-        // In cgeventtap mode, non-scroll pointing events carry actual information.
-        e = event;
-        state = event_queue::state::original;
-      }
-
+      auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
       event_queue::entry entry(device_id(0),
                                event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
                                e,
                                event_type,
                                std::nullopt,
                                event,
-                               state);
+                               event_queue::state::virtual_event);
 
       merged_input_event_queue_->push_back_entry(entry);
 
