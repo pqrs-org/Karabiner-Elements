@@ -179,30 +179,10 @@ public:
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
             weak_console_user_server_client,
-            notification_message_manager_);
-    post_event_to_virtual_devices_manipulator_->set_virtual_hid_keyboard_event_posted_callback(
-        [this](const momentary_switch_event& event, event_type event_type) {
-          if (!is_cgeventtap_input_enabled()) {
-            return;
-          }
-
-          if (event.valid()) {
-            switch (event_type) {
-              case event_type::key_down:
-                virtual_hid_posted_pressed_keys_manager_->insert(event);
-                break;
-              case event_type::key_up:
-                virtual_hid_posted_pressed_keys_manager_->erase(event);
-                break;
-              case event_type::single:
-                break;
-            }
-          }
-
-          keyboard_suppression_->enqueue(event,
-                                         event_type,
-                                         pqrs::osx::chrono::mach_absolute_time_point());
-        });
+            notification_message_manager_,
+            virtual_hid_posted_pressed_keys_manager_,
+            keyboard_suppression_);
+    post_event_to_virtual_devices_manipulator_->set_cgeventtap_input_enabled(is_cgeventtap_input_enabled());
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
     // Connect manipulator_managers
@@ -444,6 +424,16 @@ public:
     secure_event_input_monitor_ = std::make_unique<pqrs::osx::hitoolbox::secure_event_input_monitor>(weak_dispatcher_,
                                                                                                      std::chrono::milliseconds(50));
     secure_event_input_monitor_->secure_event_input_enabled_changed.connect([this](auto&& enabled) {
+      // For devices opened via IOHIDDeviceOpen, we can still receive events even when secure event input is enabled
+      // (for example, when sudo or System Settings is prompting for a password).
+      //
+      // With CGEventTap, however, we cannot receive events while secure event input is active.
+      // As a result, for keys that were pressed before entering secure event input, we cannot receive key_up,
+      // and key repeat can continue unexpectedly.
+      //
+      // Therefore, when using CGEventTap, we must release all keys pressed on the virtual device
+      // when secure event input becomes enabled.
+
       if (!is_cgeventtap_input_enabled()) {
         return;
       }
@@ -1158,6 +1148,10 @@ private:
     logger::get_logger()->info("event_input_source_backend changed: effective={0}",
                                nlohmann::json(effective_event_input_source_backend_).get<std::string>());
 
+    if (post_event_to_virtual_devices_manipulator_) {
+      post_event_to_virtual_devices_manipulator_->set_cgeventtap_input_enabled(is_cgeventtap_input_enabled());
+    }
+
     if (event_tap_monitor_) {
       setup_event_tap_monitor(is_cgeventtap_input_enabled());
     }
@@ -1310,6 +1304,9 @@ private:
   std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
+  // Tracks currently held virtual HID keys for event-tap keyboard handling.
+  // This is used to distinguish valid auto-repeat events from stray physical repeats
+  // after remapping (only repeats for virtually held keys should pass through).
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
   std::unordered_map<device_id, std::unordered_set<modifier_flag>> physical_pressed_modifier_flags_;
 

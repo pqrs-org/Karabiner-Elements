@@ -20,11 +20,15 @@ namespace post_event_to_virtual_devices {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   post_event_to_virtual_devices(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
-                                std::weak_ptr<notification_message_manager> weak_notification_message_manager)
+                                std::weak_ptr<notification_message_manager> weak_notification_message_manager,
+                                pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager,
+                                pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression)
       : base(),
         dispatcher_client(),
         weak_console_user_server_client_(weak_console_user_server_client),
-        weak_notification_message_manager_(weak_notification_message_manager) {
+        weak_notification_message_manager_(weak_notification_message_manager),
+        queue_(virtual_hid_posted_pressed_keys_manager,
+               keyboard_suppression) {
     mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_);
   }
 
@@ -399,8 +403,8 @@ public:
     // This manipulator is always valid.
   }
 
-  void set_virtual_hid_keyboard_event_posted_callback(queue::virtual_hid_keyboard_event_posted_callback callback) {
-    queue_.set_virtual_hid_keyboard_event_posted_callback(callback);
+  void set_cgeventtap_input_enabled(bool value) {
+    queue_.set_cgeventtap_input_enabled(value);
   }
 
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {

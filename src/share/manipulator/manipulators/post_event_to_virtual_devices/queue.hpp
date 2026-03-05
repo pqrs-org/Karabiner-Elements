@@ -1,10 +1,11 @@
 #pragma once
 
+#include "../../../keyboard_suppression.hpp"
+#include "../../../pressed_keys_manager.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_utility.hpp"
 #include <chrono>
-#include <functional>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 #include <variant>
@@ -15,8 +16,6 @@ namespace manipulators {
 namespace post_event_to_virtual_devices {
 class queue final : pqrs::dispatcher::extra::dispatcher_client {
 public:
-  using virtual_hid_keyboard_event_posted_callback = std::function<void(const momentary_switch_event&, event_type)>;
-
   class event final {
   public:
     enum class type {
@@ -331,9 +330,14 @@ public:
     std::optional<std::pair<momentary_switch_event, event_type>> posted_momentary_switch_event_;
   };
 
-  queue(void) : dispatcher_client(),
-                last_event_type_(event_type::single),
-                last_event_time_stamp_(0) {
+  queue(pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager,
+        pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression)
+      : dispatcher_client(),
+        virtual_hid_posted_pressed_keys_manager_(virtual_hid_posted_pressed_keys_manager),
+        keyboard_suppression_(keyboard_suppression),
+        cgeventtap_input_enabled_(false),
+        last_event_type_(event_type::single),
+        last_event_time_stamp_(0) {
   }
 
   virtual ~queue(void) {
@@ -348,8 +352,8 @@ public:
     return keyboard_repeat_detector_;
   }
 
-  void set_virtual_hid_keyboard_event_posted_callback(virtual_hid_keyboard_event_posted_callback value) {
-    virtual_hid_keyboard_event_posted_callback_ = value;
+  void set_cgeventtap_input_enabled(bool value) {
+    cgeventtap_input_enabled_ = value;
   }
 
   void emplace_back_key_event(const pqrs::hid::usage_pair& usage_pair,
@@ -565,31 +569,31 @@ public:
 
             if (auto input = e.get_keyboard_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
-                emit_virtual_hid_keyboard_event(e);
+                handle_posted_momentary_switch_event(e);
                 client->async_post_report(*input);
               }
             }
             if (auto input = e.get_consumer_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
-                emit_virtual_hid_keyboard_event(e);
+                handle_posted_momentary_switch_event(e);
                 client->async_post_report(*input);
               }
             }
             if (auto input = e.get_apple_vendor_top_case_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
-                emit_virtual_hid_keyboard_event(e);
+                handle_posted_momentary_switch_event(e);
                 client->async_post_report(*input);
               }
             }
             if (auto input = e.get_apple_vendor_keyboard_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
-                emit_virtual_hid_keyboard_event(e);
+                handle_posted_momentary_switch_event(e);
                 client->async_post_report(*input);
               }
             }
             if (auto input = e.get_generic_desktop_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
-                emit_virtual_hid_keyboard_event(e);
+                handle_posted_momentary_switch_event(e);
                 client->async_post_report(*input);
               }
             }
@@ -687,16 +691,48 @@ private:
     }
   }
 
-  void emit_virtual_hid_keyboard_event(const event& event) {
-    if (virtual_hid_keyboard_event_posted_callback_) {
-      if (auto pair = event.get_posted_momentary_switch_event()) {
-        virtual_hid_keyboard_event_posted_callback_(pair->first, pair->second);
+  // Registers posted key events for event-tap mode.
+  //
+  // Why we need `virtual_hid_posted_pressed_keys_manager_`:
+  // Event tap receives physical auto-repeat key_down events repeatedly.
+  // We should pass through only the repeats for keys that are actually held in virtual HID;
+  // otherwise, remapped keys can leak unmatched physical repeats.
+  //
+  // Why we also enqueue to `keyboard_suppression_`:
+  // Posted virtual HID events come back to event tap. They must be consumed there so they do not
+  // re-enter Karabiner's manipulation pipeline.
+  void handle_posted_momentary_switch_event(const event& event) {
+    if (!cgeventtap_input_enabled_) {
+      return;
+    }
+
+    if (auto pair = event.get_posted_momentary_switch_event()) {
+      const auto& event = pair->first;
+      auto et = pair->second;
+
+      if (event.valid()) {
+        switch (et) {
+          case event_type::key_down:
+            virtual_hid_posted_pressed_keys_manager_->insert(event);
+            break;
+          case event_type::key_up:
+            virtual_hid_posted_pressed_keys_manager_->erase(event);
+            break;
+          case event_type::single:
+            break;
+        }
       }
+
+      keyboard_suppression_->enqueue(event,
+                                     et,
+                                     pqrs::osx::chrono::mach_absolute_time_point());
     }
   }
 
   std::vector<event> events_;
-  virtual_hid_keyboard_event_posted_callback virtual_hid_keyboard_event_posted_callback_;
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
+  pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
+  bool cgeventtap_input_enabled_;
 
   keyboard_repeat_detector keyboard_repeat_detector_;
 
