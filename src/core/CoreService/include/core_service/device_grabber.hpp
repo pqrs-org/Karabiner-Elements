@@ -285,6 +285,7 @@ public:
                                        it->second->get_device_name());
             logger_unique_filter_.reset();
 
+            physical_pressed_modifier_flags_.erase(device_id);
             post_device_ungrabbed_event(device_id);
 
             update_virtual_hid_pointing();
@@ -340,6 +341,7 @@ public:
       // Unregister device
       //
 
+      physical_pressed_modifier_flags_.erase(device_id);
       hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
 
       // ----------------------------------------
@@ -821,16 +823,6 @@ private:
                                 e->get_original_event(),
                                 e->get_state());
 
-          switch (qe.get_event().get_type()) {
-            case event_queue::event::type::device_keys_and_pointing_buttons_are_released:
-            case event_queue::event::type::device_ungrabbed:
-              physical_pressed_modifier_flags_.erase(qe.get_device_id());
-              break;
-
-            default:
-              break;
-          }
-
           merged_input_event_queue_->push_back_entry(qe);
 
           notify = true;
@@ -1228,12 +1220,6 @@ private:
             break;
         }
       }
-    }
-
-    if (pressed_modifiers.empty() &&
-        (event_type == event_type::key_up ||
-         event_type == event_type::single)) {
-      physical_pressed_modifier_flags_.erase(device_id);
     }
 
     return false;
