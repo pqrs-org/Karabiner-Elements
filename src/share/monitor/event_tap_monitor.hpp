@@ -259,22 +259,18 @@ private:
       case kCGEventKeyDown:
       case kCGEventKeyUp:
       case kCGEventFlagsChanged: {
-        std::optional<std::pair<event_type, event_queue::event>> normalized_keyboard_event;
         if (auto pair = event_tap_utility::make_event(type, event)) {
-          normalized_keyboard_event = normalize_fn_modified_navigation_event(*pair);
-        }
+          auto normalized_keyboard_event = normalize_fn_modified_navigation_event(*pair);
 
-        if (should_skip_keyboard_event(type, event, normalized_keyboard_event)) {
-          return event;
-        }
+          if (should_skip_keyboard_event(type, event, normalized_keyboard_event)) {
+            return event;
+          }
 
-        if (normalized_keyboard_event) {
           if (manipulate_keyboard_events_) {
             enqueue_to_dispatcher([this, normalized_keyboard_event] {
-              keyboard_event_arrived(normalized_keyboard_event->first, normalized_keyboard_event->second);
+              keyboard_event_arrived(normalized_keyboard_event.first, normalized_keyboard_event.second);
             });
-          }
-          if (manipulate_keyboard_events_) {
+
             return nullptr;
           }
         }
@@ -293,7 +289,7 @@ private:
 
   bool should_skip_keyboard_event(CGEventType type,
                                   CGEventRef _Nullable event,
-                                  const std::optional<std::pair<event_type, event_queue::event>>& normalized_keyboard_event) {
+                                  std::pair<event_type, event_queue::event>& normalized_keyboard_event) {
     if (!manipulate_keyboard_events_ ||
         !event) {
       return false;
@@ -303,10 +299,8 @@ private:
     // (e.g., do not pass through physical escape repeat when escape is remapped to left_shift.)
     if (type == kCGEventKeyDown &&
         CGEventGetIntegerValueField(event, kCGKeyboardEventAutorepeat) != 0) {
-      if (normalized_keyboard_event) {
-        if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
-          return virtual_hid_posted_pressed_keys_manager_->contains(*m);
-        }
+      if (auto m = normalized_keyboard_event.second.template get_if<momentary_switch_event>()) {
+        return virtual_hid_posted_pressed_keys_manager_->contains(*m);
       }
 
       return true;
@@ -316,18 +310,10 @@ private:
 
     // Skip keyboard events emitted from virtual HID so they bypass Karabiner
     // processing and pass through to apps.
-    if (normalized_keyboard_event) {
-      if (auto m = normalized_keyboard_event->second.template get_if<momentary_switch_event>()) {
-        return keyboard_suppression_->consume(*m,
-                                              normalized_keyboard_event->first,
-                                              now);
-      }
-    } else if (auto pair = event_tap_utility::make_event(type, event)) {
-      if (auto m = pair->second.template get_if<momentary_switch_event>()) {
-        return keyboard_suppression_->consume(*m,
-                                              pair->first,
-                                              now);
-      }
+    if (auto m = normalized_keyboard_event.second.template get_if<momentary_switch_event>()) {
+      return keyboard_suppression_->consume(*m,
+                                            normalized_keyboard_event.first,
+                                            now);
     }
 
     return false;
