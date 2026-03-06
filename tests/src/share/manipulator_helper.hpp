@@ -49,6 +49,8 @@ public:
       auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(geteuid(),
                                                                                            std::nullopt);
       auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
+      auto virtual_hid_posted_pressed_keys_manager = std::make_shared<krbn::pressed_keys_manager>();
+      auto keyboard_suppression = std::make_shared<krbn::keyboard_suppression>();
       auto connector = std::make_shared<manipulator::manipulator_managers_connector>();
       auto manipulator_managers = std::make_shared<std::vector<std::shared_ptr<manipulator::manipulator_manager>>>();
       auto event_queues = std::make_shared<std::vector<std::shared_ptr<event_queue::queue>>>();
@@ -143,7 +145,9 @@ public:
         post_event_to_virtual_devices_manipulator =
             std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
                 console_user_server_client,
-                notification_message_manager);
+                notification_message_manager,
+                virtual_hid_posted_pressed_keys_manager,
+                keyboard_suppression);
 
         manipulator_managers->push_back(std::make_unique<manipulator::manipulator_manager>());
         manipulator_managers->back()->push_back_manipulator(post_event_to_virtual_devices_manipulator);

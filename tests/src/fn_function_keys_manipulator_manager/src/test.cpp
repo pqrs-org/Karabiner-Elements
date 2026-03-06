@@ -33,9 +33,13 @@ int main(void) {
     auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(geteuid(),
                                                                                          std::nullopt);
     auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
+    auto virtual_hid_posted_pressed_keys_manager = std::make_shared<krbn::pressed_keys_manager>();
+    auto keyboard_suppression = std::make_shared<krbn::keyboard_suppression>();
     auto post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
         console_user_server_client,
-        notification_message_manager);
+        notification_message_manager,
+        virtual_hid_posted_pressed_keys_manager,
+        keyboard_suppression);
     auto post_event_to_virtual_devices_manipulator_manager = std::make_shared<krbn::manipulator::manipulator_manager>();
     post_event_to_virtual_devices_manipulator_manager->push_back_manipulator(post_event_to_virtual_devices_manipulator);
 
