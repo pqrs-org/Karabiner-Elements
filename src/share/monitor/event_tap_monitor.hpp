@@ -127,6 +127,13 @@ public:
 
 private:
   using fn_modified_key_down_expirations = std::deque<std::chrono::steady_clock::time_point>;
+  static constexpr CGEventFlags modifier_event_flags_mask =
+      kCGEventFlagMaskShift |
+      kCGEventFlagMaskControl |
+      kCGEventFlagMaskAlternate |
+      kCGEventFlagMaskCommand |
+      kCGEventFlagMaskAlphaShift |
+      kCGEventFlagMaskSecondaryFn;
 
   void purge_expired_fn_modified_key_down_events(const std::chrono::steady_clock::time_point& now) {
     for (auto it = std::begin(fn_modified_key_down_event_counts_); it != std::end(fn_modified_key_down_event_counts_);) {
@@ -230,6 +237,64 @@ private:
     return nullptr;
   }
 
+  CGEventFlags make_virtual_hid_modifier_flags(void) const {
+    CGEventFlags flags = 0;
+
+    for (const auto& event : virtual_hid_posted_pressed_keys_manager_->make_entries()) {
+      if (auto modifier = event.make_modifier_flag()) {
+        switch (*modifier) {
+          case modifier_flag::left_shift:
+          case modifier_flag::right_shift:
+            flags |= kCGEventFlagMaskShift;
+            break;
+
+          case modifier_flag::left_control:
+          case modifier_flag::right_control:
+            flags |= kCGEventFlagMaskControl;
+            break;
+
+          case modifier_flag::left_option:
+          case modifier_flag::right_option:
+            flags |= kCGEventFlagMaskAlternate;
+            break;
+
+          case modifier_flag::left_command:
+          case modifier_flag::right_command:
+            flags |= kCGEventFlagMaskCommand;
+            break;
+
+          case modifier_flag::caps_lock:
+            flags |= kCGEventFlagMaskAlphaShift;
+            break;
+
+          case modifier_flag::fn:
+            flags |= kCGEventFlagMaskSecondaryFn;
+            break;
+
+          case modifier_flag::zero:
+          case modifier_flag::end_:
+            break;
+        }
+      }
+    }
+
+    return flags;
+  }
+
+  void sync_pointing_event_modifier_flags(CGEventRef _Nullable event) const {
+    if (!manipulate_keyboard_events_ ||
+        !event) {
+      return;
+    }
+
+    auto current_flags = CGEventGetFlags(event);
+    auto virtual_hid_modifier_flags = make_virtual_hid_modifier_flags();
+    auto synchronized_flags =
+        (current_flags & ~modifier_event_flags_mask) |
+        (virtual_hid_modifier_flags & modifier_event_flags_mask);
+    CGEventSetFlags(event, synchronized_flags);
+  }
+
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
     switch (type) {
       case kCGEventTapDisabledByTimeout:
@@ -249,6 +314,12 @@ private:
       case kCGEventOtherMouseDown:
       case kCGEventOtherMouseUp:
       case kCGEventOtherMouseDragged:
+        // In CGEventTap fallback mode, physical modifier states may remain in mouse event flags
+        // even if keyboard events are remapped.
+        // (This happens when the CGEventTap fallback is enabled and the keyboard is ignored by settings.)
+        // Example: left_control is remapped to left_shift, but a click is still interpreted as a control-click.
+        // Align pointing-event modifier flags with the modifiers currently pressed on the virtual HID device.
+        sync_pointing_event_modifier_flags(event);
         if (auto pair = event_tap_utility::make_event(type, event)) {
           enqueue_to_dispatcher([this, pair] {
             pointing_device_event_arrived(pair->first, pair->second);

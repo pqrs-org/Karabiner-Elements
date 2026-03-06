@@ -48,6 +48,19 @@ public:
     return result;
   }
 
+  std::vector<momentary_switch_event> make_entries(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    std::vector<momentary_switch_event> result;
+    result.reserve(entries_.size());
+
+    for (const auto& e : entries_) {
+      result.push_back(e);
+    }
+
+    return result;
+  }
+
 private:
   std::unordered_set<momentary_switch_event> entries_;
   mutable std::mutex mutex_;
