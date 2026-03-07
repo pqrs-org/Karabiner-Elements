@@ -169,11 +169,30 @@ struct DevicesView: View {
             .foregroundColor(Color(NSColor.placeholderTextColor))
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
-          Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
-            Text("Modify events")
+          VStack(alignment: .leading) {
+            Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
+              Text("Modify events")
+            }
+            .switchToggleStyle()
+            .frame(width: 140.0)
+
+            if settings.enableCgeventtapFallback && !connectedDeviceSetting.modifyEvents
+              && connectedDeviceSetting.connectedDevice.isKeyboard
+            {
+              Label(
+                title: {
+                  Text(
+                    "Key events from this device are handled via the CGEventTap fallback"
+                  )
+                  .textSelection(.enabled)
+                },
+                icon: {
+                  Image(systemName: InfoBorder.icon)
+                }
+              )
+              .modifier(InfoBorder())
+            }
           }
-          .switchToggleStyle()
-          .frame(width: 140.0)
         }
       }
     }
