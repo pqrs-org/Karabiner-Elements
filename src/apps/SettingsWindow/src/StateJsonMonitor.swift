@@ -13,6 +13,7 @@ private struct State: Codable {
   var driverConnected: Bool?
   var driverVersionMismatched: Bool?
   var hidDeviceOpenPermitted: Bool?
+  var accessibilityProcessTrusted: Bool?
 
   public mutating func update(_ s: State) {
     virtualHidDeviceServiceClientConnected =
@@ -21,6 +22,7 @@ private struct State: Codable {
     driverConnected = s.driverConnected ?? driverConnected
     driverVersionMismatched = s.driverVersionMismatched ?? driverVersionMismatched
     hidDeviceOpenPermitted = s.hidDeviceOpenPermitted ?? hidDeviceOpenPermitted
+    accessibilityProcessTrusted = s.accessibilityProcessTrusted ?? accessibilityProcessTrusted
   }
 }
 
@@ -80,6 +82,9 @@ public class StateJsonMonitor {
     if let v = state.hidDeviceOpenPermitted {
       print("hidDeviceOpenPermitted \(v)")
     }
+    if let v = state.accessibilityProcessTrusted {
+      print("accessibilityProcessTrusted \(v)")
+    }
 
     let contentViewStates = ContentViewStates.shared
 
@@ -124,6 +129,15 @@ public class StateJsonMonitor {
       contentViewStates.showInputMonitoringPermissionsAlert = false
     case false:
       contentViewStates.showInputMonitoringPermissionsAlert = true
+    default:  // nil
+      break
+    }
+
+    switch state.accessibilityProcessTrusted {
+    case true:
+      contentViewStates.showAccessibilityAlert = false
+    case false:
+      contentViewStates.showAccessibilityAlert = true
     default:  // nil
       break
     }

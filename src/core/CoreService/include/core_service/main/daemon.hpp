@@ -78,8 +78,7 @@ int daemon(void) {
   // Update karabiner_core_service_state.json
   //
 
-  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted &&
-      pqrs::osx::accessibility::is_process_trusted()) {
+  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
     core_service_state_json_writer->set_hid_device_open_permitted(true);
   } else {
     logger::get_logger()->warn("Input Monitoring is not granted");
@@ -91,6 +90,18 @@ int daemon(void) {
     // simply waits until Input Monitoring permission is granted.
     // The daemon exits once permission is granted, which triggers launchd to restart it.
     core_service_utility::wait_until_input_monitoring_granted();
+
+    return 0;
+  }
+
+  if (!pqrs::osx::accessibility::is_process_trusted()) {
+    core_service_state_json_writer->set_accessibility_process_trusted(true);
+  } else {
+    logger::get_logger()->warn("accessibility process is not trusted");
+
+    core_service_state_json_writer->set_accessibility_process_trusted(false);
+
+    core_service_utility::wait_until_accessibility_process_trusted();
 
     return 0;
   }

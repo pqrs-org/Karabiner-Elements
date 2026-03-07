@@ -34,6 +34,19 @@ inline void wait_until_input_monitoring_granted(void) {
   }
 }
 
+inline void wait_until_accessibility_process_trusted(void) {
+  while (true) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    auto exit_code = system(fmt::format("'{0}' accessibility-process-trusted",
+                                        karabiner_core_service_path)
+                                .c_str());
+    if (exit_code == 0) {
+      break;
+    }
+  }
+}
+
 } // namespace core_service_utility
 } // namespace core_service
 } // namespace krbn
