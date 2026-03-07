@@ -122,7 +122,7 @@ final class EVCoreServiceClient: ObservableObject {
   }
 
   public func productName(deviceId: UInt64) -> String {
-    productsByDeviceId[deviceId] ?? ""
+    productsByDeviceId[deviceId] ?? "an unnamed device"
   }
 
   public func updateConnectedDevices(_ text: String) {

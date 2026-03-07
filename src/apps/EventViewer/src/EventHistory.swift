@@ -106,6 +106,7 @@ private func callback(
 
   Task { @MainActor in
     let entry = EventHistoryEntry()
+    entry.product = EVCoreServiceClient.shared.productName(deviceId: deviceId)
 
     //
     // entry.code
@@ -198,6 +199,7 @@ private func callback(
 public class EventHistoryEntry: Identifiable, Equatable {
   nonisolated public let id = UUID()
   public var eventType = ""
+  public var product = ""
   public var usagePage = ""
   public var usage = ""
   public var integerValue = ""
