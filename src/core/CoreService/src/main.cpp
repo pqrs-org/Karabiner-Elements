@@ -26,15 +26,24 @@ int main(int argc, const char* argv[]) {
   //
 
   for (int i = 1; i < argc; ++i) {
-    if (std::string_view(argv[1]) == "input-monitoring-granted") {
-      if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted &&
-          pqrs::osx::accessibility::is_process_trusted()) {
+    if (std::string_view(argv[i]) == "input-monitoring-granted") {
+      if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
         std::cout << "granted" << std::endl;
         return 0;
       } else {
         std::cout << "denied" << std::endl;
         return 1;
       }
+
+    } else if (std::string_view(argv[i]) == "accessibility-process-trusted") {
+      if (pqrs::osx::accessibility::is_process_trusted()) {
+        std::cout << "trusted" << std::endl;
+        return 0;
+      } else {
+        std::cout << "not trusted" << std::endl;
+        return 1;
+      }
+
     } else {
       std::cout << "unsupported argument: " << argv[i] << std::endl;
     }
