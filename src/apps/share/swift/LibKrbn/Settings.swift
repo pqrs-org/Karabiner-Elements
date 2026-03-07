@@ -149,8 +149,8 @@ extension LibKrbn {
         libkrbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices()
       reorderSameTimestampInputEventsToPrioritizeModifiers =
         libkrbn_core_configuration_get_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers()
-      eventInputSourceBackend =
-        libkrbn_core_configuration_get_global_configuration_event_input_source_backend()
+      enableCgeventtapFallback =
+        libkrbn_core_configuration_get_global_configuration_enable_cgeventtap_fallback()
 
       updateSystemDefaultProfileExists()
 
@@ -875,13 +875,11 @@ extension LibKrbn {
       }
     }
 
-    @Published var eventInputSourceBackend: libkrbn_event_input_source_backend =
-      libkrbn_event_input_source_backend_hid
-    {
+    @Published var enableCgeventtapFallback: Bool = false {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_global_configuration_event_input_source_backend(
-            eventInputSourceBackend
+          libkrbn_core_configuration_set_global_configuration_enable_cgeventtap_fallback(
+            enableCgeventtapFallback
           )
           save()
         }

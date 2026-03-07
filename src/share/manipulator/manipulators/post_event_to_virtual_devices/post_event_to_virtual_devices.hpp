@@ -403,8 +403,8 @@ public:
     // This manipulator is always valid.
   }
 
-  void set_cgeventtap_input_enabled(bool value) {
-    queue_.set_cgeventtap_input_enabled(value);
+  void set_cgeventtap_fallback_enabled(bool value) {
+    queue_.set_cgeventtap_fallback_enabled(value);
   }
 
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {

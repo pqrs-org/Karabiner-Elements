@@ -182,7 +182,7 @@ public:
             notification_message_manager_,
             virtual_hid_posted_pressed_keys_manager_,
             keyboard_suppression_);
-    post_event_to_virtual_devices_manipulator_->set_cgeventtap_input_enabled(is_cgeventtap_input_enabled());
+    post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(is_cgeventtap_fallback_enabled());
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
     // Connect manipulator_managers
@@ -436,7 +436,7 @@ public:
       // Therefore, when using CGEventTap, we must release all keys pressed on the virtual device
       // when secure event input becomes enabled.
 
-      if (!is_cgeventtap_input_enabled()) {
+      if (!is_cgeventtap_fallback_enabled()) {
         return;
       }
 
@@ -556,7 +556,7 @@ public:
 
           auto& profile = core_configuration_->get_selected_profile();
 
-          set_event_input_source_backend(core_configuration_->get_global_configuration().get_event_input_source_backend());
+          set_cgeventtap_fallback_enabled(core_configuration_->get_global_configuration().get_enable_cgeventtap_fallback());
 
           if (hid_manager_) {
             hid_manager_->async_set_device_matched_delay(
@@ -1128,39 +1128,39 @@ private:
     async_grab_devices();
   }
 
-  void set_event_input_source_backend(event_input_source_backend value) {
-    if (effective_event_input_source_backend_ == value) {
-      logger::get_logger()->info("event_input_source_backend unchanged: effective={0}",
-                                 nlohmann::json(effective_event_input_source_backend_).get<std::string>());
+  void set_cgeventtap_fallback_enabled(bool value) {
+    if (cgeventtap_fallback_enabled_ == value) {
+      logger::get_logger()->info("enable_cgeventtap_fallback unchanged: effective={0}",
+                                 cgeventtap_fallback_enabled_);
       return;
     }
 
-    effective_event_input_source_backend_ = value;
+    cgeventtap_fallback_enabled_ = value;
 
-    logger::get_logger()->info("event_input_source_backend changed: effective={0}",
-                               nlohmann::json(effective_event_input_source_backend_).get<std::string>());
+    logger::get_logger()->info("enable_cgeventtap_fallback changed: effective={0}",
+                               cgeventtap_fallback_enabled_);
 
     if (post_event_to_virtual_devices_manipulator_) {
-      post_event_to_virtual_devices_manipulator_->set_cgeventtap_input_enabled(is_cgeventtap_input_enabled());
+      post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(is_cgeventtap_fallback_enabled());
     }
 
     if (event_tap_monitor_) {
-      setup_event_tap_monitor(is_cgeventtap_input_enabled());
+      setup_event_tap_monitor(is_cgeventtap_fallback_enabled());
     }
 
     async_grab_devices();
   }
 
-  bool is_cgeventtap_input_enabled(void) const {
-    return effective_event_input_source_backend_ == event_input_source_backend::cgeventtap;
+  bool is_cgeventtap_fallback_enabled(void) const {
+    return cgeventtap_fallback_enabled_;
   }
 
-  void setup_event_tap_monitor(bool manipulate_keyboard_events) {
-    logger::get_logger()->info("setup_event_tap_monitor (manipulate_keyboard_events={0})",
-                               manipulate_keyboard_events);
+  void setup_event_tap_monitor(bool cgeventtap_fallback_enabled) {
+    logger::get_logger()->info("setup_event_tap_monitor (enable_cgeventtap_fallback={0})",
+                               cgeventtap_fallback_enabled);
 
     event_tap_monitor_ = std::make_unique<event_tap_monitor>(
-        manipulate_keyboard_events,
+        cgeventtap_fallback_enabled,
         virtual_hid_posted_pressed_keys_manager_,
         keyboard_suppression_);
 
@@ -1296,7 +1296,7 @@ private:
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
   std::unordered_map<device_id, std::unordered_set<modifier_flag>> physical_pressed_modifier_flags_;
 
-  event_input_source_backend effective_event_input_source_backend_ = event_input_source_backend::hid;
+  bool cgeventtap_fallback_enabled_ = false;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;

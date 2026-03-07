@@ -156,30 +156,14 @@ void libkrbn_core_configuration_set_global_configuration_reorder_same_timestamp_
   c->get_global_configuration().set_reorder_same_timestamp_input_events_to_prioritize_modifiers(value);
 }
 
-libkrbn_event_input_source_backend libkrbn_core_configuration_get_global_configuration_event_input_source_backend(void) {
+bool libkrbn_core_configuration_get_global_configuration_enable_cgeventtap_fallback(void) {
   auto c = get_current_core_configuration();
-
-  switch (c->get_global_configuration().get_event_input_source_backend()) {
-    case krbn::event_input_source_backend::cgeventtap:
-      return libkrbn_event_input_source_backend_cgeventtap;
-    case krbn::event_input_source_backend::hid:
-    default:
-      return libkrbn_event_input_source_backend_hid;
-  }
+  return c->get_global_configuration().get_enable_cgeventtap_fallback();
 }
 
-void libkrbn_core_configuration_set_global_configuration_event_input_source_backend(libkrbn_event_input_source_backend value) {
+void libkrbn_core_configuration_set_global_configuration_enable_cgeventtap_fallback(bool value) {
   auto c = get_current_core_configuration();
-
-  switch (value) {
-    case libkrbn_event_input_source_backend_cgeventtap:
-      c->get_global_configuration().set_event_input_source_backend(krbn::event_input_source_backend::cgeventtap);
-      break;
-    case libkrbn_event_input_source_backend_hid:
-    default:
-      c->get_global_configuration().set_event_input_source_backend(krbn::event_input_source_backend::hid);
-      break;
-  }
+  c->get_global_configuration().set_enable_cgeventtap_fallback(value);
 }
 
 bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension(void) {

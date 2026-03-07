@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../configuration_json_helper.hpp"
-#include "types/event_input_source_backend.hpp"
 #include <pqrs/json.hpp>
 
 namespace krbn {
@@ -50,9 +49,9 @@ public:
                                          reorder_same_timestamp_input_events_to_prioritize_modifiers_,
                                          true);
 
-    helper_values_.push_back_value<event_input_source_backend>("event_input_source_backend",
-                                                               event_input_source_backend_,
-                                                               event_input_source_backend::hid);
+    helper_values_.push_back_value<bool>("enable_cgeventtap_fallback",
+                                         enable_cgeventtap_fallback_,
+                                         false);
 
     pqrs::json::requires_object(json, "json");
 
@@ -130,11 +129,11 @@ public:
     reorder_same_timestamp_input_events_to_prioritize_modifiers_ = value;
   }
 
-  const event_input_source_backend& get_event_input_source_backend(void) const {
-    return event_input_source_backend_;
+  const bool& get_enable_cgeventtap_fallback(void) const {
+    return enable_cgeventtap_fallback_;
   }
-  void set_event_input_source_backend(event_input_source_backend value) {
-    event_input_source_backend_ = value;
+  void set_enable_cgeventtap_fallback(bool value) {
+    enable_cgeventtap_fallback_ = value;
   }
 
 private:
@@ -148,7 +147,7 @@ private:
   bool unsafe_ui_;
   bool filter_useless_events_from_specific_devices_;
   bool reorder_same_timestamp_input_events_to_prioritize_modifiers_;
-  event_input_source_backend event_input_source_backend_;
+  bool enable_cgeventtap_fallback_;
   configuration_json_helper::helper_values helper_values_;
 };
 

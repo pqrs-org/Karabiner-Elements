@@ -27,19 +27,16 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Input event source backend")) {
+        GroupBox(label: Text("CGEventTap fallback")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {
-              Picker("Input event source backend", selection: $settings.eventInputSourceBackend) {
-                Text("hid").tag(libkrbn_event_input_source_backend_hid)
-                Text("cgeventtap").tag(libkrbn_event_input_source_backend_cgeventtap)
+              Toggle(isOn: $settings.enableCgeventtapFallback) {
+                Text("Enable CGEventTap fallback (Default: off)")
               }
-              .pickerStyle(.menu)
+              .switchToggleStyle()
 
               Label(
-                "Choose input capture backend for Karabiner-Core-Service.\n"
-                  + "- hid: current default behavior.\n"
-                  + "- cgeventtap: fallback mode for environments where HID input capture is unavailable.",
+                "If this setting is enabled, Karabiner-Core-Service uses CGEventTap as a fallback for devices that cannot be handled via HID input capture.",
                 systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())

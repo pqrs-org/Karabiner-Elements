@@ -335,7 +335,7 @@ public:
       : dispatcher_client(),
         virtual_hid_posted_pressed_keys_manager_(virtual_hid_posted_pressed_keys_manager),
         keyboard_suppression_(keyboard_suppression),
-        cgeventtap_input_enabled_(false),
+        cgeventtap_fallback_enabled_(false),
         last_event_type_(event_type::single),
         last_event_time_stamp_(0) {
   }
@@ -352,8 +352,8 @@ public:
     return keyboard_repeat_detector_;
   }
 
-  void set_cgeventtap_input_enabled(bool value) {
-    cgeventtap_input_enabled_ = value;
+  void set_cgeventtap_fallback_enabled(bool value) {
+    cgeventtap_fallback_enabled_ = value;
   }
 
   void emplace_back_key_event(const pqrs::hid::usage_pair& usage_pair,
@@ -702,7 +702,7 @@ private:
   // Posted virtual HID events come back to event tap. They must be consumed there so they do not
   // re-enter Karabiner's manipulation pipeline.
   void handle_posted_momentary_switch_event(const event& event) {
-    if (!cgeventtap_input_enabled_) {
+    if (!cgeventtap_fallback_enabled_) {
       return;
     }
 
@@ -732,7 +732,7 @@ private:
   std::vector<event> events_;
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
-  bool cgeventtap_input_enabled_;
+  bool cgeventtap_fallback_enabled_;
 
   keyboard_repeat_detector keyboard_repeat_detector_;
 

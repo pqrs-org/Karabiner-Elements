@@ -26,11 +26,11 @@ public:
 
   event_tap_monitor(const event_tap_monitor&) = delete;
 
-  event_tap_monitor(bool manipulate_keyboard_events,
+  event_tap_monitor(bool cgeventtap_fallback_enabled,
                     pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager,
                     pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression)
       : dispatcher_client(),
-        manipulate_keyboard_events_(manipulate_keyboard_events),
+        cgeventtap_fallback_enabled_(cgeventtap_fallback_enabled),
         virtual_hid_posted_pressed_keys_manager_(virtual_hid_posted_pressed_keys_manager),
         keyboard_suppression_(keyboard_suppression),
         event_tap_(nullptr),
@@ -86,17 +86,17 @@ public:
                   CGEventMaskBit(kCGEventOtherMouseDown) |
                   CGEventMaskBit(kCGEventOtherMouseUp) |
                   CGEventMaskBit(kCGEventOtherMouseDragged);
-      if (manipulate_keyboard_events_) {
+      if (cgeventtap_fallback_enabled_) {
         mask |= CGEventMaskBit(kCGEventKeyDown) |
                 CGEventMaskBit(kCGEventKeyUp);
       }
 
-      logger::get_logger()->info("event_tap_monitor start (manipulate_keyboard_events={0})",
-                                 manipulate_keyboard_events_);
+      logger::get_logger()->info("event_tap_monitor start (enable_cgeventtap_fallback={0})",
+                                 cgeventtap_fallback_enabled_);
 
       event_tap_ = CGEventTapCreate(kCGHIDEventTap,
                                     kCGTailAppendEventTap,
-                                    manipulate_keyboard_events_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
+                                    cgeventtap_fallback_enabled_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
                                     mask,
                                     event_tap_monitor::static_callback,
                                     this);
@@ -119,8 +119,8 @@ public:
           event_tap_ = nullptr;
         }
       } else {
-        logger::get_logger()->error("event_tap_monitor failed to create event tap (manipulate_keyboard_events={0})",
-                                    manipulate_keyboard_events_);
+        logger::get_logger()->error("event_tap_monitor failed to create event tap (enable_cgeventtap_fallback={0})",
+                                    cgeventtap_fallback_enabled_);
       }
     });
   }
@@ -282,7 +282,7 @@ private:
   }
 
   void sync_pointing_event_modifier_flags(CGEventRef _Nullable event) const {
-    if (!manipulate_keyboard_events_ ||
+    if (!cgeventtap_fallback_enabled_ ||
         !event) {
       return;
     }
@@ -337,7 +337,7 @@ private:
             return event;
           }
 
-          if (manipulate_keyboard_events_) {
+          if (cgeventtap_fallback_enabled_) {
             enqueue_to_dispatcher([this, normalized_keyboard_event] {
               keyboard_event_arrived(normalized_keyboard_event.first, normalized_keyboard_event.second);
             });
@@ -361,7 +361,7 @@ private:
   bool should_skip_keyboard_event(CGEventType type,
                                   CGEventRef _Nullable event,
                                   std::pair<event_type, event_queue::event>& normalized_keyboard_event) {
-    if (!manipulate_keyboard_events_ ||
+    if (!cgeventtap_fallback_enabled_ ||
         !event) {
       return false;
     }
@@ -391,7 +391,7 @@ private:
   }
 
   std::unique_ptr<pqrs::cf::run_loop_thread> cf_run_loop_thread_;
-  bool manipulate_keyboard_events_;
+  bool cgeventtap_fallback_enabled_;
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
   CFMachPortRef _Nullable event_tap_;
