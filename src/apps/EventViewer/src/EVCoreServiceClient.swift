@@ -1,5 +1,6 @@
 import AsyncAlgorithms
 import Combine
+import Foundation
 
 private func statusChangedCallback() {
   Task { @MainActor in
@@ -20,6 +21,7 @@ private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>
 
   Task { @MainActor in
     EVCoreServiceClient.shared.connectedDevicesStream.setText(text)
+    EVCoreServiceClient.shared.updateConnectedDevices(text)
   }
 }
 
@@ -29,11 +31,14 @@ final class EVCoreServiceClient: ObservableObject {
 
   private let manipulatorEnvironmentTimer: AsyncTimerSequence<ContinuousClock>
   private var manipulatorEnvironmentTimerTask: Task<Void, Never>?
+  private var manipulatorEnvironmentStartCount = 0
   let manipulatorEnvironmentStream = RealtimeTextStream()
 
   private let connectedDevicesTimer: AsyncTimerSequence<ContinuousClock>
   private var connectedDevicesTimerTask: Task<Void, Never>?
+  private var connectedDevicesStartCount = 0
   let connectedDevicesStream = RealtimeTextStream()
+  @Published private(set) var productsByDeviceId: [UInt64: String] = [:]
 
   init() {
     manipulatorEnvironmentTimer = AsyncTimerSequence(
@@ -72,32 +77,78 @@ final class EVCoreServiceClient: ObservableObject {
     libkrbn_core_service_client_async_start()
   }
 
-  public func manipulatorEnvironmentStart() {
-    manipulatorEnvironmentTimerTask = Task { @MainActor in
-      libkrbn_core_service_client_async_get_manipulator_environment()
-
-      for await _ in manipulatorEnvironmentTimer {
+  public func startManipulatorEnvironment() {
+    manipulatorEnvironmentStartCount += 1
+    if manipulatorEnvironmentStartCount == 1 {
+      manipulatorEnvironmentTimerTask = Task { @MainActor in
         libkrbn_core_service_client_async_get_manipulator_environment()
+
+        for await _ in manipulatorEnvironmentTimer {
+          libkrbn_core_service_client_async_get_manipulator_environment()
+        }
       }
     }
   }
 
-  public func manipulatorEnvironmentStop() {
-    manipulatorEnvironmentTimerTask?.cancel()
+  public func stopManipulatorEnvironment() {
+    manipulatorEnvironmentStartCount -= 1
+    if manipulatorEnvironmentStartCount <= 0 {
+      manipulatorEnvironmentStartCount = 0
+      manipulatorEnvironmentTimerTask?.cancel()
+      manipulatorEnvironmentTimerTask = nil
+    }
   }
 
   public func startConnectedDevices() {
-    connectedDevicesTimerTask = Task { @MainActor in
-      libkrbn_core_service_client_async_get_connected_devices()
-
-      for await _ in connectedDevicesTimer {
+    connectedDevicesStartCount += 1
+    if connectedDevicesStartCount == 1 {
+      connectedDevicesTimerTask = Task { @MainActor in
         libkrbn_core_service_client_async_get_connected_devices()
+
+        for await _ in connectedDevicesTimer {
+          libkrbn_core_service_client_async_get_connected_devices()
+        }
       }
     }
   }
 
   public func stopConnectedDevices() {
-    connectedDevicesTimerTask?.cancel()
+    connectedDevicesStartCount -= 1
+    if connectedDevicesStartCount <= 0 {
+      connectedDevicesStartCount = 0
+      connectedDevicesTimerTask?.cancel()
+      connectedDevicesTimerTask = nil
+    }
+  }
+
+  public func productName(deviceId: UInt64) -> String {
+    productsByDeviceId[deviceId] ?? ""
+  }
+
+  public func updateConnectedDevices(_ text: String) {
+    guard let data = text.data(using: .utf8),
+      let array = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
+    else {
+      productsByDeviceId = [:]
+      return
+    }
+
+    var result: [UInt64: String] = [:]
+
+    for item in array {
+      guard
+        let idNumber = item["device_id"] as? NSNumber,
+        let product = item["product"] as? String
+      else {
+        continue
+      }
+
+      if !product.isEmpty {
+        result[idNumber.uint64Value] = product
+      }
+    }
+
+    productsByDeviceId = result
   }
 
   @Published var temporarilyIgnoreAllDevices: Bool = false {
