@@ -41,7 +41,7 @@ public:
   ~event_tap_monitor(void) {
     detach_from_dispatcher([this] {
       if (event_tap_) {
-        CGEventTapEnable(event_tap_, false);
+        enable_event_tap(false, "terminate");
 
         if (run_loop_source_) {
           CFRunLoopRemoveSource(cf_run_loop_thread_->get_run_loop(),
@@ -107,7 +107,7 @@ public:
           CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
                              run_loop_source_,
                              kCFRunLoopCommonModes);
-          CGEventTapEnable(event_tap_, true);
+          enable_event_tap(true, "async_start");
 
           cf_run_loop_thread_->wake();
 
@@ -295,12 +295,24 @@ private:
     CGEventSetFlags(event, synchronized_flags);
   }
 
+  void enable_event_tap(bool enable, const char* context) const {
+    if (!event_tap_) {
+      return;
+    }
+
+    CGEventTapEnable(event_tap_, enable);
+
+    if (CGEventTapIsEnabled(event_tap_) != enable) {
+      logger::get_logger()->error("CGEventTapEnable failed ({0}, enable={1})", context, enable);
+    }
+  }
+
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
     switch (type) {
       case kCGEventTapDisabledByTimeout:
       case kCGEventTapDisabledByUserInput:
         logger::get_logger()->info("Re-enable event_tap_");
-        CGEventTapEnable(event_tap_, true);
+        enable_event_tap(true, "callback");
         break;
 
       case kCGEventLeftMouseDown:
