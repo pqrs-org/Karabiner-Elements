@@ -94,7 +94,7 @@ int daemon(void) {
     return 0;
   }
 
-  if (!pqrs::osx::accessibility::is_process_trusted()) {
+  if (pqrs::osx::accessibility::is_process_trusted()) {
     core_service_state_json_writer->set_accessibility_process_trusted(true);
   } else {
     logger::get_logger()->warn("accessibility process is not trusted");
