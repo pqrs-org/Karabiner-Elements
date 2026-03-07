@@ -35,7 +35,7 @@ public:
     wait_for_process_termination("System Settings");
   }
 
-  static void wait_for_process_termination(const std::string_view name) {
+  static void wait_for_process_termination(std::string_view name) {
     auto pgrep = fmt::format("/usr/bin/pgrep -x -U {0} '{1}'",
                              getuid(),
                              name);

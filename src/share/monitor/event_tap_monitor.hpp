@@ -295,7 +295,7 @@ private:
     CGEventSetFlags(event, synchronized_flags);
   }
 
-  void enable_event_tap(bool enable, const char* context) const {
+  void enable_event_tap(bool enable, std::string_view context) const {
     if (!event_tap_) {
       return;
     }

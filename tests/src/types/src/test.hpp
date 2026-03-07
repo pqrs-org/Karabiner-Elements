@@ -9,7 +9,7 @@ using namespace boost::ut::literals;
 
 template <typename T>
 void json_unmarshal_error_test(const nlohmann::json& json,
-                               const std::string_view& what) {
+                               std::string_view what) {
   try {
     json.get<T>();
     expect(false);
