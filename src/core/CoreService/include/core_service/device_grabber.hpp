@@ -470,6 +470,7 @@ public:
       fn_function_keys_manipulator_manager_ = nullptr;
       post_event_to_virtual_devices_manipulator_manager_ = nullptr;
       virtual_hid_device_service_client_ = nullptr;
+      secure_event_input_monitor_ = nullptr;
 
       notification_message_manager_ = nullptr;
 
@@ -579,13 +580,9 @@ public:
 
       configuration_monitor_->async_start();
 
-      if (virtual_hid_device_service_client_) {
-        virtual_hid_device_service_client_->async_start();
-      }
+      virtual_hid_device_service_client_->async_start();
 
-      if (secure_event_input_monitor_) {
-        secure_event_input_monitor_->async_start();
-      }
+      secure_event_input_monitor_->async_start();
     });
   }
 
@@ -758,10 +755,6 @@ public:
 
 private:
   void stop(void) {
-    if (secure_event_input_monitor_) {
-      secure_event_input_monitor_->async_stop();
-    }
-
     configuration_monitor_ = nullptr;
 
     async_ungrab_devices();
@@ -769,6 +762,8 @@ private:
     event_tap_monitor_ = nullptr;
 
     virtual_hid_device_service_client_->async_stop();
+
+    secure_event_input_monitor_->async_stop();
   }
 
   // This method is executed in the shared dispatcher thread.
