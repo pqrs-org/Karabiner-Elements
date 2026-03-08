@@ -439,13 +439,14 @@ public:
 
       if (enabled) {
         logger::get_logger()->info("secure event input is enabled: release all pressed keys");
+        post_device_keys_and_pointing_buttons_are_released_event();
+        reset_pressed_modifiers_state();
+        physical_pressed_modifier_flags_.clear();
+
         if (post_event_to_virtual_devices_manipulator_) {
           post_event_to_virtual_devices_manipulator_->async_release_virtual_hid_keyboard_pressed_keys(
               virtual_hid_device_service_client_);
         }
-        post_device_keys_and_pointing_buttons_are_released_event();
-        reset_pressed_modifiers_state();
-        physical_pressed_modifier_flags_.clear();
       }
     });
   }
