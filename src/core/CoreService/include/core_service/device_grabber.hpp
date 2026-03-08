@@ -482,10 +482,6 @@ public:
     enqueue_to_dispatcher([this,
                            user_core_configuration_file_path,
                            expected_user_core_configuration_file_owner] {
-      if (secure_event_input_monitor_) {
-        secure_event_input_monitor_->async_start();
-      }
-
       // We should call CGEventTapCreate after user is logged in.
       // So, we create event_tap_monitor here.
       setup_event_tap_monitor(false);
@@ -583,7 +579,13 @@ public:
 
       configuration_monitor_->async_start();
 
-      virtual_hid_device_service_client_->async_start();
+      if (virtual_hid_device_service_client_) {
+        virtual_hid_device_service_client_->async_start();
+      }
+
+      if (secure_event_input_monitor_) {
+        secure_event_input_monitor_->async_start();
+      }
     });
   }
 
