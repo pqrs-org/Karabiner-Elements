@@ -9,6 +9,7 @@
 #include <chrono>
 #include <deque>
 #include <nod/nod.hpp>
+#include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/chrono.hpp>
@@ -32,9 +33,7 @@ public:
       : dispatcher_client(),
         cgeventtap_fallback_enabled_(cgeventtap_fallback_enabled),
         virtual_hid_keyboard_pressed_keys_manager_(virtual_hid_keyboard_pressed_keys_manager),
-        keyboard_suppression_(keyboard_suppression),
-        event_tap_(nullptr),
-        run_loop_source_(nullptr) {
+        keyboard_suppression_(keyboard_suppression) {
     cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>(pqrs::cf::run_loop_thread::failure_policy::exit);
   }
 
@@ -45,13 +44,11 @@ public:
 
         if (run_loop_source_) {
           CFRunLoopRemoveSource(cf_run_loop_thread_->get_run_loop(),
-                                run_loop_source_,
+                                run_loop_source_.get(),
                                 kCFRunLoopCommonModes);
-          CFRelease(run_loop_source_);
           run_loop_source_ = nullptr;
         }
 
-        CFRelease(event_tap_);
         event_tap_ = nullptr;
       }
       logger::get_logger()->info("event_tap_monitor terminated");
@@ -94,18 +91,27 @@ public:
       logger::get_logger()->info("event_tap_monitor start (enable_cgeventtap_fallback={0})",
                                  cgeventtap_fallback_enabled_);
 
-      event_tap_ = CGEventTapCreate(kCGHIDEventTap,
-                                    kCGTailAppendEventTap,
-                                    cgeventtap_fallback_enabled_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
-                                    mask,
-                                    event_tap_monitor::static_callback,
-                                    this);
+      auto event_tap = CGEventTapCreate(kCGHIDEventTap,
+                                        kCGTailAppendEventTap,
+                                        cgeventtap_fallback_enabled_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
+                                        mask,
+                                        event_tap_monitor::static_callback,
+                                        this);
+      event_tap_ = event_tap;
+      if (event_tap) {
+        CFRelease(event_tap);
+      }
 
       if (event_tap_) {
-        run_loop_source_ = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, event_tap_, 0);
+        auto run_loop_source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, event_tap_.get(), 0);
+        run_loop_source_ = run_loop_source;
+        if (run_loop_source) {
+          CFRelease(run_loop_source);
+        }
+
         if (run_loop_source_) {
           CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
-                             run_loop_source_,
+                             run_loop_source_.get(),
                              kCFRunLoopCommonModes);
           enable_event_tap(true, "async_start");
 
@@ -115,7 +121,6 @@ public:
         } else {
           logger::get_logger()->error("event_tap_monitor failed to create run_loop_source");
 
-          CFRelease(event_tap_);
           event_tap_ = nullptr;
         }
       } else {
@@ -300,9 +305,9 @@ private:
       return;
     }
 
-    CGEventTapEnable(event_tap_, enable);
+    CGEventTapEnable(event_tap_.get(), enable);
 
-    if (CGEventTapIsEnabled(event_tap_) != enable) {
+    if (CGEventTapIsEnabled(event_tap_.get()) != enable) {
       logger::get_logger()->error("CGEventTapEnable failed ({0}, enable={1})", context, enable);
     }
   }
@@ -406,8 +411,8 @@ private:
   bool cgeventtap_fallback_enabled_;
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager_;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
-  CFMachPortRef _Nullable event_tap_;
-  CFRunLoopSourceRef _Nullable run_loop_source_;
+  pqrs::cf::cf_ptr<CFMachPortRef> event_tap_;
+  pqrs::cf::cf_ptr<CFRunLoopSourceRef> run_loop_source_;
   bool fn_pressed_{false};
   static constexpr auto fn_modified_key_down_event_ttl_ = std::chrono::seconds(30);
   std::unordered_map<momentary_switch_event, fn_modified_key_down_expirations> fn_modified_key_down_event_counts_;
