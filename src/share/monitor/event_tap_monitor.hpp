@@ -27,11 +27,11 @@ public:
   event_tap_monitor(const event_tap_monitor&) = delete;
 
   event_tap_monitor(bool cgeventtap_fallback_enabled,
-                    pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager,
+                    pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager,
                     pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression)
       : dispatcher_client(),
         cgeventtap_fallback_enabled_(cgeventtap_fallback_enabled),
-        virtual_hid_posted_pressed_keys_manager_(virtual_hid_posted_pressed_keys_manager),
+        virtual_hid_keyboard_pressed_keys_manager_(virtual_hid_keyboard_pressed_keys_manager),
         keyboard_suppression_(keyboard_suppression),
         event_tap_(nullptr),
         run_loop_source_(nullptr) {
@@ -240,7 +240,7 @@ private:
   CGEventFlags make_virtual_hid_modifier_flags(void) const {
     CGEventFlags flags = 0;
 
-    for (const auto& event : virtual_hid_posted_pressed_keys_manager_->make_entries()) {
+    for (const auto& event : virtual_hid_keyboard_pressed_keys_manager_->make_entries()) {
       if (auto modifier = event.make_modifier_flag()) {
         switch (*modifier) {
           case modifier_flag::left_shift:
@@ -383,7 +383,7 @@ private:
     if (type == kCGEventKeyDown &&
         CGEventGetIntegerValueField(event, kCGKeyboardEventAutorepeat) != 0) {
       if (auto m = normalized_keyboard_event.second.template get_if<momentary_switch_event>()) {
-        return virtual_hid_posted_pressed_keys_manager_->contains(*m);
+        return virtual_hid_keyboard_pressed_keys_manager_->contains(*m);
       }
 
       return true;
@@ -404,7 +404,7 @@ private:
 
   std::unique_ptr<pqrs::cf::run_loop_thread> cf_run_loop_thread_;
   bool cgeventtap_fallback_enabled_;
-  pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager_;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
   CFMachPortRef _Nullable event_tap_;
   CFRunLoopSourceRef _Nullable run_loop_source_;

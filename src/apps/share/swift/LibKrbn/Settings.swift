@@ -606,7 +606,7 @@ extension LibKrbn {
     }
 
     //
-    // Virtual Keybaord
+    // Virtual keyboard
     //
 
     @Published var virtualHIDKeyboardKeyboardTypeV2 = "" {

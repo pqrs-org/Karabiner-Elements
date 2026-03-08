@@ -330,10 +330,10 @@ public:
     std::optional<std::pair<momentary_switch_event, event_type>> posted_momentary_switch_event_;
   };
 
-  queue(pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager,
+  queue(pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager,
         pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression)
       : dispatcher_client(),
-        virtual_hid_posted_pressed_keys_manager_(virtual_hid_posted_pressed_keys_manager),
+        virtual_hid_keyboard_pressed_keys_manager_(virtual_hid_keyboard_pressed_keys_manager),
         keyboard_suppression_(keyboard_suppression),
         cgeventtap_fallback_enabled_(false),
         last_event_type_(event_type::single),
@@ -693,7 +693,7 @@ private:
 
   // Registers posted key events for event-tap mode.
   //
-  // Why we need `virtual_hid_posted_pressed_keys_manager_`:
+  // Why we need `virtual_hid_keyboard_pressed_keys_manager_`:
   // Event tap receives physical auto-repeat key_down events repeatedly.
   // We should pass through only the repeats for keys that are actually held in virtual HID;
   // otherwise, remapped keys can leak unmatched physical repeats.
@@ -713,10 +713,10 @@ private:
       if (event.valid()) {
         switch (et) {
           case event_type::key_down:
-            virtual_hid_posted_pressed_keys_manager_->insert(event);
+            virtual_hid_keyboard_pressed_keys_manager_->insert(event);
             break;
           case event_type::key_up:
-            virtual_hid_posted_pressed_keys_manager_->erase(event);
+            virtual_hid_keyboard_pressed_keys_manager_->erase(event);
             break;
           case event_type::single:
             break;
@@ -730,7 +730,7 @@ private:
   }
 
   std::vector<event> events_;
-  pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager_;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
   bool cgeventtap_fallback_enabled_;
 

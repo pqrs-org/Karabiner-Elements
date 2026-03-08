@@ -22,7 +22,6 @@
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
 #include "notification_message_manager.hpp"
-#include "pressed_keys_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include <array>
@@ -57,7 +56,6 @@ public:
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
         temporarily_ignore_all_devices_(false),
         system_sleeping_(false),
-        virtual_hid_posted_pressed_keys_manager_(std::make_shared<pressed_keys_manager>()),
         keyboard_suppression_(std::make_shared<keyboard_suppression>()),
         logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>();
@@ -180,7 +178,6 @@ public:
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
             weak_console_user_server_client,
             notification_message_manager_,
-            virtual_hid_posted_pressed_keys_manager_,
             keyboard_suppression_);
     post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(is_cgeventtap_fallback_enabled());
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
@@ -442,7 +439,7 @@ public:
 
       if (enabled) {
         logger::get_logger()->info("secure event input is enabled: release all pressed keys");
-        release_virtual_hid_posted_pressed_keys();
+        release_virtual_hid_keyboard_pressed_keys();
         post_device_keys_and_pointing_buttons_are_released_event();
         reset_pressed_modifiers_state();
         physical_pressed_modifier_flags_.clear();
@@ -1161,7 +1158,7 @@ private:
 
     event_tap_monitor_ = std::make_unique<event_tap_monitor>(
         cgeventtap_fallback_enabled,
-        virtual_hid_posted_pressed_keys_manager_,
+        post_event_to_virtual_devices_manipulator_->get_virtual_hid_keyboard_pressed_keys_manager(),
         keyboard_suppression_);
 
     event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
@@ -1233,12 +1230,12 @@ private:
     post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().set_pressed_modifier_flags({});
   }
 
-  void release_virtual_hid_posted_pressed_keys(void) {
+  void release_virtual_hid_keyboard_pressed_keys(void) {
     if (!post_event_to_virtual_devices_manipulator_) {
       return;
     }
 
-    auto pressed_keys = virtual_hid_posted_pressed_keys_manager_->make_entries_and_clear();
+    auto pressed_keys = post_event_to_virtual_devices_manipulator_->make_virtual_hid_keyboard_pressed_keys_and_clear();
     if (pressed_keys.empty()) {
       return;
     }
@@ -1290,10 +1287,6 @@ private:
   std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
-  // Tracks currently held virtual HID keys for event-tap keyboard handling.
-  // This is used to distinguish valid auto-repeat events from stray physical repeats
-  // after remapping (only repeats for virtually held keys should pass through).
-  pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_posted_pressed_keys_manager_;
   std::unordered_map<device_id, std::unordered_set<modifier_flag>> physical_pressed_modifier_flags_;
 
   bool cgeventtap_fallback_enabled_ = false;
