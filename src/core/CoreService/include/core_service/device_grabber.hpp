@@ -439,7 +439,10 @@ public:
 
       if (enabled) {
         logger::get_logger()->info("secure event input is enabled: release all pressed keys");
-        release_virtual_hid_keyboard_pressed_keys();
+        if (post_event_to_virtual_devices_manipulator_) {
+          post_event_to_virtual_devices_manipulator_->async_release_virtual_hid_keyboard_pressed_keys(
+              virtual_hid_device_service_client_);
+        }
         post_device_keys_and_pointing_buttons_are_released_event();
         reset_pressed_modifiers_state();
         physical_pressed_modifier_flags_.clear();
@@ -1228,21 +1231,6 @@ private:
     }
 
     post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().set_pressed_modifier_flags({});
-  }
-
-  void release_virtual_hid_keyboard_pressed_keys(void) {
-    if (!post_event_to_virtual_devices_manipulator_) {
-      return;
-    }
-
-    auto pressed_keys = post_event_to_virtual_devices_manipulator_->make_virtual_hid_keyboard_pressed_keys_and_clear();
-    if (pressed_keys.empty()) {
-      return;
-    }
-
-    post_event_to_virtual_devices_manipulator_->async_release_virtual_hid_pressed_keys(
-        pressed_keys,
-        virtual_hid_device_service_client_);
   }
 
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;

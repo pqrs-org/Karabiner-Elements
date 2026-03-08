@@ -411,10 +411,6 @@ public:
     return virtual_hid_keyboard_pressed_keys_manager_;
   }
 
-  std::vector<momentary_switch_event> make_virtual_hid_keyboard_pressed_keys_and_clear(void) {
-    return virtual_hid_keyboard_pressed_keys_manager_->make_entries_and_clear();
-  }
-
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_service_client] {
@@ -423,8 +419,12 @@ public:
         });
   }
 
-  void async_release_virtual_hid_pressed_keys(const std::vector<momentary_switch_event>& pressed_keys,
-                                              std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
+  void async_release_virtual_hid_keyboard_pressed_keys(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
+    auto pressed_keys = virtual_hid_keyboard_pressed_keys_manager_->make_entries_and_clear();
+    if (pressed_keys.empty()) {
+      return;
+    }
+
     enqueue_to_dispatcher(
         [this, pressed_keys, weak_virtual_hid_device_service_client] {
           auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
