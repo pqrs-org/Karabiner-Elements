@@ -146,6 +146,9 @@ public:
         // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
         // We try to reinitialize the device.
         if (!ready) {
+          if (post_event_to_virtual_devices_manipulator_) {
+            post_event_to_virtual_devices_manipulator_->clear_virtual_hid_keyboard_pressed_keys();
+          }
           virtual_hid_device_service_client_->async_virtual_hid_keyboard_terminate();
           update_virtual_hid_keyboard();
         }
@@ -440,10 +443,11 @@ public:
       if (enabled) {
         logger::get_logger()->info("secure event input is enabled: release all pressed keys");
         post_device_keys_and_pointing_buttons_are_released_event();
-        reset_pressed_modifiers_state();
         physical_pressed_modifier_flags_.clear();
 
         if (post_event_to_virtual_devices_manipulator_) {
+          post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().set_pressed_modifier_flags({});
+
           post_event_to_virtual_devices_manipulator_->async_release_virtual_hid_keyboard_pressed_keys(
               virtual_hid_device_service_client_);
         }
@@ -1224,14 +1228,6 @@ private:
     }
 
     return false;
-  }
-
-  void reset_pressed_modifiers_state(void) {
-    if (!post_event_to_virtual_devices_manipulator_) {
-      return;
-    }
-
-    post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().set_pressed_modifier_flags({});
   }
 
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;

@@ -407,16 +407,20 @@ public:
     queue_.set_cgeventtap_fallback_enabled(value);
   }
 
-  pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_virtual_hid_keyboard_pressed_keys_manager(void) const {
-    return virtual_hid_keyboard_pressed_keys_manager_;
-  }
-
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_service_client] {
           queue_.async_post_events(weak_virtual_hid_device_service_client,
                                    weak_console_user_server_client_);
         });
+  }
+
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_virtual_hid_keyboard_pressed_keys_manager(void) const {
+    return virtual_hid_keyboard_pressed_keys_manager_;
+  }
+
+  void clear_virtual_hid_keyboard_pressed_keys(void) {
+    virtual_hid_keyboard_pressed_keys_manager_->clear();
   }
 
   void async_release_virtual_hid_keyboard_pressed_keys(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {

@@ -61,6 +61,12 @@ public:
     return result;
   }
 
+  void clear(void) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    entries_.clear();
+  }
+
 private:
   std::unordered_set<momentary_switch_event> entries_;
   mutable std::mutex mutex_;

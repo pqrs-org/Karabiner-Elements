@@ -147,10 +147,6 @@ public:
     pressed_modifier_flags_ = modifier_flags;
   }
 
-  const std::vector<std::pair<device_id, pqrs::hid::usage_pair>>& get_pressed_keys(void) const {
-    return pressed_keys_;
-  }
-
   void clear(void) {
     pressed_keys_.clear();
     pressed_modifier_flags_.clear();

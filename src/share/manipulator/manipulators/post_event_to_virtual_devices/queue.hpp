@@ -599,6 +599,7 @@ public:
             }
             if (auto pointing_input = e.get_pointing_input()) {
               if (auto client = weak_virtual_hid_device_service_client.lock()) {
+                // `handle_posted_momentary_switch_event` only targets keyboard events, so there is no need to call it.
                 client->async_post_report(*pointing_input);
               }
             }
@@ -691,7 +692,7 @@ private:
     }
   }
 
-  // Registers posted key events for event-tap mode.
+  // Registers posted key events.
   //
   // Why we need `virtual_hid_keyboard_pressed_keys_manager_`:
   // Event tap receives physical auto-repeat key_down events repeatedly.
@@ -702,10 +703,6 @@ private:
   // Posted virtual HID events come back to event tap. They must be consumed there so they do not
   // re-enter Karabiner's manipulation pipeline.
   void handle_posted_momentary_switch_event(const event& event) {
-    if (!cgeventtap_fallback_enabled_) {
-      return;
-    }
-
     if (auto pair = event.get_posted_momentary_switch_event()) {
       const auto& event = pair->first;
       auto et = pair->second;
