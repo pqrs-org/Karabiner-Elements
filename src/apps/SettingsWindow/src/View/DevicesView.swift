@@ -176,7 +176,7 @@ struct DevicesView: View {
             .switchToggleStyle()
             .frame(width: 140.0)
 
-            if settings.enableCgeventtapFallback && !connectedDeviceSetting.modifyEvents
+            if settings.enableCGEventTapFallback && !connectedDeviceSetting.modifyEvents
               && connectedDeviceSetting.connectedDevice.isKeyboard
             {
               Label(

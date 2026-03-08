@@ -30,7 +30,7 @@ struct ExpertView: View {
         GroupBox(label: Text("CGEventTap fallback")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {
-              Toggle(isOn: $settings.enableCgeventtapFallback) {
+              Toggle(isOn: $settings.enableCGEventTapFallback) {
                 Text("Enable CGEventTap fallback (Default: off)")
               }
               .switchToggleStyle()
