@@ -180,7 +180,7 @@ public:
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
             weak_console_user_server_client,
             notification_message_manager_);
-    post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(is_cgeventtap_fallback_enabled());
+    post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
     // Connect manipulator_managers
@@ -434,7 +434,7 @@ public:
       // Therefore, when using CGEventTap, we must release all keys pressed on the virtual device
       // when secure event input becomes enabled.
 
-      if (!is_cgeventtap_fallback_enabled()) {
+      if (!cgeventtap_fallback_enabled_) {
         return;
       }
 
@@ -1141,18 +1141,14 @@ private:
                                cgeventtap_fallback_enabled_);
 
     if (post_event_to_virtual_devices_manipulator_) {
-      post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(is_cgeventtap_fallback_enabled());
+      post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
     }
 
     if (event_tap_monitor_) {
-      setup_event_tap_monitor(is_cgeventtap_fallback_enabled());
+      setup_event_tap_monitor(cgeventtap_fallback_enabled_);
     }
 
     async_grab_devices();
-  }
-
-  bool is_cgeventtap_fallback_enabled(void) const {
-    return cgeventtap_fallback_enabled_;
   }
 
   void setup_event_tap_monitor(bool cgeventtap_fallback_enabled) {
