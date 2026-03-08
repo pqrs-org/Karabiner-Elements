@@ -56,7 +56,6 @@ public:
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
         temporarily_ignore_all_devices_(false),
         system_sleeping_(false),
-        keyboard_suppression_(std::make_shared<keyboard_suppression>()),
         logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>();
 
@@ -180,8 +179,7 @@ public:
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
             weak_console_user_server_client,
-            notification_message_manager_,
-            keyboard_suppression_);
+            notification_message_manager_);
     post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(is_cgeventtap_fallback_enabled());
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
@@ -1167,7 +1165,7 @@ private:
     event_tap_monitor_ = std::make_unique<event_tap_monitor>(
         cgeventtap_fallback_enabled,
         post_event_to_virtual_devices_manipulator_->get_virtual_hid_keyboard_pressed_keys_manager(),
-        keyboard_suppression_);
+        post_event_to_virtual_devices_manipulator_->get_keyboard_suppression());
 
     event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
       auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
@@ -1275,7 +1273,6 @@ private:
   std::unordered_map<device_id, std::unordered_set<modifier_flag>> physical_pressed_modifier_flags_;
 
   bool cgeventtap_fallback_enabled_ = false;
-  pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;
 };
