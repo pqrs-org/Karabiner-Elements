@@ -444,7 +444,7 @@ public:
         physical_pressed_modifier_flags_.clear();
 
         if (post_event_to_virtual_devices_manipulator_) {
-          post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().set_pressed_modifier_flags({});
+          post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().clear_pressed_modifier_flags();
 
           post_event_to_virtual_devices_manipulator_->async_release_virtual_hid_keyboard_pressed_keys(
               virtual_hid_device_service_client_);

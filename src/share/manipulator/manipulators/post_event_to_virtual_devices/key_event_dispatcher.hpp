@@ -143,12 +143,12 @@ public:
     pressed_modifier_flags_.erase(modifier_flag);
   }
 
-  void set_pressed_modifier_flags(const std::unordered_set<modifier_flag>& modifier_flags) {
-    pressed_modifier_flags_ = modifier_flags;
-  }
-
   void clear(void) {
     pressed_keys_.clear();
+    pressed_modifier_flags_.clear();
+  }
+
+  void clear_pressed_modifier_flags(void) {
     pressed_modifier_flags_.clear();
   }
 
