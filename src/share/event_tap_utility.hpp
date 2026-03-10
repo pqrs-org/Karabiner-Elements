@@ -5,7 +5,7 @@
 #include "event_queue.hpp"
 #include <CoreGraphics/CoreGraphics.h>
 #include <optional>
-#include <pqrs/osx/iokit_hid_system/key_code.hpp>
+#include <pqrs/osx/cg_event.hpp>
 
 namespace krbn {
 class event_tap_utility final {
@@ -15,25 +15,11 @@ public:
       return std::nullopt;
     }
 
-    auto key_code = pqrs::osx::iokit_hid_system::key_code::value_t(
+    auto key_code = pqrs::osx::cg_event::key_code::value_t(
         static_cast<uint16_t>(CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode)));
 
-    if (auto usage = find_usage(key_code,
-                                pqrs::osx::iokit_hid_system::key_code::impl::usage_page_keyboard_or_keypad_map)) {
-      return event_queue::event(momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                       *usage));
-    }
-
-    if (auto usage = find_usage(key_code,
-                                pqrs::osx::iokit_hid_system::key_code::impl::usage_page_apple_vendor_top_case_map)) {
-      return event_queue::event(momentary_switch_event(pqrs::hid::usage_page::apple_vendor_top_case,
-                                                       *usage));
-    }
-
-    if (auto usage = find_usage(key_code,
-                                pqrs::osx::iokit_hid_system::key_code::impl::usage_page_apple_vendor_keyboard_map)) {
-      return event_queue::event(momentary_switch_event(pqrs::hid::usage_page::apple_vendor_keyboard,
-                                                       *usage));
+    if (auto usage_pair = pqrs::osx::cg_event::make_usage_pair(key_code)) {
+      return event_queue::event(momentary_switch_event(*usage_pair));
     }
 
     return std::nullopt;
@@ -121,18 +107,6 @@ public:
   }
 
 private:
-  template <typename Map>
-  static std::optional<pqrs::hid::usage::value_t> find_usage(pqrs::osx::iokit_hid_system::key_code::value_t key_code,
-                                                             const Map& map) {
-    for (const auto& pair : map) {
-      if (pair.second == key_code) {
-        return pair.first;
-      }
-    }
-
-    return std::nullopt;
-  }
-
   static std::optional<event_type> get_modifier_event_type(const event_queue::event& event,
                                                            CGEventFlags flags) {
     auto m = event.get_if<momentary_switch_event>();
