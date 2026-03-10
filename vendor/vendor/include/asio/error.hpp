@@ -355,6 +355,13 @@ inline asio::error_code make_error_code(misc_errors e)
       static_cast<int>(e), get_misc_category());
 }
 
+// boostify: non-boost code starts here
+namespace detail {
+
+ASIO_DECL std::error_condition error_number_to_condition(int ev);
+
+} // namespace detail
+// boostify: non-boost code ends here
 } // namespace error
 namespace stream_errc {
   // Simulates the proposed stream_errc scoped enum.

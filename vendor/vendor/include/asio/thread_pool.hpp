@@ -441,6 +441,7 @@ private:
 private:
   friend struct asio_query_fn::impl;
   friend struct asio::execution::detail::mapping_t<0>;
+  friend struct asio::execution::detail::inline_exception_handling_t<0>;
   friend struct asio::execution::detail::outstanding_work_t<0>;
 #endif // !defined(GENERATING_DOCUMENTATION)
 
@@ -458,6 +459,24 @@ private:
   static constexpr execution::mapping_t query(execution::mapping_t) noexcept
   {
     return execution::mapping.thread;
+  }
+
+  /// Query the current value of the @c inline_exception_handling property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.get_executor();
+   * if (asio::query(ex,
+   *       asio::execution::inline_exception_handling)
+   *     == asio::execution::inline_exception_handling.terminate)
+   *   ... @endcode
+   */
+  static constexpr execution::inline_exception_handling_t query(
+      execution::inline_exception_handling_t) noexcept
+  {
+    return execution::inline_exception_handling.terminate;
   }
 
   /// Query the current value of the @c context property.
@@ -925,6 +944,29 @@ struct query_static_constexpr_member<
   static constexpr bool is_valid = true;
   static constexpr bool is_noexcept = true;
   typedef asio::execution::mapping_t::thread_t result_type;
+
+  static constexpr result_type value() noexcept
+  {
+    return result_type();
+  }
+};
+
+template <typename Allocator, unsigned int Bits, typename Property>
+struct query_static_constexpr_member<
+    asio::thread_pool::basic_executor_type<Allocator, Bits>,
+    Property,
+    typename asio::enable_if<
+      asio::is_convertible<
+        Property,
+        asio::execution::inline_exception_handling_t
+      >::value
+    >::type
+  >
+{
+  static constexpr bool is_valid = true;
+  static constexpr bool is_noexcept = true;
+  typedef asio::execution::inline_exception_handling_t::terminate_t
+    result_type;
 
   static constexpr result_type value() noexcept
   {

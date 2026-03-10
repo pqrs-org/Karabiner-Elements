@@ -20,8 +20,9 @@
 #include "asio/detail/functional.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/execution/executor.hpp"
+#include "asio/execution_context.hpp"
+#include "asio/inline_executor.hpp"
 #include "asio/is_executor.hpp"
-#include "asio/system_executor.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -113,7 +114,7 @@ struct associated_executor_impl<T, E,
  * get(t,e) and with return type @c type or a (possibly const) reference to @c
  * type.
  */
-template <typename T, typename Executor = system_executor>
+template <typename T, typename Executor = inline_executor>
 struct associated_executor
 #if !defined(GENERATING_DOCUMENTATION)
   : detail::associated_executor_impl<T, Executor>
@@ -176,7 +177,7 @@ get_associated_executor(const T& t, ExecutionContext& ctx,
     typename ExecutionContext::executor_type>::get(t, ctx.get_executor());
 }
 
-template <typename T, typename Executor = system_executor>
+template <typename T, typename Executor = inline_executor>
 using associated_executor_t = typename associated_executor<T, Executor>::type;
 
 namespace detail {

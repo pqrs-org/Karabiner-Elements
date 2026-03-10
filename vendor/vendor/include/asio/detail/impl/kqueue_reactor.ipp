@@ -454,6 +454,9 @@ void kqueue_reactor::run(long usec, op_queue<operation>& ops)
   struct kevent events[128];
   int num_events = kevent(kqueue_fd_, 0, 0, events, 128, timeout);
 
+  if (num_events > 0)
+    (void)ref_count_read_acquire(allocation_counter_);
+
 #if defined(ASIO_ENABLE_HANDLER_TRACKING)
   // Trace the waiting events.
   for (int i = 0; i < num_events; ++i)
@@ -569,7 +572,9 @@ int kqueue_reactor::do_kqueue_create()
 kqueue_reactor::descriptor_state* kqueue_reactor::allocate_descriptor_state()
 {
   mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
-  return registered_descriptors_.alloc(io_locking_, io_locking_spin_count_);
+  auto* s = registered_descriptors_.alloc(io_locking_, io_locking_spin_count_);
+  ref_count_up_release(allocation_counter_);
+  return s;
 }
 
 void kqueue_reactor::free_descriptor_state(kqueue_reactor::descriptor_state* s)

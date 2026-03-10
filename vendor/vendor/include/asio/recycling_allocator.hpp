@@ -24,7 +24,7 @@ namespace asio {
 
 /// An allocator that caches memory blocks in thread-local storage for reuse.
 /**
- * The @recycling_allocator uses a simple strategy where a limited number of
+ * The @c recycling_allocator uses a simple strategy where a limited number of
  * small memory blocks are cached in thread-local storage, if the current
  * thread is running an @c io_context or is part of a @c thread_pool.
  */
@@ -85,7 +85,7 @@ public:
 /// A proto-allocator that caches memory blocks in thread-local storage for
 /// reuse.
 /**
- * The @recycling_allocator uses a simple strategy where a limited number of
+ * The @c recycling_allocator uses a simple strategy where a limited number of
  * small memory blocks are cached in thread-local storage, if the current
  * thread is running an @c io_context or is part of a @c thread_pool.
  */

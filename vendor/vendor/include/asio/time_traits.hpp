@@ -30,11 +30,13 @@ namespace asio {
 
 /// (Deprecated) Time traits suitable for use with the deadline timer.
 template <typename Time>
-struct time_traits;
+struct ASIO_DEPRECATED_MSG("Use basic_waitable_timer and wait_traits")
+  time_traits;
 
 /// (Deprecated) Time traits specialised for posix_time.
 template <>
-struct time_traits<boost::posix_time::ptime>
+struct ASIO_DEPRECATED_MSG("Use basic_waitable_timer and wait_traits")
+  time_traits<boost::posix_time::ptime>
 {
   /// The time type.
   typedef boost::posix_time::ptime time_type;

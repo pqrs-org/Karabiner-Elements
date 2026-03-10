@@ -490,6 +490,14 @@ public:
 };
 
 template <typename Handler, typename Arg1>
+inline move_binder1<decay_t<Handler>, decay_t<Arg1>> move_bind_handler(
+    Handler&& handler, Arg1&& arg1)
+{
+  return move_binder1<decay_t<Handler>, decay_t<Arg1>>(0,
+      static_cast<Handler&&>(handler), static_cast<Arg1&&>(arg1));
+}
+
+template <typename Handler, typename Arg1>
 inline bool asio_handler_is_continuation(
     move_binder1<Handler, Arg1>* this_handler)
 {

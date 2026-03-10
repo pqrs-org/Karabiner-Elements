@@ -737,6 +737,9 @@ protected:
 
   // Cached success value to avoid accessing category singleton.
   const asio::error_code success_ec_;
+
+  // Extra state flags to be applied to newly opened sockets.
+  socket_ops::state_type extra_state_;
 };
 
 } // namespace detail

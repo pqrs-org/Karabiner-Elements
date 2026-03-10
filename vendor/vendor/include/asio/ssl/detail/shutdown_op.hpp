@@ -41,6 +41,17 @@ public:
     return eng.shutdown(ec);
   }
 
+  void complete_sync(asio::error_code& ec) const
+  {
+    if (ec == asio::error::eof)
+    {
+      // The engine only generates an eof when the shutdown notification has
+      // been received from the peer. This indicates that the shutdown has
+      // completed successfully, and thus need not be returned to the caller.
+      ec = asio::error_code();
+    }
+  }
+
   template <typename Handler>
   void call_handler(Handler& handler,
       const asio::error_code& ec,

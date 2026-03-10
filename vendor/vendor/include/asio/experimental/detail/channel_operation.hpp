@@ -108,7 +108,8 @@ public:
   void post(const IoExecutor& io_exec, Function& function, Handler&)
   {
     (asio::detail::initiate_post_with_executor<IoExecutor>(io_exec))(
-        static_cast<Function&&>(function));
+        static_cast<Function&&>(function),
+        asio::detail::empty_work_function());
   }
 
   template <typename Function, typename Handler>
@@ -268,8 +269,10 @@ public:
     immediate_ex_type immediate_ex = (get_associated_immediate_executor)(
         handler, base1_type::get_executor());
 
-    (asio::detail::initiate_dispatch_with_executor<immediate_ex_type>(
-          immediate_ex))(static_cast<Function&&>(function));
+    (asio::detail::initiate_dispatch_with_executor<
+          immediate_ex_type>(immediate_ex))(
+        static_cast<Function&&>(function),
+        asio::detail::empty_work_function());
   }
 
   template <typename Function>
@@ -287,7 +290,8 @@ public:
     (asio::detail::initiate_post_with_executor<
         typename base1_type::executor_type>(
           base1_type::get_executor()))(
-        static_cast<Function&&>(function));
+        static_cast<Function&&>(function),
+        asio::detail::empty_work_function());
   }
 };
 
@@ -332,8 +336,10 @@ public:
     immediate_ex_type immediate_ex = (get_associated_immediate_executor)(
         handler, base1_type::get_executor());
 
-    (asio::detail::initiate_dispatch_with_executor<immediate_ex_type>(
-          immediate_ex))(static_cast<Function&&>(function));
+    (asio::detail::initiate_dispatch_with_executor<
+          immediate_ex_type>(immediate_ex))(
+        static_cast<Function&&>(function),
+        asio::detail::empty_work_function());
   }
 
   template <typename Function>

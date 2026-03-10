@@ -32,6 +32,8 @@ inline void increment(atomic_count& a, long b) { a += b; }
 inline void decrement(atomic_count& a, long b) { a -= b; }
 inline void ref_count_up(atomic_count& a) { ++a; }
 inline bool ref_count_down(atomic_count& a) { return --a == 0; }
+inline void ref_count_up_release(atomic_count& a) { ++a; }
+inline long ref_count_read_acquire(atomic_count& a) { return a; }
 #else // !defined(ASIO_HAS_THREADS)
 typedef std::atomic<long> atomic_count;
 inline void increment(atomic_count& a, long b) { a += b; }
@@ -51,6 +53,17 @@ inline bool ref_count_down(atomic_count& a)
   }
   return false;
 }
+
+inline void ref_count_up_release(atomic_count& a)
+{
+  a.fetch_add(1, std::memory_order_release);
+}
+
+inline long ref_count_read_acquire(atomic_count& a)
+{
+  return a.load(std::memory_order_acquire);
+}
+
 #endif // !defined(ASIO_HAS_THREADS)
 
 } // namespace detail

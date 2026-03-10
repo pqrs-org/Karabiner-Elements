@@ -37,7 +37,7 @@
 namespace asio {
 namespace detail {
 
-pipe_select_interrupter::pipe_select_interrupter()
+pipe_select_interrupter::pipe_select_interrupter(bool)
 {
   open_descriptors();
 }

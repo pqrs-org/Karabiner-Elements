@@ -80,7 +80,11 @@ public:
   awaitable& operator=(awaitable&& other) noexcept
   {
     if (this != &other)
+    {
+      if (frame_)
+        frame_->destroy();
       frame_ = std::exchange(other.frame_, nullptr);
+    }
     return *this;
   }
 

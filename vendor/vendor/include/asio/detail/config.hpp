@@ -398,10 +398,20 @@
 #  if (__cplusplus >= 201703)
 #   if defined(__clang__)
 #    if defined(ASIO_HAS_CLANG_LIBCXX)
-#     if (_LIBCPP_STD_VER > 14) && defined(_LIBCPP_HAS_ALIGNED_ALLOC) \
-        && !defined(_LIBCPP_MSVCRT) && !defined(__MINGW32__)
-#      if defined(__ANDROID__) && (__ANDROID_API__ >= 28)
+#     if (_LIBCPP_STD_VER > 14)
+#      if defined(__FreeBSD__) || defined(__Fuchsia__) || defined(__wasi__) \
+         || defined(__NetBSD__) || defined(__OpenBSD__)
+#       define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#      elif defined(__linux__)
+#       if defined(_LIBCPP_HAS_MUSL_LIBC)
 #        define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#       else // !defined(_LIBCPP_HAS_MUSL_LIBC)
+#        if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 17)
+#         define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#        endif // (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 17)
+#       endif // !defined(_LIBCPP_HAS_MUSL_LIBC)
+#      elif defined(__ANDROID__) && (__ANDROID_API__ >= 28)
+#       define ASIO_HAS_STD_ALIGNED_ALLOC 1
 #      elif defined(__APPLE__)
 #       if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #        if (__MAC_OS_X_VERSION_MIN_REQUIRED >= 101500)
@@ -420,11 +430,8 @@
 #         define ASIO_HAS_STD_ALIGNED_ALLOC 1
 #        endif // (__WATCH_OS_VERSION_MIN_REQUIRED >= 60000)
 #       endif // defined(__WATCH_OS_X_VERSION_MIN_REQUIRED)
-#      else // defined(__APPLE__)
-#       define ASIO_HAS_STD_ALIGNED_ALLOC 1
 #      endif // defined(__APPLE__)
-#     endif // (_LIBCPP_STD_VER > 14) && defined(_LIBCPP_HAS_ALIGNED_ALLOC)
-            //   && !defined(_LIBCPP_MSVCRT) && !defined(__MINGW32__)
+#     endif // (_LIBCPP_STD_VER > 14)
 #    elif defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
 #     define ASIO_HAS_STD_ALIGNED_ALLOC 1
 #    endif // defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
@@ -623,7 +630,9 @@
 // Standard library support for std::source_location.
 #if !defined(ASIO_HAS_STD_SOURCE_LOCATION)
 # if !defined(ASIO_DISABLE_STD_SOURCE_LOCATION)
-// ...
+#  if (__cpp_lib_source_location >= 201907)
+#   define ASIO_HAS_STD_SOURCE_LOCATION 1
+#  endif // (__cpp_lib_source_location >= 201907)
 # endif // !defined(ASIO_DISABLE_STD_SOURCE_LOCATION)
 #endif // !defined(ASIO_HAS_STD_SOURCE_LOCATION)
 
@@ -848,11 +857,13 @@
 #  endif // !defined(ASIO_DISABLE_EVENTFD)
 # endif // !defined(ASIO_HAS_EVENTFD)
 # if !defined(ASIO_HAS_TIMERFD)
-#  if defined(ASIO_HAS_EPOLL)
-#   if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 8)
-#    define ASIO_HAS_TIMERFD 1
-#   endif // (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 8)
-#  endif // defined(ASIO_HAS_EPOLL)
+#  if !defined(ASIO_DISABLE_TIMERFD)
+#   if defined(ASIO_HAS_EPOLL)
+#    if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 8)
+#     define ASIO_HAS_TIMERFD 1
+#    endif // (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 8)
+#   endif // defined(ASIO_HAS_EPOLL)
+#  endif // !defined(ASIO_DISABLE_TIMERFD)
 # endif // !defined(ASIO_HAS_TIMERFD)
 # if defined(ASIO_HAS_IO_URING)
 #  if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)
@@ -1385,6 +1396,24 @@
 #if !defined(ASIO_NODISCARD)
 # define ASIO_NODISCARD
 #endif // !defined(ASIO_NODISCARD)
+
+// Compiler support for the the [[deprecated(msg)]] attribute.
+#if !defined(ASIO_DEPRECATED_MSG)
+# if !defined(ASIO_DISABLE_DEPRECATED_MSG)
+#  if defined(ASIO_MSVC) && (ASIO_MSVC >= 1400)
+#   define ASIO_DEPRECATED_MSG(msg) __declspec(deprecated(msg))
+#  elif (__cplusplus >= 201402)
+#   if defined(__has_cpp_attribute)
+#    if __has_cpp_attribute(deprecated)
+#     define ASIO_DEPRECATED_MSG(msg) [[deprecated(msg)]]
+#    endif // __has_cpp_attribute(deprecated)
+#   endif // defined(__has_cpp_attribute)
+#  endif // __cplusplus >= 201402
+# endif // !defined(ASIO_DISABLE_DEPRECATED_MSG)
+#endif // !defined(ASIO_DEPRECATED_MSG)
+#if !defined(ASIO_DEPRECATED_MSG)
+# define ASIO_DEPRECATED_MSG(msg)
+#endif // !defined(ASIO_DEPRECATED_MSG)
 
 // Kernel support for MSG_NOSIGNAL.
 #if !defined(ASIO_HAS_MSG_NOSIGNAL)

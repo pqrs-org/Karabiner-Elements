@@ -260,6 +260,10 @@ private:
   // Keep track of all registered descriptors.
   object_pool<descriptor_state, execution_context::allocator<void>>
     registered_descriptors_;
+
+  // Atomic used to create a happens-before relationship between allocation of
+  // a new descriptor state and that state being received via a kqueue event.
+  atomic_count allocation_counter_;
 };
 
 } // namespace detail

@@ -2,11 +2,12 @@
 
 // (C) Copyright Takayama Fumihiko 2022.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <compare>
 #include <functional>
 #include <iostream>
+#include <mach/mach.h>
 #include <type_safe/strong_typedef.hpp>
 
 namespace pqrs {

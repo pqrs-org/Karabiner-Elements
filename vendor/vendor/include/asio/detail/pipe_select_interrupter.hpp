@@ -32,7 +32,7 @@ class pipe_select_interrupter
 {
 public:
   // Constructor.
-  ASIO_DECL pipe_select_interrupter();
+  ASIO_DECL explicit pipe_select_interrupter(bool = true);
 
   // Destructor.
   ASIO_DECL ~pipe_select_interrupter();

@@ -85,15 +85,16 @@ public:
     return ex_;
   }
 
-  template <typename CompletionHandler>
-  void operator()(CompletionHandler&& handler,
+  template <typename CompletionHandler, typename Function>
+  void operator()(CompletionHandler&& handler, Function&&,
       enable_if_t<
         execution::is_executor<
           conditional_t<true, executor_type, CompletionHandler>
         >::value
       >* = 0,
       enable_if_t<
-        !detail::is_work_dispatcher_required<
+        !is_work_dispatcher_required<
+          decay_t<Function>,
           decay_t<CompletionHandler>,
           Executor
         >::value
@@ -107,21 +108,23 @@ public:
           static_cast<CompletionHandler&&>(handler)));
   }
 
-  template <typename CompletionHandler>
-  void operator()(CompletionHandler&& handler,
+  template <typename CompletionHandler, typename Function>
+  void operator()(CompletionHandler&& handler, Function&& function,
       enable_if_t<
         execution::is_executor<
           conditional_t<true, executor_type, CompletionHandler>
         >::value
       >* = 0,
       enable_if_t<
-        detail::is_work_dispatcher_required<
+        is_work_dispatcher_required<
+          decay_t<Function>,
           decay_t<CompletionHandler>,
           Executor
         >::value
       >* = 0) const
   {
     typedef decay_t<CompletionHandler> handler_t;
+    typedef decay_t<Function> function_t;
 
     typedef associated_executor_t<handler_t, Executor> handler_ex_t;
     handler_ex_t handler_ex((get_associated_executor)(handler, ex_));
@@ -130,19 +133,21 @@ public:
         (get_associated_allocator)(handler));
 
     asio::prefer(ex_, execution::allocator(alloc)).execute(
-        detail::work_dispatcher<handler_t, handler_ex_t>(
+        work_dispatcher<function_t, handler_t, handler_ex_t>(
+          static_cast<Function&&>(function),
           static_cast<CompletionHandler&&>(handler), handler_ex));
   }
 
-  template <typename CompletionHandler>
-  void operator()(CompletionHandler&& handler,
+  template <typename CompletionHandler, typename Function>
+  void operator()(CompletionHandler&& handler, Function&&,
       enable_if_t<
         !execution::is_executor<
           conditional_t<true, executor_type, CompletionHandler>
         >::value
       >* = 0,
       enable_if_t<
-        !detail::is_work_dispatcher_required<
+        !is_work_dispatcher_required<
+          decay_t<Function>,
           decay_t<CompletionHandler>,
           Executor
         >::value
@@ -155,21 +160,23 @@ public:
           static_cast<CompletionHandler&&>(handler)), alloc);
   }
 
-  template <typename CompletionHandler>
-  void operator()(CompletionHandler&& handler,
+  template <typename CompletionHandler, typename Function>
+  void operator()(CompletionHandler&& handler, Function&& function,
       enable_if_t<
         !execution::is_executor<
           conditional_t<true, executor_type, CompletionHandler>
         >::value
       >* = 0,
       enable_if_t<
-        detail::is_work_dispatcher_required<
+        is_work_dispatcher_required<
+          decay_t<Function>,
           decay_t<CompletionHandler>,
           Executor
         >::value
       >* = 0) const
   {
     typedef decay_t<CompletionHandler> handler_t;
+    typedef decay_t<Function> function_t;
 
     typedef associated_executor_t<handler_t, Executor> handler_ex_t;
     handler_ex_t handler_ex((get_associated_executor)(handler, ex_));
@@ -177,7 +184,8 @@ public:
     associated_allocator_t<handler_t> alloc(
         (get_associated_allocator)(handler));
 
-    ex_.dispatch(detail::work_dispatcher<handler_t, handler_ex_t>(
+    ex_.dispatch(work_dispatcher<function_t, handler_t, handler_ex_t>(
+          static_cast<Function&&>(function),
           static_cast<CompletionHandler&&>(handler), handler_ex), alloc);
   }
 

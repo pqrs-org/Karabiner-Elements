@@ -51,6 +51,10 @@ public:
     return eng.read(buffer, ec, bytes_transferred);
   }
 
+  void complete_sync(asio::error_code&) const
+  {
+  }
+
   template <typename Handler>
   void call_handler(Handler& handler,
       const asio::error_code& ec,

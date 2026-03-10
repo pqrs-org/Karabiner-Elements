@@ -46,6 +46,10 @@ public:
     return eng.handshake(type_, ec);
   }
 
+  void complete_sync(asio::error_code&) const
+  {
+  }
+
   template <typename Handler>
   void call_handler(Handler& handler,
       const asio::error_code& ec,
