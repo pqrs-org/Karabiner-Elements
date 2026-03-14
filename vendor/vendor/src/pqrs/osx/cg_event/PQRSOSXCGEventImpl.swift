@@ -24,3 +24,23 @@ public func pqrs_osx_cg_event_get_aux_control_button(
 
   return true
 }
+
+@_cdecl("pqrs_osx_cg_event_get_aux_control_button_event_type")
+public func pqrs_osx_cg_event_get_aux_control_button_event_type(
+  _ event: CGEvent,
+  _ value: UnsafeMutablePointer<UInt8>?
+) -> Bool {
+  guard
+    let value,
+    let nsEvent = NSEvent(cgEvent: event),
+    nsEvent.type == .systemDefined,
+    nsEvent.subtype.rawValue == Int16(NX_SUBTYPE_AUX_CONTROL_BUTTONS)
+  else {
+    return false
+  }
+
+  let data1 = UInt32(bitPattern: Int32(nsEvent.data1))
+  value.pointee = UInt8((data1 & 0x0000_ff00) >> 8)
+
+  return true
+}

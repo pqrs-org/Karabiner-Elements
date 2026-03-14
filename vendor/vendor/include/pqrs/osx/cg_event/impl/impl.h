@@ -15,6 +15,9 @@ extern "C" {
 // Do not use this function directly.
 bool pqrs_osx_cg_event_get_aux_control_button(CGEventRef event, uint16_t* value);
 
+// Do not use this function directly.
+bool pqrs_osx_cg_event_get_aux_control_button_event_type(CGEventRef event, uint8_t* value);
+
 #ifdef __cplusplus
 }
 #endif

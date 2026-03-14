@@ -5,15 +5,50 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <CoreGraphics/CoreGraphics.h>
+#include <IOKit/hidsystem/IOLLEvent.h>
 #include <optional>
 
 #include "aux_control_button.hpp"
+#include "event_type.hpp"
 #include "impl/impl.h"
 #include "key_code.hpp"
 
 namespace pqrs {
 namespace osx {
 namespace cg_event {
+inline std::optional<event_type> make_event_type(CGEventRef event) {
+  if (!event) {
+    return std::nullopt;
+  }
+
+  switch (CGEventGetType(event)) {
+    case kCGEventKeyDown:
+      return event_type::key_down;
+
+    case kCGEventKeyUp:
+      return event_type::key_up;
+
+    default:
+      break;
+  }
+
+  uint8_t value = 0;
+  if (pqrs_osx_cg_event_get_aux_control_button_event_type(event, &value)) {
+    switch (value) {
+      case NX_KEYDOWN:
+        return event_type::key_down;
+
+      case NX_KEYUP:
+        return event_type::key_up;
+
+      default:
+        break;
+    }
+  }
+
+  return std::nullopt;
+}
+
 inline std::optional<hid::usage_pair> make_usage_pair(CGEventRef event) {
   if (!event) {
     return std::nullopt;
