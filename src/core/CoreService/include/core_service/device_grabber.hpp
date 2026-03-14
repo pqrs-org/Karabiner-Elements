@@ -283,7 +283,7 @@ public:
                                        it->second->get_device_name());
             logger_unique_filter_.reset();
 
-            physical_pressed_modifier_flags_.erase(device_id);
+            physical_pressed_momentary_switch_events_.erase(device_id);
             post_device_ungrabbed_event(device_id);
 
             update_virtual_hid_pointing();
@@ -339,7 +339,7 @@ public:
       // Unregister device
       //
 
-      physical_pressed_modifier_flags_.erase(device_id);
+      physical_pressed_momentary_switch_events_.erase(device_id);
       hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
 
       // ----------------------------------------
@@ -441,7 +441,7 @@ public:
       if (enabled) {
         logger::get_logger()->info("secure event input is enabled: release all pressed keys");
         post_device_keys_and_pointing_buttons_are_released_event();
-        physical_pressed_modifier_flags_.clear();
+        physical_pressed_momentary_switch_events_.clear();
 
         if (post_event_to_virtual_devices_manipulator_) {
           post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().clear_pressed_modifier_flags();
@@ -809,9 +809,9 @@ private:
 
       for (const auto& e : *event_queue_entries) {
         if (!entry.get_disabled() && entry.seized()) {
-          if (unbalanced_modifier_key(e->get_device_id(),
-                                      e->get_event(),
-                                      e->get_event_type())) {
+          if (unbalanced_momentary_switch_event(e->get_device_id(),
+                                                e->get_event(),
+                                                e->get_event_type())) {
             continue;
           }
 
@@ -840,9 +840,9 @@ private:
   }
 
   void event_tap_keyboard_event_arrived(event_type event_type, const event_queue::event& event) {
-    if (unbalanced_modifier_key(device_id(0),
-                                event,
-                                event_type)) {
+    if (unbalanced_momentary_switch_event(device_id(0),
+                                          event,
+                                          event_type)) {
       return;
     }
 
@@ -1182,39 +1182,40 @@ private:
     event_tap_monitor_->async_start();
   }
 
-  // Some input paths (for example around secure event input transitions) can
-  // deliver a modifier key_up without a corresponding key_down.
-  // If we push such unmatched key_up into merged_input_event_queue_,
-  // queue::push_back_entry updates modifier_flag_manager and can leave
-  // modifier state inconsistent (causing stuck/ignored modifier behavior).
-  // Therefore we have to drop unbalanced modifier keys before queue insertion.
-  bool unbalanced_modifier_key(device_id device_id,
-                               const event_queue::event& event,
-                               event_type event_type) {
-    auto& pressed_modifiers = physical_pressed_modifier_flags_[device_id];
+  // Some input paths (for example around secure event input transitions or CGEventTap fallback re-entry)
+  // can deliver a key_up without a corresponding key_down, or repeated key_down while the same key is
+  // still treated as pressed. If we push such unbalanced events into merged_input_event_queue_,
+  // downstream state can become inconsistent and cause stuck keys or re-entry loops.
+  // Therefore we have to drop unbalanced momentary switch events before queue insertion.
+  bool unbalanced_momentary_switch_event(device_id device_id,
+                                         const event_queue::event& event,
+                                         event_type event_type) {
+    auto& pressed_momentary_switch_events = physical_pressed_momentary_switch_events_[device_id];
 
     if (auto mse = event.template get_if<momentary_switch_event>()) {
-      if (auto modifier = mse->make_modifier_flag()) {
-        switch (event_type) {
-          case event_type::key_down:
-            if (pressed_modifiers.contains(*modifier)) {
-              logger::get_logger()->warn("drop duplicated modifier key_down before merged_input_event_queue insertion");
-              return true;
-            }
-            pressed_modifiers.insert(*modifier);
-            break;
+      if (!mse->valid()) {
+        return false;
+      }
 
-          case event_type::key_up:
-            if (!pressed_modifiers.contains(*modifier)) {
-              logger::get_logger()->warn("drop unmatched physical modifier key_up");
-              return true;
-            }
-            pressed_modifiers.erase(*modifier);
-            break;
+      switch (event_type) {
+        case event_type::key_down:
+          if (pressed_momentary_switch_events.contains(*mse)) {
+            logger::get_logger()->warn("drop duplicated momentary switch key_down before merged_input_event_queue insertion");
+            return true;
+          }
+          pressed_momentary_switch_events.insert(*mse);
+          break;
 
-          case event_type::single:
-            break;
-        }
+        case event_type::key_up:
+          if (!pressed_momentary_switch_events.contains(*mse)) {
+            logger::get_logger()->warn("drop unmatched momentary switch key_up before merged_input_event_queue insertion");
+            return true;
+          }
+          pressed_momentary_switch_events.erase(*mse);
+          break;
+
+        case event_type::single:
+          break;
       }
     }
 
@@ -1263,7 +1264,7 @@ private:
   std::shared_ptr<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator_;
   std::shared_ptr<manipulator::manipulator_manager> post_event_to_virtual_devices_manipulator_manager_;
   std::shared_ptr<event_queue::queue> posted_event_queue_;
-  std::unordered_map<device_id, std::unordered_set<modifier_flag>> physical_pressed_modifier_flags_;
+  std::unordered_map<device_id, std::unordered_set<momentary_switch_event>> physical_pressed_momentary_switch_events_;
 
   bool cgeventtap_fallback_enabled_ = false;
 
