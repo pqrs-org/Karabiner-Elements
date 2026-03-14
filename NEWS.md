@@ -14,6 +14,8 @@
       you can execute any action from Karabiner-Elements with low latency. (Thanks to @nikivdev)
     - Added [`to.from_event`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/from-event/),
       allowing pressed events to be passed through as-is.
+    - Added `Enable CGEventTap fallback` setting to Expert tab.
+      Enable receiving events via CGEventTap for keyboards where IOHIDDeviceOpen fails for some reason.
 - 🐛 Bug Fixes
     - Fixed an issue where reordering in Complex Modifications and Profiles didn't work properly when dragging while scrolling.
     - Fixed an issue where variables in expressions were not properly initialized when unset.
