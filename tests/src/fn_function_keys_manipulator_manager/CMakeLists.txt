@@ -12,4 +12,6 @@ add_executable(
 target_link_libraries(
   karabiner_test
   libduktape
+  "-framework CoreFoundation"
+  "-framework CoreGraphics"
 )

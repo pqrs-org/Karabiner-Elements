@@ -52,7 +52,7 @@ public:
   }
 
   // Move constructor.
-  null_thread(null_thread&& other) noexcept
+  null_thread(null_thread&&) noexcept
   {
   }
 
@@ -62,7 +62,7 @@ public:
   }
 
   // Move assignment.
-  null_thread& operator=(null_thread&& other) noexcept
+  null_thread& operator=(null_thread&&) noexcept
   {
     return *this;
   }

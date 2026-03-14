@@ -29,7 +29,7 @@ class eventfd_select_interrupter
 {
 public:
   // Constructor.
-  ASIO_DECL eventfd_select_interrupter();
+  ASIO_DECL explicit eventfd_select_interrupter(bool use_eventfd = true);
 
   // Destructor.
   ASIO_DECL ~eventfd_select_interrupter();
@@ -51,7 +51,7 @@ public:
 
 private:
   // Open the descriptors. Throws on error.
-  ASIO_DECL void open_descriptors();
+  ASIO_DECL void open_descriptors(bool use_eventfd);
 
   // Close the descriptors.
   ASIO_DECL void close_descriptors();

@@ -34,7 +34,7 @@ class socket_select_interrupter
 {
 public:
   // Constructor.
-  ASIO_DECL socket_select_interrupter();
+  ASIO_DECL explicit socket_select_interrupter(bool = true);
 
   // Destructor.
   ASIO_DECL ~socket_select_interrupter();

@@ -38,38 +38,43 @@
 namespace asio {
 namespace detail {
 
-eventfd_select_interrupter::eventfd_select_interrupter()
+eventfd_select_interrupter::eventfd_select_interrupter(bool use_eventfd)
 {
-  open_descriptors();
+  open_descriptors(use_eventfd);
 }
 
-void eventfd_select_interrupter::open_descriptors()
+void eventfd_select_interrupter::open_descriptors(bool use_eventfd)
 {
+  if (use_eventfd)
+  {
 #if __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
-  write_descriptor_ = read_descriptor_ = syscall(__NR_eventfd, 0);
-  if (read_descriptor_ != -1)
-  {
-    ::fcntl(read_descriptor_, F_SETFL, O_NONBLOCK);
-    ::fcntl(read_descriptor_, F_SETFD, FD_CLOEXEC);
-  }
-#else // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
-# if defined(EFD_CLOEXEC) && defined(EFD_NONBLOCK)
-  write_descriptor_ = read_descriptor_ =
-    ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-# else // defined(EFD_CLOEXEC) && defined(EFD_NONBLOCK)
-  errno = EINVAL;
-  write_descriptor_ = read_descriptor_ = -1;
-# endif // defined(EFD_CLOEXEC) && defined(EFD_NONBLOCK)
-  if (read_descriptor_ == -1 && errno == EINVAL)
-  {
-    write_descriptor_ = read_descriptor_ = ::eventfd(0, 0);
+    write_descriptor_ = read_descriptor_ = syscall(__NR_eventfd, 0);
     if (read_descriptor_ != -1)
     {
       ::fcntl(read_descriptor_, F_SETFL, O_NONBLOCK);
       ::fcntl(read_descriptor_, F_SETFD, FD_CLOEXEC);
     }
-  }
+#else // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
+# if defined(EFD_CLOEXEC) && defined(EFD_NONBLOCK)
+    write_descriptor_ = read_descriptor_ =
+      ::eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
+# else // defined(EFD_CLOEXEC) && defined(EFD_NONBLOCK)
+    errno = EINVAL;
+    write_descriptor_ = read_descriptor_ = -1;
+# endif // defined(EFD_CLOEXEC) && defined(EFD_NONBLOCK)
+    if (read_descriptor_ == -1 && errno == EINVAL)
+    {
+      write_descriptor_ = read_descriptor_ = ::eventfd(0, 0);
+      if (read_descriptor_ != -1)
+      {
+        ::fcntl(read_descriptor_, F_SETFL, O_NONBLOCK);
+        ::fcntl(read_descriptor_, F_SETFD, FD_CLOEXEC);
+      }
+    }
 #endif // __GLIBC__ == 2 && __GLIBC_MINOR__ < 8 && !defined(__UCLIBC__)
+  }
+  else
+    write_descriptor_ = read_descriptor_ = -1;
 
   if (read_descriptor_ == -1)
   {
@@ -107,12 +112,10 @@ void eventfd_select_interrupter::close_descriptors()
 
 void eventfd_select_interrupter::recreate()
 {
+  bool use_eventfd = (write_descriptor_ == read_descriptor_);
   close_descriptors();
-
-  write_descriptor_ = -1;
-  read_descriptor_ = -1;
-
-  open_descriptors();
+  write_descriptor_ = read_descriptor_ = -1;
+  open_descriptors(use_eventfd);
 }
 
 void eventfd_select_interrupter::interrupt()

@@ -149,6 +149,8 @@ extension LibKrbn {
         libkrbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices()
       reorderSameTimestampInputEventsToPrioritizeModifiers =
         libkrbn_core_configuration_get_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers()
+      enableCGEventTapFallback =
+        libkrbn_core_configuration_get_global_configuration_enable_cgeventtap_fallback()
 
       updateSystemDefaultProfileExists()
 
@@ -604,7 +606,7 @@ extension LibKrbn {
     }
 
     //
-    // Virtual Keybaord
+    // Virtual keyboard
     //
 
     @Published var virtualHIDKeyboardKeyboardTypeV2 = "" {
@@ -867,6 +869,17 @@ extension LibKrbn {
         if didSetEnabled {
           libkrbn_core_configuration_set_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers(
             reorderSameTimestampInputEventsToPrioritizeModifiers
+          )
+          save()
+        }
+      }
+    }
+
+    @Published var enableCGEventTapFallback: Bool = false {
+      didSet {
+        if didSetEnabled {
+          libkrbn_core_configuration_set_global_configuration_enable_cgeventtap_fallback(
+            enableCGEventTapFallback
           )
           save()
         }

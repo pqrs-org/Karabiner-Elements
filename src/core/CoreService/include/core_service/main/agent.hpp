@@ -3,6 +3,7 @@
 #include "core_service/core_service_utility.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <iostream>
+#include <pqrs/osx/accessibility.hpp>
 
 namespace krbn {
 namespace core_service {
@@ -12,9 +13,21 @@ int agent(void) {
   // in case ~/.config/karabiner is a symlink and karabiner.json lives under Documents or similar.
   std::ifstream input(krbn::constants::get_user_core_configuration_file_path());
 
+  //
+  // Input Monitoring
+  //
+
   IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
 
   core_service_utility::wait_until_input_monitoring_granted();
+
+  //
+  // Accessibility
+  //
+
+  pqrs::osx::accessibility::is_process_trusted_with_prompt();
+
+  core_service_utility::wait_until_accessibility_process_trusted();
 
   return 0;
 }

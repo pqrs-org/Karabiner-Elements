@@ -80,10 +80,17 @@ struct MainView: View {
                     .font(.title)
                     .frame(width: 70, alignment: .leading)
 
-                  VStack(alignment: .leading, spacing: 0) {
+                  VStack(alignment: .leading, spacing: 2.0) {
                     Text(entry.name)
-                    Text(entry.misc)
+
+                    if !entry.misc.isEmpty {
+                      Text(entry.misc)
+                        .font(.caption)
+                    }
+
+                    Text("from \(entry.product)")
                       .font(.caption)
+                      .foregroundStyle(.secondary)
                   }
                   .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -153,7 +160,11 @@ struct MainView: View {
     .task {
       eventHistory.start()
       eventHistory.pause(false)
-      defer { eventHistory.stop() }
+      evCoreServiceClient.startConnectedDevices()
+      defer {
+        eventHistory.stop()
+        evCoreServiceClient.stopConnectedDevices()
+      }
 
       do {
         while true {

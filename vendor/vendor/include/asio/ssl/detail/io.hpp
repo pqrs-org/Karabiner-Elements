@@ -78,18 +78,21 @@ std::size_t io(Stream& next_layer, stream_core& core,
 
     // Operation is complete. Return result to caller.
     core.engine_.map_error_code(ec);
+    op.complete_sync(ec);
     return bytes_transferred;
 
   default:
 
     // Operation is complete. Return result to caller.
     core.engine_.map_error_code(ec);
+    op.complete_sync(ec);
     return bytes_transferred;
 
   } while (!ec);
 
   // Operation failed. Return result to caller.
   core.engine_.map_error_code(ec);
+  op.complete_sync(ec);
   return 0;
 }
 

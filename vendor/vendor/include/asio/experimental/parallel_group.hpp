@@ -20,6 +20,7 @@
 #include "asio/async_result.hpp"
 #include "asio/detail/array.hpp"
 #include "asio/detail/memory.hpp"
+#include "asio/detail/throw_exception.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/detail/utility.hpp"
 #include "asio/experimental/cancellation_condition.hpp"
@@ -156,6 +157,9 @@ private:
   std::tuple<Ops...> ops_;
 
 public:
+  static_assert(sizeof...(Ops) >= 1,
+      "parallel_group requires at least one operation");
+
   /// Constructor.
   explicit parallel_group(Ops... ops)
     : ops_(std::move(ops)...)
@@ -303,11 +307,19 @@ private:
 
 public:
   /// Constructor.
+  /**
+   * @throws std::logic_error Thrown if the range is empty.
+   */
   explicit ranged_parallel_group(Range range,
       const Allocator& allocator = Allocator())
     : range_(std::move(range)),
       allocator_(allocator)
   {
+    if (range_.empty())
+    {
+      std::logic_error e("ranged_parallel_group must be non-empty");
+      asio::detail::throw_exception(e);
+    }
   }
 
   /// The completion signature for the group of operations.
@@ -360,6 +372,8 @@ public:
 /**
  * @param range A range containing the operations to be launched.
  *
+ * @throws std::logic_error Thrown if the range is empty.
+ *
  * For example:
  * @code
  * using op_type =
@@ -402,6 +416,8 @@ make_parallel_group(Range&& range,
  * @param allocator Specifies the allocator to be used with the result vectors.
  *
  * @param range A range containing the operations to be launched.
+ *
+ * @throws std::logic_error Thrown if the range is empty.
  *
  * For example:
  * @code

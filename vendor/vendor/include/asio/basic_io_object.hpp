@@ -60,7 +60,8 @@ template <typename IoObjectService>
 template <typename IoObjectService,
     bool Movable = detail::service_has_move<IoObjectService>::value>
 #endif
-class basic_io_object
+class ASIO_DEPRECATED_MSG("Deprecated without replacement")
+  basic_io_object
 {
 public:
   /// The type of the service that will be used to provide I/O operations.
@@ -190,7 +191,8 @@ private:
 
 // Specialisation for movable objects.
 template <typename IoObjectService>
-class basic_io_object<IoObjectService, true>
+class ASIO_DEPRECATED_MSG("Deprecated without replacement")
+  basic_io_object<IoObjectService, true>
 {
 public:
   typedef IoObjectService service_type;

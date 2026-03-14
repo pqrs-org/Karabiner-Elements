@@ -23,6 +23,7 @@
 #include "asio/execution/context.hpp"
 #include "asio/execution/context_as.hpp"
 #include "asio/execution/executor.hpp"
+#include "asio/execution/inline_exception_handling.hpp"
 #include "asio/execution/invocable_archetype.hpp"
 #include "asio/execution/mapping.hpp"
 #include "asio/execution/occupancy.hpp"

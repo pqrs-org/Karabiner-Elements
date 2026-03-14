@@ -109,6 +109,8 @@ using std::is_scalar;
 
 using std::is_unsigned;
 
+using std::is_void;
+
 using std::remove_cv;
 
 template <typename T>

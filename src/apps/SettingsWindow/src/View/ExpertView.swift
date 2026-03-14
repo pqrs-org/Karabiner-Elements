@@ -27,6 +27,26 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
+        GroupBox(label: Text("CGEventTap fallback")) {
+          VStack(alignment: .leading, spacing: 20.0) {
+            VStack(alignment: .leading, spacing: 4.0) {
+              Toggle(isOn: $settings.enableCGEventTapFallback) {
+                Text("Enable CGEventTap fallback (Default: off)")
+              }
+              .switchToggleStyle()
+
+              Label(
+                "If this setting is enabled, Karabiner-Core-Service uses CGEventTap as a fallback for devices that cannot be handled via HID input capture.",
+                systemImage: InfoBorder.icon
+              )
+              .modifier(InfoBorder())
+              .fixedSize(horizontal: false, vertical: true)
+            }
+          }
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
+        }
+
         GroupBox(label: Text("Options")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {

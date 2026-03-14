@@ -275,11 +275,33 @@ private:
   bool modified_;
 };
 
+class coroutine_base_value
+{
+public:
+  constexpr coroutine_base_value(int value) : value_(value) {}
+  constexpr operator bool() const { return false; }
+  constexpr int get() const { return value_; }
+private:
+  int value_;
+};
+
 } // namespace detail
 } // namespace asio
 
+#if !defined(ASIO_CORO_VALUE_INIT)
+# if defined(_MSC_VER)
+#  define ASIO_CORO_VALUE_INIT __COUNTER__
+# else // defined(_MSC_VER)
+#  define ASIO_CORO_VALUE_INIT __LINE__
+# endif // defined(_MSC_VER)
+#endif // !defined(ASIO_CORO_VALUE_INIT)
+
 #define ASIO_CORO_REENTER(c) \
-  switch (::asio::detail::coroutine_ref _coro_value = c) \
+  if (constexpr ::asio::detail::coroutine_base_value \
+      _coro_base_value = ASIO_CORO_VALUE_INIT) \
+  { \
+  } \
+  else switch (::asio::detail::coroutine_ref _coro_value = c) \
     case -1: if (_coro_value) \
     { \
       goto terminate_coroutine; \
@@ -317,12 +339,12 @@ private:
     } \
     else
 
-#if defined(_MSC_VER)
-# define ASIO_CORO_YIELD ASIO_CORO_YIELD_IMPL(__COUNTER__ + 1)
-# define ASIO_CORO_FORK ASIO_CORO_FORK_IMPL(__COUNTER__ + 1)
-#else // defined(_MSC_VER)
-# define ASIO_CORO_YIELD ASIO_CORO_YIELD_IMPL(__LINE__)
-# define ASIO_CORO_FORK ASIO_CORO_FORK_IMPL(__LINE__)
-#endif // defined(_MSC_VER)
+# define ASIO_CORO_YIELD \
+  ASIO_CORO_YIELD_IMPL( \
+    ASIO_CORO_VALUE_INIT + 1 - _coro_base_value.get())
+
+# define ASIO_CORO_FORK \
+  ASIO_CORO_FORK_IMPL( \
+    ASIO_CORO_VALUE_INIT + 1 - _coro_base_value.get())
 
 #endif // ASIO_COROUTINE_HPP

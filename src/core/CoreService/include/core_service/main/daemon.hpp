@@ -94,6 +94,18 @@ int daemon(void) {
     return 0;
   }
 
+  if (pqrs::osx::accessibility::is_process_trusted()) {
+    core_service_state_json_writer->set_accessibility_process_trusted(true);
+  } else {
+    logger::get_logger()->warn("accessibility process is not trusted");
+
+    core_service_state_json_writer->set_accessibility_process_trusted(false);
+
+    core_service_utility::wait_until_accessibility_process_trusted();
+
+    return 0;
+  }
+
   //
   // Set task_qos_policy
   //

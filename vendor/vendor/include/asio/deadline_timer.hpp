@@ -31,6 +31,7 @@ namespace asio {
 
 /// (Deprecated: Use system_timer.) Typedef for the typical usage of timer. Uses
 /// a UTC clock.
+ASIO_DEPRECATED_MSG("Use system_timer")
 typedef basic_deadline_timer<boost::posix_time::ptime> deadline_timer;
 
 } // namespace asio

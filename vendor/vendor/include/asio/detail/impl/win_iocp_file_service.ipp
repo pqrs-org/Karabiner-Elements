@@ -22,6 +22,7 @@
 
 #include <cstring>
 #include <sys/stat.h>
+#include "asio/detail/memory.hpp"
 #include "asio/detail/win_iocp_file_service.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -56,6 +57,27 @@ asio::error_code win_iocp_file_service::open(
   if (is_open(impl))
   {
     ec = asio::error::already_open;
+    ASIO_ERROR_LOCATION(ec);
+    return ec;
+  }
+
+  int required_path_length = ::MultiByteToWideChar(
+      CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, 0, 0);
+  if (required_path_length == 0)
+  {
+    DWORD last_error = ::GetLastError();
+    ec.assign(last_error, asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
+    return ec;
+  }
+
+  std::unique_ptr<wchar_t[]> wide_path(new wchar_t[required_path_length]);
+  int result = ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+      path, -1, wide_path.get(), required_path_length);
+  if (result == 0)
+  {
+    DWORD last_error = ::GetLastError();
+    ec.assign(last_error, asio::error::get_system_category());
     ASIO_ERROR_LOCATION(ec);
     return ec;
   }
@@ -95,7 +117,8 @@ asio::error_code win_iocp_file_service::open(
     flags |= FILE_FLAG_WRITE_THROUGH;
 
   impl.offset_ = 0;
-  HANDLE handle = ::CreateFileA(path, access, share, 0, disposition, flags, 0);
+  HANDLE handle = ::CreateFileW(wide_path.get(),
+      access, share, 0, disposition, flags, 0);
   if (handle != INVALID_HANDLE_VALUE)
   {
     if (disposition == OPEN_ALWAYS)

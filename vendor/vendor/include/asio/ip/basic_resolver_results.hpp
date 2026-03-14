@@ -132,14 +132,20 @@ public:
       if (address_info->ai_family == ASIO_OS_DEF(AF_INET)
           || address_info->ai_family == ASIO_OS_DEF(AF_INET6))
       {
-        using namespace std; // For memcpy.
-        typename InternetProtocol::endpoint endpoint;
-        endpoint.resize(static_cast<std::size_t>(address_info->ai_addrlen));
-        memcpy(endpoint.data(), address_info->ai_addr,
-            address_info->ai_addrlen);
-        results.values_->push_back(
-            basic_resolver_entry<InternetProtocol>(endpoint,
-              actual_host_name, service_name));
+        const std::size_t expected_size =
+          address_info->ai_family == ASIO_OS_DEF(AF_INET)
+            ? sizeof(asio::detail::sockaddr_in4_type)
+            : sizeof(asio::detail::sockaddr_in6_type);
+        if (address_info->ai_addrlen >= expected_size)
+        {
+          using namespace std; // For memcpy.
+          typename InternetProtocol::endpoint endpoint;
+          endpoint.resize(expected_size);
+          memcpy(endpoint.data(), address_info->ai_addr, expected_size);
+          results.values_->push_back(
+              basic_resolver_entry<InternetProtocol>(endpoint,
+                actual_host_name, service_name));
+        }
       }
       address_info = address_info->ai_next;
     }

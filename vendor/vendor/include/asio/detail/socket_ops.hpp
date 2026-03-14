@@ -52,7 +52,11 @@ enum
   datagram_oriented = 32,
 
   // The socket may have been dup()-ed.
-  possible_dup = 64
+  possible_dup = 64,
+
+  // When using an edge-triggered reactor (epoll) the user wants the edge to be
+  // reset following a partial read on a stream-oriented socket.
+  reset_edge_on_partial_read = 128
 };
 
 typedef unsigned char state_type;

@@ -100,6 +100,12 @@ engine& engine::operator=(engine&& other) noexcept
 {
   if (this != &other)
   {
+    if (ssl_ && SSL_get_app_data(ssl_))
+    {
+      delete static_cast<verify_callback_base*>(SSL_get_app_data(ssl_));
+      SSL_set_app_data(ssl_, 0);
+    }
+
     if (ext_bio_)
       ::BIO_free(ext_bio_);
 

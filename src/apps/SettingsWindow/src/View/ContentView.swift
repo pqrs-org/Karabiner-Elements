@@ -33,6 +33,10 @@ struct ContentView: View {
         OverlayAlertView {
           InputMonitoringPermissionsAlertView()
         }
+      } else if contentViewStates.showAccessibilityAlert {
+        OverlayAlertView {
+          AccessibilityAlertView()
+        }
       } else if contentViewStates.showVirtualHidDeviceServiceClientNotConnectedAlert {
         OverlayAlertView {
           VirtualHidDeviceServiceClientNotConnectedAlertView()

@@ -42,10 +42,10 @@ struct VariablesView: View {
       .border(Color(NSColor.separatorColor), width: 2)
     }
     .onAppear {
-      evCoreServiceClient.manipulatorEnvironmentStart()
+      evCoreServiceClient.startManipulatorEnvironment()
     }
     .onDisappear {
-      evCoreServiceClient.manipulatorEnvironmentStop()
+      evCoreServiceClient.stopManipulatorEnvironment()
     }
   }
 }

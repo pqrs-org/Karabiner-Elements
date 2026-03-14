@@ -236,6 +236,7 @@ public:
    * @code asio::dispatch(strand, boost::bind(f, a1, ... an)); @endcode
    */
   template <typename Handler>
+  ASIO_DEPRECATED_MSG("Use asio::bind_executor()")
 #if defined(GENERATING_DOCUMENTATION)
   unspecified
 #else

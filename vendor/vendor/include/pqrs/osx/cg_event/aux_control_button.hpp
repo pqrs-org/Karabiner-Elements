@@ -2,7 +2,7 @@
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <mapbox/eternal.hpp>
@@ -12,7 +12,7 @@
 
 namespace pqrs {
 namespace osx {
-namespace iokit_hid_system {
+namespace cg_event {
 namespace aux_control_button {
 struct value_t : type_safe::strong_typedef<value_t, uint16_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
@@ -95,6 +95,16 @@ inline std::optional<value_t> find(T& map, hid::usage::value_t usage) {
   }
   return std::nullopt;
 }
+
+template <typename T>
+inline std::optional<hid::usage::value_t> find_usage(T& map, aux_control_button::value_t aux_control_button) {
+  for (const auto& [usage, mapped_aux_control_button] : map) {
+    if (mapped_aux_control_button == aux_control_button) {
+      return usage;
+    }
+  }
+  return std::nullopt;
+}
 } // namespace impl
 } // namespace aux_control_button
 
@@ -111,12 +121,52 @@ inline std::optional<aux_control_button::value_t> make_aux_control_button(hid::u
 
   return std::nullopt;
 }
-} // namespace iokit_hid_system
+
+inline std::optional<hid::usage_pair> make_usage_pair(aux_control_button::value_t aux_control_button) {
+  // Some usage_pair values share a single aux_control_button::value_t.
+  // Use the following priority so the reverse conversion stays deterministic:
+  //
+  // consumer -> keyboard_or_keypad -> apple_vendor_top_case -> apple_vendor_keyboard
+  //
+  // - power
+  //   - consumer::power
+  //   - keyboard_or_keypad::keyboard_power
+  // - mute
+  //   - consumer::mute
+  //   - keyboard_or_keypad::keyboard_mute
+  // - sound_up
+  //   - consumer::volume_increment
+  //   - keyboard_or_keypad::keyboard_volume_up
+  // - sound_down
+  //   - consumer::volume_decrement
+  //   - keyboard_or_keypad::keyboard_volume_down
+  // - brightness_up
+  //   - consumer::display_brightness_increment
+  //   - apple_vendor_top_case::brightness_up
+  //   - apple_vendor_keyboard::brightness_up
+  // - brightness_down
+  //   - consumer::display_brightness_decrement
+  //   - apple_vendor_top_case::brightness_down
+  //   - apple_vendor_keyboard::brightness_down
+
+  if (auto usage = aux_control_button::impl::find_usage(aux_control_button::impl::usage_page_consumer_map, aux_control_button)) {
+    return hid::usage_pair(hid::usage_page::consumer, *usage);
+  } else if (auto usage = aux_control_button::impl::find_usage(aux_control_button::impl::usage_page_keyboard_or_keypad_map, aux_control_button)) {
+    return hid::usage_pair(hid::usage_page::keyboard_or_keypad, *usage);
+  } else if (auto usage = aux_control_button::impl::find_usage(aux_control_button::impl::usage_page_apple_vendor_top_case_map, aux_control_button)) {
+    return hid::usage_pair(hid::usage_page::apple_vendor_top_case, *usage);
+  } else if (auto usage = aux_control_button::impl::find_usage(aux_control_button::impl::usage_page_apple_vendor_keyboard_map, aux_control_button)) {
+    return hid::usage_pair(hid::usage_page::apple_vendor_keyboard, *usage);
+  }
+
+  return std::nullopt;
+}
+} // namespace cg_event
 } // namespace osx
 } // namespace pqrs
 
 namespace std {
 template <>
-struct hash<pqrs::osx::iokit_hid_system::aux_control_button::value_t> : type_safe::hashable<pqrs::osx::iokit_hid_system::aux_control_button::value_t> {
+struct hash<pqrs::osx::cg_event::aux_control_button::value_t> : type_safe::hashable<pqrs::osx::cg_event::aux_control_button::value_t> {
 };
 } // namespace std

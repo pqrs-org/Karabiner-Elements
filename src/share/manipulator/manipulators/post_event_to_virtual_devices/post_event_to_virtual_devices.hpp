@@ -10,6 +10,7 @@
 #include "notification_message_manager.hpp"
 #include "queue.hpp"
 #include "types.hpp"
+#include <algorithm>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
 namespace krbn {
@@ -23,7 +24,11 @@ public:
       : base(),
         dispatcher_client(),
         weak_console_user_server_client_(weak_console_user_server_client),
-        weak_notification_message_manager_(weak_notification_message_manager) {
+        weak_notification_message_manager_(weak_notification_message_manager),
+        virtual_hid_keyboard_pressed_keys_manager_(std::make_shared<pressed_keys_manager>()),
+        keyboard_suppression_(std::make_shared<keyboard_suppression>()),
+        queue_(virtual_hid_keyboard_pressed_keys_manager_,
+               keyboard_suppression_) {
     mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_);
   }
 
@@ -398,9 +403,53 @@ public:
     // This manipulator is always valid.
   }
 
+  void set_cgeventtap_fallback_enabled(bool value) {
+    keyboard_suppression_->set_expired_log_enabled(value);
+    queue_.set_cgeventtap_fallback_enabled(value);
+  }
+
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_service_client] {
+          queue_.async_post_events(weak_virtual_hid_device_service_client,
+                                   weak_console_user_server_client_);
+        });
+  }
+
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_virtual_hid_keyboard_pressed_keys_manager(void) const {
+    return virtual_hid_keyboard_pressed_keys_manager_;
+  }
+
+  pqrs::not_null_shared_ptr_t<keyboard_suppression> get_keyboard_suppression(void) const {
+    return keyboard_suppression_;
+  }
+
+  void clear_virtual_hid_keyboard_pressed_keys(void) {
+    virtual_hid_keyboard_pressed_keys_manager_->clear();
+  }
+
+  void async_release_virtual_hid_keyboard_pressed_keys(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
+    auto pressed_keys = virtual_hid_keyboard_pressed_keys_manager_->make_entries_and_clear();
+    if (pressed_keys.empty()) {
+      return;
+    }
+
+    enqueue_to_dispatcher(
+        [this, pressed_keys, weak_virtual_hid_device_service_client] {
+          auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
+
+          for (const auto& e : pressed_keys) {
+            if (!e.valid() || e.pointing_button()) {
+              continue;
+            }
+
+            queue_.emplace_back_key_event(e.get_usage_pair(),
+                                          event_type::key_up,
+                                          time_stamp);
+          }
+
+          key_event_dispatcher_.clear();
+
           queue_.async_post_events(weak_virtual_hid_device_service_client,
                                    weak_console_user_server_client_);
         });
@@ -415,6 +464,10 @@ public:
   }
 
   const key_event_dispatcher& get_key_event_dispatcher(void) const {
+    return key_event_dispatcher_;
+  }
+
+  key_event_dispatcher& get_key_event_dispatcher(void) {
     return key_event_dispatcher_;
   }
 
@@ -453,10 +506,39 @@ private:
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
   std::weak_ptr<notification_message_manager> weak_notification_message_manager_;
 
+  // Manages the list of keys that are currently pressed.
+  // This is needed for the following two reasons when enable_cgeventtap_fallback is enabled.
+  //
+  // - CGEventTap cannot receive key events while secure_event_input is enabled.
+  //   For example, if you press the return key in Terminal to run `sudo ls`,
+  //   the key_up event for the return key will not be received.
+  //   In that case, when a virtual device is being operated via the CGEventTap fallback,
+  //   unintended key repeat for the return key can occur.
+  //   To prevent this, all virtual-device keys must be released when secure_event_input becomes enabled,
+  //   which requires remembering which keys are currently pressed.
+  //
+  // - CGEventTap also receives key-repeat events. When processing via the CGEventTap fallback,
+  //   CGEventTap receives the following two kinds of key-repeat events:
+  //
+  //   1. Repeats of the original pre-remapping key events from the physical keyboard.
+  //   2. Repeats of the post-remapping key events from the virtual device.
+  //
+  //   The former must be blocked, while the latter must pass through.
+  //   Ideally we would pass through only repeats originating from the virtual device,
+  //   but CGEventTap does not provide enough hardware-origin information to distinguish them directly.
+  //   Therefore, we use the following approach: allow repeats only for keys that are currently pressed
+  //   on the virtual device, which requires remembering the pressed keys.
+  //
+  //   As a side effect of this approach, unmodified key events can repeat twice as fast because
+  //   identical events are generated by both the physical device and the virtual device.
+  //   This is unavoidable.
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager_;
+
+  pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
+
   queue queue_;
   key_event_dispatcher key_event_dispatcher_;
   std::unique_ptr<mouse_key_handler> mouse_key_handler_;
-  std::unordered_set<modifier_flag> pressed_modifier_flags_;
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons pressed_buttons_;
 };
 } // namespace post_event_to_virtual_devices
