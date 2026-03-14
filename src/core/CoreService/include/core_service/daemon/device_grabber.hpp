@@ -3,7 +3,7 @@
 #include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
-#include "core_service/core_service_state_json_writer.hpp"
+#include "core_service/daemon/core_service_state_json_writer.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"

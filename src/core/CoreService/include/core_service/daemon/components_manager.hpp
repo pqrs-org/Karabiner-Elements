@@ -4,7 +4,7 @@
 
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
-#include "core_service/core_service_state_json_writer.hpp"
+#include "core_service/daemon/core_service_state_json_writer.hpp"
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"

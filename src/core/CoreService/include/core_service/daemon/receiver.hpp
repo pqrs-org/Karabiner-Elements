@@ -6,7 +6,7 @@
 #include "application_launcher.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "core_service/core_service_state_json_writer.hpp"
+#include "core_service/daemon/core_service_state_json_writer.hpp"
 #include "device_grabber.hpp"
 #include "filesystem_utility.hpp"
 #include "types.hpp"
