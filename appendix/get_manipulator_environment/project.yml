@@ -24,3 +24,5 @@ targets:
           - -Wall
           - -Werror
           - '-std=c++23'
+    dependencies:
+      - sdk: CoreFoundation.framework
