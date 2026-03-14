@@ -6,7 +6,6 @@
 #include "libkrbn/impl/libkrbn_core_service_client.hpp"
 #include "libkrbn/impl/libkrbn_dispatcher_client.hpp"
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
-#include "libkrbn/impl/libkrbn_frontmost_application_monitor.hpp"
 #include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
 #include "libkrbn/impl/libkrbn_version_monitor.hpp"
@@ -108,24 +107,6 @@ public:
   }
 
   //
-  // frontmost_application_monitor_
-  //
-
-  void enable_frontmost_application_monitor(void) {
-    if (!frontmost_application_monitor_) {
-      frontmost_application_monitor_ = std::make_unique<libkrbn_frontmost_application_monitor>();
-    }
-  }
-
-  void disable_frontmost_application_monitor(void) {
-    frontmost_application_monitor_ = nullptr;
-  }
-
-  std::shared_ptr<libkrbn_frontmost_application_monitor> get_libkrbn_frontmost_application_monitor(void) const {
-    return frontmost_application_monitor_;
-  }
-
-  //
   // log_monitor_
   //
 
@@ -212,7 +193,6 @@ private:
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::shared_ptr<libkrbn_file_monitors> file_monitors_;
-  std::shared_ptr<libkrbn_frontmost_application_monitor> frontmost_application_monitor_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::shared_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
   std::shared_ptr<libkrbn_core_service_client> core_service_client_;

@@ -489,22 +489,6 @@ void libkrbn_unregister_file_updated_callback(const char* _Nonnull file_path,
 void libkrbn_get_core_service_state_json_file_path(char* _Nonnull buffer, size_t length);
 
 //
-// libkrbn_frontmost_application_monitor
-//
-
-void libkrbn_enable_frontmost_application_monitor(void);
-void libkrbn_disable_frontmost_application_monitor(void);
-
-typedef void (*libkrbn_frontmost_application_changed_t)(void);
-void libkrbn_register_frontmost_application_changed_callback(libkrbn_frontmost_application_changed_t _Nonnull callback);
-void libkrbn_unregister_frontmost_application_changed_callback(libkrbn_frontmost_application_changed_t _Nonnull callback);
-
-bool libkrbn_get_frontmost_application(char* _Nonnull bundle_identifier_buffer,
-                                       size_t bundle_identifier_buffer_length,
-                                       char* _Nonnull file_path_buffer,
-                                       size_t file_path_buffer_length);
-
-//
 // libkrbn_log_monitor
 //
 
