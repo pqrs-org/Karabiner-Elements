@@ -4,6 +4,7 @@
 
 #include "logger.hpp"
 #include "types.hpp"
+#include <atomic>
 #include <deque>
 #include <mutex>
 
@@ -42,6 +43,10 @@ public:
   void purge_expired(absolute_time_point now) {
     std::lock_guard<std::mutex> lock(mutex_);
     purge_expired_entries_unlocked(now);
+  }
+
+  void set_expired_log_enabled(bool value) {
+    expired_log_enabled_.store(value);
   }
 
   void enqueue(const momentary_switch_event& event,
@@ -104,7 +109,8 @@ private:
       ++expired_count;
     }
 
-    if (expired_count > 0) {
+    if (expired_count > 0 &&
+        expired_log_enabled_.load()) {
       logger::get_logger()->warn("keyboard suppression expired before matching event ({0} entries)", expired_count);
     }
   }
@@ -112,6 +118,7 @@ private:
   std::deque<entry> entries_;
   std::chrono::milliseconds ttl_;
   size_t max_size_;
+  std::atomic<bool> expired_log_enabled_{false};
   mutable std::mutex mutex_;
 };
 } // namespace krbn

@@ -404,6 +404,7 @@ public:
   }
 
   void set_cgeventtap_fallback_enabled(bool value) {
+    keyboard_suppression_->set_expired_log_enabled(value);
     queue_.set_cgeventtap_fallback_enabled(value);
   }
 
