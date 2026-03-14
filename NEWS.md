@@ -2,6 +2,8 @@
 
 ## Beta
 
+- 🔔 Important Notes
+    - Karabiner-Core-Service now requires Accessibility permission. Please enable it in System Settings.
 - ✨ New Features
     - You can now generate JSON for Complex Modifications rules by writing JavaScript.
     - Added an "Add your own rule using JavaScript" button to the complex modifications viewer.
