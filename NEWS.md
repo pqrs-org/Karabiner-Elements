@@ -17,6 +17,7 @@
     - Added `Enable CGEventTap fallback` setting to Expert tab.
       Enable receiving events via CGEventTap for keyboards where IOHIDDeviceOpen fails for some reason.
 - 🐛 Bug Fixes
+    - Fixed an issue where modifier keys could remain stuck when physical keyboard events were missed during capture.
     - Fixed an issue where reordering in Complex Modifications and Profiles didn't work properly when dragging while scrolling.
     - Fixed an issue where variables in expressions were not properly initialized when unset.
 - ⚡️ Improvements
