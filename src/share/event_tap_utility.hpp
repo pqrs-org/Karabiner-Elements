@@ -4,21 +4,19 @@
 
 #include "event_queue.hpp"
 #include <CoreGraphics/CoreGraphics.h>
+#include <IOKit/hidsystem/IOLLEvent.h>
 #include <optional>
 #include <pqrs/osx/cg_event.hpp>
 
 namespace krbn {
 class event_tap_utility final {
 public:
-  static std::optional<event_queue::event> make_momentary_switch_event_from_key_code(CGEventRef event) {
+  static std::optional<event_queue::event> make_momentary_switch_event(CGEventRef event) {
     if (!event) {
       return std::nullopt;
     }
 
-    auto key_code = pqrs::osx::cg_event::key_code::value_t(
-        static_cast<uint16_t>(CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode)));
-
-    if (auto usage_pair = pqrs::osx::cg_event::make_usage_pair(key_code)) {
+    if (auto usage_pair = pqrs::osx::cg_event::make_usage_pair(event)) {
       return event_queue::event(momentary_switch_event(*usage_pair));
     }
 
@@ -29,19 +27,35 @@ public:
                                                                              CGEventRef event) {
     switch (type) {
       case kCGEventKeyDown:
-        if (auto e = make_momentary_switch_event_from_key_code(event)) {
+        if (auto e = make_momentary_switch_event(event)) {
           return std::make_pair(event_type::key_down, *e);
         }
         break;
 
       case kCGEventKeyUp:
-        if (auto e = make_momentary_switch_event_from_key_code(event)) {
+        if (auto e = make_momentary_switch_event(event)) {
           return std::make_pair(event_type::key_up, *e);
         }
         break;
 
+      case static_cast<CGEventType>(NX_SYSDEFINED): {
+        if (auto e = make_momentary_switch_event(event);
+            e) {
+          if (auto event_type = pqrs::osx::cg_event::make_event_type(event)) {
+            switch (*event_type) {
+              case pqrs::osx::cg_event::event_type::key_down:
+                return std::make_pair(event_type::key_down, *e);
+
+              case pqrs::osx::cg_event::event_type::key_up:
+                return std::make_pair(event_type::key_up, *e);
+            }
+          }
+        }
+        break;
+      }
+
       case kCGEventFlagsChanged:
-        if (auto e = make_momentary_switch_event_from_key_code(event)) {
+        if (auto e = make_momentary_switch_event(event)) {
           auto flags = CGEventGetFlags(event);
           auto event_type = get_modifier_event_type(*e, flags);
           if (event_type) {

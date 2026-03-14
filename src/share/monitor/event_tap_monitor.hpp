@@ -65,14 +65,13 @@ public:
         return;
       }
 
-      // Observe flags changed in order to get the caps lock state and pointing device events from Apple trackpads.
+      // Observe pointing device events from Apple trackpads.
       //
       // Note:
       // We cannot catch pointing device events from Apple trackpads without eventtap.
       // (Apple trackpad driver does not send events to IOKit.)
 
-      auto mask = CGEventMaskBit(kCGEventFlagsChanged) |
-                  CGEventMaskBit(kCGEventLeftMouseDown) |
+      auto mask = CGEventMaskBit(kCGEventLeftMouseDown) |
                   CGEventMaskBit(kCGEventLeftMouseUp) |
                   CGEventMaskBit(kCGEventRightMouseDown) |
                   CGEventMaskBit(kCGEventRightMouseUp) |
@@ -85,7 +84,9 @@ public:
                   CGEventMaskBit(kCGEventOtherMouseDragged);
       if (cgeventtap_fallback_enabled_) {
         mask |= CGEventMaskBit(kCGEventKeyDown) |
-                CGEventMaskBit(kCGEventKeyUp);
+                CGEventMaskBit(kCGEventKeyUp) |
+                CGEventMaskBit(kCGEventFlagsChanged) |
+                CGEventMaskBit(static_cast<CGEventType>(NX_SYSDEFINED));
       }
 
       logger::get_logger()->info("event_tap_monitor start (enable_cgeventtap_fallback={0})",
@@ -346,7 +347,8 @@ private:
 
       case kCGEventKeyDown:
       case kCGEventKeyUp:
-      case kCGEventFlagsChanged: {
+      case kCGEventFlagsChanged:
+      case static_cast<CGEventType>(NX_SYSDEFINED): {
         if (auto pair = event_tap_utility::make_event(type, event)) {
           auto normalized_keyboard_event = normalize_fn_modified_navigation_event(*pair);
 

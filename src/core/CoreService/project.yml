@@ -31,6 +31,7 @@ targets:
           - -Wall
           - -Werror
           - '-std=c++23'
+      - path: ../../../vendor/vendor/src/pqrs/osx/cg_event
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
       - path: Resources
