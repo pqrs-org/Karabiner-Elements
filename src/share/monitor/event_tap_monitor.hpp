@@ -3,6 +3,7 @@
 // `krbn::event_tap_monitor` can be used safely in a multi-threaded environment.
 
 #include "event_tap_utility.hpp"
+#include "keyboard_fallback_loop_guard.hpp"
 #include "keyboard_suppression.hpp"
 #include "logger.hpp"
 #include "pressed_keys_manager.hpp"
@@ -133,7 +134,6 @@ public:
 
 private:
   using fn_modified_key_down_expirations = std::deque<std::chrono::steady_clock::time_point>;
-  using keyboard_fallback_event_timestamps = std::deque<std::chrono::steady_clock::time_point>;
   static constexpr CGEventFlags modifier_event_flags_mask =
       kCGEventFlagMaskShift |
       kCGEventFlagMaskControl |
@@ -141,9 +141,6 @@ private:
       kCGEventFlagMaskCommand |
       kCGEventFlagMaskAlphaShift |
       kCGEventFlagMaskSecondaryFn;
-  static constexpr auto keyboard_fallback_event_rate_window_ = std::chrono::milliseconds(100);
-  static constexpr auto keyboard_fallback_event_rate_threshold_ = size_t(100);
-  static constexpr auto keyboard_fallback_suspension_duration_ = std::chrono::seconds(1);
 
   void purge_expired_fn_modified_key_down_events(const std::chrono::steady_clock::time_point& now) {
     for (auto it = std::begin(fn_modified_key_down_event_counts_); it != std::end(fn_modified_key_down_event_counts_);) {
@@ -237,40 +234,6 @@ private:
     }
 
     return pair;
-  }
-
-  void purge_expired_keyboard_fallback_event_timestamps(const std::chrono::steady_clock::time_point& now) {
-    while (!keyboard_fallback_event_timestamps_.empty() &&
-           keyboard_fallback_event_timestamps_.front() <= now - keyboard_fallback_event_rate_window_) {
-      keyboard_fallback_event_timestamps_.pop_front();
-    }
-  }
-
-  bool should_suspend_keyboard_fallback(const std::chrono::steady_clock::time_point& now) {
-    if (keyboard_fallback_suspended_until_) {
-      if (now < *keyboard_fallback_suspended_until_) {
-        return true;
-      }
-
-      logger::get_logger()->info("event_tap_monitor keyboard fallback resumed");
-      keyboard_fallback_suspended_until_ = std::nullopt;
-      keyboard_fallback_event_timestamps_.clear();
-    }
-
-    purge_expired_keyboard_fallback_event_timestamps(now);
-    keyboard_fallback_event_timestamps_.push_back(now);
-
-    if (keyboard_fallback_event_timestamps_.size() <= keyboard_fallback_event_rate_threshold_) {
-      return false;
-    }
-
-    keyboard_fallback_suspended_until_ = now + keyboard_fallback_suspension_duration_;
-    keyboard_fallback_event_timestamps_.clear();
-
-    logger::get_logger()->error("event_tap_monitor keyboard fallback suspended for {0}ms due to excessive event rate",
-                                std::chrono::duration_cast<std::chrono::milliseconds>(keyboard_fallback_suspension_duration_).count());
-
-    return true;
   }
 
   static CGEventRef _Nullable static_callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event, void* _Nonnull refcon) {
@@ -388,11 +351,6 @@ private:
       case kCGEventFlagsChanged:
       case static_cast<CGEventType>(NX_SYSDEFINED): {
         if (auto pair = event_tap_utility::make_event(type, event)) {
-          if (cgeventtap_fallback_enabled_ &&
-              should_suspend_keyboard_fallback(std::chrono::steady_clock::now())) {
-            return event;
-          }
-
           auto normalized_keyboard_event = normalize_fn_modified_navigation_event(*pair);
 
           if (should_skip_keyboard_event(type, event, normalized_keyboard_event)) {
@@ -400,6 +358,11 @@ private:
           }
 
           if (cgeventtap_fallback_enabled_) {
+            if (keyboard_fallback_loop_guard_.should_suspend(normalized_keyboard_event.second,
+                                                             std::chrono::steady_clock::now())) {
+              return event;
+            }
+
             enqueue_to_dispatcher([this, normalized_keyboard_event] {
               keyboard_event_arrived(normalized_keyboard_event.first, normalized_keyboard_event.second);
             });
@@ -459,8 +422,7 @@ private:
   pqrs::cf::cf_ptr<CFMachPortRef> event_tap_;
   pqrs::cf::cf_ptr<CFRunLoopSourceRef> run_loop_source_;
   bool fn_pressed_{false};
-  keyboard_fallback_event_timestamps keyboard_fallback_event_timestamps_;
-  std::optional<std::chrono::steady_clock::time_point> keyboard_fallback_suspended_until_;
+  keyboard_fallback_loop_guard keyboard_fallback_loop_guard_;
   static constexpr auto fn_modified_key_down_event_ttl_ = std::chrono::seconds(30);
   std::unordered_map<momentary_switch_event, fn_modified_key_down_expirations> fn_modified_key_down_event_counts_;
 };
