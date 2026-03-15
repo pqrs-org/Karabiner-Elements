@@ -586,12 +586,6 @@ public:
     });
   }
 
-  void async_stop(void) {
-    enqueue_to_dispatcher([this] {
-      stop();
-    });
-  }
-
   void async_grab_devices(void) {
     enqueue_to_dispatcher([this] {
       for (auto&& e : entries_) {
@@ -1144,9 +1138,7 @@ private:
       post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
     }
 
-    if (event_tap_monitor_) {
-      setup_event_tap_monitor(cgeventtap_fallback_enabled_);
-    }
+    setup_event_tap_monitor(cgeventtap_fallback_enabled_);
 
     async_grab_devices();
   }

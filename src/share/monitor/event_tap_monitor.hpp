@@ -9,6 +9,7 @@
 #include "pressed_keys_manager.hpp"
 #include <chrono>
 #include <deque>
+#include <mutex>
 #include <nod/nod.hpp>
 #include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
@@ -40,8 +41,10 @@ public:
 
   ~event_tap_monitor(void) {
     detach_from_dispatcher([this] {
+      std::lock_guard<std::mutex> lock(event_tap_mutex_);
+
       if (event_tap_) {
-        enable_event_tap(false, "terminate");
+        CGEventTapEnable(event_tap_.get(), false);
 
         if (run_loop_source_) {
           CFRunLoopRemoveSource(cf_run_loop_thread_->get_run_loop(),
@@ -52,6 +55,7 @@ public:
 
         event_tap_ = nullptr;
       }
+
       logger::get_logger()->info("event_tap_monitor terminated");
     });
 
@@ -61,9 +65,13 @@ public:
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      if (event_tap_) {
-        logger::get_logger()->info("event_tap_monitor start is skipped (already started)");
-        return;
+      {
+        std::lock_guard<std::mutex> lock(event_tap_mutex_);
+
+        if (event_tap_) {
+          logger::get_logger()->info("event_tap_monitor start is skipped (already started)");
+          return;
+        }
       }
 
       // Observe pointing device events from Apple trackpads.
@@ -99,35 +107,39 @@ public:
                                         mask,
                                         event_tap_monitor::static_callback,
                                         this);
-      event_tap_ = event_tap;
-      if (event_tap) {
-        CFRelease(event_tap);
-      }
+      {
+        std::lock_guard<std::mutex> lock(event_tap_mutex_);
 
-      if (event_tap_) {
-        auto run_loop_source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, event_tap_.get(), 0);
-        run_loop_source_ = run_loop_source;
-        if (run_loop_source) {
-          CFRelease(run_loop_source);
+        event_tap_ = event_tap;
+        if (event_tap) {
+          CFRelease(event_tap);
         }
 
-        if (run_loop_source_) {
-          CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
-                             run_loop_source_.get(),
-                             kCFRunLoopCommonModes);
-          enable_event_tap(true, "async_start");
+        if (event_tap_) {
+          auto run_loop_source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, event_tap_.get(), 0);
+          run_loop_source_ = run_loop_source;
+          if (run_loop_source) {
+            CFRelease(run_loop_source);
+          }
 
-          cf_run_loop_thread_->wake();
+          if (run_loop_source_) {
+            CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
+                               run_loop_source_.get(),
+                               kCFRunLoopCommonModes);
+            CGEventTapEnable(event_tap_.get(), true);
 
-          logger::get_logger()->info("event_tap_monitor initialized");
+            cf_run_loop_thread_->wake();
+
+            logger::get_logger()->info("event_tap_monitor initialized");
+          } else {
+            logger::get_logger()->error("event_tap_monitor failed to create run_loop_source");
+
+            event_tap_ = nullptr;
+          }
         } else {
-          logger::get_logger()->error("event_tap_monitor failed to create run_loop_source");
-
-          event_tap_ = nullptr;
+          logger::get_logger()->error("event_tap_monitor failed to create event tap (enable_cgeventtap_fallback={0})",
+                                      cgeventtap_fallback_enabled_);
         }
-      } else {
-        logger::get_logger()->error("event_tap_monitor failed to create event tap (enable_cgeventtap_fallback={0})",
-                                    cgeventtap_fallback_enabled_);
       }
     });
   }
@@ -141,22 +153,6 @@ private:
       kCGEventFlagMaskCommand |
       kCGEventFlagMaskAlphaShift |
       kCGEventFlagMaskSecondaryFn;
-
-  void purge_expired_fn_modified_key_down_events(const std::chrono::steady_clock::time_point& now) {
-    for (auto it = std::begin(fn_modified_key_down_event_counts_); it != std::end(fn_modified_key_down_event_counts_);) {
-      auto& expirations = it->second;
-      while (!expirations.empty() &&
-             expirations.front() <= now) {
-        expirations.pop_front();
-      }
-
-      if (expirations.empty()) {
-        it = fn_modified_key_down_event_counts_.erase(it);
-      } else {
-        ++it;
-      }
-    }
-  }
 
   static std::optional<momentary_switch_event> remap_fn_modified_key_event(const momentary_switch_event& event) {
     auto usage_pair = event.get_usage_pair();
@@ -195,7 +191,24 @@ private:
 
   std::pair<event_type, event_queue::event> normalize_fn_modified_navigation_event(std::pair<event_type, event_queue::event> pair) {
     auto now = std::chrono::steady_clock::now();
-    purge_expired_fn_modified_key_down_events(now);
+
+    //
+    // Purge expired entries
+    //
+
+    std::erase_if(fn_modified_key_down_event_counts_, [&](auto& pair) {
+      auto& expirations = pair.second;
+      while (!expirations.empty() &&
+             expirations.front() <= now) {
+        expirations.pop_front();
+      }
+
+      return expirations.empty();
+    });
+
+    //
+    // Normalize
+    //
 
     if (auto momentary_switch_event = pair.second.get_if<krbn::momentary_switch_event>()) {
       if (auto modifier_flag = momentary_switch_event->make_modifier_flag();
@@ -303,6 +316,8 @@ private:
   }
 
   void enable_event_tap(bool enable, std::string_view context) const {
+    std::lock_guard<std::mutex> lock(event_tap_mutex_);
+
     if (!event_tap_) {
       return;
     }
@@ -419,6 +434,8 @@ private:
   bool cgeventtap_fallback_enabled_;
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager_;
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
+  // event_tap_mutex_ needs synchronization because it is accessed from both the run loop thread and the dispatcher thread.
+  mutable std::mutex event_tap_mutex_;
   pqrs::cf::cf_ptr<CFMachPortRef> event_tap_;
   pqrs::cf::cf_ptr<CFRunLoopSourceRef> run_loop_source_;
   bool fn_pressed_{false};
