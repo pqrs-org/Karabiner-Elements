@@ -13,6 +13,7 @@
 #include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/gsl.hpp>
 
 namespace pqrs {
 namespace osx {
@@ -21,14 +22,16 @@ class monitor final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(std::shared_ptr<application>)> frontmost_application_changed;
-  nod::signal<void(std::shared_ptr<focused_ui_element>)> focused_ui_element_changed;
+  nod::signal<void(pqrs::not_null_shared_ptr_t<application>)> frontmost_application_changed;
+  nod::signal<void(pqrs::not_null_shared_ptr_t<focused_ui_element>)> focused_ui_element_changed;
 
 private:
   monitor(const monitor&) = delete;
 
   monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher)
-      : dispatcher_client(weak_dispatcher) {
+      : dispatcher_client(weak_dispatcher),
+        last_application_(std::make_shared<application>()),
+        last_focused_ui_element_(std::make_shared<focused_ui_element>()) {
     pqrs_osx_accessibility_monitor_set_callback(static_cpp_callback);
   }
 
@@ -94,11 +97,11 @@ private:
     }
   }
 
-  static std::shared_ptr<application> make_application(const char* application_name,
-                                                       const char* bundle_identifier,
-                                                       const char* bundle_path,
-                                                       const char* file_path,
-                                                       pid_t pid) {
+  static pqrs::not_null_shared_ptr_t<application> make_application(const char* application_name,
+                                                                   const char* bundle_identifier,
+                                                                   const char* bundle_path,
+                                                                   const char* file_path,
+                                                                   pid_t pid) {
     auto result = std::make_shared<application>();
 
     if (application_name) {
@@ -120,12 +123,12 @@ private:
     return result;
   }
 
-  static std::shared_ptr<focused_ui_element> make_focused_ui_element(const char* role,
-                                                                     const char* subrole,
-                                                                     const char* role_description,
-                                                                     const char* title,
-                                                                     const char* description,
-                                                                     const char* identifier) {
+  static pqrs::not_null_shared_ptr_t<focused_ui_element> make_focused_ui_element(const char* role,
+                                                                                 const char* subrole,
+                                                                                 const char* role_description,
+                                                                                 const char* title,
+                                                                                 const char* description,
+                                                                                 const char* identifier) {
     auto result = std::make_shared<focused_ui_element>();
 
     if (role) {
@@ -192,8 +195,8 @@ private:
   static inline std::shared_ptr<monitor> shared_monitor_;
   static inline std::mutex shared_monitor_mutex_;
 
-  std::shared_ptr<application> last_application_;
-  std::shared_ptr<focused_ui_element> last_focused_ui_element_;
+  pqrs::not_null_shared_ptr_t<application> last_application_;
+  pqrs::not_null_shared_ptr_t<focused_ui_element> last_focused_ui_element_;
 };
 } // namespace accessibility
 } // namespace osx
