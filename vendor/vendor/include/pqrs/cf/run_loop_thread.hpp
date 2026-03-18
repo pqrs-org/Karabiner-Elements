@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v2.8
+// pqrs::cf::run_loop_thread v2.9
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -78,7 +78,7 @@ public:
         // Although this does not usually happen, it is reached when CFRunLoop processing does not start due to a problem with CFRunLoop.
         // Abort because it is irrecoverable.
         if (failure_policy_ == failure_policy::exit) {
-          std::exit(EXIT_FAILURE);
+          std::quick_exit(EXIT_FAILURE);
         } else {
           abort();
         }
