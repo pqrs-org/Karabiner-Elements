@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::core_service::components_manager` can be used safely in a multi-threaded environment.
+// `krbn::core_service::daemon::components_manager` can be used safely in a multi-threaded environment.
 
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
@@ -15,6 +15,7 @@
 
 namespace krbn {
 namespace core_service {
+namespace daemon {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -93,5 +94,6 @@ private:
   std::unique_ptr<hid_event_system_monitor> hid_event_system_monitor_;
   std::unique_ptr<receiver> receiver_;
 };
+} // namespace daemon
 } // namespace core_service
 } // namespace krbn

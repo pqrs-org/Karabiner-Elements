@@ -10,6 +10,7 @@
 
 namespace krbn {
 namespace core_service {
+namespace daemon {
 namespace device_grabber_details {
 //
 // game_pad_stick_converter takes value_arrived data as input and outputs poinitng motion.
@@ -645,5 +646,6 @@ private:
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> horizontal_wheel_formula_;
 };
 } // namespace device_grabber_details
+} // namespace daemon
 } // namespace core_service
 } // namespace krbn

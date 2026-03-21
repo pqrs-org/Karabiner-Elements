@@ -72,7 +72,7 @@ int daemon(void) {
   // Prepare state_json_writer
   //
 
-  auto core_service_state_json_writer = std::make_shared<core_service::core_service_state_json_writer>();
+  auto core_service_state_json_writer = std::make_shared<daemon::core_service_state_json_writer>();
 
   //
   // Update karabiner_core_service_state.json
@@ -140,7 +140,7 @@ int daemon(void) {
   components_manager_killer::initialize_shared_components_manager_killer();
 
   // We have to use raw pointer (not smart pointer) to delete it in `dispatch_async`.
-  core_service::components_manager* components_manager = nullptr;
+  daemon::components_manager* components_manager = nullptr;
 
   if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
     killer->kill_called.connect([&components_manager] {
@@ -159,7 +159,7 @@ int daemon(void) {
     });
   }
 
-  components_manager = new core_service::components_manager(core_service_state_json_writer);
+  components_manager = new daemon::components_manager(core_service_state_json_writer);
   components_manager->async_start();
 
   CFRunLoopRun();

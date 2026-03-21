@@ -8,6 +8,7 @@
 
 namespace krbn {
 namespace core_service {
+namespace daemon {
 class core_service_state_json_writer final {
 public:
   core_service_state_json_writer(void) : state_json_writer_(constants::get_core_service_state_json_file_path()) {
@@ -46,5 +47,6 @@ public:
 private:
   krbn::state_json_writer state_json_writer_;
 };
+} // namespace daemon
 } // namespace core_service
 } // namespace krbn

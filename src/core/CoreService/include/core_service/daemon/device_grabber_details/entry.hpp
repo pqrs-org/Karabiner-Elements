@@ -15,6 +15,7 @@
 
 namespace krbn {
 namespace core_service {
+namespace daemon {
 namespace device_grabber_details {
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -352,5 +353,6 @@ private:
   bool temporarily_ignore_;
 };
 } // namespace device_grabber_details
+} // namespace daemon
 } // namespace core_service
 } // namespace krbn

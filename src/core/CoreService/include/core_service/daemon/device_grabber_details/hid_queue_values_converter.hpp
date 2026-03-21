@@ -4,6 +4,8 @@
 #include <unordered_map>
 
 namespace krbn {
+namespace core_service {
+namespace daemon {
 class hid_queue_values_converter final {
 public:
   hid_queue_values_converter(void)
@@ -41,4 +43,6 @@ public:
 private:
   pqrs::osx::chrono::absolute_time_point last_time_stamp_;
 }; // namespace krbn
+} // namespace daemon
+} // namespace core_service
 } // namespace krbn

@@ -8,6 +8,8 @@
 
 namespace krbn {
 namespace core_service {
+namespace daemon {
+
 namespace device_grabber_details {
 class fn_function_keys_manipulator_manager final {
 public:
@@ -331,5 +333,6 @@ private:
   std::shared_ptr<manipulator::manipulator_manager> manipulator_manager_;
 };
 } // namespace device_grabber_details
+} // namespace daemon
 } // namespace core_service
 } // namespace krbn

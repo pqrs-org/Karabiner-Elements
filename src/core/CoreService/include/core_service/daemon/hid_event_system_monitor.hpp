@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::core_service::hid_event_system_monitor` can be used safely in a multi-threaded environment.
+// `krbn::core_service::daemon::hid_event_system_monitor` can be used safely in a multi-threaded environment.
 
 #include "run_loop_thread_utility.hpp"
 #include <pqrs/dispatcher.hpp>
@@ -9,6 +9,7 @@
 
 namespace krbn {
 namespace core_service {
+namespace daemon {
 class hid_event_system_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   hid_event_system_monitor(const hid_event_system_monitor&) = delete;
@@ -65,5 +66,6 @@ private:
   std::unique_ptr<pqrs::osx::iokit_service_monitor> monitor_;
   pqrs::dispatcher::extra::timer set_property_timer_;
 };
+} // namespace daemon
 } // namespace core_service
 } // namespace krbn

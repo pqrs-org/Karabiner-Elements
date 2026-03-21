@@ -45,6 +45,7 @@
 
 namespace krbn {
 namespace core_service {
+namespace daemon {
 class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
@@ -1262,5 +1263,6 @@ private:
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;
 };
+} // namespace daemon
 } // namespace core_service
 } // namespace krbn
