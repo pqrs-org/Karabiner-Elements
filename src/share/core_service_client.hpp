@@ -154,6 +154,19 @@ public:
     });
   }
 
+  void async_focused_ui_element_changed(const focused_ui_element& focused_ui_element) const {
+    enqueue_to_dispatcher([this, focused_ui_element] {
+      nlohmann::json json{
+          {"operation_type", operation_type::focused_ui_element_changed},
+          {"focused_ui_element", focused_ui_element},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
   void async_input_source_changed(std::shared_ptr<pqrs::osx::input_source::properties> properties) const {
     enqueue_to_dispatcher([this, properties] {
       if (properties) {
