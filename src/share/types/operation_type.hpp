@@ -5,6 +5,9 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
+  // any -> any
+  handshake,
+  shared_secret, // The response to the `handshake`
   // session_monitor -> core_service (daemon)
   console_user_id_changed,
   // core_service (agent) -> core_service (deamon)
@@ -15,7 +18,6 @@ enum class operation_type : uint8_t {
   system_preferences_updated,
   input_source_changed,
   // core_service (daemon) -> console_user_server
-  handshake,
   get_user_core_configuration_file_path,
   check_for_updates_on_startup,
   register_menu_agent,
@@ -29,7 +31,6 @@ enum class operation_type : uint8_t {
   select_input_source,
   software_function,
   // console_user_server -> core_service (daemon)
-  shared_secret, // The response to the `handshake`
   user_core_configuration_file_path,
   // event_viewer -> console_user_server
   get_frontmost_application_history,
@@ -62,15 +63,15 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     operation_type,
     {
         {operation_type::none, nullptr},
+        {operation_type::handshake, "handshake"},
+        {operation_type::shared_secret, "shared_secret"},
         {operation_type::console_user_id_changed, "console_user_id_changed"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::focused_ui_element_changed, "focused_ui_element_changed"},
         {operation_type::connect_console_user_server, "connect_console_user_server"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::input_source_changed, "input_source_changed"},
-        {operation_type::handshake, "handshake"},
         {operation_type::get_user_core_configuration_file_path, "get_user_core_configuration_file_path"},
-        {operation_type::shared_secret, "shared_secret"},
         {operation_type::user_core_configuration_file_path, "user_core_configuration_file_path"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::send_user_command, "send_user_command,"},
