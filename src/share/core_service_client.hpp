@@ -5,6 +5,7 @@
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "logger.hpp"
+#include "shared_secret_authentication.hpp"
 #include "types.hpp"
 #include <glob/glob.hpp>
 #include <nod/nod.hpp>
@@ -64,9 +65,10 @@ public:
 
       client_->connected.connect([this](auto&& peer_pid) {
         logger::get_logger()->info("core_service_client is connected.");
-
         enqueue_to_dispatcher([this] {
-          connected();
+          if (client_) {
+            shared_secret_authentication_client_.connected(*client_);
+          }
         });
       });
 
@@ -97,7 +99,24 @@ public:
 
       client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
         enqueue_to_dispatcher([this, buffer, sender_endpoint] {
-          received(buffer, sender_endpoint);
+          if (buffer->empty()) {
+            return;
+          }
+
+          try {
+            if (client_ &&
+                shared_secret_authentication_client_.handle_shared_secret_payload(*buffer,
+                                                                                  *client_,
+                                                                                  [this] {
+                                                                                    connected();
+                                                                                  })) {
+              return;
+            }
+
+            received(buffer, sender_endpoint);
+          } catch (std::exception& e) {
+            logger::get_logger()->error("core_service_client received data is corrupted");
+          }
         });
       });
 
@@ -120,9 +139,7 @@ public:
           {"user_core_configuration_file_path", constants::get_user_core_configuration_file_path().c_str()},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -134,9 +151,7 @@ public:
             {"system_preferences_properties", *properties},
         };
 
-        if (client_) {
-          client_->async_send(nlohmann::json::to_msgpack(json));
-        }
+        async_send_message(std::move(json));
       }
     });
   }
@@ -148,9 +163,7 @@ public:
           {"frontmost_application", application},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -161,9 +174,7 @@ public:
           {"focused_ui_element", focused_ui_element},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -175,9 +186,7 @@ public:
             {"input_source_properties", *properties},
         };
 
-        if (client_) {
-          client_->async_send(nlohmann::json::to_msgpack(json));
-        }
+        async_send_message(std::move(json));
       }
     });
   }
@@ -189,9 +198,7 @@ public:
           {"value", value},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -201,9 +208,7 @@ public:
           {"operation_type", operation_type::get_manipulator_environment},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -213,9 +218,7 @@ public:
           {"operation_type", operation_type::get_connected_devices},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -225,9 +228,7 @@ public:
           {"operation_type", operation_type::get_notification_message},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -237,9 +238,7 @@ public:
           {"operation_type", operation_type::get_system_variables},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -249,9 +248,7 @@ public:
           {"operation_type", operation_type::get_multitouch_extension_variables},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -261,9 +258,7 @@ public:
           {"operation_type", operation_type::connect_multitouch_extension},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -274,9 +269,7 @@ public:
           {"number", number},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -295,10 +288,8 @@ public:
           {"variables", variables},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json),
-                            processed);
-      }
+      async_send_message(std::move(json),
+                         processed);
     });
   }
 
@@ -308,13 +299,22 @@ public:
           {"operation_type", operation_type::clear_user_variables},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
 private:
+  void async_send_message(nlohmann::json&& json,
+                          std::function<void(void)> processed = nullptr) const {
+    if (!client_) {
+      return;
+    }
+
+    shared_secret_authentication_client_.async_send_message(*client_,
+                                                            std::move(json),
+                                                            processed);
+  }
+
   std::filesystem::path find_karabiner_core_service_socket_file_path(void) const {
     return filesystem_utility::find_socket_file_path(
         constants::get_karabiner_core_service_socket_directory_path());
@@ -360,6 +360,7 @@ private:
       return;
     }
 
+    shared_secret_authentication_client_.reset();
     client_ = nullptr;
 
     logger::get_logger()->info("core_service_client is stopped.");
@@ -367,5 +368,6 @@ private:
 
   std::optional<std::string> client_socket_directory_name_;
   std::unique_ptr<pqrs::local_datagram::client> client_;
+  mutable shared_secret_authentication::client shared_secret_authentication_client_;
 };
 } // namespace krbn
