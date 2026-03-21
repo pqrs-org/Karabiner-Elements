@@ -8,6 +8,7 @@
 #include "types/device_state.hpp"
 #include "types/event_integer_value.hpp"
 #include "types/event_type.hpp"
+#include "types/focused_ui_element.hpp"
 #include "types/grabbable_state.hpp"
 #include "types/karabiner_machine_identifier.hpp"
 #include "types/led_state.hpp"

@@ -47,16 +47,7 @@ public:
     return *this;
   }
 
-  bool operator==(const application& other) const {
-    return bundle_identifier_ == other.bundle_identifier_ &&
-           bundle_path_ == other.bundle_path_ &&
-           file_path_ == other.file_path_ &&
-           pid_ == other.pid_;
-  }
-
-  bool operator!=(const application& other) const {
-    return !(*this == other);
-  }
+  bool operator==(const application& other) const = default;
 
 private:
   std::optional<std::string> bundle_identifier_;
