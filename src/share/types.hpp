@@ -2,6 +2,7 @@
 
 #include "types/absolute_time_duration.hpp"
 #include "types/absolute_time_point.hpp"
+#include "types/application.hpp"
 #include "types/device_id.hpp"
 #include "types/device_identifiers.hpp"
 #include "types/device_state.hpp"
