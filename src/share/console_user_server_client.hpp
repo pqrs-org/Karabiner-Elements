@@ -5,6 +5,7 @@
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "logger.hpp"
+#include "shared_secret_authentication.hpp"
 #include "types.hpp"
 #include <glob/glob.hpp>
 #include <nod/nod.hpp>
@@ -75,10 +76,10 @@ public:
           }
         }
 
-        async_handshake();
-
         enqueue_to_dispatcher([this] {
-          connected();
+          if (client_) {
+            shared_secret_authentication_client_.connected(*client_);
+          }
         });
       });
 
@@ -113,14 +114,18 @@ public:
         }
 
         try {
+          if (client_ &&
+              shared_secret_authentication_client_.handle_shared_secret_payload(*buffer,
+                                                                                *client_,
+                                                                                [this] {
+                                                                                  connected();
+                                                                                })) {
+            return;
+          }
+
           nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
           auto ot = json.at("operation_type").get<operation_type>();
           switch (ot) {
-            case operation_type::shared_secret: {
-              shared_secret_ = json.at("shared_secret").get<std::vector<uint8_t>>();
-              break;
-            }
-
             case operation_type::user_core_configuration_file_path:
             case operation_type::frontmost_application_history:
               enqueue_to_dispatcher([this, ot, json] {
@@ -148,30 +153,13 @@ public:
     });
   }
 
-  // core_service -> console_user_server
-  void async_handshake(void) const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::handshake},
-      };
-
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
-    });
-  }
-
   void async_get_user_core_configuration_file_path(void) const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::get_user_core_configuration_file_path},
-          // If the request is invalid client, no response is returned.
-          // So there's no need to protect it with shared_secret.
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -179,12 +167,9 @@ public:
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::check_for_updates_on_startup},
-          {"shared_secret", shared_secret_},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -192,12 +177,9 @@ public:
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::register_menu_agent},
-          {"shared_secret", shared_secret_},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -205,12 +187,9 @@ public:
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::unregister_menu_agent},
-          {"shared_secret", shared_secret_},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -218,12 +197,9 @@ public:
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::register_multitouch_extension_agent},
-          {"shared_secret", shared_secret_},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -231,12 +207,9 @@ public:
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::unregister_multitouch_extension_agent},
-          {"shared_secret", shared_secret_},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -244,12 +217,9 @@ public:
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::register_notification_window_agent},
-          {"shared_secret", shared_secret_},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -257,12 +227,9 @@ public:
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::unregister_notification_window_agent},
-          {"shared_secret", shared_secret_},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -271,13 +238,10 @@ public:
     enqueue_to_dispatcher([this, application] {
       nlohmann::json json{
           {"operation_type", operation_type::frontmost_application_changed},
-          {"shared_secret", shared_secret_},
           {"frontmost_application", application},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -286,13 +250,10 @@ public:
     enqueue_to_dispatcher([this, shell_command] {
       nlohmann::json json{
           {"operation_type", operation_type::shell_command_execution},
-          {"shared_secret", shared_secret_},
           {"shell_command", shell_command},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -301,13 +262,10 @@ public:
     enqueue_to_dispatcher([this, user_command] {
       nlohmann::json json{
           {"operation_type", operation_type::send_user_command},
-          {"shared_secret", shared_secret_},
           {"user_command", user_command},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -317,13 +275,10 @@ public:
       if (input_source_specifiers) {
         nlohmann::json json{
             {"operation_type", operation_type::select_input_source},
-            {"shared_secret", shared_secret_},
             {"input_source_specifiers", *input_source_specifiers},
         };
 
-        if (client_) {
-          client_->async_send(nlohmann::json::to_msgpack(json));
-        }
+        async_send_message(std::move(json));
       }
     });
   }
@@ -333,13 +288,10 @@ public:
     enqueue_to_dispatcher([this, software_function] {
       nlohmann::json json{
           {"operation_type", operation_type::software_function},
-          {"shared_secret", shared_secret_},
           {"software_function", software_function},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
@@ -350,13 +302,22 @@ public:
           {"operation_type", operation_type::get_frontmost_application_history},
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_message(std::move(json));
     });
   }
 
 private:
+  void async_send_message(nlohmann::json&& json,
+                          std::function<void(void)> processed = nullptr) const {
+    if (!client_) {
+      return;
+    }
+
+    shared_secret_authentication_client_.async_send_message(*client_,
+                                                            std::move(json),
+                                                            processed);
+  }
+
   std::filesystem::path find_console_user_server_socket_file_path(void) const {
     return filesystem_utility::find_socket_file_path(
         constants::get_console_user_server_socket_directory_path(uid_));
@@ -406,6 +367,7 @@ private:
       return;
     }
 
+    shared_secret_authentication_client_.reset();
     client_ = nullptr;
 
     logger::get_logger()->info("console_user_server_client is stopped.");
@@ -415,6 +377,6 @@ private:
   std::optional<std::string> client_socket_directory_name_;
 
   std::unique_ptr<pqrs::local_datagram::client> client_;
-  std::vector<uint8_t> shared_secret_;
+  mutable shared_secret_authentication::client shared_secret_authentication_client_;
 };
 } // namespace krbn
