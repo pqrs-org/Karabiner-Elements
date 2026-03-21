@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::application v1.0
+// pqrs::osx::application v1.1
 
 // (C) Copyright Takayama Fumihiko 2026.
 // Distributed under the Boost Software License, Version 1.0.
@@ -28,6 +28,10 @@ inline void finish_launching(void) {
 
 inline void run(void) {
   pqrs_osx_application_run();
+}
+
+inline void stop(void) {
+  pqrs_osx_application_stop();
 }
 
 } // namespace application

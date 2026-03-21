@@ -31,3 +31,23 @@ func PQRSOSXApplicationFinishLaunching() {
 func PQRSOSXApplicationRun() {
   NSApplication.shared.run()
 }
+
+@_cdecl("pqrs_osx_application_stop")
+func PQRSOSXApplicationStop() {
+  NSApplication.shared.stop(nil)
+
+  // Post a synthetic event to trigger the loop to process and exit.
+  if let stopEvent = NSEvent.otherEvent(
+    with: .applicationDefined,
+    location: .zero,
+    modifierFlags: [],
+    timestamp: 0,
+    windowNumber: 0,
+    context: nil,
+    subtype: 0,
+    data1: 0,
+    data2: 0
+  ) {
+    NSApplication.shared.postEvent(stopEvent, atStart: false)
+  }
+}
