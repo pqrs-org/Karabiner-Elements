@@ -5,10 +5,7 @@
     <key>Label</key>
     <string>org.pqrs.service.agent.Karabiner-Core-Service</string>
     <key>KeepAlive</key>
-    <dict>
-      <key>SuccessfulExit</key>
-      <false/>
-    </dict>
+    <true/>
     <key>ProgramArguments</key>
     <array>
       <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service</string>

@@ -31,6 +31,8 @@ targets:
           - -Wall
           - -Werror
           - '-std=c++23'
+      - path: ../../../vendor/vendor/src/pqrs/osx/accessibility
+      - path: ../../../vendor/vendor/src/pqrs/osx/application
       - path: ../../../vendor/vendor/src/pqrs/osx/cg_event
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
@@ -42,3 +44,4 @@ targets:
       - path: ../../apps/share/Resources/app.icns
     dependencies:
       - sdk: Carbon.framework
+      - sdk: AppKit.framework
