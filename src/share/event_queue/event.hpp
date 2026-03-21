@@ -55,7 +55,7 @@ public:
                                mouse_key,                                                // For mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For sticky_modifier
                                software_function,                                        // For software_function
-                               pqrs::osx::frontmost_application_monitor::application,    // For frontmost_application_changed
+                               application,                                              // For frontmost_application_changed
                                pqrs::osx::input_source::properties,                      // For input_source_changed
                                pqrs::not_null_shared_ptr_t<device_properties>,           // For device_grabbed
                                pqrs::osx::system_preferences::properties,                // For system_preferences_properties_changed
@@ -97,7 +97,7 @@ public:
           } else if (key == "software_function") {
             result.value_ = value.get<software_function>();
           } else if (key == "frontmost_application") {
-            result.value_ = value.get<pqrs::osx::frontmost_application_monitor::application>();
+            result.value_ = value.get<application>();
           } else if (key == "input_source_properties") {
             result.value_ = value.get<pqrs::osx::input_source::properties>();
           } else if (key == "system_preferences_properties") {
@@ -320,7 +320,7 @@ public:
     return make_virtual_event(type::pointing_device_event_from_event_tap);
   }
 
-  static event make_frontmost_application_changed_event(const pqrs::osx::frontmost_application_monitor::application& application) {
+  static event make_frontmost_application_changed_event(const application& application) {
     event e;
     e.type_ = type::frontmost_application_changed;
     e.value_ = application;
@@ -441,10 +441,10 @@ public:
     return std::nullopt;
   }
 
-  std::optional<pqrs::osx::frontmost_application_monitor::application> get_frontmost_application(void) const {
+  std::optional<application> get_frontmost_application(void) const {
     try {
       if (type_ == type::frontmost_application_changed) {
-        return std::get<pqrs::osx::frontmost_application_monitor::application>(value_);
+        return std::get<application>(value_);
       }
     } catch (std::bad_variant_access&) {
     }

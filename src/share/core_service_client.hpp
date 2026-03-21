@@ -11,7 +11,6 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 #include <pqrs/local_datagram.hpp>
-#include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
@@ -142,17 +141,15 @@ public:
     });
   }
 
-  void async_frontmost_application_changed(std::shared_ptr<pqrs::osx::frontmost_application_monitor::application> application) const {
+  void async_frontmost_application_changed(const application& application) const {
     enqueue_to_dispatcher([this, application] {
-      if (application) {
-        nlohmann::json json{
-            {"operation_type", operation_type::frontmost_application_changed},
-            {"frontmost_application", *application},
-        };
+      nlohmann::json json{
+          {"operation_type", operation_type::frontmost_application_changed},
+          {"frontmost_application", application},
+      };
 
-        if (client_) {
-          client_->async_send(nlohmann::json::to_msgpack(json));
-        }
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
       }
     });
   }

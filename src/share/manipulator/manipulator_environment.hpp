@@ -10,8 +10,6 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <pqrs/filesystem.hpp>
-#include <pqrs/osx/frontmost_application_monitor.hpp>
-#include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>
 #include <pqrs/osx/input_source.hpp>
 #include <pqrs/osx/input_source/extra/nlohmann_json.hpp>
 #include <string>
@@ -74,11 +72,11 @@ public:
     device_properties_manager_.erase(device_id);
   }
 
-  const pqrs::osx::frontmost_application_monitor::application& get_frontmost_application(void) const {
+  const application& get_frontmost_application(void) const {
     return frontmost_application_;
   }
 
-  void set_frontmost_application(const pqrs::osx::frontmost_application_monitor::application& value) {
+  void set_frontmost_application(const application& value) {
     frontmost_application_ = value;
   }
 
@@ -154,7 +152,7 @@ public:
 private:
   karabiner_machine_identifier karabiner_machine_identifier_;
   device_properties_manager device_properties_manager_;
-  pqrs::osx::frontmost_application_monitor::application frontmost_application_;
+  application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
   std::unordered_map<std::string, manipulator_environment_variable_value> variables_;
   // Used to remove unset variables from expression_wrapper.

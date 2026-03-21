@@ -5,14 +5,16 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
-  // session_monitor -> core_service
+  // session_monitor -> core_service (daemon)
   console_user_id_changed,
-  // console_user_server -> core_service
+  // core_service (agent) -> core_service (deamon)
+  frontmost_application_changed, // Synchronized to console_user_server as well via the core_service (daemon) -> console_user_server path.
+  focused_ui_element_changed,
+  // console_user_server -> core_service (deamon)
   connect_console_user_server,
   system_preferences_updated,
-  frontmost_application_changed,
   input_source_changed,
-  // core_service -> console_user_server
+  // core_service (daemon) -> console_user_server
   handshake,
   get_user_core_configuration_file_path,
   check_for_updates_on_startup,
@@ -26,25 +28,25 @@ enum class operation_type : uint8_t {
   send_user_command,
   select_input_source,
   software_function,
-  // console_user_server -> core_service
+  // console_user_server -> core_service (daemon)
   shared_secret, // The response to the `handshake`
   user_core_configuration_file_path,
   // event_viewer -> console_user_server
   get_frontmost_application_history,
   // console_user_server -> event_viewer
   frontmost_application_history,
-  // event_viewer -> core_service
+  // event_viewer -> core_service (daemon)
   temporarily_ignore_all_devices,
   get_manipulator_environment, // The core_service responds only if the client is code-signed with the same Team ID.
-  // core_service -> event_viewer
+  // core_service (daemon) -> event_viewer
   manipulator_environment,
-  // multitouch_extension -> core_service
+  // multitouch_extension -> core_service (daemon)
   connect_multitouch_extension,
-  // any -> core_service
+  // any -> core_service (daemon)
   set_app_icon,
   set_variables,
   clear_user_variables,
-  // core_service -> any
+  // core_service (daemon) -> any
   get_connected_devices,
   connected_devices,
   get_notification_message,
@@ -61,9 +63,10 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {
         {operation_type::none, nullptr},
         {operation_type::console_user_id_changed, "console_user_id_changed"},
+        {operation_type::frontmost_application_changed, "frontmost_application_changed"},
+        {operation_type::focused_ui_element_changed, "focused_ui_element_changed"},
         {operation_type::connect_console_user_server, "connect_console_user_server"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},
-        {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::input_source_changed, "input_source_changed"},
         {operation_type::handshake, "handshake"},
         {operation_type::get_user_core_configuration_file_path, "get_user_core_configuration_file_path"},

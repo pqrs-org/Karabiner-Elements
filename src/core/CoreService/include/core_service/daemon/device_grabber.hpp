@@ -654,7 +654,7 @@ public:
     });
   }
 
-  void async_post_frontmost_application_changed_event(const pqrs::osx::frontmost_application_monitor::application& application) {
+  void async_post_frontmost_application_changed_event(const application& application) {
     enqueue_to_dispatcher([this, application] {
       auto event = event_queue::event::make_frontmost_application_changed_event(application);
       event_queue::entry entry(device_id(0),

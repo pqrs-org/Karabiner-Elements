@@ -4,8 +4,6 @@
 #include <optional>
 #include <pqrs/hash.hpp>
 #include <pqrs/json.hpp>
-#include <pqrs/osx/frontmost_application_monitor.hpp>
-#include <pqrs/osx/frontmost_application_monitor/extra/nlohmann_json.hpp>
 #include <pqrs/regex.hpp>
 #include <regex>
 

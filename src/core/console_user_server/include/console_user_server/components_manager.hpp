@@ -14,7 +14,6 @@
 #include "services_utility.hpp"
 #include "software_function_handler.hpp"
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
 #include <pqrs/osx/json_file_monitor.hpp>
 #include <pqrs/osx/session.hpp>
@@ -141,38 +140,6 @@ private:
 
     system_preferences_monitor_->async_start(std::chrono::milliseconds(3000));
 
-    // frontmost_application_monitor
-    //
-    // `frontmost_application_monitor` does not work properly in Karabiner-Core-Service after fast user switching.
-    // Therefore, we have to use `frontmost_application_monitor` in `console_user_server`.
-
-    pqrs::osx::frontmost_application_monitor::monitor::initialize_shared_monitor(weak_dispatcher_);
-
-    if (auto m = pqrs::osx::frontmost_application_monitor::monitor::get_shared_monitor().lock()) {
-      m->frontmost_application_changed.connect([this](auto&& application_ptr) {
-        if (application_ptr) {
-          if (software_function_handler_) {
-            software_function_handler_->add_frontmost_application_history(*application_ptr);
-          }
-
-          //
-          // Notify the core_service of frontmost application changed.
-          //
-
-          if (application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner.EventViewer" ||
-              application_ptr->get_bundle_identifier() == "org.pqrs.Karabiner-EventViewer") {
-            return;
-          }
-
-          if (core_service_client_) {
-            core_service_client_->async_frontmost_application_changed(application_ptr);
-          }
-        }
-      });
-
-      m->trigger();
-    }
-
     // input_source_monitor_
 
     input_source_monitor_ = std::make_unique<pqrs::osx::input_source_monitor>(
@@ -200,7 +167,6 @@ private:
     receiver_ = nullptr;
 
     system_preferences_monitor_ = nullptr;
-    pqrs::osx::frontmost_application_monitor::monitor::terminate_shared_monitor();
     input_source_monitor_ = nullptr;
     software_function_handler_ = nullptr;
   }

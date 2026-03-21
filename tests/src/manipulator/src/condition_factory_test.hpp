@@ -78,7 +78,7 @@ void run_condition_factory_test(void) {
     });
 
     {
-      pqrs::osx::frontmost_application_monitor::application application;
+      application application;
       application.set_bundle_identifier("com.apple.Terminal");
       application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
       manipulator_conditions_helper.get_manipulator_environment().set_frontmost_application(application);
@@ -87,7 +87,7 @@ void run_condition_factory_test(void) {
       expect(c->is_fulfilled(e, manipulator_conditions_helper.get_manipulator_environment()) == true);
     }
     {
-      pqrs::osx::frontmost_application_monitor::application application;
+      application application;
       application.set_bundle_identifier("com.apple.loginwindow");
       application.set_file_path("/System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow");
       manipulator_conditions_helper.get_manipulator_environment().set_frontmost_application(application);

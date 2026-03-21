@@ -133,7 +133,7 @@ private:
   std::vector<pqrs::regex> bundle_identifiers_;
   std::vector<pqrs::regex> file_paths_;
 
-  mutable std::optional<std::pair<pqrs::osx::frontmost_application_monitor::application, bool>> cached_result_;
+  mutable std::optional<std::pair<application, bool>> cached_result_;
 };
 } // namespace conditions
 } // namespace manipulator

@@ -125,13 +125,29 @@ public:
             logger::get_logger()->info("`system_preferences` is updated.");
             break;
 
-          case operation_type::frontmost_application_changed:
-            frontmost_application_ = json.at("frontmost_application")
-                                         .get<pqrs::osx::frontmost_application_monitor::application>();
-            if (device_grabber_) {
-              device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
+          case operation_type::frontmost_application_changed: {
+            auto app = json.at("frontmost_application").get<application>();
+
+            //
+            // Synchronize frontmost_application_changed to console_user_server
+            //
+
+            if (console_user_server_client_) {
+              console_user_server_client_->async_frontmost_application_changed(app);
+            }
+
+            //
+            // Update environment_variables in device_grabber
+            //
+
+            if (app.get_bundle_identifier() != "org.pqrs.Karabiner-EventViewer") {
+              frontmost_application_ = app;
+              if (device_grabber_) {
+                device_grabber_->async_post_frontmost_application_changed_event(app);
+              }
             }
             break;
+          }
 
           case operation_type::input_source_changed:
             input_source_properties_ = json.at("input_source_properties")
@@ -520,7 +536,7 @@ private:
   std::unique_ptr<device_grabber> device_grabber_;
 
   pqrs::osx::system_preferences::properties system_preferences_properties_;
-  pqrs::osx::frontmost_application_monitor::application frontmost_application_;
+  application frontmost_application_;
   pqrs::osx::input_source::properties input_source_properties_;
 };
 } // namespace daemon

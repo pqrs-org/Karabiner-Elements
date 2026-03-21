@@ -34,7 +34,6 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
-      - path: ../../vendor/vendor/src/pqrs/osx/frontmost_application_monitor
       - path: ../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../vendor/vendor/src/pqrs/osx/workspace
       - path: Resources

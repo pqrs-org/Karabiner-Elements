@@ -114,6 +114,7 @@ public:
           case operation_type::unregister_multitouch_extension_agent:
           case operation_type::register_notification_window_agent:
           case operation_type::unregister_notification_window_agent:
+          case operation_type::frontmost_application_changed:
           case operation_type::select_input_source:
           case operation_type::shell_command_execution:
           case operation_type::send_user_command:
@@ -171,6 +172,13 @@ public:
 
                   case operation_type::unregister_notification_window_agent:
                     services_utility::unregister_notification_window_agent();
+                    break;
+
+                  case operation_type::frontmost_application_changed:
+                    if (auto h = weak_software_function_handler_.lock()) {
+                      auto app = json.at("frontmost_application").get<application>();
+                      h->add_frontmost_application_history(app);
+                    }
                     break;
 
                   case operation_type::select_input_source:

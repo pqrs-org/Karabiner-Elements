@@ -37,7 +37,7 @@ public:
     }
   }
 
-  void add_frontmost_application_history(const pqrs::osx::frontmost_application_monitor::application& application) {
+  void add_frontmost_application_history(const application& application) {
     // Skip non-applications like "/System/Library/Frameworks/LocalAuthentication.framework/Support/coreautha.bundle".
     if (auto v = application.get_bundle_path()) {
       if (!pqrs::cf::bundle::application(*v)) {
@@ -101,7 +101,7 @@ public:
   }
 
   void async_invoke_with_frontmost_application_history(
-      std::function<void(const std::deque<pqrs::osx::frontmost_application_monitor::application>&)> function) const {
+      std::function<void(const std::deque<application>&)> function) const {
     enqueue_to_dispatcher([this, function] {
       function(frontmost_application_history_);
     });
@@ -141,7 +141,7 @@ private:
       auto history_index = *v;
 
       // If the number of applications specified by frontmost_application_history_index does not exist, the oldest application will be selected.
-      std::optional<pqrs::osx::frontmost_application_monitor::application> target_application;
+      std::optional<application> target_application;
 
       for (const auto& h : frontmost_application_history_) {
         // Since there are cases where the bundle paths differ even if the bundle_identifier is the same, prioritize using the bundle path.
@@ -193,7 +193,7 @@ private:
   }
 
   bool excluded_frontmost_application_history(const software_function_details::open_application& open_application,
-                                              const pqrs::osx::frontmost_application_monitor::application& application) {
+                                              const application& application) {
     if (auto bundle_identifier = application.get_bundle_identifier()) {
       for (const auto& regex : open_application.get_frontmost_application_history_exclusion_bundle_identifiers()) {
         if (std::regex_search(std::begin(*bundle_identifier),
@@ -240,7 +240,7 @@ private:
 private:
   bool check_trusted_;
   // Stored in order from the newest at the beginning.
-  std::deque<pqrs::osx::frontmost_application_monitor::application> frontmost_application_history_;
+  std::deque<application> frontmost_application_history_;
 };
 } // namespace console_user_server
 } // namespace krbn

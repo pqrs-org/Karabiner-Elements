@@ -11,7 +11,6 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
 #include <pqrs/local_datagram.hpp>
-#include <pqrs/osx/frontmost_application_monitor.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
@@ -259,6 +258,21 @@ public:
       nlohmann::json json{
           {"operation_type", operation_type::unregister_notification_window_agent},
           {"shared_secret", shared_secret_},
+      };
+
+      if (client_) {
+        client_->async_send(nlohmann::json::to_msgpack(json));
+      }
+    });
+  }
+
+  // core_service (daemon) -> console_user_server
+  void async_frontmost_application_changed(const application& application) const {
+    enqueue_to_dispatcher([this, application] {
+      nlohmann::json json{
+          {"operation_type", operation_type::frontmost_application_changed},
+          {"shared_secret", shared_secret_},
+          {"frontmost_application", application},
       };
 
       if (client_) {
