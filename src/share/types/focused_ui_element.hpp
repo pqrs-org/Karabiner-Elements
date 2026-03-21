@@ -7,7 +7,7 @@
 namespace krbn {
 class focused_ui_element final {
 public:
-  focused_ui_element(void) {
+  focused_ui_element() {
   }
 
   const std::optional<std::string>& get_role() const {
