@@ -9,6 +9,7 @@
 #include "core_service/daemon/core_service_state_json_writer.hpp"
 #include "device_grabber.hpp"
 #include "filesystem_utility.hpp"
+#include "shared_secret_authentication.hpp"
 #include "types.hpp"
 #include <array>
 #include <pqrs/dispatcher.hpp>
@@ -33,6 +34,10 @@ public:
     // Remove old files and prepare a socket directory.
     prepare_karabiner_core_service_socket_directory();
 
+    shared_secret_authentication_receiver_ =
+        std::make_unique<shared_secret_authentication::receiver>(weak_dispatcher_,
+                                                                 constants::local_datagram_buffer_size);
+
     event_viewer_temporarily_ignore_all_devices_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
         weak_dispatcher_,
         constants::local_datagram_buffer_size,
@@ -49,29 +54,6 @@ public:
               device_grabber_->async_set_temporarily_ignore_all_devices(false);
             }
           }
-        });
-
-    event_viewer_get_manipulator_environment_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
-        weak_dispatcher_,
-        constants::local_datagram_buffer_size,
-        [](auto&& peer_pid,
-           auto&& peer_socket_file_path) {
-          // Verify the peer's Team ID before sending manipulator environment information.
-          if (get_shared_codesign_manager()->same_team_id(peer_pid)) {
-            logger::get_logger()->info("verified peer connected");
-            return true;
-          } else {
-            logger::get_logger()->warn("peer is not code-signed with same Team ID");
-            return false;
-          }
-        });
-
-    verification_exempt_peer_manager_ = std::make_unique<pqrs::local_datagram::extra::peer_manager>(
-        weak_dispatcher_,
-        constants::local_datagram_buffer_size,
-        [](auto&& peer_pid,
-           auto&& peer_socket_file_path) {
-          return true;
         });
 
     //
@@ -115,7 +97,22 @@ public:
 
       try {
         nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-        switch (json.at("operation_type").get<operation_type>()) {
+        auto ot = json.at("operation_type").get<operation_type>();
+        if (ot == operation_type::handshake) {
+          if (shared_secret_authentication_receiver_) {
+            shared_secret_authentication_receiver_->handle_handshake(sender_endpoint->path());
+          }
+          return;
+        }
+
+        if (!shared_secret_authentication_receiver_ ||
+            !shared_secret_authentication_receiver_->verify_shared_secret(sender_endpoint->path(),
+                                                                          json,
+                                                                          ot)) {
+          return;
+        }
+
+        switch (ot) {
           case operation_type::system_preferences_updated:
             system_preferences_properties_ = json.at("system_preferences_properties")
                                                  .get<pqrs::osx::system_preferences::properties>();
@@ -188,13 +185,13 @@ public:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_manipulator_environment(
                   [this, sender_endpoint](auto&& manipulator_environment) {
-                    if (event_viewer_get_manipulator_environment_peer_manager_) {
-                      nlohmann::json json{
-                          {"operation_type", operation_type::manipulator_environment},
-                          {"manipulator_environment", manipulator_environment.to_json()},
-                      };
-                      event_viewer_get_manipulator_environment_peer_manager_->async_send(sender_endpoint->path(),
-                                                                                         nlohmann::json::to_msgpack(json));
+                    if (shared_secret_authentication_receiver_) {
+                      shared_secret_authentication_receiver_->async_send(
+                          sender_endpoint->path(),
+                          nlohmann::json{
+                              {"operation_type", operation_type::manipulator_environment},
+                              {"manipulator_environment", manipulator_environment.to_json()},
+                          });
                     }
                   });
             }
@@ -289,13 +286,13 @@ public:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_connected_devices(
                   [this, sender_endpoint](auto&& connected_devices_json) {
-                    if (verification_exempt_peer_manager_) {
-                      nlohmann::json json{
-                          {"operation_type", operation_type::connected_devices},
-                          {"connected_devices", connected_devices_json},
-                      };
-                      verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
-                                                                    nlohmann::json::to_msgpack(json));
+                    if (shared_secret_authentication_receiver_) {
+                      shared_secret_authentication_receiver_->async_send(
+                          sender_endpoint->path(),
+                          nlohmann::json{
+                              {"operation_type", operation_type::connected_devices},
+                              {"connected_devices", connected_devices_json},
+                          });
                     }
                   });
             }
@@ -305,13 +302,13 @@ public:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_notification_message(
                   [this, sender_endpoint](auto&& message) {
-                    if (verification_exempt_peer_manager_) {
-                      nlohmann::json json{
-                          {"operation_type", operation_type::notification_message},
-                          {"notification_message", message},
-                      };
-                      verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
-                                                                    nlohmann::json::to_msgpack(json));
+                    if (shared_secret_authentication_receiver_) {
+                      shared_secret_authentication_receiver_->async_send(
+                          sender_endpoint->path(),
+                          nlohmann::json{
+                              {"operation_type", operation_type::notification_message},
+                              {"notification_message", message},
+                          });
                     }
                   });
             }
@@ -321,32 +318,32 @@ public:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_manipulator_environment(
                   [this, sender_endpoint](auto&& manipulator_environment) {
-                    if (verification_exempt_peer_manager_) {
-                      nlohmann::json json{
-                          {"operation_type", operation_type::system_variables},
-                          {
-                              "system_variables",
+                    if (shared_secret_authentication_receiver_) {
+                      shared_secret_authentication_receiver_->async_send(
+                          sender_endpoint->path(),
+                          nlohmann::json{
+                              {"operation_type", operation_type::system_variables},
                               {
+                                  "system_variables",
                                   {
-                                      "system.now.milliseconds",
-                                      manipulator_environment.get_variable("system.now.milliseconds"),
+                                      {
+                                          "system.now.milliseconds",
+                                          manipulator_environment.get_variable("system.now.milliseconds"),
+                                      },
+                                      {
+                                          "system.scroll_direction_is_natural",
+                                          manipulator_environment.get_variable("system.scroll_direction_is_natural"),
+                                      },
+                                      {
+                                          "system.temporarily_ignore_all_devices",
+                                          manipulator_environment.get_variable("system.temporarily_ignore_all_devices"),
+                                      },
+                                      {
+                                          "system.use_fkeys_as_standard_function_keys",
+                                          manipulator_environment.get_variable("system.use_fkeys_as_standard_function_keys"),
+                                      },
                                   },
-                                  {
-                                      "system.scroll_direction_is_natural",
-                                      manipulator_environment.get_variable("system.scroll_direction_is_natural"),
-                                  },
-                                  {
-                                      "system.temporarily_ignore_all_devices",
-                                      manipulator_environment.get_variable("system.temporarily_ignore_all_devices"),
-                                  },
-                                  {
-                                      "system.use_fkeys_as_standard_function_keys",
-                                      manipulator_environment.get_variable("system.use_fkeys_as_standard_function_keys"),
-                                  },
-                              },
-                          }};
-                      verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
-                                                                    nlohmann::json::to_msgpack(json));
+                              }});
                     }
                   });
             }
@@ -356,17 +353,17 @@ public:
             if (device_grabber_) {
               device_grabber_->async_invoke_with_manipulator_environment(
                   [this, sender_endpoint](auto&& manipulator_environment) {
-                    if (verification_exempt_peer_manager_) {
-                      std::unordered_map<std::string, manipulator_environment_variable_value> variables;
-                      for (const auto& name : multitouch_extension_environment_variable_names) {
-                        variables[name] = manipulator_environment.get_variable(name);
-                      }
+                    std::unordered_map<std::string, manipulator_environment_variable_value> variables;
+                    for (const auto& name : multitouch_extension_environment_variable_names) {
+                      variables[name] = manipulator_environment.get_variable(name);
+                    }
 
-                      nlohmann::json json{
-                          {"operation_type", operation_type::multitouch_extension_variables},
-                          {"multitouch_extension_variables", variables}};
-                      verification_exempt_peer_manager_->async_send(sender_endpoint->path(),
-                                                                    nlohmann::json::to_msgpack(json));
+                    if (shared_secret_authentication_receiver_) {
+                      shared_secret_authentication_receiver_->async_send(
+                          sender_endpoint->path(),
+                          nlohmann::json{
+                              {"operation_type", operation_type::multitouch_extension_variables},
+                              {"multitouch_extension_variables", variables}});
                     }
                   });
             }
@@ -439,8 +436,7 @@ public:
       server_ = nullptr;
       console_user_server_client_ = nullptr;
       multitouch_extension_client_ = nullptr;
-      verification_exempt_peer_manager_ = nullptr;
-      event_viewer_get_manipulator_environment_peer_manager_ = nullptr;
+      shared_secret_authentication_receiver_ = nullptr;
       event_viewer_temporarily_ignore_all_devices_peer_manager_ = nullptr;
       stop_device_grabber();
     });
@@ -564,9 +560,7 @@ private:
   std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer_;
 
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_temporarily_ignore_all_devices_peer_manager_;
-  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_get_manipulator_environment_peer_manager_;
-  // For operation_type::get_system_variables
-  std::unique_ptr<pqrs::local_datagram::extra::peer_manager> verification_exempt_peer_manager_;
+  std::unique_ptr<shared_secret_authentication::receiver> shared_secret_authentication_receiver_;
   std::unique_ptr<pqrs::local_datagram::server> server_;
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<pqrs::local_datagram::client> multitouch_extension_client_;
