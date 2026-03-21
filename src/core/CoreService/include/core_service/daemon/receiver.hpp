@@ -149,6 +149,14 @@ public:
             break;
           }
 
+          case operation_type::focused_ui_element_changed: {
+            auto element = json.at("focused_ui_element").get<focused_ui_element>();
+
+            focused_ui_element_ = element;
+            set_focused_ui_element_variables();
+            break;
+          }
+
           case operation_type::input_source_changed:
             input_source_properties_ = json.at("input_source_properties")
                                            .get<pqrs::osx::input_source::properties>();
@@ -426,7 +434,7 @@ public:
     logger::get_logger()->info("receiver is initialized");
   }
 
-  virtual ~receiver(void) {
+  virtual ~receiver() {
     detach_from_dispatcher([this] {
       server_ = nullptr;
       console_user_server_client_ = nullptr;
@@ -441,11 +449,11 @@ public:
   }
 
 private:
-  std::filesystem::path karabiner_core_service_socket_file_path(void) const {
+  std::filesystem::path karabiner_core_service_socket_file_path() const {
     return constants::get_karabiner_core_service_socket_directory_path() / filesystem_utility::make_socket_file_basename();
   }
 
-  void prepare_karabiner_core_service_socket_directory(void) const {
+  void prepare_karabiner_core_service_socket_directory() const {
     filesystem_utility::create_base_directories(current_console_user_id_);
 
     auto directory_path = constants::get_karabiner_core_service_socket_directory_path();
@@ -455,7 +463,7 @@ private:
     chmod(directory_path.c_str(), 0755);
   }
 
-  void start_grabbing_if_system_core_configuration_file_exists(void) {
+  void start_grabbing_if_system_core_configuration_file_exists() {
     auto file_path = constants::get_system_core_configuration_file_path();
     if (pqrs::filesystem::exists(file_path)) {
       stop_device_grabber();
@@ -473,6 +481,7 @@ private:
 
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
+    set_focused_ui_element_variables();
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
 
     device_grabber_->async_start(configuration_file_path,
@@ -481,7 +490,7 @@ private:
     logger::get_logger()->info("device_grabber is started.");
   }
 
-  void stop_device_grabber(void) {
+  void stop_device_grabber() {
     if (!device_grabber_) {
       return;
     }
@@ -491,7 +500,35 @@ private:
     logger::get_logger()->info("device_grabber is stopped.");
   }
 
-  void clear_multitouch_extension_environment_variables(void) {
+  void set_focused_ui_element_variables() {
+    if (device_grabber_) {
+      device_grabber_->async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
+              "accessibility.focused_ui_element.role",
+              manipulator_environment_variable_value(focused_ui_element_.get_role().value_or("")),
+              nullptr,
+              std::nullopt,
+              nullptr));
+
+      device_grabber_->async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
+              "accessibility.focused_ui_element.subrole",
+              manipulator_environment_variable_value(focused_ui_element_.get_subrole().value_or("")),
+              nullptr,
+              std::nullopt,
+              nullptr));
+
+      device_grabber_->async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
+              "accessibility.focused_ui_element.title",
+              manipulator_environment_variable_value(focused_ui_element_.get_title().value_or("")),
+              nullptr,
+              std::nullopt,
+              nullptr));
+    }
+  }
+
+  void clear_multitouch_extension_environment_variables() {
     if (device_grabber_) {
       for (const auto& name : multitouch_extension_environment_variable_names) {
         device_grabber_->async_post_set_variable_event(
@@ -537,6 +574,7 @@ private:
 
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   application frontmost_application_;
+  focused_ui_element focused_ui_element_;
   pqrs::osx::input_source::properties input_source_properties_;
 };
 } // namespace daemon

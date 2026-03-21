@@ -38,22 +38,26 @@ public:
     pqrs::osx::accessibility::monitor::initialize_shared_monitor(pqrs::dispatcher::extra::get_shared_dispatcher());
     if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
       m->frontmost_application_changed.connect([this](auto&& application_ptr) {
-        logger::get_logger()->info("accessibility frontmost_application_changed {}",
-                                   application_ptr->get_bundle_identifier().value_or("unknown"));
         if (core_service_client_) {
-          application application;
-          application.set_bundle_identifier(application_ptr->get_bundle_identifier());
-          application.set_bundle_path(application_ptr->get_bundle_path());
-          application.set_file_path(application_ptr->get_file_path());
-          application.set_pid(application_ptr->get_pid());
+          application a;
+          a.set_bundle_identifier(application_ptr->get_bundle_identifier());
+          a.set_bundle_path(application_ptr->get_bundle_path());
+          a.set_file_path(application_ptr->get_file_path());
+          a.set_pid(application_ptr->get_pid());
 
-          core_service_client_->async_frontmost_application_changed(application);
+          core_service_client_->async_frontmost_application_changed(a);
         }
       });
 
-      m->focused_ui_element_changed.connect([](auto&& focused_ui_element_ptr) {
-        logger::get_logger()->info("accessibility focused_ui_element_changed {}",
-                                   focused_ui_element_ptr->get_role().value_or("unknown"));
+      m->focused_ui_element_changed.connect([this](auto&& focused_ui_element_ptr) {
+        if (core_service_client_) {
+          focused_ui_element e;
+          e.set_role(focused_ui_element_ptr->get_role());
+          e.set_subrole(focused_ui_element_ptr->get_subrole());
+          e.set_title(focused_ui_element_ptr->get_title());
+
+          core_service_client_->async_focused_ui_element_changed(e);
+        }
       });
     }
   }
