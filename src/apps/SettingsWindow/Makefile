@@ -10,6 +10,7 @@ clean:
 	rm -fr build
 
 run:
+	bash ../../../scripts/codesign.sh build/Release
 	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements
 
 xcode:

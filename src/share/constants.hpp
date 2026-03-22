@@ -28,11 +28,6 @@ public:
     return path;
   }
 
-  static const std::filesystem::path& get_pid_directory(void) {
-    static auto path = get_tmp_directory() / "pid";
-    return path;
-  }
-
   static const std::filesystem::path& get_rootonly_directory(void) {
     static auto path = get_tmp_directory() / "rootonly";
     return path;
@@ -241,24 +236,6 @@ public:
       auto d = get_user_data_directory();
       if (!d.empty()) {
         directory = d / "log";
-      }
-    }
-
-    return directory;
-  }
-
-  static const std::filesystem::path& get_user_pid_directory(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> guard(mutex);
-
-    static bool once = false;
-    static std::filesystem::path directory;
-
-    if (!once) {
-      once = true;
-      auto d = get_user_data_directory();
-      if (!d.empty()) {
-        directory = d / "pid";
       }
     }
 

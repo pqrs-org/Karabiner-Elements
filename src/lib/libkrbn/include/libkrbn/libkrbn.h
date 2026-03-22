@@ -38,8 +38,6 @@ void libkrbn_get_user_complex_modifications_assets_directory(char* _Nonnull buff
 void libkrbn_get_user_tmp_directory(char* _Nonnull buffer,
                                     size_t length);
 
-bool libkrbn_user_pid_directory_writable(void);
-
 void libkrbn_services_register_core_daemons(void);
 void libkrbn_services_register_core_agents(void);
 void libkrbn_services_bootout_old_agents(void);

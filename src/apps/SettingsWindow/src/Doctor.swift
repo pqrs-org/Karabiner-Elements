@@ -36,14 +36,12 @@ final class Doctor: ObservableObject {
   }
 
   private func check() {
-    userPIDDirectoryWritable = libkrbn_user_pid_directory_writable()
-
     var buffer = [Int8](repeating: 0, count: 32 * 1024)
     if libkrbn_configuration_monitor_get_parse_error_message(&buffer, buffer.count) {
       karabinerJSONParseErrorMessage = String(utf8String: buffer) ?? ""
     }
 
-    let showAlert = !userPIDDirectoryWritable || !karabinerJSONParseErrorMessage.isEmpty
+    let showAlert = !karabinerJSONParseErrorMessage.isEmpty
 
     // Display alerts only when the status changes.
     if previousShowAlert == nil || previousShowAlert != showAlert {

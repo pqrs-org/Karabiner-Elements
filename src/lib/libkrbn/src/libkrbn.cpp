@@ -87,40 +87,6 @@ void libkrbn_get_user_tmp_directory(char* buffer,
   strlcpy(buffer, krbn::constants::get_user_tmp_directory().c_str(), length);
 }
 
-bool libkrbn_user_pid_directory_writable(void) {
-  auto pid_directory = krbn::constants::get_user_pid_directory();
-
-  pqrs::filesystem::create_directory_with_intermediate_directories(pid_directory, 0700);
-  if (!pqrs::filesystem::is_directory(pid_directory)) {
-    return false;
-  }
-
-  auto doctor_file = pid_directory / "doctor";
-
-  if (pqrs::filesystem::exists(doctor_file)) {
-    std::error_code error_code;
-    std::filesystem::remove(pid_directory / "doctor", error_code);
-  }
-
-  if (pqrs::filesystem::exists(doctor_file)) {
-    return false;
-  }
-
-  std::ofstream ofs(doctor_file);
-  if (!ofs) {
-    return false;
-  }
-
-  ofs << "writable";
-  ofs.close();
-
-  if (!pqrs::filesystem::exists(doctor_file)) {
-    return false;
-  }
-
-  return true;
-}
-
 void libkrbn_services_register_core_daemons(void) {
   krbn::services_utility::register_core_daemons();
 }
