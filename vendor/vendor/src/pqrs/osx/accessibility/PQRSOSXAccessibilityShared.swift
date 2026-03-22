@@ -8,18 +8,18 @@ import ApplicationServices
 public typealias PQRSOSXAccessibilityMonitorCallback =
   @Sendable @convention(c) (
     Int32,
-    UnsafePointer<CChar>?,
-    UnsafePointer<CChar>?,
-    UnsafePointer<CChar>?,
-    UnsafePointer<CChar>?,
-    pid_t,
-    UnsafePointer<CChar>?,
-    UnsafePointer<CChar>?,
-    UnsafePointer<CChar>?,
-    UnsafePointer<CChar>?,
-    UnsafePointer<CChar>?,
-    UnsafePointer<CChar>?
+    UnsafePointer<pqrs_osx_accessibility_snapshot>?
   ) -> Void
+
+struct WindowPosition: Sendable, Equatable {
+  let x: Double
+  let y: Double
+}
+
+struct WindowSize: Sendable, Equatable {
+  let width: Double
+  let height: Double
+}
 
 struct FrontmostApplication: Sendable, Equatable {
   let name: String?
@@ -58,14 +58,32 @@ struct FocusedUIElement: Sendable, Equatable {
   let title: String?
   let description: String?
   let identifier: String?
+  let windowPosition: WindowPosition?
+  let windowSize: WindowSize?
 
-  init(_ element: AXUIElement) {
+  init(_ element: AXUIElement, applicationElement: AXUIElement?) {
     role = copyAttribute(element, kAXRoleAttribute as CFString)
     subrole = copyAttribute(element, kAXSubroleAttribute as CFString)
     roleDescription = copyAttribute(element, kAXRoleDescriptionAttribute as CFString)
     title = copyAttribute(element, kAXTitleAttribute as CFString)
     description = copyAttribute(element, kAXDescriptionAttribute as CFString)
     identifier = copyAttribute(element, kAXIdentifierAttribute as CFString)
+    let windowElement =
+      (copyAttribute(element, kAXWindowAttribute as CFString) as AXUIElement?)
+      ?? applicationElement.flatMap {
+        copyAttribute($0, kAXFocusedWindowAttribute as CFString) as AXUIElement?
+      }
+
+    windowPosition = windowElement.flatMap {
+      copyCGPointAttribute($0, kAXPositionAttribute as CFString)
+    }.map {
+      WindowPosition(x: Double($0.x), y: Double($0.y))
+    }
+    windowSize = windowElement.flatMap {
+      copyCGSizeAttribute($0, kAXSizeAttribute as CFString)
+    }.map {
+      WindowSize(width: Double($0.width), height: Double($0.height))
+    }
   }
 }
 
@@ -90,6 +108,40 @@ func copyPid(_ element: AXUIElement) -> pid_t? {
     return nil
   }
   return pid
+}
+
+func copyCGPointAttribute(_ element: AXUIElement, _ attribute: CFString) -> CGPoint? {
+  guard let value: AXValue = copyAttribute(element, attribute) else {
+    return nil
+  }
+
+  guard AXValueGetType(value) == .cgPoint else {
+    return nil
+  }
+
+  var point = CGPoint.zero
+  guard AXValueGetValue(value, .cgPoint, &point) else {
+    return nil
+  }
+
+  return point
+}
+
+func copyCGSizeAttribute(_ element: AXUIElement, _ attribute: CFString) -> CGSize? {
+  guard let value: AXValue = copyAttribute(element, attribute) else {
+    return nil
+  }
+
+  guard AXValueGetType(value) == .cgSize else {
+    return nil
+  }
+
+  var size = CGSize.zero
+  guard AXValueGetValue(value, .cgSize, &size) else {
+    return nil
+  }
+
+  return size
 }
 
 @MainActor
@@ -124,8 +176,9 @@ func copySnapshot(cachedApplication: FrontmostApplication?) -> Snapshot {
       copyAttribute($0, kAXFocusedUIElementAttribute as CFString) as AXUIElement?
     }
 
-  let focusedElement = (applicationFocusedUIElement ?? systemWideFocusedUIElement).map(
-    FocusedUIElement.init)
+  let focusedElement = (applicationFocusedUIElement ?? systemWideFocusedUIElement).map {
+    FocusedUIElement($0, applicationElement: applicationElement)
+  }
 
   return Snapshot(
     application: resolvedApplication,

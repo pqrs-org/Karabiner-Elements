@@ -159,20 +159,30 @@ actor PQRSOSXAccessibilityMonitor {
                   withOptionalCString(snapshot.focusedUIElement?.title) { title in
                     withOptionalCString(snapshot.focusedUIElement?.description) { description in
                       withOptionalCString(snapshot.focusedUIElement?.identifier) { identifier in
-                        callback(
-                          force ? 1 : 0,
-                          applicationName,
-                          bundleIdentifier,
-                          bundlePath,
-                          filePath,
-                          snapshot.application?.processIdentifier ?? 0,
-                          role,
-                          subrole,
-                          roleDescription,
-                          title,
-                          description,
-                          identifier
+                        var cSnapshot = pqrs_osx_accessibility_snapshot(
+                          application_name: applicationName,
+                          bundle_identifier: bundleIdentifier,
+                          bundle_path: bundlePath,
+                          file_path: filePath,
+                          pid: snapshot.application?.processIdentifier ?? 0,
+                          role: role,
+                          subrole: subrole,
+                          role_description: roleDescription,
+                          title: title,
+                          description: description,
+                          identifier: identifier,
+                          has_window_position: snapshot.focusedUIElement?.windowPosition == nil
+                            ? 0 : 1,
+                          window_position_x: snapshot.focusedUIElement?.windowPosition?.x ?? 0,
+                          window_position_y: snapshot.focusedUIElement?.windowPosition?.y ?? 0,
+                          has_window_size: snapshot.focusedUIElement?.windowSize == nil ? 0 : 1,
+                          window_size_width: snapshot.focusedUIElement?.windowSize?.width ?? 0,
+                          window_size_height: snapshot.focusedUIElement?.windowSize?.height ?? 0
                         )
+
+                        withUnsafePointer(to: &cSnapshot) { cSnapshotPointer in
+                          callback(force ? 1 : 0, cSnapshotPointer)
+                        }
                       }
                     }
                   }

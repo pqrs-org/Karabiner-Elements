@@ -70,113 +70,75 @@ public:
 
 private:
   static void static_cpp_callback(int32_t force,
-                                  const char* application_name,
-                                  const char* bundle_identifier,
-                                  const char* bundle_path,
-                                  const char* file_path,
-                                  pid_t pid,
-                                  const char* role,
-                                  const char* subrole,
-                                  const char* role_description,
-                                  const char* title,
-                                  const char* description,
-                                  const char* identifier) {
+                                  const pqrs_osx_accessibility_snapshot* snapshot) {
     if (auto m = shared_monitor_; m) {
-      m->cpp_callback(force,
-                      application_name,
-                      bundle_identifier,
-                      bundle_path,
-                      file_path,
-                      pid,
-                      role,
-                      subrole,
-                      role_description,
-                      title,
-                      description,
-                      identifier);
+      m->cpp_callback(force, snapshot);
     }
   }
 
-  static pqrs::not_null_shared_ptr_t<application> make_application(const char* application_name,
-                                                                   const char* bundle_identifier,
-                                                                   const char* bundle_path,
-                                                                   const char* file_path,
-                                                                   pid_t pid) {
+  static pqrs::not_null_shared_ptr_t<application> make_application(const pqrs_osx_accessibility_snapshot& snapshot) {
     auto result = std::make_shared<application>();
 
-    if (application_name) {
-      result->set_name(application_name);
+    if (snapshot.application_name) {
+      result->set_name(snapshot.application_name);
     }
-    if (bundle_identifier) {
-      result->set_bundle_identifier(bundle_identifier);
+    if (snapshot.bundle_identifier) {
+      result->set_bundle_identifier(snapshot.bundle_identifier);
     }
-    if (bundle_path) {
-      result->set_bundle_path(bundle_path);
+    if (snapshot.bundle_path) {
+      result->set_bundle_path(snapshot.bundle_path);
     }
-    if (file_path) {
-      result->set_file_path(file_path);
+    if (snapshot.file_path) {
+      result->set_file_path(snapshot.file_path);
     }
-    if (pid != 0) {
-      result->set_pid(pid);
+    if (snapshot.pid != 0) {
+      result->set_pid(snapshot.pid);
     }
 
     return result;
   }
 
-  static pqrs::not_null_shared_ptr_t<focused_ui_element> make_focused_ui_element(const char* role,
-                                                                                 const char* subrole,
-                                                                                 const char* role_description,
-                                                                                 const char* title,
-                                                                                 const char* description,
-                                                                                 const char* identifier) {
+  static pqrs::not_null_shared_ptr_t<focused_ui_element> make_focused_ui_element(const pqrs_osx_accessibility_snapshot& snapshot) {
     auto result = std::make_shared<focused_ui_element>();
 
-    if (role) {
-      result->set_role(role);
+    if (snapshot.role) {
+      result->set_role(snapshot.role);
     }
-    if (subrole) {
-      result->set_subrole(subrole);
+    if (snapshot.subrole) {
+      result->set_subrole(snapshot.subrole);
     }
-    if (role_description) {
-      result->set_role_description(role_description);
+    if (snapshot.role_description) {
+      result->set_role_description(snapshot.role_description);
     }
-    if (title) {
-      result->set_title(title);
+    if (snapshot.title) {
+      result->set_title(snapshot.title);
     }
-    if (description) {
-      result->set_description(description);
+    if (snapshot.description) {
+      result->set_description(snapshot.description);
     }
-    if (identifier) {
-      result->set_identifier(identifier);
+    if (snapshot.identifier) {
+      result->set_identifier(snapshot.identifier);
+    }
+    if (snapshot.has_window_position != 0) {
+      result->set_window_position_x(snapshot.window_position_x);
+      result->set_window_position_y(snapshot.window_position_y);
+    }
+    if (snapshot.has_window_size != 0) {
+      result->set_window_size_width(snapshot.window_size_width);
+      result->set_window_size_height(snapshot.window_size_height);
     }
 
     return result;
   }
 
   void cpp_callback(int32_t force,
-                    const char* application_name,
-                    const char* bundle_identifier,
-                    const char* bundle_path,
-                    const char* file_path,
-                    pid_t pid,
-                    const char* role,
-                    const char* subrole,
-                    const char* role_description,
-                    const char* title,
-                    const char* description,
-                    const char* identifier) {
-    auto current_application = make_application(application_name,
-                                                bundle_identifier,
-                                                bundle_path,
-                                                file_path,
-                                                pid);
+                    const pqrs_osx_accessibility_snapshot* snapshot) {
+    if (!snapshot) {
+      return;
+    }
 
-    auto current_focused_ui_element = make_focused_ui_element(role,
-                                                              subrole,
-                                                              role_description,
-                                                              title,
-                                                              description,
-                                                              identifier);
+    auto current_application = make_application(*snapshot);
+    auto current_focused_ui_element = make_focused_ui_element(*snapshot);
 
     enqueue_to_dispatcher([this, force, current_application, current_focused_ui_element] {
       // `force` is non-zero when async_trigger() explicitly requests callbacks even if the snapshot is unchanged.

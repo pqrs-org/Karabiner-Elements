@@ -66,6 +66,42 @@ public:
     return *this;
   }
 
+  const std::optional<double>& get_window_position_x() const {
+    return window_position_x_;
+  }
+
+  focused_ui_element& set_window_position_x(const std::optional<double>& value) {
+    window_position_x_ = value;
+    return *this;
+  }
+
+  const std::optional<double>& get_window_position_y() const {
+    return window_position_y_;
+  }
+
+  focused_ui_element& set_window_position_y(const std::optional<double>& value) {
+    window_position_y_ = value;
+    return *this;
+  }
+
+  const std::optional<double>& get_window_size_width() const {
+    return window_size_width_;
+  }
+
+  focused_ui_element& set_window_size_width(const std::optional<double>& value) {
+    window_size_width_ = value;
+    return *this;
+  }
+
+  const std::optional<double>& get_window_size_height() const {
+    return window_size_height_;
+  }
+
+  focused_ui_element& set_window_size_height(const std::optional<double>& value) {
+    window_size_height_ = value;
+    return *this;
+  }
+
   bool operator==(const focused_ui_element& other) const = default;
 
 private:
@@ -75,6 +111,10 @@ private:
   std::optional<std::string> title_;
   std::optional<std::string> description_;
   std::optional<std::string> identifier_;
+  std::optional<double> window_position_x_;
+  std::optional<double> window_position_y_;
+  std::optional<double> window_size_width_;
+  std::optional<double> window_size_height_;
 };
 } // namespace accessibility
 } // namespace osx
