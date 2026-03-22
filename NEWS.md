@@ -10,6 +10,10 @@
         - accessibility.focused_ui_element.role
         - accessibility.focused_ui_element.subrole
         - accessibility.focused_ui_element.title
+        - accessibility.focused_ui_element.window_position_x
+        - accessibility.focused_ui_element.window_position_y
+        - accessibility.focused_ui_element.window_size_height
+        - accessibility.focused_ui_element.window_size_width
     - You can now generate JSON for Complex Modifications rules by writing JavaScript.
     - Added an "Add your own rule using JavaScript" button to the complex modifications viewer.
     - Added an "Open in external editor" button to the complex modifications editor.

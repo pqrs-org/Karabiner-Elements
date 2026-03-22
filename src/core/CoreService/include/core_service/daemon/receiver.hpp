@@ -527,6 +527,42 @@ private:
               nullptr,
               std::nullopt,
               nullptr));
+
+      device_grabber_->async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
+              "accessibility.focused_ui_element.window_position_x",
+              manipulator_environment_variable_value(
+                  static_cast<int64_t>(focused_ui_element_.get_window_position_x().value_or(0))),
+              nullptr,
+              std::nullopt,
+              nullptr));
+
+      device_grabber_->async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
+              "accessibility.focused_ui_element.window_position_y",
+              manipulator_environment_variable_value(
+                  static_cast<int64_t>(focused_ui_element_.get_window_position_y().value_or(0))),
+              nullptr,
+              std::nullopt,
+              nullptr));
+
+      device_grabber_->async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
+              "accessibility.focused_ui_element.window_size_width",
+              manipulator_environment_variable_value(
+                  static_cast<int64_t>(focused_ui_element_.get_window_size_width().value_or(0))),
+              nullptr,
+              std::nullopt,
+              nullptr));
+
+      device_grabber_->async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
+              "accessibility.focused_ui_element.window_size_height",
+              manipulator_environment_variable_value(
+                  static_cast<int64_t>(focused_ui_element_.get_window_size_height().value_or(0))),
+              nullptr,
+              std::nullopt,
+              nullptr));
     }
   }
 

@@ -55,6 +55,10 @@ public:
           e.set_role(focused_ui_element_ptr->get_role());
           e.set_subrole(focused_ui_element_ptr->get_subrole());
           e.set_title(focused_ui_element_ptr->get_title());
+          e.set_window_position_x(focused_ui_element_ptr->get_window_position_x());
+          e.set_window_position_y(focused_ui_element_ptr->get_window_position_y());
+          e.set_window_size_width(focused_ui_element_ptr->get_window_size_width());
+          e.set_window_size_height(focused_ui_element_ptr->get_window_size_height());
 
           core_service_client_->async_focused_ui_element_changed(e);
         }
