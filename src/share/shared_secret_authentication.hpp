@@ -12,7 +12,7 @@ namespace shared_secret_authentication {
 class client final {
 public:
   void connected(pqrs::local_datagram::client& client) {
-    reset();
+    reset_shared_secret();
 
     nlohmann::json json{
         {"operation_type", operation_type::handshake},
@@ -53,6 +53,10 @@ public:
   void reset(void) {
     shared_secret_.clear();
     pending_messages_.clear();
+  }
+
+  void reset_shared_secret(void) {
+    shared_secret_.clear();
   }
 
 private:
