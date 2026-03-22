@@ -33,7 +33,7 @@ public:
   console_user_server_client(const console_user_server_client&) = delete;
 
   console_user_server_client(uid_t uid,
-                             std::optional<std::string> client_socket_directory_name)
+                             const std::string& client_socket_directory_name)
       : dispatcher_client(),
         uid_(uid),
         client_socket_directory_name_(client_socket_directory_name) {
@@ -71,9 +71,7 @@ public:
         logger::get_logger()->info("console_user_server_client is connected.");
 
         if (uid_ != geteuid()) {
-          if (auto p = client_socket_file_path) {
-            chown(p->c_str(), uid_, 0);
-          }
+          chown(client_socket_file_path.c_str(), uid_, 0);
         }
 
         enqueue_to_dispatcher([this] {
@@ -323,42 +321,32 @@ private:
         constants::get_console_user_server_socket_directory_path(uid_));
   }
 
-  std::optional<std::filesystem::path> console_user_server_client_socket_directory_path(void) const {
-    if (client_socket_directory_name_ != std::nullopt &&
-        client_socket_directory_name_ != "") {
-      return constants::get_system_user_directory(uid_) / *client_socket_directory_name_;
-    }
-
-    return std::nullopt;
+  std::filesystem::path console_user_server_client_socket_directory_path(void) const {
+    return constants::get_system_user_directory(uid_) / client_socket_directory_name_;
   }
 
-  std::optional<std::filesystem::path> console_user_server_client_socket_file_path(void) const {
-    if (auto d = console_user_server_client_socket_directory_path()) {
-      return *d / filesystem_utility::make_socket_file_basename();
-    }
-
-    return std::nullopt;
+  std::filesystem::path console_user_server_client_socket_file_path(void) const {
+    return console_user_server_client_socket_directory_path() / filesystem_utility::make_socket_file_basename();
   }
 
   void prepare_console_user_server_client_socket_directory(void) {
-    if (auto d = console_user_server_client_socket_directory_path()) {
+    auto d = console_user_server_client_socket_directory_path();
 
-      //
-      // Remove old socket files.
-      //
+    //
+    // Remove old socket files.
+    //
 
-      std::error_code ec;
-      std::filesystem::remove_all(*d, ec);
+    std::error_code ec;
+    std::filesystem::remove_all(d, ec);
 
-      //
-      // Create directory.
-      //
+    //
+    // Create directory.
+    //
 
-      std::filesystem::create_directory(*d, ec);
+    std::filesystem::create_directory(d, ec);
 
-      if (uid_ != geteuid()) {
-        chown(d->c_str(), uid_, 0);
-      }
+    if (uid_ != geteuid()) {
+      chown(d.c_str(), uid_, 0);
     }
   }
 
@@ -374,7 +362,7 @@ private:
   }
 
   uid_t uid_;
-  std::optional<std::string> client_socket_directory_name_;
+  std::string client_socket_directory_name_;
 
   std::unique_ptr<pqrs::local_datagram::client> client_;
   mutable shared_secret_authentication::client shared_secret_authentication_client_;

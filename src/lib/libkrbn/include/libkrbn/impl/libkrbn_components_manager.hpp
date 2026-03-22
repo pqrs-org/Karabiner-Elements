@@ -153,7 +153,7 @@ public:
   // core_service_client_
   //
 
-  void enable_core_service_client(std::optional<std::string> client_socket_directory_name) {
+  void enable_core_service_client(const std::string& client_socket_directory_name) {
     if (!core_service_client_) {
       core_service_client_ = std::make_shared<libkrbn_core_service_client>(client_socket_directory_name);
     }
@@ -172,7 +172,7 @@ public:
   //
 
   void enable_console_user_server_client(uid_t uid,
-                                         std::optional<std::string> client_socket_directory_name) {
+                                         const std::string& client_socket_directory_name) {
     if (!console_user_server_client_) {
       console_user_server_client_ = std::make_shared<libkrbn_console_user_server_client>(uid,
                                                                                          client_socket_directory_name);

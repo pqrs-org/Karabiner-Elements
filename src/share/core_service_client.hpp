@@ -32,7 +32,7 @@ public:
 
   core_service_client(const core_service_client&) = delete;
 
-  core_service_client(std::optional<std::string> client_socket_directory_name)
+  core_service_client(const std::string& client_socket_directory_name)
       : dispatcher_client(),
         client_socket_directory_name_(client_socket_directory_name) {
   }
@@ -320,39 +320,29 @@ private:
         constants::get_karabiner_core_service_socket_directory_path());
   }
 
-  std::optional<std::filesystem::path> core_service_client_socket_directory_path(void) const {
-    if (client_socket_directory_name_ != std::nullopt &&
-        client_socket_directory_name_ != "") {
-      return constants::get_system_user_directory(geteuid()) / *client_socket_directory_name_;
-    }
-
-    return std::nullopt;
+  std::filesystem::path core_service_client_socket_directory_path(void) const {
+    return constants::get_system_user_directory(geteuid()) / client_socket_directory_name_;
   }
 
-  std::optional<std::filesystem::path> core_service_client_socket_file_path(void) const {
-    if (auto d = core_service_client_socket_directory_path()) {
-      return *d / filesystem_utility::make_socket_file_basename();
-    }
-
-    return std::nullopt;
+  std::filesystem::path core_service_client_socket_file_path(void) const {
+    return core_service_client_socket_directory_path() / filesystem_utility::make_socket_file_basename();
   }
 
   void prepare_core_service_client_socket_directory(void) {
-    if (auto d = core_service_client_socket_directory_path()) {
+    auto d = core_service_client_socket_directory_path();
 
-      //
-      // Remove old socket files.
-      //
+    //
+    // Remove old socket files.
+    //
 
-      std::error_code ec;
-      std::filesystem::remove_all(*d, ec);
+    std::error_code ec;
+    std::filesystem::remove_all(d, ec);
 
-      //
-      // Create directory.
-      //
+    //
+    // Create directory.
+    //
 
-      std::filesystem::create_directory(*d, ec);
-    }
+    std::filesystem::create_directory(d, ec);
   }
 
   void stop(void) {
@@ -366,7 +356,7 @@ private:
     logger::get_logger()->info("core_service_client is stopped.");
   }
 
-  std::optional<std::string> client_socket_directory_name_;
+  std::string client_socket_directory_name_;
   std::unique_ptr<pqrs::local_datagram::client> client_;
   mutable shared_secret_authentication::client shared_secret_authentication_client_;
 };

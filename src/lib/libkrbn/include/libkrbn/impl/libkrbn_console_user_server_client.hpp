@@ -9,7 +9,7 @@ public:
   libkrbn_console_user_server_client(const libkrbn_console_user_server_client&) = delete;
 
   libkrbn_console_user_server_client(uid_t uid,
-                                     std::optional<std::string> client_socket_directory_name)
+                                     const std::string& client_socket_directory_name)
       : dispatcher_client(),
         status_(libkrbn_console_user_server_client_status_none) {
     console_user_server_client_ = std::make_unique<krbn::console_user_server_client>(uid,

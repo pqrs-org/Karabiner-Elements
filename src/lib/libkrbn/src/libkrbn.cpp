@@ -678,12 +678,9 @@ bool libkrbn_hid_value_monitor_observed(void) {
 
 void libkrbn_enable_core_service_client(const char* client_socket_directory_name) {
   if (auto manager = libkrbn_components_manager_) {
-    std::optional<std::string> name;
     if (client_socket_directory_name) {
-      name = client_socket_directory_name;
+      manager->enable_core_service_client(client_socket_directory_name);
     }
-
-    manager->enable_core_service_client(name);
   }
 }
 
@@ -873,13 +870,10 @@ void libkrbn_core_service_client_async_clear_user_variables(void) {
 void libkrbn_enable_console_user_server_client(uid_t uid,
                                                const char* client_socket_directory_name) {
   if (auto manager = libkrbn_components_manager_) {
-    std::optional<std::string> name;
     if (client_socket_directory_name) {
-      name = client_socket_directory_name;
+      manager->enable_console_user_server_client(uid,
+                                                 client_socket_directory_name);
     }
-
-    manager->enable_console_user_server_client(uid,
-                                               name);
   }
 }
 

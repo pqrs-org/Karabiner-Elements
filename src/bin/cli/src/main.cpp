@@ -266,7 +266,7 @@ void set_variables(const std::string& variables) {
 
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client(std::nullopt);
+    krbn::core_service_client client("cli_cs_clnt");
     client.async_start();
     client.async_set_variables(json, [&wait] {
       wait->notify();
