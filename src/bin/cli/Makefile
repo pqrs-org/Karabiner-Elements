@@ -9,6 +9,8 @@ clean:
 	rm -fr build
 
 install:
+	bash ../../../scripts/codesign.sh build/Release/karabiner_cli
+
 	sudo install \
 		-m 755 \
 		build/Release/karabiner_cli \
