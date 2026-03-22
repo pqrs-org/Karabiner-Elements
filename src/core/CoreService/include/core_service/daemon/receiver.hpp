@@ -265,7 +265,8 @@ public:
               device_grabber_->async_invoke_with_manipulator_environment(
                   [this, sender_endpoint](auto&& manipulator_environment) {
                     for (const auto& name : manipulator_environment.get_variable_names()) {
-                      if (name.starts_with("system.")) {
+                      if (name.starts_with("system.") ||
+                          name.starts_with("accessibility.")) {
                         continue;
                       }
 
@@ -343,6 +344,11 @@ public:
                                           manipulator_environment.get_variable("system.use_fkeys_as_standard_function_keys"),
                                       },
                                   },
+
+                                  // Note:
+                                  // The accessibility.* variables contain information such as window titles,
+                                  // so they should not be exposed to other applications via the CLI
+                                  // and are therefore excluded from the return value.
                               }});
                     }
                   });
