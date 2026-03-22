@@ -29,25 +29,10 @@ int daemon(void) {
   // Setup logger
   //
 
-  logger::set_async_rotating_logger("core_service",
+  logger::set_async_rotating_logger("core_service (daemon)",
                                     "/var/log/karabiner/core_service.log",
                                     pqrs::spdlog::filesystem::log_directory_perms_0755);
   logger::get_logger()->info("version {0}", karabiner_version);
-
-  //
-  // Check another process
-  //
-
-  {
-    bool another_process_running = !process_utility::lock_single_application(constants::get_pid_directory() / "karabiner_core_service.pid");
-
-    if (another_process_running) {
-      auto message = "Exit since another process is running.";
-      logger::get_logger()->info(message);
-      std::cerr << message << std::endl;
-      return 1;
-    }
-  }
 
   //
   // Get codesign

@@ -24,7 +24,7 @@ int agent(void) {
   //
 
   if (!krbn::constants::get_user_log_directory().empty()) {
-    krbn::logger::set_async_rotating_logger("core_service",
+    krbn::logger::set_async_rotating_logger("core_service (agent)",
                                             krbn::constants::get_user_log_directory() / "core_service.log",
                                             pqrs::spdlog::filesystem::log_directory_perms_0700);
   }
@@ -36,17 +36,6 @@ int agent(void) {
   //
 
   krbn::environment_variable_utility::log(environment_variables);
-
-  //
-  // Check another process
-  //
-
-  if (!krbn::process_utility::lock_single_application_with_user_pid_file("karabiner_core_service.pid")) {
-    auto message = "Exit since another process is running.";
-    krbn::logger::get_logger()->info(message);
-    std::cerr << message << std::endl;
-    return 1;
-  }
 
   //
   // Get codesign
