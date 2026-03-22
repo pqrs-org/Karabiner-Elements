@@ -212,7 +212,7 @@ void run_manipulator_conditions_test(void) {
 
     // bundle_identifiers matching
     {
-      application application;
+      krbn::application application;
       application.set_bundle_identifier("com.apple.Terminal");
       application.set_file_path("/not_found");
       manipulator_environment.set_frontmost_application(application);
@@ -225,7 +225,7 @@ void run_manipulator_conditions_test(void) {
 
     // Test regex escape works properly
     {
-      application application;
+      krbn::application application;
       application.set_bundle_identifier("com/apple/Terminal");
       application.set_file_path("/not_found");
       manipulator_environment.set_frontmost_application(application);
@@ -239,7 +239,7 @@ void run_manipulator_conditions_test(void) {
 
     // file_path matching
     {
-      application application;
+      krbn::application application;
       application.set_bundle_identifier("com/apple/Terminal");
       application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
       manipulator_environment.set_frontmost_application(application);
@@ -250,7 +250,7 @@ void run_manipulator_conditions_test(void) {
 
     // frontmost_application_unless
     {
-      application application;
+      krbn::application application;
       application.set_bundle_identifier("com.googlecode.iterm2");
       application.set_file_path("/Applications/iTerm.app");
       manipulator_environment.set_frontmost_application(application);
@@ -260,7 +260,7 @@ void run_manipulator_conditions_test(void) {
     }
 
     {
-      application application;
+      krbn::application application;
       application.set_bundle_identifier("com.googlecode.iterm2");
       application.set_file_path("/Users/tekezo/Applications/iTerm.app");
       manipulator_environment.set_frontmost_application(application);
