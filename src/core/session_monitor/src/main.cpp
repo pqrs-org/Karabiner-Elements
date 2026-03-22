@@ -3,7 +3,6 @@
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
-#include "process_utility.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "session_monitor/components_manager.hpp"
 #include <iostream>
@@ -52,23 +51,6 @@ int main(int argc, const char* argv[]) {
                                           pqrs::spdlog::filesystem::log_directory_perms_0755);
 
   krbn::logger::get_logger()->info("version {0}", karabiner_version);
-
-  //
-  // Check another process
-  //
-
-  {
-    // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
-    // (We have to make pid file which includes the real user ID in the file path.)
-    auto pid_file_path = krbn::constants::get_pid_directory() /
-                         fmt::format("karabiner_session_monitor.{0}.pid", getuid());
-    if (!krbn::process_utility::lock_single_application(pid_file_path)) {
-      auto message = "Exit since another process is running.";
-      krbn::logger::get_logger()->info(message);
-      std::cerr << message << std::endl;
-      return 1;
-    }
-  }
 
   //
   // Make socket directory.

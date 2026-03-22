@@ -7,7 +7,6 @@
 #include "environment_variable_utility.hpp"
 #include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
-#include "process_utility.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "services_utility.hpp"
 #include "types.hpp"
@@ -120,14 +119,6 @@ bool libkrbn_user_pid_directory_writable(void) {
   }
 
   return true;
-}
-
-bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name) {
-  return krbn::process_utility::lock_single_application_with_user_pid_file(pid_file_name);
-}
-
-void libkrbn_unlock_single_application(void) {
-  krbn::process_utility::unlock_single_application();
 }
 
 void libkrbn_services_register_core_daemons(void) {

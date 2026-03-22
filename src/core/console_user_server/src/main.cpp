@@ -6,7 +6,6 @@
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
-#include "process_utility.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "services_utility.hpp"
 #include <pqrs/dispatcher.hpp>
@@ -51,17 +50,6 @@ int main(int argc, const char* argv[]) {
   //
 
   krbn::environment_variable_utility::log(environment_variables);
-
-  //
-  // Check another process
-  //
-
-  if (!krbn::process_utility::lock_single_application_with_user_pid_file("karabiner_console_user_server.pid")) {
-    auto message = "Exit since another process is running.";
-    krbn::logger::get_logger()->info(message);
-    std::cerr << message << std::endl;
-    return 1;
-  }
 
   //
   // Get codesign

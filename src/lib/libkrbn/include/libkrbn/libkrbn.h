@@ -40,9 +40,6 @@ void libkrbn_get_user_tmp_directory(char* _Nonnull buffer,
 
 bool libkrbn_user_pid_directory_writable(void);
 
-bool libkrbn_lock_single_application_with_user_pid_file(const char* _Nonnull pid_file_name);
-void libkrbn_unlock_single_application(void);
-
 void libkrbn_services_register_core_daemons(void);
 void libkrbn_services_register_core_agents(void);
 void libkrbn_services_bootout_old_agents(void);

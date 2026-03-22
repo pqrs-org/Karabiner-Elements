@@ -8,7 +8,6 @@
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
-#include "process_utility.hpp"
 #include "services_utility.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <iostream>
