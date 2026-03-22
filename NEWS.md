@@ -5,6 +5,11 @@
 - 🔔 Important Notes
     - Karabiner-Core-Service now requires Accessibility permission. Please enable it in System Settings.
 - ✨ New Features
+    - `frontmost_application_if` can now detect overlay windows, such as Spotlight, using the Accessibility API.
+    - `variable_if` now supports the following variables, making it possible to change behavior depending on whether the focused element is a text area.
+        - accessibility.focused_ui_element.role
+        - accessibility.focused_ui_element.subrole
+        - accessibility.focused_ui_element.title
     - You can now generate JSON for Complex Modifications rules by writing JavaScript.
     - Added an "Add your own rule using JavaScript" button to the complex modifications viewer.
     - Added an "Open in external editor" button to the complex modifications editor.
