@@ -149,6 +149,18 @@ public:
           case operation_type::focused_ui_element_changed: {
             auto element = json.at("focused_ui_element").get<focused_ui_element>();
 
+            //
+            // Synchronize frontmost_application_changed to console_user_server
+            //
+
+            if (console_user_server_client_) {
+              console_user_server_client_->async_focused_ui_element_changed(element);
+            }
+
+            //
+            // Update accessibility.* variables
+            //
+
             focused_ui_element_ = element;
             set_focused_ui_element_variables();
             break;

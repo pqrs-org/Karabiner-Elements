@@ -243,6 +243,18 @@ public:
     });
   }
 
+  // core_service (daemon) -> console_user_server
+  void async_focused_ui_element_changed(const focused_ui_element& focused_ui_element) const {
+    enqueue_to_dispatcher([this, focused_ui_element] {
+      nlohmann::json json{
+          {"operation_type", operation_type::focused_ui_element_changed},
+          {"focused_ui_element", focused_ui_element},
+      };
+
+      async_send_message(std::move(json));
+    });
+  }
+
   // core_service -> console_user_server
   void async_shell_command_execution(const std::string& shell_command) const {
     enqueue_to_dispatcher([this, shell_command] {

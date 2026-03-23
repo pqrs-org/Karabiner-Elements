@@ -54,6 +54,16 @@ public:
     type type_;
   };
 
+  enum class relative_to {
+    screen,
+    focused_window,
+  };
+
+  enum class fallback_to {
+    none,
+    screen,
+  };
+
   set_mouse_cursor_position(void) {
   }
 
@@ -81,6 +91,22 @@ public:
     screen_ = value;
   }
 
+  relative_to get_relative_to(void) const {
+    return relative_to_;
+  }
+
+  void set_relative_to(relative_to value) {
+    relative_to_ = value;
+  }
+
+  fallback_to get_fallback_to(void) const {
+    return fallback_to_;
+  }
+
+  void set_fallback_to(fallback_to value) {
+    fallback_to_ = value;
+  }
+
   CGPoint get_point(const CGRect& bounds) const {
     return CGPointMake(x_.point_value(bounds.size.width),
                        y_.point_value(bounds.size.height));
@@ -92,7 +118,23 @@ private:
   position_value x_;
   position_value y_;
   std::optional<uint32_t> screen_;
+  relative_to relative_to_ = relative_to::screen;
+  fallback_to fallback_to_ = fallback_to::none;
 };
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+    set_mouse_cursor_position::relative_to,
+    {
+        {set_mouse_cursor_position::relative_to::screen, "screen"},
+        {set_mouse_cursor_position::relative_to::focused_window, "focused_window"},
+    });
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+    set_mouse_cursor_position::fallback_to,
+    {
+        {set_mouse_cursor_position::fallback_to::none, "none"},
+        {set_mouse_cursor_position::fallback_to::screen, "screen"},
+    });
 
 //
 // set_mouse_cursor_position::position_value json
@@ -162,6 +204,12 @@ inline void to_json(nlohmann::json& json, const set_mouse_cursor_position& value
   if (auto v = value.get_screen()) {
     json["screen"] = *v;
   }
+  if (value.get_relative_to() != set_mouse_cursor_position::relative_to::screen) {
+    json["relative_to"] = value.get_relative_to();
+  }
+  if (value.get_fallback_to() != set_mouse_cursor_position::fallback_to::none) {
+    json["fallback_to"] = value.get_fallback_to();
+  }
 }
 
 inline void from_json(const nlohmann::json& json, set_mouse_cursor_position& value) {
@@ -175,6 +223,28 @@ inline void from_json(const nlohmann::json& json, set_mouse_cursor_position& val
     } else if (k == "screen") {
       pqrs::json::requires_number(v, "`" + k + "`");
       value.set_screen(v.get<int>());
+    } else if (k == "relative_to") {
+      pqrs::json::requires_string(v, "`" + k + "`");
+      auto s = v.get<std::string>();
+
+      if (s == "screen") {
+        value.set_relative_to(set_mouse_cursor_position::relative_to::screen);
+      } else if (s == "focused_window") {
+        value.set_relative_to(set_mouse_cursor_position::relative_to::focused_window);
+      } else {
+        throw pqrs::json::unmarshal_error("unknown relative_to: " + s);
+      }
+    } else if (k == "fallback_to") {
+      pqrs::json::requires_string(v, "`" + k + "`");
+      auto s = v.get<std::string>();
+
+      if (s == "none") {
+        value.set_fallback_to(set_mouse_cursor_position::fallback_to::none);
+      } else if (s == "screen") {
+        value.set_fallback_to(set_mouse_cursor_position::fallback_to::screen);
+      } else {
+        throw pqrs::json::unmarshal_error("unknown fallback_to: " + s);
+      }
     } else {
       throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));
     }
@@ -204,6 +274,8 @@ struct hash<krbn::software_function_details::set_mouse_cursor_position> final {
     pqrs::hash::combine(h, value.get_x());
     pqrs::hash::combine(h, value.get_y());
     pqrs::hash::combine(h, value.get_screen());
+    pqrs::hash::combine(h, value.get_relative_to());
+    pqrs::hash::combine(h, value.get_fallback_to());
 
     return h;
   }

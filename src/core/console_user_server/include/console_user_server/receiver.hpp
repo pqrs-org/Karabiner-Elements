@@ -93,6 +93,7 @@ public:
           case operation_type::register_notification_window_agent:
           case operation_type::unregister_notification_window_agent:
           case operation_type::frontmost_application_changed:
+          case operation_type::focused_ui_element_changed:
           case operation_type::select_input_source:
           case operation_type::shell_command_execution:
           case operation_type::send_user_command:
@@ -158,6 +159,13 @@ public:
                   if (auto h = weak_software_function_handler_.lock()) {
                     auto app = json.at("frontmost_application").get<application>();
                     h->add_frontmost_application_history(app);
+                  }
+                  break;
+
+                case operation_type::focused_ui_element_changed:
+                  if (auto h = weak_software_function_handler_.lock()) {
+                    auto element = json.at("focused_ui_element").get<focused_ui_element>();
+                    h->set_focused_ui_element(element);
                   }
                   break;
 

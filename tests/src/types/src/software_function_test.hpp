@@ -134,6 +134,42 @@ void run_software_function_test(void) {
 
       expect(nlohmann::json(value) == json);
     }
+    {
+      auto json = nlohmann::json::object({
+          {"x", "50%"},
+          {"y", "50%"},
+          {"relative_to", "focused_window"},
+          {"fallback_to", "screen"},
+      });
+
+      auto value = json.get<krbn::software_function_details::set_mouse_cursor_position>();
+      expect(value.get_x().get_value() == 50);
+      expect(value.get_x().get_type() == krbn::software_function_details::set_mouse_cursor_position::position_value::type::percent);
+      expect(value.get_y().get_value() == 50);
+      expect(value.get_y().get_type() == krbn::software_function_details::set_mouse_cursor_position::position_value::type::percent);
+      expect(value.get_relative_to() == krbn::software_function_details::set_mouse_cursor_position::relative_to::focused_window);
+      expect(value.get_fallback_to() == krbn::software_function_details::set_mouse_cursor_position::fallback_to::screen);
+
+      expect(nlohmann::json(value) == json);
+    }
+    {
+      auto json = nlohmann::json::object({
+          {"relative_to", "invalid"},
+      });
+
+      expect(throws([&] {
+        json.get<krbn::software_function_details::set_mouse_cursor_position>();
+      }));
+    }
+    {
+      auto json = nlohmann::json::object({
+          {"fallback_to", "invalid"},
+      });
+
+      expect(throws([&] {
+        json.get<krbn::software_function_details::set_mouse_cursor_position>();
+      }));
+    }
 
     //
     // software_function
@@ -145,6 +181,8 @@ void run_software_function_test(void) {
            nlohmann::json::object({
                {"x", 100},
                {"y", 200},
+               {"relative_to", "focused_window"},
+               {"fallback_to", "screen"},
                {"screen", 1},
            })},
       });
@@ -152,6 +190,8 @@ void run_software_function_test(void) {
       auto value = json.get<krbn::software_function>();
       expect(value.get_if<krbn::software_function_details::cg_event_double_click>() == nullptr);
       expect(value.get_if<krbn::software_function_details::set_mouse_cursor_position>()->get_x().get_value() == 100);
+      expect(value.get_if<krbn::software_function_details::set_mouse_cursor_position>()->get_relative_to() == krbn::software_function_details::set_mouse_cursor_position::relative_to::focused_window);
+      expect(value.get_if<krbn::software_function_details::set_mouse_cursor_position>()->get_fallback_to() == krbn::software_function_details::set_mouse_cursor_position::fallback_to::screen);
 
       expect(nlohmann::json(value) == json);
     }

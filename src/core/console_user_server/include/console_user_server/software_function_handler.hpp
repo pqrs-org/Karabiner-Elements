@@ -107,6 +107,10 @@ public:
     });
   }
 
+  void set_focused_ui_element(const focused_ui_element& focused_ui_element) {
+    focused_ui_element_ = focused_ui_element;
+  }
+
 private:
   void execute_cg_event_double_click(const software_function_details::cg_event_double_click& cg_event_double_click) {
     if (!check_trusted_) {
@@ -218,9 +222,42 @@ private:
   }
 
   void execute_set_mouse_cursor_position(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
-    if (auto target_display_id = get_target_display_id(set_mouse_cursor_position)) {
-      auto local_display_point = set_mouse_cursor_position.get_point(CGDisplayBounds(*target_display_id));
-      CGDisplayMoveCursorToPoint(*target_display_id, local_display_point);
+    switch (set_mouse_cursor_position.get_relative_to()) {
+      case software_function_details::set_mouse_cursor_position::relative_to::screen:
+        if (auto bounds = get_screen_bounds(set_mouse_cursor_position)) {
+          auto point = set_mouse_cursor_position.get_point(bounds->second);
+          CGDisplayMoveCursorToPoint(bounds->first, point);
+        }
+        break;
+
+      case software_function_details::set_mouse_cursor_position::relative_to::focused_window:
+        if (auto bounds = get_focused_window_bounds()) {
+          auto point = set_mouse_cursor_position.get_point(*bounds);
+          auto target_display_id = CGMainDisplayID();
+          CGDirectDisplayID display_id;
+          if (CGGetDisplaysWithPoint(bounds->origin,
+                                     1,
+                                     &display_id,
+                                     nullptr) == kCGErrorSuccess) {
+            target_display_id = display_id;
+          }
+          CGDisplayMoveCursorToPoint(target_display_id,
+                                     CGPointMake(bounds->origin.x + point.x,
+                                                 bounds->origin.y + point.y));
+        } else {
+          switch (set_mouse_cursor_position.get_fallback_to()) {
+            case software_function_details::set_mouse_cursor_position::fallback_to::none:
+              break;
+
+            case software_function_details::set_mouse_cursor_position::fallback_to::screen:
+              if (auto bounds = get_screen_bounds(set_mouse_cursor_position)) {
+                auto point = set_mouse_cursor_position.get_point(bounds->second);
+                CGDisplayMoveCursorToPoint(bounds->first, point);
+              }
+              break;
+          }
+        }
+        break;
     }
   }
 
@@ -237,10 +274,37 @@ private:
     return std::nullopt;
   }
 
+  std::optional<std::pair<CGDirectDisplayID, CGRect>> get_screen_bounds(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
+    if (auto target_display_id = get_target_display_id(set_mouse_cursor_position)) {
+      return std::make_pair(*target_display_id, CGDisplayBounds(*target_display_id));
+    }
+
+    return std::nullopt;
+  }
+
+  std::optional<CGRect> get_focused_window_bounds(void) const {
+    if (auto x = focused_ui_element_.get_window_position_x()) {
+      if (auto y = focused_ui_element_.get_window_position_y()) {
+        if (auto width = focused_ui_element_.get_window_size_width()) {
+          if (auto height = focused_ui_element_.get_window_size_height()) {
+            if (*width <= 0 || *height <= 0) {
+              return std::nullopt;
+            }
+
+            return CGRectMake(*x, *y, *width, *height);
+          }
+        }
+      }
+    }
+
+    return std::nullopt;
+  }
+
 private:
   bool check_trusted_;
   // Stored in order from the newest at the beginning.
   std::deque<application> frontmost_application_history_;
+  focused_ui_element focused_ui_element_;
 };
 } // namespace console_user_server
 } // namespace krbn

@@ -498,6 +498,28 @@
         "input": {
             "software_function": {
                 "set_mouse_cursor_position": {
+                    "relative_to": "invalid"
+                }
+            }
+        },
+        "error": "`software_function` error: `set_mouse_cursor_position` error: unknown relative_to: invalid"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "set_mouse_cursor_position": {
+                    "fallback_to": "invalid"
+                }
+            }
+        },
+        "error": "`software_function` error: `set_mouse_cursor_position` error: unknown fallback_to: invalid"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "software_function": {
+                "set_mouse_cursor_position": {
                     "unknown": null
                 }
             }

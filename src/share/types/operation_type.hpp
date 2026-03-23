@@ -10,8 +10,8 @@ enum class operation_type : uint8_t {
   shared_secret, // The response to the `handshake`
   // session_monitor -> core_service (daemon)
   console_user_id_changed,
-  // core_service (agent) -> core_service (deamon)
-  frontmost_application_changed, // Synchronized to console_user_server as well via the core_service (daemon) -> console_user_server path.
+  // core_service (agent) -> core_service (deamon) -> console_user_server
+  frontmost_application_changed,
   focused_ui_element_changed,
   // console_user_server -> core_service (deamon)
   connect_console_user_server,

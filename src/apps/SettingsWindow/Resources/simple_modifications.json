@@ -2527,6 +2527,22 @@
     },
     {
         "not_from": true,
+        "label": "Set mouse cursor position to the center of the focused window",
+        "data": [
+            {
+                "software_function": {
+                    "set_mouse_cursor_position": {
+                        "x": "50%",
+                        "y": "50%",
+                        "relative_to": "focused_window",
+                        "fallback_to": "screen"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "not_from": true,
         "label": "Sleep (IOKit Power Management Sleep System)",
         "data": [
             {
