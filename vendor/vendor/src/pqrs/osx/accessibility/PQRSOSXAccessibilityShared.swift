@@ -5,6 +5,12 @@
 import AppKit
 import ApplicationServices
 
+enum DetectionSource: Int32, Sendable, Equatable {
+  case none = 0
+  case workspace = 1
+  case axObserver = 2
+}
+
 public typealias PQRSOSXAccessibilityMonitorCallback =
   @Sendable @convention(c) (
     Int32,
@@ -27,13 +33,14 @@ struct FrontmostApplication: Sendable, Equatable {
   let bundlePath: String?
   let filePath: String?
   let processIdentifier: pid_t?
+  let detectionSource: DetectionSource
 
-  init(processIdentifier: pid_t) {
+  init(processIdentifier: pid_t, detectionSource: DetectionSource = .none) {
     let runningApplication = NSRunningApplication(processIdentifier: processIdentifier)
-    self.init(runningApplication)
+    self.init(runningApplication, detectionSource: detectionSource)
   }
 
-  init(_ runningApplication: NSRunningApplication?) {
+  init(_ runningApplication: NSRunningApplication?, detectionSource: DetectionSource = .none) {
     let processIdentifier = runningApplication?.processIdentifier ?? 0
 
     name = Self.normalize(runningApplication?.localizedName)
@@ -41,6 +48,7 @@ struct FrontmostApplication: Sendable, Equatable {
     bundlePath = Self.normalize(runningApplication?.bundleURL?.path)
     filePath = Self.normalize(runningApplication?.executableURL?.path)
     self.processIdentifier = processIdentifier == 0 ? nil : processIdentifier
+    self.detectionSource = detectionSource
   }
 
   static func normalize(_ value: String?) -> String? {
@@ -48,6 +56,22 @@ struct FrontmostApplication: Sendable, Equatable {
       return nil
     }
     return value
+  }
+
+  private init(
+    name: String?,
+    bundleIdentifier: String?,
+    bundlePath: String?,
+    filePath: String?,
+    processIdentifier: pid_t?,
+    detectionSource: DetectionSource
+  ) {
+    self.name = name
+    self.bundleIdentifier = bundleIdentifier
+    self.bundlePath = bundlePath
+    self.filePath = filePath
+    self.processIdentifier = processIdentifier
+    self.detectionSource = detectionSource
   }
 }
 
@@ -145,28 +169,67 @@ func copyCGSizeAttribute(_ element: AXUIElement, _ attribute: CFString) -> CGSiz
 }
 
 @MainActor
-func copySnapshot(cachedApplication: FrontmostApplication?) -> Snapshot {
+func copySnapshot(
+  cachedApplication: FrontmostApplication?,
+  handleAXProcessIdentifier: (pid_t?) -> Void
+) -> Snapshot {
   let systemWideElement = AXUIElementCreateSystemWide()
+  let workspaceFrontmostApplication = NSWorkspace.shared.frontmostApplication
   let applicationElement: AXUIElement? = copyAttribute(
     systemWideElement, kAXFocusedApplicationAttribute as CFString)
   let systemWideFocusedUIElement: AXUIElement? = copyAttribute(
     systemWideElement, kAXFocusedUIElementAttribute as CFString)
 
-  let processIdentifier =
+  let axProcessIdentifier =
     applicationElement
     .flatMap(copyPid(_:))
     ?? systemWideFocusedUIElement
     .flatMap(copyPid(_:))
 
+  let workspaceProcessIdentifier = workspaceFrontmostApplication?.processIdentifier
+  let processIdentifier: pid_t? =
+    if let axProcessIdentifier, axProcessIdentifier != 0 {
+      axProcessIdentifier
+    } else if let workspaceProcessIdentifier, workspaceProcessIdentifier != 0 {
+      workspaceProcessIdentifier
+    } else {
+      nil
+    }
+
+  let detectionSource: DetectionSource
+  if let axProcessIdentifier, axProcessIdentifier != 0 {
+    if workspaceProcessIdentifier == nil
+      || workspaceProcessIdentifier == 0
+      || workspaceProcessIdentifier != axProcessIdentifier
+    {
+      handleAXProcessIdentifier(axProcessIdentifier)
+      detectionSource = .axObserver
+    } else {
+      detectionSource = .workspace
+    }
+  } else if let workspaceProcessIdentifier, workspaceProcessIdentifier != 0 {
+    detectionSource = .workspace
+  } else {
+    detectionSource = .none
+  }
+
   let resolvedApplication: FrontmostApplication? =
     if let processIdentifier {
-      if cachedApplication?.processIdentifier == processIdentifier {
+      if cachedApplication?.processIdentifier == processIdentifier,
+        cachedApplication?.detectionSource == detectionSource
+      {
         cachedApplication
       } else {
-        FrontmostApplication(processIdentifier: processIdentifier)
+        FrontmostApplication(
+          processIdentifier: processIdentifier,
+          detectionSource: detectionSource
+        )
       }
     } else {
-      FrontmostApplication(NSWorkspace.shared.frontmostApplication)
+      FrontmostApplication(
+        workspaceFrontmostApplication,
+        detectionSource: detectionSource
+      )
     }
 
   let applicationFocusedUIElement: AXUIElement? =

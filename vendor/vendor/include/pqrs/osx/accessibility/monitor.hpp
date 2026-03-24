@@ -94,6 +94,17 @@ private:
     if (snapshot.pid != 0) {
       result->set_pid(snapshot.pid);
     }
+    switch (snapshot.application_detection_source) {
+      case 1:
+        result->set_detection_source(application::detection_source::workspace);
+        break;
+      case 2:
+        result->set_detection_source(application::detection_source::ax_observer);
+        break;
+      default:
+        result->set_detection_source(application::detection_source::none);
+        break;
+    }
 
     return result;
   }

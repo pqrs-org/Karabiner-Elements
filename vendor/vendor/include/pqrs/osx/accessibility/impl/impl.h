@@ -19,6 +19,7 @@ typedef struct {
   const char* bundle_path;
   const char* file_path;
   pid_t pid;
+  int32_t application_detection_source;
 
   const char* role;
   const char* subrole;

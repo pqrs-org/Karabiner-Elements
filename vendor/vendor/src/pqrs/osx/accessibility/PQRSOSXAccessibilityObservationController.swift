@@ -29,12 +29,18 @@ final class PQRSOSXAccessibilityObservationController {
   // PIDs discovered outside NSWorkspace that still need AXObserver-based tracking.
   private var observerManagedPIDs: Set<pid_t> = []
   private var observersByPID: [pid_t: AXObserver] = [:]
-  // The current frontmost PID tracked via NSWorkspace activation notifications.
-  private var workspaceFrontmostProcessIdentifier: pid_t?
+  // The current frontmost PID used to keep frontmost-app observation attached.
+  private var frontmostProcessIdentifier: pid_t?
 
   func start() {
     guard activationObserver == nil, terminationObserver == nil else {
       return
+    }
+
+    if let processIdentifier = NSWorkspace.shared.frontmostApplication?.processIdentifier,
+      processIdentifier != 0
+    {
+      workspaceKnownPIDs.insert(processIdentifier)
     }
 
     activationObserver = NSWorkspace.shared.notificationCenter.addObserver(
@@ -67,7 +73,7 @@ final class PQRSOSXAccessibilityObservationController {
     }
 
     syncObservers(
-      workspaceFrontmostProcessIdentifier: NSWorkspace.shared.frontmostApplication?
+      frontmostProcessIdentifier: NSWorkspace.shared.frontmostApplication?
         .processIdentifier)
   }
 
@@ -89,7 +95,7 @@ final class PQRSOSXAccessibilityObservationController {
     workspaceKnownPIDs.removeAll()
     observerManagedPIDs.removeAll()
     observersByPID.removeAll()
-    workspaceFrontmostProcessIdentifier = nil
+    frontmostProcessIdentifier = nil
   }
 
   func registerObserverManagedProcessIdentifier(_ processIdentifier: pid_t?) {
@@ -102,7 +108,6 @@ final class PQRSOSXAccessibilityObservationController {
     }
 
     observerManagedPIDs.insert(processIdentifier)
-    syncObservers(workspaceFrontmostProcessIdentifier: workspaceFrontmostProcessIdentifier)
   }
 
   func pruneProcessIdentifier(_ processIdentifier: pid_t?) {
@@ -113,8 +118,8 @@ final class PQRSOSXAccessibilityObservationController {
     workspaceKnownPIDs.remove(processIdentifier)
     observerManagedPIDs.remove(processIdentifier)
 
-    if workspaceFrontmostProcessIdentifier == processIdentifier {
-      workspaceFrontmostProcessIdentifier = nil
+    if frontmostProcessIdentifier == processIdentifier {
+      frontmostProcessIdentifier = nil
     }
 
     detachObserver(processIdentifier: processIdentifier)
@@ -159,7 +164,7 @@ final class PQRSOSXAccessibilityObservationController {
 
     guard let processIdentifier, processIdentifier != 0 else {
       syncObservers(
-        workspaceFrontmostProcessIdentifier: NSWorkspace.shared.frontmostApplication?
+        frontmostProcessIdentifier: NSWorkspace.shared.frontmostApplication?
           .processIdentifier)
       requestRefresh()
       return
@@ -167,7 +172,7 @@ final class PQRSOSXAccessibilityObservationController {
 
     workspaceKnownPIDs.insert(processIdentifier)
     observerManagedPIDs.remove(processIdentifier)
-    syncObservers(workspaceFrontmostProcessIdentifier: processIdentifier)
+    syncObservers(frontmostProcessIdentifier: processIdentifier)
     requestRefresh()
   }
 
@@ -179,14 +184,13 @@ final class PQRSOSXAccessibilityObservationController {
     pruneProcessIdentifier(processIdentifier)
   }
 
-  func syncObservers(workspaceFrontmostProcessIdentifier: pid_t?) {
-    self.workspaceFrontmostProcessIdentifier = workspaceFrontmostProcessIdentifier
+  func syncObservers(frontmostProcessIdentifier: pid_t?) {
+    self.frontmostProcessIdentifier = frontmostProcessIdentifier
 
-    var targetPIDs = observerManagedPIDs
+    var targetPIDs = observerManagedPIDs.subtracting(workspaceKnownPIDs)
 
-    if let workspaceFrontmostProcessIdentifier, workspaceFrontmostProcessIdentifier != 0 {
-      targetPIDs.insert(workspaceFrontmostProcessIdentifier)
-      workspaceKnownPIDs.insert(workspaceFrontmostProcessIdentifier)
+    if let frontmostProcessIdentifier, frontmostProcessIdentifier != 0 {
+      targetPIDs.insert(frontmostProcessIdentifier)
     }
 
     let stalePIDs = Set(observersByPID.keys).subtracting(targetPIDs)

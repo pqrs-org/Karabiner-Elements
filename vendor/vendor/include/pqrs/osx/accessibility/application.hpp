@@ -13,6 +13,12 @@ namespace osx {
 namespace accessibility {
 class application final {
 public:
+  enum class detection_source {
+    none,
+    workspace,
+    ax_observer,
+  };
+
   const std::optional<std::string>& get_name() const {
     return name_;
   }
@@ -58,6 +64,15 @@ public:
     return *this;
   }
 
+  detection_source get_detection_source() const {
+    return detection_source_;
+  }
+
+  application& set_detection_source(detection_source value) {
+    detection_source_ = value;
+    return *this;
+  }
+
   bool operator==(const application& other) const = default;
 
 private:
@@ -66,6 +81,7 @@ private:
   std::optional<std::string> bundle_path_;
   std::optional<std::string> file_path_;
   std::optional<pid_t> pid_;
+  detection_source detection_source_ = detection_source::none;
 };
 } // namespace accessibility
 } // namespace osx
