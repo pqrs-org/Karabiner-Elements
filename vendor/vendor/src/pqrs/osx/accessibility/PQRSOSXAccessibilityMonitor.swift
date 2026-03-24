@@ -66,16 +66,6 @@ actor PQRSOSXAccessibilityMonitor {
     await requestRefresh(force: true)
   }
 
-  func handleAccessibilityNotification(_ notification: CFString, processIdentifier: pid_t?) async {
-    let observationController = observationController
-    await MainActor.run {
-      observationController?.handleAccessibilityNotification(
-        notification,
-        processIdentifier: processIdentifier
-      )
-    }
-  }
-
   private func listenLoop() async {
     while !Task.isCancelled {
       do {
@@ -124,8 +114,11 @@ actor PQRSOSXAccessibilityMonitor {
       let snapshot = await MainActor.run {
         copySnapshot(
           cachedApplication: cachedApplication,
-          handleAXProcessIdentifier: { axProcessIdentifier in
-            observationController?.registerObserverManagedProcessIdentifier(axProcessIdentifier)
+          handleProcessIdentifier: { processIdentifier, detectionSource in
+            observationController?.registerProcessIdentifier(
+              processIdentifier,
+              detectionSource: detectionSource
+            )
           }
         )
       }
