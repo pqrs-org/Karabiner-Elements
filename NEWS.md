@@ -25,6 +25,7 @@
       you can execute any action from Karabiner-Elements with low latency. (Thanks to @nikivdev)
     - Added [`to.from_event`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/from-event/),
       allowing pressed events to be passed through as-is.
+    - Added `relative_to` and `fallback_to` to `software_function.set_mouse_cursor_position`.
     - Added `Enable CGEventTap fallback` setting to Expert tab.
       Enable receiving events via CGEventTap for keyboards where IOHIDDeviceOpen fails for some reason.
 - 🐛 Bug Fixes
