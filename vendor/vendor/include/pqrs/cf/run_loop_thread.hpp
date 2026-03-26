@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v2.9
+// pqrs::cf::run_loop_thread v2.10
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -78,7 +78,9 @@ public:
         // Although this does not usually happen, it is reached when CFRunLoop processing does not start due to a problem with CFRunLoop.
         // Abort because it is irrecoverable.
         if (failure_policy_ == failure_policy::exit) {
-          std::quick_exit(EXIT_FAILURE);
+          // `std::quick_exit` causes a "Symbol not found: _quick_exit" error on macOS 13,
+          // so we use `std::_Exit` instead.
+          std::_Exit(EXIT_FAILURE);
         } else {
           abort();
         }
