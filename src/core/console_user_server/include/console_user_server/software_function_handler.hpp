@@ -148,6 +148,13 @@ private:
       std::optional<application> target_application;
 
       for (const auto& h : frontmost_application_history_) {
+        // We should exclude applications such as Spotlight detected via ax_observer
+        // because opening them directly can result in unpredictable behavior,
+        // for example, the tooltip window stays on screen indefinitely.
+        if (h.get_detection_source() != application::detection_source::workspace) {
+          continue;
+        }
+
         // Since there are cases where the bundle paths differ even if the bundle_identifier is the same, prioritize using the bundle path.
         if (auto bundle_path = h.get_bundle_path()) {
           // Target only applications that are currently running.
