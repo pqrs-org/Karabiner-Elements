@@ -2,6 +2,17 @@
 
 ## How to replace binaries without reinstalling package
 
+If you want to modify the source code, replacing the built binaries requires several steps.
+
+Karabiner-Elements is split into multiple processes, and inter-process communication is performed using UNIX domain sockets.
+For this communication to work, each process must have the same code signature, or be unsigned.
+All binaries distributed officially are signed with G43BCU2T37, so if you replace only some of the binaries, communication will stop working.
+
+Therefore, you first need to rebuild and install the entire package with your own signature.
+The build instructions are described in `README.md`, so follow them to build and install your package.
+
+After that, in order to replace individual binaries, you can quickly build and install them by moving to each program's directory and running `make install`.
+
 ### Replace `Karabiner-Core-Service`
 
 ```shell
@@ -26,8 +37,9 @@ make install
 ## Core Processes
 
 - `Karabiner-Core-Service`
-    - Seize the input devices and modify events then post events using `Karabiner-DriverKit-VirtualHIDDevice`.
-    - It is run with root privileges which are required to seize the device and send events to the virtual driver.
+    - Seizes only the input devices that are configured to be modified,
+      then modifies and reposts the resulting events via `Karabiner-DriverKit-VirtualHIDDevice`.
+    - It is run with root privileges which are required to seize devices and send events to the virtual driver.
 - `karabiner_session_monitor`
     - It informs `Karabiner-Core-Service` of the user currently using the console.
       Karabiner-Core-Service will change the owner of the Unix domain socket that `Karabiner-Core-Service` provides for `karabiner_console_user_server`.
@@ -67,7 +79,7 @@ make install
 
 1.  Run `karabiner_console_user_server`.
 2.  Try to open console_user_server Unix domain socket.
-3.  Karabiner-Core-Service seizes input devices.
+3.  Karabiner-Core-Service starts grabbing the input devices that should be modified.
 
 ### Other notes
 
@@ -116,17 +128,22 @@ IOHIDDeviceOpen(device2, kIOHIDOptionsTypeSeizeDevice);
 
 ### CGEventTapCreate
 
-`CGEventTapCreate` is a limited approach.<br />
-It does not work with Secure Keyboard Entry even if we use `kCGHIDEventTap` and root privillege.<br />
-Thus, it does not work in Terminal.<br />
-You can confirm this behavior in `appendix/eventtap`.
+When capturing key events with `CGEventTap`, there are several limitations.
 
-There is another problem with `CGEventTapCreate`.<br />
-`Shake mouse pointer to locate` feature will be stopped after we call `CGEventTapCreate` with `kCGEventTapOptionDefault`.<br />
-(We confirmed the problem at least on macOS 10.13.1.)<br />
+- Events cannot be captured while Secure Event Input is enabled. This cannot be avoided even by creating a `CGEventTap` with `kCGHIDEventTap` as root.
+  As a result, this causes two limitations.
+    - First, event transformation cannot be performed while entering a password, for example.
+    - Second, while events cannot be captured, modifier states and similar state can change, so when Secure Event Input ends, the pressed-key state may suddenly differ from what it was when Secure Event Input began. This is especially noticeable when using `sudo` in `Terminal.app`.
+- With `CGEventTap`, there is no way to determine which device an event came from. Because of this, behavior such as modifying only events from the built-in keyboard cannot be implemented.
 
-`Karabiner-Core-Service` uses `CGEventTapCreate` with `kCGEventTapOptionListenOnly` in order to catch Apple mouse/trackpad events which we cannot catch in IOKit.
-(See above note.)
+Because these limitations are significant, Karabiner-Elements does not use `CGEventTap` as its primary method for capturing key events.
+
+However, `CGEventTap` is the most common event-handling mechanism provided by macOS, and it is considered less likely to be affected by OS specification changes.
+
+For that reason, it is also possible to enable key event capture via `CGEventTap` through the `enable_cgeventtap_fallback` setting.
+(When enable_cgeventtap_fallback is enabled, key events that are not handled through HID will instead be processed through CGEventTap.
+In other words, key events from devices for which Modify events is disabled in Karabiner-Elements device settings will become subject to modification.
+Because this has substantial side effects, enable_cgeventtap_fallback is off by default.)
 
 ---
 
@@ -405,7 +422,7 @@ Specifically, the following issues occur on macOS 13:
 To avoid these issues, the application should adhere to the following:
 
 - To avoid an issue after `sfltool resetbtm`, if the status of SMAppService is `.notFound`, call `unregister` before calling `register`.
-- To avoid an issue of the daemon not starting, periodically check if the daemon is running using `launchctl print` command.
+- To avoid an issue of the daemon not starting, periodically check if the daemon is running.
   If the process is not running, call `SMAppService.register` to start the daemon.
 - To avoid an issue with the System Settings UI, prompt the user to approve the daemon if it is not running.
   Inform them that it may already appear as approved and, if it does not work correctly, guide them to revoke and re-approve the daemon.
