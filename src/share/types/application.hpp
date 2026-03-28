@@ -4,10 +4,17 @@
 #include <pqrs/hash.hpp>
 #include <pqrs/json.hpp>
 #include <string>
+#include <type_traits>
 
 namespace krbn {
 class application final {
 public:
+  enum class detection_source {
+    none,
+    workspace,
+    ax_observer,
+  };
+
   application() {
   }
 
@@ -47,6 +54,15 @@ public:
     return *this;
   }
 
+  detection_source get_detection_source() const {
+    return detection_source_;
+  }
+
+  application& set_detection_source(detection_source value) {
+    detection_source_ = value;
+    return *this;
+  }
+
   bool operator==(const application& other) const = default;
 
 private:
@@ -54,7 +70,37 @@ private:
   std::optional<std::string> bundle_path_;
   std::optional<std::string> file_path_;
   std::optional<pid_t> pid_;
+  detection_source detection_source_ = detection_source::none;
 };
+
+inline std::string to_string(application::detection_source value) {
+  switch (value) {
+    case application::detection_source::none:
+      return "none";
+    case application::detection_source::workspace:
+      return "workspace";
+    case application::detection_source::ax_observer:
+      return "ax_observer";
+  }
+
+  throw pqrs::json::unmarshal_error("invalid detection_source");
+}
+
+inline application::detection_source detection_source_from_string(const std::string& value) {
+  if (value == "none") {
+    return application::detection_source::none;
+  }
+
+  if (value == "workspace") {
+    return application::detection_source::workspace;
+  }
+
+  if (value == "ax_observer") {
+    return application::detection_source::ax_observer;
+  }
+
+  throw pqrs::json::unmarshal_error("unknown detection_source: `" + value + "`");
+}
 
 inline void to_json(nlohmann::json& j, const application& s) {
   j = nlohmann::json::object();
@@ -74,6 +120,8 @@ inline void to_json(nlohmann::json& j, const application& s) {
   if (auto& v = s.get_pid()) {
     j["pid"] = *v;
   }
+
+  j["detection_source"] = to_string(s.get_detection_source());
 }
 
 inline void from_json(const nlohmann::json& j, application& s) {
@@ -101,6 +149,11 @@ inline void from_json(const nlohmann::json& j, application& s) {
       pqrs::json::requires_number(value, "`"s + key + "`");
 
       s.set_pid(value.get<pid_t>());
+
+    } else if (key == "detection_source") {
+      pqrs::json::requires_string(value, "`"s + key + "`");
+
+      s.set_detection_source(detection_source_from_string(value.get<std::string>()));
 
     } else {
       throw pqrs::json::unmarshal_error("unknown key: `"s + key + "`"s);
@@ -138,6 +191,8 @@ struct hash<krbn::application> final {
     } else {
       pqrs::hash::combine(h, 0);
     }
+
+    pqrs::hash::combine(h, static_cast<std::underlying_type_t<krbn::application::detection_source>>(value.get_detection_source()));
 
     return h;
   }

@@ -13,6 +13,7 @@
     },
     "files.watcherExclude": {
         "**/build/**": true,
-        "**/pkgroot/**": true
+        "**/pkgroot/**": true,
+        "**/*.xcodeproj/**": true
     }
 }

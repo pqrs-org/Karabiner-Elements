@@ -36,6 +36,17 @@ struct FrontmostApplicationView: View {
                     Text(entry.filePath)
                       .textSelection(.enabled)
                   }
+
+                  HStack(alignment: .center, spacing: 0) {
+                    Text("Detection Source: ")
+                      .font(.caption)
+                      .foregroundStyle(.secondary)
+
+                    Text(entry.detectionSource)
+                      .font(.caption)
+                      .foregroundStyle(.secondary)
+                      .textSelection(.enabled)
+                  }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 

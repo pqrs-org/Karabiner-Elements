@@ -17,6 +17,7 @@ extension LibKrbn {
     let bundlePath: String?
     let filePath: String?
     let pid: Int?
+    let detectionSource: String?
   }
 
   struct FrontmostApplicationHistoryEntry: Identifiable, Equatable {
@@ -24,6 +25,7 @@ extension LibKrbn {
 
     let bundleIdentifier: String
     let filePath: String
+    let detectionSource: String
 
     public static func == (
       lhs: FrontmostApplicationHistoryEntry,
@@ -98,7 +100,8 @@ extension LibKrbn {
         }.map { payload in
           FrontmostApplicationHistoryEntry(
             bundleIdentifier: payload.bundleIdentifier ?? "",
-            filePath: payload.filePath ?? ""
+            filePath: payload.filePath ?? "",
+            detectionSource: payload.detectionSource ?? ""
           )
         }.reversed()
       } catch {

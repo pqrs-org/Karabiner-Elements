@@ -45,6 +45,20 @@ public:
           a.set_file_path(application_ptr->get_file_path());
           a.set_pid(application_ptr->get_pid());
 
+          switch (application_ptr->get_detection_source()) {
+            case pqrs::osx::accessibility::application::detection_source::none:
+              a.set_detection_source(application::detection_source::none);
+              break;
+
+            case pqrs::osx::accessibility::application::detection_source::workspace:
+              a.set_detection_source(application::detection_source::workspace);
+              break;
+
+            case pqrs::osx::accessibility::application::detection_source::ax_observer:
+              a.set_detection_source(application::detection_source::ax_observer);
+              break;
+          }
+
           core_service_client_->async_frontmost_application_changed(a);
         }
       });
