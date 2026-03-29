@@ -50,8 +50,8 @@ void run_device_test(void) {
     auto device_id_0000_0000 = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{
         .vendor_id = pqrs::hid::vendor_id::value_t(0),   // vendor_id
         .product_id = pqrs::hid::product_id::value_t(0), // product_id
-        .is_keyboard = true,
         .device_address = "aa-bb-cc-dd-ee-ff",
+        .is_keyboard = true,
     });
 
     auto device_id_1000_2000_tt = manipulator_conditions_helper.prepare_device(krbn::device_properties::initialization_parameters{

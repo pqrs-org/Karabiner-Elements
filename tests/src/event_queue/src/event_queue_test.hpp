@@ -199,9 +199,11 @@ void run_event_queue_test(void) {
       expected["type"] = "frontmost_application_changed";
       expected["frontmost_application"]["bundle_identifier"] = "com.apple.Terminal";
       expected["frontmost_application"]["file_path"] = "/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal";
+      expected["frontmost_application"]["detection_source"] = "workspace";
       krbn::application application;
       application.set_bundle_identifier("com.apple.Terminal");
       application.set_file_path("/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal");
+      application.set_detection_source(krbn::application::detection_source::workspace);
       auto e = krbn::event_queue::event::make_frontmost_application_changed_event(application);
       auto json = e.to_json();
       expect(json == expected);

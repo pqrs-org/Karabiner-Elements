@@ -4,7 +4,8 @@
         "**/.DS_Store": true,
         "**/.git": true,
         "**/build/": true,
-        "pkgroot/": true
+        "pkgroot/": true,
+        "**/*.xcodeproj/**": true
     },
     "search.exclude": {
         "**/node_modules": true,
