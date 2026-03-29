@@ -2,10 +2,6 @@
     "configurations": [
         {
             "name": "Mac",
-            "browse": {
-                "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db"
-            },
             "defines": [],
             "includePath": [
                 "${workspaceFolder}/src/core/CoreService/include",
