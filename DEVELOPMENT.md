@@ -36,10 +36,15 @@ make install
 
 ## Core Processes
 
-- `Karabiner-Core-Service`
+- `Karabiner-Core-Service (daemon)`
     - Seizes only the input devices that are configured to be modified,
       then modifies and reposts the resulting events via `Karabiner-DriverKit-VirtualHIDDevice`.
     - It is run with root privileges which are required to seize devices and send events to the virtual driver.
+- `Karabiner-Core-Service (agent)`
+    - Monitors application switches and changes to the focused UI element using the Accessibility API.
+    - Runs with user privileges.
+    - `Karabiner-Core-Service` is also granted the permissions required on the daemon side, such as Input Monitoring, when running as an agent.
+      For that reason, responsibilities are split so that tasks such as launching external processes are handled by `karabiner_console_user_server` rather than by `Karabiner-Core-Service`.
 - `karabiner_session_monitor`
     - It informs `Karabiner-Core-Service` of the user currently using the console.
       Karabiner-Core-Service will change the owner of the Unix domain socket that `Karabiner-Core-Service` provides for `karabiner_console_user_server`.
@@ -92,14 +97,14 @@ Thus, `Karabiner-Core-Service` cannot send events to IOHIDSystem directly.
 
 ### IOKit
 
-IOKit allows you to read raw HID input events from kernel.<br />
+IOKit allows you to read raw HID input events from kernel.
 The highest layer is IOHIDQueue which provides us the HID values.
 
 `Karabiner-Core-Service` uses this method.
 
 #### IOKit with Apple Trackpads
 
-IOKit cannot catch events from Apple Trackpads.<br />
+IOKit cannot catch events from Apple Trackpads.
 (== Apple Trackpad driver does not send events to IOKit.)
 
 Thus, we should use CGEventTap together for pointing devices.
@@ -135,6 +140,9 @@ When capturing key events with `CGEventTap`, there are several limitations.
     - First, event transformation cannot be performed while entering a password, for example.
     - Second, while events cannot be captured, modifier states and similar state can change, so when Secure Event Input ends, the pressed-key state may suddenly differ from what it was when Secure Event Input began. This is especially noticeable when using `sudo` in `Terminal.app`.
 - With `CGEventTap`, there is no way to determine which device an event came from. Because of this, behavior such as modifying only events from the built-in keyboard cannot be implemented.
+- The caps Lock hardware events cannot be received directly; instead, we receive the result after macOS has processed them.
+  As a result, the key_up and key_down events for the caps Lock key do not correspond to the physical key movement:
+  only key_down is received when it is locked, and only key_up is received when it is unlocked.
 
 Because these limitations are significant, Karabiner-Elements does not use `CGEventTap` as its primary method for capturing key events.
 
@@ -151,29 +159,29 @@ Because this has substantial side effects, enable_cgeventtap_fallback is off by 
 
 ### IOKit device report in dext
 
-It requires posting HID events.<br />
-The IOHIKeyboard processes the reports by passing reports to `handleReport`.
+It requires posting HID events.
 
+The IOHIKeyboard processes the reports by passing reports to `handleReport`.
 `Karabiner-Core-Service` uses this method by using `Karabiner-DriverKit-VirtualHIDDevice`.
 
 Note: `handleReport` fails to treat events which usage page are `kHIDPage_AppleVendorKeyboard` or `kHIDPage_AppleVendorTopCase` on macOS 10.11 or earlier.
 
 ### IOHIDPostEvent
 
-It requires posting coregraphics events.<br />
+It requires posting coregraphics events.
 
 `IOHIDPostEvent` will be failed if the process is not running in the current session user.
 (The root user is also forbidden.)
 
 ### CGEventPost
 
-It requires posting coregraphics events.<br />
+It requires posting coregraphics events.
 
-`CGEventPost` does not support some key events in OS X 10.12.
+There are several limitations for events sent via `CGEventPost`.
+The biggest limitation is that the behavior of the `fn` key sent via `CGEventPost` differs from that of the physical `fn` key.
 
-- Mission Control key
-- Launchpad key
-- Option-Command-Escape
+- When `fn` is pressed by itself, the function configured in macOS System Settings under `Press 🌐 key to` is not triggered.
+- Actions such as moving a window with `fn+control+arrow keys` do not work.
 
 Thus, `Karabiner-Core-Service` does not use `CGEventPost`.
 
@@ -196,7 +204,7 @@ Thus, `IOHIDPostEvent` will be ignored in accessibility functions and mouse even
 
 ## About hid reports
 
-We can get hid reports from devices via `IOHIDDeviceRegisterInputReportCallback`.<br />
+We can get hid reports from devices via `IOHIDDeviceRegisterInputReportCallback`.
 The hid report contains a list of pressed keys, so it seems suitable information to observe.
 
 But `Karabiner-Core-Service` does not use it in order to reduce the device dependancy.
@@ -205,7 +213,7 @@ But `Karabiner-Core-Service` does not use it in order to reduce the device depen
 
 #### Apple devices reports
 
-Apple keyboards does not use generic HID keyboard report descriptor.<br />
+Apple keyboards does not use generic HID keyboard report descriptor.
 Thus, we have to handle them by separate way.
 
 ##### Generic HID keyboard report descriptor
@@ -248,7 +256,7 @@ uint8_t extra_modifiers; // fn
 There are several way to get the session information, however, the reliable way is limited.
 
 - The owner of `/dev/console`
-    - The owner of `/dev/console` becomes wrong value after remote user is logged in via Screen Sharing.<br />
+    - The owner of `/dev/console` becomes wrong value after remote user is logged in via Screen Sharing.
       How to reproduce the problem.
         1.  Restart macOS.
         2.  Log in from console as Guest user.
@@ -366,6 +374,77 @@ Example:
     - `hid::usage::keyboard_or_keypad::keyboard_caps_lock` is sent via virtual hid keyboard by sticky_modifier.
     - sticky_modifiers are erased.
     - `tab` is sent via virtual hid keyboard.
+
+---
+
+## Permissions
+
+`Karabiner-Elements` requires several permissions from the user in order to operate.
+
+- Privileged Daemon (SMAppService.daemon)
+    - This permission is required to run `Karabiner-Core-Service` with root privileges.
+    - Root privileges are necessary because `kIOHIDOptionsTypeSeizeDevice` is used to seize devices when opening them.
+- Input Monitoring
+    - Required to receive events from devices via `IOHIDDeviceOpen`.
+- Accessibility
+    - This permission is required for the following three purposes:
+        - Detecting application switches for apps that do not emit `NSWorkspace.didActivateApplicationNotification` notifications, such as Spotlight.
+        - Obtaining the focused UI element.
+        - Receiving key events when the CGEventTap fallback is enabled.
+
+---
+
+## CGEventTap fallback behavior
+
+The following describes the behavior when the CGEventTap fallback is enabled via `enable_cgeventtap_fallback`.
+
+Even when the CGEventTap fallback is enabled, devices that can be handled through `IOHIDDeviceOpen` are still processed through that path in preference to `CGEventTap`.
+Therefore, only devices that meet one of the following conditions are handled via `CGEventTap`:
+
+- Devices for which `IOHIDDeviceOpen` fails for some reason.
+- Devices for which `Modify events` is turned off.
+  (This is not a typo. Since `CGEventTap` doesn't provide a way to determine the source device of an event, all events received through `CGEventTap` must be processed.
+  This means it is not possible to enable or disable processing on a per-device basis.)
+
+### Avoid processing events sent via the virtual device in CGEventTap
+
+As described above, `CGEventPost` has several limitations.
+For that reason, even when device events are captured via the CGEventTap fallback, the processed key events are still sent through the virtual device.
+(In addition, events processed through HID are also sent via the virtual device.)
+
+The event flow is therefore as follows:
+
+- Capture key events using `CGEventTap`.
+- Modify them through the manipulator pipeline.
+- Send the modified events to the virtual device.
+- Since events sent via the virtual device re-enter through `CGEventTap`, ignore events that have already been sent.
+
+The most challenging part is filtering out re-entrant events.
+`CGEventTap` does not provide reliable information about which device generated an event, so there is no stable way to detect events originating from the virtual device. (`kCGEventSourceUnixProcessID` and `kCGEventSourceUserData` both become `0` after passing through the virtual device.)
+
+To work around this, we keep track of the events sent to the virtual device and ignore matching events when they reappear.
+
+In theory, using `CGEventCreateKeyboardEvent` would simplify this, since re-entrant events could be identified and ignored via `kCGEventSourceUnixProcessID`.
+However, key events generated with `CGEventCreateKeyboardEvent` and posted via `CGEventPost` have behavioral limitations. For example, `fn` key events are not treated by macOS in the same way as true hardware `fn` key presses for certain system-level behaviors, such as tapping `fn` by itself or using `fn+control+arrow keys` for window tiling.
+
+Because of this, using a virtual device is still necessary in order to generate key events that behave naturally.
+
+### Handling internal state before and after Secure Event Input
+
+Another challenge with CGEventTap is how it behaves when Secure Event Input is enabled, for example while entering a password.
+In this state, no events are delivered to CGEventTap.
+While this is correct from a security perspective, it complicates things for software that relies on CGEventTap.
+
+Because events are suppressed during Secure Event Input, once it is disabled,
+the internal state of modifiers and pressed keys can suddenly become inconsistent.
+To avoid this, key states must be reset properly when Secure Event Input is enabled and disabled;
+otherwise, keys may be incorrectly treated as still being pressed.
+
+There is also a related issue: if Secure Event Input becomes active while a key is being held down, the corresponding key_up event is never observed.
+This can result in unintended key repeats.
+This can be easily reproduced by running a command such as sudo ls in Terminal.
+
+To mitigate this, all currently pressed keys must be forcibly released by emitting key_up events when Secure Event Input is detected.
 
 ---
 
