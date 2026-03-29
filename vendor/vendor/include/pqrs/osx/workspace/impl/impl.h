@@ -25,8 +25,8 @@ struct pqrs_osx_workspace_open_configuration {
 void pqrs_osx_workspace_open_application_by_bundle_identifier(const char* bundle_identifier,
                                                               const struct pqrs_osx_workspace_open_configuration* configuration);
 
-void pqrs_osx_workspace_open_application_by_file_path(const char* file_path,
-                                                      const struct pqrs_osx_workspace_open_configuration* configuration);
+void pqrs_osx_workspace_open_application_by_bundle_path(const char* bundle_path,
+                                                        const struct pqrs_osx_workspace_open_configuration* configuration);
 
 void pqrs_osx_workspace_find_application_url_by_bundle_identifier(const char* bundle_identifier,
                                                                   char* buffer,
@@ -34,7 +34,7 @@ void pqrs_osx_workspace_find_application_url_by_bundle_identifier(const char* bu
 
 int pqrs_osx_workspace_application_running_by_bundle_identifier(const char* bundle_identifier);
 
-int pqrs_osx_workspace_application_running_by_file_path(const char* file_path);
+int pqrs_osx_workspace_application_running_by_bundle_path(const char* bundle_path);
 
 #ifdef __cplusplus
 }

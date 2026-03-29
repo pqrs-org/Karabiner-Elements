@@ -140,7 +140,7 @@ private:
     if (auto v = open_application.get_bundle_identifier()) {
       pqrs::osx::workspace::open_application_by_bundle_identifier(*v);
     } else if (auto v = open_application.get_file_path()) {
-      pqrs::osx::workspace::open_application_by_file_path(*v);
+      pqrs::osx::workspace::open_application_by_bundle_path(*v);
     } else if (auto v = open_application.get_frontmost_application_history_index()) {
       auto history_index = *v;
 
@@ -158,7 +158,7 @@ private:
         // Since there are cases where the bundle paths differ even if the bundle_identifier is the same, prioritize using the bundle path.
         if (auto bundle_path = h.get_bundle_path()) {
           // Target only applications that are currently running.
-          if (!pqrs::osx::workspace::application_running_by_file_path(*bundle_path)) {
+          if (!pqrs::osx::workspace::application_running_by_bundle_path(*bundle_path)) {
             continue;
           }
           target_application = h;
@@ -195,7 +195,7 @@ private:
 
       if (target_application) {
         if (auto bundle_path = target_application->get_bundle_path()) {
-          pqrs::osx::workspace::open_application_by_file_path(*bundle_path);
+          pqrs::osx::workspace::open_application_by_bundle_path(*bundle_path);
         } else if (auto bundle_identifier = target_application->get_bundle_identifier()) {
           pqrs::osx::workspace::open_application_by_bundle_identifier(*bundle_identifier);
         }

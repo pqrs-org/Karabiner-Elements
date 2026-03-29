@@ -26,7 +26,7 @@ private:
                              bool activates) {
     system("/usr/bin/killall Karabiner-Updater");
 
-    pqrs::osx::workspace::open_application_by_file_path(
+    pqrs::osx::workspace::open_application_by_bundle_path(
         "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app",
         pqrs::osx::workspace::open_configuration{
             .activates = activates,

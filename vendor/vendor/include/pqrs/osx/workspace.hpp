@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::workspace v2.6
+// pqrs::osx::workspace v3.0
 
 // (C) Copyright Takayama Fumihiko 2022.
 // Distributed under the Boost Software License, Version 1.0.
@@ -56,15 +56,15 @@ inline void open_application_by_bundle_identifier(const std::string& bundle_iden
                                         open_configuration());
 }
 
-inline void open_application_by_file_path(const std::string& file_path,
-                                          const open_configuration& configuration) {
-  pqrs_osx_workspace_open_application_by_file_path(file_path.c_str(),
-                                                   &(configuration.c_struct()));
+inline void open_application_by_bundle_path(const std::string& bundle_path,
+                                            const open_configuration& configuration) {
+  pqrs_osx_workspace_open_application_by_bundle_path(bundle_path.c_str(),
+                                                     &(configuration.c_struct()));
 }
 
-inline void open_application_by_file_path(const std::string& file_path) {
-  open_application_by_file_path(file_path,
-                                open_configuration());
+inline void open_application_by_bundle_path(const std::string& bundle_path) {
+  open_application_by_bundle_path(bundle_path,
+                                  open_configuration());
 }
 
 inline std::string find_application_url_by_bundle_identifier(const std::string& bundle_identifier) {
@@ -81,8 +81,8 @@ inline bool application_running_by_bundle_identifier(const std::string& bundle_i
   return pqrs_osx_workspace_application_running_by_bundle_identifier(bundle_identifier.c_str());
 }
 
-inline bool application_running_by_file_path(const std::string& file_path) {
-  return pqrs_osx_workspace_application_running_by_file_path(file_path.c_str());
+inline bool application_running_by_bundle_path(const std::string& bundle_path) {
+  return pqrs_osx_workspace_application_running_by_bundle_path(bundle_path.c_str());
 }
 
 } // namespace workspace
