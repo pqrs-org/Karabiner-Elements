@@ -82,9 +82,10 @@ extension LibKrbn {
 
       do {
         var inheritBaseKeyCategory = SimpleModificationDefinitionCategory(
-          "Inherit the base setting")
+          "Use the \"For all devices\" setting")
         inheritBaseKeyCategory.entries.append(
-          SimpleModificationDefinitionEntry("--- (Inherit the base setting)", "[]", false))
+          SimpleModificationDefinitionEntry(
+            "--- (Use the \"For all devices\" setting)", "[]", false))
 
         toCategoriesWithInheritBase.categories.append(inheritBaseKeyCategory)
         toCategories.categories.forEach { category in
