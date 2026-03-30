@@ -57,40 +57,8 @@ public:
     helper_values_.push_back_array<details::profile>("profiles",
                                                      profiles_);
 
-    bool valid_file_owner = false;
-
-    // Load karabiner.json only when the owner is root or current session user.
-    if (pqrs::filesystem::exists(file_path)) {
-      if (pqrs::filesystem::is_owned(file_path, 0)) {
-        valid_file_owner = true;
-      } else {
-        if (pqrs::filesystem::is_owned(file_path, expected_file_owner)) {
-          valid_file_owner = true;
-        }
-      }
-
-      if (!valid_file_owner) {
-        logger::get_logger()->warn("{0} is not owned by a valid user.", file_path);
-
-      } else {
-        std::ifstream input(file_path);
-        if (input) {
-          try {
-            json_ = json_utility::parse_jsonc(input);
-
-            helper_values_.update_value(json_,
-                                        error_handling);
-
-            loaded_ = true;
-
-          } catch (std::exception& e) {
-            logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
-            parse_error_message_ = e.what();
-          }
-        } else {
-          logger::get_logger()->error("failed to open {0}", file_path);
-        }
-      }
+    if (not try_read_jsonnet(file_path, expected_file_owner, error_handling)) {
+      try_read_json(file_path, expected_file_owner, error_handling);
     }
 
     // Fallbacks
@@ -210,6 +178,69 @@ public:
   }
 
 private:
+  // Only load config files if:
+  // 1. They exist, AND
+  // 2. They are owned by root or the current user
+  static bool is_valid_file(const std::string& file_path, uid_t expected_owner) {
+    if (not pqrs::filesystem::exists(file_path)) {
+      return false;
+    }
+    if (not(
+            pqrs::filesystem::is_owned(file_path, 0) or
+            pqrs::filesystem::is_owned(file_path, expected_owner))) {
+      logger::get_logger()->warn("{0} is not owned by a valid user.", file_path);
+      return false;
+    }
+
+    return true;
+  }
+  bool try_read_jsonnet(const std::filesystem::path& json_cfg_path, uid_t expected_file_owner, error_handling error_handling) {
+    auto jsonnet_path = json_cfg_path;
+    jsonnet_path.replace_extension("jsonnet");
+    if (not is_valid_file(json_cfg_path, expected_file_owner)) {
+      return false;
+    }
+    auto cmd = fmt::format("jsonnet {}", jsonnet_path.string());
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) {
+      logger::get_logger()->error("failed to run {0}", cmd);
+      return false;
+    }
+    try {
+      json_ = json_utility::parse_jsonc(pipe);
+      helper_values_.update_value(json_, error_handling);
+      loaded_ = true;
+    } catch (std::exception& e) {
+      logger::get_logger()->error("parse error in {0}: {1}", jsonnet_path.string(), e.what());
+      parse_error_message_ = e.what();
+      return false;
+    }
+    return true;
+  }
+  bool try_read_json(const std::string& json_cfg_path, uid_t expected_file_owner, error_handling error_handling) {
+    if (not is_valid_file(json_cfg_path, expected_file_owner)) {
+      return false;
+    }
+    std::ifstream input(json_cfg_path);
+    if (not input) {
+      logger::get_logger()->error("failed to open {0}", json_cfg_path);
+      return false;
+    }
+    try {
+      json_ = json_utility::parse_jsonc(input);
+
+      helper_values_.update_value(json_,
+                                  error_handling);
+
+      loaded_ = true;
+
+    } catch (std::exception& e) {
+      logger::get_logger()->error("parse error in {0}: {1}", json_cfg_path, e.what());
+      parse_error_message_ = e.what();
+      return false;
+    }
+    return true;
+  }
   void make_backup_file(void) {
     auto file_path = constants::get_user_core_configuration_file_path();
 
