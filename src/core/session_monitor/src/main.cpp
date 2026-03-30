@@ -68,15 +68,8 @@ int main(int argc, const char* argv[]) {
   krbn::session_monitor::components_manager* components_manager = nullptr;
 
   if (auto killer = krbn::components_manager_killer::get_shared_components_manager_killer()) {
-    killer->kill_called.connect([&components_manager] {
+    killer->kill_called.connect([] {
       dispatch_async(dispatch_get_main_queue(), ^{
-        {
-          // Mark as main queue to avoid a deadlock in `pqrs::gcd::dispatch_sync_on_main_queue` in destructor.
-          pqrs::gcd::scoped_running_on_main_queue_marker marker;
-
-          delete components_manager;
-        }
-
         CFRunLoopStop(CFRunLoopGetCurrent());
       });
     });
@@ -84,8 +77,15 @@ int main(int argc, const char* argv[]) {
 
   components_manager = new krbn::session_monitor::components_manager();
   components_manager->async_start();
-
   CFRunLoopRun();
+
+  {
+    // Mark as main queue to avoid a deadlock in `pqrs::gcd::dispatch_sync_on_main_queue` in destructor.
+    pqrs::gcd::scoped_running_on_main_queue_marker marker;
+
+    delete components_manager;
+    components_manager = nullptr;
+  }
 
   krbn::components_manager_killer::terminate_shared_components_manager_killer();
 
