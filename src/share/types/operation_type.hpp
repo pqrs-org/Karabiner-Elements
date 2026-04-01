@@ -32,6 +32,10 @@ enum class operation_type : uint8_t {
   software_function,
   // console_user_server -> core_service (daemon)
   user_core_configuration_file_path,
+  // settings_window -> console_user_server
+  get_settings_window_alert,
+  // console_user_server -> settings_window
+  settings_window_alert,
   // event_viewer -> console_user_server
   get_frontmost_application_history,
   // console_user_server -> event_viewer
@@ -77,6 +81,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::send_user_command, "send_user_command,"},
         {operation_type::select_input_source, "select_input_source"},
         {operation_type::software_function, "software_function"},
+        {operation_type::get_settings_window_alert, "get_settings_window_alert"},
+        {operation_type::settings_window_alert, "settings_window_alert"},
         {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},
         {operation_type::check_for_updates_on_startup, "check_for_updates_on_startup"},
         {operation_type::register_menu_agent, "register_menu_agent"},
