@@ -4,6 +4,7 @@
 #pragma clang diagnostic pop
 
 #include "complex_modifications_assets_file.hpp"
+#include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "core_service_client.hpp"
 #include "dispatcher_utility.hpp"
@@ -52,13 +53,13 @@ void select_profile(const std::string& name) {
   });
 }
 
-void show_current_profile_name(void) {
+void show_current_profile_name() {
   apply_core_configuration_function([](auto core_configuration) {
     std::cout << core_configuration->get_selected_profile().get_name() << std::endl;
   });
 }
 
-void list_profile_names(void) {
+void list_profile_names() {
   apply_core_configuration_function([](auto core_configuration) {
     for (const auto& profile : core_configuration->get_profiles()) {
       std::cout << profile->get_name() << std::endl;
@@ -66,7 +67,7 @@ void list_profile_names(void) {
   });
 }
 
-void list_connected_devices(void) {
+void list_connected_devices() {
   try {
     auto wait = pqrs::make_thread_wait();
 
@@ -113,7 +114,7 @@ void list_connected_devices(void) {
   }
 }
 
-void list_system_variables(void) {
+void list_system_variables() {
   try {
     auto wait = pqrs::make_thread_wait();
 
@@ -160,7 +161,7 @@ void list_system_variables(void) {
   }
 }
 
-void list_multitouch_extension_variables(void) {
+void list_multitouch_extension_variables() {
   try {
     auto wait = pqrs::make_thread_wait();
 
@@ -279,14 +280,14 @@ void set_variables(const std::string& variables) {
   }
 }
 
-int copy_current_profile_to_system_default_profile(void) {
+int copy_current_profile_to_system_default_profile() {
   pqrs::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_system_configuration_directory(), 0755);
   pqrs::filesystem::copy(krbn::constants::get_user_core_configuration_file_path(),
                          krbn::constants::get_system_core_configuration_file_path());
   return 0;
 }
 
-int remove_system_default_profile(void) {
+int remove_system_default_profile() {
   if (!pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path())) {
     krbn::logger::get_logger()->error("{0} is not found.",
                                       krbn::constants::get_system_core_configuration_file_path().string());
@@ -302,6 +303,42 @@ int remove_system_default_profile(void) {
   }
 
   return 0;
+}
+
+void show_settings_window_alert() {
+  try {
+    auto wait = pqrs::make_thread_wait();
+
+    krbn::console_user_server_client client(geteuid(),
+                                            "cli_cus_clnt");
+
+    client.connect_failed.connect([&wait](auto&& error_code) {
+      std::cerr << "show-settings-window-alert error:" << error_code << std::endl;
+      wait->notify();
+    });
+
+    client.received.connect([&wait](auto&& operation_type,
+                                    auto&& json) {
+      switch (operation_type) {
+        case krbn::operation_type::settings_window_alert: {
+          std::cout << krbn::json_utility::dump(json.at("settings_window_alert")) << std::endl;
+          wait->notify();
+          break;
+        }
+
+        default:
+          break;
+      }
+    });
+
+    client.async_start();
+    client.async_get_settings_window_alert();
+
+    wait->wait_notice();
+  } catch (std::exception& e) {
+    std::cerr << "show-settings-window-alert error:" << std::endl
+              << e.what() << std::endl;
+  }
 }
 } // namespace
 
@@ -371,6 +408,9 @@ int main(int argc, char** argv) {
 
   options.add_options()("remove-system-default-profile",
                         "Remove the system default profile");
+
+  options.add_options()("show-settings-window-alert",
+                        "Show the alert currently shown in the settings window");
 
   options.add_options()("lint-complex-modifications",
                         "Check complex_modifications.json",
@@ -503,6 +543,14 @@ int main(int argc, char** argv) {
           goto finish;
         }
         exit_code = remove_system_default_profile();
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "show-settings-window-alert";
+      if (parse_result.count(key)) {
+        show_settings_window_alert();
         goto finish;
       }
     }
