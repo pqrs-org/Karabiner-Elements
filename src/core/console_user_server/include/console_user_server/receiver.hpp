@@ -7,6 +7,7 @@
 #include "filesystem_utility.hpp"
 #include "send_user_command_handler.hpp"
 #include "services_utility.hpp"
+#include "settings_window_alert_manager.hpp"
 #include "shared_secret_authentication.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
@@ -23,8 +24,10 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<software_function_handler> weak_software_function_handler)
+  receiver(std::weak_ptr<settings_window_alert_manager> weak_settings_window_alert_manager,
+           std::weak_ptr<software_function_handler> weak_software_function_handler)
       : dispatcher_client(),
+        weak_settings_window_alert_manager_(weak_settings_window_alert_manager),
         weak_software_function_handler_(weak_software_function_handler),
         input_source_selector_(std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_)),
         shell_command_handler_(std::make_unique<shell_command_handler>()),
@@ -76,15 +79,8 @@ public:
             break;
 
           case operation_type::get_user_core_configuration_file_path:
-            if (shared_secret_authentication_receiver_) {
-              shared_secret_authentication_receiver_->async_send(sender_endpoint->path(),
-                                                                 nlohmann::json{
-                                                                     {"operation_type", operation_type::user_core_configuration_file_path},
-                                                                     {"user_core_configuration_file_path", constants::get_user_core_configuration_file_path()},
-                                                                 });
-            }
-            break;
-
+          case operation_type::get_settings_window_alert:
+          case operation_type::get_frontmost_application_history:
           case operation_type::check_for_updates_on_startup:
           case operation_type::register_menu_agent:
           case operation_type::unregister_menu_agent:
@@ -103,6 +99,43 @@ public:
                                                                              json,
                                                                              ot)) {
               switch (ot) {
+                case operation_type::get_user_core_configuration_file_path:
+                  if (shared_secret_authentication_receiver_) {
+                    shared_secret_authentication_receiver_->async_send(sender_endpoint->path(),
+                                                                       nlohmann::json{
+                                                                           {"operation_type", operation_type::user_core_configuration_file_path},
+                                                                           {"user_core_configuration_file_path", constants::get_user_core_configuration_file_path()},
+                                                                       });
+                  }
+                  break;
+
+                case operation_type::get_settings_window_alert:
+                  if (auto m = weak_settings_window_alert_manager_.lock()) {
+                    if (shared_secret_authentication_receiver_) {
+                      shared_secret_authentication_receiver_->async_send(
+                          sender_endpoint->path(),
+                          nlohmann::json{
+                              {"operation_type", operation_type::settings_window_alert},
+                              {"settings_window_alert", m->get_current_alert()}});
+                    }
+                  }
+                  break;
+
+                case operation_type::get_frontmost_application_history:
+                  if (auto h = weak_software_function_handler_.lock()) {
+                    h->async_invoke_with_frontmost_application_history(
+                        [this, sender_endpoint](auto&& frontmost_application_history) {
+                          if (shared_secret_authentication_receiver_) {
+                            shared_secret_authentication_receiver_->async_send(
+                                sender_endpoint->path(),
+                                nlohmann::json{
+                                    {"operation_type", operation_type::frontmost_application_history},
+                                    {"frontmost_application_history", frontmost_application_history}});
+                          }
+                        });
+                  }
+                  break;
+
                 case operation_type::check_for_updates_on_startup: {
                   static bool checked = false;
                   if (!checked) {
@@ -203,21 +236,6 @@ public:
             }
             break;
 
-          case operation_type::get_frontmost_application_history:
-            if (auto h = weak_software_function_handler_.lock()) {
-              h->async_invoke_with_frontmost_application_history(
-                  [this, sender_endpoint](auto&& frontmost_application_history) {
-                    if (shared_secret_authentication_receiver_) {
-                      shared_secret_authentication_receiver_->async_send(
-                          sender_endpoint->path(),
-                          nlohmann::json{
-                              {"operation_type", operation_type::frontmost_application_history},
-                              {"frontmost_application_history", frontmost_application_history}});
-                    }
-                  });
-            }
-            break;
-
           default:
             break;
         }
@@ -258,6 +276,7 @@ private:
     chmod(directory_path.c_str(), 0755);
   }
 
+  std::weak_ptr<settings_window_alert_manager> weak_settings_window_alert_manager_;
   std::weak_ptr<software_function_handler> weak_software_function_handler_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::unique_ptr<shell_command_handler> shell_command_handler_;

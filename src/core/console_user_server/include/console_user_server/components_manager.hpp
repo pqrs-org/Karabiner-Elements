@@ -12,6 +12,7 @@
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "services_utility.hpp"
+#include "settings_window_alert_manager.hpp"
 #include "software_function_handler.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
@@ -26,12 +27,15 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(void) : dispatcher_client() {
+  components_manager(void)
+      : dispatcher_client(),
+        version_monitor_(std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path())),
+        session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
+        settings_window_alert_manager_(std::make_shared<settings_window_alert_manager>()),
+        software_function_handler_(std::make_shared<software_function_handler>()) {
     //
     // version_monitor_
     //
-
-    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
     version_monitor_->changed.connect([](auto&& version) {
       if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
@@ -42,8 +46,6 @@ public:
     //
     // session_monitor_
     //
-
-    session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
     session_monitor_->on_console_changed.connect([this](auto&& on_console) {
       logger::get_logger()->info("on_console_changed: on_console:{}", on_console);
@@ -65,6 +67,9 @@ public:
     detach_from_dispatcher([this] {
       stop_core_service_client();
 
+      receiver_ = nullptr;
+      software_function_handler_ = nullptr;
+      settings_window_alert_manager_ = nullptr;
       session_monitor_ = nullptr;
       version_monitor_ = nullptr;
     });
@@ -74,6 +79,9 @@ public:
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
+      settings_window_alert_manager_->async_start();
+      receiver_ = std::make_unique<receiver>(settings_window_alert_manager_,
+                                             software_function_handler_);
     });
   }
 
@@ -153,22 +161,11 @@ private:
     });
 
     input_source_monitor_->async_start();
-
-    // software_function_handler_
-
-    software_function_handler_ = std::make_shared<software_function_handler>();
-
-    // receiver_
-
-    receiver_ = std::make_unique<receiver>(software_function_handler_);
   }
 
   void stop_child_components(void) {
-    receiver_ = nullptr;
-
     system_preferences_monitor_ = nullptr;
     input_source_monitor_ = nullptr;
-    software_function_handler_ = nullptr;
   }
 
   // Core components
@@ -177,14 +174,14 @@ private:
 
   std::optional<bool> on_console_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
+  std::shared_ptr<settings_window_alert_manager> settings_window_alert_manager_;
+  std::shared_ptr<software_function_handler> software_function_handler_;
   std::shared_ptr<core_service_client> core_service_client_;
 
   // Child components
 
   std::unique_ptr<pqrs::osx::system_preferences_monitor> system_preferences_monitor_;
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
-  std::shared_ptr<software_function_handler> software_function_handler_;
-
   std::unique_ptr<receiver> receiver_;
 };
 } // namespace console_user_server
