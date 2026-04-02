@@ -1228,7 +1228,7 @@
         ]
     },
     {
-        "category": "Keys in pc keyboards"
+        "category": "Keys on PC keyboards"
     },
     {
         "label": "print_screen",
@@ -1373,6 +1373,121 @@
         "data": [
             {
                 "key_code": "find"
+            }
+        ]
+    },
+    {
+        "category": "Keys on Sun keyboards"
+    },
+    {
+        "label": "Help",
+        "data": [
+            {
+                "key_code": "help"
+            }
+        ]
+    },
+    {
+        "label": "NULL",
+        "data": [
+            {
+                "key_code": "menu"
+            }
+        ]
+    },
+    {
+        "label": "Stop",
+        "data": [
+            {
+                "key_code": "stop"
+            }
+        ]
+    },
+    {
+        "label": "Again",
+        "data": [
+            {
+                "key_code": "again"
+            }
+        ]
+    },
+    {
+        "label": "Props",
+        "data": [
+            {
+                "key_code": "menu"
+            }
+        ]
+    },
+    {
+        "label": "Undo",
+        "data": [
+            {
+                "key_code": "undo"
+            }
+        ]
+    },
+    {
+        "label": "Front",
+        "data": [
+            {
+                "key_code": "select"
+            }
+        ]
+    },
+    {
+        "label": "Copy",
+        "data": [
+            {
+                "key_code": "copy"
+            }
+        ]
+    },
+    {
+        "label": "Open",
+        "data": [
+            {
+                "key_code": "execute"
+            }
+        ]
+    },
+    {
+        "label": "Paste",
+        "data": [
+            {
+                "key_code": "paste"
+            }
+        ]
+    },
+    {
+        "label": "Find",
+        "data": [
+            {
+                "key_code": "find"
+            }
+        ]
+    },
+    {
+        "label": "Cut",
+        "data": [
+            {
+                "key_code": "cut"
+            }
+        ]
+    },
+    {
+        "label": "Compose",
+        "data": [
+            {
+                "key_code": "application"
+            }
+        ]
+    },
+    {
+        "label": "Alt Graph",
+        "data": [
+            {
+                "key_code": "right_option"
             }
         ]
     },
