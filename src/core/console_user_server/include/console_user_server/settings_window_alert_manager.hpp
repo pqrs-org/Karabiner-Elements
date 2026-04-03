@@ -96,8 +96,7 @@ private:
                            std::nullopt);
       update_optional_bool(driver_not_activated_alert_,
                            std::nullopt);
-      update_optional_bool(driver_not_connected_alert_,
-                           std::nullopt);
+      update_driver_connected(std::nullopt);
       update_optional_bool(driver_version_mismatched_alert_,
                            std::nullopt);
       update_optional_bool(input_monitoring_permissions_alert_,
@@ -116,9 +115,8 @@ private:
       update_optional_bool(driver_not_activated_alert_,
                            get_optional_inverted_bool(json,
                                                       "driver_activated"));
-      update_optional_bool(driver_not_connected_alert_,
-                           get_optional_inverted_bool(json,
-                                                      "driver_connected"));
+      update_driver_connected(get_optional_bool(json,
+                                                "driver_connected"));
       update_optional_bool(driver_version_mismatched_alert_,
                            get_optional_bool(json,
                                              "driver_version_mismatched"));
@@ -156,6 +154,52 @@ private:
     enqueue_to_dispatcher(
         [this] {
           update_services_conditions();
+        },
+        when_now() + std::chrono::seconds(3));
+  }
+
+  void update_driver_connected(const std::optional<bool>& value) {
+    if (driver_connected_ == value) {
+      return;
+    }
+
+    driver_connected_ = value;
+    ++driver_connected_generation_;
+
+    if (!value) {
+      update_optional_bool(driver_not_connected_alert_,
+                           std::nullopt);
+      return;
+    }
+
+    if (*value) {
+      update_optional_bool(driver_not_connected_alert_,
+                           false);
+      return;
+    }
+
+    // `driver_connected` always transitions `nullopt -> false -> true` during normal startup.
+    // If we immediately surface `driver_not_connected_alert_` when it becomes false,
+    // SettingsWindow would show a transient alert while the driver is still connecting.
+    // Therefore, false is treated as a pending state here, and we only show the alert
+    // if it remains false after a delay.
+    update_optional_bool(driver_not_connected_alert_,
+                         false);
+    enqueue_evaluate_driver_not_connected(driver_connected_generation_);
+  }
+
+  void enqueue_evaluate_driver_not_connected(std::size_t generation) {
+    enqueue_to_dispatcher(
+        [this, generation] {
+          // Ignore stale delayed checks that were scheduled for an older state.
+          if (driver_connected_generation_ != generation) {
+            return;
+          }
+
+          if (driver_connected_ == false) {
+            update_optional_bool(driver_not_connected_alert_,
+                                 true);
+          }
         },
         when_now() + std::chrono::seconds(3));
   }
@@ -258,6 +302,8 @@ private:
   std::optional<bool> driver_version_mismatched_alert_;
   std::optional<bool> driver_not_activated_alert_;
   std::optional<bool> driver_not_connected_alert_;
+  std::optional<bool> driver_connected_;
+  std::size_t driver_connected_generation_ = 0;
 
   std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
   std::unique_ptr<pqrs::osx::file_monitor> core_service_state_file_monitor_;
