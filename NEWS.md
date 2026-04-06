@@ -7,9 +7,9 @@
 - ✨ New Features
     - `frontmost_application_if` can now detect overlay windows, such as Spotlight, using the Accessibility API.
     - `variable_if` now supports the following variables, making it possible to change behavior depending on whether the focused element is a text area.
-        - accessibility.focused_ui_element.role
-        - accessibility.focused_ui_element.subrole
-        - accessibility.focused_ui_element.title
+        - accessibility.focused_ui_element.role_string
+        - accessibility.focused_ui_element.subrole_string
+        - accessibility.focused_ui_element.title_string
         - accessibility.focused_ui_element.window_position_x
         - accessibility.focused_ui_element.window_position_y
         - accessibility.focused_ui_element.window_size_height

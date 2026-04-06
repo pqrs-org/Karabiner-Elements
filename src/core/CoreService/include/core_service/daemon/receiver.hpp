@@ -518,7 +518,7 @@ private:
     if (device_grabber_) {
       device_grabber_->async_post_set_variable_event(
           manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.role",
+              "accessibility.focused_ui_element.role_string",
               manipulator_environment_variable_value(focused_ui_element_.get_role().value_or("")),
               nullptr,
               std::nullopt,
@@ -526,7 +526,7 @@ private:
 
       device_grabber_->async_post_set_variable_event(
           manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.subrole",
+              "accessibility.focused_ui_element.subrole_string",
               manipulator_environment_variable_value(focused_ui_element_.get_subrole().value_or("")),
               nullptr,
               std::nullopt,
@@ -534,7 +534,7 @@ private:
 
       device_grabber_->async_post_set_variable_event(
           manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.title",
+              "accessibility.focused_ui_element.title_string",
               manipulator_environment_variable_value(focused_ui_element_.get_title().value_or("")),
               nullptr,
               std::nullopt,
