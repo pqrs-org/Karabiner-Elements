@@ -116,7 +116,7 @@ public:
                           sender_endpoint->path(),
                           nlohmann::json{
                               {"operation_type", operation_type::settings_window_alert},
-                              {"settings_window_alert", m->get_current_alert()}});
+                              {"settings_window_alert", m->get_state()}});
                     }
                   }
                   break;

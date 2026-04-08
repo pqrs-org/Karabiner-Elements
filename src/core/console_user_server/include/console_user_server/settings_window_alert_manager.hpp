@@ -6,10 +6,9 @@
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "services_utility.hpp"
-#include "types/settings_window_alert.hpp"
+#include "types/settings_window_alert_state.hpp"
 #include <fstream>
 #include <mutex>
-#include <nod/nod.hpp>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/file_monitor.hpp>
@@ -18,8 +17,6 @@ namespace krbn {
 namespace console_user_server {
 class settings_window_alert_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  nod::signal<void(settings_window_alert)> current_alert_changed;
-
   settings_window_alert_manager(void)
       : dispatcher_client(),
         current_alert_(settings_window_alert::none),
@@ -71,13 +68,41 @@ public:
     });
   }
 
+  settings_window_alert_state get_state(void) const {
+    auto state = settings_window_alert_state();
+    state.set_current_alert(get_current_alert());
+    state.set_alert_context(get_alert_context());
+
+    return state;
+  }
+
+private:
   settings_window_alert get_current_alert(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return current_alert_;
   }
 
-private:
+  settings_window_alert_context get_alert_context(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    auto context = settings_window_alert_context();
+    context.set_services_enabled(services_enabled_);
+    context.set_core_daemons_running(core_daemons_running_);
+    context.set_core_agents_running(core_agents_running_);
+
+    auto services_waiting_seconds = 0;
+    if (!(core_daemons_running_ && core_agents_running_)) {
+      services_waiting_seconds =
+          static_cast<int>(std::chrono::duration_cast<std::chrono::seconds>(
+                               std::chrono::steady_clock::now() - services_waiting_started_at_)
+                               .count());
+    }
+    context.set_services_waiting_seconds(services_waiting_seconds);
+
+    return context;
+  }
+
   void update_configuration_conditions(void) {
     doctor_alert_ = !configuration_monitor_->get_parse_error_message().empty();
 
@@ -134,9 +159,25 @@ private:
   }
 
   void update_services_conditions(void) {
-    auto services_running =
-        services_utility::core_daemons_running() &&
-        services_utility::core_agents_running();
+    auto services_enabled =
+        services_utility::core_daemons_enabled() &&
+        services_utility::core_agents_enabled();
+    auto core_daemons_running = services_utility::core_daemons_running();
+    auto core_agents_running = services_utility::core_agents_running();
+    auto services_running = core_daemons_running && core_agents_running;
+
+    services_enabled_ = services_enabled;
+    core_daemons_running_ = core_daemons_running;
+    core_agents_running_ = core_agents_running;
+
+    if (!previous_services_running_ ||
+        *previous_services_running_ != services_running) {
+      previous_services_running_ = services_running;
+
+      if (!services_running) {
+        services_waiting_started_at_ = std::chrono::steady_clock::now();
+      }
+    }
 
     services_not_running_alert_ = !services_running;
 
@@ -254,8 +295,6 @@ private:
     if (new_current_alert != settings_window_alert::none) {
       application_launcher::launch_settings();
     }
-
-    current_alert_changed(new_current_alert);
   }
 
   settings_window_alert make_current_alert(void) const {
@@ -296,6 +335,9 @@ private:
   bool doctor_alert_ = false;
   bool settings_alert_ = false;
   bool services_not_running_alert_ = false;
+  bool services_enabled_ = true;
+  bool core_daemons_running_ = true;
+  bool core_agents_running_ = true;
   std::optional<bool> input_monitoring_permissions_alert_;
   std::optional<bool> accessibility_alert_;
   std::optional<bool> virtual_hid_device_service_client_not_connected_alert_;
@@ -304,6 +346,8 @@ private:
   std::optional<bool> driver_not_connected_alert_;
   std::optional<bool> driver_connected_;
   std::size_t driver_connected_generation_ = 0;
+  std::optional<bool> previous_services_running_;
+  std::chrono::steady_clock::time_point services_waiting_started_at_ = std::chrono::steady_clock::now();
 
   std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
   std::unique_ptr<pqrs::osx::file_monitor> core_service_state_file_monitor_;
