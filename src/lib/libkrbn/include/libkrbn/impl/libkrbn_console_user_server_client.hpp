@@ -13,7 +13,7 @@ public:
       : dispatcher_client(),
         status_(libkrbn_console_user_server_client_status_none) {
     console_user_server_client_ = std::make_unique<krbn::console_user_server_client>(uid,
-                                                                                        client_socket_directory_name);
+                                                                                     client_socket_directory_name);
 
     console_user_server_client_->connected.connect([this] {
       set_status(libkrbn_console_user_server_client_status_connected);
@@ -31,6 +31,16 @@ public:
                                                          auto&& json) {
       try {
         switch (operation_type) {
+          case krbn::operation_type::settings_window_alert: {
+            auto json_dump = krbn::json_utility::dump(json.at("settings_window_alert"));
+
+            for (const auto& c : settings_window_alert_received_callback_manager_.get_callbacks()) {
+              c(json_dump.c_str());
+            }
+
+            break;
+          }
+
           case krbn::operation_type::frontmost_application_history: {
             auto json_dump = krbn::json_utility::dump(json.at("frontmost_application_history"));
 
@@ -64,6 +74,10 @@ public:
     return status_;
   }
 
+  void async_get_settings_window_alert(void) {
+    console_user_server_client_->async_get_settings_window_alert();
+  }
+
   void async_get_frontmost_application_history(void) {
     console_user_server_client_->async_get_frontmost_application_history();
   }
@@ -77,6 +91,18 @@ public:
   void unregister_libkrbn_console_user_server_client_status_changed_callback(libkrbn_console_user_server_client_status_changed_t callback) {
     enqueue_to_dispatcher([this, callback] {
       status_changed_callback_manager_.unregister_callback(callback);
+    });
+  }
+
+  void register_libkrbn_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+    enqueue_to_dispatcher([this, callback] {
+      settings_window_alert_received_callback_manager_.register_callback(callback);
+    });
+  }
+
+  void unregister_libkrbn_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+    enqueue_to_dispatcher([this, callback] {
+      settings_window_alert_received_callback_manager_.unregister_callback(callback);
     });
   }
 
@@ -105,5 +131,6 @@ private:
   std::unique_ptr<krbn::console_user_server_client> console_user_server_client_;
   libkrbn_console_user_server_client_status status_;
   libkrbn_callback_manager<libkrbn_console_user_server_client_status_changed_t> status_changed_callback_manager_;
+  libkrbn_callback_manager<libkrbn_console_user_server_client_settings_window_alert_received_t> settings_window_alert_received_callback_manager_;
   libkrbn_callback_manager<libkrbn_console_user_server_client_frontmost_application_history_received_t> frontmost_application_history_received_callback_manager_;
 };

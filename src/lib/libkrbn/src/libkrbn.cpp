@@ -874,6 +874,30 @@ libkrbn_console_user_server_client_status libkrbn_console_user_server_client_get
   return libkrbn_console_user_server_client_status_none;
 }
 
+void libkrbn_console_user_server_client_async_get_settings_window_alert(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_console_user_server_client()) {
+      c->async_get_settings_window_alert();
+    }
+  }
+}
+
+void libkrbn_register_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_console_user_server_client()) {
+      c->register_libkrbn_console_user_server_client_settings_window_alert_received_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_console_user_server_client()) {
+      c->unregister_libkrbn_console_user_server_client_settings_window_alert_received_callback(callback);
+    }
+  }
+}
+
 void libkrbn_console_user_server_client_async_get_frontmost_application_history(void) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_console_user_server_client()) {
