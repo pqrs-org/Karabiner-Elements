@@ -8,9 +8,10 @@ clean:
 	rm -fr *.xcodeproj
 	rm -fr build
 
-install:
+codesign: all
 	bash ../../../scripts/codesign.sh build/Release/karabiner_cli
 
+install: codesign
 	sudo install \
 		-m 755 \
 		build/Release/karabiner_cli \
