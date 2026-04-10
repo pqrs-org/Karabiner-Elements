@@ -8,15 +8,28 @@ final class ContentViewStates: ObservableObject {
   // Alerts
   //
 
-  @Published public var showServicesNotRunningAlert = false
-  @Published public var showVirtualHidDeviceServiceClientNotConnectedAlert = false
-  @Published public var showDriverNotActivatedAlert = false
-  @Published public var showDriverNotConnectedAlert = false
-  @Published public var showDriverVersionMismatchedAlert = false
-  @Published public var showInputMonitoringPermissionsAlert = false
-  @Published public var showAccessibilityAlert = false
-  @Published public var showDoctorAlert = false
-  @Published public var showSettingsAlert = false
+  @Published public private(set) var currentAlert: SettingsWindowAlert = .none {
+    didSet {
+      if currentAlert != dismissedAlert {
+        dismissedAlert = .none
+      }
+    }
+  }
+  @Published private var dismissedAlert: SettingsWindowAlert = .none
+  @Published var alertContext = SettingsWindowAlertContext()
+
+  var displayedAlert: SettingsWindowAlert {
+    currentAlert == dismissedAlert ? .none : currentAlert
+  }
+
+  func updateAlertState(_ state: SettingsWindowAlertState) {
+    currentAlert = state.currentAlert
+    alertContext = state.alertContext
+  }
+
+  func dismissCurrentAlert() {
+    dismissedAlert = currentAlert
+  }
 
   //
   // ContentMainView

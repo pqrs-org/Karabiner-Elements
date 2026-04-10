@@ -19,6 +19,7 @@ struct KarabinerSettingsApp: App {
     //
 
     SettingsCoreServiceClient.shared.start()
+    SettingsConsoleUserServerClient.shared.start()
 
     //
     // Start components
@@ -27,10 +28,7 @@ struct KarabinerSettingsApp: App {
     KarabinerAppHelper.shared.observeVersionUpdated()
     Doctor.shared.start()
     LibKrbn.Settings.shared.watch()
-    ServicesMonitor.shared.start()
-    SettingsChecker.shared.start()
     SettingsCoreServiceClient.shared.startSystemVariablesMonitoring()
-    StateJsonMonitor.shared.start()
     SystemPreferences.shared.start()
   }
 

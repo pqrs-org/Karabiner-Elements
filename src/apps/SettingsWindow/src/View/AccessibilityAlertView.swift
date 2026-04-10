@@ -43,7 +43,7 @@ struct AccessibilityAlertView: View {
       .frame(width: 700)
 
       SheetCloseButton {
-        ContentViewStates.shared.showAccessibilityAlert = false
+        ContentViewStates.shared.dismissCurrentAlert()
       }
     }
     .onAppear {

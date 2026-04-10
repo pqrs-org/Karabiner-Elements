@@ -65,7 +65,7 @@ struct DriverVersionMismatchedAlertView: View {
       .frame(width: 500)
 
       SheetCloseButton {
-        ContentViewStates.shared.showDriverVersionMismatchedAlert = false
+        ContentViewStates.shared.dismissCurrentAlert()
       }
     }
     .onAppear {

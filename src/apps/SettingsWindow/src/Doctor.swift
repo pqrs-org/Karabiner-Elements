@@ -9,9 +9,6 @@ final class Doctor: ObservableObject {
   private let timer: AsyncTimerSequence<ContinuousClock>
   private var timerTask: Task<Void, Never>?
 
-  private var previousShowAlert: Bool?
-
-  @Published var userPIDDirectoryWritable: Bool = true
   @Published var karabinerJSONParseErrorMessage = ""
 
   init() {
@@ -39,15 +36,6 @@ final class Doctor: ObservableObject {
     var buffer = [Int8](repeating: 0, count: 32 * 1024)
     if libkrbn_configuration_monitor_get_parse_error_message(&buffer, buffer.count) {
       karabinerJSONParseErrorMessage = String(utf8String: buffer) ?? ""
-    }
-
-    let showAlert = !karabinerJSONParseErrorMessage.isEmpty
-
-    // Display alerts only when the status changes.
-    if previousShowAlert == nil || previousShowAlert != showAlert {
-      previousShowAlert = showAlert
-
-      ContentViewStates.shared.showDoctorAlert = showAlert
     }
   }
 }
