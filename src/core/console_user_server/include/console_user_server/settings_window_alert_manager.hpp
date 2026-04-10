@@ -20,10 +20,10 @@ public:
   settings_window_alert_manager(void)
       : dispatcher_client(),
         current_alert_(settings_window_alert::none),
-        configuration_monitor_(std::make_unique<krbn::configuration_monitor>(
+        configuration_monitor_(std::make_unique<configuration_monitor>(
             constants::get_user_core_configuration_file_path(),
             geteuid(),
-            krbn::core_configuration::error_handling::loose)),
+            core_configuration::error_handling::loose)),
         core_service_state_file_monitor_(std::make_unique<pqrs::osx::file_monitor>(
             weak_dispatcher_,
             std::vector<std::string>{constants::get_core_service_state_json_file_path().string()})) {
@@ -349,7 +349,7 @@ private:
   std::optional<bool> previous_services_running_;
   std::chrono::steady_clock::time_point services_waiting_started_at_ = std::chrono::steady_clock::now();
 
-  std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
+  std::unique_ptr<configuration_monitor> configuration_monitor_;
   std::unique_ptr<pqrs::osx::file_monitor> core_service_state_file_monitor_;
 };
 } // namespace console_user_server
