@@ -10,16 +10,28 @@ final class ContentViewStates: ObservableObject {
 
   @Published public private(set) var currentAlert: SettingsWindowAlert = .none {
     didSet {
-      if currentAlert != dismissedAlert {
-        dismissedAlert = .none
-      }
+      resetDismissedAlertIfNeeded()
     }
   }
   @Published private var dismissedAlert: SettingsWindowAlert = .none
   @Published var alertContext = SettingsWindowAlertContext()
+  @Published private var consoleUserServerClientConnected = false {
+    didSet {
+      resetDismissedAlertIfNeeded()
+    }
+  }
+
+  private var currentResolvedAlert: SettingsWindowAlert {
+    if !consoleUserServerClientConnected {
+      return .consoleUserServerNotConnected
+    }
+
+    return currentAlert
+  }
 
   var displayedAlert: SettingsWindowAlert {
-    currentAlert == dismissedAlert ? .none : currentAlert
+    let resolvedAlert = currentResolvedAlert
+    return resolvedAlert == dismissedAlert ? .none : resolvedAlert
   }
 
   func updateAlertState(_ state: SettingsWindowAlertState) {
@@ -27,8 +39,18 @@ final class ContentViewStates: ObservableObject {
     alertContext = state.alertContext
   }
 
+  func updateConsoleUserServerClientConnected(_ connected: Bool) {
+    consoleUserServerClientConnected = connected
+  }
+
   func dismissCurrentAlert() {
-    dismissedAlert = currentAlert
+    dismissedAlert = currentResolvedAlert
+  }
+
+  private func resetDismissedAlertIfNeeded() {
+    if currentResolvedAlert != dismissedAlert {
+      dismissedAlert = .none
+    }
   }
 
   //

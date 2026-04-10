@@ -17,6 +17,10 @@ struct ContentView: View {
         OverlayAlertView {
           SettingsAlertView()
         }
+      } else if contentViewStates.displayedAlert == .consoleUserServerNotConnected {
+        OverlayAlertView {
+          ConsoleUserServerNotConnectedAlertView()
+        }
       } else if contentViewStates.displayedAlert == .servicesNotRunning {
         OverlayAlertView {
           ServicesNotRunningAlertView()

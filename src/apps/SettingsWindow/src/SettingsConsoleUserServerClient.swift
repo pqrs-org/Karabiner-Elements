@@ -12,6 +12,14 @@ private func settingsWindowAlertReceivedCallback(_ jsonString: UnsafePointer<CCh
 }
 
 private func consoleUserServerClientStatusChangedCallback() {
+  let connected =
+    libkrbn_console_user_server_client_get_status()
+    == libkrbn_console_user_server_client_status_connected
+
+  Task { @MainActor in
+    ContentViewStates.shared.updateConsoleUserServerClientConnected(connected)
+  }
+
   libkrbn_console_user_server_client_async_get_settings_window_alert()
 }
 
