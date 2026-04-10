@@ -20,6 +20,7 @@ final class ContentViewStates: ObservableObject {
       resetDismissedAlertIfNeeded()
     }
   }
+  @Published private(set) var consoleUserServerClientWaitingSeconds = 0
 
   private var currentResolvedAlert: SettingsWindowAlert {
     if !consoleUserServerClientConnected {
@@ -41,6 +42,10 @@ final class ContentViewStates: ObservableObject {
 
   func updateConsoleUserServerClientConnected(_ connected: Bool) {
     consoleUserServerClientConnected = connected
+  }
+
+  func updateConsoleUserServerClientWaitingSeconds(_ seconds: Int) {
+    consoleUserServerClientWaitingSeconds = seconds
   }
 
   func dismissCurrentAlert() {

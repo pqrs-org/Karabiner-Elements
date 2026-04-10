@@ -12,12 +12,8 @@ private func settingsWindowAlertReceivedCallback(_ jsonString: UnsafePointer<CCh
 }
 
 private func consoleUserServerClientStatusChangedCallback() {
-  let connected =
-    libkrbn_console_user_server_client_get_status()
-    == libkrbn_console_user_server_client_status_connected
-
   Task { @MainActor in
-    ContentViewStates.shared.updateConsoleUserServerClientConnected(connected)
+    SettingsConsoleUserServerClient.shared.updateConsoleUserServerClientState()
   }
 
   libkrbn_console_user_server_client_async_get_settings_window_alert()
@@ -27,13 +23,16 @@ private func consoleUserServerClientStatusChangedCallback() {
 final class SettingsConsoleUserServerClient {
   static let shared = SettingsConsoleUserServerClient()
 
+  private let continuousClock: ContinuousClock
   private let currentAlertTimer: AsyncTimerSequence<ContinuousClock>
   private var currentAlertTimerTask: Task<Void, Never>?
+  private var consoleUserServerClientDisconnectedAt: ContinuousClock.Instant?
 
   init() {
+    continuousClock = ContinuousClock()
     currentAlertTimer = AsyncTimerSequence(
       interval: .seconds(1),
-      clock: .continuous
+      clock: continuousClock
     )
   }
 
@@ -48,11 +47,36 @@ final class SettingsConsoleUserServerClient {
     libkrbn_console_user_server_client_async_start()
 
     currentAlertTimerTask = Task { @MainActor in
+      updateConsoleUserServerClientState()
       libkrbn_console_user_server_client_async_get_settings_window_alert()
 
       for await _ in currentAlertTimer {
+        updateConsoleUserServerClientState()
         libkrbn_console_user_server_client_async_get_settings_window_alert()
       }
     }
+  }
+
+  func updateConsoleUserServerClientState() {
+    let connected =
+      libkrbn_console_user_server_client_get_status()
+      == libkrbn_console_user_server_client_status_connected
+
+    if connected {
+      consoleUserServerClientDisconnectedAt = nil
+    } else {
+      if consoleUserServerClientDisconnectedAt == nil {
+        consoleUserServerClientDisconnectedAt = continuousClock.now
+      }
+    }
+
+    let consoleUserServerClientWaitingSeconds =
+      consoleUserServerClientDisconnectedAt.map {
+        max(0, Int($0.duration(to: continuousClock.now).components.seconds))
+      } ?? 0
+
+    ContentViewStates.shared.updateConsoleUserServerClientConnected(connected)
+    ContentViewStates.shared.updateConsoleUserServerClientWaitingSeconds(
+      consoleUserServerClientWaitingSeconds)
   }
 }
