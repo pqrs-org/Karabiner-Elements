@@ -98,7 +98,8 @@ inline void from_json(const nlohmann::json& json, settings_window_alert_context&
 class settings_window_alert_state final {
 public:
   settings_window_alert_state(void)
-      : current_alert_(settings_window_alert::none) {
+      : current_alert_(settings_window_alert::none),
+        core_service_deamon_state_(nlohmann::json::object()) {
   }
 
   settings_window_alert get_current_alert(void) const {
@@ -117,20 +118,32 @@ public:
     alert_context_ = value;
   }
 
+  const nlohmann::json& get_core_service_daemon_state(void) const {
+    return core_service_deamon_state_;
+  }
+
+  void set_core_service_daemon_state(const nlohmann::json& value) {
+    core_service_deamon_state_ = value;
+  }
+
 private:
   settings_window_alert current_alert_;
   settings_window_alert_context alert_context_;
+  nlohmann::json core_service_deamon_state_;
 };
 
 inline void to_json(nlohmann::json& json, const settings_window_alert_state& value) {
   json = nlohmann::json::object({
       {"current_alert", value.get_current_alert()},
       {"alert_context", value.get_alert_context()},
+      {"core_service_daemon_state", value.get_core_service_daemon_state()},
   });
 }
 
 inline void from_json(const nlohmann::json& json, settings_window_alert_state& value) {
   value.set_current_alert(json.at("current_alert").get<settings_window_alert>());
   value.set_alert_context(json.at("alert_context").get<settings_window_alert_context>());
+  value.set_core_service_daemon_state(json.value("core_service_daemon_state",
+                                                 nlohmann::json::object()));
 }
 } // namespace krbn
