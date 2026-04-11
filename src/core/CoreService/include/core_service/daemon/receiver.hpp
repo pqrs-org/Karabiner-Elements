@@ -6,7 +6,7 @@
 #include "application_launcher.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "core_service/daemon/core_service_state_json_writer.hpp"
+#include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "device_grabber.hpp"
 #include "filesystem_utility.hpp"
 #include "shared_secret_authentication.hpp"
@@ -27,10 +27,18 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(std::optional<uid_t> current_console_user_id,
-           std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
+           std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager)
       : dispatcher_client(),
         current_console_user_id_(current_console_user_id),
-        weak_core_service_state_json_writer_(weak_core_service_state_json_writer) {
+        weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      core_service_daemon_state_manager_connection_ = m->changed.connect([this](const auto& core_service_daemon_state) {
+        enqueue_to_dispatcher([this, core_service_daemon_state] {
+          send_core_service_daemon_state(core_service_daemon_state);
+        });
+      });
+    }
+
     // Remove old files and prepare a socket directory.
     prepare_karabiner_core_service_socket_directory();
 
@@ -407,6 +415,10 @@ public:
 
       console_user_server_client_->connected.connect([this] {
         console_user_server_client_->async_get_user_core_configuration_file_path();
+
+        if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+          send_core_service_daemon_state(m->get_state());
+        }
       });
 
       // If the console_user_server isn't running (i.e., operating under system_core_configuration),
@@ -451,6 +463,7 @@ public:
 
   virtual ~receiver() {
     detach_from_dispatcher([this] {
+      core_service_daemon_state_manager_connection_.disconnect();
       server_ = nullptr;
       console_user_server_client_ = nullptr;
       multitouch_extension_client_ = nullptr;
@@ -491,7 +504,7 @@ private:
     }
 
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_,
-                                                       weak_core_service_state_json_writer_);
+                                                       weak_core_service_daemon_state_manager_);
 
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
@@ -578,6 +591,12 @@ private:
     }
   }
 
+  void send_core_service_daemon_state(const nlohmann::json& core_service_daemon_state) {
+    if (console_user_server_client_) {
+      console_user_server_client_->async_core_service_daemon_state(core_service_daemon_state);
+    }
+  }
+
   void clear_multitouch_extension_environment_variables() {
     if (device_grabber_) {
       for (const auto& name : multitouch_extension_environment_variable_names) {
@@ -611,7 +630,8 @@ private:
   };
 
   std::optional<uid_t> current_console_user_id_;
-  std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer_;
+  std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;
+  nod::scoped_connection core_service_daemon_state_manager_connection_;
 
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_temporarily_ignore_all_devices_peer_manager_;
   std::unique_ptr<shared_secret_authentication::receiver> shared_secret_authentication_receiver_;
