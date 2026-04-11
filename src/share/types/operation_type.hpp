@@ -15,6 +15,7 @@ enum class operation_type : uint8_t {
   focused_ui_element_changed,
   // console_user_server -> core_service (deamon)
   connect_console_user_server,
+  core_service_daemon_state,
   system_preferences_updated,
   input_source_changed,
   // core_service (daemon) -> console_user_server
@@ -73,6 +74,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::focused_ui_element_changed, "focused_ui_element_changed"},
         {operation_type::connect_console_user_server, "connect_console_user_server"},
+        {operation_type::core_service_daemon_state, "core_service_daemon_state"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::input_source_changed, "input_source_changed"},
         {operation_type::get_user_core_configuration_file_path, "get_user_core_configuration_file_path"},
