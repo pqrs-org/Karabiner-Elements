@@ -385,23 +385,6 @@ void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configu
   }
 }
 
-bool libkrbn_configuration_monitor_get_parse_error_message(char* buffer,
-                                                           size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_configuration_monitor()) {
-      auto message = m->get_parse_error_message();
-      strlcpy(buffer, message.c_str(), length);
-      return true;
-    }
-  }
-
-  return false;
-}
-
 //
 // complex_modifications_assets_manager
 //
@@ -550,10 +533,6 @@ void libkrbn_unregister_file_updated_callback(const char* file_path,
       m->unregister_libkrbn_file_updated_callback(file_path, callback);
     }
   }
-}
-
-void libkrbn_get_core_service_state_json_file_path(char* buffer, size_t length) {
-  strlcpy(buffer, krbn::constants::get_core_service_state_json_file_path().c_str(), length);
 }
 
 //

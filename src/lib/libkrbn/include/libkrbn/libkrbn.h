@@ -451,9 +451,6 @@ typedef void (*libkrbn_core_configuration_updated_t)(void);
 void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated_t _Nonnull callback);
 void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated_t _Nonnull callback);
 
-bool libkrbn_configuration_monitor_get_parse_error_message(char* _Nonnull buffer,
-                                                           size_t length);
-
 //
 // libkrbn_version_monitor
 //
@@ -480,8 +477,6 @@ void libkrbn_register_file_updated_callback(const char* _Nonnull file_path,
                                             libkrbn_file_updated_t _Nonnull callback);
 void libkrbn_unregister_file_updated_callback(const char* _Nonnull file_path,
                                               libkrbn_file_updated_t _Nonnull callback);
-
-void libkrbn_get_core_service_state_json_file_path(char* _Nonnull buffer, size_t length);
 
 //
 // libkrbn_log_monitor
