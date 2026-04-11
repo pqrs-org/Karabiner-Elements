@@ -107,10 +107,6 @@ private:
     core_service_client_->connected.connect([this] {
       version_monitor_->async_manual_check();
 
-      if (core_service_client_) {
-        core_service_client_->async_connect_console_user_server();
-      }
-
       stop_child_components();
       start_child_components();
     });
