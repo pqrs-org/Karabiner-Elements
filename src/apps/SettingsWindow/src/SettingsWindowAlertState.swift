@@ -1,5 +1,27 @@
 import Foundation
 
+struct SettingsWindowCoreServiceState: Codable {
+  var virtualHidDeviceServiceClientConnected: Bool?
+  var driverActivated: Bool?
+  var driverConnected: Bool?
+  var driverVersionMismatched: Bool?
+  var hidDeviceOpenPermitted: Bool?
+  var accessibilityProcessTrusted: Bool?
+  var karabinerJsonParseErrorMessage = ""
+  var virtualHidKeyboardTypeNotSet = false
+
+  enum CodingKeys: String, CodingKey {
+    case virtualHidDeviceServiceClientConnected = "virtual_hid_device_service_client_connected"
+    case driverActivated = "driver_activated"
+    case driverConnected = "driver_connected"
+    case driverVersionMismatched = "driver_version_mismatched"
+    case hidDeviceOpenPermitted = "hid_device_open_permitted"
+    case accessibilityProcessTrusted = "accessibility_process_trusted"
+    case karabinerJsonParseErrorMessage = "karabiner_json_parse_error_message"
+    case virtualHidKeyboardTypeNotSet = "virtual_hid_keyboard_type_not_set"
+  }
+}
+
 struct SettingsWindowAlertContext: Codable {
   var servicesEnabled = true
   var coreDaemonsRunning = true
@@ -17,9 +39,11 @@ struct SettingsWindowAlertContext: Codable {
 struct SettingsWindowAlertState: Codable {
   var currentAlert: SettingsWindowAlert
   var alertContext: SettingsWindowAlertContext
+  var coreServiceDaemonState = SettingsWindowCoreServiceState()
 
   enum CodingKeys: String, CodingKey {
     case currentAlert = "current_alert"
     case alertContext = "alert_context"
+    case coreServiceDaemonState = "core_service_daemon_state"
   }
 }

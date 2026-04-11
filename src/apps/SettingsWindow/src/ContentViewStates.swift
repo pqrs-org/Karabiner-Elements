@@ -15,6 +15,7 @@ final class ContentViewStates: ObservableObject {
   }
   @Published private var dismissedAlert: SettingsWindowAlert = .none
   @Published var alertContext = SettingsWindowAlertContext()
+  @Published var coreServiceDaemonState = SettingsWindowCoreServiceState()
   @Published private var consoleUserServerClientConnected = false {
     didSet {
       resetDismissedAlertIfNeeded()
@@ -38,6 +39,7 @@ final class ContentViewStates: ObservableObject {
   func updateAlertState(_ state: SettingsWindowAlertState) {
     currentAlert = state.currentAlert
     alertContext = state.alertContext
+    coreServiceDaemonState = state.coreServiceDaemonState
   }
 
   func updateConsoleUserServerClientConnected(_ connected: Bool) {

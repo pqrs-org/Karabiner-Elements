@@ -26,7 +26,6 @@ struct KarabinerSettingsApp: App {
     //
 
     KarabinerAppHelper.shared.observeVersionUpdated()
-    Doctor.shared.start()
     LibKrbn.Settings.shared.watch()
     SettingsCoreServiceClient.shared.startSystemVariablesMonitoring()
     SystemPreferences.shared.start()
