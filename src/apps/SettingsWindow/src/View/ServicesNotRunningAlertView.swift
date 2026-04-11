@@ -54,14 +54,18 @@ struct ServicesNotRunningAlertView: View {
               Label(
                 "Karabiner-Elements Non-Privileged Agents v2",
                 systemImage:
-                  contentViewStates.alertContext.coreAgentsRunning ? "checkmark.circle.fill" : "circle")
+                  contentViewStates.alertContext.coreAgentsRunning
+                  ? "checkmark.circle.fill" : "circle")
               Label(
                 "Karabiner-Elements Privileged Daemons v2",
                 systemImage:
-                  contentViewStates.alertContext.coreDaemonsRunning ? "checkmark.circle.fill" : "circle")
+                  contentViewStates.alertContext.coreDaemonsRunning
+                  ? "checkmark.circle.fill" : "circle")
             }
 
-            if !contentViewStates.alertContext.servicesEnabled || contentViewStates.alertContext.servicesWaitingSeconds > 15 {
+            if !contentViewStates.alertContext.servicesEnabled
+              || contentViewStates.alertContext.servicesWaitingSeconds > 15
+            {
               Button(
                 action: {
                   SMAppService.openSystemSettingsLoginItems()
