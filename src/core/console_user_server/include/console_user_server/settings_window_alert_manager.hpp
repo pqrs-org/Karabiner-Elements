@@ -1,17 +1,12 @@
 #pragma once
 
 #include "application_launcher.hpp"
-#include "constants.hpp"
-#include "json_utility.hpp"
 #include "logger.hpp"
-#include "monitor/configuration_monitor.hpp"
 #include "services_utility.hpp"
 #include "types/settings_window_alert_state.hpp"
-#include <fstream>
 #include <mutex>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/osx/file_monitor.hpp>
 
 namespace krbn {
 namespace console_user_server {
@@ -19,42 +14,19 @@ class settings_window_alert_manager final : public pqrs::dispatcher::extra::disp
 public:
   settings_window_alert_manager(void)
       : dispatcher_client(),
-        current_alert_(settings_window_alert::none),
-        configuration_monitor_(std::make_unique<configuration_monitor>(
-            constants::get_user_core_configuration_file_path(),
-            geteuid(),
-            core_configuration::error_handling::loose)),
-        core_service_state_file_monitor_(std::make_unique<pqrs::osx::file_monitor>(
-            weak_dispatcher_,
-            std::vector<std::string>{constants::get_core_service_state_json_file_path().string()})) {
-    configuration_monitor_->core_configuration_updated.connect([this](auto&&) {
-      update_configuration_conditions();
-    });
-
-    core_service_state_file_monitor_->file_changed.connect([this](auto&&, auto&&) {
-      update_core_service_state_conditions();
-    });
+        current_alert_(settings_window_alert::none) {
   }
 
   ~settings_window_alert_manager(void) {
-    detach_from_dispatcher([this] {
-      core_service_state_file_monitor_ = nullptr;
-      configuration_monitor_ = nullptr;
-    });
+    detach_from_dispatcher();
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
-      configuration_monitor_->async_start();
-      core_service_state_file_monitor_->async_start();
-
       // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.
       // So we should enable them once before checking the status.
       services_utility::register_core_daemons();
       services_utility::register_core_agents();
-
-      update_configuration_conditions();
-      update_core_service_state_conditions();
 
       // When updating Karabiner-Elements, after the new version is installed, the daemons, agents, and Settings will restart.
       // To prevent alerts from appearing at that time, if the daemons or agents are enabled, wait for the timer to fire for the process startup check.
@@ -68,10 +40,17 @@ public:
     });
   }
 
+  void async_update_core_service_daemon_state(const nlohmann::json& json) {
+    enqueue_to_dispatcher([this, json] {
+      update_core_service_daemon_state_conditions(json);
+    });
+  }
+
   settings_window_alert_state get_state(void) const {
     auto state = settings_window_alert_state();
     state.set_current_alert(get_current_alert());
     state.set_alert_context(get_alert_context());
+    state.set_core_service_daemon_state(get_core_service_daemon_state());
 
     return state;
   }
@@ -103,59 +82,41 @@ private:
     return context;
   }
 
-  void update_configuration_conditions(void) {
-    doctor_alert_ = !configuration_monitor_->get_parse_error_message().empty();
+  nlohmann::json get_core_service_daemon_state(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    settings_alert_ = false;
-    if (auto c = configuration_monitor_->get_core_configuration()) {
-      settings_alert_ = c->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2().empty();
-    }
-
-    update_current_alert();
+    return core_service_deamon_state_;
   }
 
-  void update_core_service_state_conditions(void) {
-    std::ifstream input(constants::get_core_service_state_json_file_path());
-    if (!input) {
-      update_optional_bool(virtual_hid_device_service_client_not_connected_alert_,
-                           std::nullopt);
-      update_optional_bool(driver_not_activated_alert_,
-                           std::nullopt);
-      update_driver_connected(std::nullopt);
-      update_optional_bool(driver_version_mismatched_alert_,
-                           std::nullopt);
-      update_optional_bool(input_monitoring_permissions_alert_,
-                           std::nullopt);
-      update_optional_bool(accessibility_alert_,
-                           std::nullopt);
-      return;
+  void update_core_service_daemon_state_conditions(const nlohmann::json& json) {
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      core_service_deamon_state_ = json;
     }
 
-    try {
-      auto json = json_utility::parse_jsonc(input);
+    doctor_alert_ =
+        !json.value("karabiner_json_parse_error_message", std::string()).empty();
+    virtual_hid_keyboard_type_not_set_ = json.value("virtual_hid_keyboard_type_not_set", false);
 
-      update_optional_bool(virtual_hid_device_service_client_not_connected_alert_,
-                           get_optional_inverted_bool(json,
-                                                      "virtual_hid_device_service_client_connected"));
-      update_optional_bool(driver_not_activated_alert_,
-                           get_optional_inverted_bool(json,
-                                                      "driver_activated"));
-      update_driver_connected(get_optional_bool(json,
-                                                "driver_connected"));
-      update_optional_bool(driver_version_mismatched_alert_,
-                           get_optional_bool(json,
-                                             "driver_version_mismatched"));
-      update_optional_bool(input_monitoring_permissions_alert_,
-                           get_optional_inverted_bool(json,
-                                                      "hid_device_open_permitted"));
-      update_optional_bool(accessibility_alert_,
-                           get_optional_inverted_bool(json,
-                                                      "accessibility_process_trusted"));
-    } catch (const std::exception& e) {
-      logger::get_logger()->error("parse error in {0}: {1}",
-                                  constants::get_core_service_state_json_file_path().string(),
-                                  e.what());
-    }
+    update_optional_bool(virtual_hid_device_service_client_not_connected_alert_,
+                         get_optional_inverted_bool(json,
+                                                    "virtual_hid_device_service_client_connected"));
+    update_optional_bool(driver_not_activated_alert_,
+                         get_optional_inverted_bool(json,
+                                                    "driver_activated"));
+    update_driver_connected(get_optional_bool(json,
+                                              "driver_connected"));
+    update_optional_bool(driver_version_mismatched_alert_,
+                         get_optional_bool(json,
+                                           "driver_version_mismatched"));
+    update_optional_bool(input_monitoring_permissions_alert_,
+                         get_optional_inverted_bool(json,
+                                                    "hid_device_open_permitted"));
+    update_optional_bool(accessibility_alert_,
+                         get_optional_inverted_bool(json,
+                                                    "accessibility_process_trusted"));
+
+    update_current_alert();
   }
 
   void update_services_conditions(void) {
@@ -301,7 +262,7 @@ private:
     if (doctor_alert_) {
       return settings_window_alert::doctor;
     }
-    if (settings_alert_) {
+    if (virtual_hid_keyboard_type_not_set_) {
       return settings_window_alert::settings;
     }
     if (services_not_running_alert_) {
@@ -333,7 +294,7 @@ private:
   settings_window_alert current_alert_;
 
   bool doctor_alert_ = false;
-  bool settings_alert_ = false;
+  bool virtual_hid_keyboard_type_not_set_ = false;
   bool services_not_running_alert_ = false;
   bool services_enabled_ = true;
   bool core_daemons_running_ = true;
@@ -348,9 +309,7 @@ private:
   std::size_t driver_connected_generation_ = 0;
   std::optional<bool> previous_services_running_;
   std::chrono::steady_clock::time_point services_waiting_started_at_ = std::chrono::steady_clock::now();
-
-  std::unique_ptr<configuration_monitor> configuration_monitor_;
-  std::unique_ptr<pqrs::osx::file_monitor> core_service_state_file_monitor_;
+  nlohmann::json core_service_deamon_state_ = nlohmann::json::object();
 };
 } // namespace console_user_server
 } // namespace krbn

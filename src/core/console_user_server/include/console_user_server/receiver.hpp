@@ -79,6 +79,7 @@ public:
             break;
 
           case operation_type::get_user_core_configuration_file_path:
+          case operation_type::core_service_daemon_state:
           case operation_type::get_settings_window_alert:
           case operation_type::get_frontmost_application_history:
           case operation_type::check_for_updates_on_startup:
@@ -133,6 +134,13 @@ public:
                                     {"frontmost_application_history", frontmost_application_history}});
                           }
                         });
+                  }
+                  break;
+
+                case operation_type::core_service_daemon_state:
+                  if (auto m = weak_settings_window_alert_manager_.lock()) {
+                    m->async_update_core_service_daemon_state(
+                        json.at("core_service_daemon_state"));
                   }
                   break;
 
