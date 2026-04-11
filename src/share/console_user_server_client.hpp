@@ -317,6 +317,18 @@ public:
     });
   }
 
+  // core_service (daemon) -> console_user_server
+  void async_core_service_daemon_state(const nlohmann::json& core_service_daemon_state) const {
+    enqueue_to_dispatcher([this, core_service_daemon_state] {
+      nlohmann::json json{
+          {"operation_type", operation_type::core_service_daemon_state},
+          {"core_service_daemon_state", core_service_daemon_state},
+      };
+
+      async_send_message(std::move(json));
+    });
+  }
+
   // event_viewer -> console_user_server
   void async_get_frontmost_application_history(void) const {
     enqueue_to_dispatcher([this] {
