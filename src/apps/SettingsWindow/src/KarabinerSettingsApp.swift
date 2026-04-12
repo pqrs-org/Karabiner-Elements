@@ -15,6 +15,14 @@ struct KarabinerSettingsApp: App {
     libkrbn_services_bootout_old_agents()
 
     //
+    // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.
+    // So we should enable them once before checking the status.
+    //
+
+    libkrbn_services_register_core_daemons()
+    libkrbn_services_register_core_agents()
+
+    //
     // Setup CoreServiceClient
     //
 
