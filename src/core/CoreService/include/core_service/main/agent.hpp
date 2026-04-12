@@ -16,36 +16,6 @@ namespace core_service {
 namespace main {
 int agent(std::vector<std::string> args) {
   //
-  // Load custom environment variables
-  //
-
-  auto environment_variables = environment_variable_utility::load_custom_environment_variables();
-
-  //
-  // Setup logger
-  //
-
-  if (!constants::get_user_log_directory().empty()) {
-    logger::set_async_rotating_logger("core_service (agent)",
-                                      constants::get_user_log_directory() / "core_service.log",
-                                      pqrs::spdlog::filesystem::log_directory_perms_0700);
-  }
-
-  logger::get_logger()->info("version {0}", karabiner_version);
-
-  //
-  // Log custom environment variables
-  //
-
-  environment_variable_utility::log(environment_variables);
-
-  //
-  // Get codesign
-  //
-
-  get_shared_codesign_manager()->log();
-
-  //
   // Call NSApplication.shared.finishLaunching() in order to avoid the following error
   // when the app is launched by the open command or similar methods.
   // This is especially problematic when it is executed with the permission-check argument.
@@ -89,6 +59,36 @@ int agent(std::vector<std::string> args) {
       std::cout << "unsupported argument: " << args[i] << std::endl;
     }
   }
+
+  //
+  // Load custom environment variables
+  //
+
+  auto environment_variables = environment_variable_utility::load_custom_environment_variables();
+
+  //
+  // Setup logger
+  //
+
+  if (!constants::get_user_log_directory().empty()) {
+    logger::set_async_rotating_logger("core_service (agent)",
+                                      constants::get_user_log_directory() / "core_service.log",
+                                      pqrs::spdlog::filesystem::log_directory_perms_0700);
+  }
+
+  logger::get_logger()->info("version {0}", karabiner_version);
+
+  //
+  // Log custom environment variables
+  //
+
+  environment_variable_utility::log(environment_variables);
+
+  //
+  // Get codesign
+  //
+
+  get_shared_codesign_manager()->log();
 
   //
   // The agent opens karabiner.json to trigger the disk-access permission prompt,
