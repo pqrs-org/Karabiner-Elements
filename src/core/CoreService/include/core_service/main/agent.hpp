@@ -98,28 +98,6 @@ int agent(std::vector<std::string> args) {
   std::ifstream input(constants::get_user_core_configuration_file_path());
 
   //
-  // Check input monitoring permission
-  //
-
-  IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
-
-  core_service_utility::wait_until_input_monitoring_granted();
-
-  //
-  // Check accessibility permission
-  //
-
-  pqrs::osx::accessibility::is_process_trusted_with_prompt();
-
-  core_service_utility::wait_until_accessibility_process_trusted();
-
-  //
-  // Restart the daemon so it starts with the granted permissions.
-  //
-
-  services_utility::register_core_daemons();
-
-  //
   // Run components_manager
   //
 
