@@ -12,6 +12,7 @@
 #include "types.hpp"
 #include <algorithm>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
+#include <pqrs/osx/iokit_types.hpp>
 
 namespace krbn {
 namespace manipulator {
@@ -145,16 +146,19 @@ public:
                                            output_event_queue);
 
               } else if (!front_input_event_modifier_key_event) {
+                auto usage_pair = adjust_usage_pair_by_keyboard_type(front_input_event.get_device_id(),
+                                                                     e->get_usage_pair(),
+                                                                     *output_event_queue);
                 switch (front_input_event.get_event_type()) {
                   case event_type::key_down:
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
-                                                                  e->get_usage_pair(),
+                                                                  usage_pair,
                                                                   queue_,
                                                                   front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
 
                   case event_type::key_up:
-                    key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair(),
+                    key_event_dispatcher_.dispatch_key_up_event(usage_pair,
                                                                 queue_,
                                                                 front_input_event.get_event_time_stamp().get_time_stamp());
                     break;
@@ -472,6 +476,50 @@ public:
   }
 
 private:
+  pqrs::hid::usage_pair adjust_usage_pair_by_keyboard_type(device_id device_id,
+                                                           const pqrs::hid::usage_pair& usage_pair,
+                                                           const event_queue::queue& output_event_queue) const {
+    if (usage_pair.get_usage_page() != pqrs::hid::usage_page::keyboard_or_keypad) {
+      return usage_pair;
+    }
+
+    auto source_iokit_keyboard_type = std::optional<pqrs::osx::iokit_keyboard_type::value_t>();
+    if (auto device_properties = output_event_queue.get_manipulator_environment().find_device_properties(device_id)) {
+      source_iokit_keyboard_type = device_properties->get_iokit_keyboard_type();
+    }
+
+    if (!source_iokit_keyboard_type) {
+      return usage_pair;
+    }
+
+    auto destination_iokit_keyboard_type =
+        output_event_queue.get_manipulator_environment()
+            .get_core_configuration()
+            ->get_selected_profile()
+            .get_virtual_hid_keyboard()
+            ->get_iokit_keyboard_type();
+
+    if (!((*source_iokit_keyboard_type == pqrs::osx::iokit_keyboard_type::ansi &&
+           destination_iokit_keyboard_type == pqrs::osx::iokit_keyboard_type::iso) ||
+          (*source_iokit_keyboard_type == pqrs::osx::iokit_keyboard_type::iso &&
+           destination_iokit_keyboard_type == pqrs::osx::iokit_keyboard_type::ansi))) {
+      return usage_pair;
+    }
+
+    auto usage = usage_pair.get_usage();
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_grave_accent_and_tilde) {
+      return pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_non_us_backslash);
+    }
+
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_non_us_backslash) {
+      return pqrs::hid::usage_pair(pqrs::hid::usage_page::keyboard_or_keypad,
+                                   pqrs::hid::usage::keyboard_or_keypad::keyboard_grave_accent_and_tilde);
+    }
+
+    return usage_pair;
+  }
+
   void post_pointing_input_report(event_queue::entry& front_input_event,
                                   std::shared_ptr<event_queue::queue> output_event_queue) {
     pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;

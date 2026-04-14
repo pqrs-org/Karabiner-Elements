@@ -5,6 +5,7 @@
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_types.hpp>
+#include <optional>
 
 namespace krbn {
 class device_properties final {
@@ -23,6 +24,7 @@ public:
     bool is_pointing_device = false;
     bool is_game_pad = false;
     bool is_consumer = false;
+    std::optional<pqrs::osx::iokit_keyboard_type::value_t> iokit_keyboard_type = std::nullopt;
   };
 
   device_properties(initialization_parameters parameters)
@@ -32,6 +34,7 @@ public:
         product_(parameters.product),
         serial_number_(parameters.serial_number),
         transport_(parameters.transport),
+        iokit_keyboard_type_(parameters.iokit_keyboard_type),
         is_built_in_keyboard_(false),
         is_built_in_pointing_device_(false),
         is_built_in_touch_bar_(false),
@@ -210,6 +213,14 @@ public:
         .is_pointing_device = is_pointing_device,
         .is_game_pad = is_game_pad,
         .is_consumer = is_consumer,
+        .iokit_keyboard_type = [&] {
+          if (auto value = hid_device.find_int64_property(CFSTR(kIOHIDKeyboardTypeKey),
+                                                          true)) {
+            return std::optional<pqrs::osx::iokit_keyboard_type::value_t>(
+                pqrs::osx::iokit_keyboard_type::value_t(*value));
+          }
+          return std::optional<pqrs::osx::iokit_keyboard_type::value_t>(std::nullopt);
+        }(),
     });
   }
 
@@ -327,6 +338,10 @@ public:
     return transport_;
   }
 
+  const std::optional<pqrs::osx::iokit_keyboard_type::value_t>& get_iokit_keyboard_type(void) const {
+    return iokit_keyboard_type_;
+  }
+
   bool get_is_built_in_keyboard(void) const {
     return is_built_in_keyboard_;
   }
@@ -417,7 +432,8 @@ public:
            manufacturer_ == other.manufacturer_ &&
            product_ == other.product_ &&
            serial_number_ == other.serial_number_ &&
-           transport_ == other.transport_;
+           transport_ == other.transport_ &&
+           iokit_keyboard_type_ == other.iokit_keyboard_type_;
   }
 
 private:
@@ -428,6 +444,7 @@ private:
   pqrs::hid::product_string::value_t product_;
   std::string serial_number_;
   std::string transport_;
+  std::optional<pqrs::osx::iokit_keyboard_type::value_t> iokit_keyboard_type_;
   bool is_built_in_keyboard_;
   bool is_built_in_pointing_device_;
   bool is_built_in_touch_bar_;
