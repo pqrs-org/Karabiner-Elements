@@ -2,8 +2,6 @@ name: Karabiner-Elements CI
 
 on:
   push:
-    branches:
-      - main
     paths-ignore:
       - vendor/cpm-cmake-package-lock
   pull_request:
