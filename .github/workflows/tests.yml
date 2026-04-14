@@ -4,6 +4,9 @@ on:
   push:
     paths-ignore:
       - vendor/cpm-cmake-package-lock
+  pull_request:
+    paths-ignore:
+      - vendor/cpm-cmake-package-lock
   workflow_dispatch:
 
 jobs:
