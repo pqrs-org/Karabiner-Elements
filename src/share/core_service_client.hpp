@@ -145,6 +145,19 @@ public:
     });
   }
 
+  void async_granted_permissions(bool input_monitoring_granted,
+                                 bool accessibility_process_trusted) const {
+    enqueue_to_dispatcher([this, input_monitoring_granted, accessibility_process_trusted] {
+      nlohmann::json json{
+          {"operation_type", operation_type::granted_permissions},
+          {"input_monitoring_granted", input_monitoring_granted},
+          {"accessibility_process_trusted", accessibility_process_trusted},
+      };
+
+      async_send_message(std::move(json));
+    });
+  }
+
   void async_frontmost_application_changed(const application& application) const {
     enqueue_to_dispatcher([this, application] {
       nlohmann::json json{
