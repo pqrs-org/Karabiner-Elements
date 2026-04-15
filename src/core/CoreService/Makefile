@@ -8,7 +8,10 @@ clean:
 	rm -fr *.xcodeproj
 	rm -fr build
 
-install: all
+codesign: all
+	bash ../../../scripts/codesign.sh build/Release
+
+install: codesign
 	bash ../../../scripts/codesign.sh build/Release
 
 	sudo rsync -a --delete \
