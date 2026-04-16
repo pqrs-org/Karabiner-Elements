@@ -1,22 +1,38 @@
 import Foundation
 
+struct SettingsWindowCoreServicePermissionCheckResult: Codable {
+  var inputMonitoringGranted = false
+  var accessibilityProcessTrusted = false
+
+  enum CodingKeys: String, CodingKey {
+    case inputMonitoringGranted = "input_monitoring_granted"
+    case accessibilityProcessTrusted = "accessibility_process_trusted"
+  }
+}
+
 struct SettingsWindowCoreServiceState: Codable {
   var virtualHidDeviceServiceClientConnected: Bool?
   var driverActivated: Bool?
   var driverConnected: Bool?
   var driverVersionMismatched: Bool?
-  var inputMonitoringGranted: Bool?
-  var accessibilityProcessTrusted: Bool?
+  var permissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
   var karabinerJsonParseErrorMessage = ""
   var virtualHidKeyboardTypeNotSet = false
+
+  var inputMonitoringGranted: Bool? {
+    permissionCheckResult?.inputMonitoringGranted
+  }
+
+  var accessibilityProcessTrusted: Bool? {
+    permissionCheckResult?.accessibilityProcessTrusted
+  }
 
   enum CodingKeys: String, CodingKey {
     case virtualHidDeviceServiceClientConnected = "virtual_hid_device_service_client_connected"
     case driverActivated = "driver_activated"
     case driverConnected = "driver_connected"
     case driverVersionMismatched = "driver_version_mismatched"
-    case inputMonitoringGranted = "input_monitoring_granted"
-    case accessibilityProcessTrusted = "accessibility_process_trusted"
+    case permissionCheckResult = "permission_check_result"
     case karabinerJsonParseErrorMessage = "karabiner_json_parse_error_message"
     case virtualHidKeyboardTypeNotSet = "virtual_hid_keyboard_type_not_set"
   }
