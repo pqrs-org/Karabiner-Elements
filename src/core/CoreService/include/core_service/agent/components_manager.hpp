@@ -117,6 +117,9 @@ private:
       return;
     }
 
+    last_permission_check_result_ = *result;
+    send_granted_permissions(*result);
+
     auto permissions_granted =
         result->get_input_monitoring_granted() &&
         result->get_accessibility_process_trusted();
@@ -136,6 +139,14 @@ private:
     }
   }
 
+  void send_granted_permissions(const core_service_utility::permission_check_result& result) {
+    if (core_service_client_) {
+      core_service_client_->async_granted_permissions(
+          result.get_input_monitoring_granted(),
+          result.get_accessibility_process_trusted());
+    }
+  }
+
   void start_core_service_client(void) {
     if (core_service_client_) {
       return;
@@ -151,6 +162,9 @@ private:
     core_service_client_ = std::make_shared<core_service_client>("cs_agent_cs_clnt");
 
     core_service_client_->connected.connect([this] {
+      if (last_permission_check_result_) {
+        send_granted_permissions(*last_permission_check_result_);
+      }
       version_monitor_->async_manual_check();
     });
 
@@ -171,6 +185,7 @@ private:
 
   std::unique_ptr<version_monitor> version_monitor_;
   std::shared_ptr<core_service_client> core_service_client_;
+  std::optional<core_service_utility::permission_check_result> last_permission_check_result_;
   bool restart_required_after_permissions_granted_ = false;
 };
 } // namespace agent
