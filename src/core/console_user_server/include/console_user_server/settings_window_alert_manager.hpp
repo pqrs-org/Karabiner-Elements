@@ -93,8 +93,7 @@ private:
       accessibility_process_trusted = permission_check_result->get_accessibility_process_trusted();
     }
 
-    update_alert_state(doctor_alert_state_,
-                       state.get_karabiner_json_parse_error_message().empty() ? alert_state::inactive : alert_state::active);
+    update_karabiner_json_parse_error_message_alert_state(state.get_karabiner_json_parse_error_message());
     virtual_hid_keyboard_type_not_set_ = state.get_virtual_hid_keyboard_type_not_set().value_or(false);
 
     update_alert_state(virtual_hid_device_service_client_not_connected_alert_state_,
@@ -153,6 +152,22 @@ private:
         when_now() + std::chrono::seconds(3));
   }
 
+  template <typename F>
+  void enqueue_delayed_evaluation(std::size_t generation,
+                                  std::size_t settings_window_alert_manager::* generation_member,
+                                  pqrs::dispatcher::duration delay,
+                                  F&& evaluator) {
+    enqueue_to_dispatcher(
+        [this, generation, generation_member, evaluator = std::forward<F>(evaluator)] {
+          if (this->*generation_member != generation) {
+            return;
+          }
+
+          evaluator();
+        },
+        when_now() + delay);
+  }
+
   void update_driver_connected(const std::optional<bool>& value) {
     if (driver_connected_ == value) {
       return;
@@ -180,23 +195,47 @@ private:
     // if it remains false after a delay.
     update_alert_state(driver_not_connected_alert_state_,
                        alert_state::inactive);
-    enqueue_evaluate_driver_not_connected(driver_connected_generation_);
-  }
 
-  void enqueue_evaluate_driver_not_connected(std::size_t generation) {
-    enqueue_to_dispatcher(
-        [this, generation] {
-          // Ignore stale delayed checks that were scheduled for an older state.
-          if (driver_connected_generation_ != generation) {
-            return;
-          }
-
+    enqueue_delayed_evaluation(
+        driver_connected_generation_,
+        &settings_window_alert_manager::driver_connected_generation_,
+        pqrs::dispatcher::duration(std::chrono::seconds(3)),
+        [this] {
           if (driver_connected_ == false) {
             update_alert_state(driver_not_connected_alert_state_,
                                alert_state::active);
           }
-        },
-        when_now() + std::chrono::seconds(3));
+        });
+  }
+
+  void update_karabiner_json_parse_error_message_alert_state(const std::string& value) {
+    if (karabiner_json_parse_error_message_ == value) {
+      return;
+    }
+
+    karabiner_json_parse_error_message_ = value;
+    ++karabiner_json_parse_error_message_generation_;
+
+    if (value.empty()) {
+      update_alert_state(doctor_alert_state_,
+                         alert_state::inactive);
+      return;
+    }
+
+    // karabiner.json can be observed in the middle of an external split write.
+    // Delay surfacing the parse error so a transient partial-write state does not open Settings.
+    update_alert_state(doctor_alert_state_,
+                       alert_state::inactive);
+    enqueue_delayed_evaluation(
+        karabiner_json_parse_error_message_generation_,
+        &settings_window_alert_manager::karabiner_json_parse_error_message_generation_,
+        pqrs::dispatcher::duration(std::chrono::seconds(3)),
+        [this] {
+          if (!karabiner_json_parse_error_message_.empty()) {
+            update_alert_state(doctor_alert_state_,
+                               alert_state::active);
+          }
+        });
   }
 
   static alert_state make_alert_state(const std::optional<bool>& value) {
@@ -299,6 +338,8 @@ private:
   bool core_agents_running_ = true;
   std::optional<bool> driver_connected_;
   std::size_t driver_connected_generation_ = 0;
+  std::string karabiner_json_parse_error_message_;
+  std::size_t karabiner_json_parse_error_message_generation_ = 0;
   std::optional<bool> previous_services_running_;
   std::chrono::steady_clock::time_point services_waiting_started_at_ = std::chrono::steady_clock::now();
   core_service_daemon_state core_service_deamon_state_;
