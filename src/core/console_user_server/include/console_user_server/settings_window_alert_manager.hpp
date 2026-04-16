@@ -10,6 +10,12 @@
 
 namespace krbn {
 namespace console_user_server {
+enum class alert_state {
+  unknown,
+  inactive,
+  active,
+};
+
 class settings_window_alert_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   settings_window_alert_manager(void)
@@ -87,20 +93,21 @@ private:
       accessibility_process_trusted = permission_check_result->get_accessibility_process_trusted();
     }
 
-    doctor_alert_ = !state.get_karabiner_json_parse_error_message().empty();
+    update_alert_state(doctor_alert_state_,
+                       state.get_karabiner_json_parse_error_message().empty() ? alert_state::inactive : alert_state::active);
     virtual_hid_keyboard_type_not_set_ = state.get_virtual_hid_keyboard_type_not_set().value_or(false);
 
-    update_optional_bool(virtual_hid_device_service_client_not_connected_alert_,
-                         invert_optional_bool(state.get_virtual_hid_device_service_client_connected()));
-    update_optional_bool(driver_not_activated_alert_,
-                         invert_optional_bool(state.get_driver_activated()));
+    update_alert_state(virtual_hid_device_service_client_not_connected_alert_state_,
+                       make_inverted_alert_state(state.get_virtual_hid_device_service_client_connected()));
+    update_alert_state(driver_not_activated_alert_state_,
+                       make_inverted_alert_state(state.get_driver_activated()));
     update_driver_connected(state.get_driver_connected());
-    update_optional_bool(driver_version_mismatched_alert_,
-                         state.get_driver_version_mismatched());
-    update_optional_bool(input_monitoring_permissions_alert_,
-                         invert_optional_bool(input_monitoring_granted));
-    update_optional_bool(accessibility_alert_,
-                         invert_optional_bool(accessibility_process_trusted));
+    update_alert_state(driver_version_mismatched_alert_state_,
+                       make_alert_state(state.get_driver_version_mismatched()));
+    update_alert_state(input_monitoring_permissions_alert_state_,
+                       make_inverted_alert_state(input_monitoring_granted));
+    update_alert_state(accessibility_alert_state_,
+                       make_inverted_alert_state(accessibility_process_trusted));
 
     update_current_alert();
   }
@@ -155,14 +162,14 @@ private:
     ++driver_connected_generation_;
 
     if (!value) {
-      update_optional_bool(driver_not_connected_alert_,
-                           std::nullopt);
+      update_alert_state(driver_not_connected_alert_state_,
+                         alert_state::unknown);
       return;
     }
 
     if (*value) {
-      update_optional_bool(driver_not_connected_alert_,
-                           false);
+      update_alert_state(driver_not_connected_alert_state_,
+                         alert_state::inactive);
       return;
     }
 
@@ -171,8 +178,8 @@ private:
     // SettingsWindow would show a transient alert while the driver is still connecting.
     // Therefore, false is treated as a pending state here, and we only show the alert
     // if it remains false after a delay.
-    update_optional_bool(driver_not_connected_alert_,
-                         false);
+    update_alert_state(driver_not_connected_alert_state_,
+                       alert_state::inactive);
     enqueue_evaluate_driver_not_connected(driver_connected_generation_);
   }
 
@@ -185,23 +192,31 @@ private:
           }
 
           if (driver_connected_ == false) {
-            update_optional_bool(driver_not_connected_alert_,
-                                 true);
+            update_alert_state(driver_not_connected_alert_state_,
+                               alert_state::active);
           }
         },
         when_now() + std::chrono::seconds(3));
   }
 
-  static std::optional<bool> invert_optional_bool(const std::optional<bool>& value) {
-    if (value) {
-      return !*value;
+  static alert_state make_alert_state(const std::optional<bool>& value) {
+    if (!value) {
+      return alert_state::unknown;
     }
 
-    return std::nullopt;
+    return *value ? alert_state::active : alert_state::inactive;
   }
 
-  void update_optional_bool(std::optional<bool>& target,
-                            const std::optional<bool>& value) {
+  static alert_state make_inverted_alert_state(const std::optional<bool>& value) {
+    if (!value) {
+      return alert_state::unknown;
+    }
+
+    return *value ? alert_state::inactive : alert_state::active;
+  }
+
+  void update_alert_state(alert_state& target,
+                          alert_state value) {
     if (target == value) {
       return;
     }
@@ -235,7 +250,7 @@ private:
   }
 
   settings_window_alert make_current_alert(void) const {
-    if (doctor_alert_) {
+    if (doctor_alert_state_ == alert_state::active) {
       return settings_window_alert::doctor;
     }
     if (virtual_hid_keyboard_type_not_set_) {
@@ -244,22 +259,22 @@ private:
     if (services_not_running_alert_) {
       return settings_window_alert::services_not_running;
     }
-    if (input_monitoring_permissions_alert_ == true) {
+    if (input_monitoring_permissions_alert_state_ == alert_state::active) {
       return settings_window_alert::input_monitoring_permissions;
     }
-    if (accessibility_alert_ == true) {
+    if (accessibility_alert_state_ == alert_state::active) {
       return settings_window_alert::accessibility;
     }
-    if (virtual_hid_device_service_client_not_connected_alert_ == true) {
+    if (virtual_hid_device_service_client_not_connected_alert_state_ == alert_state::active) {
       return settings_window_alert::virtual_hid_device_service_client_not_connected;
     }
-    if (driver_version_mismatched_alert_ == true) {
+    if (driver_version_mismatched_alert_state_ == alert_state::active) {
       return settings_window_alert::driver_version_mismatched;
     }
-    if (driver_not_activated_alert_ == true) {
+    if (driver_not_activated_alert_state_ == alert_state::active) {
       return settings_window_alert::driver_not_activated;
     }
-    if (driver_not_connected_alert_ == true) {
+    if (driver_not_connected_alert_state_ == alert_state::active) {
       return settings_window_alert::driver_not_connected;
     }
 
@@ -269,18 +284,19 @@ private:
   mutable std::mutex mutex_;
   settings_window_alert current_alert_;
 
-  bool doctor_alert_ = false;
+  alert_state doctor_alert_state_ = alert_state::inactive;
+  alert_state input_monitoring_permissions_alert_state_ = alert_state::unknown;
+  alert_state accessibility_alert_state_ = alert_state::unknown;
+  alert_state virtual_hid_device_service_client_not_connected_alert_state_ = alert_state::unknown;
+  alert_state driver_version_mismatched_alert_state_ = alert_state::unknown;
+  alert_state driver_not_activated_alert_state_ = alert_state::unknown;
+  alert_state driver_not_connected_alert_state_ = alert_state::unknown;
+
   bool virtual_hid_keyboard_type_not_set_ = false;
   bool services_not_running_alert_ = false;
   bool services_enabled_ = true;
   bool core_daemons_running_ = true;
   bool core_agents_running_ = true;
-  std::optional<bool> input_monitoring_permissions_alert_;
-  std::optional<bool> accessibility_alert_;
-  std::optional<bool> virtual_hid_device_service_client_not_connected_alert_;
-  std::optional<bool> driver_version_mismatched_alert_;
-  std::optional<bool> driver_not_activated_alert_;
-  std::optional<bool> driver_not_connected_alert_;
   std::optional<bool> driver_connected_;
   std::size_t driver_connected_generation_ = 0;
   std::optional<bool> previous_services_running_;
