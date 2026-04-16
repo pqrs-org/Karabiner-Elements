@@ -140,7 +140,7 @@ public:
                 case operation_type::core_service_daemon_state:
                   if (auto m = weak_settings_window_alert_manager_.lock()) {
                     m->async_update_core_service_daemon_state(
-                        json.at("core_service_daemon_state"));
+                        json.at("core_service_daemon_state").get<core_service_daemon_state>());
                   }
                   break;
 

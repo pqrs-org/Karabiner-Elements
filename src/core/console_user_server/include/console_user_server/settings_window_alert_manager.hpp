@@ -40,30 +40,18 @@ public:
     });
   }
 
-  void async_update_core_service_daemon_state(const nlohmann::json& json) {
-    enqueue_to_dispatcher([this, json] {
-      update_core_service_daemon_state_conditions(json);
+  void async_update_core_service_daemon_state(const core_service_daemon_state& state) {
+    enqueue_to_dispatcher([this, state] {
+      update_core_service_daemon_state_conditions(state);
     });
   }
 
   settings_window_alert_state get_state(void) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     auto state = settings_window_alert_state();
-    state.set_current_alert(get_current_alert());
-    state.set_alert_context(get_alert_context());
-    state.set_core_service_daemon_state(get_core_service_daemon_state());
 
-    return state;
-  }
-
-private:
-  settings_window_alert get_current_alert(void) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    return current_alert_;
-  }
-
-  settings_window_alert_context get_alert_context(void) const {
-    std::lock_guard<std::mutex> lock(mutex_);
+    state.set_current_alert(current_alert_);
 
     auto context = settings_window_alert_context();
     context.set_services_enabled(services_enabled_);
@@ -79,42 +67,40 @@ private:
     }
     context.set_services_waiting_seconds(services_waiting_seconds);
 
-    return context;
+    state.set_alert_context(context);
+    state.set_core_service_daemon_state(core_service_deamon_state_);
+
+    return state;
   }
 
-  nlohmann::json get_core_service_daemon_state(void) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    return core_service_deamon_state_;
-  }
-
-  void update_core_service_daemon_state_conditions(const nlohmann::json& json) {
+private:
+  void update_core_service_daemon_state_conditions(const core_service_daemon_state& state) {
     {
       std::lock_guard<std::mutex> lock(mutex_);
-      core_service_deamon_state_ = json;
+      core_service_deamon_state_ = state;
     }
 
-    doctor_alert_ =
-        !json.value("karabiner_json_parse_error_message", std::string()).empty();
-    virtual_hid_keyboard_type_not_set_ = json.value("virtual_hid_keyboard_type_not_set", false);
+    auto input_monitoring_granted = std::optional<bool>();
+    auto accessibility_process_trusted = std::optional<bool>();
+    if (auto permission_check_result = state.get_permission_check_result()) {
+      input_monitoring_granted = permission_check_result->get_input_monitoring_granted();
+      accessibility_process_trusted = permission_check_result->get_accessibility_process_trusted();
+    }
+
+    doctor_alert_ = !state.get_karabiner_json_parse_error_message().empty();
+    virtual_hid_keyboard_type_not_set_ = state.get_virtual_hid_keyboard_type_not_set().value_or(false);
 
     update_optional_bool(virtual_hid_device_service_client_not_connected_alert_,
-                         get_optional_inverted_bool(json,
-                                                    "virtual_hid_device_service_client_connected"));
+                         invert_optional_bool(state.get_virtual_hid_device_service_client_connected()));
     update_optional_bool(driver_not_activated_alert_,
-                         get_optional_inverted_bool(json,
-                                                    "driver_activated"));
-    update_driver_connected(get_optional_bool(json,
-                                              "driver_connected"));
+                         invert_optional_bool(state.get_driver_activated()));
+    update_driver_connected(state.get_driver_connected());
     update_optional_bool(driver_version_mismatched_alert_,
-                         get_optional_bool(json,
-                                           "driver_version_mismatched"));
+                         state.get_driver_version_mismatched());
     update_optional_bool(input_monitoring_permissions_alert_,
-                         get_optional_inverted_bool(json,
-                                                    "input_monitoring_granted"));
+                         invert_optional_bool(input_monitoring_granted));
     update_optional_bool(accessibility_alert_,
-                         get_optional_inverted_bool(json,
-                                                    "accessibility_process_trusted"));
+                         invert_optional_bool(accessibility_process_trusted));
 
     update_current_alert();
   }
@@ -206,18 +192,8 @@ private:
         when_now() + std::chrono::seconds(3));
   }
 
-  static std::optional<bool> get_optional_bool(const nlohmann::json& json,
-                                               const std::string& key) {
-    if (!json.contains(key) || json.at(key).is_null()) {
-      return std::nullopt;
-    }
-
-    return json.at(key).get<bool>();
-  }
-
-  static std::optional<bool> get_optional_inverted_bool(const nlohmann::json& json,
-                                                        const std::string& key) {
-    if (auto value = get_optional_bool(json, key)) {
+  static std::optional<bool> invert_optional_bool(const std::optional<bool>& value) {
+    if (value) {
       return !*value;
     }
 
@@ -309,7 +285,7 @@ private:
   std::size_t driver_connected_generation_ = 0;
   std::optional<bool> previous_services_running_;
   std::chrono::steady_clock::time_point services_waiting_started_at_ = std::chrono::steady_clock::now();
-  nlohmann::json core_service_deamon_state_ = nlohmann::json::object();
+  core_service_daemon_state core_service_deamon_state_;
 };
 } // namespace console_user_server
 } // namespace krbn
