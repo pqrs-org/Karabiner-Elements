@@ -3,6 +3,8 @@
 #include "types/absolute_time_duration.hpp"
 #include "types/absolute_time_point.hpp"
 #include "types/application.hpp"
+#include "types/core_service_daemon_state.hpp"
+#include "types/core_service_permission_check_result.hpp"
 #include "types/device_id.hpp"
 #include "types/device_identifiers.hpp"
 #include "types/device_state.hpp"
