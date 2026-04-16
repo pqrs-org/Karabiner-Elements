@@ -58,8 +58,7 @@ int daemon(void) {
   auto core_service_daemon_state_manager = std::make_shared<daemon::core_service_daemon_state_manager>();
   {
     auto permission_check_result = core_service_utility::make_permission_check_result();
-    core_service_daemon_state_manager->set_input_monitoring_granted(permission_check_result.get_input_monitoring_granted());
-    core_service_daemon_state_manager->set_accessibility_process_trusted(permission_check_result.get_accessibility_process_trusted());
+    core_service_daemon_state_manager->set_permission_check_result(permission_check_result);
   }
 
   //

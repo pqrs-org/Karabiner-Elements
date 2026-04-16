@@ -12,6 +12,7 @@
 #include "filesystem_utility.hpp"
 #include "shared_secret_authentication.hpp"
 #include "types.hpp"
+#include "types/core_service_daemon_state.hpp"
 #include <array>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
@@ -33,7 +34,7 @@ public:
         current_console_user_id_(current_console_user_id),
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
     if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-      core_service_daemon_state_manager_connection_ = m->changed.connect([this](const auto& core_service_daemon_state) {
+      core_service_daemon_state_manager_connection_ = m->core_service_daemon_state_changed.connect([this](const auto& core_service_daemon_state) {
         enqueue_to_dispatcher([this, core_service_daemon_state] {
           send_core_service_daemon_state(core_service_daemon_state);
         });
@@ -129,7 +130,6 @@ public:
               // restart this process.
               // (The actual restart is handled by launchd, so this process just exits.)
 
-              auto state = m->get_state();
               auto input_monitoring_granted = json.at("input_monitoring_granted").get<bool>();
               auto accessibility_process_trusted = json.at("accessibility_process_trusted").get<bool>();
 
@@ -444,7 +444,7 @@ public:
         console_user_server_client_->async_get_user_core_configuration_file_path();
 
         if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-          send_core_service_daemon_state(m->get_state());
+          send_core_service_daemon_state(m->copy_state());
         }
       });
 
@@ -566,10 +566,9 @@ private:
 
   bool required_permissions_granted() const {
     if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-      auto state = m->get_state();
-
-      return state.value("input_monitoring_granted", false) &&
-             state.value("accessibility_process_trusted", false);
+      if (auto result = m->copy_permission_check_result()) {
+        return result->required_permissions_granted();
+      }
     }
 
     return false;
@@ -639,7 +638,7 @@ private:
     }
   }
 
-  void send_core_service_daemon_state(const nlohmann::json& core_service_daemon_state) {
+  void send_core_service_daemon_state(const core_service_daemon_state& core_service_daemon_state) {
     if (console_user_server_client_) {
       console_user_server_client_->async_core_service_daemon_state(core_service_daemon_state);
     }
