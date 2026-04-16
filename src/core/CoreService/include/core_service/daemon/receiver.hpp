@@ -4,6 +4,7 @@
 
 #include "app_icon.hpp"
 #include "application_launcher.hpp"
+#include "components_manager_killer.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
@@ -121,6 +122,32 @@ public:
         }
 
         switch (ot) {
+          case operation_type::granted_permissions:
+            if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+              // If the required permissions were missing when this process started,
+              // and a newly launched process confirms that the permissions are now granted,
+              // restart this process.
+              // (The actual restart is handled by launchd, so this process just exits.)
+
+              auto state = m->get_state();
+              auto input_monitoring_granted = json.at("input_monitoring_granted").get<bool>();
+              auto accessibility_process_trusted = json.at("accessibility_process_trusted").get<bool>();
+
+              auto restart_required =
+                  !required_permissions_granted() &&
+                  input_monitoring_granted &&
+                  accessibility_process_trusted;
+
+              if (restart_required) {
+                logger::get_logger()->info("The required permissions are granted. Restarting core daemons.");
+
+                if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+                  killer->async_kill();
+                }
+              }
+            }
+            break;
+
           case operation_type::system_preferences_updated:
             system_preferences_properties_ = json.at("system_preferences_properties")
                                                  .get<pqrs::osx::system_preferences::properties>();
@@ -491,6 +518,11 @@ private:
   }
 
   void start_grabbing_if_system_core_configuration_file_exists() {
+    if (!required_permissions_granted()) {
+      logger::get_logger()->info("device_grabber is not started because the required permissions are not granted.");
+      return;
+    }
+
     auto file_path = constants::get_system_core_configuration_file_path();
     if (pqrs::filesystem::exists(file_path)) {
       stop_device_grabber();
@@ -500,6 +532,11 @@ private:
 
   void start_device_grabber(const std::string& configuration_file_path) {
     if (device_grabber_) {
+      return;
+    }
+
+    if (!required_permissions_granted()) {
+      logger::get_logger()->info("device_grabber is not started because the required permissions are not granted.");
       return;
     }
 
@@ -525,6 +562,17 @@ private:
     device_grabber_ = nullptr;
 
     logger::get_logger()->info("device_grabber is stopped.");
+  }
+
+  bool required_permissions_granted() const {
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      auto state = m->get_state();
+
+      return state.value("input_monitoring_granted", false) &&
+             state.value("accessibility_process_trusted", false);
+    }
+
+    return false;
   }
 
   void set_focused_ui_element_variables() {

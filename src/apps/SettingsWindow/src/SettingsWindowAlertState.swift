@@ -5,7 +5,7 @@ struct SettingsWindowCoreServiceState: Codable {
   var driverActivated: Bool?
   var driverConnected: Bool?
   var driverVersionMismatched: Bool?
-  var hidDeviceOpenPermitted: Bool?
+  var inputMonitoringGranted: Bool?
   var accessibilityProcessTrusted: Bool?
   var karabinerJsonParseErrorMessage = ""
   var virtualHidKeyboardTypeNotSet = false
@@ -15,7 +15,7 @@ struct SettingsWindowCoreServiceState: Codable {
     case driverActivated = "driver_activated"
     case driverConnected = "driver_connected"
     case driverVersionMismatched = "driver_version_mismatched"
-    case hidDeviceOpenPermitted = "hid_device_open_permitted"
+    case inputMonitoringGranted = "input_monitoring_granted"
     case accessibilityProcessTrusted = "accessibility_process_trusted"
     case karabinerJsonParseErrorMessage = "karabiner_json_parse_error_message"
     case virtualHidKeyboardTypeNotSet = "virtual_hid_keyboard_type_not_set"

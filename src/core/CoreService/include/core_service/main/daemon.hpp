@@ -3,14 +3,13 @@
 #include "app_icon.hpp"
 #include "codesign_manager.hpp"
 #include "constants.hpp"
-#include "core_service/core_service_utility.hpp"
 #include "core_service/daemon/components_manager.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
+#include "core_service/core_service_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "services_utility.hpp"
-#include <IOKit/hidsystem/IOHIDLib.h>
 #include <iostream>
 #include <mach/mach.h>
 #include <pqrs/osx/workspace.hpp>
@@ -57,37 +56,10 @@ int daemon(void) {
   //
 
   auto core_service_daemon_state_manager = std::make_shared<daemon::core_service_daemon_state_manager>();
-
-  //
-  // Wait until the required permissions are granted.
-  //
-
-  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
-    core_service_daemon_state_manager->set_hid_device_open_permitted(true);
-  } else {
-    logger::get_logger()->warn("Input Monitoring is not granted");
-
-    core_service_daemon_state_manager->set_hid_device_open_permitted(false);
-
-    // IOHIDRequestAccess won't work correctly unless it's called from the agent.
-    // Therefore, the daemon does not call IOHIDRequestAccess and
-    // simply waits until Input Monitoring permission is granted.
-    // The daemon exits once permission is granted, which triggers launchd to restart it.
-    core_service_utility::wait_until_input_monitoring_granted();
-
-    return 0;
-  }
-
-  if (pqrs::osx::accessibility::is_process_trusted()) {
-    core_service_daemon_state_manager->set_accessibility_process_trusted(true);
-  } else {
-    logger::get_logger()->warn("accessibility process is not trusted");
-
-    core_service_daemon_state_manager->set_accessibility_process_trusted(false);
-
-    core_service_utility::wait_until_accessibility_process_trusted();
-
-    return 0;
+  {
+    auto permission_check_result = core_service_utility::make_permission_check_result();
+    core_service_daemon_state_manager->set_input_monitoring_granted(permission_check_result.get_input_monitoring_granted());
+    core_service_daemon_state_manager->set_accessibility_process_trusted(permission_check_result.get_accessibility_process_trusted());
   }
 
   //

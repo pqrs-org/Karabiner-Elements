@@ -111,7 +111,7 @@ private:
                                            "driver_version_mismatched"));
     update_optional_bool(input_monitoring_permissions_alert_,
                          get_optional_inverted_bool(json,
-                                                    "hid_device_open_permitted"));
+                                                    "input_monitoring_granted"));
     update_optional_bool(accessibility_alert_,
                          get_optional_inverted_bool(json,
                                                     "accessibility_process_trusted"));

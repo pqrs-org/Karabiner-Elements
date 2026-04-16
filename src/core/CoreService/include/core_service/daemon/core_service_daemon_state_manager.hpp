@@ -15,7 +15,7 @@ public:
   nod::signal<void(const nlohmann::json&)> changed;
 
   core_service_daemon_state_manager(void) : state_(nlohmann::json::object()) {
-    set_hid_device_open_permitted(std::nullopt);
+    set_input_monitoring_granted(std::nullopt);
     set_accessibility_process_trusted(std::nullopt);
     set_virtual_hid_device_service_client_connected(std::nullopt);
     set_driver_activated(std::nullopt);
@@ -25,8 +25,8 @@ public:
     set_virtual_hid_keyboard_type_not_set(false);
   }
 
-  void set_hid_device_open_permitted(std::optional<bool> value) {
-    set("hid_device_open_permitted", value);
+  void set_input_monitoring_granted(std::optional<bool> value) {
+    set("input_monitoring_granted", value);
   }
 
   void set_accessibility_process_trusted(std::optional<bool> value) {
