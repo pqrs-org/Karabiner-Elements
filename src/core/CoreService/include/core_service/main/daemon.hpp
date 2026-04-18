@@ -3,9 +3,9 @@
 #include "app_icon.hpp"
 #include "codesign_manager.hpp"
 #include "constants.hpp"
+#include "core_service/core_service_utility.hpp"
 #include "core_service/daemon/components_manager.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
-#include "core_service/core_service_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -59,6 +59,8 @@ int daemon(void) {
   {
     auto permission_check_result = core_service_utility::make_permission_check_result_for_current_process();
     core_service_daemon_state_manager->set_current_process_permission_check_result(permission_check_result);
+    // Immediately after startup, current_process_permission_check_result and bundle_permission_check_result are the same, so set both.
+    core_service_daemon_state_manager->set_bundle_permission_check_result(permission_check_result);
   }
 
   //
