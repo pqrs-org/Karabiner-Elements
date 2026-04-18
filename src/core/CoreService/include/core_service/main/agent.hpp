@@ -15,6 +15,16 @@ namespace krbn {
 namespace core_service {
 namespace main {
 int agent(std::vector<std::string> args) {
+  auto log_cli_error = [](const std::string& message) {
+    if (!constants::get_user_log_directory().empty()) {
+      logger::set_async_rotating_logger("core_service (cli)",
+                                        constants::get_user_log_directory() / "core_service_cli.log",
+                                        pqrs::spdlog::filesystem::log_directory_perms_0700);
+    }
+    logger::get_logger()->error(message);
+    std::cerr << message << std::endl;
+  };
+
   //
   // Call NSApplication.shared.finishLaunching() in order to avoid the following error
   // when the app is launched by the open command or similar methods.
@@ -32,7 +42,7 @@ int agent(std::vector<std::string> args) {
   for (std::size_t i = 1; i < args.size(); ++i) {
     if (args[i] == "permission-check") {
       if (i + 1 >= args.size()) {
-        std::cerr << "missing result path" << std::endl;
+        log_cli_error("missing result path");
         return 1;
       }
 
@@ -51,12 +61,13 @@ int agent(std::vector<std::string> args) {
 
         return 0;
       } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
+        log_cli_error(e.what());
         return 1;
       }
 
     } else {
-      std::cout << "unsupported argument: " << args[i] << std::endl;
+      log_cli_error("unsupported argument: " + args[i]);
+      return 1;
     }
   }
 
