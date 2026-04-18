@@ -28,9 +28,26 @@ inline core_service_permission_check_result make_current_process_permission_chec
   return result;
 }
 
-inline void prompt_permissions() {
-  IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
+inline void prompt_accessibility_permission_once() {
+  static bool prompted = false;
+
+  if (prompted) {
+    return;
+  }
+
+  prompted = true;
   pqrs::osx::accessibility::is_process_trusted_with_prompt();
+}
+
+inline void prompt_input_monitoring_permission_once() {
+  static bool prompted = false;
+
+  if (prompted) {
+    return;
+  }
+
+  prompted = true;
+  IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
 }
 
 inline std::optional<core_service_permission_check_result> make_bundle_permission_check_result() {

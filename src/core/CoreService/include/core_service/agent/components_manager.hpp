@@ -120,6 +120,18 @@ private:
       return;
     }
 
+    // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
+    // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
+    // Therefore, request Accessibility permission first,
+    // and only request Input Monitoring permission if it is still needed after Accessibility has already been granted.
+    if (!result->get_accessibility_process_trusted()) {
+      prompt_accessibility_permission_once();
+    } else {
+      if (!result->get_input_monitoring_granted()) {
+        prompt_input_monitoring_permission_once();
+      }
+    }
+
     last_bundle_permission_check_result_ = *result;
     send_core_service_bundle_permission_check_result(*result);
 
