@@ -17,7 +17,7 @@ struct SettingsWindowCoreServiceState: Codable {
   var driverVersionMismatched: Bool?
   var permissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
   var karabinerJsonParseErrorMessage = ""
-  var virtualHidKeyboardTypeNotSet = false
+  var virtualHidKeyboardTypeNotSet: Bool?
 
   var inputMonitoringGranted: Bool? {
     permissionCheckResult?.inputMonitoringGranted
