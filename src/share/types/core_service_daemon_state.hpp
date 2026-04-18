@@ -57,6 +57,14 @@ public:
     driver_version_mismatched_ = value;
   }
 
+  const std::optional<bool>& get_virtual_hid_keyboard_ready() const {
+    return virtual_hid_keyboard_ready_;
+  }
+
+  void set_virtual_hid_keyboard_ready(const std::optional<bool>& value) {
+    virtual_hid_keyboard_ready_ = value;
+  }
+
   const std::optional<bool>& get_virtual_hid_keyboard_type_not_set() const {
     return virtual_hid_keyboard_type_not_set_;
   }
@@ -86,6 +94,7 @@ private:
   std::optional<bool> driver_activated_;
   std::optional<bool> driver_connected_;
   std::optional<bool> driver_version_mismatched_;
+  std::optional<bool> virtual_hid_keyboard_ready_;
   std::optional<bool> virtual_hid_keyboard_type_not_set_;
   std::string karabiner_json_parse_error_message_;
 };
@@ -117,6 +126,10 @@ inline void to_json(nlohmann::json& json, const core_service_daemon_state& value
     json["driver_version_mismatched"] = *v;
   }
 
+  if (auto v = value.get_virtual_hid_keyboard_ready()) {
+    json["virtual_hid_keyboard_ready"] = *v;
+  }
+
   if (auto v = value.get_virtual_hid_keyboard_type_not_set()) {
     json["virtual_hid_keyboard_type_not_set"] = *v;
   }
@@ -131,6 +144,7 @@ inline void from_json(const nlohmann::json& json, core_service_daemon_state& val
   value.set_driver_activated(pqrs::json::find<bool>(json, "driver_activated"));
   value.set_driver_connected(pqrs::json::find<bool>(json, "driver_connected"));
   value.set_driver_version_mismatched(pqrs::json::find<bool>(json, "driver_version_mismatched"));
+  value.set_virtual_hid_keyboard_ready(pqrs::json::find<bool>(json, "virtual_hid_keyboard_ready"));
   value.set_virtual_hid_keyboard_type_not_set(pqrs::json::find<bool>(json, "virtual_hid_keyboard_type_not_set"));
   value.set_karabiner_json_parse_error_message(json.value("karabiner_json_parse_error_message",
                                                           std::string()));

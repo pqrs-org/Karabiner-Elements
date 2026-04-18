@@ -137,12 +137,16 @@ public:
       }
     });
 
-    virtual_hid_device_service_client_->virtual_hid_keyboard_ready.connect([this](auto&& ready) {
+    virtual_hid_device_service_client_->virtual_hid_keyboard_ready.connect([this, weak_core_service_daemon_state_manager](auto&& ready) {
       if (virtual_hid_devices_state_.get_virtual_hid_keyboard_ready() != ready) {
         logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_response: {0}", ready);
 
         virtual_hid_devices_state_.set_virtual_hid_keyboard_ready(ready);
         async_post_virtual_hid_devices_state_changed_event();
+
+        if (auto m = weak_core_service_daemon_state_manager.lock()) {
+          m->set_virtual_hid_keyboard_ready(ready);
+        }
 
         // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
         // We try to reinitialize the device.

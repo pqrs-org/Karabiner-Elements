@@ -66,6 +66,12 @@ public:
     });
   }
 
+  void set_virtual_hid_keyboard_ready(std::optional<bool> value) {
+    update([&value](auto& state) {
+      state.set_virtual_hid_keyboard_ready(value);
+    });
+  }
+
   void set_virtual_hid_keyboard_type_not_set(std::optional<bool> value) {
     update([&value](auto& state) {
       state.set_virtual_hid_keyboard_type_not_set(value);

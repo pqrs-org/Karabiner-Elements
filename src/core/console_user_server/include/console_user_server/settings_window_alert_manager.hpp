@@ -94,6 +94,7 @@ private:
     }
 
     update_karabiner_json_parse_error_message_alert_state(state.get_karabiner_json_parse_error_message());
+    virtual_hid_keyboard_ready_ = state.get_virtual_hid_keyboard_ready().value_or(false);
     virtual_hid_keyboard_type_not_set_ = state.get_virtual_hid_keyboard_type_not_set().value_or(false);
 
     update_alert_state(virtual_hid_device_service_client_not_connected_alert_state_,
@@ -292,9 +293,6 @@ private:
     if (doctor_alert_state_ == alert_state::active) {
       return settings_window_alert::doctor;
     }
-    if (virtual_hid_keyboard_type_not_set_) {
-      return settings_window_alert::settings;
-    }
     if (services_not_running_alert_) {
       return settings_window_alert::services_not_running;
     }
@@ -320,6 +318,10 @@ private:
     if (driver_not_connected_alert_state_ == alert_state::active) {
       return settings_window_alert::driver_not_connected;
     }
+    if (virtual_hid_keyboard_ready_ &&
+        virtual_hid_keyboard_type_not_set_) {
+      return settings_window_alert::settings;
+    }
 
     return settings_window_alert::none;
   }
@@ -335,6 +337,7 @@ private:
   alert_state driver_not_activated_alert_state_ = alert_state::unknown;
   alert_state driver_not_connected_alert_state_ = alert_state::unknown;
 
+  bool virtual_hid_keyboard_ready_ = false;
   bool virtual_hid_keyboard_type_not_set_ = false;
   bool services_not_running_alert_ = false;
   bool services_enabled_ = true;

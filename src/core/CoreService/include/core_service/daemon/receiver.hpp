@@ -545,6 +545,8 @@ private:
       return;
     }
 
+    clear_device_grabber_state();
+
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_,
                                                        weak_core_service_daemon_state_manager_);
 
@@ -565,6 +567,7 @@ private:
     }
 
     device_grabber_ = nullptr;
+    clear_device_grabber_state();
 
     logger::get_logger()->info("device_grabber is stopped.");
   }
@@ -577,6 +580,16 @@ private:
     }
 
     return false;
+  }
+
+  void clear_device_grabber_state(void) {
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      m->set_virtual_hid_device_service_client_connected(std::nullopt);
+      m->set_driver_activated(std::nullopt);
+      m->set_driver_connected(std::nullopt);
+      m->set_driver_version_mismatched(std::nullopt);
+      m->set_virtual_hid_keyboard_ready(std::nullopt);
+    }
   }
 
   void set_focused_ui_element_variables() {

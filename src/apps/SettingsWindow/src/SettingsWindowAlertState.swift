@@ -15,6 +15,7 @@ struct SettingsWindowCoreServiceState: Codable {
   var driverActivated: Bool?
   var driverConnected: Bool?
   var driverVersionMismatched: Bool?
+  var virtualHidKeyboardReady: Bool?
   var currentProcessPermissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
   var bundlePermissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
   var karabinerJsonParseErrorMessage = ""
@@ -33,6 +34,7 @@ struct SettingsWindowCoreServiceState: Codable {
     case driverActivated = "driver_activated"
     case driverConnected = "driver_connected"
     case driverVersionMismatched = "driver_version_mismatched"
+    case virtualHidKeyboardReady = "virtual_hid_keyboard_ready"
     case currentProcessPermissionCheckResult = "current_process_permission_check_result"
     case bundlePermissionCheckResult = "bundle_permission_check_result"
     case karabinerJsonParseErrorMessage = "karabiner_json_parse_error_message"
