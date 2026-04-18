@@ -118,7 +118,7 @@ private:
     }
 
     last_permission_check_result_ = *result;
-    send_granted_permissions(*result);
+    send_core_service_bundle_permission_check_result(*result);
 
     auto permissions_granted =
         result->get_input_monitoring_granted() &&
@@ -139,9 +139,9 @@ private:
     }
   }
 
-  void send_granted_permissions(const core_service_permission_check_result& result) {
+  void send_core_service_bundle_permission_check_result(const core_service_permission_check_result& result) {
     if (core_service_client_) {
-      core_service_client_->async_granted_permissions(
+      core_service_client_->async_core_service_bundle_permission_check_result(
           result.get_input_monitoring_granted(),
           result.get_accessibility_process_trusted());
     }
@@ -163,7 +163,7 @@ private:
 
     core_service_client_->connected.connect([this] {
       if (last_permission_check_result_) {
-        send_granted_permissions(*last_permission_check_result_);
+        send_core_service_bundle_permission_check_result(*last_permission_check_result_);
       }
       version_monitor_->async_manual_check();
     });

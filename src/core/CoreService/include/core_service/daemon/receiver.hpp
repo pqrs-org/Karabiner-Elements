@@ -123,7 +123,7 @@ public:
         }
 
         switch (ot) {
-          case operation_type::granted_permissions:
+          case operation_type::core_service_bundle_permission_check_result:
             if (auto m = weak_core_service_daemon_state_manager_.lock()) {
               // If the required permissions were missing when this process started,
               // and a newly launched process confirms that the permissions are now granted,

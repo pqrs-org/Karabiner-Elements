@@ -145,11 +145,11 @@ public:
     });
   }
 
-  void async_granted_permissions(bool input_monitoring_granted,
-                                 bool accessibility_process_trusted) const {
+  void async_core_service_bundle_permission_check_result(bool input_monitoring_granted,
+                                                         bool accessibility_process_trusted) const {
     enqueue_to_dispatcher([this, input_monitoring_granted, accessibility_process_trusted] {
       nlohmann::json json{
-          {"operation_type", operation_type::granted_permissions},
+          {"operation_type", operation_type::core_service_bundle_permission_check_result},
           {"input_monitoring_granted", input_monitoring_granted},
           {"accessibility_process_trusted", accessibility_process_trusted},
       };
