@@ -91,6 +91,14 @@ int agent(std::vector<std::string> args) {
   get_shared_codesign_manager()->log();
 
   //
+  // To show system prompts requesting permission for Input Monitoring and Accessibility,
+  // send permission requests to the system.
+  // This needs to be done from the GUI session, so it must be handled on the agent side.
+  //
+
+  core_service::core_service_utility::prompt_permissions();
+
+  //
   // The agent opens karabiner.json to trigger the disk-access permission prompt,
   // in case ~/.config/karabiner is a symlink and karabiner.json lives under Documents or similar.
   //
