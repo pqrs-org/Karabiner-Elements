@@ -16,8 +16,10 @@ run:
 xcode:
 	open *.xcodeproj
 
-install:
+codesign: all
 	bash ../../../scripts/codesign.sh build/Release
+
+install: codesign
 	sudo rsync -a --delete \
 		build/Release/Karabiner-Elements.app \
 		/Applications
