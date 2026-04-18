@@ -298,11 +298,15 @@ private:
     if (services_not_running_alert_) {
       return settings_window_alert::services_not_running;
     }
-    if (input_monitoring_permissions_alert_state_ == alert_state::active) {
-      return settings_window_alert::input_monitoring_permissions;
-    }
+    // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
+    // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
+    // Therefore, since Accessibility permission is requested first,
+    // the Accessibility alert is also displayed with higher priority than the Input Monitoring alert.
     if (accessibility_alert_state_ == alert_state::active) {
       return settings_window_alert::accessibility;
+    }
+    if (input_monitoring_permissions_alert_state_ == alert_state::active) {
+      return settings_window_alert::input_monitoring_permissions;
     }
     if (virtual_hid_device_service_client_not_connected_alert_state_ == alert_state::active) {
       return settings_window_alert::virtual_hid_device_service_client_not_connected;
