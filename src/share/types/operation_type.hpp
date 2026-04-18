@@ -11,14 +11,15 @@ enum class operation_type : uint8_t {
   // session_monitor -> core_service (daemon)
   console_user_id_changed,
   // core_service (agent) -> core_service (deamon) -> console_user_server
+  core_service_bundle_permission_check_result,
   frontmost_application_changed,
   focused_ui_element_changed,
   // console_user_server -> core_service (deamon)
-  connect_console_user_server,
   system_preferences_updated,
   input_source_changed,
   // core_service (daemon) -> console_user_server
   get_user_core_configuration_file_path,
+  core_service_daemon_state,
   check_for_updates_on_startup,
   register_menu_agent,
   unregister_menu_agent,
@@ -32,6 +33,10 @@ enum class operation_type : uint8_t {
   software_function,
   // console_user_server -> core_service (daemon)
   user_core_configuration_file_path,
+  // settings_window -> console_user_server
+  get_settings_window_alert,
+  // console_user_server -> settings_window
+  settings_window_alert,
   // event_viewer -> console_user_server
   get_frontmost_application_history,
   // console_user_server -> event_viewer
@@ -66,17 +71,20 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::handshake, "handshake"},
         {operation_type::shared_secret, "shared_secret"},
         {operation_type::console_user_id_changed, "console_user_id_changed"},
+        {operation_type::core_service_bundle_permission_check_result, "core_service_bundle_permission_check_result"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::focused_ui_element_changed, "focused_ui_element_changed"},
-        {operation_type::connect_console_user_server, "connect_console_user_server"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::input_source_changed, "input_source_changed"},
         {operation_type::get_user_core_configuration_file_path, "get_user_core_configuration_file_path"},
+        {operation_type::core_service_daemon_state, "core_service_daemon_state"},
         {operation_type::user_core_configuration_file_path, "user_core_configuration_file_path"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::send_user_command, "send_user_command,"},
         {operation_type::select_input_source, "select_input_source"},
         {operation_type::software_function, "software_function"},
+        {operation_type::get_settings_window_alert, "get_settings_window_alert"},
+        {operation_type::settings_window_alert, "settings_window_alert"},
         {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},
         {operation_type::check_for_updates_on_startup, "check_for_updates_on_startup"},
         {operation_type::register_menu_agent, "register_menu_agent"},

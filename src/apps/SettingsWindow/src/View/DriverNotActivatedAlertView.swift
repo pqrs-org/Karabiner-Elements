@@ -103,7 +103,7 @@ struct DriverNotActivatedAlertView: View {
       .frame(width: 850)
 
       SheetCloseButton {
-        ContentViewStates.shared.showDriverNotActivatedAlert = false
+        ContentViewStates.shared.dismissCurrentAlert()
       }
     }
     .onAppear {

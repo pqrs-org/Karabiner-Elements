@@ -42,13 +42,6 @@ public:
     return weak_core_configuration_;
   }
 
-  std::string get_parse_error_message(void) {
-    if (auto m = monitor_) {
-      return m->get_parse_error_message();
-    }
-    return "";
-  }
-
   void register_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);

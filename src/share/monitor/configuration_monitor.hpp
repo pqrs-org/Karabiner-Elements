@@ -14,6 +14,7 @@ public:
   // Signals (invoked from the shared dispatcher thread)
 
   nod::signal<void(std::weak_ptr<core_configuration::core_configuration>)> core_configuration_updated;
+  nod::signal<void(const std::string&)> parse_error_message_changed;
 
   // Methods
 
@@ -66,12 +67,15 @@ public:
                                                                         expected_user_core_configuration_file_owner,
                                                                         error_handling);
 
-      // In the case of a parse error, core_configuration_ should not be updated, but parse_error_message_ should be.
-      // Therefore, we update parse_error_message_ first.
-      {
-        std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+      // If a parse error occurs, parse_error_message_changed should be called, but core_configuration_updated should not.
+      // Therefore, we handle the parse error first.
+      auto parse_error_message = c->get_parse_error_message();
 
-        parse_error_message_ = c->get_parse_error_message();
+      if (parse_error_message_ != parse_error_message) {
+        parse_error_message_ = parse_error_message;
+        enqueue_to_dispatcher([this, parse_error_message] {
+          this->parse_error_message_changed(parse_error_message);
+        });
       }
 
       if (core_configuration_ && !c->is_loaded()) {
@@ -82,11 +86,7 @@ public:
         return;
       }
 
-      {
-        std::lock_guard<std::mutex> lock(core_configuration_mutex_);
-
-        core_configuration_ = c;
-      }
+      core_configuration_ = c;
 
       logger::get_logger()->info("core_configuration is updated.");
 
@@ -106,23 +106,10 @@ public:
     file_monitor_->async_start();
   }
 
-  std::shared_ptr<core_configuration::core_configuration> get_core_configuration(void) const {
-    std::lock_guard<std::mutex> lock(core_configuration_mutex_);
-
-    return core_configuration_;
-  }
-
-  const std::string& get_parse_error_message(void) const {
-    std::lock_guard<std::mutex> lock(core_configuration_mutex_);
-
-    return parse_error_message_;
-  }
-
 private:
   std::unique_ptr<pqrs::osx::file_monitor> file_monitor_;
 
   std::shared_ptr<core_configuration::core_configuration> core_configuration_;
   std::string parse_error_message_;
-  mutable std::mutex core_configuration_mutex_;
 };
 } // namespace krbn

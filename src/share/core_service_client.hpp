@@ -132,17 +132,6 @@ public:
     });
   }
 
-  void async_connect_console_user_server(void) const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::connect_console_user_server},
-          {"user_core_configuration_file_path", constants::get_user_core_configuration_file_path().c_str()},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
   void async_system_preferences_updated(std::shared_ptr<pqrs::osx::system_preferences::properties> properties) const {
     enqueue_to_dispatcher([this, properties] {
       if (properties) {
@@ -153,6 +142,19 @@ public:
 
         async_send_message(std::move(json));
       }
+    });
+  }
+
+  void async_core_service_bundle_permission_check_result(bool input_monitoring_granted,
+                                                         bool accessibility_process_trusted) const {
+    enqueue_to_dispatcher([this, input_monitoring_granted, accessibility_process_trusted] {
+      nlohmann::json json{
+          {"operation_type", operation_type::core_service_bundle_permission_check_result},
+          {"input_monitoring_granted", input_monitoring_granted},
+          {"accessibility_process_trusted", accessibility_process_trusted},
+      };
+
+      async_send_message(std::move(json));
     });
   }
 

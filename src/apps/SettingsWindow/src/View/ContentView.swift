@@ -9,43 +9,39 @@ struct ContentView: View {
     ZStack {
       ContentMainView()
 
-      if contentViewStates.showDoctorAlert {
+      if contentViewStates.displayedAlert == .doctor {
         OverlayAlertView {
           DoctorAlertView()
         }
-      } else if contentViewStates.showSettingsAlert {
-        // When performing a clean install, many alerts are displayed.
-        // Among them, SettingsAlertView is always displayed first,
-        // followed by other permission-related alerts in order.
-        // If the display priority of SettingsAlertView is low,
-        // it briefly appears before being replaced by other alerts, causing a flickering effect.
-        // To avoid this, the display priority of SettingsAlertView should be set higher.
+      } else if contentViewStates.displayedAlert == .settings {
         OverlayAlertView {
           SettingsAlertView()
         }
-      } else if contentViewStates.showServicesNotRunningAlert {
-        // Since showInputMonitoringPermissionsAlert never becomes false while Karabiner-Core-Service is not running,
-        // `ServicesNotRunningAlertView` needs to take priority over `InputMonitoringPermissionsAlertView`.
+      } else if contentViewStates.displayedAlert == .consoleUserServerNotConnected {
+        OverlayAlertView {
+          ConsoleUserServerNotConnectedAlertView()
+        }
+      } else if contentViewStates.displayedAlert == .servicesNotRunning {
         OverlayAlertView {
           ServicesNotRunningAlertView()
         }
-      } else if contentViewStates.showInputMonitoringPermissionsAlert {
+      } else if contentViewStates.displayedAlert == .inputMonitoringPermissions {
         OverlayAlertView {
           InputMonitoringPermissionsAlertView()
         }
-      } else if contentViewStates.showAccessibilityAlert {
+      } else if contentViewStates.displayedAlert == .accessibility {
         OverlayAlertView {
           AccessibilityAlertView()
         }
-      } else if contentViewStates.showVirtualHidDeviceServiceClientNotConnectedAlert {
+      } else if contentViewStates.displayedAlert == .virtualHidDeviceServiceClientNotConnected {
         OverlayAlertView {
           VirtualHidDeviceServiceClientNotConnectedAlertView()
         }
-      } else if contentViewStates.showDriverVersionMismatchedAlert {
+      } else if contentViewStates.displayedAlert == .driverVersionMismatched {
         OverlayAlertView {
           DriverVersionMismatchedAlertView()
         }
-      } else if contentViewStates.showDriverNotActivatedAlert {
+      } else if contentViewStates.displayedAlert == .driverNotActivated {
         if #available(macOS 15.0, *) {
           OverlayAlertView {
             DriverNotActivatedAlertView()
@@ -55,9 +51,7 @@ struct ContentView: View {
             DriverNotActivatedAlertViewMacOS14()
           }
         }
-      } else if contentViewStates.showDriverNotConnectedAlert {
-        // Until the driver is activated, showDriverNotConnectedAlert is always true,
-        // so its priority needs to be lower than showDriverNotActivatedAlert.
+      } else if contentViewStates.displayedAlert == .driverNotConnected {
         OverlayAlertView {
           DriverNotConnectedAlertView()
         }

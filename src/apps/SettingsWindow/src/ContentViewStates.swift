@@ -8,15 +8,57 @@ final class ContentViewStates: ObservableObject {
   // Alerts
   //
 
-  @Published public var showServicesNotRunningAlert = false
-  @Published public var showVirtualHidDeviceServiceClientNotConnectedAlert = false
-  @Published public var showDriverNotActivatedAlert = false
-  @Published public var showDriverNotConnectedAlert = false
-  @Published public var showDriverVersionMismatchedAlert = false
-  @Published public var showInputMonitoringPermissionsAlert = false
-  @Published public var showAccessibilityAlert = false
-  @Published public var showDoctorAlert = false
-  @Published public var showSettingsAlert = false
+  @Published public private(set) var currentAlert: SettingsWindowAlert = .none {
+    didSet {
+      resetDismissedAlertIfNeeded()
+    }
+  }
+  @Published private var dismissedAlert: SettingsWindowAlert = .none
+  @Published var alertContext = SettingsWindowAlertContext()
+  @Published var coreServiceDaemonState = SettingsWindowCoreServiceState()
+  @Published private var consoleUserServerClientConnected = false {
+    didSet {
+      resetDismissedAlertIfNeeded()
+    }
+  }
+  @Published private(set) var consoleUserServerClientWaitingSeconds = 0
+
+  private var currentResolvedAlert: SettingsWindowAlert {
+    if !consoleUserServerClientConnected {
+      return .consoleUserServerNotConnected
+    }
+
+    return currentAlert
+  }
+
+  var displayedAlert: SettingsWindowAlert {
+    let resolvedAlert = currentResolvedAlert
+    return resolvedAlert == dismissedAlert ? .none : resolvedAlert
+  }
+
+  func updateAlertState(_ state: SettingsWindowAlertState) {
+    currentAlert = state.currentAlert
+    alertContext = state.alertContext
+    coreServiceDaemonState = state.coreServiceDaemonState
+  }
+
+  func updateConsoleUserServerClientConnected(_ connected: Bool) {
+    consoleUserServerClientConnected = connected
+  }
+
+  func updateConsoleUserServerClientWaitingSeconds(_ seconds: Int) {
+    consoleUserServerClientWaitingSeconds = seconds
+  }
+
+  func dismissCurrentAlert() {
+    dismissedAlert = currentResolvedAlert
+  }
+
+  private func resetDismissedAlertIfNeeded() {
+    if currentResolvedAlert != dismissedAlert {
+      dismissedAlert = .none
+    }
+  }
 
   //
   // ContentMainView

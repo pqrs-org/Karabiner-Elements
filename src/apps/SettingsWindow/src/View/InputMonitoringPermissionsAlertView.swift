@@ -43,7 +43,7 @@ struct InputMonitoringPermissionsAlertView: View {
       .frame(width: 700)
 
       SheetCloseButton {
-        ContentViewStates.shared.showInputMonitoringPermissionsAlert = false
+        ContentViewStates.shared.dismissCurrentAlert()
       }
     }
     .onAppear {

@@ -5,12 +5,11 @@
 #include "constants.hpp"
 #include "core_service/core_service_utility.hpp"
 #include "core_service/daemon/components_manager.hpp"
-#include "core_service/daemon/core_service_state_json_writer.hpp"
+#include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "services_utility.hpp"
-#include <IOKit/hidsystem/IOHIDLib.h>
 #include <iostream>
 #include <mach/mach.h>
 #include <pqrs/osx/workspace.hpp>
@@ -53,41 +52,15 @@ int daemon(void) {
   logger::get_logger()->info("Karabiner-Elements.app path: {0}", settings_application_url);
 
   //
-  // Prepare state_json_writer
+  // Prepare core_service_daemon_state_manager
   //
 
-  auto core_service_state_json_writer = std::make_shared<daemon::core_service_state_json_writer>();
-
-  //
-  // Update karabiner_core_service_state.json
-  //
-
-  if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
-    core_service_state_json_writer->set_hid_device_open_permitted(true);
-  } else {
-    logger::get_logger()->warn("Input Monitoring is not granted");
-
-    core_service_state_json_writer->set_hid_device_open_permitted(false);
-
-    // IOHIDRequestAccess won't work correctly unless it's called from the agent.
-    // Therefore, the daemon does not call IOHIDRequestAccess and
-    // simply waits until Input Monitoring permission is granted.
-    // The daemon exits once permission is granted, which triggers launchd to restart it.
-    core_service_utility::wait_until_input_monitoring_granted();
-
-    return 0;
-  }
-
-  if (pqrs::osx::accessibility::is_process_trusted()) {
-    core_service_state_json_writer->set_accessibility_process_trusted(true);
-  } else {
-    logger::get_logger()->warn("accessibility process is not trusted");
-
-    core_service_state_json_writer->set_accessibility_process_trusted(false);
-
-    core_service_utility::wait_until_accessibility_process_trusted();
-
-    return 0;
+  auto core_service_daemon_state_manager = std::make_shared<daemon::core_service_daemon_state_manager>();
+  {
+    auto permission_check_result = core_service_utility::make_current_process_permission_check_result();
+    core_service_daemon_state_manager->set_current_process_permission_check_result(permission_check_result);
+    // Immediately after startup, current_process_permission_check_result and bundle_permission_check_result are the same, so set both.
+    core_service_daemon_state_manager->set_bundle_permission_check_result(permission_check_result);
   }
 
   //
@@ -134,7 +107,7 @@ int daemon(void) {
     });
   }
 
-  components_manager = new daemon::components_manager(core_service_state_json_writer);
+  components_manager = new daemon::components_manager(core_service_daemon_state_manager);
   components_manager->async_start();
 
   CFRunLoopRun();
@@ -149,7 +122,7 @@ int daemon(void) {
 
   components_manager_killer::terminate_shared_components_manager_killer();
 
-  core_service_state_json_writer = nullptr;
+  core_service_daemon_state_manager = nullptr;
 
   logger::get_logger()->info("Karabiner-Core-Service is terminated.");
 

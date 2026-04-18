@@ -125,6 +125,7 @@ public:
           auto ot = json.at("operation_type").get<operation_type>();
           switch (ot) {
             case operation_type::user_core_configuration_file_path:
+            case operation_type::settings_window_alert:
             case operation_type::frontmost_application_history:
               enqueue_to_dispatcher([this, ot, json] {
                 received(ot, json);
@@ -299,6 +300,29 @@ public:
       nlohmann::json json{
           {"operation_type", operation_type::software_function},
           {"software_function", software_function},
+      };
+
+      async_send_message(std::move(json));
+    });
+  }
+
+  // settings_window -> console_user_server
+  void async_get_settings_window_alert(void) const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::get_settings_window_alert},
+      };
+
+      async_send_message(std::move(json));
+    });
+  }
+
+  // core_service (daemon) -> console_user_server
+  void async_core_service_daemon_state(const nlohmann::json& core_service_daemon_state) const {
+    enqueue_to_dispatcher([this, core_service_daemon_state] {
+      nlohmann::json json{
+          {"operation_type", operation_type::core_service_daemon_state},
+          {"core_service_daemon_state", core_service_daemon_state},
       };
 
       async_send_message(std::move(json));

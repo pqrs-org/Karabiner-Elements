@@ -3,7 +3,7 @@
 #include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
-#include "core_service/daemon/core_service_state_json_writer.hpp"
+#include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
@@ -51,9 +51,10 @@ public:
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
-                 std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
+                 std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager)
       : dispatcher_client(),
         weak_console_user_server_client_(weak_console_user_server_client),
+        weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
         temporarily_ignore_all_devices_(false),
         system_sleeping_(false),
@@ -77,11 +78,11 @@ public:
 
     virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>();
 
-    virtual_hid_device_service_client_->connected.connect([this, weak_core_service_state_json_writer] {
+    virtual_hid_device_service_client_->connected.connect([this, weak_core_service_daemon_state_manager] {
       logger::get_logger()->info("virtual_hid_device_service_client_ connected");
 
-      if (auto writer = weak_core_service_state_json_writer.lock()) {
-        writer->set_virtual_hid_device_service_client_connected(true);
+      if (auto m = weak_core_service_daemon_state_manager.lock()) {
+        m->set_virtual_hid_device_service_client_connected(true);
       }
 
       update_virtual_hid_keyboard();
@@ -91,19 +92,19 @@ public:
       async_grab_devices();
     });
 
-    virtual_hid_device_service_client_->connect_failed.connect([weak_core_service_state_json_writer](auto&& error_code) {
+    virtual_hid_device_service_client_->connect_failed.connect([weak_core_service_daemon_state_manager](auto&& error_code) {
       logger::get_logger()->info("virtual_hid_device_service_client_ connect_failed: {0}", error_code.message());
 
-      if (auto writer = weak_core_service_state_json_writer.lock()) {
-        writer->set_virtual_hid_device_service_client_connected(false);
+      if (auto m = weak_core_service_daemon_state_manager.lock()) {
+        m->set_virtual_hid_device_service_client_connected(false);
       }
     });
 
-    virtual_hid_device_service_client_->closed.connect([weak_core_service_state_json_writer] {
+    virtual_hid_device_service_client_->closed.connect([weak_core_service_daemon_state_manager] {
       logger::get_logger()->info("virtual_hid_device_service_client_ closed");
 
-      if (auto writer = weak_core_service_state_json_writer.lock()) {
-        writer->set_virtual_hid_device_service_client_connected(false);
+      if (auto m = weak_core_service_daemon_state_manager.lock()) {
+        m->set_virtual_hid_device_service_client_connected(false);
       }
 
       // Wait automatic reconnection.
@@ -118,21 +119,21 @@ public:
       logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
     });
 
-    virtual_hid_device_service_client_->driver_activated.connect([weak_core_service_state_json_writer](auto&& driver_activated) {
-      if (auto writer = weak_core_service_state_json_writer.lock()) {
-        writer->set_driver_activated(driver_activated);
+    virtual_hid_device_service_client_->driver_activated.connect([weak_core_service_daemon_state_manager](auto&& driver_activated) {
+      if (auto m = weak_core_service_daemon_state_manager.lock()) {
+        m->set_driver_activated(driver_activated);
       }
     });
 
-    virtual_hid_device_service_client_->driver_connected.connect([weak_core_service_state_json_writer](auto&& driver_connected) {
-      if (auto writer = weak_core_service_state_json_writer.lock()) {
-        writer->set_driver_connected(driver_connected);
+    virtual_hid_device_service_client_->driver_connected.connect([weak_core_service_daemon_state_manager](auto&& driver_connected) {
+      if (auto m = weak_core_service_daemon_state_manager.lock()) {
+        m->set_driver_connected(driver_connected);
       }
     });
 
-    virtual_hid_device_service_client_->driver_version_mismatched.connect([weak_core_service_state_json_writer](auto&& driver_version_mismatched) {
-      if (auto writer = weak_core_service_state_json_writer.lock()) {
-        writer->set_driver_version_mismatched(driver_version_mismatched);
+    virtual_hid_device_service_client_->driver_version_mismatched.connect([weak_core_service_daemon_state_manager](auto&& driver_version_mismatched) {
+      if (auto m = weak_core_service_daemon_state_manager.lock()) {
+        m->set_driver_version_mismatched(driver_version_mismatched);
       }
     });
 
@@ -492,9 +493,20 @@ public:
                                                                        expected_user_core_configuration_file_owner.value_or(uid_t(0)),
                                                                        krbn::core_configuration::error_handling::loose);
 
+      configuration_monitor_->parse_error_message_changed.connect([this](auto&& parse_error_message) {
+        if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+          m->set_karabiner_json_parse_error_message(parse_error_message);
+        }
+      });
+
       configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
         if (auto core_configuration = weak_core_configuration.lock()) {
           core_configuration_ = core_configuration;
+
+          if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+            m->set_virtual_hid_keyboard_type_not_set(
+                core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2().empty());
+          }
 
           for (auto&& e : entries_) {
             e.second->set_core_configuration(core_configuration);
@@ -1216,6 +1228,7 @@ private:
   }
 
   std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
+  std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;
 
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;
 

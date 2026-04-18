@@ -2,7 +2,7 @@ import ServiceManagement
 import SwiftUI
 
 struct ServicesNotRunningAlertView: View {
-  @ObservedObject private var servicesMonitor = ServicesMonitor.shared
+  @ObservedObject private var contentViewStates = ContentViewStates.shared
   @FocusState var focus: Bool
 
   private let loginItemsImage: String
@@ -19,7 +19,7 @@ struct ServicesNotRunningAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
         Label(
-          servicesMonitor.servicesEnabled
+          contentViewStates.alertContext.servicesEnabled
             ? "The background services are not running. Please wait a few seconds."
             : "The background services are not enabled. Please enable them.",
           systemImage: "exclamationmark.triangle"
@@ -28,10 +28,10 @@ struct ServicesNotRunningAlertView: View {
 
         GroupBox {
           VStack(alignment: .center, spacing: 20.0) {
-            if servicesMonitor.servicesEnabled {
+            if contentViewStates.alertContext.servicesEnabled {
               VStack(alignment: .center, spacing: 0.0) {
                 Text(
-                  "Waiting for the background services to start for \(servicesMonitor.servicesWaitingSeconds) seconds."
+                  "Waiting for the background services to start for \(contentViewStates.alertContext.servicesWaitingSeconds) seconds."
                 )
                 Text(
                   "If the services do not start within 20 seconds, please disable the services and then enable them again."
@@ -46,7 +46,7 @@ struct ServicesNotRunningAlertView: View {
               }
             }
 
-            if servicesMonitor.servicesEnabled {
+            if contentViewStates.alertContext.servicesEnabled {
               ProgressView()
             }
 
@@ -54,14 +54,18 @@ struct ServicesNotRunningAlertView: View {
               Label(
                 "Karabiner-Elements Non-Privileged Agents v2",
                 systemImage:
-                  servicesMonitor.coreAgentsRunning ? "checkmark.circle.fill" : "circle")
+                  contentViewStates.alertContext.coreAgentsRunning
+                  ? "checkmark.circle.fill" : "circle")
               Label(
                 "Karabiner-Elements Privileged Daemons v2",
                 systemImage:
-                  servicesMonitor.coreDaemonsRunning ? "checkmark.circle.fill" : "circle")
+                  contentViewStates.alertContext.coreDaemonsRunning
+                  ? "checkmark.circle.fill" : "circle")
             }
 
-            if !servicesMonitor.servicesEnabled || servicesMonitor.servicesWaitingSeconds > 15 {
+            if !contentViewStates.alertContext.servicesEnabled
+              || contentViewStates.alertContext.servicesWaitingSeconds > 15
+            {
               Button(
                 action: {
                   SMAppService.openSystemSettingsLoginItems()
@@ -82,7 +86,7 @@ struct ServicesNotRunningAlertView: View {
             )
             .modifier(InfoBorder())
 
-            if !servicesMonitor.servicesEnabled {
+            if !contentViewStates.alertContext.servicesEnabled {
               Image(decorative: loginItemsImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -97,7 +101,7 @@ struct ServicesNotRunningAlertView: View {
       .frame(width: 850)
 
       SheetCloseButton {
-        ContentViewStates.shared.showServicesNotRunningAlert = false
+        ContentViewStates.shared.dismissCurrentAlert()
       }
     }
     .onAppear {

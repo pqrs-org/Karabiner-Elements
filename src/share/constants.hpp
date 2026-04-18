@@ -93,11 +93,6 @@ public:
     return path;
   }
 
-  static const std::filesystem::path& get_core_service_state_json_file_path(void) {
-    static auto path = get_tmp_directory() / "karabiner_core_service_state.json";
-    return path;
-  }
-
   static const std::filesystem::path& get_system_configuration_directory(void) {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/config");
     return path;

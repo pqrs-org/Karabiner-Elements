@@ -4,8 +4,16 @@
 #include "run_loop_thread_utility.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <pqrs/osx/process_info.hpp>
+#include <vector>
 
 int main(int argc, const char* argv[]) {
+  std::vector<std::string> args;
+  args.reserve(static_cast<std::size_t>(argc));
+
+  for (int i = 0; i < argc; ++i) {
+    args.emplace_back(argv[i]);
+  }
+
   //
   // Initialize
   //
@@ -22,34 +30,6 @@ int main(int argc, const char* argv[]) {
   pqrs::osx::process_info::enable_sudden_termination();
 
   //
-  // Process arguments
-  //
-
-  for (int i = 1; i < argc; ++i) {
-    if (std::string_view(argv[i]) == "input-monitoring-granted") {
-      if (IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted) {
-        std::cout << "granted" << std::endl;
-        return 0;
-      } else {
-        std::cout << "denied" << std::endl;
-        return 1;
-      }
-
-    } else if (std::string_view(argv[i]) == "accessibility-process-trusted") {
-      if (pqrs::osx::accessibility::is_process_trusted()) {
-        std::cout << "trusted" << std::endl;
-        return 0;
-      } else {
-        std::cout << "not trusted" << std::endl;
-        return 1;
-      }
-
-    } else {
-      std::cout << "unsupported argument: " << argv[i] << std::endl;
-    }
-  }
-
-  //
   // Check euid
   // (core_service is launched from LaunchDaemons (root) and LaunchAgents (user).)
   //
@@ -59,6 +39,6 @@ int main(int argc, const char* argv[]) {
   if (root) {
     return krbn::core_service::main::daemon();
   } else {
-    return krbn::core_service::main::agent();
+    return krbn::core_service::main::agent(args);
   }
 }

@@ -451,9 +451,6 @@ typedef void (*libkrbn_core_configuration_updated_t)(void);
 void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configuration_updated_t _Nonnull callback);
 void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated_t _Nonnull callback);
 
-bool libkrbn_configuration_monitor_get_parse_error_message(char* _Nonnull buffer,
-                                                           size_t length);
-
 //
 // libkrbn_version_monitor
 //
@@ -480,8 +477,6 @@ void libkrbn_register_file_updated_callback(const char* _Nonnull file_path,
                                             libkrbn_file_updated_t _Nonnull callback);
 void libkrbn_unregister_file_updated_callback(const char* _Nonnull file_path,
                                               libkrbn_file_updated_t _Nonnull callback);
-
-void libkrbn_get_core_service_state_json_file_path(char* _Nonnull buffer, size_t length);
 
 //
 // libkrbn_log_monitor
@@ -596,6 +591,11 @@ void libkrbn_register_console_user_server_client_status_changed_callback(libkrbn
 void libkrbn_unregister_console_user_server_client_status_changed_callback(libkrbn_console_user_server_client_status_changed_t _Nonnull callback);
 
 libkrbn_console_user_server_client_status libkrbn_console_user_server_client_get_status(void);
+
+void libkrbn_console_user_server_client_async_get_settings_window_alert(void);
+typedef void (*libkrbn_console_user_server_client_settings_window_alert_received_t)(const char* _Nonnull json_string);
+void libkrbn_register_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t _Nonnull callback);
+void libkrbn_unregister_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t _Nonnull callback);
 
 void libkrbn_console_user_server_client_async_get_frontmost_application_history(void);
 typedef void (*libkrbn_console_user_server_client_frontmost_application_history_received_t)(const char* _Nonnull json_string);

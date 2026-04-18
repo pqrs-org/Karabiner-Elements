@@ -385,23 +385,6 @@ void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configu
   }
 }
 
-bool libkrbn_configuration_monitor_get_parse_error_message(char* buffer,
-                                                           size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_configuration_monitor()) {
-      auto message = m->get_parse_error_message();
-      strlcpy(buffer, message.c_str(), length);
-      return true;
-    }
-  }
-
-  return false;
-}
-
 //
 // complex_modifications_assets_manager
 //
@@ -550,10 +533,6 @@ void libkrbn_unregister_file_updated_callback(const char* file_path,
       m->unregister_libkrbn_file_updated_callback(file_path, callback);
     }
   }
-}
-
-void libkrbn_get_core_service_state_json_file_path(char* buffer, size_t length) {
-  strlcpy(buffer, krbn::constants::get_core_service_state_json_file_path().c_str(), length);
 }
 
 //
@@ -872,6 +851,30 @@ libkrbn_console_user_server_client_status libkrbn_console_user_server_client_get
   }
 
   return libkrbn_console_user_server_client_status_none;
+}
+
+void libkrbn_console_user_server_client_async_get_settings_window_alert(void) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_console_user_server_client()) {
+      c->async_get_settings_window_alert();
+    }
+  }
+}
+
+void libkrbn_register_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_console_user_server_client()) {
+      c->register_libkrbn_console_user_server_client_settings_window_alert_received_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto c = manager->get_libkrbn_console_user_server_client()) {
+      c->unregister_libkrbn_console_user_server_client_settings_window_alert_received_callback(callback);
+    }
+  }
 }
 
 void libkrbn_console_user_server_client_async_get_frontmost_application_history(void) {

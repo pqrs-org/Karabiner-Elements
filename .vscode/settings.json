@@ -3,18 +3,25 @@
         ".vscode/browse.*": true,
         "**/.DS_Store": true,
         "**/.git": true,
+        "**/.build/": true,
+        "**/*.xcodeproj/": true,
         "**/build/": true,
-        "pkgroot/": true,
-        "**/*.xcodeproj/**": true
+        "**/pkgroot": true
+        // `vendor` must be removed from `exclude` so that `browse.path` can find header files.
+        // "**/vendor/": true
     },
     "search.exclude": {
-        "**/node_modules": true,
-        "**/bower_components": true,
-        "**/vendor": true
+        "**/.build/": true,
+        "**/*.xcodeproj/": true,
+        "**/build/": true,
+        "**/pkgroot/": true,
+        "**/vendor/": true
     },
     "files.watcherExclude": {
-        "**/build/**": true,
-        "**/pkgroot/**": true,
-        "**/*.xcodeproj/**": true
+        "**/.build/": true,
+        "**/*.xcodeproj/": true,
+        "**/build/": true,
+        "**/pkgroot/": true,
+        "**/vendor/": true
     }
 }

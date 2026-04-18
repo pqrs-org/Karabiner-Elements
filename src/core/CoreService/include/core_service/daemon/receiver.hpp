@@ -4,13 +4,15 @@
 
 #include "app_icon.hpp"
 #include "application_launcher.hpp"
+#include "components_manager_killer.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "core_service/daemon/core_service_state_json_writer.hpp"
+#include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "device_grabber.hpp"
 #include "filesystem_utility.hpp"
 #include "shared_secret_authentication.hpp"
 #include "types.hpp"
+#include "types/core_service_daemon_state.hpp"
 #include <array>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
@@ -27,10 +29,18 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(std::optional<uid_t> current_console_user_id,
-           std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer)
+           std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager)
       : dispatcher_client(),
         current_console_user_id_(current_console_user_id),
-        weak_core_service_state_json_writer_(weak_core_service_state_json_writer) {
+        weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      core_service_daemon_state_manager_connection_ = m->core_service_daemon_state_changed.connect([this](const auto& core_service_daemon_state) {
+        enqueue_to_dispatcher([this, core_service_daemon_state] {
+          send_core_service_daemon_state(core_service_daemon_state);
+        });
+      });
+    }
+
     // Remove old files and prepare a socket directory.
     prepare_karabiner_core_service_socket_directory();
 
@@ -113,6 +123,36 @@ public:
         }
 
         switch (ot) {
+          case operation_type::core_service_bundle_permission_check_result:
+            if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+              // If the required permissions were missing when this process started,
+              // and a newly launched process confirms that the permissions are now granted,
+              // restart this process.
+              // (The actual restart is handled by launchd, so this process just exits.)
+
+              auto input_monitoring_granted = json.at("input_monitoring_granted").get<bool>();
+              auto accessibility_process_trusted = json.at("accessibility_process_trusted").get<bool>();
+              auto restart_required =
+                  !required_permissions_granted() &&
+                  input_monitoring_granted &&
+                  accessibility_process_trusted;
+
+              auto result = core_service_permission_check_result();
+              result.set_input_monitoring_granted(input_monitoring_granted);
+              result.set_accessibility_process_trusted(accessibility_process_trusted);
+
+              m->set_bundle_permission_check_result(result);
+
+              if (restart_required) {
+                logger::get_logger()->info("The required permissions are granted. Restarting core daemons.");
+
+                if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+                  killer->async_kill();
+                }
+              }
+            }
+            break;
+
           case operation_type::system_preferences_updated:
             system_preferences_properties_ = json.at("system_preferences_properties")
                                                  .get<pqrs::osx::system_preferences::properties>();
@@ -407,6 +447,10 @@ public:
 
       console_user_server_client_->connected.connect([this] {
         console_user_server_client_->async_get_user_core_configuration_file_path();
+
+        if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+          send_core_service_daemon_state(m->copy_state());
+        }
       });
 
       // If the console_user_server isn't running (i.e., operating under system_core_configuration),
@@ -451,6 +495,7 @@ public:
 
   virtual ~receiver() {
     detach_from_dispatcher([this] {
+      core_service_daemon_state_manager_connection_.disconnect();
       server_ = nullptr;
       console_user_server_client_ = nullptr;
       multitouch_extension_client_ = nullptr;
@@ -478,6 +523,11 @@ private:
   }
 
   void start_grabbing_if_system_core_configuration_file_exists() {
+    if (!required_permissions_granted()) {
+      logger::get_logger()->info("device_grabber is not started because the required permissions are not granted.");
+      return;
+    }
+
     auto file_path = constants::get_system_core_configuration_file_path();
     if (pqrs::filesystem::exists(file_path)) {
       stop_device_grabber();
@@ -490,8 +540,13 @@ private:
       return;
     }
 
+    if (!required_permissions_granted()) {
+      logger::get_logger()->info("device_grabber is not started because the required permissions are not granted.");
+      return;
+    }
+
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_,
-                                                       weak_core_service_state_json_writer_);
+                                                       weak_core_service_daemon_state_manager_);
 
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
@@ -512,6 +567,16 @@ private:
     device_grabber_ = nullptr;
 
     logger::get_logger()->info("device_grabber is stopped.");
+  }
+
+  bool required_permissions_granted() const {
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      if (auto result = m->copy_current_process_permission_check_result()) {
+        return result->required_permissions_granted();
+      }
+    }
+
+    return false;
   }
 
   void set_focused_ui_element_variables() {
@@ -578,6 +643,12 @@ private:
     }
   }
 
+  void send_core_service_daemon_state(const core_service_daemon_state& core_service_daemon_state) {
+    if (console_user_server_client_) {
+      console_user_server_client_->async_core_service_daemon_state(core_service_daemon_state);
+    }
+  }
+
   void clear_multitouch_extension_environment_variables() {
     if (device_grabber_) {
       for (const auto& name : multitouch_extension_environment_variable_names) {
@@ -611,7 +682,8 @@ private:
   };
 
   std::optional<uid_t> current_console_user_id_;
-  std::weak_ptr<core_service_state_json_writer> weak_core_service_state_json_writer_;
+  std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;
+  nod::scoped_connection core_service_daemon_state_manager_connection_;
 
   std::unique_ptr<pqrs::local_datagram::extra::peer_manager> event_viewer_temporarily_ignore_all_devices_peer_manager_;
   std::unique_ptr<shared_secret_authentication::receiver> shared_secret_authentication_receiver_;

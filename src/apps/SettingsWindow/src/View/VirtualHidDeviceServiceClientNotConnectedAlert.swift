@@ -26,7 +26,7 @@ struct VirtualHidDeviceServiceClientNotConnectedAlertView: View {
       .frame(width: 850)
 
       SheetCloseButton {
-        ContentViewStates.shared.showVirtualHidDeviceServiceClientNotConnectedAlert = false
+        ContentViewStates.shared.dismissCurrentAlert()
       }
     }
     .onAppear {
