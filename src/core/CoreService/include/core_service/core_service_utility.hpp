@@ -29,7 +29,7 @@ inline core_service_permission_check_result make_permission_check_result_for_cur
 }
 
 inline void prompt_permissions() {
-  IOHIDCheckAccess(kIOHIDRequestTypeListenEvent);
+  IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
   pqrs::osx::accessibility::is_process_trusted_with_prompt();
 }
 
