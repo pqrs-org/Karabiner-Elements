@@ -9,12 +9,20 @@
 namespace krbn {
 class core_service_daemon_state final {
 public:
-  const std::optional<core_service_permission_check_result>& get_permission_check_result() const {
-    return permission_check_result_;
+  const std::optional<core_service_permission_check_result>& get_current_process_permission_check_result() const {
+    return current_process_permission_check_result_;
   }
 
-  void set_permission_check_result(const std::optional<core_service_permission_check_result>& value) {
-    permission_check_result_ = value;
+  void set_current_process_permission_check_result(const std::optional<core_service_permission_check_result>& value) {
+    current_process_permission_check_result_ = value;
+  }
+
+  const std::optional<core_service_permission_check_result>& get_bundle_permission_check_result() const {
+    return bundle_permission_check_result_;
+  }
+
+  void set_bundle_permission_check_result(const std::optional<core_service_permission_check_result>& value) {
+    bundle_permission_check_result_ = value;
   }
 
   const std::optional<bool>& get_virtual_hid_device_service_client_connected() const {
@@ -68,7 +76,12 @@ public:
   bool operator==(const core_service_daemon_state&) const = default;
 
 private:
-  std::optional<core_service_permission_check_result> permission_check_result_;
+  std::optional<core_service_permission_check_result> current_process_permission_check_result_;
+  // If permissions such as Accessibility are granted to Karabiner-Core-Service from System Settings after the process has started,
+  // the permission state of the current process and that of the application bundle itself may no longer match.
+  // Since the Settings window alert logic should be based on the application bundle state,
+  // the permissions of the current process and the application bundle are stored separately.
+  std::optional<core_service_permission_check_result> bundle_permission_check_result_;
   std::optional<bool> virtual_hid_device_service_client_connected_;
   std::optional<bool> driver_activated_;
   std::optional<bool> driver_connected_;
@@ -80,8 +93,12 @@ private:
 inline void to_json(nlohmann::json& json, const core_service_daemon_state& value) {
   json = nlohmann::json::object();
 
-  if (auto permission_check_result = value.get_permission_check_result()) {
-    json["permission_check_result"] = *permission_check_result;
+  if (auto permission_check_result = value.get_current_process_permission_check_result()) {
+    json["current_process_permission_check_result"] = *permission_check_result;
+  }
+
+  if (auto permission_check_result = value.get_bundle_permission_check_result()) {
+    json["bundle_permission_check_result"] = *permission_check_result;
   }
 
   if (auto v = value.get_virtual_hid_device_service_client_connected()) {
@@ -108,7 +125,8 @@ inline void to_json(nlohmann::json& json, const core_service_daemon_state& value
 }
 
 inline void from_json(const nlohmann::json& json, core_service_daemon_state& value) {
-  value.set_permission_check_result(pqrs::json::find<core_service_permission_check_result>(json, "permission_check_result"));
+  value.set_current_process_permission_check_result(pqrs::json::find<core_service_permission_check_result>(json, "current_process_permission_check_result"));
+  value.set_bundle_permission_check_result(pqrs::json::find<core_service_permission_check_result>(json, "bundle_permission_check_result"));
   value.set_virtual_hid_device_service_client_connected(pqrs::json::find<bool>(json, "virtual_hid_device_service_client_connected"));
   value.set_driver_activated(pqrs::json::find<bool>(json, "driver_activated"));
   value.set_driver_connected(pqrs::json::find<bool>(json, "driver_connected"));

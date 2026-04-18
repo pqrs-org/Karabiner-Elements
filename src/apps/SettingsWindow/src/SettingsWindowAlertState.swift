@@ -15,16 +15,17 @@ struct SettingsWindowCoreServiceState: Codable {
   var driverActivated: Bool?
   var driverConnected: Bool?
   var driverVersionMismatched: Bool?
-  var permissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
+  var currentProcessPermissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
+  var bundlePermissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
   var karabinerJsonParseErrorMessage = ""
   var virtualHidKeyboardTypeNotSet: Bool?
 
   var inputMonitoringGranted: Bool? {
-    permissionCheckResult?.inputMonitoringGranted
+    bundlePermissionCheckResult?.inputMonitoringGranted
   }
 
   var accessibilityProcessTrusted: Bool? {
-    permissionCheckResult?.accessibilityProcessTrusted
+    bundlePermissionCheckResult?.accessibilityProcessTrusted
   }
 
   enum CodingKeys: String, CodingKey {
@@ -32,7 +33,8 @@ struct SettingsWindowCoreServiceState: Codable {
     case driverActivated = "driver_activated"
     case driverConnected = "driver_connected"
     case driverVersionMismatched = "driver_version_mismatched"
-    case permissionCheckResult = "permission_check_result"
+    case currentProcessPermissionCheckResult = "current_process_permission_check_result"
+    case bundlePermissionCheckResult = "bundle_permission_check_result"
     case karabinerJsonParseErrorMessage = "karabiner_json_parse_error_message"
     case virtualHidKeyboardTypeNotSet = "virtual_hid_keyboard_type_not_set"
   }

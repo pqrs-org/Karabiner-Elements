@@ -24,15 +24,21 @@ public:
     detach_from_dispatcher();
   }
 
-  std::optional<core_service_permission_check_result> copy_permission_check_result() const {
+  std::optional<core_service_permission_check_result> copy_current_process_permission_check_result() const {
     std::lock_guard<std::mutex> guard(mutex_);
 
-    return state_.get_permission_check_result();
+    return state_.get_current_process_permission_check_result();
   }
 
-  void set_permission_check_result(const core_service_permission_check_result& value) {
+  void set_current_process_permission_check_result(const core_service_permission_check_result& value) {
     update([&value](auto& state) {
-      state.set_permission_check_result(value);
+      state.set_current_process_permission_check_result(value);
+    });
+  }
+
+  void set_bundle_permission_check_result(const core_service_permission_check_result& value) {
+    update([&value](auto& state) {
+      state.set_bundle_permission_check_result(value);
     });
   }
 

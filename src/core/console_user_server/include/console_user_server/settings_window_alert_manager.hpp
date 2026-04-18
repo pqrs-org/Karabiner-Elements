@@ -88,7 +88,7 @@ private:
 
     auto input_monitoring_granted = std::optional<bool>();
     auto accessibility_process_trusted = std::optional<bool>();
-    if (auto permission_check_result = state.get_permission_check_result()) {
+    if (auto permission_check_result = state.get_bundle_permission_check_result()) {
       input_monitoring_granted = permission_check_result->get_input_monitoring_granted();
       accessibility_process_trusted = permission_check_result->get_accessibility_process_trusted();
     }

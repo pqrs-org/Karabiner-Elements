@@ -132,11 +132,16 @@ public:
 
               auto input_monitoring_granted = json.at("input_monitoring_granted").get<bool>();
               auto accessibility_process_trusted = json.at("accessibility_process_trusted").get<bool>();
-
               auto restart_required =
                   !required_permissions_granted() &&
                   input_monitoring_granted &&
                   accessibility_process_trusted;
+
+              auto result = core_service_permission_check_result();
+              result.set_input_monitoring_granted(input_monitoring_granted);
+              result.set_accessibility_process_trusted(accessibility_process_trusted);
+
+              m->set_bundle_permission_check_result(result);
 
               if (restart_required) {
                 logger::get_logger()->info("The required permissions are granted. Restarting core daemons.");
@@ -566,7 +571,7 @@ private:
 
   bool required_permissions_granted() const {
     if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-      if (auto result = m->copy_permission_check_result()) {
+      if (auto result = m->copy_current_process_permission_check_result()) {
         return result->required_permissions_granted();
       }
     }
