@@ -125,10 +125,10 @@ private:
     // Therefore, request Accessibility permission first, and only request Input Monitoring permission
     // if it is still needed after Accessibility has already been granted.
     if (!result->get_accessibility_process_trusted()) {
-      prompt_accessibility_permission_once();
+      core_service_utility::prompt_accessibility_permission_once();
     } else {
       if (!result->get_iohid_listen_event_allowed()) {
-        prompt_input_monitoring_permission_once();
+        core_service_utility::prompt_input_monitoring_permission_once();
       }
     }
 
