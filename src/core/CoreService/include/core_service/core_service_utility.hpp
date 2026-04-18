@@ -21,21 +21,18 @@ namespace core_service_utility {
 
 static constexpr const char* karabiner_core_service_bundle_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app";
 
-inline core_service_permission_check_result make_permission_check_result(void) {
+inline core_service_permission_check_result make_permission_check_result_for_current_process(void) {
   core_service_permission_check_result result;
   result.set_input_monitoring_granted(IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted);
   result.set_accessibility_process_trusted(pqrs::osx::accessibility::is_process_trusted());
   return result;
 }
 
-inline std::filesystem::path get_permission_check_result_json_file_path(void) {
-  return constants::get_user_tmp_directory() / "core-service-permission-check-result.json";
-}
-
-inline std::optional<core_service_permission_check_result> run_permission_check(void) {
+inline std::optional<core_service_permission_check_result> run_permission_check_for_new_core_service_instance(void) {
   filesystem_utility::mkdir_user_directories();
 
-  auto result_json_file_path = get_permission_check_result_json_file_path();
+  auto result_json_file_path =
+      constants::get_user_tmp_directory() / "core-service-permission-check-result.json";
   std::error_code ec;
   std::filesystem::remove(result_json_file_path, ec);
 
@@ -44,6 +41,7 @@ inline std::optional<core_service_permission_check_result> run_permission_check(
       pqrs::osx::workspace::open_configuration{
           .activates = false,
           .adds_to_recent_items = false,
+          .creates_new_application_instance = true,
           .arguments = {
               "permission-check",
               result_json_file_path.string(),

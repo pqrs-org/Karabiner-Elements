@@ -111,7 +111,7 @@ private:
   }
 
   void check_permissions(void) {
-    auto result = core_service_utility::run_permission_check();
+    auto result = core_service_utility::run_permission_check_for_new_core_service_instance();
     if (!result) {
       enqueue_check_permissions();
       return;
