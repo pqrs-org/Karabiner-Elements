@@ -1,11 +1,11 @@
 import Foundation
 
 struct SettingsWindowCoreServicePermissionCheckResult: Codable {
-  var inputMonitoringGranted = false
+  var iohidListenEventAllowed = false
   var accessibilityProcessTrusted = false
 
   enum CodingKeys: String, CodingKey {
-    case inputMonitoringGranted = "input_monitoring_granted"
+    case iohidListenEventAllowed = "iohid_listen_event_allowed"
     case accessibilityProcessTrusted = "accessibility_process_trusted"
   }
 }
@@ -21,7 +21,7 @@ struct SettingsWindowCoreServiceState: Codable {
   var virtualHidKeyboardTypeNotSet: Bool?
 
   var inputMonitoringGranted: Bool? {
-    bundlePermissionCheckResult?.inputMonitoringGranted
+    bundlePermissionCheckResult?.iohidListenEventAllowed
   }
 
   var accessibilityProcessTrusted: Bool? {

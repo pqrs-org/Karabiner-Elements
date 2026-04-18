@@ -86,10 +86,10 @@ private:
       core_service_deamon_state_ = state;
     }
 
-    auto input_monitoring_granted = std::optional<bool>();
+    auto iohid_listen_event_allowed = std::optional<bool>();
     auto accessibility_process_trusted = std::optional<bool>();
     if (auto permission_check_result = state.get_bundle_permission_check_result()) {
-      input_monitoring_granted = permission_check_result->get_input_monitoring_granted();
+      iohid_listen_event_allowed = permission_check_result->get_iohid_listen_event_allowed();
       accessibility_process_trusted = permission_check_result->get_accessibility_process_trusted();
     }
 
@@ -104,7 +104,7 @@ private:
     update_alert_state(driver_version_mismatched_alert_state_,
                        make_alert_state(state.get_driver_version_mismatched()));
     update_alert_state(input_monitoring_permissions_alert_state_,
-                       make_inverted_alert_state(input_monitoring_granted));
+                       make_inverted_alert_state(iohid_listen_event_allowed));
     update_alert_state(accessibility_alert_state_,
                        make_inverted_alert_state(accessibility_process_trusted));
 

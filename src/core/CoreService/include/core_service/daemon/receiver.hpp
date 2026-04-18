@@ -130,15 +130,15 @@ public:
               // restart this process.
               // (The actual restart is handled by launchd, so this process just exits.)
 
-              auto input_monitoring_granted = json.at("input_monitoring_granted").get<bool>();
+              auto iohid_listen_event_allowed = json.at("iohid_listen_event_allowed").get<bool>();
               auto accessibility_process_trusted = json.at("accessibility_process_trusted").get<bool>();
               auto restart_required =
                   !required_permissions_granted() &&
-                  input_monitoring_granted &&
+                  iohid_listen_event_allowed &&
                   accessibility_process_trusted;
 
               auto result = core_service_permission_check_result();
-              result.set_input_monitoring_granted(input_monitoring_granted);
+              result.set_iohid_listen_event_allowed(iohid_listen_event_allowed);
               result.set_accessibility_process_trusted(accessibility_process_trusted);
 
               m->set_bundle_permission_check_result(result);

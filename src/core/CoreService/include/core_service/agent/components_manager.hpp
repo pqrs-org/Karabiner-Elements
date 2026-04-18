@@ -122,12 +122,12 @@ private:
 
     // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
     // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
-    // Therefore, request Accessibility permission first,
-    // and only request Input Monitoring permission if it is still needed after Accessibility has already been granted.
+    // Therefore, request Accessibility permission first, and only request Input Monitoring permission
+    // if it is still needed after Accessibility has already been granted.
     if (!result->get_accessibility_process_trusted()) {
       prompt_accessibility_permission_once();
     } else {
-      if (!result->get_input_monitoring_granted()) {
+      if (!result->get_iohid_listen_event_allowed()) {
         prompt_input_monitoring_permission_once();
       }
     }
@@ -136,7 +136,7 @@ private:
     send_core_service_bundle_permission_check_result(*result);
 
     auto permissions_granted =
-        result->get_input_monitoring_granted() &&
+        result->get_iohid_listen_event_allowed() &&
         result->get_accessibility_process_trusted();
 
     if (!permissions_granted) {
@@ -157,7 +157,7 @@ private:
   void send_core_service_bundle_permission_check_result(const core_service_permission_check_result& result) {
     if (core_service_client_) {
       core_service_client_->async_core_service_bundle_permission_check_result(
-          result.get_input_monitoring_granted(),
+          result.get_iohid_listen_event_allowed(),
           result.get_accessibility_process_trusted());
     }
   }

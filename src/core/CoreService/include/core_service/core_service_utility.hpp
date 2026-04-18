@@ -23,7 +23,7 @@ static constexpr const char* karabiner_core_service_bundle_path = "/Library/Appl
 
 inline core_service_permission_check_result make_current_process_permission_check_result() {
   core_service_permission_check_result result;
-  result.set_input_monitoring_granted(IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted);
+  result.set_iohid_listen_event_allowed(IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted);
   result.set_accessibility_process_trusted(pqrs::osx::accessibility::is_process_trusted());
   return result;
 }

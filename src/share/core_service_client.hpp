@@ -145,12 +145,12 @@ public:
     });
   }
 
-  void async_core_service_bundle_permission_check_result(bool input_monitoring_granted,
+  void async_core_service_bundle_permission_check_result(bool iohid_listen_event_allowed,
                                                          bool accessibility_process_trusted) const {
-    enqueue_to_dispatcher([this, input_monitoring_granted, accessibility_process_trusted] {
+    enqueue_to_dispatcher([this, iohid_listen_event_allowed, accessibility_process_trusted] {
       nlohmann::json json{
           {"operation_type", operation_type::core_service_bundle_permission_check_result},
-          {"input_monitoring_granted", input_monitoring_granted},
+          {"iohid_listen_event_allowed", iohid_listen_event_allowed},
           {"accessibility_process_trusted", accessibility_process_trusted},
       };
 
