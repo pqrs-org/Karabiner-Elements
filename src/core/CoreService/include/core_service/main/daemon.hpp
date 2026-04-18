@@ -57,7 +57,7 @@ int daemon(void) {
 
   auto core_service_daemon_state_manager = std::make_shared<daemon::core_service_daemon_state_manager>();
   {
-    auto permission_check_result = core_service_utility::make_permission_check_result_for_current_process();
+    auto permission_check_result = core_service_utility::make_current_process_permission_check_result();
     core_service_daemon_state_manager->set_current_process_permission_check_result(permission_check_result);
     // Immediately after startup, current_process_permission_check_result and bundle_permission_check_result are the same, so set both.
     core_service_daemon_state_manager->set_bundle_permission_check_result(permission_check_result);

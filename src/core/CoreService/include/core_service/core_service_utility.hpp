@@ -21,7 +21,7 @@ namespace core_service_utility {
 
 static constexpr const char* karabiner_core_service_bundle_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app";
 
-inline core_service_permission_check_result make_permission_check_result_for_current_process() {
+inline core_service_permission_check_result make_current_process_permission_check_result() {
   core_service_permission_check_result result;
   result.set_input_monitoring_granted(IOHIDCheckAccess(kIOHIDRequestTypeListenEvent) == kIOHIDAccessTypeGranted);
   result.set_accessibility_process_trusted(pqrs::osx::accessibility::is_process_trusted());
@@ -33,7 +33,7 @@ inline void prompt_permissions() {
   pqrs::osx::accessibility::is_process_trusted_with_prompt();
 }
 
-inline std::optional<core_service_permission_check_result> run_permission_check_for_new_core_service_instance() {
+inline std::optional<core_service_permission_check_result> make_bundle_permission_check_result() {
   filesystem_utility::mkdir_user_directories();
 
   auto result_json_file_path =

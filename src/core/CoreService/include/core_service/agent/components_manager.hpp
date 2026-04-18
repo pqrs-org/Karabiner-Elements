@@ -111,16 +111,16 @@ private:
   }
 
   void check_permissions(void) {
-    // `run_permission_check_for_new_core_service_instance` blocks while waiting for the permission-check result file.
+    // `make_bundle_permission_check_result` blocks while waiting for the permission-check result file.
     // This is acceptable here because this path is only relevant while the required permissions are not granted,
     // and during that period the agent has little else to do besides prompting for and re-checking permissions.
-    auto result = core_service_utility::run_permission_check_for_new_core_service_instance();
+    auto result = core_service_utility::make_bundle_permission_check_result();
     if (!result) {
       enqueue_check_permissions();
       return;
     }
 
-    last_permission_check_result_ = *result;
+    last_bundle_permission_check_result_ = *result;
     send_core_service_bundle_permission_check_result(*result);
 
     auto permissions_granted =
@@ -165,8 +165,8 @@ private:
     core_service_client_ = std::make_shared<core_service_client>("cs_agent_cs_clnt");
 
     core_service_client_->connected.connect([this] {
-      if (last_permission_check_result_) {
-        send_core_service_bundle_permission_check_result(*last_permission_check_result_);
+      if (last_bundle_permission_check_result_) {
+        send_core_service_bundle_permission_check_result(*last_bundle_permission_check_result_);
       }
       version_monitor_->async_manual_check();
     });
@@ -188,7 +188,7 @@ private:
 
   std::unique_ptr<version_monitor> version_monitor_;
   std::shared_ptr<core_service_client> core_service_client_;
-  std::optional<core_service_permission_check_result> last_permission_check_result_;
+  std::optional<core_service_permission_check_result> last_bundle_permission_check_result_;
   bool restart_required_after_permissions_granted_ = false;
 };
 } // namespace agent

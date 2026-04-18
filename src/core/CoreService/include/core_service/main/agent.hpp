@@ -36,7 +36,7 @@ int agent(std::vector<std::string> args) {
         return 1;
       }
 
-      auto result = core_service::core_service_utility::make_permission_check_result_for_current_process();
+      auto result = core_service::core_service_utility::make_current_process_permission_check_result();
       auto result_json_file_path = std::filesystem::path(args[i + 1]);
       auto temporary_result_json_file_path = result_json_file_path;
       temporary_result_json_file_path += ".tmp";
