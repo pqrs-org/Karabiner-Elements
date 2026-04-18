@@ -34,6 +34,7 @@
     - Fixed an issue where variables in expressions were not properly initialized when unset.
 - ⚡️ Improvements
     - Changed to call `exit` instead of `abort` to suppress crash reports when a fatal error prevents CFRunLoop from running in background processes.
+    - If Accessibility permission makes Input Monitoring permission unnecessary, only Accessibility permission will be requested.
 
 ## Karabiner-Elements 15.9.0
 
