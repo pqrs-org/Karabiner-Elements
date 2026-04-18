@@ -111,6 +111,9 @@ private:
   }
 
   void check_permissions(void) {
+    // `run_permission_check_for_new_core_service_instance` blocks while waiting for the permission-check result file.
+    // This is acceptable here because this path is only relevant while the required permissions are not granted,
+    // and during that period the agent has little else to do besides prompting for and re-checking permissions.
     auto result = core_service_utility::run_permission_check_for_new_core_service_instance();
     if (!result) {
       enqueue_check_permissions();
