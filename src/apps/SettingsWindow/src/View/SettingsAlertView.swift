@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsAlertView: View {
+  @ObservedObject private var contentViewStates = ContentViewStates.shared
   @FocusState var focus: Bool
 
   var body: some View {
@@ -43,6 +44,7 @@ struct SettingsAlertView: View {
     }
     .onAppear {
       focus = true
+      contentViewStates.navigationSelection = .virtualKeyboard
     }
   }
 }

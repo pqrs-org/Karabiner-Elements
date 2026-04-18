@@ -11,7 +11,7 @@ clean:
 
 run:
 	bash ../../../scripts/codesign.sh build/Release
-	./build/Release/Karabiner-Elements.app/Contents/MacOS/Karabiner-Elements
+	open ./build/Release/Karabiner-Elements.app
 
 xcode:
 	open *.xcodeproj
