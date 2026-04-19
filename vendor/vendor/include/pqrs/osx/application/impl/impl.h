@@ -17,6 +17,7 @@ typedef enum {
 } pqrs_osx_application_activation_policy_t;
 
 void pqrs_osx_application_set_activation_policy(pqrs_osx_application_activation_policy_t policy);
+void pqrs_osx_application_enable_stop_on_terminate(void);
 void pqrs_osx_application_finish_launching(void);
 void pqrs_osx_application_run(void);
 void pqrs_osx_application_stop(void);

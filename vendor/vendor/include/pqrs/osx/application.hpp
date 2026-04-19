@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::application v1.1
+// pqrs::osx::application v1.2
 
 // (C) Copyright Takayama Fumihiko 2026.
 // Distributed under the Boost Software License, Version 1.0.
@@ -32,6 +32,13 @@ inline void run(void) {
 
 inline void stop(void) {
   pqrs_osx_application_stop();
+}
+
+// Prevents NSApplication.shared.terminate from calling exit internally.
+// When a terminate request is received, stop is called instead, allowing the run loop to exit.
+// (applicationShouldTerminate returns .terminateCancel.)
+inline void enable_stop_on_terminate(void) {
+  pqrs_osx_application_enable_stop_on_terminate();
 }
 
 } // namespace application

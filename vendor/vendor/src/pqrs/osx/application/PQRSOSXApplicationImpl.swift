@@ -51,3 +51,17 @@ func PQRSOSXApplicationStop() {
     NSApplication.shared.postEvent(stopEvent, atStart: false)
   }
 }
+
+@_cdecl("pqrs_osx_application_enable_stop_on_terminate")
+func PQRSOSXApplicationEnableStopOnTerminate() {
+  NSApplication.shared.delegate = applicationDelegate
+}
+
+private final class ApplicationDelegate: NSObject, NSApplicationDelegate {
+  func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+    PQRSOSXApplicationStop()
+    return .terminateCancel
+  }
+}
+
+private let applicationDelegate = ApplicationDelegate()
