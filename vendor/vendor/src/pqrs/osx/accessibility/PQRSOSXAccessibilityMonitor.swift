@@ -74,7 +74,7 @@ actor PQRSOSXAccessibilityMonitor {
         break
       }
 
-      await requestRefresh(force: false)
+      await refreshIfPollingNeedsSnapshot()
     }
   }
 
@@ -134,6 +134,43 @@ actor PQRSOSXAccessibilityMonitor {
     }
 
     refreshInFlight = false
+  }
+
+  // In general, information about the currently focused application can be obtained through the following mechanisms:
+  //
+  // - Application switches can be detected via NSWorkspace.didActivateApplicationNotification.
+  // - Window position and size changes can be detected via Accessibility notifications.
+  //
+  // However, some applications do not work with these mechanisms. Specifically, there are two categories:
+  //
+  // - Applications such as Spotlight, where NSWorkspace.didActivateApplicationNotification is not delivered.
+  //   (Once the application has been detected at least once and AXObserverAddNotification has been registered for its process,
+  //   subsequent detections can be made via kAXFocusedUIElementChangedNotification.)
+  // - Applications such as Google Chrome and Electron-based apps that do not provide sufficient information through Accessibility.
+  //   (window position and size changes cannot be obtained from notifications).
+  //
+  // For these applications, notification-based detection is not sufficient, so polling is required.
+  // In particular, Spotlight-style application switches can be missed unless polling runs at a fairly high frequency.
+  // For that reason, polling is performed every 500 ms.
+  //
+  // Because this polling needs to stay lightweight, requestRefresh is called only when necessary.
+  // More specifically, requestRefresh is triggered only in the following cases:
+  //
+  // - When polling detects an application switch.
+  // - When the current application's window position or size could not be obtained through the Accessibility API.
+  //   (requestRefresh is called in order to fetch the latest window position and size.)
+  private func refreshIfPollingNeedsSnapshot() async {
+    let frontmostProcessIdentifier = await MainActor.run {
+      copyFrontmostProcessIdentifier()
+    }
+    let applicationChanged =
+      frontmostProcessIdentifier != lastSnapshot.application?.processIdentifier
+    let needsGeometryPolling =
+      lastSnapshot.focusedUIElement?.windowGeometrySource == .coreGraphics
+
+    if applicationChanged || needsGeometryPolling {
+      await requestRefresh(force: false)
+    }
   }
 
   private func commitSnapshotAndEmit(_ snapshot: Snapshot, force: Bool) async {
