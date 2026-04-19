@@ -33,6 +33,7 @@ int agent(std::vector<std::string> args) {
   // _LSOpenURLsWithCompletionHandler() failed for the application Karabiner-Core-Service.app with error -1712.
   //
 
+  pqrs::osx::application::enable_stop_on_terminate();
   pqrs::osx::application::finish_launching();
 
   //
