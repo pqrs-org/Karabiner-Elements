@@ -16,6 +16,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case action
   case log
   case systemExtensions
+  case setup
 
   var id: Self { self }
 
@@ -36,6 +37,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .action: return "Quit, Restart"
     case .log: return "Log"
     case .systemExtensions: return "System Extensions"
+    case .setup: return "Setup"
     }
   }
 
@@ -56,6 +58,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .action: return "xmark.rectangle"
     case .log: return "doc.plaintext"
     case .systemExtensions: return "puzzlepiece.extension"
+    case .setup: return "checklist"
     }
   }
 }
@@ -67,8 +70,6 @@ struct ContentMainView: View {
   @ObservedObject private var systemPreferences = SystemPreferences.shared
 
   @State private var selectedSidebarItem: SidebarItem = .simpleModifications
-
-  private let padding = 6.0
 
   struct SidebarSection {
     let title: String
@@ -109,6 +110,7 @@ struct ContentMainView: View {
       items: [
         .log,
         .systemExtensions,
+        .setup,
       ]
     ),
   ]
@@ -120,8 +122,7 @@ struct ContentMainView: View {
           ForEach(sections.indices, id: \.self) { section in
             Section {
               ForEach(sections[section].items) { item in
-                Label(item.title, systemImage: item.systemImage)
-                  .padding(.vertical, 2.0)
+                sidebarRow(item)
               }
             } header: {
               Text(sections[section].title)
@@ -178,12 +179,14 @@ struct ContentMainView: View {
           if systemPreferences.virtualHIDKeyboardModifierMappingsExists {
             VStack(alignment: .leading) {
               Label(
-                "macOS also remaps modifier keys. It's recommended to restore defaults and configure them via Karabiner-Elements.\n"
-                  + "\n"
-                  + "You can reset the macOS setting by following steps:\n"
-                  + "1. Open System Settings and go to Keyboard Shortcuts... > Modifier Keys.\n"
-                  + "2. Choose Karabiner DriverKit VirtualHIDKeyboard.\n"
-                  + "3. Click the Restore Defaults button.",
+                """
+                macOS also remaps modifier keys. It's recommended to restore defaults and configure them via Karabiner-Elements.
+
+                You can reset the macOS setting by following steps:
+                1. Open System Settings and go to Keyboard Shortcuts... > Modifier Keys.
+                2. Choose Karabiner DriverKit VirtualHIDKeyboard.
+                3. Click the Restore Defaults button.
+                """,
                 systemImage: WarningBorder.icon
               )
 
@@ -245,9 +248,23 @@ struct ContentMainView: View {
             LogView()
           case .systemExtensions:
             SystemExtensionsView()
+          case .setup:
+            SetupView()
           }
         }
       }
     )
+  }
+
+  @ViewBuilder
+  private func sidebarRow(_ item: SidebarItem) -> some View {
+    HStack(spacing: 8.0) {
+      Image(systemName: item.systemImage)
+        .frame(width: 18.0)
+
+      Text(item.title)
+    }
+    .padding(.vertical, 2.0)
+    .tag(item)
   }
 }

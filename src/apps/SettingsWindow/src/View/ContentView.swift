@@ -21,17 +21,9 @@ struct ContentView: View {
         OverlayAlertView {
           ConsoleUserServerNotConnectedAlertView()
         }
-      } else if contentViewStates.displayedAlert == .servicesNotRunning {
-        OverlayAlertView {
-          ServicesNotRunningAlertView()
-        }
       } else if contentViewStates.displayedAlert == .inputMonitoringPermissions {
         OverlayAlertView {
           InputMonitoringPermissionsAlertView()
-        }
-      } else if contentViewStates.displayedAlert == .accessibility {
-        OverlayAlertView {
-          AccessibilityAlertView()
         }
       } else if contentViewStates.displayedAlert == .virtualHidDeviceServiceClientNotConnected {
         OverlayAlertView {

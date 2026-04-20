@@ -22,6 +22,7 @@ final class ContentViewStates: ObservableObject {
     }
   }
   @Published private(set) var consoleUserServerClientWaitingSeconds = 0
+  private var lastAutoPresentedSetupAlert: SettingsWindowAlert = .none
 
   private var currentResolvedAlert: SettingsWindowAlert {
     if !consoleUserServerClientConnected {
@@ -40,6 +41,16 @@ final class ContentViewStates: ObservableObject {
     currentAlert = state.currentAlert
     alertContext = state.alertContext
     coreServiceDaemonState = state.coreServiceDaemonState
+
+    if let item = SetupItem.from(alert: state.currentAlert),
+      state.currentAlert != lastAutoPresentedSetupAlert
+    {
+      lastAutoPresentedSetupAlert = state.currentAlert
+      setupSelection = item
+      navigationSelection = .setup
+    } else if SetupItem.from(alert: state.currentAlert) == nil {
+      lastAutoPresentedSetupAlert = .none
+    }
   }
 
   func updateConsoleUserServerClientConnected(_ connected: Bool) {
@@ -65,6 +76,13 @@ final class ContentViewStates: ObservableObject {
   //
 
   @Published var navigationSelection = SidebarItem.simpleModifications
+  @Published var setupSelection = SetupItem.services
+
+  func userSelectedSetupItem(_ item: SetupItem) {
+    if setupSelection != item {
+      setupSelection = item
+    }
+  }
 
   //
   // SimpleModificationsView
