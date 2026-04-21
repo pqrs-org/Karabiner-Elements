@@ -28,6 +28,7 @@
     - Added `relative_to` and `fallback_to` to `software_function.set_mouse_cursor_position`.
     - Added `Enable CGEventTap fallback` setting to Expert tab.
       Enable receiving events via CGEventTap for keyboards where IOHIDDeviceOpen fails for some reason.
+    - Added Setup tab to Settings.
 - 🐛 Bug Fixes
     - Fixed an issue where modifier keys could remain stuck when physical keyboard events were missed during capture.
     - Fixed an issue where reordering in Complex Modifications and Profiles didn't work properly when dragging while scrolling.
