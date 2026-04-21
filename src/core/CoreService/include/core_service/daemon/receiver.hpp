@@ -14,6 +14,7 @@
 #include "types.hpp"
 #include "types/core_service_daemon_state.hpp"
 #include <array>
+#include <pqrs/karabiner/driverkit/virtual_hid_device_service/utility.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/session.hpp>
@@ -489,6 +490,7 @@ public:
     //
 
     start_grabbing_if_system_core_configuration_file_exists();
+    enqueue_update_driver_activated();
 
     logger::get_logger()->info("receiver is initialized");
   }
@@ -508,6 +510,19 @@ public:
   }
 
 private:
+  void enqueue_update_driver_activated(void) {
+    enqueue_to_dispatcher(
+        [this] {
+          if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+            m->set_driver_activated(
+                pqrs::karabiner::driverkit::virtual_hid_device_service::utility::driver_running());
+          }
+
+          enqueue_update_driver_activated();
+        },
+        when_now() + std::chrono::seconds(1));
+  }
+
   std::filesystem::path karabiner_core_service_socket_file_path() const {
     return constants::get_karabiner_core_service_socket_directory_path() / filesystem_utility::make_socket_file_basename();
   }
@@ -585,7 +600,8 @@ private:
   void clear_device_grabber_state(void) {
     if (auto m = weak_core_service_daemon_state_manager_.lock()) {
       m->set_virtual_hid_device_service_client_connected(std::nullopt);
-      m->set_driver_activated(std::nullopt);
+      m->set_driver_activated(
+          pqrs::karabiner::driverkit::virtual_hid_device_service::utility::driver_running());
       m->set_driver_connected(std::nullopt);
       m->set_driver_version_mismatched(std::nullopt);
       m->set_virtual_hid_keyboard_ready(std::nullopt);

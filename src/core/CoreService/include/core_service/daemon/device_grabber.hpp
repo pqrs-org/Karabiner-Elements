@@ -119,12 +119,6 @@ public:
       logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
     });
 
-    virtual_hid_device_service_client_->driver_activated.connect([weak_core_service_daemon_state_manager](auto&& driver_activated) {
-      if (auto m = weak_core_service_daemon_state_manager.lock()) {
-        m->set_driver_activated(driver_activated);
-      }
-    });
-
     virtual_hid_device_service_client_->driver_connected.connect([weak_core_service_daemon_state_manager](auto&& driver_connected) {
       if (auto m = weak_core_service_daemon_state_manager.lock()) {
         m->set_driver_connected(driver_connected);
