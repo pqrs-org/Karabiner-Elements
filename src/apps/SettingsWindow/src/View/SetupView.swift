@@ -78,7 +78,11 @@ struct SetupView: View {
             case .accessibility:
               SetupAccessibilityView()
             case .inputMonitoring:
-              SetupInputMonitoringView()
+              if contentViewStates.setupItemCompleted(.accessibility) {
+                SetupInputMonitoringView()
+              } else {
+                setupAccessibilityFirstView()
+              }
             case .driverExtension:
               if #available(macOS 15.0, *) {
                 SetupDriverExtensionView()
@@ -133,6 +137,27 @@ struct SetupView: View {
         """
     case .driverExtension:
       return "Driver Extension is allowed."
+    }
+  }
+
+  @ViewBuilder
+  private func setupAccessibilityFirstView() -> some View {
+    VStack(alignment: .leading, spacing: 20.0) {
+      Label(
+        "Please configure Accessibility first",
+        systemImage: "lightbulb"
+      )
+      .font(.system(size: 24))
+
+      Button {
+        selectedItem = .accessibility
+      } label: {
+        Label(
+          "Go to Accessibility Setup",
+          systemImage: "arrow.left.circle.fill"
+        )
+      }
+      .buttonStyle(.link)
     }
   }
 }
