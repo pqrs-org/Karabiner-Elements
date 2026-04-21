@@ -285,7 +285,7 @@ private:
                                nlohmann::json(new_current_alert).get<std::string>());
 
     if (new_current_alert != settings_window_alert::none) {
-      application_launcher::launch_settings();
+      application_launcher::launch_settings_without_activation();
     }
   }
 

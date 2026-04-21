@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 @main
@@ -49,21 +50,47 @@ struct KarabinerSettingsApp: App {
   }
 }
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
+  private var cancellables = Set<AnyCancellable>()
+  private var userAttentionRequestIdentifier: Int?
+
   public func applicationWillFinishLaunching(_: Notification) {
     NSAppleEventManager.shared().setEventHandler(
       self,
       andSelector: #selector(handleGetURLEvent(_:withReplyEvent:)),
       forEventClass: AEEventClass(kInternetEventClass),
       andEventID: AEEventID(kAEGetURL))
+
+    ContentViewStates.shared.$currentAlert
+      .sink { [weak self] currentAlert in
+        self?.updateUserAttentionRequest(currentAlert: currentAlert)
+      }
+      .store(in: &cancellables)
   }
 
   public func applicationWillTerminate(_: Notification) {
+    if let identifier = userAttentionRequestIdentifier {
+      NSApp.cancelUserAttentionRequest(identifier)
+      userAttentionRequestIdentifier = nil
+    }
+
     libkrbn_terminate()
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
     return true
+  }
+
+  private func updateUserAttentionRequest(currentAlert: SettingsWindowAlert) {
+    if currentAlert == .none {
+      if let identifier = userAttentionRequestIdentifier {
+        NSApp.cancelUserAttentionRequest(identifier)
+        userAttentionRequestIdentifier = nil
+      }
+    } else if userAttentionRequestIdentifier == nil {
+      userAttentionRequestIdentifier = NSApp.requestUserAttention(.criticalRequest)
+    }
   }
 
   @objc func handleGetURLEvent(

@@ -26,6 +26,14 @@ public:
     pqrs::osx::workspace::open_application_by_bundle_path("/Applications/Karabiner-Elements.app");
   }
 
+  static void launch_settings_without_activation(void) {
+    pqrs::osx::workspace::open_application_by_bundle_path(
+        "/Applications/Karabiner-Elements.app",
+        pqrs::osx::workspace::open_configuration{
+            .activates = false,
+        });
+  }
+
   static void killall_settings(void) {
     system("/usr/bin/killall Karabiner-Elements");
   }

@@ -52,10 +52,7 @@ final class ContentViewStates: ObservableObject {
       }
     } else {
       lastAutoPresentedSetupAlert = .none
-      if autoOpenedSetup &&
-          navigationSelection == .setup &&
-          allSetupItemsCompleted()
-      {
+      if autoOpenedSetup && navigationSelection == .setup && allSetupItemsCompleted() {
         autoOpenedSetup = false
         navigationSelection = .simpleModifications
       }
@@ -108,9 +105,8 @@ final class ContentViewStates: ObservableObject {
   func setupItemCompleted(_ item: SetupItem) -> Bool {
     switch item {
     case .services:
-      return alertContext.servicesEnabled &&
-        alertContext.coreDaemonsRunning &&
-        alertContext.coreAgentsRunning
+      return alertContext.servicesEnabled && alertContext.coreDaemonsRunning
+        && alertContext.coreAgentsRunning
     case .accessibility:
       return coreServiceDaemonState.accessibilityProcessTrusted == true
     case .inputMonitoring:
