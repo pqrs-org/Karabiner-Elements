@@ -110,6 +110,32 @@ private:
         when_now() + std::chrono::seconds(1));
   }
 
+  void refresh_bundle_permission_check_result_on_connect(void) {
+    auto result = core_service_utility::make_bundle_permission_check_result();
+    if (!result) {
+      return;
+    }
+
+    // If permissions were revoked while the agent kept running, the cached bundle permission state can become stale.
+    // In that case, terminate the agent and let launchd restart the agent.
+    // The restarted process can re-enter the normal prompt-and-poll flow from a clean state.
+    if (last_bundle_permission_check_result_ &&
+        last_bundle_permission_check_result_->required_permissions_granted() &&
+        !result->required_permissions_granted()) {
+      logger::get_logger()->info("Required permissions were revoked. Terminating the agent.");
+
+      last_bundle_permission_check_result_ = *result;
+
+      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+        killer->async_kill();
+      }
+      return;
+    }
+
+    last_bundle_permission_check_result_ = *result;
+    send_core_service_bundle_permission_check_result(*result);
+  }
+
   void check_permissions(void) {
     // `make_bundle_permission_check_result` blocks while waiting for the permission-check result file.
     // This is acceptable here because this path is only relevant while the required permissions are not granted,
@@ -135,11 +161,7 @@ private:
     last_bundle_permission_check_result_ = *result;
     send_core_service_bundle_permission_check_result(*result);
 
-    auto permissions_granted =
-        result->get_iohid_listen_event_allowed() &&
-        result->get_accessibility_process_trusted();
-
-    if (!permissions_granted) {
+    if (!result->required_permissions_granted()) {
       restart_required_after_permissions_granted_ = true;
       enqueue_check_permissions();
       return;
@@ -177,9 +199,7 @@ private:
     core_service_client_ = std::make_shared<core_service_client>("cs_agent_cs_clnt");
 
     core_service_client_->connected.connect([this] {
-      if (last_bundle_permission_check_result_) {
-        send_core_service_bundle_permission_check_result(*last_bundle_permission_check_result_);
-      }
+      refresh_bundle_permission_check_result_on_connect();
       version_monitor_->async_manual_check();
     });
 
