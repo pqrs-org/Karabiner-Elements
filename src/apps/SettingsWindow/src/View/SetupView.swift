@@ -3,6 +3,7 @@ import SwiftUI
 enum SetupItem: String, CaseIterable, Identifiable, Hashable {
   case services
   case accessibility
+  case inputMonitoring
 
   var id: Self { self }
 
@@ -10,6 +11,12 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
     switch self {
     case .services: return "Background Services"
     case .accessibility: return "Accessibility"
+    // Depending on the macOS version, granting Accessibility permission may also allow Input Monitoring.
+    // In that case, both requirements are considered completed once Accessibility is granted, so if we call it
+    // "Input Monitoring", users may wonder why it is marked as completed even though they did not explicitly
+    // allow Input Monitoring.
+    // To avoid that confusion, the displayed label is changed to "Capture Input Events".
+    case .inputMonitoring: return "Capture Input Events"
     }
   }
 
@@ -19,6 +26,8 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
       .services
     case .accessibility:
       .accessibility
+    case .inputMonitoringPermissions:
+      .inputMonitoring
     default:
       nil
     }
@@ -64,6 +73,8 @@ struct SetupView: View {
               SetupServicesView()
             case .accessibility:
               SetupAccessibilityView()
+            case .inputMonitoring:
+              SetupInputMonitoringView()
             }
           }
         }
@@ -95,6 +106,8 @@ struct SetupView: View {
       return context.servicesEnabled && context.coreDaemonsRunning && context.coreAgentsRunning
     case .accessibility:
       return contentViewStates.coreServiceDaemonState.accessibilityProcessTrusted == true
+    case .inputMonitoring:
+      return contentViewStates.coreServiceDaemonState.inputMonitoringGranted == true
     }
   }
 
@@ -112,9 +125,14 @@ struct SetupView: View {
   private func setupCompletedTitle(_ item: SetupItem) -> String {
     switch item {
     case .services:
-      return "Background services are running"
+      return "Background services are running."
     case .accessibility:
-      return "Accessibility access is allowed"
+      return "Accessibility access is allowed."
+    case .inputMonitoring:
+      return """
+        Input event capture is allowed.
+        (It may be granted via Accessibility permission.)
+        """
     }
   }
 }

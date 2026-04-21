@@ -48,6 +48,8 @@ final class ContentViewStates: ObservableObject {
       lastAutoPresentedSetupAlert = state.currentAlert
       setupSelection = item
       navigationSelection = .setup
+    } else if state.currentAlert == .inputMonitoringPermissions {
+      navigationSelection = .setup
     } else if SetupItem.from(alert: state.currentAlert) == nil {
       lastAutoPresentedSetupAlert = .none
     }

@@ -21,10 +21,6 @@ struct ContentView: View {
         OverlayAlertView {
           ConsoleUserServerNotConnectedAlertView()
         }
-      } else if contentViewStates.displayedAlert == .inputMonitoringPermissions {
-        OverlayAlertView {
-          InputMonitoringPermissionsAlertView()
-        }
       } else if contentViewStates.displayedAlert == .virtualHidDeviceServiceClientNotConnected {
         OverlayAlertView {
           VirtualHidDeviceServiceClientNotConnectedAlertView()
