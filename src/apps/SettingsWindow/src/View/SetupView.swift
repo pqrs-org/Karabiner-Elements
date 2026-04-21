@@ -69,7 +69,7 @@ struct SetupView: View {
 
       ScrollView {
         Group {
-          if setupItemCompleted(selectedItem) {
+          if contentViewStates.setupItemCompleted(selectedItem) {
             setupCompletedMessageView(selectedItem)
           } else {
             switch selectedItem {
@@ -106,21 +106,7 @@ struct SetupView: View {
   }
 
   private func setupStatusSystemImage(_ item: SetupItem) -> String {
-    setupItemCompleted(item) ? "checkmark.circle.fill" : "circle"
-  }
-
-  private func setupItemCompleted(_ item: SetupItem) -> Bool {
-    switch item {
-    case .services:
-      let context = contentViewStates.alertContext
-      return context.servicesEnabled && context.coreDaemonsRunning && context.coreAgentsRunning
-    case .accessibility:
-      return contentViewStates.coreServiceDaemonState.accessibilityProcessTrusted == true
-    case .inputMonitoring:
-      return contentViewStates.coreServiceDaemonState.inputMonitoringGranted == true
-    case .driverExtension:
-      return contentViewStates.coreServiceDaemonState.driverActivated == true
-    }
+    contentViewStates.setupItemCompleted(item) ? "checkmark.circle.fill" : "circle"
   }
 
   @ViewBuilder

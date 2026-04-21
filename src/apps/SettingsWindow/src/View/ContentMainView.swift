@@ -134,7 +134,7 @@ struct ContentMainView: View {
         }
         .onChange(of: selectedSidebarItem) { newValue in
           if contentViewStates.navigationSelection != newValue {
-            contentViewStates.navigationSelection = newValue
+            contentViewStates.userSelectedNavigationItem(newValue)
           }
         }
         .onChange(of: contentViewStates.navigationSelection) { newValue in

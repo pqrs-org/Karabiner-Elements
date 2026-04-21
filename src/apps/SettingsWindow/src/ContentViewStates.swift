@@ -23,6 +23,7 @@ final class ContentViewStates: ObservableObject {
   }
   @Published private(set) var consoleUserServerClientWaitingSeconds = 0
   private var lastAutoPresentedSetupAlert: SettingsWindowAlert = .none
+  private var autoOpenedSetup = false
 
   private var currentResolvedAlert: SettingsWindowAlert {
     if !consoleUserServerClientConnected {
@@ -45,11 +46,19 @@ final class ContentViewStates: ObservableObject {
     if let item = SetupItem.from(alert: state.currentAlert) {
       if state.currentAlert != lastAutoPresentedSetupAlert {
         lastAutoPresentedSetupAlert = state.currentAlert
+        autoOpenedSetup = true
         setupSelection = item
         navigationSelection = .setup
       }
     } else {
       lastAutoPresentedSetupAlert = .none
+      if autoOpenedSetup &&
+          navigationSelection == .setup &&
+          allSetupItemsCompleted()
+      {
+        autoOpenedSetup = false
+        navigationSelection = .simpleModifications
+      }
     }
   }
 
@@ -78,9 +87,36 @@ final class ContentViewStates: ObservableObject {
   @Published var navigationSelection = SidebarItem.simpleModifications
   @Published var setupSelection = SetupItem.services
 
+  func userSelectedNavigationItem(_ item: SidebarItem) {
+    autoOpenedSetup = false
+
+    if navigationSelection != item {
+      navigationSelection = item
+    }
+  }
+
   func userSelectedSetupItem(_ item: SetupItem) {
     if setupSelection != item {
       setupSelection = item
+    }
+  }
+
+  func allSetupItemsCompleted() -> Bool {
+    SetupItem.allCases.allSatisfy { setupItemCompleted($0) }
+  }
+
+  func setupItemCompleted(_ item: SetupItem) -> Bool {
+    switch item {
+    case .services:
+      return alertContext.servicesEnabled &&
+        alertContext.coreDaemonsRunning &&
+        alertContext.coreAgentsRunning
+    case .accessibility:
+      return coreServiceDaemonState.accessibilityProcessTrusted == true
+    case .inputMonitoring:
+      return coreServiceDaemonState.inputMonitoringGranted == true
+    case .driverExtension:
+      return coreServiceDaemonState.driverActivated == true
     }
   }
 
