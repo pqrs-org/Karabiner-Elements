@@ -4,6 +4,7 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
   case services
   case accessibility
   case inputMonitoring
+  case driverExtension
 
   var id: Self { self }
 
@@ -17,6 +18,7 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
     // allow Input Monitoring.
     // To avoid that confusion, the displayed label is changed to "Capture Input Events".
     case .inputMonitoring: return "Capture Input Events"
+    case .driverExtension: return "Driver Extension"
     }
   }
 
@@ -28,6 +30,8 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
       .accessibility
     case .inputMonitoringPermissions:
       .inputMonitoring
+    case .driverNotActivated:
+      .driverExtension
     default:
       nil
     }
@@ -75,6 +79,12 @@ struct SetupView: View {
               SetupAccessibilityView()
             case .inputMonitoring:
               SetupInputMonitoringView()
+            case .driverExtension:
+              if #available(macOS 15.0, *) {
+                SetupDriverExtensionView()
+              } else {
+                SetupDriverExtensionViewMacOS14()
+              }
             }
           }
         }
@@ -108,6 +118,8 @@ struct SetupView: View {
       return contentViewStates.coreServiceDaemonState.accessibilityProcessTrusted == true
     case .inputMonitoring:
       return contentViewStates.coreServiceDaemonState.inputMonitoringGranted == true
+    case .driverExtension:
+      return contentViewStates.coreServiceDaemonState.driverActivated == true
     }
   }
 
@@ -133,6 +145,8 @@ struct SetupView: View {
         Input event capture is allowed.
         (It may be granted via Accessibility permission.)
         """
+    case .driverExtension:
+      return "Driver Extension is allowed."
     }
   }
 }

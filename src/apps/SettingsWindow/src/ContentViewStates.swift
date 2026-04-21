@@ -42,15 +42,13 @@ final class ContentViewStates: ObservableObject {
     alertContext = state.alertContext
     coreServiceDaemonState = state.coreServiceDaemonState
 
-    if let item = SetupItem.from(alert: state.currentAlert),
-      state.currentAlert != lastAutoPresentedSetupAlert
-    {
-      lastAutoPresentedSetupAlert = state.currentAlert
-      setupSelection = item
-      navigationSelection = .setup
-    } else if state.currentAlert == .inputMonitoringPermissions {
-      navigationSelection = .setup
-    } else if SetupItem.from(alert: state.currentAlert) == nil {
+    if let item = SetupItem.from(alert: state.currentAlert) {
+      if state.currentAlert != lastAutoPresentedSetupAlert {
+        lastAutoPresentedSetupAlert = state.currentAlert
+        setupSelection = item
+        navigationSelection = .setup
+      }
+    } else {
       lastAutoPresentedSetupAlert = .none
     }
   }

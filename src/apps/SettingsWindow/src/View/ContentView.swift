@@ -29,16 +29,6 @@ struct ContentView: View {
         OverlayAlertView {
           DriverVersionMismatchedAlertView()
         }
-      } else if contentViewStates.displayedAlert == .driverNotActivated {
-        if #available(macOS 15.0, *) {
-          OverlayAlertView {
-            DriverNotActivatedAlertView()
-          }
-        } else {
-          OverlayAlertView {
-            DriverNotActivatedAlertViewMacOS14()
-          }
-        }
       } else if contentViewStates.displayedAlert == .driverNotConnected {
         OverlayAlertView {
           DriverNotConnectedAlertView()

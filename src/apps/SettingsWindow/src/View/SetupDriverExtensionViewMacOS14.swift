@@ -1,0 +1,97 @@
+import SwiftUI
+
+// For macOS 13, macOS 14
+struct SetupDriverExtensionViewMacOS14: View {
+  @State private var showingAdvanced = false
+
+  var body: some View {
+    VStack(alignment: .center) {
+      Label(
+        "Please allow Karabiner-VirtualHIDDevice-Manager system software",
+        systemImage: "lightbulb"
+      )
+      .font(.system(size: 24))
+
+      GroupBox {
+        VStack(alignment: .center, spacing: 20.0) {
+          VStack(alignment: .center, spacing: 0) {
+            Text("The virtual keyboard and mouse driver is not loaded.")
+            Text(
+              "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Privacy & Security System Settings."
+            )
+          }
+
+          OpenSystemSettingsButton(
+            url: "x-apple.systempreferences:com.apple.preference.security?General",
+            label: {
+              Label(
+                "Open Privacy & Security System Settings...",
+                systemImage: "arrow.forward.circle.fill")
+            }
+          )
+
+          Image(decorative: "dext-allow-macos14")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 300)
+            .border(Color.gray, width: 1)
+
+          if !showingAdvanced {
+            Button(
+              action: { showingAdvanced = true },
+              label: {
+                Label(
+                  "If the Allow button is not displayed on Privacy & Security.",
+                  systemImage: "questionmark.circle")
+              })
+          }
+        }.padding()
+      }
+
+      if showingAdvanced {
+        GroupBox(label: Text("Advanced")) {
+          VStack(alignment: .leading, spacing: 20.0) {
+            VStack(alignment: .leading, spacing: 0) {
+              Text(
+                "If macOS failed to load the driver in the early stage, the allow button might be not shown on Privacy & Security System Settings."
+              )
+              Text(
+                "In this case, you need to reinstall the driver in order for the button to appear."
+              )
+            }
+
+            Text("How to reinstall driver:")
+
+            VStack(alignment: .leading, spacing: 10.0) {
+              Text(
+                "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"
+              )
+              .fixedSize(horizontal: false, vertical: true)
+
+              DeactivateDriverButton()
+                .padding(.vertical, 10)
+                .padding(.leading, 20)
+
+              Text("2. Restart macOS.")
+                .fontWeight(.bold)
+                .fixedSize(horizontal: false, vertical: true)
+
+              Text("3. Press the following button to activate driver.")
+                .fixedSize(horizontal: false, vertical: true)
+
+              ActivateDriverButton()
+                .padding(.vertical, 10)
+                .padding(.leading, 20)
+
+              Text("4. \"System Extension Blocked\" alert is shown.")
+                .fixedSize(horizontal: false, vertical: true)
+
+              Text("5. Open Privacy & Security System Settings and press the allow button.")
+                .fixedSize(horizontal: false, vertical: true)
+            }
+          }.padding()
+        }
+      }
+    }
+  }
+}
