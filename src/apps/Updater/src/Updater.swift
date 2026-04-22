@@ -25,6 +25,12 @@ final class Updater: ObservableObject {
     #endif
   }
 
+  isolated deinit {
+    #if USE_SPARKLE
+      delegate.cancelUserAttentionRequest()
+    #endif
+  }
+
   func checkForUpdatesInBackground() {
     #if USE_SPARKLE
       delegate.includingBetaVersions = false
@@ -53,6 +59,7 @@ final class Updater: ObservableObject {
         category: String(describing: SparkleDelegate.self))
 
       var includingBetaVersions = false
+      private var userAttentionRequestIdentifier: Int?
 
       func feedURLString(for updater: SPUUpdater) -> String? {
         var url = "https://appcast.pqrs.org/karabiner-elements-appcast.xml"
@@ -71,7 +78,7 @@ final class Updater: ObservableObject {
 
       func updaterDidNotFindUpdate(_: SPUUpdater) {
         Task { @MainActor in
-          NSApp.activate(ignoringOtherApps: true)
+          cancelUserAttentionRequest()
         }
       }
 
@@ -80,12 +87,9 @@ final class Updater: ObservableObject {
           // Just in case, wait until the update notification window is shown.
           try await Task.sleep(for: .seconds(1))
 
-          NSApp.activate(ignoringOtherApps: true)
-
-          // When the updater is launched in the background,
-          // the update notification window isn't shown.
-          // So we need to bring it to the front explicitly.
-          NSApp.windows.forEach { $0.makeKeyAndOrderFront(nil) }
+          if userAttentionRequestIdentifier == nil {
+            userAttentionRequestIdentifier = NSApp.requestUserAttention(.criticalRequest)
+          }
         }
       }
 
@@ -94,7 +98,16 @@ final class Updater: ObservableObject {
       ) {
         // Exit after completing the check.
         Task { @MainActor in
+          cancelUserAttentionRequest()
           NSApplication.shared.terminate(nil)
+        }
+      }
+
+      @MainActor
+      func cancelUserAttentionRequest() {
+        if let identifier = userAttentionRequestIdentifier {
+          NSApp.cancelUserAttentionRequest(identifier)
+          userAttentionRequestIdentifier = nil
         }
       }
     }
