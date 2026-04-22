@@ -125,7 +125,7 @@ public:
           auto ot = json.at("operation_type").get<operation_type>();
           switch (ot) {
             case operation_type::user_core_configuration_file_path:
-            case operation_type::settings_window_alert:
+            case operation_type::settings_window_guidance:
             case operation_type::frontmost_application_history:
               enqueue_to_dispatcher([this, ot, json] {
                 received(ot, json);
@@ -307,10 +307,10 @@ public:
   }
 
   // settings_window -> console_user_server
-  void async_get_settings_window_alert(void) const {
+  void async_get_settings_window_guidance(void) const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
-          {"operation_type", operation_type::get_settings_window_alert},
+          {"operation_type", operation_type::get_settings_window_guidance},
       };
 
       async_send_message(std::move(json));

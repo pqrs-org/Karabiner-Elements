@@ -23,7 +23,7 @@
 #include "types/notification_message.hpp"
 #include "types/operation_type.hpp"
 #include "types/pointing_motion.hpp"
-#include "types/settings_window_alert_state.hpp"
+#include "types/settings_window_guidance_state.hpp"
 #include "types/software_function.hpp"
 #include "types/sticky_modifier_type.hpp"
 #include "types/validity.hpp"

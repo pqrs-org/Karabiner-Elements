@@ -8,6 +8,7 @@ enum class settings_window_alert : uint8_t {
   none,
   doctor,
   settings,
+  services_disabled,
   services_not_running,
   input_monitoring_permissions,
   accessibility,
@@ -23,6 +24,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {settings_window_alert::none, "none"},
         {settings_window_alert::doctor, "doctor"},
         {settings_window_alert::settings, "settings"},
+        {settings_window_alert::services_disabled, "services_disabled"},
         {settings_window_alert::services_not_running, "services_not_running"},
         {settings_window_alert::input_monitoring_permissions, "input_monitoring_permissions"},
         {settings_window_alert::accessibility, "accessibility"},
@@ -32,9 +34,9 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {settings_window_alert::driver_not_connected, "driver_not_connected"},
     });
 
-class settings_window_alert_context final {
+class settings_window_guidance_context final {
 public:
-  settings_window_alert_context(void)
+  settings_window_guidance_context(void)
       : services_enabled_(true),
         core_daemons_running_(true),
         core_agents_running_(true),
@@ -80,7 +82,7 @@ private:
   int services_waiting_seconds_;
 };
 
-inline void to_json(nlohmann::json& json, const settings_window_alert_context& value) {
+inline void to_json(nlohmann::json& json, const settings_window_guidance_context& value) {
   json = nlohmann::json::object({
       {"services_enabled", value.get_services_enabled()},
       {"core_daemons_running", value.get_core_daemons_running()},
@@ -89,16 +91,16 @@ inline void to_json(nlohmann::json& json, const settings_window_alert_context& v
   });
 }
 
-inline void from_json(const nlohmann::json& json, settings_window_alert_context& value) {
+inline void from_json(const nlohmann::json& json, settings_window_guidance_context& value) {
   value.set_services_enabled(json.at("services_enabled").get<bool>());
   value.set_core_daemons_running(json.at("core_daemons_running").get<bool>());
   value.set_core_agents_running(json.at("core_agents_running").get<bool>());
   value.set_services_waiting_seconds(json.at("services_waiting_seconds").get<int>());
 }
 
-class settings_window_alert_state final {
+class settings_window_guidance_state final {
 public:
-  settings_window_alert_state(void)
+  settings_window_guidance_state(void)
       : current_alert_(settings_window_alert::none) {
   }
 
@@ -110,12 +112,12 @@ public:
     current_alert_ = value;
   }
 
-  const settings_window_alert_context& get_alert_context(void) const {
-    return alert_context_;
+  const settings_window_guidance_context& get_guidance_context(void) const {
+    return guidance_context_;
   }
 
-  void set_alert_context(const settings_window_alert_context& value) {
-    alert_context_ = value;
+  void set_guidance_context(const settings_window_guidance_context& value) {
+    guidance_context_ = value;
   }
 
   const core_service_daemon_state& get_core_service_daemon_state(void) const {
@@ -128,21 +130,21 @@ public:
 
 private:
   settings_window_alert current_alert_;
-  settings_window_alert_context alert_context_;
+  settings_window_guidance_context guidance_context_;
   core_service_daemon_state core_service_deamon_state_;
 };
 
-inline void to_json(nlohmann::json& json, const settings_window_alert_state& value) {
+inline void to_json(nlohmann::json& json, const settings_window_guidance_state& value) {
   json = nlohmann::json::object({
       {"current_alert", value.get_current_alert()},
-      {"alert_context", value.get_alert_context()},
+      {"guidance_context", value.get_guidance_context()},
       {"core_service_daemon_state", value.get_core_service_daemon_state()},
   });
 }
 
-inline void from_json(const nlohmann::json& json, settings_window_alert_state& value) {
+inline void from_json(const nlohmann::json& json, settings_window_guidance_state& value) {
   value.set_current_alert(json.at("current_alert").get<settings_window_alert>());
-  value.set_alert_context(json.at("alert_context").get<settings_window_alert_context>());
+  value.set_guidance_context(json.at("guidance_context").get<settings_window_guidance_context>());
   value.set_core_service_daemon_state(json.value("core_service_daemon_state",
                                                  core_service_daemon_state()));
 }
