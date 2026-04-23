@@ -103,12 +103,12 @@ private:
 
     update_guidance_state(virtual_hid_device_service_client_not_connected_alert_state_,
                           make_inverted_alert_state(state.get_virtual_hid_device_service_client_connected()));
-    update_guidance_state(driver_not_activated_setup_state_,
+    update_guidance_state(driver_extension_setup_state_,
                           make_inverted_alert_state(state.get_driver_activated()));
     update_driver_connected(state.get_driver_connected());
     update_guidance_state(driver_version_mismatched_alert_state_,
                           make_alert_state(state.get_driver_version_mismatched()));
-    update_guidance_state(input_monitoring_permissions_setup_state_,
+    update_guidance_state(input_monitoring_setup_state_,
                           make_inverted_alert_state(iohid_listen_event_allowed));
     update_guidance_state(accessibility_setup_state_,
                           make_inverted_alert_state(accessibility_process_trusted));
@@ -339,10 +339,10 @@ private:
     if (accessibility_setup_state_ == alert_state::active) {
       return settings_window_guidance_setup::accessibility;
     }
-    if (input_monitoring_permissions_setup_state_ == alert_state::active) {
+    if (input_monitoring_setup_state_ == alert_state::active) {
       return settings_window_guidance_setup::input_monitoring;
     }
-    if (driver_not_activated_setup_state_ == alert_state::active) {
+    if (driver_extension_setup_state_ == alert_state::active) {
       return settings_window_guidance_setup::driver_extension;
     }
 
@@ -387,12 +387,21 @@ private:
   settings_window_guidance_setup current_setup_;
   settings_window_guidance_alert current_alert_;
 
-  alert_state doctor_alert_state_ = alert_state::inactive;
-  alert_state input_monitoring_permissions_setup_state_ = alert_state::unknown;
+  //
+  // For settings_window_guidance_setup
+  //
+
   alert_state accessibility_setup_state_ = alert_state::unknown;
+  alert_state input_monitoring_setup_state_ = alert_state::unknown;
+  alert_state driver_extension_setup_state_ = alert_state::unknown;
+
+  //
+  // For settings_window_guidance_alert
+  //
+
+  alert_state doctor_alert_state_ = alert_state::inactive;
   alert_state virtual_hid_device_service_client_not_connected_alert_state_ = alert_state::unknown;
   alert_state driver_version_mismatched_alert_state_ = alert_state::unknown;
-  alert_state driver_not_activated_setup_state_ = alert_state::unknown;
   alert_state driver_not_connected_alert_state_ = alert_state::unknown;
 
   bool virtual_hid_keyboard_ready_ = false;
