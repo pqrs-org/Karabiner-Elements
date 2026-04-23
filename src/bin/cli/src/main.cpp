@@ -305,7 +305,7 @@ int remove_system_default_profile() {
   return 0;
 }
 
-void show_settings_window_alert() {
+void show_settings_window_guidance() {
   try {
     auto wait = pqrs::make_thread_wait();
 
@@ -313,15 +313,15 @@ void show_settings_window_alert() {
                                             "cli_cus_clnt");
 
     client.connect_failed.connect([&wait](auto&& error_code) {
-      std::cerr << "show-settings-window-alert error:" << error_code << std::endl;
+      std::cerr << "show-settings-window-guidance error:" << error_code << std::endl;
       wait->notify();
     });
 
     client.received.connect([&wait](auto&& operation_type,
                                     auto&& json) {
       switch (operation_type) {
-        case krbn::operation_type::settings_window_alert: {
-          std::cout << krbn::json_utility::dump(json.at("settings_window_alert")) << std::endl;
+        case krbn::operation_type::settings_window_guidance: {
+          std::cout << krbn::json_utility::dump(json.at("settings_window_guidance")) << std::endl;
           wait->notify();
           break;
         }
@@ -332,11 +332,11 @@ void show_settings_window_alert() {
     });
 
     client.async_start();
-    client.async_get_settings_window_alert();
+    client.async_get_settings_window_guidance();
 
     wait->wait_notice();
   } catch (std::exception& e) {
-    std::cerr << "show-settings-window-alert error:" << std::endl
+    std::cerr << "show-settings-window-guidance error:" << std::endl
               << e.what() << std::endl;
   }
 }
@@ -409,8 +409,8 @@ int main(int argc, char** argv) {
   options.add_options()("remove-system-default-profile",
                         "Remove the system default profile");
 
-  options.add_options()("show-settings-window-alert",
-                        "Show the alert currently shown in the settings window");
+  options.add_options()("show-settings-window-guidance",
+                        "Show the settings window guidance state");
 
   options.add_options()("lint-complex-modifications",
                         "Check complex_modifications.json",
@@ -548,9 +548,9 @@ int main(int argc, char** argv) {
     }
 
     {
-      std::string key = "show-settings-window-alert";
+      std::string key = "show-settings-window-guidance";
       if (parse_result.count(key)) {
-        show_settings_window_alert();
+        show_settings_window_guidance();
         goto finish;
       }
     }
