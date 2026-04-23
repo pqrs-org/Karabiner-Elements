@@ -141,7 +141,6 @@ private:
       }
     }
 
-    services_disabled_setup_ = !services_enabled;
     services_not_running_alert_ = services_enabled && !services_running;
 
     if (!services_running) {
@@ -320,7 +319,7 @@ private:
   }
 
   settings_window_guidance_setup make_current_setup(void) const {
-    if (services_disabled_setup_) {
+    if (!services_enabled_) {
       return settings_window_guidance_setup::services;
     }
     // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
@@ -378,7 +377,6 @@ private:
 
   bool virtual_hid_keyboard_ready_ = false;
   bool virtual_hid_keyboard_type_not_set_ = false;
-  bool services_disabled_setup_ = false;
   bool services_not_running_alert_ = false;
   bool services_enabled_ = true;
   bool core_daemons_enabled_ = true;
