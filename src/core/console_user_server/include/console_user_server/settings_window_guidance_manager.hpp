@@ -127,6 +127,7 @@ private:
     auto services_running = core_daemons_running && core_agents_running;
 
     services_enabled_ = services_enabled;
+    services_running_ = services_running;
     core_daemons_enabled_ = core_daemons_enabled;
     core_agents_enabled_ = core_agents_enabled;
     core_daemons_running_ = core_daemons_running;
@@ -140,8 +141,6 @@ private:
         services_waiting_started_at_ = std::chrono::steady_clock::now();
       }
     }
-
-    services_not_running_alert_ = services_enabled && !services_running;
 
     if (!services_running) {
       services_utility::register_core_daemons();
@@ -343,7 +342,8 @@ private:
     if (doctor_alert_state_ == alert_state::active) {
       return settings_window_guidance_alert::doctor;
     }
-    if (services_not_running_alert_) {
+    if (services_enabled_ &&
+        !services_running_) {
       return settings_window_guidance_alert::services_not_running;
     }
     if (virtual_hid_device_service_client_not_connected_alert_state_ == alert_state::active) {
@@ -377,8 +377,8 @@ private:
 
   bool virtual_hid_keyboard_ready_ = false;
   bool virtual_hid_keyboard_type_not_set_ = false;
-  bool services_not_running_alert_ = false;
   bool services_enabled_ = true;
+  bool services_running_ = true;
   bool core_daemons_enabled_ = true;
   bool core_agents_enabled_ = true;
   bool core_daemons_running_ = true;
