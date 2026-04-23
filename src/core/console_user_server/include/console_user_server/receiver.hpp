@@ -7,7 +7,7 @@
 #include "filesystem_utility.hpp"
 #include "send_user_command_handler.hpp"
 #include "services_utility.hpp"
-#include "settings_window_alert_manager.hpp"
+#include "settings_window_guidance_manager.hpp"
 #include "shared_secret_authentication.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
@@ -24,10 +24,10 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
 
-  receiver(std::weak_ptr<settings_window_alert_manager> weak_settings_window_alert_manager,
+  receiver(std::weak_ptr<settings_window_guidance_manager> weak_settings_window_guidance_manager,
            std::weak_ptr<software_function_handler> weak_software_function_handler)
       : dispatcher_client(),
-        weak_settings_window_alert_manager_(weak_settings_window_alert_manager),
+        weak_settings_window_guidance_manager_(weak_settings_window_guidance_manager),
         weak_software_function_handler_(weak_software_function_handler),
         input_source_selector_(std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_)),
         shell_command_handler_(std::make_unique<shell_command_handler>()),
@@ -111,7 +111,7 @@ public:
                   break;
 
                 case operation_type::get_settings_window_guidance:
-                  if (auto m = weak_settings_window_alert_manager_.lock()) {
+                  if (auto m = weak_settings_window_guidance_manager_.lock()) {
                     if (shared_secret_authentication_receiver_) {
                       shared_secret_authentication_receiver_->async_send(
                           sender_endpoint->path(),
@@ -138,7 +138,7 @@ public:
                   break;
 
                 case operation_type::core_service_daemon_state:
-                  if (auto m = weak_settings_window_alert_manager_.lock()) {
+                  if (auto m = weak_settings_window_guidance_manager_.lock()) {
                     m->async_update_core_service_daemon_state(
                         json.at("core_service_daemon_state").get<core_service_daemon_state>());
                   }
@@ -284,7 +284,7 @@ private:
     chmod(directory_path.c_str(), 0755);
   }
 
-  std::weak_ptr<settings_window_alert_manager> weak_settings_window_alert_manager_;
+  std::weak_ptr<settings_window_guidance_manager> weak_settings_window_guidance_manager_;
   std::weak_ptr<software_function_handler> weak_software_function_handler_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::unique_ptr<shell_command_handler> shell_command_handler_;

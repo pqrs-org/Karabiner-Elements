@@ -12,7 +12,7 @@
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "services_utility.hpp"
-#include "settings_window_alert_manager.hpp"
+#include "settings_window_guidance_manager.hpp"
 #include "software_function_handler.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
@@ -31,7 +31,7 @@ public:
       : dispatcher_client(),
         version_monitor_(std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path())),
         session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
-        settings_window_alert_manager_(std::make_shared<settings_window_alert_manager>()),
+        settings_window_guidance_manager_(std::make_shared<settings_window_guidance_manager>()),
         software_function_handler_(std::make_shared<software_function_handler>()) {
     //
     // version_monitor_
@@ -69,7 +69,7 @@ public:
 
       receiver_ = nullptr;
       software_function_handler_ = nullptr;
-      settings_window_alert_manager_ = nullptr;
+      settings_window_guidance_manager_ = nullptr;
       session_monitor_ = nullptr;
       version_monitor_ = nullptr;
     });
@@ -79,8 +79,8 @@ public:
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
-      settings_window_alert_manager_->async_start();
-      receiver_ = std::make_unique<receiver>(settings_window_alert_manager_,
+      settings_window_guidance_manager_->async_start();
+      receiver_ = std::make_unique<receiver>(settings_window_guidance_manager_,
                                              software_function_handler_);
     });
   }
@@ -170,7 +170,7 @@ private:
 
   std::optional<bool> on_console_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
-  std::shared_ptr<settings_window_alert_manager> settings_window_alert_manager_;
+  std::shared_ptr<settings_window_guidance_manager> settings_window_guidance_manager_;
   std::shared_ptr<software_function_handler> software_function_handler_;
   std::shared_ptr<core_service_client> core_service_client_;
 

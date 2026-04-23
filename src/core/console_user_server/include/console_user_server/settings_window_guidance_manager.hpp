@@ -16,14 +16,14 @@ enum class alert_state {
   active,
 };
 
-class settings_window_alert_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+class settings_window_guidance_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  settings_window_alert_manager(void)
+  settings_window_guidance_manager(void)
       : dispatcher_client(),
         current_alert_(settings_window_alert::none) {
   }
 
-  ~settings_window_alert_manager(void) {
+  ~settings_window_guidance_manager(void) {
     detach_from_dispatcher();
   }
 
@@ -162,7 +162,7 @@ private:
 
   template <typename F>
   void enqueue_delayed_evaluation(std::size_t generation,
-                                  std::size_t settings_window_alert_manager::* generation_member,
+                                  std::size_t settings_window_guidance_manager::* generation_member,
                                   pqrs::dispatcher::duration delay,
                                   F&& evaluator) {
     enqueue_to_dispatcher(
@@ -206,7 +206,7 @@ private:
 
     enqueue_delayed_evaluation(
         driver_connected_generation_,
-        &settings_window_alert_manager::driver_connected_generation_,
+        &settings_window_guidance_manager::driver_connected_generation_,
         pqrs::dispatcher::duration(std::chrono::seconds(3)),
         [this] {
           if (driver_connected_ == false) {
@@ -236,7 +236,7 @@ private:
                        alert_state::inactive);
     enqueue_delayed_evaluation(
         karabiner_json_parse_error_message_generation_,
-        &settings_window_alert_manager::karabiner_json_parse_error_message_generation_,
+        &settings_window_guidance_manager::karabiner_json_parse_error_message_generation_,
         pqrs::dispatcher::duration(std::chrono::seconds(3)),
         [this] {
           if (!karabiner_json_parse_error_message_.empty()) {
