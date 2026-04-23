@@ -136,9 +136,20 @@ private:
     if (!previous_services_running_ ||
         *previous_services_running_ != services_running) {
       previous_services_running_ = services_running;
+      ++services_running_generation_;
 
       if (!services_running) {
         services_waiting_started_at_ = std::chrono::steady_clock::now();
+
+        enqueue_delayed_evaluation(
+            services_running_generation_,
+            &settings_window_guidance_manager::services_running_generation_,
+            pqrs::dispatcher::duration(std::chrono::seconds(10)),
+            [this] {
+              if (!services_running_) {
+                update_current_guidance();
+              }
+            });
       }
     }
 
@@ -343,7 +354,7 @@ private:
       return settings_window_guidance_alert::doctor;
     }
     if (services_enabled_ &&
-        !services_running_) {
+        services_not_running_alert_condition()) {
       return settings_window_guidance_alert::services_not_running;
     }
     if (virtual_hid_device_service_client_not_connected_alert_state_ == alert_state::active) {
@@ -363,6 +374,15 @@ private:
     return settings_window_guidance_alert::none;
   }
 
+  bool services_not_running_alert_condition(void) const {
+    if (services_running_) {
+      return false;
+    }
+
+    return std::chrono::steady_clock::now() - services_waiting_started_at_ >=
+           std::chrono::seconds(10);
+  }
+
   mutable std::mutex mutex_;
   settings_window_guidance_setup current_setup_;
   settings_window_guidance_alert current_alert_;
@@ -379,6 +399,7 @@ private:
   bool virtual_hid_keyboard_type_not_set_ = false;
   bool services_enabled_ = true;
   bool services_running_ = true;
+  std::size_t services_running_generation_ = 0;
   bool core_daemons_enabled_ = true;
   bool core_agents_enabled_ = true;
   bool core_daemons_running_ = true;
