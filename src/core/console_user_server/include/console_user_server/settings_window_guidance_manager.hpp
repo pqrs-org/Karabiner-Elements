@@ -10,7 +10,7 @@
 
 namespace krbn {
 namespace console_user_server {
-enum class alert_state {
+enum class guidance_state {
   unknown,
   inactive,
   active,
@@ -100,6 +100,7 @@ private:
     update_karabiner_json_parse_error_message_alert_state(state.get_karabiner_json_parse_error_message());
     virtual_hid_keyboard_ready_ = state.get_virtual_hid_keyboard_ready().value_or(false);
     virtual_hid_keyboard_type_not_set_ = state.get_virtual_hid_keyboard_type_not_set().value_or(false);
+    update_settings_alert_state();
 
     update_guidance_state(virtual_hid_device_service_client_not_connected_alert_state_,
                           make_inverted_alert_state(state.get_virtual_hid_device_service_client_connected()));
@@ -136,22 +137,12 @@ private:
     if (!previous_services_running_ ||
         *previous_services_running_ != services_running) {
       previous_services_running_ = services_running;
-      ++services_running_generation_;
-
       if (!services_running) {
         services_waiting_started_at_ = std::chrono::steady_clock::now();
-
-        enqueue_delayed_evaluation(
-            services_running_generation_,
-            &settings_window_guidance_manager::services_running_generation_,
-            pqrs::dispatcher::duration(std::chrono::seconds(10)),
-            [this] {
-              if (!services_running_) {
-                update_current_guidance();
-              }
-            });
       }
     }
+
+    update_services_not_running_alert_state();
 
     if (!services_running) {
       services_utility::register_core_daemons();
@@ -197,13 +188,13 @@ private:
 
     if (!value) {
       update_guidance_state(driver_not_connected_alert_state_,
-                            alert_state::unknown);
+                            guidance_state::unknown);
       return;
     }
 
     if (*value) {
       update_guidance_state(driver_not_connected_alert_state_,
-                            alert_state::inactive);
+                            guidance_state::inactive);
       return;
     }
 
@@ -213,7 +204,7 @@ private:
     // Therefore, false is treated as a pending state here, and we only show the alert
     // if it remains false after a delay.
     update_guidance_state(driver_not_connected_alert_state_,
-                          alert_state::inactive);
+                          guidance_state::inactive);
 
     enqueue_delayed_evaluation(
         driver_connected_generation_,
@@ -222,7 +213,7 @@ private:
         [this] {
           if (driver_connected_ == false) {
             update_guidance_state(driver_not_connected_alert_state_,
-                                  alert_state::active);
+                                  guidance_state::active);
           }
         });
   }
@@ -237,14 +228,14 @@ private:
 
     if (value.empty()) {
       update_guidance_state(doctor_alert_state_,
-                            alert_state::inactive);
+                            guidance_state::inactive);
       return;
     }
 
     // karabiner.json can be observed in the middle of an external split write.
     // Delay surfacing the parse error so a transient partial-write state does not open Settings.
     update_guidance_state(doctor_alert_state_,
-                          alert_state::inactive);
+                          guidance_state::inactive);
     enqueue_delayed_evaluation(
         karabiner_json_parse_error_message_generation_,
         &settings_window_guidance_manager::karabiner_json_parse_error_message_generation_,
@@ -252,29 +243,69 @@ private:
         [this] {
           if (!karabiner_json_parse_error_message_.empty()) {
             update_guidance_state(doctor_alert_state_,
-                                  alert_state::active);
+                                  guidance_state::active);
           }
         });
   }
 
-  static alert_state make_alert_state(const std::optional<bool>& value) {
-    if (!value) {
-      return alert_state::unknown;
-    }
-
-    return *value ? alert_state::active : alert_state::inactive;
+  void update_settings_alert_state(void) {
+    auto settings_alert = virtual_hid_keyboard_ready_ &&
+                          virtual_hid_keyboard_type_not_set_;
+    update_guidance_state(settings_alert_state_,
+                          settings_alert ? guidance_state::active : guidance_state::inactive);
   }
 
-  static alert_state make_inverted_alert_state(const std::optional<bool>& value) {
-    if (!value) {
-      return alert_state::unknown;
+  void update_services_not_running_alert_state(void) {
+    auto services_not_running = services_enabled_ &&
+                                !services_running_;
+
+    if (previous_services_not_running_ &&
+        *previous_services_not_running_ == services_not_running) {
+      return;
     }
 
-    return *value ? alert_state::inactive : alert_state::active;
+    previous_services_not_running_ = services_not_running;
+    ++services_running_generation_;
+
+    if (!services_not_running) {
+      update_guidance_state(services_not_running_alert_state_,
+                            guidance_state::inactive);
+      return;
+    }
+
+    update_guidance_state(services_not_running_alert_state_,
+                          guidance_state::inactive);
+    enqueue_delayed_evaluation(
+        services_running_generation_,
+        &settings_window_guidance_manager::services_running_generation_,
+        pqrs::dispatcher::duration(std::chrono::seconds(10)),
+        [this] {
+          if (services_enabled_ &&
+              !services_running_) {
+            update_guidance_state(services_not_running_alert_state_,
+                                  guidance_state::active);
+          }
+        });
   }
 
-  void update_guidance_state(alert_state& target,
-                             alert_state value) {
+  static guidance_state make_alert_state(const std::optional<bool>& value) {
+    if (!value) {
+      return guidance_state::unknown;
+    }
+
+    return *value ? guidance_state::active : guidance_state::inactive;
+  }
+
+  static guidance_state make_inverted_alert_state(const std::optional<bool>& value) {
+    if (!value) {
+      return guidance_state::unknown;
+    }
+
+    return *value ? guidance_state::inactive : guidance_state::active;
+  }
+
+  void update_guidance_state(guidance_state& target,
+                             guidance_state value) {
     if (target == value) {
       return;
     }
@@ -336,13 +367,13 @@ private:
     // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
     // Therefore, since Accessibility permission is requested first,
     // the Accessibility setup is also displayed with higher priority than the Input Monitoring setup.
-    if (accessibility_setup_state_ == alert_state::active) {
+    if (accessibility_setup_state_ == guidance_state::active) {
       return settings_window_guidance_setup::accessibility;
     }
-    if (input_monitoring_setup_state_ == alert_state::active) {
+    if (input_monitoring_setup_state_ == guidance_state::active) {
       return settings_window_guidance_setup::input_monitoring;
     }
-    if (driver_extension_setup_state_ == alert_state::active) {
+    if (driver_extension_setup_state_ == guidance_state::active) {
       return settings_window_guidance_setup::driver_extension;
     }
 
@@ -350,37 +381,26 @@ private:
   }
 
   settings_window_guidance_alert make_current_alert(void) const {
-    if (doctor_alert_state_ == alert_state::active) {
+    if (doctor_alert_state_ == guidance_state::active) {
       return settings_window_guidance_alert::doctor;
     }
-    if (services_enabled_ &&
-        services_not_running_alert_condition()) {
+    if (services_not_running_alert_state_ == guidance_state::active) {
       return settings_window_guidance_alert::services_not_running;
     }
-    if (virtual_hid_device_service_client_not_connected_alert_state_ == alert_state::active) {
+    if (virtual_hid_device_service_client_not_connected_alert_state_ == guidance_state::active) {
       return settings_window_guidance_alert::virtual_hid_device_service_client_not_connected;
     }
-    if (driver_version_mismatched_alert_state_ == alert_state::active) {
+    if (driver_version_mismatched_alert_state_ == guidance_state::active) {
       return settings_window_guidance_alert::driver_version_mismatched;
     }
-    if (driver_not_connected_alert_state_ == alert_state::active) {
+    if (driver_not_connected_alert_state_ == guidance_state::active) {
       return settings_window_guidance_alert::driver_not_connected;
     }
-    if (virtual_hid_keyboard_ready_ &&
-        virtual_hid_keyboard_type_not_set_) {
+    if (settings_alert_state_ == guidance_state::active) {
       return settings_window_guidance_alert::settings;
     }
 
     return settings_window_guidance_alert::none;
-  }
-
-  bool services_not_running_alert_condition(void) const {
-    if (services_running_) {
-      return false;
-    }
-
-    return std::chrono::steady_clock::now() - services_waiting_started_at_ >=
-           std::chrono::seconds(10);
   }
 
   mutable std::mutex mutex_;
@@ -391,18 +411,20 @@ private:
   // For settings_window_guidance_setup
   //
 
-  alert_state accessibility_setup_state_ = alert_state::unknown;
-  alert_state input_monitoring_setup_state_ = alert_state::unknown;
-  alert_state driver_extension_setup_state_ = alert_state::unknown;
+  guidance_state accessibility_setup_state_ = guidance_state::unknown;
+  guidance_state input_monitoring_setup_state_ = guidance_state::unknown;
+  guidance_state driver_extension_setup_state_ = guidance_state::unknown;
 
   //
   // For settings_window_guidance_alert
   //
 
-  alert_state doctor_alert_state_ = alert_state::inactive;
-  alert_state virtual_hid_device_service_client_not_connected_alert_state_ = alert_state::unknown;
-  alert_state driver_version_mismatched_alert_state_ = alert_state::unknown;
-  alert_state driver_not_connected_alert_state_ = alert_state::unknown;
+  guidance_state doctor_alert_state_ = guidance_state::inactive;
+  guidance_state settings_alert_state_ = guidance_state::inactive;
+  guidance_state services_not_running_alert_state_ = guidance_state::inactive;
+  guidance_state virtual_hid_device_service_client_not_connected_alert_state_ = guidance_state::unknown;
+  guidance_state driver_version_mismatched_alert_state_ = guidance_state::unknown;
+  guidance_state driver_not_connected_alert_state_ = guidance_state::unknown;
 
   bool virtual_hid_keyboard_ready_ = false;
   bool virtual_hid_keyboard_type_not_set_ = false;
@@ -418,6 +440,7 @@ private:
   std::string karabiner_json_parse_error_message_;
   std::size_t karabiner_json_parse_error_message_generation_ = 0;
   std::optional<bool> previous_services_running_;
+  std::optional<bool> previous_services_not_running_;
   std::chrono::steady_clock::time_point services_waiting_started_at_ = std::chrono::steady_clock::now();
   core_service_daemon_state core_service_deamon_state_;
 };
