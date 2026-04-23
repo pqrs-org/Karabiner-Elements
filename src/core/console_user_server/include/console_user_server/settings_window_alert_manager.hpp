@@ -3,7 +3,7 @@
 #include "application_launcher.hpp"
 #include "logger.hpp"
 #include "services_utility.hpp"
-#include "types/settings_window_alert_state.hpp"
+#include "types/settings_window_guidance_state.hpp"
 #include <mutex>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
@@ -52,14 +52,14 @@ public:
     });
   }
 
-  settings_window_alert_state get_state(void) const {
+  settings_window_guidance_state get_guidance_state(void) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    auto state = settings_window_alert_state();
+    auto state = settings_window_guidance_state();
 
     state.set_current_alert(current_alert_);
 
-    auto context = settings_window_alert_context();
+    auto context = settings_window_guidance_context();
     context.set_services_enabled(services_enabled_);
     context.set_core_daemons_running(core_daemons_running_);
     context.set_core_agents_running(core_agents_running_);
@@ -73,7 +73,7 @@ public:
     }
     context.set_services_waiting_seconds(services_waiting_seconds);
 
-    state.set_alert_context(context);
+    state.set_guidance_context(context);
     state.set_core_service_daemon_state(core_service_deamon_state_);
 
     return state;
@@ -133,7 +133,8 @@ private:
       }
     }
 
-    services_not_running_alert_ = !services_running;
+    services_disabled_alert_ = !services_enabled;
+    services_not_running_alert_ = services_enabled && !services_running;
 
     if (!services_running) {
       services_utility::register_core_daemons();
@@ -293,6 +294,9 @@ private:
     if (doctor_alert_state_ == alert_state::active) {
       return settings_window_alert::doctor;
     }
+    if (services_disabled_alert_) {
+      return settings_window_alert::services_disabled;
+    }
     if (services_not_running_alert_) {
       return settings_window_alert::services_not_running;
     }
@@ -339,6 +343,7 @@ private:
 
   bool virtual_hid_keyboard_ready_ = false;
   bool virtual_hid_keyboard_type_not_set_ = false;
+  bool services_disabled_alert_ = false;
   bool services_not_running_alert_ = false;
   bool services_enabled_ = true;
   bool core_daemons_running_ = true;

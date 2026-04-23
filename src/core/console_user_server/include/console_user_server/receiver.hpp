@@ -80,7 +80,7 @@ public:
 
           case operation_type::get_user_core_configuration_file_path:
           case operation_type::core_service_daemon_state:
-          case operation_type::get_settings_window_alert:
+          case operation_type::get_settings_window_guidance:
           case operation_type::get_frontmost_application_history:
           case operation_type::check_for_updates_on_startup:
           case operation_type::register_menu_agent:
@@ -110,14 +110,14 @@ public:
                   }
                   break;
 
-                case operation_type::get_settings_window_alert:
+                case operation_type::get_settings_window_guidance:
                   if (auto m = weak_settings_window_alert_manager_.lock()) {
                     if (shared_secret_authentication_receiver_) {
                       shared_secret_authentication_receiver_->async_send(
                           sender_endpoint->path(),
                           nlohmann::json{
-                              {"operation_type", operation_type::settings_window_alert},
-                              {"settings_window_alert", m->get_state()}});
+                              {"operation_type", operation_type::settings_window_guidance},
+                              {"settings_window_guidance", m->get_guidance_state()}});
                     }
                   }
                   break;
