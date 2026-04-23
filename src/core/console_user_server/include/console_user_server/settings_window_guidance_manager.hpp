@@ -20,6 +20,7 @@ class settings_window_guidance_manager final : public pqrs::dispatcher::extra::d
 public:
   settings_window_guidance_manager(void)
       : dispatcher_client(),
+        current_setup_(settings_window_setup::none),
         current_alert_(settings_window_alert::none) {
   }
 
@@ -57,6 +58,7 @@ public:
 
     auto state = settings_window_guidance_state();
 
+    state.set_current_setup(current_setup_);
     state.set_current_alert(current_alert_);
 
     auto context = settings_window_guidance_context();
@@ -99,19 +101,19 @@ private:
     virtual_hid_keyboard_ready_ = state.get_virtual_hid_keyboard_ready().value_or(false);
     virtual_hid_keyboard_type_not_set_ = state.get_virtual_hid_keyboard_type_not_set().value_or(false);
 
-    update_alert_state(virtual_hid_device_service_client_not_connected_alert_state_,
-                       make_inverted_alert_state(state.get_virtual_hid_device_service_client_connected()));
-    update_alert_state(driver_not_activated_alert_state_,
-                       make_inverted_alert_state(state.get_driver_activated()));
+    update_guidance_state(virtual_hid_device_service_client_not_connected_alert_state_,
+                          make_inverted_alert_state(state.get_virtual_hid_device_service_client_connected()));
+    update_guidance_state(driver_not_activated_setup_state_,
+                          make_inverted_alert_state(state.get_driver_activated()));
     update_driver_connected(state.get_driver_connected());
-    update_alert_state(driver_version_mismatched_alert_state_,
-                       make_alert_state(state.get_driver_version_mismatched()));
-    update_alert_state(input_monitoring_permissions_alert_state_,
-                       make_inverted_alert_state(iohid_listen_event_allowed));
-    update_alert_state(accessibility_alert_state_,
-                       make_inverted_alert_state(accessibility_process_trusted));
+    update_guidance_state(driver_version_mismatched_alert_state_,
+                          make_alert_state(state.get_driver_version_mismatched()));
+    update_guidance_state(input_monitoring_permissions_setup_state_,
+                          make_inverted_alert_state(iohid_listen_event_allowed));
+    update_guidance_state(accessibility_setup_state_,
+                          make_inverted_alert_state(accessibility_process_trusted));
 
-    update_current_alert();
+    update_current_guidance();
   }
 
   void update_services_conditions(void) {
@@ -139,7 +141,7 @@ private:
       }
     }
 
-    services_disabled_alert_ = !services_enabled;
+    services_disabled_setup_ = !services_enabled;
     services_not_running_alert_ = services_enabled && !services_running;
 
     if (!services_running) {
@@ -147,7 +149,7 @@ private:
       services_utility::register_core_agents();
     }
 
-    update_current_alert();
+    update_current_guidance();
 
     enqueue_update_services_conditions();
   }
@@ -185,14 +187,14 @@ private:
     ++driver_connected_generation_;
 
     if (!value) {
-      update_alert_state(driver_not_connected_alert_state_,
-                         alert_state::unknown);
+      update_guidance_state(driver_not_connected_alert_state_,
+                            alert_state::unknown);
       return;
     }
 
     if (*value) {
-      update_alert_state(driver_not_connected_alert_state_,
-                         alert_state::inactive);
+      update_guidance_state(driver_not_connected_alert_state_,
+                            alert_state::inactive);
       return;
     }
 
@@ -201,8 +203,8 @@ private:
     // SettingsWindow would show a transient alert while the driver is still connecting.
     // Therefore, false is treated as a pending state here, and we only show the alert
     // if it remains false after a delay.
-    update_alert_state(driver_not_connected_alert_state_,
-                       alert_state::inactive);
+    update_guidance_state(driver_not_connected_alert_state_,
+                          alert_state::inactive);
 
     enqueue_delayed_evaluation(
         driver_connected_generation_,
@@ -210,8 +212,8 @@ private:
         pqrs::dispatcher::duration(std::chrono::seconds(3)),
         [this] {
           if (driver_connected_ == false) {
-            update_alert_state(driver_not_connected_alert_state_,
-                               alert_state::active);
+            update_guidance_state(driver_not_connected_alert_state_,
+                                  alert_state::active);
           }
         });
   }
@@ -225,23 +227,23 @@ private:
     ++karabiner_json_parse_error_message_generation_;
 
     if (value.empty()) {
-      update_alert_state(doctor_alert_state_,
-                         alert_state::inactive);
+      update_guidance_state(doctor_alert_state_,
+                            alert_state::inactive);
       return;
     }
 
     // karabiner.json can be observed in the middle of an external split write.
     // Delay surfacing the parse error so a transient partial-write state does not open Settings.
-    update_alert_state(doctor_alert_state_,
-                       alert_state::inactive);
+    update_guidance_state(doctor_alert_state_,
+                          alert_state::inactive);
     enqueue_delayed_evaluation(
         karabiner_json_parse_error_message_generation_,
         &settings_window_guidance_manager::karabiner_json_parse_error_message_generation_,
         pqrs::dispatcher::duration(std::chrono::seconds(3)),
         [this] {
           if (!karabiner_json_parse_error_message_.empty()) {
-            update_alert_state(doctor_alert_state_,
-                               alert_state::active);
+            update_guidance_state(doctor_alert_state_,
+                                  alert_state::active);
           }
         });
   }
@@ -262,68 +264,94 @@ private:
     return *value ? alert_state::inactive : alert_state::active;
   }
 
-  void update_alert_state(alert_state& target,
-                          alert_state value) {
+  void update_guidance_state(alert_state& target,
+                             alert_state value) {
     if (target == value) {
       return;
     }
 
     target = value;
-    update_current_alert();
+    update_current_guidance();
   }
 
-  void update_current_alert(void) {
-    auto new_current_alert = make_current_alert();
+  void update_current_guidance(void) {
+    auto new_current_setup = make_current_setup();
+    // Do not show alerts until setup is complete.
+    // If alerts take priority in the UI, the required setup may never be completed.
+    auto new_current_alert = new_current_setup == settings_window_setup::none
+                                 ? make_current_alert()
+                                 : settings_window_alert::none;
+    auto previous_setup = settings_window_setup::none;
     auto previous_alert = settings_window_alert::none;
+    auto setup_changed = false;
+    auto alert_changed = false;
 
     {
       std::lock_guard<std::mutex> lock(mutex_);
 
-      if (current_alert_ == new_current_alert) {
+      setup_changed = current_setup_ != new_current_setup;
+      alert_changed = current_alert_ != new_current_alert;
+      if (!setup_changed &&
+          !alert_changed) {
         return;
       }
 
+      previous_setup = current_setup_;
       previous_alert = current_alert_;
+      current_setup_ = new_current_setup;
       current_alert_ = new_current_alert;
     }
 
-    logger::get_logger()->info("settings_window_alert changed: {0} -> {1}",
-                               nlohmann::json(previous_alert).get<std::string>(),
-                               nlohmann::json(new_current_alert).get<std::string>());
+    if (setup_changed) {
+      logger::get_logger()->info("settings_window_setup changed: {0} -> {1}",
+                                 nlohmann::json(previous_setup).get<std::string>(),
+                                 nlohmann::json(new_current_setup).get<std::string>());
+    }
+    if (alert_changed) {
+      logger::get_logger()->info("settings_window_alert changed: {0} -> {1}",
+                                 nlohmann::json(previous_alert).get<std::string>(),
+                                 nlohmann::json(new_current_alert).get<std::string>());
+    }
 
-    if (new_current_alert != settings_window_alert::none) {
+    if (new_current_setup != settings_window_setup::none ||
+        new_current_alert != settings_window_alert::none) {
       application_launcher::launch_settings_without_activation();
     }
+  }
+
+  settings_window_setup make_current_setup(void) const {
+    if (services_disabled_setup_) {
+      return settings_window_setup::services;
+    }
+    // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
+    // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
+    // Therefore, since Accessibility permission is requested first,
+    // the Accessibility setup is also displayed with higher priority than the Input Monitoring setup.
+    if (accessibility_setup_state_ == alert_state::active) {
+      return settings_window_setup::accessibility;
+    }
+    if (input_monitoring_permissions_setup_state_ == alert_state::active) {
+      return settings_window_setup::input_monitoring;
+    }
+    if (driver_not_activated_setup_state_ == alert_state::active) {
+      return settings_window_setup::driver_extension;
+    }
+
+    return settings_window_setup::none;
   }
 
   settings_window_alert make_current_alert(void) const {
     if (doctor_alert_state_ == alert_state::active) {
       return settings_window_alert::doctor;
     }
-    if (services_disabled_alert_) {
-      return settings_window_alert::services_disabled;
-    }
     if (services_not_running_alert_) {
       return settings_window_alert::services_not_running;
-    }
-    // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
-    // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
-    // Therefore, since Accessibility permission is requested first,
-    // the Accessibility alert is also displayed with higher priority than the Input Monitoring alert.
-    if (accessibility_alert_state_ == alert_state::active) {
-      return settings_window_alert::accessibility;
-    }
-    if (input_monitoring_permissions_alert_state_ == alert_state::active) {
-      return settings_window_alert::input_monitoring_permissions;
     }
     if (virtual_hid_device_service_client_not_connected_alert_state_ == alert_state::active) {
       return settings_window_alert::virtual_hid_device_service_client_not_connected;
     }
     if (driver_version_mismatched_alert_state_ == alert_state::active) {
       return settings_window_alert::driver_version_mismatched;
-    }
-    if (driver_not_activated_alert_state_ == alert_state::active) {
-      return settings_window_alert::driver_not_activated;
     }
     if (driver_not_connected_alert_state_ == alert_state::active) {
       return settings_window_alert::driver_not_connected;
@@ -337,19 +365,20 @@ private:
   }
 
   mutable std::mutex mutex_;
+  settings_window_setup current_setup_;
   settings_window_alert current_alert_;
 
   alert_state doctor_alert_state_ = alert_state::inactive;
-  alert_state input_monitoring_permissions_alert_state_ = alert_state::unknown;
-  alert_state accessibility_alert_state_ = alert_state::unknown;
+  alert_state input_monitoring_permissions_setup_state_ = alert_state::unknown;
+  alert_state accessibility_setup_state_ = alert_state::unknown;
   alert_state virtual_hid_device_service_client_not_connected_alert_state_ = alert_state::unknown;
   alert_state driver_version_mismatched_alert_state_ = alert_state::unknown;
-  alert_state driver_not_activated_alert_state_ = alert_state::unknown;
+  alert_state driver_not_activated_setup_state_ = alert_state::unknown;
   alert_state driver_not_connected_alert_state_ = alert_state::unknown;
 
   bool virtual_hid_keyboard_ready_ = false;
   bool virtual_hid_keyboard_type_not_set_ = false;
-  bool services_disabled_alert_ = false;
+  bool services_disabled_setup_ = false;
   bool services_not_running_alert_ = false;
   bool services_enabled_ = true;
   bool core_daemons_enabled_ = true;

@@ -22,15 +22,15 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
     }
   }
 
-  static func from(alert: SettingsWindowAlert) -> SetupItem? {
-    switch alert {
-    case .servicesDisabled:
+  static func from(setup: SettingsWindowSetup) -> SetupItem? {
+    switch setup {
+    case .services:
       .services
     case .accessibility:
       .accessibility
-    case .inputMonitoringPermissions:
+    case .inputMonitoring:
       .inputMonitoring
-    case .driverNotActivated:
+    case .driverExtension:
       .driverExtension
     default:
       nil

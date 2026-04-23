@@ -13,6 +13,7 @@ final class ContentViewStates: ObservableObject {
       resetDismissedAlertIfNeeded()
     }
   }
+  @Published public private(set) var currentSetup: SettingsWindowSetup = .none
   @Published private var dismissedAlert: SettingsWindowAlert = .none
   @Published var guidanceContext = SettingsWindowGuidanceContext()
   @Published var coreServiceDaemonState = SettingsWindowCoreServiceState()
@@ -22,7 +23,7 @@ final class ContentViewStates: ObservableObject {
     }
   }
   @Published private(set) var consoleUserServerClientWaitingSeconds = 0
-  private var lastAutoPresentedSetupAlert: SettingsWindowAlert = .none
+  private var lastAutoPresentedSetup: SettingsWindowSetup = .none
   private var autoOpenedSetup = false
 
   private var currentResolvedAlert: SettingsWindowAlert {
@@ -40,18 +41,19 @@ final class ContentViewStates: ObservableObject {
 
   func updateGuidanceState(_ state: SettingsWindowGuidanceState) {
     currentAlert = state.currentAlert
+    currentSetup = state.currentSetup
     guidanceContext = state.guidanceContext
     coreServiceDaemonState = state.coreServiceDaemonState
 
-    if let item = SetupItem.from(alert: state.currentAlert) {
-      if state.currentAlert != lastAutoPresentedSetupAlert {
-        lastAutoPresentedSetupAlert = state.currentAlert
+    if let item = SetupItem.from(setup: state.currentSetup) {
+      if state.currentSetup != lastAutoPresentedSetup {
+        lastAutoPresentedSetup = state.currentSetup
         autoOpenedSetup = true
         setupSelection = item
         navigationSelection = .setup
       }
     } else {
-      lastAutoPresentedSetupAlert = .none
+      lastAutoPresentedSetup = .none
       if autoOpenedSetup && navigationSelection == .setup && allSetupItemsCompleted() {
         autoOpenedSetup = false
         navigationSelection = .simpleModifications

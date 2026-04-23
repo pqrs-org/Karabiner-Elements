@@ -8,13 +8,9 @@ enum class settings_window_alert : uint8_t {
   none,
   doctor,
   settings,
-  services_disabled,
   services_not_running,
-  input_monitoring_permissions,
-  accessibility,
   virtual_hid_device_service_client_not_connected,
   driver_version_mismatched,
-  driver_not_activated,
   driver_not_connected,
 };
 
@@ -24,14 +20,28 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {settings_window_alert::none, "none"},
         {settings_window_alert::doctor, "doctor"},
         {settings_window_alert::settings, "settings"},
-        {settings_window_alert::services_disabled, "services_disabled"},
         {settings_window_alert::services_not_running, "services_not_running"},
-        {settings_window_alert::input_monitoring_permissions, "input_monitoring_permissions"},
-        {settings_window_alert::accessibility, "accessibility"},
         {settings_window_alert::virtual_hid_device_service_client_not_connected, "virtual_hid_device_service_client_not_connected"},
         {settings_window_alert::driver_version_mismatched, "driver_version_mismatched"},
-        {settings_window_alert::driver_not_activated, "driver_not_activated"},
         {settings_window_alert::driver_not_connected, "driver_not_connected"},
+    });
+
+enum class settings_window_setup : uint8_t {
+  none,
+  services,
+  accessibility,
+  input_monitoring,
+  driver_extension,
+};
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+    settings_window_setup,
+    {
+        {settings_window_setup::none, "none"},
+        {settings_window_setup::services, "services"},
+        {settings_window_setup::accessibility, "accessibility"},
+        {settings_window_setup::input_monitoring, "input_monitoring"},
+        {settings_window_setup::driver_extension, "driver_extension"},
     });
 
 class settings_window_guidance_context final {
@@ -125,7 +135,8 @@ inline void from_json(const nlohmann::json& json, settings_window_guidance_conte
 class settings_window_guidance_state final {
 public:
   settings_window_guidance_state(void)
-      : current_alert_(settings_window_alert::none) {
+      : current_alert_(settings_window_alert::none),
+        current_setup_(settings_window_setup::none) {
   }
 
   settings_window_alert get_current_alert(void) const {
@@ -134,6 +145,14 @@ public:
 
   void set_current_alert(settings_window_alert value) {
     current_alert_ = value;
+  }
+
+  settings_window_setup get_current_setup(void) const {
+    return current_setup_;
+  }
+
+  void set_current_setup(settings_window_setup value) {
+    current_setup_ = value;
   }
 
   const settings_window_guidance_context& get_guidance_context(void) const {
@@ -154,6 +173,7 @@ public:
 
 private:
   settings_window_alert current_alert_;
+  settings_window_setup current_setup_;
   settings_window_guidance_context guidance_context_;
   core_service_daemon_state core_service_deamon_state_;
 };
@@ -161,6 +181,7 @@ private:
 inline void to_json(nlohmann::json& json, const settings_window_guidance_state& value) {
   json = nlohmann::json::object({
       {"current_alert", value.get_current_alert()},
+      {"current_setup", value.get_current_setup()},
       {"guidance_context", value.get_guidance_context()},
       {"core_service_daemon_state", value.get_core_service_daemon_state()},
   });
@@ -168,6 +189,7 @@ inline void to_json(nlohmann::json& json, const settings_window_guidance_state& 
 
 inline void from_json(const nlohmann::json& json, settings_window_guidance_state& value) {
   value.set_current_alert(json.at("current_alert").get<settings_window_alert>());
+  value.set_current_setup(json.at("current_setup").get<settings_window_setup>());
   value.set_guidance_context(json.at("guidance_context").get<settings_window_guidance_context>());
   value.set_core_service_daemon_state(json.value("core_service_daemon_state",
                                                  core_service_daemon_state()));
