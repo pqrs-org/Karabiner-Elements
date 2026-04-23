@@ -82,7 +82,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     return true
   }
 
-  private func updateUserAttentionRequest(currentAlert: SettingsWindowAlert) {
+  private func updateUserAttentionRequest(currentAlert: SettingsWindowGuidanceAlert) {
     if currentAlert == .none {
       if let identifier = userAttentionRequestIdentifier {
         NSApp.cancelUserAttentionRequest(identifier)

@@ -20,8 +20,8 @@ class settings_window_guidance_manager final : public pqrs::dispatcher::extra::d
 public:
   settings_window_guidance_manager(void)
       : dispatcher_client(),
-        current_setup_(settings_window_setup::none),
-        current_alert_(settings_window_alert::none) {
+        current_setup_(settings_window_guidance_setup::none),
+        current_alert_(settings_window_guidance_alert::none) {
   }
 
   ~settings_window_guidance_manager(void) {
@@ -278,11 +278,11 @@ private:
     auto new_current_setup = make_current_setup();
     // Do not show alerts until setup is complete.
     // If alerts take priority in the UI, the required setup may never be completed.
-    auto new_current_alert = new_current_setup == settings_window_setup::none
+    auto new_current_alert = new_current_setup == settings_window_guidance_setup::none
                                  ? make_current_alert()
-                                 : settings_window_alert::none;
-    auto previous_setup = settings_window_setup::none;
-    auto previous_alert = settings_window_alert::none;
+                                 : settings_window_guidance_alert::none;
+    auto previous_setup = settings_window_guidance_setup::none;
+    auto previous_alert = settings_window_guidance_alert::none;
     auto setup_changed = false;
     auto alert_changed = false;
 
@@ -303,70 +303,70 @@ private:
     }
 
     if (setup_changed) {
-      logger::get_logger()->info("settings_window_setup changed: {0} -> {1}",
+      logger::get_logger()->info("settings_window_guidance_setup changed: {0} -> {1}",
                                  nlohmann::json(previous_setup).get<std::string>(),
                                  nlohmann::json(new_current_setup).get<std::string>());
     }
     if (alert_changed) {
-      logger::get_logger()->info("settings_window_alert changed: {0} -> {1}",
+      logger::get_logger()->info("settings_window_guidance_alert changed: {0} -> {1}",
                                  nlohmann::json(previous_alert).get<std::string>(),
                                  nlohmann::json(new_current_alert).get<std::string>());
     }
 
-    if (new_current_setup != settings_window_setup::none ||
-        new_current_alert != settings_window_alert::none) {
+    if (new_current_setup != settings_window_guidance_setup::none ||
+        new_current_alert != settings_window_guidance_alert::none) {
       application_launcher::launch_settings_without_activation();
     }
   }
 
-  settings_window_setup make_current_setup(void) const {
+  settings_window_guidance_setup make_current_setup(void) const {
     if (services_disabled_setup_) {
-      return settings_window_setup::services;
+      return settings_window_guidance_setup::services;
     }
     // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
     // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
     // Therefore, since Accessibility permission is requested first,
     // the Accessibility setup is also displayed with higher priority than the Input Monitoring setup.
     if (accessibility_setup_state_ == alert_state::active) {
-      return settings_window_setup::accessibility;
+      return settings_window_guidance_setup::accessibility;
     }
     if (input_monitoring_permissions_setup_state_ == alert_state::active) {
-      return settings_window_setup::input_monitoring;
+      return settings_window_guidance_setup::input_monitoring;
     }
     if (driver_not_activated_setup_state_ == alert_state::active) {
-      return settings_window_setup::driver_extension;
+      return settings_window_guidance_setup::driver_extension;
     }
 
-    return settings_window_setup::none;
+    return settings_window_guidance_setup::none;
   }
 
-  settings_window_alert make_current_alert(void) const {
+  settings_window_guidance_alert make_current_alert(void) const {
     if (doctor_alert_state_ == alert_state::active) {
-      return settings_window_alert::doctor;
+      return settings_window_guidance_alert::doctor;
     }
     if (services_not_running_alert_) {
-      return settings_window_alert::services_not_running;
+      return settings_window_guidance_alert::services_not_running;
     }
     if (virtual_hid_device_service_client_not_connected_alert_state_ == alert_state::active) {
-      return settings_window_alert::virtual_hid_device_service_client_not_connected;
+      return settings_window_guidance_alert::virtual_hid_device_service_client_not_connected;
     }
     if (driver_version_mismatched_alert_state_ == alert_state::active) {
-      return settings_window_alert::driver_version_mismatched;
+      return settings_window_guidance_alert::driver_version_mismatched;
     }
     if (driver_not_connected_alert_state_ == alert_state::active) {
-      return settings_window_alert::driver_not_connected;
+      return settings_window_guidance_alert::driver_not_connected;
     }
     if (virtual_hid_keyboard_ready_ &&
         virtual_hid_keyboard_type_not_set_) {
-      return settings_window_alert::settings;
+      return settings_window_guidance_alert::settings;
     }
 
-    return settings_window_alert::none;
+    return settings_window_guidance_alert::none;
   }
 
   mutable std::mutex mutex_;
-  settings_window_setup current_setup_;
-  settings_window_alert current_alert_;
+  settings_window_guidance_setup current_setup_;
+  settings_window_guidance_alert current_alert_;
 
   alert_state doctor_alert_state_ = alert_state::inactive;
   alert_state input_monitoring_permissions_setup_state_ = alert_state::unknown;

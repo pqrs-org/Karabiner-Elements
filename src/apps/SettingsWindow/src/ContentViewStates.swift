@@ -8,13 +8,13 @@ final class ContentViewStates: ObservableObject {
   // Alerts
   //
 
-  @Published public private(set) var currentAlert: SettingsWindowAlert = .none {
+  @Published public private(set) var currentAlert: SettingsWindowGuidanceAlert = .none {
     didSet {
       resetDismissedAlertIfNeeded()
     }
   }
-  @Published public private(set) var currentSetup: SettingsWindowSetup = .none
-  @Published private var dismissedAlert: SettingsWindowAlert = .none
+  @Published public private(set) var currentSetup: SettingsWindowGuidanceSetup = .none
+  @Published private var dismissedAlert: SettingsWindowGuidanceAlert = .none
   @Published var guidanceContext = SettingsWindowGuidanceContext()
   @Published var coreServiceDaemonState = SettingsWindowCoreServiceState()
   @Published private var consoleUserServerClientConnected = false {
@@ -23,10 +23,10 @@ final class ContentViewStates: ObservableObject {
     }
   }
   @Published private(set) var consoleUserServerClientWaitingSeconds = 0
-  private var lastAutoPresentedSetup: SettingsWindowSetup = .none
+  private var lastAutoPresentedSetup: SettingsWindowGuidanceSetup = .none
   private var autoOpenedSetup = false
 
-  private var currentResolvedAlert: SettingsWindowAlert {
+  private var currentResolvedAlert: SettingsWindowGuidanceAlert {
     if !consoleUserServerClientConnected {
       return .consoleUserServerNotConnected
     }
@@ -34,7 +34,7 @@ final class ContentViewStates: ObservableObject {
     return currentAlert
   }
 
-  var displayedAlert: SettingsWindowAlert {
+  var displayedAlert: SettingsWindowGuidanceAlert {
     let resolvedAlert = currentResolvedAlert
     return resolvedAlert == dismissedAlert ? .none : resolvedAlert
   }

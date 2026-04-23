@@ -61,14 +61,14 @@ struct SettingsWindowGuidanceContext: Codable {
 }
 
 struct SettingsWindowGuidanceState: Codable {
-  var currentAlert: SettingsWindowAlert
-  var currentSetup: SettingsWindowSetup
+  var currentSetup: SettingsWindowGuidanceSetup
+  var currentAlert: SettingsWindowGuidanceAlert
   var guidanceContext: SettingsWindowGuidanceContext
   var coreServiceDaemonState = SettingsWindowCoreServiceState()
 
   enum CodingKeys: String, CodingKey {
-    case currentAlert = "current_alert"
     case currentSetup = "current_setup"
+    case currentAlert = "current_alert"
     case guidanceContext = "guidance_context"
     case coreServiceDaemonState = "core_service_daemon_state"
   }

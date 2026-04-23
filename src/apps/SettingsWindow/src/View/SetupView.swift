@@ -22,7 +22,7 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
     }
   }
 
-  static func from(setup: SettingsWindowSetup) -> SetupItem? {
+  static func from(setup: SettingsWindowGuidanceSetup) -> SetupItem? {
     switch setup {
     case .services:
       .services

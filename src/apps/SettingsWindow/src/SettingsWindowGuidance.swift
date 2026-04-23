@@ -1,6 +1,6 @@
 import Foundation
 
-enum SettingsWindowAlert: String, Codable {
+enum SettingsWindowGuidanceAlert: String, Codable {
   case none
   case doctor
   case settings
@@ -12,7 +12,7 @@ enum SettingsWindowAlert: String, Codable {
   case driverNotConnected = "driver_not_connected"
 }
 
-enum SettingsWindowSetup: String, Codable {
+enum SettingsWindowGuidanceSetup: String, Codable {
   case none
   case services
   case accessibility
