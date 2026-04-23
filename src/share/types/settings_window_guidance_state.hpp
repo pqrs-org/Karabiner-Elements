@@ -4,6 +4,24 @@
 #include <nlohmann/json.hpp>
 
 namespace krbn {
+enum class settings_window_guidance_setup : uint8_t {
+  none,
+  services,
+  accessibility,
+  input_monitoring,
+  driver_extension,
+};
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+    settings_window_guidance_setup,
+    {
+        {settings_window_guidance_setup::none, "none"},
+        {settings_window_guidance_setup::services, "services"},
+        {settings_window_guidance_setup::accessibility, "accessibility"},
+        {settings_window_guidance_setup::input_monitoring, "input_monitoring"},
+        {settings_window_guidance_setup::driver_extension, "driver_extension"},
+    });
+
 enum class settings_window_guidance_alert : uint8_t {
   none,
   doctor,
@@ -24,24 +42,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {settings_window_guidance_alert::virtual_hid_device_service_client_not_connected, "virtual_hid_device_service_client_not_connected"},
         {settings_window_guidance_alert::driver_version_mismatched, "driver_version_mismatched"},
         {settings_window_guidance_alert::driver_not_connected, "driver_not_connected"},
-    });
-
-enum class settings_window_guidance_setup : uint8_t {
-  none,
-  services,
-  accessibility,
-  input_monitoring,
-  driver_extension,
-};
-
-NLOHMANN_JSON_SERIALIZE_ENUM(
-    settings_window_guidance_setup,
-    {
-        {settings_window_guidance_setup::none, "none"},
-        {settings_window_guidance_setup::services, "services"},
-        {settings_window_guidance_setup::accessibility, "accessibility"},
-        {settings_window_guidance_setup::input_monitoring, "input_monitoring"},
-        {settings_window_guidance_setup::driver_extension, "driver_extension"},
     });
 
 class settings_window_guidance_context final {

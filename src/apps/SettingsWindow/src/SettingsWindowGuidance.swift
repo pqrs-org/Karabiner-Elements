@@ -1,5 +1,13 @@
 import Foundation
 
+enum SettingsWindowGuidanceSetup: String, Codable {
+  case none
+  case services
+  case accessibility
+  case inputMonitoring = "input_monitoring"
+  case driverExtension = "driver_extension"
+}
+
 enum SettingsWindowGuidanceAlert: String, Codable {
   case none
   case doctor
@@ -10,12 +18,4 @@ enum SettingsWindowGuidanceAlert: String, Codable {
     "virtual_hid_device_service_client_not_connected"
   case driverVersionMismatched = "driver_version_mismatched"
   case driverNotConnected = "driver_not_connected"
-}
-
-enum SettingsWindowGuidanceSetup: String, Codable {
-  case none
-  case services
-  case accessibility
-  case inputMonitoring = "input_monitoring"
-  case driverExtension = "driver_extension"
 }
