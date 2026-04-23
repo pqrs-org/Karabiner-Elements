@@ -13,6 +13,10 @@ struct ContentView: View {
         OverlayAlertView {
           DoctorAlertView()
         }
+      } else if contentViewStates.displayedAlert == .servicesNotRunning {
+        OverlayAlertView {
+          ServicesNotRunningAlertView()
+        }
       } else if contentViewStates.displayedAlert == .settings {
         OverlayAlertView {
           SettingsAlertView()

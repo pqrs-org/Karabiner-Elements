@@ -38,6 +38,8 @@ class settings_window_guidance_context final {
 public:
   settings_window_guidance_context(void)
       : services_enabled_(true),
+        core_daemons_enabled_(true),
+        core_agents_enabled_(true),
         core_daemons_running_(true),
         core_agents_running_(true),
         services_waiting_seconds_(0) {
@@ -49,6 +51,22 @@ public:
 
   void set_services_enabled(bool value) {
     services_enabled_ = value;
+  }
+
+  bool get_core_daemons_enabled(void) const {
+    return core_daemons_enabled_;
+  }
+
+  void set_core_daemons_enabled(bool value) {
+    core_daemons_enabled_ = value;
+  }
+
+  bool get_core_agents_enabled(void) const {
+    return core_agents_enabled_;
+  }
+
+  void set_core_agents_enabled(bool value) {
+    core_agents_enabled_ = value;
   }
 
   bool get_core_daemons_running(void) const {
@@ -77,6 +95,8 @@ public:
 
 private:
   bool services_enabled_;
+  bool core_daemons_enabled_;
+  bool core_agents_enabled_;
   bool core_daemons_running_;
   bool core_agents_running_;
   int services_waiting_seconds_;
@@ -85,6 +105,8 @@ private:
 inline void to_json(nlohmann::json& json, const settings_window_guidance_context& value) {
   json = nlohmann::json::object({
       {"services_enabled", value.get_services_enabled()},
+      {"core_daemons_enabled", value.get_core_daemons_enabled()},
+      {"core_agents_enabled", value.get_core_agents_enabled()},
       {"core_daemons_running", value.get_core_daemons_running()},
       {"core_agents_running", value.get_core_agents_running()},
       {"services_waiting_seconds", value.get_services_waiting_seconds()},
@@ -93,6 +115,8 @@ inline void to_json(nlohmann::json& json, const settings_window_guidance_context
 
 inline void from_json(const nlohmann::json& json, settings_window_guidance_context& value) {
   value.set_services_enabled(json.at("services_enabled").get<bool>());
+  value.set_core_daemons_enabled(json.at("core_daemons_enabled").get<bool>());
+  value.set_core_agents_enabled(json.at("core_agents_enabled").get<bool>());
   value.set_core_daemons_running(json.at("core_daemons_running").get<bool>());
   value.set_core_agents_running(json.at("core_agents_running").get<bool>());
   value.set_services_waiting_seconds(json.at("services_waiting_seconds").get<int>());

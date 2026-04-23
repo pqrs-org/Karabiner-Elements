@@ -5,6 +5,7 @@ enum SettingsWindowAlert: String, Codable {
   case doctor
   case settings
   case consoleUserServerNotConnected = "console_user_server_not_connected"
+  case servicesDisabled = "services_disabled"
   case servicesNotRunning = "services_not_running"
   case inputMonitoringPermissions = "input_monitoring_permissions"
   case accessibility

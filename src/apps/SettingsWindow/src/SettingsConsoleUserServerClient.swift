@@ -1,12 +1,12 @@
 import AsyncAlgorithms
 import Foundation
 
-private func settingsWindowAlertReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+private func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   let data = Data(String(cString: jsonString).utf8)
 
-  if let state = try? JSONDecoder().decode(SettingsWindowAlertState.self, from: data) {
+  if let state = try? JSONDecoder().decode(SettingsWindowGuidanceState.self, from: data) {
     Task { @MainActor in
-      ContentViewStates.shared.updateAlertState(state)
+      ContentViewStates.shared.updateGuidanceState(state)
     }
   }
 }
@@ -16,7 +16,7 @@ private func consoleUserServerClientStatusChangedCallback() {
     SettingsConsoleUserServerClient.shared.updateConsoleUserServerClientState()
   }
 
-  libkrbn_console_user_server_client_async_get_settings_window_alert()
+  libkrbn_console_user_server_client_async_get_settings_window_guidance()
 }
 
 @MainActor
@@ -41,18 +41,18 @@ final class SettingsConsoleUserServerClient {
 
     libkrbn_register_console_user_server_client_status_changed_callback(
       consoleUserServerClientStatusChangedCallback)
-    libkrbn_register_console_user_server_client_settings_window_alert_received_callback(
-      settingsWindowAlertReceivedCallback)
+    libkrbn_register_console_user_server_client_settings_window_guidance_received_callback(
+      settingsWindowGuidanceReceivedCallback)
 
     libkrbn_console_user_server_client_async_start()
 
     currentAlertTimerTask = Task { @MainActor in
       updateConsoleUserServerClientState()
-      libkrbn_console_user_server_client_async_get_settings_window_alert()
+      libkrbn_console_user_server_client_async_get_settings_window_guidance()
 
       for await _ in currentAlertTimer {
         updateConsoleUserServerClientState()
-        libkrbn_console_user_server_client_async_get_settings_window_alert()
+        libkrbn_console_user_server_client_async_get_settings_window_guidance()
       }
     }
   }

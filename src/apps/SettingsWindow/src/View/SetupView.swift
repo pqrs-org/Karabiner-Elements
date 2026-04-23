@@ -24,7 +24,7 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
 
   static func from(alert: SettingsWindowAlert) -> SetupItem? {
     switch alert {
-    case .servicesNotRunning:
+    case .servicesDisabled:
       .services
     case .accessibility:
       .accessibility
@@ -127,7 +127,7 @@ struct SetupView: View {
   private func setupCompletedTitle(_ item: SetupItem) -> String {
     switch item {
     case .services:
-      return "Background services are running."
+      return "Background services are enabled."
     case .accessibility:
       return "Accessibility access is allowed."
     case .inputMonitoring:

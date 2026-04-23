@@ -42,28 +42,32 @@ struct SettingsWindowCoreServiceState: Codable {
   }
 }
 
-struct SettingsWindowAlertContext: Codable {
+struct SettingsWindowGuidanceContext: Codable {
   var servicesEnabled = true
+  var coreDaemonsEnabled = true
+  var coreAgentsEnabled = true
   var coreDaemonsRunning = true
   var coreAgentsRunning = true
   var servicesWaitingSeconds = 0
 
   enum CodingKeys: String, CodingKey {
     case servicesEnabled = "services_enabled"
+    case coreDaemonsEnabled = "core_daemons_enabled"
+    case coreAgentsEnabled = "core_agents_enabled"
     case coreDaemonsRunning = "core_daemons_running"
     case coreAgentsRunning = "core_agents_running"
     case servicesWaitingSeconds = "services_waiting_seconds"
   }
 }
 
-struct SettingsWindowAlertState: Codable {
+struct SettingsWindowGuidanceState: Codable {
   var currentAlert: SettingsWindowAlert
-  var alertContext: SettingsWindowAlertContext
+  var guidanceContext: SettingsWindowGuidanceContext
   var coreServiceDaemonState = SettingsWindowCoreServiceState()
 
   enum CodingKeys: String, CodingKey {
     case currentAlert = "current_alert"
-    case alertContext = "alert_context"
+    case guidanceContext = "guidance_context"
     case coreServiceDaemonState = "core_service_daemon_state"
   }
 }

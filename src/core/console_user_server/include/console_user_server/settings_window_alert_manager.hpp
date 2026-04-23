@@ -61,6 +61,8 @@ public:
 
     auto context = settings_window_guidance_context();
     context.set_services_enabled(services_enabled_);
+    context.set_core_daemons_enabled(core_daemons_enabled_);
+    context.set_core_agents_enabled(core_agents_enabled_);
     context.set_core_daemons_running(core_daemons_running_);
     context.set_core_agents_running(core_agents_running_);
 
@@ -113,14 +115,18 @@ private:
   }
 
   void update_services_conditions(void) {
+    auto core_daemons_enabled = services_utility::core_daemons_enabled();
+    auto core_agents_enabled = services_utility::core_agents_enabled();
     auto services_enabled =
-        services_utility::core_daemons_enabled() &&
-        services_utility::core_agents_enabled();
+        core_daemons_enabled &&
+        core_agents_enabled;
     auto core_daemons_running = services_utility::core_daemons_running();
     auto core_agents_running = services_utility::core_agents_running();
     auto services_running = core_daemons_running && core_agents_running;
 
     services_enabled_ = services_enabled;
+    core_daemons_enabled_ = core_daemons_enabled;
+    core_agents_enabled_ = core_agents_enabled;
     core_daemons_running_ = core_daemons_running;
     core_agents_running_ = core_agents_running;
 
@@ -346,6 +352,8 @@ private:
   bool services_disabled_alert_ = false;
   bool services_not_running_alert_ = false;
   bool services_enabled_ = true;
+  bool core_daemons_enabled_ = true;
+  bool core_agents_enabled_ = true;
   bool core_daemons_running_ = true;
   bool core_agents_running_ = true;
   std::optional<bool> driver_connected_;

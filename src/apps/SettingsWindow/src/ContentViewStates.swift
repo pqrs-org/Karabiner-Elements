@@ -14,7 +14,7 @@ final class ContentViewStates: ObservableObject {
     }
   }
   @Published private var dismissedAlert: SettingsWindowAlert = .none
-  @Published var alertContext = SettingsWindowAlertContext()
+  @Published var guidanceContext = SettingsWindowGuidanceContext()
   @Published var coreServiceDaemonState = SettingsWindowCoreServiceState()
   @Published private var consoleUserServerClientConnected = false {
     didSet {
@@ -38,9 +38,9 @@ final class ContentViewStates: ObservableObject {
     return resolvedAlert == dismissedAlert ? .none : resolvedAlert
   }
 
-  func updateAlertState(_ state: SettingsWindowAlertState) {
+  func updateGuidanceState(_ state: SettingsWindowGuidanceState) {
     currentAlert = state.currentAlert
-    alertContext = state.alertContext
+    guidanceContext = state.guidanceContext
     coreServiceDaemonState = state.coreServiceDaemonState
 
     if let item = SetupItem.from(alert: state.currentAlert) {
@@ -105,8 +105,7 @@ final class ContentViewStates: ObservableObject {
   func setupItemCompleted(_ item: SetupItem) -> Bool {
     switch item {
     case .services:
-      return alertContext.servicesEnabled && alertContext.coreDaemonsRunning
-        && alertContext.coreAgentsRunning
+      return guidanceContext.servicesEnabled
     case .accessibility:
       return coreServiceDaemonState.accessibilityProcessTrusted == true
     case .inputMonitoring:
