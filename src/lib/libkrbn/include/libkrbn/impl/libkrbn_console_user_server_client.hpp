@@ -31,10 +31,10 @@ public:
                                                          auto&& json) {
       try {
         switch (operation_type) {
-          case krbn::operation_type::settings_window_alert: {
-            auto json_dump = krbn::json_utility::dump(json.at("settings_window_alert"));
+          case krbn::operation_type::settings_window_guidance: {
+            auto json_dump = krbn::json_utility::dump(json.at("settings_window_guidance"));
 
-            for (const auto& c : settings_window_alert_received_callback_manager_.get_callbacks()) {
+            for (const auto& c : settings_window_guidance_received_callback_manager_.get_callbacks()) {
               c(json_dump.c_str());
             }
 
@@ -74,8 +74,8 @@ public:
     return status_;
   }
 
-  void async_get_settings_window_alert(void) {
-    console_user_server_client_->async_get_settings_window_alert();
+  void async_get_settings_window_guidance(void) {
+    console_user_server_client_->async_get_settings_window_guidance();
   }
 
   void async_get_frontmost_application_history(void) {
@@ -94,15 +94,15 @@ public:
     });
   }
 
-  void register_libkrbn_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+  void register_libkrbn_console_user_server_client_settings_window_guidance_received_callback(libkrbn_console_user_server_client_settings_window_guidance_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
-      settings_window_alert_received_callback_manager_.register_callback(callback);
+      settings_window_guidance_received_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+  void unregister_libkrbn_console_user_server_client_settings_window_guidance_received_callback(libkrbn_console_user_server_client_settings_window_guidance_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
-      settings_window_alert_received_callback_manager_.unregister_callback(callback);
+      settings_window_guidance_received_callback_manager_.unregister_callback(callback);
     });
   }
 
@@ -131,6 +131,6 @@ private:
   std::unique_ptr<krbn::console_user_server_client> console_user_server_client_;
   libkrbn_console_user_server_client_status status_;
   libkrbn_callback_manager<libkrbn_console_user_server_client_status_changed_t> status_changed_callback_manager_;
-  libkrbn_callback_manager<libkrbn_console_user_server_client_settings_window_alert_received_t> settings_window_alert_received_callback_manager_;
+  libkrbn_callback_manager<libkrbn_console_user_server_client_settings_window_guidance_received_t> settings_window_guidance_received_callback_manager_;
   libkrbn_callback_manager<libkrbn_console_user_server_client_frontmost_application_history_received_t> frontmost_application_history_received_callback_manager_;
 };

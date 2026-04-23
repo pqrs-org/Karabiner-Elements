@@ -853,26 +853,26 @@ libkrbn_console_user_server_client_status libkrbn_console_user_server_client_get
   return libkrbn_console_user_server_client_status_none;
 }
 
-void libkrbn_console_user_server_client_async_get_settings_window_alert(void) {
+void libkrbn_console_user_server_client_async_get_settings_window_guidance(void) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_console_user_server_client()) {
-      c->async_get_settings_window_alert();
+      c->async_get_settings_window_guidance();
     }
   }
 }
 
-void libkrbn_register_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+void libkrbn_register_console_user_server_client_settings_window_guidance_received_callback(libkrbn_console_user_server_client_settings_window_guidance_received_t callback) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_console_user_server_client()) {
-      c->register_libkrbn_console_user_server_client_settings_window_alert_received_callback(callback);
+      c->register_libkrbn_console_user_server_client_settings_window_guidance_received_callback(callback);
     }
   }
 }
 
-void libkrbn_unregister_console_user_server_client_settings_window_alert_received_callback(libkrbn_console_user_server_client_settings_window_alert_received_t callback) {
+void libkrbn_unregister_console_user_server_client_settings_window_guidance_received_callback(libkrbn_console_user_server_client_settings_window_guidance_received_t callback) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_console_user_server_client()) {
-      c->unregister_libkrbn_console_user_server_client_settings_window_alert_received_callback(callback);
+      c->unregister_libkrbn_console_user_server_client_settings_window_guidance_received_callback(callback);
     }
   }
 }
