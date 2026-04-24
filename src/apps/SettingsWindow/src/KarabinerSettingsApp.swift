@@ -62,11 +62,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       forEventClass: AEEventClass(kInternetEventClass),
       andEventID: AEEventID(kAEGetURL))
 
-    ContentViewStates.shared.$currentAlert
-      .sink { [weak self] currentAlert in
-        self?.updateUserAttentionRequest(currentAlert: currentAlert)
-      }
-      .store(in: &cancellables)
+    Publishers.CombineLatest(
+      ContentViewStates.shared.$currentAlert,
+      ContentViewStates.shared.$currentSetup
+    )
+    .sink { [weak self] currentAlert, currentSetup in
+      self?.updateUserAttentionRequest(
+        currentAlert: currentAlert,
+        currentSetup: currentSetup)
+    }
+    .store(in: &cancellables)
   }
 
   public func applicationWillTerminate(_: Notification) {
@@ -82,8 +87,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     return true
   }
 
-  private func updateUserAttentionRequest(currentAlert: SettingsWindowGuidanceAlert) {
-    if currentAlert == .none {
+  private func updateUserAttentionRequest(
+    currentAlert: SettingsWindowGuidanceAlert,
+    currentSetup: SettingsWindowGuidanceSetup
+  ) {
+    if currentAlert == .none && currentSetup == .none {
       if let identifier = userAttentionRequestIdentifier {
         NSApp.cancelUserAttentionRequest(identifier)
         userAttentionRequestIdentifier = nil
