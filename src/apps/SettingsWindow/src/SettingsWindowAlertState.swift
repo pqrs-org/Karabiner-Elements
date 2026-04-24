@@ -1,6 +1,6 @@
 import Foundation
 
-struct SettingsWindowCoreServicePermissionCheckResult: Codable {
+struct SettingsWindowCoreServicePermissionCheckResult: Codable, Equatable {
   var iohidListenEventAllowed = false
   var accessibilityProcessTrusted = false
 
@@ -10,7 +10,7 @@ struct SettingsWindowCoreServicePermissionCheckResult: Codable {
   }
 }
 
-struct SettingsWindowCoreServiceState: Codable {
+struct SettingsWindowCoreServiceState: Codable, Equatable {
   var virtualHidDeviceServiceClientConnected: Bool?
   var driverActivated: Bool?
   var driverConnected: Bool?
@@ -42,7 +42,7 @@ struct SettingsWindowCoreServiceState: Codable {
   }
 }
 
-struct SettingsWindowGuidanceContext: Codable {
+struct SettingsWindowGuidanceContext: Codable, Equatable {
   var servicesEnabled = true
   var coreDaemonsEnabled = true
   var coreAgentsEnabled = true
@@ -60,7 +60,7 @@ struct SettingsWindowGuidanceContext: Codable {
   }
 }
 
-struct SettingsWindowGuidanceState: Codable {
+struct SettingsWindowGuidanceState: Codable, Equatable {
   var currentSetup: SettingsWindowGuidanceSetup
   var currentAlert: SettingsWindowGuidanceAlert
   var guidanceContext: SettingsWindowGuidanceContext

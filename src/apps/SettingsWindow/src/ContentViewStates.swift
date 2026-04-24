@@ -40,10 +40,18 @@ final class ContentViewStates: ObservableObject {
   }
 
   func updateGuidanceState(_ state: SettingsWindowGuidanceState) {
-    currentAlert = state.currentAlert
-    currentSetup = state.currentSetup
-    guidanceContext = state.guidanceContext
-    coreServiceDaemonState = state.coreServiceDaemonState
+    if currentAlert != state.currentAlert {
+      currentAlert = state.currentAlert
+    }
+    if currentSetup != state.currentSetup {
+      currentSetup = state.currentSetup
+    }
+    if guidanceContext != state.guidanceContext {
+      guidanceContext = state.guidanceContext
+    }
+    if coreServiceDaemonState != state.coreServiceDaemonState {
+      coreServiceDaemonState = state.coreServiceDaemonState
+    }
 
     if let item = SetupItem.from(setup: state.currentSetup) {
       if state.currentSetup != lastAutoPresentedSetup {

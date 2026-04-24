@@ -96,7 +96,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.cancelUserAttentionRequest(identifier)
         userAttentionRequestIdentifier = nil
       }
-    } else if userAttentionRequestIdentifier == nil {
+    } else {
+      if let identifier = userAttentionRequestIdentifier {
+        NSApp.cancelUserAttentionRequest(identifier)
+      }
       userAttentionRequestIdentifier = NSApp.requestUserAttention(.criticalRequest)
     }
   }
