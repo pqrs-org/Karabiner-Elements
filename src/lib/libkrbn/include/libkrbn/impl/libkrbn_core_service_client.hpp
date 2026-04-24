@@ -50,7 +50,7 @@ public:
           }
 
           case krbn::operation_type::notification_message: {
-            auto message = json.at("notification_message").get<std::string>();
+            auto message = json.at("notification_message").template get<std::string>();
             for (const auto& c : notification_message_received_callback_manager_.get_callbacks()) {
               c(message.c_str());
             }
