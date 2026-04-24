@@ -78,29 +78,22 @@ void list_connected_devices() {
       wait->notify();
     });
 
-    client.received.connect([&wait](auto&& buffer,
-                                    auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
-
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<krbn::operation_type>()) {
-            case krbn::operation_type::connected_devices: {
-              std::cout << krbn::json_utility::dump(json.at("connected_devices")) << std::endl;
-              wait->notify();
-              break;
-            }
-
-            default:
-              break;
+    client.received.connect([&wait](auto&& operation_type,
+                                    auto&& json) {
+      try {
+        switch (operation_type) {
+          case krbn::operation_type::connected_devices: {
+            std::cout << krbn::json_utility::dump(json.at("connected_devices")) << std::endl;
+            wait->notify();
+            break;
           }
-        } catch (std::exception& e) {
-          std::cerr << "list-connected-devices error:" << std::endl
-                    << e.what() << std::endl;
+
+          default:
+            break;
         }
+      } catch (std::exception& e) {
+        std::cerr << "list-connected-devices error:" << std::endl
+                  << e.what() << std::endl;
       }
     });
 
@@ -125,29 +118,22 @@ void list_system_variables() {
       wait->notify();
     });
 
-    client.received.connect([&wait](auto&& buffer,
-                                    auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
-
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<krbn::operation_type>()) {
-            case krbn::operation_type::system_variables: {
-              std::cout << krbn::json_utility::dump(json.at("system_variables")) << std::endl;
-              wait->notify();
-              break;
-            }
-
-            default:
-              break;
+    client.received.connect([&wait](auto&& operation_type,
+                                    auto&& json) {
+      try {
+        switch (operation_type) {
+          case krbn::operation_type::system_variables: {
+            std::cout << krbn::json_utility::dump(json.at("system_variables")) << std::endl;
+            wait->notify();
+            break;
           }
-        } catch (std::exception& e) {
-          std::cerr << "list-system-variables error:" << std::endl
-                    << e.what() << std::endl;
+
+          default:
+            break;
         }
+      } catch (std::exception& e) {
+        std::cerr << "list-system-variables error:" << std::endl
+                  << e.what() << std::endl;
       }
     });
 
@@ -172,29 +158,22 @@ void list_multitouch_extension_variables() {
       wait->notify();
     });
 
-    client.received.connect([&wait](auto&& buffer,
-                                    auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
-
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<krbn::operation_type>()) {
-            case krbn::operation_type::multitouch_extension_variables: {
-              std::cout << krbn::json_utility::dump(json.at("multitouch_extension_variables")) << std::endl;
-              wait->notify();
-              break;
-            }
-
-            default:
-              break;
+    client.received.connect([&wait](auto&& operation_type,
+                                    auto&& json) {
+      try {
+        switch (operation_type) {
+          case krbn::operation_type::multitouch_extension_variables: {
+            std::cout << krbn::json_utility::dump(json.at("multitouch_extension_variables")) << std::endl;
+            wait->notify();
+            break;
           }
-        } catch (std::exception& e) {
-          std::cerr << "list-multitouch-extension-variables error:" << std::endl
-                    << e.what() << std::endl;
+
+          default:
+            break;
         }
+      } catch (std::exception& e) {
+        std::cerr << "list-multitouch-extension-variables error:" << std::endl
+                  << e.what() << std::endl;
       }
     });
 
@@ -220,32 +199,25 @@ void watch_multitouch_extension_variables(int interval) {
       exit(1);
     });
 
-    client.received.connect([&json_string](auto&& buffer,
-                                           auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
-
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<krbn::operation_type>()) {
-            case krbn::operation_type::multitouch_extension_variables: {
-              auto s = json.at("multitouch_extension_variables").dump();
-              if (json_string != s) {
-                json_string = s;
-                std::cout << s << std::endl;
-              }
-              break;
+    client.received.connect([&json_string](auto&& operation_type,
+                                           auto&& json) {
+      try {
+        switch (operation_type) {
+          case krbn::operation_type::multitouch_extension_variables: {
+            auto s = json.at("multitouch_extension_variables").dump();
+            if (json_string != s) {
+              json_string = s;
+              std::cout << s << std::endl;
             }
-
-            default:
-              break;
+            break;
           }
-        } catch (std::exception& e) {
-          std::cerr << "watch-multitouch-extension-variables error:" << std::endl
-                    << e.what() << std::endl;
+
+          default:
+            break;
         }
+      } catch (std::exception& e) {
+        std::cerr << "watch-multitouch-extension-variables error:" << std::endl
+                  << e.what() << std::endl;
       }
     });
 
