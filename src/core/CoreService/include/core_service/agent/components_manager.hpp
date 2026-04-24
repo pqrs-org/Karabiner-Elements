@@ -110,7 +110,7 @@ private:
         when_now() + std::chrono::seconds(1));
   }
 
-  void refresh_bundle_permission_check_result_on_connect(void) {
+  void refresh_bundle_permission_check_result(void) {
     auto result = core_service_utility::make_bundle_permission_check_result();
     if (!result) {
       return;
@@ -199,7 +199,7 @@ private:
     core_service_client_ = std::make_shared<core_service_client>("cs_agent_cs_clnt");
 
     core_service_client_->connected.connect([this] {
-      refresh_bundle_permission_check_result_on_connect();
+      refresh_bundle_permission_check_result();
       version_monitor_->async_manual_check();
     });
 
@@ -209,6 +209,22 @@ private:
 
     core_service_client_->closed.connect([this] {
       version_monitor_->async_manual_check();
+    });
+
+    core_service_client_->received.connect([this](auto&& operation_type,
+                                                  auto&& json) {
+      try {
+        switch (operation_type) {
+          case operation_type::refresh_core_service_bundle_permission_check_result:
+            refresh_bundle_permission_check_result();
+            break;
+
+          default:
+            break;
+        }
+      } catch (std::exception& e) {
+        logger::get_logger()->error("received data is corrupted");
+      }
     });
 
     core_service_client_->async_start();

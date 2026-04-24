@@ -107,37 +107,34 @@ public:
       });
 
       client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
-        if (buffer->empty()) {
-          return;
-        }
-
-        try {
-          if (client_ &&
-              shared_secret_authentication_client_.handle_shared_secret_payload(*buffer,
-                                                                                *client_,
-                                                                                [this] {
-                                                                                  connected();
-                                                                                })) {
+        enqueue_to_dispatcher([this, buffer] {
+          if (buffer->empty()) {
             return;
           }
 
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          auto ot = json.at("operation_type").get<operation_type>();
-          switch (ot) {
-            case operation_type::user_core_configuration_file_path:
-            case operation_type::settings_window_guidance:
-            case operation_type::frontmost_application_history:
-              enqueue_to_dispatcher([this, ot, json] {
-                received(ot, json);
-              });
-              break;
+          try {
+            if (client_ &&
+                shared_secret_authentication_client_.handle_shared_secret_payload(*buffer,
+                                                                                  *client_,
+                                                                                  [this] {
+                                                                                    connected();
+                                                                                  })) {
+              return;
+            }
 
-            default:
-              break;
+            auto json = nlohmann::json::from_msgpack(*buffer);
+            auto ot = json.at("operation_type").template get<operation_type>();
+            if (!shared_secret_authentication_client_.verify_shared_secret(json,
+                                                                           ot)) {
+              return;
+            }
+
+            received(ot,
+                     json);
+          } catch (std::exception& e) {
+            logger::get_logger()->error("received data is corrupted");
           }
-        } catch (std::exception& e) {
-          logger::get_logger()->error("received data is corrupted");
-        }
+        });
       });
 
       client_->async_start();

@@ -126,6 +126,8 @@ public:
         switch (ot) {
           case operation_type::core_service_bundle_permission_check_result:
             if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+              core_service_agent_endpoint_path_ = sender_endpoint->path();
+
               // If the required permissions were missing when this process started,
               // and a newly launched process confirms that the permissions are now granted,
               // restart this process.
@@ -452,6 +454,8 @@ public:
         if (auto m = weak_core_service_daemon_state_manager_.lock()) {
           send_core_service_daemon_state(m->copy_state());
         }
+
+        request_core_service_bundle_permission_check_result_refresh();
       });
 
       // If the console_user_server isn't running (i.e., operating under system_core_configuration),
@@ -678,6 +682,19 @@ private:
     }
   }
 
+  void request_core_service_bundle_permission_check_result_refresh(void) {
+    if (!shared_secret_authentication_receiver_ ||
+        !core_service_agent_endpoint_path_) {
+      return;
+    }
+
+    shared_secret_authentication_receiver_->async_send(
+        *core_service_agent_endpoint_path_,
+        nlohmann::json{
+            {"operation_type", operation_type::refresh_core_service_bundle_permission_check_result},
+        });
+  }
+
   void clear_multitouch_extension_environment_variables() {
     if (device_grabber_) {
       for (const auto& name : multitouch_extension_environment_variable_names) {
@@ -720,6 +737,7 @@ private:
   std::shared_ptr<console_user_server_client> console_user_server_client_;
   std::unique_ptr<pqrs::local_datagram::client> multitouch_extension_client_;
   std::unique_ptr<device_grabber> device_grabber_;
+  std::optional<std::string> core_service_agent_endpoint_path_;
 
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   application frontmost_application_;

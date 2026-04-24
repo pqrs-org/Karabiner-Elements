@@ -36,6 +36,18 @@ public:
     }
   }
 
+  bool verify_shared_secret(const nlohmann::json& json,
+                            operation_type operation_type) const {
+    try {
+      return json.at("shared_secret").get<std::vector<uint8_t>>() == shared_secret_;
+    } catch (std::exception& e) {
+    }
+
+    logger::get_logger()->error("operation_type::{0} with invalid shared secret",
+                                nlohmann::json(operation_type).get<std::string>());
+    return false;
+  }
+
   void async_send_message(pqrs::local_datagram::client& client,
                           nlohmann::json&& json,
                           std::function<void(void)> processed = nullptr) {

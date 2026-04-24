@@ -26,7 +26,7 @@ public:
   nod::signal<void(void)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void(void)> closed;
-  nod::signal<void(std::shared_ptr<std::vector<uint8_t>>, std::shared_ptr<asio::local::datagram_protocol::endpoint>)> received;
+  nod::signal<void(operation_type, const nlohmann::json&)> received;
 
   // Methods
 
@@ -98,7 +98,7 @@ public:
       });
 
       client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
-        enqueue_to_dispatcher([this, buffer, sender_endpoint] {
+        enqueue_to_dispatcher([this, buffer] {
           if (buffer->empty()) {
             return;
           }
@@ -113,7 +113,15 @@ public:
               return;
             }
 
-            received(buffer, sender_endpoint);
+            auto json = nlohmann::json::from_msgpack(*buffer);
+            auto ot = json.at("operation_type").template get<operation_type>();
+            if (!shared_secret_authentication_client_.verify_shared_secret(json,
+                                                                           ot)) {
+              return;
+            }
+
+            received(ot,
+                     json);
           } catch (std::exception& e) {
             logger::get_logger()->error("core_service_client received data is corrupted");
           }

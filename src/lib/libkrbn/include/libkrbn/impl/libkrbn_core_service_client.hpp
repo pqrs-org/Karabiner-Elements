@@ -25,61 +25,54 @@ public:
       set_status(libkrbn_core_service_client_status_closed);
     });
 
-    core_service_client_->received.connect([this](auto&& buffer,
-                                                  auto&& sender_endpoint) {
-      if (buffer) {
-        if (buffer->empty()) {
-          return;
-        }
+    core_service_client_->received.connect([this](auto&& operation_type,
+                                                  auto&& json) {
+      try {
+        switch (operation_type) {
+          case krbn::operation_type::manipulator_environment: {
+            auto json_dump = krbn::json_utility::dump(json.at("manipulator_environment"));
 
-        try {
-          nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-          switch (json.at("operation_type").get<krbn::operation_type>()) {
-            case krbn::operation_type::manipulator_environment: {
-              auto json_dump = krbn::json_utility::dump(json.at("manipulator_environment"));
-
-              for (const auto& c : manipulator_environment_received_callback_manager_.get_callbacks()) {
-                c(json_dump.c_str());
-              }
-
-              break;
+            for (const auto& c : manipulator_environment_received_callback_manager_.get_callbacks()) {
+              c(json_dump.c_str());
             }
 
-            case krbn::operation_type::connected_devices: {
-              auto json_dump = krbn::json_utility::dump(json.at("connected_devices"));
-
-              for (const auto& c : connected_devices_received_callback_manager_.get_callbacks()) {
-                c(json_dump.c_str());
-              }
-
-              break;
-            }
-
-            case krbn::operation_type::notification_message: {
-              auto message = json.at("notification_message").get<std::string>();
-              for (const auto& c : notification_message_received_callback_manager_.get_callbacks()) {
-                c(message.c_str());
-              }
-
-              break;
-            }
-
-            case krbn::operation_type::system_variables: {
-              auto json_dump = krbn::json_utility::dump(json.at("system_variables"));
-
-              for (const auto& c : system_variables_received_callback_manager_.get_callbacks()) {
-                c(json_dump.c_str());
-              }
-
-              break;
-            }
-
-            default:
-              break;
+            break;
           }
-        } catch (std::exception& e) {
-          krbn::logger::get_logger()->error("libkrbn_core_service_client received data is corrupted");
+
+          case krbn::operation_type::connected_devices: {
+            auto json_dump = krbn::json_utility::dump(json.at("connected_devices"));
+
+            for (const auto& c : connected_devices_received_callback_manager_.get_callbacks()) {
+              c(json_dump.c_str());
+            }
+
+            break;
+          }
+
+          case krbn::operation_type::notification_message: {
+            auto message = json.at("notification_message").get<std::string>();
+            for (const auto& c : notification_message_received_callback_manager_.get_callbacks()) {
+              c(message.c_str());
+            }
+
+            break;
+          }
+
+          case krbn::operation_type::system_variables: {
+            auto json_dump = krbn::json_utility::dump(json.at("system_variables"));
+
+            for (const auto& c : system_variables_received_callback_manager_.get_callbacks()) {
+              c(json_dump.c_str());
+            }
+
+            break;
+          }
+
+          default:
+            break;
         }
+      } catch (std::exception& e) {
+        krbn::logger::get_logger()->error("libkrbn_core_service_client received data is corrupted");
       }
     });
   }

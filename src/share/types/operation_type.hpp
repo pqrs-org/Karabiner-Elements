@@ -14,6 +14,8 @@ enum class operation_type : uint8_t {
   core_service_bundle_permission_check_result,
   frontmost_application_changed,
   focused_ui_element_changed,
+  // core_service (daemon) -> core_service (agent)
+  refresh_core_service_bundle_permission_check_result,
   // console_user_server -> core_service (deamon)
   system_preferences_updated,
   input_source_changed,
@@ -72,6 +74,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::shared_secret, "shared_secret"},
         {operation_type::console_user_id_changed, "console_user_id_changed"},
         {operation_type::core_service_bundle_permission_check_result, "core_service_bundle_permission_check_result"},
+        {operation_type::refresh_core_service_bundle_permission_check_result, "refresh_core_service_bundle_permission_check_result"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::focused_ui_element_changed, "focused_ui_element_changed"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},
