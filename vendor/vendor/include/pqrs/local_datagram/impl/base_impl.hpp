@@ -26,12 +26,12 @@ public:
   // Signals (invoked from the dispatcher thread)
 
   nod::signal<void(const std::string&)> warning_reported;
-  nod::signal<void(void)> bound;
+  nod::signal<void()> bound;
   nod::signal<void(const asio::error_code&)> bind_failed;
   nod::signal<void(not_null_shared_ptr_t<std::vector<uint8_t>>,
                    not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> sender_endpoint)>
       received;
-  nod::signal<void(void)> closed;
+  nod::signal<void()> closed;
   nod::signal<void(not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> sender_endpoint)> next_heartbeat_deadline_exceeded;
   nod::signal<void(const asio::error_code&)> error_occurred;
 
@@ -58,12 +58,12 @@ protected:
     });
   }
 
-  virtual ~base_impl(void) {
+  virtual ~base_impl() {
   }
 
   // We have to terminate asio and pqrs::dispatcher while all instance variables of child class are alive.
   // Thus, `base_impl::terminate` is provided to terminate in the decstructor of child class.
-  void terminate_base_impl(void) {
+  void terminate_base_impl() {
     //
     // asio
     //
@@ -105,7 +105,7 @@ protected:
     socket_->set_option(asio::socket_base::send_buffer_size(buffer_size + 1));
   }
 
-  void start_actors(void) {
+  void start_actors() {
     //
     // Sender
     //
@@ -125,7 +125,7 @@ protected:
   }
 
 public:
-  void async_close(void) {
+  void async_close() {
     asio::post(io_ctx_, [this] {
       if (!socket_) {
         return;
@@ -175,7 +175,7 @@ public:
 #pragma region server
 
   // This method is executed in `io_ctx_thread_`.
-  void async_receive(void) {
+  void async_receive() {
     if (!socket_ ||
         !socket_ready_) {
       return;
@@ -413,7 +413,7 @@ protected:
   }
 
   // This method is executed in `io_ctx_thread_`.
-  void pop_front_send_entry(void) {
+  void pop_front_send_entry() {
     if (send_entries_->empty()) {
       return;
     }
@@ -429,7 +429,7 @@ protected:
   }
 
   // This method is executed in `io_ctx_thread_`.
-  void check_send_deadline(void) {
+  void check_send_deadline() {
     if (!socket_ ||
         !socket_ready_) {
       return;

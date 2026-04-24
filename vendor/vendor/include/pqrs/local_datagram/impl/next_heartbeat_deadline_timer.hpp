@@ -23,7 +23,7 @@ public:
   // Signals (invoked from the dispatcher thread)
   //
 
-  nod::signal<void(void)> next_heartbeat_deadline_exceeded;
+  nod::signal<void()> next_heartbeat_deadline_exceeded;
 
   //
   // Methods
@@ -38,11 +38,11 @@ public:
     set_timer(deadline);
   }
 
-  ~next_heartbeat_deadline_timer(void) {
+  ~next_heartbeat_deadline_timer() {
     detach_from_dispatcher();
   }
 
-  not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> get_sender_endpoint(void) const {
+  not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint> get_sender_endpoint() const {
     return sender_endpoint_;
   }
 

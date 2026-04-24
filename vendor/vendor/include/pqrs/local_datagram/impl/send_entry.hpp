@@ -39,7 +39,7 @@ public:
 
   send_entry(type t,
              std::shared_ptr<asio::local::datagram_protocol::endpoint> destination_endpoint,
-             std::function<void(void)> processed = nullptr) : destination_endpoint_(destination_endpoint),
+             std::function<void()> processed = nullptr) : destination_endpoint_(destination_endpoint),
                                                               processed_(processed),
                                                               bytes_transferred_(0),
                                                               no_buffer_space_error_count_(0) {
@@ -49,7 +49,7 @@ public:
   send_entry(type t,
              const std::vector<uint8_t>& v,
              std::shared_ptr<asio::local::datagram_protocol::endpoint> destination_endpoint,
-             std::function<void(void)> processed = nullptr) : destination_endpoint_(destination_endpoint),
+             std::function<void()> processed = nullptr) : destination_endpoint_(destination_endpoint),
                                                               processed_(processed),
                                                               bytes_transferred_(0),
                                                               no_buffer_space_error_count_(0) {
@@ -64,7 +64,7 @@ public:
              const uint8_t* p,
              size_t length,
              std::shared_ptr<asio::local::datagram_protocol::endpoint> destination_endpoint,
-             std::function<void(void)> processed = nullptr) : destination_endpoint_(destination_endpoint),
+             std::function<void()> processed = nullptr) : destination_endpoint_(destination_endpoint),
                                                               processed_(processed),
                                                               bytes_transferred_(0),
                                                               no_buffer_space_error_count_(0) {
@@ -77,19 +77,19 @@ public:
     }
   }
 
-  std::shared_ptr<asio::local::datagram_protocol::endpoint> get_destination_endpoint(void) const {
+  std::shared_ptr<asio::local::datagram_protocol::endpoint> get_destination_endpoint() const {
     return destination_endpoint_;
   }
 
-  const std::function<void(void)>& get_processed(void) const {
+  const std::function<void()>& get_processed() const {
     return processed_;
   }
 
-  size_t get_bytes_transferred(void) const {
+  size_t get_bytes_transferred() const {
     return bytes_transferred_;
   }
 
-  size_t get_no_buffer_space_error_count(void) const {
+  size_t get_no_buffer_space_error_count() const {
     return no_buffer_space_error_count_;
   }
 
@@ -97,7 +97,7 @@ public:
     no_buffer_space_error_count_ = value;
   }
 
-  const asio::const_buffer make_buffer(void) const {
+  const asio::const_buffer make_buffer() const {
     if (bytes_transferred_ >= buffer_.size()) {
       return asio::const_buffer();
     }
@@ -111,7 +111,7 @@ public:
     bytes_transferred_ += value;
   }
 
-  size_t rest_bytes(void) {
+  size_t rest_bytes() {
     if (bytes_transferred_ >= buffer_.size()) {
       return 0;
     }
@@ -119,14 +119,14 @@ public:
     return buffer_.size() - bytes_transferred_;
   }
 
-  bool transfer_complete(void) {
+  bool transfer_complete() {
     return bytes_transferred_ >= buffer_.size();
   }
 
 private:
   std::vector<uint8_t> buffer_;
   std::shared_ptr<asio::local::datagram_protocol::endpoint> destination_endpoint_;
-  std::function<void(void)> processed_;
+  std::function<void()> processed_;
   size_t bytes_transferred_;
   size_t no_buffer_space_error_count_;
 };

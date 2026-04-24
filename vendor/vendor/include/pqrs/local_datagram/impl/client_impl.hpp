@@ -39,7 +39,7 @@ public:
         client_socket_check_client_send_entries_(std::make_shared<std::deque<not_null_shared_ptr_t<impl::send_entry>>>()) {
   }
 
-  ~client_impl(void) {
+  ~client_impl() {
     async_close();
 
     terminate_base_impl();
@@ -171,7 +171,7 @@ private:
   }
 
   // This method is executed in `io_ctx_thread_`.
-  void stop_server_check(void) {
+  void stop_server_check() {
     server_check_timer_.stop();
   }
 
@@ -213,7 +213,7 @@ private:
   }
 
   // This method is executed in `io_ctx_thread_`.
-  void stop_client_socket_check(void) {
+  void stop_client_socket_check() {
     client_socket_check_timer_.stop();
     client_socket_check_client_impl_ = nullptr;
   }

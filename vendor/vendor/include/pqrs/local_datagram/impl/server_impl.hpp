@@ -31,7 +31,7 @@ public:
         server_check_client_send_entries_(std::make_shared<std::deque<not_null_shared_ptr_t<impl::send_entry>>>()) {
   }
 
-  ~server_impl(void) {
+  ~server_impl() {
     async_close();
 
     terminate_base_impl();
@@ -118,7 +118,7 @@ private:
   }
 
   // This method is executed in `io_ctx_thread_`.
-  void stop_server_check(void) {
+  void stop_server_check() {
     server_check_timer_.stop();
     server_check_client_impl_ = nullptr;
   }

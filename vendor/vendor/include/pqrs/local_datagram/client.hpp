@@ -21,7 +21,7 @@ public:
   nod::signal<void(const std::string&)> warning_reported;
   nod::signal<void(std::optional<pid_t> peer_pid)> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
-  nod::signal<void(void)> closed;
+  nod::signal<void()> closed;
   nod::signal<void(const asio::error_code&)> error_occurred;
   nod::signal<void(not_null_shared_ptr_t<std::vector<uint8_t>>,
                    not_null_shared_ptr_t<asio::local::datagram_protocol::endpoint>)>
@@ -105,7 +105,7 @@ public:
     });
   }
 
-  virtual ~client(void) {
+  virtual ~client() {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -131,24 +131,24 @@ public:
     reconnect_interval_ = value;
   }
 
-  void set_server_socket_file_path_resolver(std::function<std::filesystem::path(void)> value) {
+  void set_server_socket_file_path_resolver(std::function<std::filesystem::path()> value) {
     server_socket_file_path_resolver_ = value;
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       connect();
     });
   }
 
-  void async_stop(void) {
+  void async_stop() {
     enqueue_to_dispatcher([this] {
       stop();
     });
   }
 
   void async_send(const std::vector<uint8_t>& v,
-                  std::function<void(void)> processed = nullptr) {
+                  std::function<void()> processed = nullptr) {
     auto entry = std::make_shared<impl::send_entry>(impl::send_entry::type::user_data,
                                                     v,
                                                     nullptr,
@@ -158,7 +158,7 @@ public:
 
   void async_send(const uint8_t* p,
                   size_t length,
-                  std::function<void(void)> processed = nullptr) {
+                  std::function<void()> processed = nullptr) {
     auto entry = std::make_shared<impl::send_entry>(impl::send_entry::type::user_data,
                                                     p,
                                                     length,
@@ -169,7 +169,7 @@ public:
 
 private:
   // This method is executed in the dispatcher thread.
-  void stop(void) {
+  void stop() {
     // We have to unset reconnect_interval_ before `close` to prevent `start_reconnect_timer` by `closed` signal.
     reconnect_interval_ = std::nullopt;
 
@@ -177,7 +177,7 @@ private:
   }
 
   // This method is executed in the dispatcher thread.
-  void connect(void) {
+  void connect() {
     if (client_impl_) {
       std::filesystem::path server_socket_file_path;
 
@@ -197,12 +197,12 @@ private:
   }
 
   // This method is executed in the dispatcher thread.
-  void close(void) {
+  void close() {
     client_impl_ = nullptr;
   }
 
   // This method is executed in the dispatcher thread.
-  void start_reconnect_timer(void) {
+  void start_reconnect_timer() {
     if (reconnect_interval_) {
       enqueue_to_dispatcher(
           [this] {
@@ -248,7 +248,7 @@ private:
   std::optional<std::chrono::milliseconds> next_heartbeat_deadline_;
   std::optional<std::chrono::milliseconds> client_socket_check_interval_;
   std::optional<std::chrono::milliseconds> reconnect_interval_;
-  std::function<std::filesystem::path(void)> server_socket_file_path_resolver_;
+  std::function<std::filesystem::path()> server_socket_file_path_resolver_;
 
   not_null_shared_ptr_t<std::deque<not_null_shared_ptr_t<impl::send_entry>>> client_send_entries_;
   std::shared_ptr<impl::client_impl> client_impl_;
