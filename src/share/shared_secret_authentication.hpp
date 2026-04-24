@@ -156,8 +156,12 @@ public:
   }
 
   void async_send(const std::filesystem::path& peer_socket_file_path,
-                  const nlohmann::json& json) const {
+                  nlohmann::json json) const {
     if (verified_peer_manager_) {
+      if (auto shared_secret = verified_peer_manager_->find_shared_secret(peer_socket_file_path)) {
+        json["shared_secret"] = *shared_secret;
+      }
+
       verified_peer_manager_->async_send(peer_socket_file_path,
                                          nlohmann::json::to_msgpack(json));
     }
