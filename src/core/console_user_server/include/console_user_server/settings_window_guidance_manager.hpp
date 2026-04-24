@@ -98,9 +98,7 @@ private:
     }
 
     update_karabiner_json_parse_error_message_alert_state(state.get_karabiner_json_parse_error_message());
-    virtual_hid_keyboard_ready_ = state.get_virtual_hid_keyboard_ready().value_or(false);
-    virtual_hid_keyboard_type_not_set_ = state.get_virtual_hid_keyboard_type_not_set().value_or(false);
-    update_settings_alert_state();
+    update_settings_alert_state(state);
 
     update_guidance_state(virtual_hid_device_service_client_not_connected_alert_state_,
                           make_inverted_alert_state(state.get_virtual_hid_device_service_client_connected()));
@@ -127,6 +125,10 @@ private:
     auto core_agents_running = services_utility::core_agents_running();
     auto services_running = core_daemons_running && core_agents_running;
 
+    auto previous_services_running = services_running_;
+    auto previous_services_not_running = services_enabled_ &&
+                                         !services_running_;
+
     services_enabled_ = services_enabled;
     services_running_ = services_running;
     core_daemons_enabled_ = core_daemons_enabled;
@@ -134,15 +136,12 @@ private:
     core_daemons_running_ = core_daemons_running;
     core_agents_running_ = core_agents_running;
 
-    if (!previous_services_running_ ||
-        *previous_services_running_ != services_running) {
-      previous_services_running_ = services_running;
-      if (!services_running) {
-        services_waiting_started_at_ = std::chrono::steady_clock::now();
-      }
+    if (previous_services_running != services_running_ &&
+        !services_running_) {
+      services_waiting_started_at_ = std::chrono::steady_clock::now();
     }
 
-    update_services_not_running_alert_state();
+    update_services_not_running_alert_state(previous_services_not_running);
 
     if (!services_running) {
       services_utility::register_core_daemons();
@@ -248,23 +247,21 @@ private:
         });
   }
 
-  void update_settings_alert_state(void) {
-    auto settings_alert = virtual_hid_keyboard_ready_ &&
-                          virtual_hid_keyboard_type_not_set_;
+  void update_settings_alert_state(const core_service_daemon_state& state) {
+    auto settings_alert = state.get_virtual_hid_keyboard_ready().value_or(false) &&
+                          state.get_virtual_hid_keyboard_type_not_set().value_or(false);
     update_guidance_state(settings_alert_state_,
                           settings_alert ? guidance_state::active : guidance_state::inactive);
   }
 
-  void update_services_not_running_alert_state(void) {
+  void update_services_not_running_alert_state(bool previous_services_not_running) {
     auto services_not_running = services_enabled_ &&
                                 !services_running_;
 
-    if (previous_services_not_running_ &&
-        *previous_services_not_running_ == services_not_running) {
+    if (previous_services_not_running == services_not_running) {
       return;
     }
 
-    previous_services_not_running_ = services_not_running;
     ++services_running_generation_;
 
     if (!services_not_running) {
@@ -426,8 +423,6 @@ private:
   guidance_state driver_version_mismatched_alert_state_ = guidance_state::unknown;
   guidance_state driver_not_connected_alert_state_ = guidance_state::unknown;
 
-  bool virtual_hid_keyboard_ready_ = false;
-  bool virtual_hid_keyboard_type_not_set_ = false;
   bool services_enabled_ = true;
   bool services_running_ = true;
   std::size_t services_running_generation_ = 0;
@@ -439,8 +434,6 @@ private:
   std::size_t driver_connected_generation_ = 0;
   std::string karabiner_json_parse_error_message_;
   std::size_t karabiner_json_parse_error_message_generation_ = 0;
-  std::optional<bool> previous_services_running_;
-  std::optional<bool> previous_services_not_running_;
   std::chrono::steady_clock::time_point services_waiting_started_at_ = std::chrono::steady_clock::now();
   core_service_daemon_state core_service_deamon_state_;
 };
