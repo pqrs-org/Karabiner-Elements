@@ -10,26 +10,26 @@
 #include "types.hpp"
 #include <mutex>
 
-namespace pqrs {
-namespace dispatcher {
+namespace pqrs::dispatcher {
 class time_source {
 public:
-  virtual time_point now(void) = 0;
+  virtual ~time_source() = default;
+  virtual time_point now() = 0;
 };
 
 class hardware_time_source final : public time_source {
 public:
-  virtual time_point now(void) {
+  time_point now() override {
     return std::chrono::time_point_cast<duration>(std::chrono::system_clock::now());
   }
 };
 
 class pseudo_time_source final : public time_source {
 public:
-  pseudo_time_source(void) : now_(duration(0)) {
+  pseudo_time_source() : now_(duration::zero()) {
   }
 
-  virtual time_point now(void) {
+  time_point now() override {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return now_;
@@ -45,5 +45,4 @@ private:
   time_point now_;
   mutable std::mutex mutex_;
 };
-} // namespace dispatcher
-} // namespace pqrs
+} // namespace pqrs::dispatcher

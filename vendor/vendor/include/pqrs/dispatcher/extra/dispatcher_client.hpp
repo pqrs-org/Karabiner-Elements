@@ -10,19 +10,18 @@
 #include "shared_dispatcher.hpp"
 #include <memory>
 
-namespace pqrs {
-namespace dispatcher {
-namespace extra {
+namespace pqrs::dispatcher::extra {
 class dispatcher_client {
 public:
   dispatcher_client(std::weak_ptr<dispatcher> weak_dispatcher = get_shared_dispatcher()) : weak_dispatcher_(weak_dispatcher),
                                                                                            object_id_(make_new_object_id()) {
     if (auto d = weak_dispatcher_.lock()) {
+      // `attach` may fail if the dispatcher is terminating or already terminated.
       d->attach(object_id_);
     }
   }
 
-  virtual ~dispatcher_client(void) {
+  virtual ~dispatcher_client() {
     if (auto d = weak_dispatcher_.lock()) {
       if (d->attached(object_id_)) {
         // You must use detach_from_dispatcher explicitly.
@@ -31,26 +30,30 @@ public:
     }
   }
 
-  void detach_from_dispatcher(void) const {
+  void detach_from_dispatcher() const {
     if (auto d = weak_dispatcher_.lock()) {
       d->detach(object_id_);
     }
   }
 
-  void detach_from_dispatcher(std::function<void(void)> function) const {
+  void detach_from_dispatcher(std::function<void()> function) const {
     if (auto d = weak_dispatcher_.lock()) {
       d->detach(object_id_, function);
     }
   }
 
-  void enqueue_to_dispatcher(std::function<void(void)> function,
+  // Returns false if the dispatcher is unavailable, terminating, already
+  // terminated, or this client is no longer attached.
+  bool enqueue_to_dispatcher(std::function<void()> function,
                              time_point when = dispatcher::when_immediately()) const {
     if (auto d = weak_dispatcher_.lock()) {
-      d->enqueue(object_id_, function, when);
+      return d->enqueue(object_id_, function, when);
     }
+
+    return false;
   }
 
-  time_point when_now(void) const {
+  time_point when_now() const {
     if (auto d = weak_dispatcher_.lock()) {
       if (auto s = d->lock_weak_time_source()) {
         return s->now();
@@ -60,14 +63,14 @@ public:
     return dispatcher::when_immediately();
   }
 
-  bool attached(void) {
+  bool attached() {
     if (auto d = weak_dispatcher_.lock()) {
       return d->attached(object_id_);
     }
     return false;
   }
 
-  bool dispatcher_thread(void) const {
+  bool dispatcher_thread() const {
     if (auto d = weak_dispatcher_.lock()) {
       return d->dispatcher_thread();
     }
@@ -78,6 +81,4 @@ protected:
   std::weak_ptr<dispatcher> weak_dispatcher_;
   object_id object_id_;
 };
-} // namespace extra
-} // namespace dispatcher
-} // namespace pqrs
+} // namespace pqrs::dispatcher::extra

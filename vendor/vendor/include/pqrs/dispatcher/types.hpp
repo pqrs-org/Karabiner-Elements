@@ -6,9 +6,7 @@
 
 #include <chrono>
 
-namespace pqrs {
-namespace dispatcher {
-typedef std::chrono::milliseconds duration;
-typedef std::chrono::time_point<std::chrono::system_clock, duration> time_point;
-} // namespace dispatcher
-} // namespace pqrs
+namespace pqrs::dispatcher {
+using duration = std::chrono::milliseconds;
+using time_point = std::chrono::time_point<std::chrono::system_clock, duration>;
+} // namespace pqrs::dispatcher

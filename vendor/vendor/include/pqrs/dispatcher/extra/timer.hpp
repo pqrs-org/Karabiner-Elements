@@ -9,9 +9,7 @@
 #include "dispatcher_client.hpp"
 #include <atomic>
 
-namespace pqrs {
-namespace dispatcher {
-namespace extra {
+namespace pqrs::dispatcher::extra {
 
 // Usage Note:
 //
@@ -24,11 +22,11 @@ class timer final {
 public:
   timer(dispatcher_client& dispatcher_client) : dispatcher_client_(dispatcher_client),
                                                 current_function_id_(0),
-                                                interval_(0),
+                                                interval_(duration::zero()),
                                                 enabled_(false) {
   }
 
-  ~timer(void) {
+  ~timer() {
     if (dispatcher_client_.attached()) {
       // Do not release timer before `dispatcher_client_` is detached.
       abort();
@@ -36,11 +34,9 @@ public:
   }
 
   // First, `function` is called once, and then `function` is called every interval specified by `interval`.
-  void start(std::function<void(void)> function,
+  void start(std::function<void()> function,
              duration interval) {
-    enabled_ = true;
-
-    dispatcher_client_.enqueue_to_dispatcher([this, function, interval] {
+    enabled_ = dispatcher_client_.enqueue_to_dispatcher([this, function, interval] {
       ++current_function_id_;
       function_ = function;
       interval_ = interval;
@@ -49,36 +45,43 @@ public:
     });
   }
 
-  void stop(void) {
+  void stop() {
     enabled_ = false;
 
     dispatcher_client_.enqueue_to_dispatcher([this] {
       ++current_function_id_;
       function_ = nullptr;
-      interval_ = duration(0);
+      interval_ = duration::zero();
     });
   }
 
-  bool enabled(void) const {
+  bool enabled() const {
+    // `enabled_` represents the last requested state from the caller thread.
     return enabled_;
   }
 
   // Update the interval.
   // Any `function` call reserved before calling this method will be canceled, and the `function` will be called after `interval` duration.
   //
-  // Special cases:.
-  // - If `interval` == duration(0), this method works same as `stop`.
+  // Special cases:
+  // - If `interval` == duration::zero(), this method works same as `stop`.
   // - If `interval` is same as the current interval, this method does nothing.
   void set_interval(duration interval) {
-    if (interval == duration(0)) {
+    if (interval == duration::zero()) {
       stop();
-    } else if (interval != interval_) {
-      dispatcher_client_.enqueue_to_dispatcher([this, interval] {
-        ++current_function_id_;
-        interval_ = interval;
+    } else {
+      if (!dispatcher_client_.enqueue_to_dispatcher([this, interval] {
+            if (interval_ == interval) {
+              return;
+            }
 
-        enqueue(current_function_id_);
-      });
+            ++current_function_id_;
+            interval_ = interval;
+
+            enqueue(current_function_id_);
+          })) {
+        enabled_ = false;
+      }
     }
   }
 
@@ -94,16 +97,21 @@ private:
       auto f = function_;
 
       // The `function_` call must be wrapped in enqueue_to_dispatcher in order to avoid heap-use-after-free when the timer itself is destroyed in `function_`.
-      dispatcher_client_.enqueue_to_dispatcher([f] {
-        f();
-      });
+      if (!dispatcher_client_.enqueue_to_dispatcher([f] {
+            f();
+          })) {
+        enabled_ = false;
+        return;
+      }
     }
 
-    enqueue(function_id);
+    if (!enqueue(function_id)) {
+      enabled_ = false;
+    }
   }
 
-  void enqueue(int function_id) {
-    dispatcher_client_.enqueue_to_dispatcher(
+  bool enqueue(int function_id) {
+    return dispatcher_client_.enqueue_to_dispatcher(
         [this, function_id] {
           call_function(function_id);
         },
@@ -112,11 +120,9 @@ private:
 
   dispatcher_client& dispatcher_client_;
   int current_function_id_;
-  std::function<void(void)> function_;
+  std::function<void()> function_;
   duration interval_;
 
   std::atomic<bool> enabled_;
 };
-} // namespace extra
-} // namespace dispatcher
-} // namespace pqrs
+} // namespace pqrs::dispatcher::extra
