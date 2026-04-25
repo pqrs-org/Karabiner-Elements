@@ -8,7 +8,7 @@ namespace pqrs {
 namespace local_datagram {
 
 inline bool non_empty_filesystem_endpoint_path(const std::string& path) {
-  if (path.size() == 0) {
+  if (path.empty()) {
     return false;
   }
 

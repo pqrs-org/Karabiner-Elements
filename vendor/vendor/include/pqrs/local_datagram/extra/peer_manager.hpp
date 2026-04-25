@@ -63,27 +63,27 @@ public:
     void async_send(const std::vector<uint8_t>& v) {
       flush();
 
-      if (connected_) {
-        if (verified_) {
-          client_.async_send(v);
-        }
+      if (connected_ && verified_) {
+        client_.async_send(v);
       } else {
         // Since we cannot verify before the connection is established,
         // enqueue pre-connection items and evaluate them after connected.
-        queue_.push_back(v);
+        queue_.emplace_back(v);
       }
     }
 
     void flush() {
-      if (connected_) {
-        for (auto&& v : queue_) {
-          if (verified_) {
-            client_.async_send(v);
-          }
-        }
-
-        queue_.clear();
+      if (!connected_) {
+        return;
       }
+
+      if (verified_) {
+        for (const auto& v : queue_) {
+          client_.async_send(v);
+        }
+      }
+
+      queue_.clear();
     }
 
   private:
@@ -115,14 +115,12 @@ public:
   void async_send(const std::filesystem::path& peer_socket_file_path,
                   const std::vector<uint8_t>& v) {
     enqueue_to_dispatcher([this, peer_socket_file_path, v] {
-      auto it = entries_.find(peer_socket_file_path);
-      if (it == std::end(entries_)) {
-        it = entries_.insert({peer_socket_file_path,
-                              std::make_shared<entry>(weak_dispatcher_,
-                                                      peer_socket_file_path,
-                                                      buffer_size_)})
-                 .first;
+      auto [it, inserted] = entries_.try_emplace(peer_socket_file_path,
+                                                 std::make_shared<entry>(weak_dispatcher_,
+                                                                         peer_socket_file_path,
+                                                                         buffer_size_));
 
+      if (inserted) {
         std::weak_ptr<entry> weak_entry = make_weak(it->second);
 
         it->second->get_client().connected.connect([this, peer_socket_file_path, weak_entry](auto&& peer_pid) {
@@ -145,11 +143,10 @@ public:
           entries_.erase(peer_socket_file_path);
           erase_shared_secret(peer_socket_file_path);
 
-          auto remaining_verified_peer_count = std::count_if(std::cbegin(entries_),
-                                                             std::cend(entries_),
-                                                             [](const auto& pair) {
-                                                               return pair.second->get_verified();
-                                                             });
+          auto remaining_verified_peer_count = std::ranges::count_if(entries_,
+                                                                     [](const auto& pair) {
+                                                                       return pair.second->get_verified();
+                                                                     });
           peer_closed(peer_socket_file_path,
                       remaining_verified_peer_count);
         });
@@ -180,23 +177,23 @@ public:
                             const std::vector<uint8_t>& shared_secret) const {
     std::lock_guard<std::mutex> lock(shared_secrets_mutex_);
 
-    auto it = shared_secrets_.find(peer_socket_file_path);
-    if (it == std::end(shared_secrets_)) {
+    if (auto it = shared_secrets_.find(peer_socket_file_path);
+        it == std::end(shared_secrets_)) {
       return false;
+    } else {
+      return constant_time_equal(it->second, shared_secret);
     }
-
-    return constant_time_equal(it->second, shared_secret);
   }
 
   std::optional<std::vector<uint8_t>> find_shared_secret(const std::filesystem::path& peer_socket_file_path) const {
     std::lock_guard<std::mutex> lock(shared_secrets_mutex_);
 
-    auto it = shared_secrets_.find(peer_socket_file_path);
-    if (it == std::end(shared_secrets_)) {
+    if (auto it = shared_secrets_.find(peer_socket_file_path);
+        it == std::end(shared_secrets_)) {
       return std::nullopt;
+    } else {
+      return it->second;
     }
-
-    return it->second;
   }
 
 private:

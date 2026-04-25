@@ -122,6 +122,7 @@ public:
               });
             } else {
               socket_ready_ = true;
+              ++next_heartbeat_deadline_timers_generation_;
 
               stop_server_check();
               start_server_check(server_check_interval,
@@ -181,8 +182,12 @@ private:
     if (!socket_ ||
         !socket_ready_) {
       stop_server_check();
+      return;
     }
 
+    // uint32_t is sufficient here because next_heartbeat_deadline is a wait time in milliseconds.
+    // (e.g., 3000 milliseconds)
+    // Values beyond ~49 days are not meaningful for this use case.
     uint32_t next_heartbeat_deadline_value = 0;
     if (next_heartbeat_deadline) {
       next_heartbeat_deadline_value = next_heartbeat_deadline->count();
@@ -225,6 +230,7 @@ private:
     if (!socket_ ||
         !socket_ready_) {
       stop_client_socket_check();
+      return;
     }
 
     if (!client_socket_check_client_impl_) {
