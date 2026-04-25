@@ -11,6 +11,7 @@
 #include "next_heartbeat_deadline_timer.hpp"
 #include "send_entry.hpp"
 #include <algorithm>
+#include <cstring>
 #include <deque>
 #include <filesystem>
 #include <nod/nod.hpp>
@@ -190,8 +191,10 @@ public:
                                       switch (t) {
                                         case send_entry::type::heartbeat:
                                           if (bytes_transferred - 1 >= sizeof(uint32_t)) {
-                                            auto p = reinterpret_cast<const uint32_t*>(&(receive_buffer_[1]));
-                                            auto next_heartbeat_deadline = *p++;
+                                            uint32_t next_heartbeat_deadline = 0;
+                                            std::memcpy(&next_heartbeat_deadline,
+                                                        receive_buffer_.data() + 1,
+                                                        sizeof(next_heartbeat_deadline));
 
                                             if (next_heartbeat_deadline > 0) {
                                               if (!non_empty_filesystem_endpoint_path(receive_sender_endpoint_)) {

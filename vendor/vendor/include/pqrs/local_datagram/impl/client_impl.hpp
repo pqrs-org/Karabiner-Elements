@@ -9,6 +9,7 @@
 #include "asio_helper.hpp"
 #include "base_impl.hpp"
 #include "send_entry.hpp"
+#include <cstring>
 #include <deque>
 #include <filesystem>
 #include <nod/nod.hpp>
@@ -188,8 +189,9 @@ private:
     }
 
     std::vector<uint8_t> v(sizeof(uint32_t));
-    auto p = reinterpret_cast<uint32_t*>(&(v[0]));
-    *p++ = next_heartbeat_deadline_value;
+    std::memcpy(v.data(),
+                &next_heartbeat_deadline_value,
+                sizeof(next_heartbeat_deadline_value));
 
     auto b = std::make_shared<send_entry>(send_entry::type::heartbeat,
                                           v,
