@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_power_management v1.0
+// pqrs::osx::iokit_power_management v1.1.0
 
 // (C) Copyright Takayama Fumihiko 2022.
 // Distributed under the Boost Software License, Version 1.0.
@@ -10,11 +10,9 @@
 
 #include "iokit_power_management/monitor.hpp"
 
-namespace pqrs {
-namespace osx {
-namespace iokit_power_management {
+namespace pqrs::osx::iokit_power_management {
 
-inline iokit_return sleep(void) {
+inline iokit_return sleep() {
   auto port = IOPMFindPowerManagement(MACH_PORT_NULL);
   if (port != IO_OBJECT_NULL) {
     iokit_return r = IOPMSleepSystem(port);
@@ -26,6 +24,4 @@ inline iokit_return sleep(void) {
   return kIOReturnError;
 }
 
-} // namespace iokit_power_management
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::iokit_power_management

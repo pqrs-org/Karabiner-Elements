@@ -7,8 +7,7 @@
 #include "process.hpp"
 #include <sstream>
 
-namespace pqrs {
-namespace process {
+namespace pqrs::process {
 // Execute the command and wait for it to finish​.
 class execute {
 public:
@@ -16,8 +15,11 @@ public:
       : time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
         dispatcher_(std::make_shared<dispatcher::dispatcher>(time_source_)),
         process_(dispatcher_, argv) {
-    // Use `wait` to ensure that all enqueued `stdout_received` and `stderr_received` are called.
-    auto wait = pqrs::make_thread_wait();
+    // `process_.wait()` joins the polling thread, but the signal handlers are
+    // invoked on the dispatcher thread. Use `wait` to ensure that the enqueued
+    // `stdout_received`, `stderr_received`, `run_failed`, and `exited` handlers
+    // have been called before capturing the results.
+    const auto wait = pqrs::make_thread_wait();
 
     std::stringstream stdout;
     std::stringstream stderr;
@@ -36,7 +38,7 @@ public:
       wait->notify();
     });
     process_.exited.connect([this, wait](auto&& status) {
-      exit_code_ = status;
+      exit_code_ = WIFEXITED(status) ? std::optional<int>(WEXITSTATUS(status)) : std::nullopt;
       wait->notify();
     });
     process_.run();
@@ -48,20 +50,20 @@ public:
     stderr_ = stderr.str();
   }
 
-  ~execute(void) {
+  ~execute() {
     dispatcher_->terminate();
     dispatcher_ = nullptr;
   }
 
-  const std::string& get_stdout(void) const {
+  const std::string& get_stdout() const {
     return stdout_;
   }
 
-  const std::string& get_stderr(void) const {
+  const std::string& get_stderr() const {
     return stderr_;
   }
 
-  const std::optional<int>& get_exit_code(void) const {
+  const std::optional<int>& get_exit_code() const {
     return exit_code_;
   }
 
@@ -74,5 +76,4 @@ private:
   std::string stderr_;
   std::optional<int> exit_code_;
 };
-} // namespace process
-} // namespace pqrs
+} // namespace pqrs::process

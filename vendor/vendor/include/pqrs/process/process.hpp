@@ -6,6 +6,7 @@
 
 #include "file_actions.hpp"
 #include "pipe.hpp"
+#include <algorithm>
 #include <csignal>
 #include <nod/nod.hpp>
 #include <optional>
@@ -22,8 +23,7 @@
 extern char** environ;
 #endif
 
-namespace pqrs {
-namespace process {
+namespace pqrs::process {
 // Capture the data using a signal for commands like top -l that produce output at regular intervals.
 class process final : public dispatcher::extra::dispatcher_client {
 public:
@@ -31,7 +31,7 @@ public:
 
   nod::signal<void(std::shared_ptr<std::vector<uint8_t>>)> stdout_received;
   nod::signal<void(std::shared_ptr<std::vector<uint8_t>>)> stderr_received;
-  nod::signal<void(void)> run_failed;
+  nod::signal<void()> run_failed;
   nod::signal<void(int)> exited;
 
   // Methods
@@ -39,16 +39,15 @@ public:
   process(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
           const std::vector<std::string>& argv)
       : dispatcher_client(weak_dispatcher),
+        argv_buffer_(make_argv_buffer(argv)),
+        argv_(make_argv(argv_buffer_)),
+        stdout_pipe_(std::make_unique<pipe>()),
+        stderr_pipe_(std::make_unique<pipe>()),
+        file_actions_(make_file_actions(*stdout_pipe_, *stderr_pipe_)),
         killed_(false) {
-    argv_buffer_ = make_argv_buffer(argv);
-    argv_ = make_argv(argv_buffer_);
-
-    stdout_pipe_ = std::make_unique<pipe>();
-    stderr_pipe_ = std::make_unique<pipe>();
-    file_actions_ = make_file_actions(*stdout_pipe_, *stderr_pipe_);
   }
 
-  ~process(void) {
+  ~process() {
     detach_from_dispatcher([this] {
       kill(SIGKILL);
       wait();
@@ -59,7 +58,7 @@ public:
     });
   }
 
-  std::optional<pid_t> get_pid(void) const {
+  std::optional<pid_t> get_pid() const {
     std::lock_guard<std::mutex> lock(pid_mutex_);
 
     return pid_;
@@ -73,8 +72,36 @@ private:
   }
 
 public:
-  void run(void) {
+  void run() {
+    // `process` is a one-shot object. The pipes and file actions are created
+    // in the constructor and consumed by the first run, so subsequent runs fail.
+    if (run_started_.exchange(true)) {
+      enqueue_to_dispatcher([this] {
+        run_failed();
+      });
+      return;
+    }
+
     killed_ = false;
+
+    //
+    // Run failed immediately if no argv is specified.
+    //
+    // Note:
+    // `argv_` is assembled by `make_argv`, which always appends a trailing `nullptr`,
+    // so its size is `1` when the original argv is empty.
+    //
+
+    if (argv_.size() <= 1 || !argv_[0]) {
+      enqueue_to_dispatcher([this] {
+        run_failed();
+      });
+      return;
+    }
+
+    //
+    // Spawn a process
+    //
 
     pid_t pid;
     if (posix_spawn(&pid,
@@ -99,21 +126,31 @@ public:
     {
       std::lock_guard<std::mutex> lock(thread_mutex_);
 
-      thread_ = std::make_unique<std::thread>([this] {
+      thread_ = std::make_shared<std::thread>([this] {
         std::vector<pollfd> poll_file_descriptors;
+        auto stdout_fd = stdout_pipe_->get_read_end();
+        auto stderr_fd = stderr_pipe_->get_read_end();
 
-        if (auto fd = stdout_pipe_->get_read_end()) {
-          poll_file_descriptors.push_back({*fd, POLLIN, 0});
+        if (stdout_fd) {
+          poll_file_descriptors.push_back({*stdout_fd, POLLIN, 0});
         }
-        if (auto fd = stderr_pipe_->get_read_end()) {
-          poll_file_descriptors.push_back({*fd, POLLIN, 0});
+        if (stderr_fd) {
+          poll_file_descriptors.push_back({*stderr_fd, POLLIN, 0});
         }
 
         if (!poll_file_descriptors.empty()) {
           std::vector<uint8_t> buffer(32 * 1024);
           int timeout = 500;
           while (true) {
-            auto poll_result = poll(&(poll_file_descriptors[0]), poll_file_descriptors.size(), timeout);
+            if (std::none_of(std::begin(poll_file_descriptors),
+                             std::end(poll_file_descriptors),
+                             [](const auto& poll_file_descriptor) {
+                               return poll_file_descriptor.fd != -1;
+                             })) {
+              break;
+            }
+
+            auto poll_result = poll(poll_file_descriptors.data(), poll_file_descriptors.size(), timeout);
 
             if (poll_result < 0) {
               // error
@@ -126,40 +163,64 @@ public:
               continue;
             }
 
-            int fd = 0;
+            bool received = false;
 
-            if (poll_file_descriptors[0].revents & POLLIN) {
-              fd = poll_file_descriptors[0].fd;
+            for (auto& poll_file_descriptor : poll_file_descriptors) {
+              if (poll_file_descriptor.fd == -1) {
+                continue;
+              }
 
-            } else if (poll_file_descriptors[1].revents & POLLIN) {
-              fd = poll_file_descriptors[1].fd;
+              if (poll_file_descriptor.revents & (POLLERR | POLLNVAL)) {
+                poll_file_descriptor.fd = -1;
+                poll_file_descriptor.events = 0;
+                poll_file_descriptor.revents = 0;
+                continue;
+              }
 
-            } else {
-              break;
-            }
+              if (!(poll_file_descriptor.revents & (POLLIN | POLLHUP))) {
+                poll_file_descriptor.revents = 0;
+                continue;
+              }
 
-            auto n = read(fd, &(buffer[0]), buffer.size());
-            if (n > 0) {
+              auto n = read(poll_file_descriptor.fd, &(buffer[0]), buffer.size());
+              if (n == 0) {
+                poll_file_descriptor.fd = -1;
+                poll_file_descriptor.events = 0;
+                poll_file_descriptor.revents = 0;
+                continue;
+              }
+              if (n < 0) {
+                poll_file_descriptor.fd = -1;
+                poll_file_descriptor.events = 0;
+                poll_file_descriptor.revents = 0;
+                break;
+              }
+
               auto b = std::make_shared<std::vector<uint8_t>>(std::begin(buffer), std::begin(buffer) + n);
 
-              if (fd == poll_file_descriptors[0].fd) {
+              if (stdout_fd && poll_file_descriptor.fd == *stdout_fd) {
                 enqueue_to_dispatcher([this, b] {
                   stdout_received(b);
                 });
-              } else if (fd == poll_file_descriptors[1].fd) {
+              } else if (stderr_fd && poll_file_descriptor.fd == *stderr_fd) {
                 enqueue_to_dispatcher([this, b] {
                   stderr_received(b);
                 });
               }
-            } else {
-              break;
+
+              received = true;
+              poll_file_descriptor.revents = 0;
+            }
+
+            if (!received) {
+              continue;
             }
           }
         }
 
         // Wait process
 
-        if (auto pid = get_pid()) {
+        if (const auto pid = get_pid()) {
           int stat;
           if (waitpid(*pid, &stat, 0) == *pid) {
             set_pid(std::nullopt);
@@ -181,7 +242,7 @@ public:
     }
   }
 
-  void wait(void) {
+  void wait() {
     std::shared_ptr<std::thread> t;
 
     {
@@ -198,11 +259,12 @@ public:
 private:
   static std::vector<std::vector<char>> make_argv_buffer(const std::vector<std::string>& argv) {
     std::vector<std::vector<char>> buffer;
+    buffer.reserve(argv.size());
 
     for (const auto& a : argv) {
       std::vector<char> b(std::begin(a), std::end(a));
       b.push_back('\0');
-      buffer.push_back(b);
+      buffer.push_back(std::move(b));
     }
 
     return buffer;
@@ -210,9 +272,10 @@ private:
 
   static std::vector<char*> make_argv(std::vector<std::vector<char>>& buffer) {
     std::vector<char*> argv;
+    argv.reserve(buffer.size() + 1);
 
     for (auto&& b : buffer) {
-      argv.push_back(&(b[0]));
+      argv.push_back(b.data());
     }
 
     argv.push_back(nullptr);
@@ -259,6 +322,6 @@ private:
   mutable std::mutex thread_mutex_;
 
   std::atomic<bool> killed_;
+  std::atomic<bool> run_started_{false};
 };
-} // namespace process
-} // namespace pqrs
+} // namespace pqrs::process

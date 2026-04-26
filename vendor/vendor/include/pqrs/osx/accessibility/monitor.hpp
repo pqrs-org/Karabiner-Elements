@@ -7,6 +7,7 @@
 #include "application.hpp"
 #include "focused_ui_element.hpp"
 #include "impl/impl.h"
+#include <cstdlib>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -36,7 +37,7 @@ private:
   }
 
 public:
-  virtual ~monitor() {
+  ~monitor() override {
     pqrs_osx_accessibility_monitor_unset_callback();
 
     detach_from_dispatcher();
@@ -44,6 +45,10 @@ public:
 
   static void initialize_shared_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) {
     std::lock_guard<std::mutex> guard(shared_monitor_mutex_);
+
+    if (shared_monitor_) {
+      std::abort();
+    }
 
     shared_monitor_ = std::shared_ptr<monitor>(new monitor(weak_dispatcher));
   }
@@ -71,7 +76,7 @@ public:
 private:
   static void static_cpp_callback(int32_t force,
                                   const pqrs_osx_accessibility_snapshot* snapshot) {
-    if (auto m = shared_monitor_; m) {
+    if (auto m = get_shared_monitor().lock()) {
       m->cpp_callback(force, snapshot);
     }
   }
@@ -148,17 +153,18 @@ private:
       return;
     }
 
+    const auto forced = force != 0;
     auto current_application = make_application(*snapshot);
     auto current_focused_ui_element = make_focused_ui_element(*snapshot);
 
-    enqueue_to_dispatcher([this, force, current_application, current_focused_ui_element] {
+    enqueue_to_dispatcher([this, forced, current_application, current_focused_ui_element] {
       // `force` is non-zero when async_trigger() explicitly requests callbacks even if the snapshot is unchanged.
-      if (force != 0 || *last_application_ != *current_application) {
+      if (forced || *last_application_ != *current_application) {
         last_application_ = current_application;
         frontmost_application_changed(current_application);
       }
 
-      if (force != 0 || *last_focused_ui_element_ != *current_focused_ui_element) {
+      if (forced || *last_focused_ui_element_ != *current_focused_ui_element) {
         last_focused_ui_element_ = current_focused_ui_element;
         focused_ui_element_changed(current_focused_ui_element);
       }

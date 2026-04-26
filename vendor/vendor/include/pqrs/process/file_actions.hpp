@@ -10,15 +10,15 @@ namespace pqrs {
 namespace process {
 class file_actions final {
 public:
-  file_actions(void) {
+  file_actions() {
     posix_spawn_file_actions_init(&actions_);
   }
 
-  ~file_actions(void) {
+  ~file_actions() {
     posix_spawn_file_actions_destroy(&actions_);
   }
 
-  posix_spawn_file_actions_t* get_actions(void) {
+  posix_spawn_file_actions_t* get_actions() {
     return &actions_;
   }
 
