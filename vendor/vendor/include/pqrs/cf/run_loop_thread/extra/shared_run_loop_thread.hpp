@@ -6,8 +6,7 @@
 
 // `pqrs::cf::run_loop_thread::extra::shared_run_loop_thread` can be used safely in a multi-threaded environment.
 
-// namespace pqrs {
-// namespace cf {
+// namespace pqrs::cf {
 // class run_loop_thread {
 // class extra {
 
@@ -21,7 +20,7 @@ public:
     }
   }
 
-  void terminate(void) {
+  void terminate() {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (run_loop_thread_) {
@@ -30,19 +29,14 @@ public:
     }
   }
 
-  std::shared_ptr<run_loop_thread> get_run_loop_thread(void) const {
+  std::shared_ptr<run_loop_thread> get_run_loop_thread() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     return run_loop_thread_;
   }
 
-  static std::shared_ptr<shared_run_loop_thread> get_shared_run_loop_thread(void) {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
-
-    static std::shared_ptr<shared_run_loop_thread> p;
-    if (!p) {
-      p = std::make_shared<shared_run_loop_thread>();
-    }
-
+  static std::shared_ptr<shared_run_loop_thread> get_shared_run_loop_thread() {
+    static auto p = std::make_shared<shared_run_loop_thread>();
     return p;
   }
 
@@ -56,12 +50,12 @@ static void initialize_shared_run_loop_thread(failure_policy policy = failure_po
   p->initialize(policy);
 }
 
-static void terminate_shared_run_loop_thread(void) {
+static void terminate_shared_run_loop_thread() {
   auto p = shared_run_loop_thread::get_shared_run_loop_thread();
   p->terminate();
 }
 
-static std::shared_ptr<run_loop_thread> get_shared_run_loop_thread(void) {
+static std::shared_ptr<run_loop_thread> get_shared_run_loop_thread() {
   auto p = shared_run_loop_thread::get_shared_run_loop_thread();
   return p->get_run_loop_thread();
 }

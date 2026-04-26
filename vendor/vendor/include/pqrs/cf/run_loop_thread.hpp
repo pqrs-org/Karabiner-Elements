@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v2.10
+// pqrs::cf::run_loop_thread v2.11
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -13,8 +13,7 @@
 #include <pqrs/thread_wait.hpp>
 #include <thread>
 
-namespace pqrs {
-namespace cf {
+namespace pqrs::cf {
 class run_loop_thread final {
 public:
   enum class failure_policy {
@@ -31,6 +30,8 @@ public:
 
   run_loop_thread(failure_policy policy = failure_policy::abort)
       : failure_policy_(policy) {
+    using namespace std::chrono_literals;
+
     std::atomic<bool> ready = false;
 
     thread_ = std::thread([this, &ready] {
@@ -74,7 +75,7 @@ public:
     auto since = std::chrono::system_clock::now();
     while (!ready) {
       auto now = std::chrono::system_clock::now();
-      if (now - since > std::chrono::milliseconds(3000)) {
+      if (now - since > 3s) {
         // Although this does not usually happen, it is reached when CFRunLoop processing does not start due to a problem with CFRunLoop.
         // Abort because it is irrecoverable.
         if (failure_policy_ == failure_policy::exit) {
@@ -96,11 +97,11 @@ public:
       }
 
       // The period of time should be as short as possible, as the thread sleeps at least once here.
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      std::this_thread::sleep_for(10ms);
     }
   }
 
-  ~run_loop_thread(void) {
+  ~run_loop_thread() {
     if (thread_.joinable()) {
       // We have to call `terminate` before destroy run_loop_thread.
       abort();
@@ -110,7 +111,7 @@ public:
     run_loop_ = nullptr;
   }
 
-  void terminate(void) {
+  void terminate() {
     enqueue(^{
       CFRunLoopStop(*run_loop_);
     });
@@ -120,11 +121,11 @@ public:
     }
   }
 
-  CFRunLoopRef _Nonnull get_run_loop(void) const {
+  CFRunLoopRef _Nonnull get_run_loop() const {
     return *run_loop_;
   }
 
-  void wake(void) const {
+  void wake() const {
     CFRunLoopWakeUp(*run_loop_);
   }
 
@@ -166,5 +167,4 @@ private:
   std::mutex initial_source_mutex_;
   failure_policy failure_policy_;
 };
-} // namespace cf
-} // namespace pqrs
+} // namespace pqrs::cf
