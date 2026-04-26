@@ -64,11 +64,21 @@ int main(int argc, const char* argv[]) {
 
   krbn::components_manager_killer::initialize_shared_components_manager_killer();
 
-  // We have to use raw pointer (not smart pointer) to delete it in `dispatch_async`.
+  // We have to use a raw pointer to control the destruction timing from `kill_called`.
   krbn::session_monitor::components_manager* components_manager = nullptr;
 
   if (auto killer = krbn::components_manager_killer::get_shared_components_manager_killer()) {
-    killer->kill_called.connect([] {
+    killer->kill_called.connect([&components_manager] {
+      // Destroy `components_manager` before stopping the main run loop so that
+      // cleanup code that uses `gcd::dispatch_sync_on_main_queue` can still run
+      // while the main thread is servicing the run loop.
+      // `kill_called` is invoked on the shared dispatcher thread, so we destroy
+      // `components_manager` there before calling `CFRunLoopStop`.
+      if (components_manager) {
+        delete components_manager;
+        components_manager = nullptr;
+      }
+
       dispatch_async(dispatch_get_main_queue(), ^{
         CFRunLoopStop(CFRunLoopGetCurrent());
       });
@@ -82,9 +92,6 @@ int main(int argc, const char* argv[]) {
   //
   // Cleanup
   //
-
-  delete components_manager;
-  components_manager = nullptr;
 
   krbn::components_manager_killer::terminate_shared_components_manager_killer();
 
