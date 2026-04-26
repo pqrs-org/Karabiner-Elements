@@ -116,20 +116,26 @@ private:
     auto core_agents_enabled = services_utility::core_agents_enabled();
     auto core_daemons_running = services_utility::core_daemons_running();
     auto core_agents_running = services_utility::core_agents_running();
-    auto previous_services_running = services_running();
-    auto previous_services_not_running = services_enabled() &&
-                                         !previous_services_running;
+    auto previous_services_not_running = false;
 
-    guidance_context_.set_services_enabled(core_daemons_enabled &&
-                                           core_agents_enabled);
-    guidance_context_.set_core_daemons_enabled(core_daemons_enabled);
-    guidance_context_.set_core_agents_enabled(core_agents_enabled);
-    guidance_context_.set_core_daemons_running(core_daemons_running);
-    guidance_context_.set_core_agents_running(core_agents_running);
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
 
-    if (previous_services_running != services_running() &&
-        !services_running()) {
-      services_waiting_started_at_ = std::chrono::steady_clock::now();
+      auto previous_services_running = services_running();
+      previous_services_not_running = services_enabled() &&
+                                      !previous_services_running;
+
+      guidance_context_.set_services_enabled(core_daemons_enabled &&
+                                             core_agents_enabled);
+      guidance_context_.set_core_daemons_enabled(core_daemons_enabled);
+      guidance_context_.set_core_agents_enabled(core_agents_enabled);
+      guidance_context_.set_core_daemons_running(core_daemons_running);
+      guidance_context_.set_core_agents_running(core_agents_running);
+
+      if (previous_services_running != services_running() &&
+          !services_running()) {
+        services_waiting_started_at_ = std::chrono::steady_clock::now();
+      }
     }
 
     update_services_not_running_alert_state(previous_services_not_running);
