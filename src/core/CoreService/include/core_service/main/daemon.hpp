@@ -112,13 +112,12 @@ int daemon(void) {
 
   CFRunLoopRun();
 
-  {
-    // Mark as main queue to avoid a deadlock in `pqrs::gcd::dispatch_sync_on_main_queue` in destructor.
-    pqrs::gcd::scoped_running_on_main_queue_marker marker;
+  //
+  // Cleanup
+  //
 
-    delete components_manager;
-    components_manager = nullptr;
-  }
+  delete components_manager;
+  components_manager = nullptr;
 
   components_manager_killer::terminate_shared_components_manager_killer();
 
