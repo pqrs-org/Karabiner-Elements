@@ -160,10 +160,12 @@ public:
     if (verified_peer_manager_) {
       if (auto shared_secret = verified_peer_manager_->find_shared_secret(peer_socket_file_path)) {
         json["shared_secret"] = *shared_secret;
+        verified_peer_manager_->async_send(peer_socket_file_path,
+                                           nlohmann::json::to_msgpack(json));
+      } else {
+        logger::get_logger()->warn("shared secret is not found for {0}",
+                                   peer_socket_file_path.string());
       }
-
-      verified_peer_manager_->async_send(peer_socket_file_path,
-                                         nlohmann::json::to_msgpack(json));
     }
   }
 
