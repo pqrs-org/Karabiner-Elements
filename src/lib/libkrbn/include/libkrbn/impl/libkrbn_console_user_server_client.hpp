@@ -60,25 +60,25 @@ public:
     });
   }
 
-  ~libkrbn_console_user_server_client(void) {
+  ~libkrbn_console_user_server_client() {
     detach_from_dispatcher([this] {
       console_user_server_client_ = nullptr;
     });
   }
 
-  void async_start(void) const {
+  void async_start() const {
     console_user_server_client_->async_start();
   }
 
-  libkrbn_console_user_server_client_status get_status(void) const {
+  libkrbn_console_user_server_client_status get_status() const {
     return status_;
   }
 
-  void async_get_settings_window_guidance(void) {
+  void async_get_settings_window_guidance() {
     console_user_server_client_->async_get_settings_window_guidance();
   }
 
-  void async_get_frontmost_application_history(void) {
+  void async_get_frontmost_application_history() {
     console_user_server_client_->async_get_frontmost_application_history();
   }
 

@@ -23,9 +23,9 @@ class console_user_server_client final : public pqrs::dispatcher::extra::dispatc
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  nod::signal<void(void)> connected;
+  nod::signal<void()> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
-  nod::signal<void(void)> closed;
+  nod::signal<void()> closed;
   nod::signal<void(operation_type, const nlohmann::json&)> received;
 
   // Methods
@@ -39,13 +39,13 @@ public:
         client_socket_directory_name_(client_socket_directory_name) {
   }
 
-  virtual ~console_user_server_client(void) {
+  virtual ~console_user_server_client() {
     detach_from_dispatcher([this] {
       stop();
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       if (client_) {
         logger::get_logger()->warn("console_user_server_client is already started.");
@@ -143,13 +143,13 @@ public:
     });
   }
 
-  void async_stop(void) {
+  void async_stop() {
     enqueue_to_dispatcher([this] {
       stop();
     });
   }
 
-  void async_get_user_core_configuration_file_path(void) const {
+  void async_get_user_core_configuration_file_path() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::get_user_core_configuration_file_path},
@@ -159,7 +159,7 @@ public:
     });
   }
 
-  void async_check_for_updates_on_startup(void) const {
+  void async_check_for_updates_on_startup() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::check_for_updates_on_startup},
@@ -169,7 +169,7 @@ public:
     });
   }
 
-  void async_register_menu_agent(void) const {
+  void async_register_menu_agent() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::register_menu_agent},
@@ -179,7 +179,7 @@ public:
     });
   }
 
-  void async_unregister_menu_agent(void) const {
+  void async_unregister_menu_agent() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::unregister_menu_agent},
@@ -189,7 +189,7 @@ public:
     });
   }
 
-  void async_register_multitouch_extension_agent(void) const {
+  void async_register_multitouch_extension_agent() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::register_multitouch_extension_agent},
@@ -199,7 +199,7 @@ public:
     });
   }
 
-  void async_unregister_multitouch_extension_agent(void) const {
+  void async_unregister_multitouch_extension_agent() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::unregister_multitouch_extension_agent},
@@ -209,7 +209,7 @@ public:
     });
   }
 
-  void async_register_notification_window_agent(void) const {
+  void async_register_notification_window_agent() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::register_notification_window_agent},
@@ -219,7 +219,7 @@ public:
     });
   }
 
-  void async_unregister_notification_window_agent(void) const {
+  void async_unregister_notification_window_agent() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::unregister_notification_window_agent},
@@ -304,7 +304,7 @@ public:
   }
 
   // settings_window -> console_user_server
-  void async_get_settings_window_guidance(void) const {
+  void async_get_settings_window_guidance() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::get_settings_window_guidance},
@@ -327,7 +327,7 @@ public:
   }
 
   // event_viewer -> console_user_server
-  void async_get_frontmost_application_history(void) const {
+  void async_get_frontmost_application_history() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::get_frontmost_application_history},
@@ -339,7 +339,7 @@ public:
 
 private:
   void async_send_message(nlohmann::json&& json,
-                          std::function<void(void)> processed = nullptr) const {
+                          std::function<void()> processed = nullptr) const {
     if (!client_) {
       return;
     }
@@ -349,20 +349,20 @@ private:
                                                             processed);
   }
 
-  std::filesystem::path find_console_user_server_socket_file_path(void) const {
+  std::filesystem::path find_console_user_server_socket_file_path() const {
     return filesystem_utility::find_socket_file_path(
         constants::get_console_user_server_socket_directory_path(uid_));
   }
 
-  std::filesystem::path console_user_server_client_socket_directory_path(void) const {
+  std::filesystem::path console_user_server_client_socket_directory_path() const {
     return constants::get_system_user_directory(uid_) / client_socket_directory_name_;
   }
 
-  std::filesystem::path console_user_server_client_socket_file_path(void) const {
+  std::filesystem::path console_user_server_client_socket_file_path() const {
     return console_user_server_client_socket_directory_path() / filesystem_utility::make_socket_file_basename();
   }
 
-  void prepare_console_user_server_client_socket_directory(void) {
+  void prepare_console_user_server_client_socket_directory() {
     auto d = console_user_server_client_socket_directory_path();
 
     //
@@ -383,7 +383,7 @@ private:
     }
   }
 
-  void stop(void) {
+  void stop() {
     if (!client_) {
       return;
     }
