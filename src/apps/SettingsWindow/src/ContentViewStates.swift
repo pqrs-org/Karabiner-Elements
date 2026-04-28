@@ -115,7 +115,7 @@ final class ContentViewStates: ObservableObject {
   func setupItemCompleted(_ item: SetupItem) -> Bool {
     switch item {
     case .services:
-      return guidanceContext.servicesEnabled
+      return guidanceContext.servicesEnabled == true
     case .accessibility:
       return coreServiceDaemonState.accessibilityProcessTrusted == true
     case .inputMonitoring:

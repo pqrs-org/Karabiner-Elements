@@ -2,6 +2,7 @@
 
 #include "types/core_service_daemon_state.hpp"
 #include <nlohmann/json.hpp>
+#include <optional>
 
 namespace krbn {
 enum class settings_window_guidance_setup : uint8_t {
@@ -46,100 +47,113 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 
 class settings_window_guidance_context final {
 public:
-  settings_window_guidance_context(void)
-      : services_enabled_(true),
-        core_daemons_enabled_(true),
-        core_agents_enabled_(true),
-        core_daemons_running_(true),
-        core_agents_running_(true),
-        services_waiting_seconds_(0) {
+  settings_window_guidance_context() {
   }
 
-  bool get_services_enabled(void) const {
-    return services_enabled_;
-  }
-
-  void set_services_enabled(bool value) {
-    services_enabled_ = value;
-  }
-
-  bool get_core_daemons_enabled(void) const {
+  const std::optional<bool>& get_core_daemons_enabled() const {
     return core_daemons_enabled_;
   }
 
-  void set_core_daemons_enabled(bool value) {
+  void set_core_daemons_enabled(const std::optional<bool>& value) {
     core_daemons_enabled_ = value;
   }
 
-  bool get_core_agents_enabled(void) const {
+  const std::optional<bool>& get_core_agents_enabled() const {
     return core_agents_enabled_;
   }
 
-  void set_core_agents_enabled(bool value) {
+  void set_core_agents_enabled(const std::optional<bool>& value) {
     core_agents_enabled_ = value;
   }
 
-  bool get_core_daemons_running(void) const {
+  const std::optional<bool>& get_core_daemons_running() const {
     return core_daemons_running_;
   }
 
-  void set_core_daemons_running(bool value) {
+  void set_core_daemons_running(const std::optional<bool>& value) {
     core_daemons_running_ = value;
   }
 
-  bool get_core_agents_running(void) const {
+  const std::optional<bool>& get_core_agents_running() const {
     return core_agents_running_;
   }
 
-  void set_core_agents_running(bool value) {
+  void set_core_agents_running(const std::optional<bool>& value) {
     core_agents_running_ = value;
   }
 
-  int get_services_waiting_seconds(void) const {
-    return services_waiting_seconds_;
+  std::optional<bool> services_enabled() const {
+    if (core_daemons_enabled_ == std::optional<bool>(true) &&
+        core_agents_enabled_ == std::optional<bool>(true)) {
+      return true;
+    }
+
+    if (core_daemons_enabled_ == std::optional<bool>(false) ||
+        core_agents_enabled_ == std::optional<bool>(false)) {
+      return false;
+    }
+
+    return std::nullopt;
   }
 
-  void set_services_waiting_seconds(int value) {
-    services_waiting_seconds_ = value;
+  std::optional<bool> services_running() const {
+    if (core_daemons_running_ == std::optional<bool>(true) &&
+        core_agents_running_ == std::optional<bool>(true)) {
+      return true;
+    }
+
+    if (core_daemons_running_ == std::optional<bool>(false) ||
+        core_agents_running_ == std::optional<bool>(false)) {
+      return false;
+    }
+
+    return std::nullopt;
   }
 
 private:
-  bool services_enabled_;
-  bool core_daemons_enabled_;
-  bool core_agents_enabled_;
-  bool core_daemons_running_;
-  bool core_agents_running_;
-  int services_waiting_seconds_;
+  std::optional<bool> core_daemons_enabled_;
+  std::optional<bool> core_agents_enabled_;
+  std::optional<bool> core_daemons_running_;
+  std::optional<bool> core_agents_running_;
 };
 
 inline void to_json(nlohmann::json& json, const settings_window_guidance_context& value) {
   json = nlohmann::json::object({
-      {"services_enabled", value.get_services_enabled()},
       {"core_daemons_enabled", value.get_core_daemons_enabled()},
       {"core_agents_enabled", value.get_core_agents_enabled()},
       {"core_daemons_running", value.get_core_daemons_running()},
       {"core_agents_running", value.get_core_agents_running()},
-      {"services_waiting_seconds", value.get_services_waiting_seconds()},
+      {"services_enabled", value.services_enabled()},
+      {"services_running", value.services_running()},
   });
 }
 
 inline void from_json(const nlohmann::json& json, settings_window_guidance_context& value) {
-  value.set_services_enabled(json.at("services_enabled").get<bool>());
-  value.set_core_daemons_enabled(json.at("core_daemons_enabled").get<bool>());
-  value.set_core_agents_enabled(json.at("core_agents_enabled").get<bool>());
-  value.set_core_daemons_running(json.at("core_daemons_running").get<bool>());
-  value.set_core_agents_running(json.at("core_agents_running").get<bool>());
-  value.set_services_waiting_seconds(json.at("services_waiting_seconds").get<int>());
+  const auto get_optional_bool = [](const nlohmann::json& json, const char* key) -> std::optional<bool> {
+    if (json.at(key).is_null()) {
+      return std::nullopt;
+    }
+    return json.at(key).get<bool>();
+  };
+
+  value.set_core_daemons_enabled(get_optional_bool(json,
+                                                   "core_daemons_enabled"));
+  value.set_core_agents_enabled(get_optional_bool(json,
+                                                  "core_agents_enabled"));
+  value.set_core_daemons_running(get_optional_bool(json,
+                                                   "core_daemons_running"));
+  value.set_core_agents_running(get_optional_bool(json,
+                                                  "core_agents_running"));
 }
 
 class settings_window_guidance_state final {
 public:
-  settings_window_guidance_state(void)
+  settings_window_guidance_state()
       : current_setup_(settings_window_guidance_setup::none),
         current_alert_(settings_window_guidance_alert::none) {
   }
 
-  settings_window_guidance_setup get_current_setup(void) const {
+  settings_window_guidance_setup get_current_setup() const {
     return current_setup_;
   }
 
@@ -147,7 +161,7 @@ public:
     current_setup_ = value;
   }
 
-  settings_window_guidance_alert get_current_alert(void) const {
+  settings_window_guidance_alert get_current_alert() const {
     return current_alert_;
   }
 
@@ -155,7 +169,7 @@ public:
     current_alert_ = value;
   }
 
-  const settings_window_guidance_context& get_guidance_context(void) const {
+  const settings_window_guidance_context& get_guidance_context() const {
     return guidance_context_;
   }
 
@@ -163,7 +177,7 @@ public:
     guidance_context_ = value;
   }
 
-  const core_service_daemon_state& get_core_service_daemon_state(void) const {
+  const core_service_daemon_state& get_core_service_daemon_state() const {
     return core_service_deamon_state_;
   }
 

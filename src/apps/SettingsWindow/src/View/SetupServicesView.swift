@@ -51,12 +51,12 @@ struct SetupServicesView: View {
             Label(
               "Karabiner-Elements Non-Privileged Agents v2",
               systemImage:
-                contentViewStates.guidanceContext.coreAgentsEnabled
+                contentViewStates.guidanceContext.coreAgentsEnabled != false
                 ? "checkmark.circle.fill" : "circle")
             Label(
               "Karabiner-Elements Privileged Daemons v2",
               systemImage:
-                contentViewStates.guidanceContext.coreDaemonsEnabled
+                contentViewStates.guidanceContext.coreDaemonsEnabled != false
                 ? "checkmark.circle.fill" : "circle")
           }
         }

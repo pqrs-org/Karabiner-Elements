@@ -43,20 +43,20 @@ struct SettingsWindowCoreServiceState: Codable, Equatable {
 }
 
 struct SettingsWindowGuidanceContext: Codable, Equatable {
-  var servicesEnabled = true
-  var coreDaemonsEnabled = true
-  var coreAgentsEnabled = true
-  var coreDaemonsRunning = true
-  var coreAgentsRunning = true
-  var servicesWaitingSeconds = 0
+  var coreDaemonsEnabled: Bool?
+  var coreAgentsEnabled: Bool?
+  var coreDaemonsRunning: Bool?
+  var coreAgentsRunning: Bool?
+  var servicesEnabled: Bool?
+  var servicesRunning: Bool?
 
   enum CodingKeys: String, CodingKey {
-    case servicesEnabled = "services_enabled"
     case coreDaemonsEnabled = "core_daemons_enabled"
     case coreAgentsEnabled = "core_agents_enabled"
     case coreDaemonsRunning = "core_daemons_running"
     case coreAgentsRunning = "core_agents_running"
-    case servicesWaitingSeconds = "services_waiting_seconds"
+    case servicesEnabled = "services_enabled"
+    case servicesRunning = "services_running"
   }
 }
 

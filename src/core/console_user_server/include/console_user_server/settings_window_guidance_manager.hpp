@@ -10,341 +10,64 @@
 
 namespace krbn {
 namespace console_user_server {
-enum class guidance_state {
-  unknown,
-  inactive,
-  active,
-};
-
 class settings_window_guidance_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  settings_window_guidance_manager(void)
+  settings_window_guidance_manager()
       : dispatcher_client(),
-        current_setup_(settings_window_guidance_setup::none),
-        current_alert_(settings_window_guidance_alert::none) {
+        timer_(*this) {
   }
 
-  ~settings_window_guidance_manager(void) {
-    detach_from_dispatcher();
-  }
-
-  void async_start(void) {
-    enqueue_to_dispatcher([this] {
-      // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.
-      // So we should enable them once before checking the status.
-      services_utility::register_core_daemons();
-      services_utility::register_core_agents();
-
-      // When updating Karabiner-Elements, after the new version is installed, the daemons, agents, and Settings will restart.
-      // To prevent alerts from appearing at that time, if the daemons or agents are enabled, wait for the timer to fire for the process startup check.
-      // If either the daemons or agents are not enabled, usually when the daemons are not approved, trigger the check immediately after startup to show the alert right away.
-      if (services_utility::core_daemons_enabled() &&
-          services_utility::core_agents_enabled()) {
-        enqueue_update_services_conditions();
-      } else {
-        update_services_conditions();
-      }
+  ~settings_window_guidance_manager() {
+    detach_from_dispatcher([this] {
+      timer_.stop();
     });
+  }
+
+  void async_start() {
+    timer_.start(
+        [this] {
+          auto c = make_guidance_context();
+
+          {
+            std::lock_guard<std::mutex> lock(mutex_);
+
+            update_guidance_context(c);
+            update_current_guidance();
+          }
+
+          launch_settings_if_needed();
+        },
+        std::chrono::seconds(3));
   }
 
   void async_update_core_service_daemon_state(const core_service_daemon_state& state) {
     enqueue_to_dispatcher([this, state] {
-      update_core_service_daemon_state_conditions(state);
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        update_core_service_daemon_state_conditions(state);
+        update_current_guidance();
+      }
+
+      launch_settings_if_needed();
     });
   }
 
-  settings_window_guidance_state get_guidance_state(void) const {
+  settings_window_guidance_state get_guidance_state() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     auto state = settings_window_guidance_state();
-
     state.set_current_setup(current_setup_);
     state.set_current_alert(current_alert_);
-
-    auto context = guidance_context_;
-
-    // Update context.services_waiting_seconds
-    auto services_waiting_seconds = 0;
-    if (!context.get_core_daemons_running() ||
-        !context.get_core_agents_running()) {
-      services_waiting_seconds =
-          static_cast<int>(std::chrono::duration_cast<std::chrono::seconds>(
-                               std::chrono::steady_clock::now() - services_waiting_started_at_)
-                               .count());
-    }
-    context.set_services_waiting_seconds(services_waiting_seconds);
-
-    state.set_guidance_context(context);
+    state.set_guidance_context(guidance_context_);
     state.set_core_service_daemon_state(core_service_deamon_state_);
 
     return state;
   }
 
 private:
-  void update_core_service_daemon_state_conditions(const core_service_daemon_state& state) {
-    {
-      std::lock_guard<std::mutex> lock(mutex_);
-      core_service_deamon_state_ = state;
-    }
-
-    auto iohid_listen_event_allowed = std::optional<bool>();
-    auto accessibility_process_trusted = std::optional<bool>();
-    if (auto permission_check_result = state.get_bundle_permission_check_result()) {
-      iohid_listen_event_allowed = permission_check_result->get_iohid_listen_event_allowed();
-      accessibility_process_trusted = permission_check_result->get_accessibility_process_trusted();
-    }
-
-    update_karabiner_json_parse_error_message_alert_state(state.get_karabiner_json_parse_error_message());
-    update_settings_alert_state(state);
-
-    update_virtual_hid_device_service_client_connected(state.get_virtual_hid_device_service_client_connected());
-    update_guidance_state(driver_extension_setup_state_,
-                          make_inverted_alert_state(state.get_driver_activated()));
-    update_driver_connected(state.get_driver_connected());
-    update_guidance_state(driver_version_mismatched_alert_state_,
-                          make_alert_state(state.get_driver_version_mismatched()));
-    update_guidance_state(input_monitoring_setup_state_,
-                          make_inverted_alert_state(iohid_listen_event_allowed));
-    update_guidance_state(accessibility_setup_state_,
-                          make_inverted_alert_state(accessibility_process_trusted));
-
-    update_current_guidance();
-  }
-
-  void update_services_conditions(void) {
-    auto core_daemons_enabled = services_utility::core_daemons_enabled();
-    auto core_agents_enabled = services_utility::core_agents_enabled();
-    auto core_daemons_running = services_utility::core_daemons_running();
-    auto core_agents_running = services_utility::core_agents_running();
-    auto previous_services_not_running = false;
-
-    {
-      std::lock_guard<std::mutex> lock(mutex_);
-
-      auto previous_services_running = services_running();
-      previous_services_not_running = services_enabled() &&
-                                      !previous_services_running;
-
-      guidance_context_.set_services_enabled(core_daemons_enabled &&
-                                             core_agents_enabled);
-      guidance_context_.set_core_daemons_enabled(core_daemons_enabled);
-      guidance_context_.set_core_agents_enabled(core_agents_enabled);
-      guidance_context_.set_core_daemons_running(core_daemons_running);
-      guidance_context_.set_core_agents_running(core_agents_running);
-
-      if (previous_services_running != services_running() &&
-          !services_running()) {
-        services_waiting_started_at_ = std::chrono::steady_clock::now();
-      }
-    }
-
-    update_services_not_running_alert_state(previous_services_not_running);
-
-    if (!services_running()) {
-      services_utility::register_core_daemons();
-      services_utility::register_core_agents();
-    }
-
-    update_current_guidance();
-
-    enqueue_update_services_conditions();
-  }
-
-  void enqueue_update_services_conditions(void) {
-    enqueue_to_dispatcher(
-        [this] {
-          update_services_conditions();
-        },
-        when_now() + std::chrono::seconds(3));
-  }
-
-  template <typename F>
-  void enqueue_delayed_evaluation(std::size_t generation,
-                                  std::size_t settings_window_guidance_manager::* generation_member,
-                                  pqrs::dispatcher::duration delay,
-                                  F&& evaluator) {
-    enqueue_to_dispatcher(
-        [this, generation, generation_member, evaluator = std::forward<F>(evaluator)] {
-          if (this->*generation_member != generation) {
-            return;
-          }
-
-          evaluator();
-        },
-        when_now() + delay);
-  }
-
-  template <typename F>
-  void enqueue_delayed_guidance_activation(
-      guidance_state settings_window_guidance_manager::* target_member,
-      std::size_t settings_window_guidance_manager::* generation_member,
-      pqrs::dispatcher::duration delay,
-      F&& should_activate) {
-    ++(this->*generation_member);
-    auto generation = this->*generation_member;
-
-    update_guidance_state(this->*target_member,
-                          guidance_state::inactive);
-    enqueue_delayed_evaluation(
-        generation,
-        generation_member,
-        delay,
-        [this, target_member, should_activate = std::forward<F>(should_activate)] {
-          if (should_activate()) {
-            update_guidance_state(this->*target_member,
-                                  guidance_state::active);
-          }
-        });
-  }
-
-  void update_virtual_hid_device_service_client_connected(const std::optional<bool>& value) {
-    if (virtual_hid_device_service_client_connected_ == value) {
-      return;
-    }
-
-    virtual_hid_device_service_client_connected_ = value;
-    ++virtual_hid_device_service_client_connected_generation_;
-
-    if (!value) {
-      update_guidance_state(virtual_hid_device_service_client_not_connected_alert_state_,
-                            guidance_state::unknown);
-      return;
-    }
-
-    if (*value) {
-      update_guidance_state(virtual_hid_device_service_client_not_connected_alert_state_,
-                            guidance_state::inactive);
-      return;
-    }
-
-    enqueue_delayed_guidance_activation(
-        &settings_window_guidance_manager::virtual_hid_device_service_client_not_connected_alert_state_,
-        &settings_window_guidance_manager::virtual_hid_device_service_client_connected_generation_,
-        pqrs::dispatcher::duration(std::chrono::seconds(10)),
-        [this] {
-          return virtual_hid_device_service_client_connected_ == false;
-        });
-  }
-
-  void update_driver_connected(const std::optional<bool>& value) {
-    if (driver_connected_ == value) {
-      return;
-    }
-
-    driver_connected_ = value;
-    ++driver_connected_generation_;
-
-    if (!value) {
-      update_guidance_state(driver_not_connected_alert_state_,
-                            guidance_state::unknown);
-      return;
-    }
-
-    if (*value) {
-      update_guidance_state(driver_not_connected_alert_state_,
-                            guidance_state::inactive);
-      return;
-    }
-
-    // `driver_connected` always transitions `nullopt -> false -> true` during normal startup.
-    // If we immediately surface `driver_not_connected_alert_` when it becomes false,
-    // SettingsWindow would show a transient alert while the driver is still connecting.
-    // Therefore, false is treated as a pending state here, and we only show the alert
-    // if it remains false after a delay.
-    enqueue_delayed_guidance_activation(
-        &settings_window_guidance_manager::driver_not_connected_alert_state_,
-        &settings_window_guidance_manager::driver_connected_generation_,
-        pqrs::dispatcher::duration(std::chrono::seconds(3)),
-        [this] {
-          return driver_connected_ == false;
-        });
-  }
-
-  void update_karabiner_json_parse_error_message_alert_state(const std::string& value) {
-    if (karabiner_json_parse_error_message_ == value) {
-      return;
-    }
-
-    karabiner_json_parse_error_message_ = value;
-    ++karabiner_json_parse_error_message_generation_;
-
-    if (value.empty()) {
-      update_guidance_state(doctor_alert_state_,
-                            guidance_state::inactive);
-      return;
-    }
-
-    // karabiner.json can be observed in the middle of an external split write.
-    // Delay surfacing the parse error so a transient partial-write state does not open Settings.
-    enqueue_delayed_guidance_activation(
-        &settings_window_guidance_manager::doctor_alert_state_,
-        &settings_window_guidance_manager::karabiner_json_parse_error_message_generation_,
-        pqrs::dispatcher::duration(std::chrono::seconds(3)),
-        [this] {
-          return !karabiner_json_parse_error_message_.empty();
-        });
-  }
-
-  void update_settings_alert_state(const core_service_daemon_state& state) {
-    auto settings_alert = state.get_virtual_hid_keyboard_ready().value_or(false) &&
-                          state.get_virtual_hid_keyboard_type_not_set().value_or(false);
-    update_guidance_state(settings_alert_state_,
-                          settings_alert ? guidance_state::active : guidance_state::inactive);
-  }
-
-  void update_services_not_running_alert_state(bool previous_services_not_running) {
-    auto services_not_running = services_enabled() &&
-                                !services_running();
-
-    if (previous_services_not_running == services_not_running) {
-      return;
-    }
-
-    ++services_running_generation_;
-
-    if (!services_not_running) {
-      update_guidance_state(services_not_running_alert_state_,
-                            guidance_state::inactive);
-      return;
-    }
-
-    enqueue_delayed_guidance_activation(
-        &settings_window_guidance_manager::services_not_running_alert_state_,
-        &settings_window_guidance_manager::services_running_generation_,
-        pqrs::dispatcher::duration(std::chrono::seconds(10)),
-        [this] {
-          return services_enabled() &&
-                 !services_running();
-        });
-  }
-
-  static guidance_state make_alert_state(const std::optional<bool>& value) {
-    if (!value) {
-      return guidance_state::unknown;
-    }
-
-    return *value ? guidance_state::active : guidance_state::inactive;
-  }
-
-  static guidance_state make_inverted_alert_state(const std::optional<bool>& value) {
-    if (!value) {
-      return guidance_state::unknown;
-    }
-
-    return *value ? guidance_state::inactive : guidance_state::active;
-  }
-
-  void update_guidance_state(guidance_state& target,
-                             guidance_state value) {
-    if (target == value) {
-      return;
-    }
-
-    target = value;
-    update_current_guidance();
-  }
-
-  void update_current_guidance(void) {
+  // This method is executed in the shared dispatcher thread.
+  void update_current_guidance() {
     auto new_current_setup = make_current_setup();
     // Do not show alerts until setup is complete.
     // If alerts take priority in the UI, the required setup may never be completed.
@@ -356,21 +79,17 @@ private:
     auto setup_changed = false;
     auto alert_changed = false;
 
-    {
-      std::lock_guard<std::mutex> lock(mutex_);
-
-      setup_changed = current_setup_ != new_current_setup;
-      alert_changed = current_alert_ != new_current_alert;
-      if (!setup_changed &&
-          !alert_changed) {
-        return;
-      }
-
-      previous_setup = current_setup_;
-      previous_alert = current_alert_;
-      current_setup_ = new_current_setup;
-      current_alert_ = new_current_alert;
+    setup_changed = current_setup_ != new_current_setup;
+    alert_changed = current_alert_ != new_current_alert;
+    if (!setup_changed &&
+        !alert_changed) {
+      return;
     }
+
+    previous_setup = current_setup_;
+    previous_alert = current_alert_;
+    current_setup_ = new_current_setup;
+    current_alert_ = new_current_alert;
 
     if (setup_changed) {
       logger::get_logger()->info("settings_window_guidance_setup changed: {0} -> {1}",
@@ -385,109 +104,203 @@ private:
 
     if (new_current_setup != settings_window_guidance_setup::none ||
         new_current_alert != settings_window_guidance_alert::none) {
-      application_launcher::launch_settings_without_activation();
+      needs_to_launch_settings_ = true;
     }
   }
 
-  settings_window_guidance_setup make_current_setup(void) const {
-    if (!services_enabled()) {
+  // This method is executed in the shared dispatcher thread.
+  settings_window_guidance_context make_guidance_context() {
+    settings_window_guidance_context c;
+
+    // Note:
+    // services_utility::*_enabled and services_utility::*_running may take time because they can trigger process launches.
+    c.set_core_daemons_enabled(services_utility::core_daemons_enabled());
+    c.set_core_agents_enabled(services_utility::core_agents_enabled());
+    c.set_core_daemons_running(services_utility::core_daemons_running());
+    c.set_core_agents_running(services_utility::core_agents_running());
+
+    return c;
+  }
+
+  // This method is executed in the shared dispatcher thread.
+  void update_guidance_context(const settings_window_guidance_context& c) {
+    auto previous_services_enabled = guidance_context_.services_enabled();
+    auto new_services_enabled = c.services_enabled();
+
+    if (previous_services_enabled != new_services_enabled &&
+        new_services_enabled == std::optional<bool>(true)) {
+      services_enabled_at_ = std::chrono::steady_clock::now();
+    }
+
+    guidance_context_ = c;
+  }
+
+  // This method is executed in the shared dispatcher thread.
+  void update_core_service_daemon_state_conditions(const core_service_daemon_state& state) {
+    core_service_deamon_state_ = state;
+
+    //
+    // karabiner_json_parse_error_message_
+    //
+
+    if (karabiner_json_parse_error_message_ != state.get_karabiner_json_parse_error_message()) {
+      karabiner_json_parse_error_message_ = state.get_karabiner_json_parse_error_message();
+
+      if (!karabiner_json_parse_error_message_.empty()) {
+        karabiner_json_parse_error_started_at_ = std::chrono::steady_clock::now();
+      }
+    }
+
+    //
+    // virtual_hid_device_service_client_connected_
+    //
+
+    if (virtual_hid_device_service_client_connected_ != state.get_virtual_hid_device_service_client_connected()) {
+      virtual_hid_device_service_client_connected_ = state.get_virtual_hid_device_service_client_connected();
+
+      if (virtual_hid_device_service_client_connected_ == std::optional<bool>(false)) {
+        virtual_hid_device_service_client_not_connected_started_at_ = std::chrono::steady_clock::now();
+      }
+    }
+
+    //
+    // driver_connected_
+    //
+
+    if (driver_connected_ != state.get_driver_connected()) {
+      driver_connected_ = state.get_driver_connected();
+
+      if (driver_connected_ == std::optional<bool>(false)) {
+        driver_not_connected_started_at_ = std::chrono::steady_clock::now();
+      }
+    }
+  }
+
+  // This method is executed in the shared dispatcher thread.
+  settings_window_guidance_setup make_current_setup() const {
+    if (guidance_context_.services_enabled() == std::optional<bool>(false)) {
       return settings_window_guidance_setup::services;
     }
+
+    auto iohid_listen_event_allowed = std::optional<bool>();
+    auto accessibility_process_trusted = std::optional<bool>();
+    if (auto permission_check_result = core_service_deamon_state_.get_bundle_permission_check_result()) {
+      iohid_listen_event_allowed = permission_check_result->get_iohid_listen_event_allowed();
+      accessibility_process_trusted = permission_check_result->get_accessibility_process_trusted();
+    }
+
     // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
     // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
     // Therefore, since Accessibility permission is requested first,
     // the Accessibility setup is also displayed with higher priority than the Input Monitoring setup.
-    if (accessibility_setup_state_ == guidance_state::active) {
+    if (accessibility_process_trusted == std::optional<bool>(false)) {
       return settings_window_guidance_setup::accessibility;
     }
-    if (input_monitoring_setup_state_ == guidance_state::active) {
+
+    if (iohid_listen_event_allowed == std::optional<bool>(false)) {
       return settings_window_guidance_setup::input_monitoring;
     }
-    if (driver_extension_setup_state_ == guidance_state::active) {
+
+    if (core_service_deamon_state_.get_driver_activated() == std::optional<bool>(false)) {
       return settings_window_guidance_setup::driver_extension;
     }
 
     return settings_window_guidance_setup::none;
   }
 
-  settings_window_guidance_alert make_current_alert(void) const {
-    if (doctor_alert_state_ == guidance_state::active) {
+  // This method is executed in the shared dispatcher thread.
+  settings_window_guidance_alert make_current_alert() const {
+    //
+    // doctor
+    //
+
+    if (!karabiner_json_parse_error_message_.empty() &&
+        std::chrono::steady_clock::now() - karabiner_json_parse_error_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_alert::doctor;
     }
-    if (settings_alert_state_ == guidance_state::active) {
+
+    //
+    // settings
+    //
+
+    if (core_service_deamon_state_.get_virtual_hid_keyboard_ready().value_or(false) &&
+        core_service_deamon_state_.get_virtual_hid_keyboard_type_not_set().value_or(false)) {
       return settings_window_guidance_alert::settings;
     }
-    if (services_not_running_alert_state_ == guidance_state::active) {
+
+    //
+    // services_not_running
+    //
+
+    if (guidance_context_.services_enabled() == std::optional<bool>(true) &&
+        guidance_context_.services_running() == std::optional<bool>(false) &&
+        std::chrono::steady_clock::now() - services_enabled_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::services_not_running;
     }
-    if (virtual_hid_device_service_client_not_connected_alert_state_ == guidance_state::active) {
+
+    //
+    // virtual_hid_device_service_client_not_connected
+    //
+
+    if (virtual_hid_device_service_client_connected_ == std::optional<bool>(false) &&
+        std::chrono::steady_clock::now() - virtual_hid_device_service_client_not_connected_started_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::virtual_hid_device_service_client_not_connected;
     }
-    if (driver_version_mismatched_alert_state_ == guidance_state::active) {
+
+    //
+    // driver_version_mismatched
+    //
+
+    if (core_service_deamon_state_.get_driver_version_mismatched() == std::optional<bool>(true)) {
       return settings_window_guidance_alert::driver_version_mismatched;
     }
-    if (driver_not_connected_alert_state_ == guidance_state::active) {
+
+    //
+    // driver_not_connected
+    //
+
+    if (driver_connected_ == std::optional<bool>(false) &&
+        std::chrono::steady_clock::now() - driver_not_connected_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_alert::driver_not_connected;
     }
 
     return settings_window_guidance_alert::none;
   }
 
-  bool services_enabled(void) const {
-    return guidance_context_.get_services_enabled();
+  // This method is executed in the shared dispatcher thread.
+  void launch_settings_if_needed() {
+    if (needs_to_launch_settings_) {
+      needs_to_launch_settings_ = false;
+
+      application_launcher::launch_settings_without_activation();
+    }
   }
 
-  bool services_running(void) const {
-    return guidance_context_.get_core_daemons_running() &&
-           guidance_context_.get_core_agents_running();
-  }
+  pqrs::dispatcher::extra::timer timer_;
 
   mutable std::mutex mutex_;
 
-  //
-  // For settings_window_guidance_setup
-  //
-
-  settings_window_guidance_setup current_setup_;
-
-  guidance_state accessibility_setup_state_ = guidance_state::unknown;
-  guidance_state input_monitoring_setup_state_ = guidance_state::unknown;
-  guidance_state driver_extension_setup_state_ = guidance_state::unknown;
-
-  //
-  // For settings_window_guidance_alert
-  //
-
-  settings_window_guidance_alert current_alert_;
-
-  // For settings_window_guidance_alert::doctor
-  guidance_state doctor_alert_state_ = guidance_state::inactive;
-  std::string karabiner_json_parse_error_message_;
-  std::size_t karabiner_json_parse_error_message_generation_ = 0;
-
-  // For settings_window_guidance_alert::settings
-  guidance_state settings_alert_state_ = guidance_state::inactive;
-
-  // For settings_window_guidance_alert::services_not_running
-  guidance_state services_not_running_alert_state_ = guidance_state::inactive;
-  std::size_t services_running_generation_ = 0;
-  std::chrono::steady_clock::time_point services_waiting_started_at_ = std::chrono::steady_clock::now();
-
-  // For settings_window_guidance_alert::virtual_hid_device_service_client_not_connected
-  guidance_state virtual_hid_device_service_client_not_connected_alert_state_ = guidance_state::unknown;
-  std::optional<bool> virtual_hid_device_service_client_connected_;
-  std::size_t virtual_hid_device_service_client_connected_generation_ = 0;
-
-  // For settings_window_guidance_alert::driver_version_mismatched
-  guidance_state driver_version_mismatched_alert_state_ = guidance_state::unknown;
-
-  // For settings_window_guidance_alert::driver_not_connected
-  guidance_state driver_not_connected_alert_state_ = guidance_state::unknown;
-  std::optional<bool> driver_connected_;
-  std::size_t driver_connected_generation_ = 0;
-
+  settings_window_guidance_setup current_setup_ = settings_window_guidance_setup::none;
+  settings_window_guidance_alert current_alert_ = settings_window_guidance_alert::none;
   settings_window_guidance_context guidance_context_;
   core_service_daemon_state core_service_deamon_state_;
+
+  bool needs_to_launch_settings_ = false;
+
+  // For settings_window_guidance_alert::doctor
+  std::string karabiner_json_parse_error_message_;
+  std::chrono::steady_clock::time_point karabiner_json_parse_error_started_at_ = std::chrono::steady_clock::now();
+
+  // For settings_window_guidance_alert::services_not_running
+  std::chrono::steady_clock::time_point services_enabled_at_ = std::chrono::steady_clock::now();
+
+  // For settings_window_guidance_alert::virtual_hid_device_service_client_not_connected
+  std::optional<bool> virtual_hid_device_service_client_connected_;
+  std::chrono::steady_clock::time_point virtual_hid_device_service_client_not_connected_started_at_ = std::chrono::steady_clock::now();
+
+  // For settings_window_guidance_alert::driver_not_connected
+  std::optional<bool> driver_connected_;
+  std::chrono::steady_clock::time_point driver_not_connected_started_at_ = std::chrono::steady_clock::now();
 };
 } // namespace console_user_server
 } // namespace krbn

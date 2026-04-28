@@ -9,17 +9,17 @@ struct ServicesNotRunningAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
         Label(
-          "Waiting for the background services",
+          "Some background services are not running",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))
 
         VStack(alignment: .leading, spacing: 0.0) {
           Text(
-            "Waiting for the background services to start for \(contentViewStates.guidanceContext.servicesWaitingSeconds) seconds."
-          )
-          Text(
-            "If the services do not start within 20 seconds, please disable the services and then enable them again."
+            """
+            Although the background services are enabled, some of them are not running.
+            Try disabling the background services once, then enable them again.
+            """
           )
         }
 
@@ -31,28 +31,26 @@ struct ServicesNotRunningAlertView: View {
               Label(
                 "Karabiner-Elements Non-Privileged Agents v2",
                 systemImage:
-                  contentViewStates.guidanceContext.coreAgentsRunning
+                  contentViewStates.guidanceContext.coreAgentsRunning != false
                   ? "checkmark.circle.fill" : "circle")
               Label(
                 "Karabiner-Elements Privileged Daemons v2",
                 systemImage:
-                  contentViewStates.guidanceContext.coreDaemonsRunning
+                  contentViewStates.guidanceContext.coreDaemonsRunning != false
                   ? "checkmark.circle.fill" : "circle")
             }
 
-            if contentViewStates.guidanceContext.servicesWaitingSeconds > 15 {
-              Button(
-                action: {
-                  SMAppService.openSystemSettingsLoginItems()
-                },
-                label: {
-                  Label(
-                    "Open System Settings > General > Login Items & Extensions",
-                    systemImage: "arrow.forward.circle.fill")
-                }
-              )
-              .focused($focus)
-            }
+            Button(
+              action: {
+                SMAppService.openSystemSettingsLoginItems()
+              },
+              label: {
+                Label(
+                  "Open System Settings > General > Login Items & Extensions",
+                  systemImage: "arrow.forward.circle.fill")
+              }
+            )
+            .focused($focus)
           }
           .padding()
         }
