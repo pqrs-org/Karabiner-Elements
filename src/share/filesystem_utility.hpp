@@ -3,8 +3,8 @@
 #include "chrono_utility.hpp"
 #include "constants.hpp"
 #include "logger.hpp"
-#include <glob/glob.hpp>
 #include <pqrs/filesystem.hpp>
+#include <vector>
 #include <string_view>
 
 namespace krbn {
@@ -95,9 +95,20 @@ inline std::filesystem::path make_socket_file_basename(void) {
 }
 
 inline std::filesystem::path find_socket_file_path(const std::filesystem::path& directory) {
-  auto pattern = (directory / "*.sock").string();
-  auto paths = glob::glob(pattern);
-  std::sort(std::begin(paths), std::end(paths));
+  auto paths = std::vector<std::filesystem::path>();
+
+  std::error_code ec;
+  for (const auto& entry : std::filesystem::directory_iterator(directory, ec)) {
+    if (ec) {
+      break;
+    }
+
+    if (entry.path().extension() == ".sock") {
+      paths.push_back(entry.path());
+    }
+  }
+
+  std::ranges::sort(paths);
 
   if (!paths.empty()) {
     return paths.back();
