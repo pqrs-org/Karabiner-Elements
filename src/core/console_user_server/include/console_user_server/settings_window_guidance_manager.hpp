@@ -167,37 +167,40 @@ private:
     // karabiner_json_parse_error_message_
     //
 
-    if (karabiner_json_parse_error_message_ != state.get_karabiner_json_parse_error_message()) {
-      karabiner_json_parse_error_message_ = state.get_karabiner_json_parse_error_message();
-
-      if (!karabiner_json_parse_error_message_.empty()) {
+    if (state.get_karabiner_json_parse_error_message().empty()) {
+      karabiner_json_parse_error_started_at_ = std::nullopt;
+    } else {
+      if (karabiner_json_parse_error_message_ != state.get_karabiner_json_parse_error_message()) {
         karabiner_json_parse_error_started_at_ = when_now();
       }
     }
+    karabiner_json_parse_error_message_ = state.get_karabiner_json_parse_error_message();
 
     //
     // virtual_hid_device_service_client_connected_
     //
 
-    if (virtual_hid_device_service_client_connected_ != state.get_virtual_hid_device_service_client_connected()) {
-      virtual_hid_device_service_client_connected_ = state.get_virtual_hid_device_service_client_connected();
-
-      if (virtual_hid_device_service_client_connected_ == std::optional<bool>(false)) {
+    if (state.get_virtual_hid_device_service_client_connected() != std::optional<bool>(false)) {
+      virtual_hid_device_service_client_not_connected_started_at_ = std::nullopt;
+    } else {
+      if (virtual_hid_device_service_client_connected_ != state.get_virtual_hid_device_service_client_connected()) {
         virtual_hid_device_service_client_not_connected_started_at_ = when_now();
       }
     }
+    virtual_hid_device_service_client_connected_ = state.get_virtual_hid_device_service_client_connected();
 
     //
     // driver_connected_
     //
 
-    if (driver_connected_ != state.get_driver_connected()) {
-      driver_connected_ = state.get_driver_connected();
-
-      if (driver_connected_ == std::optional<bool>(false)) {
+    if (state.get_driver_connected() != std::optional<bool>(false)) {
+      driver_not_connected_started_at_ = std::nullopt;
+    } else {
+      if (driver_connected_ != state.get_driver_connected()) {
         driver_not_connected_started_at_ = when_now();
       }
     }
+    driver_connected_ = state.get_driver_connected();
   }
 
   // This method is executed in the dedicated dispatcher thread.
@@ -238,8 +241,8 @@ private:
     // doctor
     //
 
-    if (!karabiner_json_parse_error_message_.empty() &&
-        when_now() - karabiner_json_parse_error_started_at_ >= std::chrono::seconds(3)) {
+    if (karabiner_json_parse_error_started_at_ &&
+        when_now() - *karabiner_json_parse_error_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_alert::doctor;
     }
 
@@ -265,8 +268,8 @@ private:
     // virtual_hid_device_service_client_not_connected
     //
 
-    if (virtual_hid_device_service_client_connected_ == std::optional<bool>(false) &&
-        when_now() - virtual_hid_device_service_client_not_connected_started_at_ >= std::chrono::seconds(10)) {
+    if (virtual_hid_device_service_client_not_connected_started_at_ &&
+        when_now() - *virtual_hid_device_service_client_not_connected_started_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::virtual_hid_device_service_client_not_connected;
     }
 
@@ -282,8 +285,8 @@ private:
     // driver_not_connected
     //
 
-    if (driver_connected_ == std::optional<bool>(false) &&
-        when_now() - driver_not_connected_started_at_ >= std::chrono::seconds(3)) {
+    if (driver_not_connected_started_at_ &&
+        when_now() - *driver_not_connected_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_alert::driver_not_connected;
     }
 
@@ -315,18 +318,18 @@ private:
 
   // For settings_window_guidance_alert::doctor
   std::string karabiner_json_parse_error_message_;
-  pqrs::dispatcher::time_point karabiner_json_parse_error_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
+  std::optional<pqrs::dispatcher::time_point> karabiner_json_parse_error_started_at_;
 
   // For settings_window_guidance_alert::services_not_running
   std::optional<pqrs::dispatcher::time_point> services_not_running_started_at_;
 
   // For settings_window_guidance_alert::virtual_hid_device_service_client_not_connected
   std::optional<bool> virtual_hid_device_service_client_connected_;
-  pqrs::dispatcher::time_point virtual_hid_device_service_client_not_connected_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
+  std::optional<pqrs::dispatcher::time_point> virtual_hid_device_service_client_not_connected_started_at_;
 
   // For settings_window_guidance_alert::driver_not_connected
   std::optional<bool> driver_connected_;
-  pqrs::dispatcher::time_point driver_not_connected_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
+  std::optional<pqrs::dispatcher::time_point> driver_not_connected_started_at_;
 };
 } // namespace console_user_server
 } // namespace krbn
