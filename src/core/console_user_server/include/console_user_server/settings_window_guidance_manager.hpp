@@ -4,6 +4,8 @@
 #include "logger.hpp"
 #include "services_utility.hpp"
 #include "types/settings_window_guidance_state.hpp"
+#include <functional>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
@@ -12,8 +14,36 @@ namespace krbn {
 namespace console_user_server {
 class settings_window_guidance_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  settings_window_guidance_manager()
-      : dispatcher_client(),
+  using guidance_context_maker = std::function<settings_window_guidance_context()>;
+  using launch_settings_handler = std::function<void()>;
+
+  static guidance_context_maker make_default_guidance_context_maker(void) {
+    return [] {
+      settings_window_guidance_context c;
+
+      // Note:
+      // services_utility::*_enabled and services_utility::*_running may take time because they trigger process launches.
+      c.set_core_daemons_enabled(services_utility::core_daemons_enabled());
+      c.set_core_agents_enabled(services_utility::core_agents_enabled());
+      c.set_core_daemons_running(services_utility::core_daemons_running());
+      c.set_core_agents_running(services_utility::core_agents_running());
+
+      return c;
+    };
+  }
+
+  static launch_settings_handler make_default_launch_settings_handler(void) {
+    return [] {
+      application_launcher::launch_settings_without_activation();
+    };
+  }
+
+  settings_window_guidance_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
+                                   guidance_context_maker guidance_context_maker,
+                                   launch_settings_handler launch_settings_handler = make_default_launch_settings_handler())
+      : dispatcher_client(weak_dispatcher),
+        guidance_context_maker_(std::move(guidance_context_maker)),
+        launch_settings_handler_(std::move(launch_settings_handler)),
         timer_(*this) {
   }
 
@@ -26,7 +56,7 @@ public:
   void async_start() {
     timer_.start(
         [this] {
-          auto c = make_guidance_context();
+          auto c = guidance_context_maker_();
 
           {
             std::lock_guard<std::mutex> lock(mutex_);
@@ -66,7 +96,7 @@ public:
   }
 
 private:
-  // This method is executed in the shared dispatcher thread.
+  // This method is executed in the dedicated dispatcher thread.
   void update_current_guidance() {
     auto new_current_setup = make_current_setup();
     // Do not show alerts until setup is complete.
@@ -108,34 +138,20 @@ private:
     }
   }
 
-  // This method is executed in the shared dispatcher thread.
-  settings_window_guidance_context make_guidance_context() {
-    settings_window_guidance_context c;
-
-    // Note:
-    // services_utility::*_enabled and services_utility::*_running may take time because they can trigger process launches.
-    c.set_core_daemons_enabled(services_utility::core_daemons_enabled());
-    c.set_core_agents_enabled(services_utility::core_agents_enabled());
-    c.set_core_daemons_running(services_utility::core_daemons_running());
-    c.set_core_agents_running(services_utility::core_agents_running());
-
-    return c;
-  }
-
-  // This method is executed in the shared dispatcher thread.
+  // This method is executed in the dedicated dispatcher thread.
   void update_guidance_context(const settings_window_guidance_context& c) {
     auto previous_services_enabled = guidance_context_.services_enabled();
     auto new_services_enabled = c.services_enabled();
 
     if (previous_services_enabled != new_services_enabled &&
         new_services_enabled == std::optional<bool>(true)) {
-      services_enabled_at_ = std::chrono::steady_clock::now();
+      services_enabled_at_ = when_now();
     }
 
     guidance_context_ = c;
   }
 
-  // This method is executed in the shared dispatcher thread.
+  // This method is executed in the dedicated dispatcher thread.
   void update_core_service_daemon_state_conditions(const core_service_daemon_state& state) {
     core_service_deamon_state_ = state;
 
@@ -147,7 +163,7 @@ private:
       karabiner_json_parse_error_message_ = state.get_karabiner_json_parse_error_message();
 
       if (!karabiner_json_parse_error_message_.empty()) {
-        karabiner_json_parse_error_started_at_ = std::chrono::steady_clock::now();
+        karabiner_json_parse_error_started_at_ = when_now();
       }
     }
 
@@ -159,7 +175,7 @@ private:
       virtual_hid_device_service_client_connected_ = state.get_virtual_hid_device_service_client_connected();
 
       if (virtual_hid_device_service_client_connected_ == std::optional<bool>(false)) {
-        virtual_hid_device_service_client_not_connected_started_at_ = std::chrono::steady_clock::now();
+        virtual_hid_device_service_client_not_connected_started_at_ = when_now();
       }
     }
 
@@ -171,12 +187,12 @@ private:
       driver_connected_ = state.get_driver_connected();
 
       if (driver_connected_ == std::optional<bool>(false)) {
-        driver_not_connected_started_at_ = std::chrono::steady_clock::now();
+        driver_not_connected_started_at_ = when_now();
       }
     }
   }
 
-  // This method is executed in the shared dispatcher thread.
+  // This method is executed in the dedicated dispatcher thread.
   settings_window_guidance_setup make_current_setup() const {
     if (guidance_context_.services_enabled() == std::optional<bool>(false)) {
       return settings_window_guidance_setup::services;
@@ -208,14 +224,14 @@ private:
     return settings_window_guidance_setup::none;
   }
 
-  // This method is executed in the shared dispatcher thread.
+  // This method is executed in the dedicated dispatcher thread.
   settings_window_guidance_alert make_current_alert() const {
     //
     // doctor
     //
 
     if (!karabiner_json_parse_error_message_.empty() &&
-        std::chrono::steady_clock::now() - karabiner_json_parse_error_started_at_ >= std::chrono::seconds(3)) {
+        when_now() - karabiner_json_parse_error_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_alert::doctor;
     }
 
@@ -234,7 +250,7 @@ private:
 
     if (guidance_context_.services_enabled() == std::optional<bool>(true) &&
         guidance_context_.services_running() == std::optional<bool>(false) &&
-        std::chrono::steady_clock::now() - services_enabled_at_ >= std::chrono::seconds(10)) {
+        when_now() - services_enabled_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::services_not_running;
     }
 
@@ -243,7 +259,7 @@ private:
     //
 
     if (virtual_hid_device_service_client_connected_ == std::optional<bool>(false) &&
-        std::chrono::steady_clock::now() - virtual_hid_device_service_client_not_connected_started_at_ >= std::chrono::seconds(10)) {
+        when_now() - virtual_hid_device_service_client_not_connected_started_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::virtual_hid_device_service_client_not_connected;
     }
 
@@ -260,21 +276,24 @@ private:
     //
 
     if (driver_connected_ == std::optional<bool>(false) &&
-        std::chrono::steady_clock::now() - driver_not_connected_started_at_ >= std::chrono::seconds(3)) {
+        when_now() - driver_not_connected_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_alert::driver_not_connected;
     }
 
     return settings_window_guidance_alert::none;
   }
 
-  // This method is executed in the shared dispatcher thread.
+  // This method is executed in the dedicated dispatcher thread.
   void launch_settings_if_needed() {
     if (needs_to_launch_settings_) {
       needs_to_launch_settings_ = false;
 
-      application_launcher::launch_settings_without_activation();
+      launch_settings_handler_();
     }
   }
+
+  guidance_context_maker guidance_context_maker_;
+  launch_settings_handler launch_settings_handler_;
 
   pqrs::dispatcher::extra::timer timer_;
 
@@ -289,18 +308,18 @@ private:
 
   // For settings_window_guidance_alert::doctor
   std::string karabiner_json_parse_error_message_;
-  std::chrono::steady_clock::time_point karabiner_json_parse_error_started_at_ = std::chrono::steady_clock::now();
+  pqrs::dispatcher::time_point karabiner_json_parse_error_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
 
   // For settings_window_guidance_alert::services_not_running
-  std::chrono::steady_clock::time_point services_enabled_at_ = std::chrono::steady_clock::now();
+  pqrs::dispatcher::time_point services_enabled_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
 
   // For settings_window_guidance_alert::virtual_hid_device_service_client_not_connected
   std::optional<bool> virtual_hid_device_service_client_connected_;
-  std::chrono::steady_clock::time_point virtual_hid_device_service_client_not_connected_started_at_ = std::chrono::steady_clock::now();
+  pqrs::dispatcher::time_point virtual_hid_device_service_client_not_connected_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
 
   // For settings_window_guidance_alert::driver_not_connected
   std::optional<bool> driver_connected_;
-  std::chrono::steady_clock::time_point driver_not_connected_started_at_ = std::chrono::steady_clock::now();
+  pqrs::dispatcher::time_point driver_not_connected_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
 };
 } // namespace console_user_server
 } // namespace krbn

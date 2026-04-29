@@ -1,5 +1,6 @@
 #pragma once
 
+#include <pqrs/osx/launchctl.hpp>
 #include <pqrs/process.hpp>
 
 namespace krbn {

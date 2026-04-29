@@ -27,11 +27,14 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(void)
+  components_manager()
       : dispatcher_client(),
         version_monitor_(std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path())),
         session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
-        settings_window_guidance_manager_(std::make_shared<settings_window_guidance_manager>()),
+        settings_window_guidance_manager_dispatcher_time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
+        settings_window_guidance_manager_dispatcher_(std::make_shared<pqrs::dispatcher::dispatcher>(settings_window_guidance_manager_dispatcher_time_source_)),
+        settings_window_guidance_manager_(std::make_shared<settings_window_guidance_manager>(settings_window_guidance_manager_dispatcher_,
+                                                                                             settings_window_guidance_manager::make_default_guidance_context_maker())),
         software_function_handler_(std::make_shared<software_function_handler>()) {
     //
     // version_monitor_
@@ -63,19 +66,21 @@ public:
     });
   }
 
-  virtual ~components_manager(void) {
+  virtual ~components_manager() {
     detach_from_dispatcher([this] {
       stop_core_service_client();
 
       receiver_ = nullptr;
       software_function_handler_ = nullptr;
       settings_window_guidance_manager_ = nullptr;
+      settings_window_guidance_manager_dispatcher_ = nullptr;
+      settings_window_guidance_manager_dispatcher_time_source_ = nullptr;
       session_monitor_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
@@ -86,7 +91,7 @@ public:
   }
 
 private:
-  void start_core_service_client(void) {
+  void start_core_service_client() {
     if (core_service_client_) {
       return;
     }
@@ -126,12 +131,12 @@ private:
     core_service_client_->async_start();
   }
 
-  void stop_core_service_client(void) {
+  void stop_core_service_client() {
     core_service_client_ = nullptr;
     stop_child_components();
   }
 
-  void start_child_components(void) {
+  void start_child_components() {
     // system_preferences_monitor_
 
     system_preferences_monitor_ = std::make_unique<pqrs::osx::system_preferences_monitor>(weak_dispatcher_);
@@ -159,7 +164,7 @@ private:
     input_source_monitor_->async_start();
   }
 
-  void stop_child_components(void) {
+  void stop_child_components() {
     system_preferences_monitor_ = nullptr;
     input_source_monitor_ = nullptr;
   }
@@ -170,7 +175,14 @@ private:
 
   std::optional<bool> on_console_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
+
+  // settings_window_guidance_manager internally calls services_utility::core_daemons_enabled() and similar functions.
+  // These are expensive operations that launch processes, and using the same dispatcher as receiver would block receiver processing.
+  // Therefore, a dedicated dispatcher is required for settings_window_guidance_manager.
+  std::shared_ptr<pqrs::dispatcher::hardware_time_source> settings_window_guidance_manager_dispatcher_time_source_;
+  std::shared_ptr<pqrs::dispatcher::dispatcher> settings_window_guidance_manager_dispatcher_;
   std::shared_ptr<settings_window_guidance_manager> settings_window_guidance_manager_;
+
   std::shared_ptr<software_function_handler> software_function_handler_;
   std::shared_ptr<core_service_client> core_service_client_;
 

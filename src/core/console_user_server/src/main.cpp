@@ -74,6 +74,8 @@ int main(int argc, const char* argv[]) {
   //
 
   krbn::services_utility::bootout_old_agents();
+  // Register services when console_user_server starts to avoid missing registrations,
+  // for example when new services are added in an update.
   krbn::services_utility::register_core_daemons();
   krbn::services_utility::register_core_agents();
 
