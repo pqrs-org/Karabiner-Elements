@@ -76,18 +76,26 @@ struct SetupView: View {
             case .services:
               SetupServicesView()
             case .accessibility:
-              SetupAccessibilityView()
-            case .inputMonitoring:
-              if contentViewStates.setupItemCompleted(.accessibility) {
-                SetupInputMonitoringView()
+              if setupItemWaitingForAnotherSetup(.accessibility) {
+                setupServicesFirstView()
               } else {
+                SetupAccessibilityView()
+              }
+            case .inputMonitoring:
+              if setupItemWaitingForAnotherSetup(.inputMonitoring) {
                 setupAccessibilityFirstView()
+              } else {
+                SetupInputMonitoringView()
               }
             case .driverExtension:
-              if #available(macOS 15.0, *) {
-                SetupDriverExtensionView()
+              if setupItemWaitingForAnotherSetup(.driverExtension) {
+                setupServicesFirstView()
               } else {
-                SetupDriverExtensionViewMacOS14()
+                if #available(macOS 15.0, *) {
+                  SetupDriverExtensionView()
+                } else {
+                  SetupDriverExtensionViewMacOS14()
+                }
               }
             }
           }
@@ -110,7 +118,15 @@ struct SetupView: View {
   }
 
   private func setupStatusSystemImage(_ item: SetupItem) -> String {
-    contentViewStates.setupItemCompleted(item) ? "checkmark.circle.fill" : "circle"
+    if contentViewStates.setupItemCompleted(item) {
+      return "checkmark.circle.fill"
+    }
+
+    if setupItemWaitingForAnotherSetup(item) {
+      return "hourglass.circle"
+    }
+
+    return "circle"
   }
 
   @ViewBuilder
@@ -137,6 +153,40 @@ struct SetupView: View {
         """
     case .driverExtension:
       return "Driver Extension is allowed."
+    }
+  }
+
+  private func setupItemWaitingForAnotherSetup(_ item: SetupItem) -> Bool {
+    switch item {
+    case .services:
+      return false
+    case .accessibility:
+      return !contentViewStates.setupItemCompleted(.services)
+    case .inputMonitoring:
+      return !contentViewStates.setupItemCompleted(.accessibility)
+    case .driverExtension:
+      return !contentViewStates.setupItemCompleted(.services)
+    }
+  }
+
+  @ViewBuilder
+  private func setupServicesFirstView() -> some View {
+    VStack(alignment: .leading, spacing: 20.0) {
+      Label(
+        "Please configure Background Services first",
+        systemImage: "lightbulb"
+      )
+      .font(.system(size: 24))
+
+      Button {
+        selectedItem = .services
+      } label: {
+        Label(
+          "Go to Background Services Setup",
+          systemImage: "arrow.left.circle.fill"
+        )
+      }
+      .buttonStyle(.link)
     }
   }
 
