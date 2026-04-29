@@ -148,9 +148,12 @@ private:
         c.services_enabled() == std::optional<bool>(true) &&
         c.services_running() == std::optional<bool>(false);
 
-    if (!previous_services_not_running &&
-        new_services_not_running) {
-      services_not_running_started_at_ = when_now();
+    if (!new_services_not_running) {
+      services_not_running_started_at_ = std::nullopt;
+    } else {
+      if (!previous_services_not_running) {
+        services_not_running_started_at_ = when_now();
+      }
     }
 
     guidance_context_ = c;
@@ -253,9 +256,8 @@ private:
     // services_not_running
     //
 
-    if (guidance_context_.services_enabled() == std::optional<bool>(true) &&
-        guidance_context_.services_running() == std::optional<bool>(false) &&
-        when_now() - services_not_running_started_at_ >= std::chrono::seconds(10)) {
+    if (services_not_running_started_at_ &&
+        when_now() - *services_not_running_started_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::services_not_running;
     }
 
@@ -316,7 +318,7 @@ private:
   pqrs::dispatcher::time_point karabiner_json_parse_error_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
 
   // For settings_window_guidance_alert::services_not_running
-  pqrs::dispatcher::time_point services_not_running_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
+  std::optional<pqrs::dispatcher::time_point> services_not_running_started_at_;
 
   // For settings_window_guidance_alert::virtual_hid_device_service_client_not_connected
   std::optional<bool> virtual_hid_device_service_client_connected_;
