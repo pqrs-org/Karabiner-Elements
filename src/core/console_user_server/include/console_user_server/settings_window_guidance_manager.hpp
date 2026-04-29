@@ -140,12 +140,17 @@ private:
 
   // This method is executed in the dedicated dispatcher thread.
   void update_guidance_context(const settings_window_guidance_context& c) {
-    auto previous_services_enabled = guidance_context_.services_enabled();
-    auto new_services_enabled = c.services_enabled();
+    // Do not set services_not_running_started_at_ while the services are not enabled.
+    auto previous_services_not_running =
+        guidance_context_.services_enabled() == std::optional<bool>(true) &&
+        guidance_context_.services_running() == std::optional<bool>(false);
+    auto new_services_not_running =
+        c.services_enabled() == std::optional<bool>(true) &&
+        c.services_running() == std::optional<bool>(false);
 
-    if (previous_services_enabled != new_services_enabled &&
-        new_services_enabled == std::optional<bool>(true)) {
-      services_enabled_at_ = when_now();
+    if (!previous_services_not_running &&
+        new_services_not_running) {
+      services_not_running_started_at_ = when_now();
     }
 
     guidance_context_ = c;
@@ -250,7 +255,7 @@ private:
 
     if (guidance_context_.services_enabled() == std::optional<bool>(true) &&
         guidance_context_.services_running() == std::optional<bool>(false) &&
-        when_now() - services_enabled_at_ >= std::chrono::seconds(10)) {
+        when_now() - services_not_running_started_at_ >= std::chrono::seconds(10)) {
       return settings_window_guidance_alert::services_not_running;
     }
 
@@ -311,7 +316,7 @@ private:
   pqrs::dispatcher::time_point karabiner_json_parse_error_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
 
   // For settings_window_guidance_alert::services_not_running
-  pqrs::dispatcher::time_point services_enabled_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
+  pqrs::dispatcher::time_point services_not_running_started_at_ = pqrs::dispatcher::time_point(pqrs::dispatcher::duration::zero());
 
   // For settings_window_guidance_alert::virtual_hid_device_service_client_not_connected
   std::optional<bool> virtual_hid_device_service_client_connected_;

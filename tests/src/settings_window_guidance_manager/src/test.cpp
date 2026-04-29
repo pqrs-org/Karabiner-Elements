@@ -130,6 +130,31 @@ int main(void) {
     expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::services_not_running);
   };
 
+  "settings_window_guidance_manager services_not_running ignores short downtime"_test = [] {
+    auto c = manager_test_context(manager_test_context::initialization_parameters{
+        .enabled = true,
+        .running = true,
+    });
+    c.manager.async_start();
+    c.wait_until(std::chrono::milliseconds(0));
+
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+
+    c.current_context.set_core_daemons_running(false);
+    c.current_context.set_core_agents_running(false);
+
+    c.wait_until(std::chrono::milliseconds(5000));
+
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+
+    c.current_context.set_core_daemons_running(true);
+    c.current_context.set_core_agents_running(true);
+
+    c.wait_until(std::chrono::milliseconds(12000));
+
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+  };
+
   "settings_window_guidance_manager setup stays none when services state becomes nullopt"_test = [] {
     auto c = manager_test_context(manager_test_context::initialization_parameters{
         .enabled = true,
