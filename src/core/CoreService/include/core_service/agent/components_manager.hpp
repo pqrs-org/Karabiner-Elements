@@ -9,8 +9,10 @@
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
 #include "services_utility.hpp"
+#include <optional>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/accessibility.hpp>
+#include <pqrs/osx/session.hpp>
 
 namespace krbn {
 namespace core_service {
@@ -31,6 +33,24 @@ public:
       if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
         killer->async_kill();
       }
+    });
+
+    //
+    // session_monitor_
+    //
+
+    session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
+
+    session_monitor_->on_console_changed.connect([this](auto&& on_console) {
+      logger::get_logger()->info("on_console_changed: on_console:{}", on_console);
+
+      on_console_ = on_console;
+
+      version_monitor_->async_manual_check();
+
+      stop_core_service_client();
+      start_core_service_client();
+      enqueue_check_permissions();
     });
 
     //
@@ -87,22 +107,25 @@ public:
       stop_core_service_client();
 
       pqrs::osx::accessibility::monitor::terminate_shared_monitor();
+
+      session_monitor_ = nullptr;
+      version_monitor_ = nullptr;
     });
   }
 
   void async_start(void) {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
-
-      version_monitor_->async_manual_check();
-
-      start_core_service_client();
-      enqueue_check_permissions();
+      session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
 
 private:
   void enqueue_check_permissions(void) {
+    if (on_console_ != std::optional<bool>(true)) {
+      return;
+    }
+
     enqueue_to_dispatcher(
         [this] {
           check_permissions();
@@ -137,6 +160,10 @@ private:
   }
 
   void check_permissions(void) {
+    if (on_console_ != std::optional<bool>(true)) {
+      return;
+    }
+
     // `make_bundle_permission_check_result` blocks while waiting for the permission-check result file.
     // This is acceptable here because this path is only relevant while the required permissions are not granted,
     // and during that period the agent has little else to do besides prompting for and re-checking permissions.
@@ -189,6 +216,10 @@ private:
       return;
     }
 
+    if (on_console_ != std::optional<bool>(true)) {
+      return;
+    }
+
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
     // So we use the shorten name core_service_agent_core_service_client -> cs_agent_cs_clnt.
@@ -235,6 +266,9 @@ private:
   }
 
   std::unique_ptr<version_monitor> version_monitor_;
+  std::optional<bool> on_console_;
+  std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
+
   std::shared_ptr<core_service_client> core_service_client_;
   std::optional<core_service_permission_check_result> last_bundle_permission_check_result_;
   bool restart_required_after_permissions_granted_ = false;
