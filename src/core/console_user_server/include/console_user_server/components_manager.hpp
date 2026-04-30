@@ -14,6 +14,7 @@
 #include "services_utility.hpp"
 #include "settings_window_guidance_manager.hpp"
 #include "software_function_handler.hpp"
+#include <optional>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
 #include <pqrs/osx/json_file_monitor.hpp>
@@ -96,7 +97,7 @@ private:
       return;
     }
 
-    if (on_console_ != true) {
+    if (on_console_ != std::optional<bool>(true)) {
       return;
     }
 
