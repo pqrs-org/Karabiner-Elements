@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 16.0.0
 
+- [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v16.0.0/Karabiner-Elements-16.0.0.dmg)
+- 📅 Release date
+    - May 3, 2026
 - 🔔 Important Notes
     - Karabiner-Core-Service now requires Accessibility permission. Please enable it in System Settings.
 - ✨ New Features
