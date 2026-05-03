@@ -221,13 +221,7 @@ public:
 
         // Wait immediate queues
 
-        {
-          auto wait = pqrs::make_thread_wait();
-          enqueue_to_dispatcher([wait] {
-            wait->notify();
-          });
-          wait->wait_notice();
-        }
+        flush_immediate_dispatcher_jobs();
 
         if (auto s = pqrs::json::find<std::string>(j, "action")) {
           if (*s == "invoke_dispatcher") {
@@ -295,6 +289,21 @@ public:
   }
 
 private:
+  void flush_immediate_dispatcher_jobs(std::size_t rounds = 4) {
+    // Flush immediate dispatcher jobs, including a few levels of follow-up
+    // immediate jobs enqueued by those jobs. This does not wait for future
+    // scheduled jobs.
+    for (std::size_t i = 0; i < rounds; ++i) {
+      auto wait = pqrs::make_thread_wait();
+
+      enqueue_to_dispatcher([wait] {
+        wait->notify();
+      });
+
+      wait->wait_notice();
+    }
+  }
+
   void advance_now(std::chrono::milliseconds ms) {
     if (pqrs::dispatcher::time_point(ms) > pseudo_time_source_->now()) {
       pseudo_time_source_->set_now(pqrs::dispatcher::time_point(ms));
