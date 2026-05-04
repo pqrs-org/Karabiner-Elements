@@ -9,11 +9,11 @@ Karabiner-Elements is a powerful key remapper for macOS.
 
 You can download Karabiner-Elements from the [official site](https://karabiner-elements.pqrs.org/).
 
-Alternatively, for users of [homebrew](https://brew.sh/), Karabiner-Elements may be installed with `brew install --cask karabiner-elements`.
+Alternatively, if you use [Homebrew](https://brew.sh/), you can install Karabiner-Elements with `brew install --cask karabiner-elements`.
 
 ### Old releases
 
-You can download previous versions of Karabiner-Elements from [Release notes](https://karabiner-elements.pqrs.org/docs/releasenotes/).
+You can download previous versions of Karabiner-Elements from the [release notes](https://karabiner-elements.pqrs.org/docs/releasenotes/).
 
 ## Supported systems
 
@@ -32,15 +32,13 @@ Documentation can be found here: <https://karabiner-elements.pqrs.org/docs/>
 
 ## Donations
 
-If you would like to contribute financially to the development of Karabiner-Elements, donations can be made via <https://karabiner-elements.pqrs.org/docs/pricing/>
+If you would like to support Karabiner-Elements development financially, donations can be made at <https://karabiner-elements.pqrs.org/docs/pricing/>.
 
 ---
 
 ## For developers
 
-### How to build
-
-System requirements to build Karabiner-Elements:
+### System requirements to build Karabiner-Elements
 
 - macOS 15+
 - Xcode 26+
@@ -49,74 +47,96 @@ System requirements to build Karabiner-Elements:
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
 - CMake (`brew install cmake`)
 
-#### Steps
+### How to build the package
 
-1.  Get source code by executing the following command in Terminal.app.
+#### Get the source code
 
-    ```shell
-    git clone --depth 1 https://github.com/pqrs-org/Karabiner-Elements.git
-    cd Karabiner-Elements
-    git submodule update --init --recursive --depth 1
-    ```
+Get the source code by running the following commands in Terminal.app.
 
-2.  (Optional) If you have a codesign identity:
-    1.  Find your codesign identity.
+```shell
+git clone --depth 1 https://github.com/pqrs-org/Karabiner-Elements.git
+cd Karabiner-Elements
+git submodule update --init --recursive --depth 1
+```
 
-        ```shell
-        security find-identity -p codesigning -v | grep 'Developer ID Application'
-        ```
+#### Prepare code signing identities
 
-        The result is as follows.
+Code signing is required for the Karabiner-Elements background services to run.
+Prepare the appropriate code signing identities for your Apple Developer Program status.
 
-        ```text
-        1) 8D660191481C98F5C56630847A6C39D95C166F22 "Developer ID Application: Fumihiko Takayama (G43BCU2T37)"
-        ```
+- If you are not enrolled in the Apple Developer Program:
+    - Use a development code signing identity.
+    - In Xcode Settings, add your account under Apple Accounts, then create an Apple Development certificate from Manage Certificates.
+- If you are enrolled in the Apple Developer Program:
+    - Create Developer ID Application and Developer ID Installer certificates if you do not already have them.
 
-        Your codesign identity is `8D660191481C98F5C56630847A6C39D95C166F22` in the above case.
+After preparing the code signing identities, run the following command in Terminal.app to get the identity hashes.
 
-    2.  Set environment variable to use your codesign identity.
+```shell
+security find-identity -v
+```
 
-        ```shell
-        export PQRS_ORG_CODE_SIGN_IDENTITY=8D660191481C98F5C56630847A6C39D95C166F22
-        ```
+The output will look like this.
+The strings such as `C3107C61DB3605DA2D4549054B225DAFB1D6FA2D` and `BD3B995B69EBA8FC153B167F063079D19CCC2834` are identity hashes.
 
-    3.  Find your codesign identity for installer signing.
+```text
+  1) C3107C61DB3605DA2D4549054B225DAFB1D6FA2D "Developer ID Installer: Fumihiko Takayama (G43BCU2T37)"
+  2) BD3B995B69EBA8FC153B167F063079D19CCC2834 "Developer ID Application: Fumihiko Takayama (G43BCU2T37)"
+  3) C0D6EBFEAD3C0EB6DB91C3514FF647917A0B5112 "Apple Development: Fumihiko Takayama (YVB3SM6ECS)"
+```
 
-        ```shell
-        security find-identity -p basic -v | grep 'Developer ID Installer'
-        ```
+Set these values in environment variables as follows.
+To avoid forgetting these settings, you can add them to your shell configuration file, such as `.zshrc`.
 
-        The result is as follows.
+```shell
+# Specify the identity hash for Developer ID Application or Apple Development.
+export PQRS_ORG_CODE_SIGN_IDENTITY=BD3B995B69EBA8FC153B167F063079D19CCC2834
+# Specify the identity hash for Developer ID Installer or Apple Development.
+export PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY=C3107C61DB3605DA2D4549054B225DAFB1D6FA2D
+```
 
-        ```text
-        1) C86BB5F7830071C7B0B07D168A9A9375CC2D02C5 "Developer ID Installer: Fumihiko Takayama (G43BCU2T37)"
-        ```
+#### Build the package
 
-        Your codesign identity is `C86BB5F7830071C7B0B07D168A9A9375CC2D02C5` in the above case.
+Build the package by running the following command in Terminal.app.
 
-    4.  Set environment variable to use your codesign identity for installer signing.
+```shell
+make package
+```
 
-        ```shell
-        export PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY=C86BB5F7830071C7B0B07D168A9A9375CC2D02C5
-        ```
+The `make` script will create a **Karabiner-Elements-VERSION.dmg** in the current directory.
+The package is included in the dmg file.
 
-3.  Build a package by executing the following command in Terminal.app.
+#### Notes when installing a package you built
 
-    ```shell
-    make package
-    ```
+The permissions you grant to Karabiner-Elements, such as background service startup and Accessibility access, are based on the code signing identity.
+Therefore, if the signer changes, these permissions become invalid and must be granted again.
 
-    The `make` script will create a redistributable **Karabiner-Elements-VERSION.dmg** in the current directory.
+macOS System Settings may not update its UI when permissions are invalidated by a signer change.
+In that case, reset the permissions by following these steps.
 
-#### Note about pre-built binaries in the source tree
+1.  Install your package.
+2.  In System Settings, disable or remove the following permissions.
+    - Disable both of the following background services:
+        - Karabiner-Elements Non-Privileged Agents v2
+        - Karabiner-Elements Privileged Daemons v2
+    - Remove the Accessibility permission.
+3.  Restart macOS.
+4.  Open Karabiner-Elements and grant the permissions again.
 
-Karabiner-Elements uses some pre-built binaries in the source tree.
+After these steps, the Karabiner-Elements package you built should work.
 
-- `vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg` (the latest one)
-- `Sparkle.framework` in `src/apps/SettingsWindow/`
+### Note about pre-built binaries and Swift packages
 
-The above `make package` command does not rebuild these binaries.<br/>
-(These binaries will be copied in the distributed package.)
+Karabiner-Elements uses some pre-built binaries and Swift packages during the build.
 
-If you want to rebuild these binaries, you have to build them manually.<br/>
-Please follow the instruction of these projects.
+- Pre-built binaries in the source tree:
+    - `vendor/Karabiner-DriverKit-VirtualHIDDevice/dist/Karabiner-DriverKit-VirtualHIDDevice-*.pkg` (the latest one)
+- Swift packages resolved by Xcode/SwiftPM during the build include:
+    - `Sparkle` for `Karabiner-Updater`
+    - `AsyncAlgorithms`, `CodeEditor`, and other packages used by individual apps
+
+The `make package` command does not rebuild the pre-built binaries listed above.<br/>
+These binaries are copied into the distributed package.
+
+Swift packages are resolved by Xcode/SwiftPM from their package repositories during the build.
+If you want to rebuild or modify them, please follow the instructions for each upstream project.
