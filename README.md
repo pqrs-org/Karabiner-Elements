@@ -49,7 +49,7 @@ If you would like to support Karabiner-Elements development financially, donatio
 
 ### How to build the package
 
-#### Get the source code
+#### Step 1: Get the source code
 
 Get the source code by running the following commands in Terminal.app.
 
@@ -59,7 +59,7 @@ cd Karabiner-Elements
 git submodule update --init --recursive --depth 1
 ```
 
-#### Prepare code signing identities
+#### Step 2: Prepare code signing identities
 
 Code signing is required for the Karabiner-Elements background services to run.
 Prepare the appropriate code signing identities for your Apple Developer Program status.
@@ -95,9 +95,9 @@ export PQRS_ORG_CODE_SIGN_IDENTITY=BD3B995B69EBA8FC153B167F063079D19CCC2834
 export PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY=C3107C61DB3605DA2D4549054B225DAFB1D6FA2D
 ```
 
-#### Build the package
+#### Step 3: Build a package
 
-Build the package by running the following command in Terminal.app.
+Build a package by running the following command in Terminal.app.
 
 ```shell
 make package
@@ -106,10 +106,12 @@ make package
 The `make` script will create a **Karabiner-Elements-VERSION.dmg** in the current directory.
 The package is included in the dmg file.
 
-#### Notes when installing a package you built
+#### Step 4: Install the package you built
+
+Open the dmg file and install Karabiner-Elements from the pkg file inside it.
 
 The permissions you grant to Karabiner-Elements, such as background service startup and Accessibility access, are based on the code signing identity.
-Therefore, if the signer changes, these permissions become invalid and must be granted again.
+Therefore, if you switch from the officially distributed package to your own build, these permissions become invalid and must be granted again.
 
 macOS System Settings may not update its UI when permissions are invalidated by a signer change.
 In that case, reset the permissions by following these steps.
