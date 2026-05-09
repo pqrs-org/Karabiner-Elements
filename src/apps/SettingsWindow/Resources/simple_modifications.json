@@ -2950,6 +2950,11 @@
         "data": [{ "consumer_key_code": "ac_zoom_in" }]
     },
     {
+        "not_to": true,
+        "label": "ac_keyboard_layout_select",
+        "data": [{ "consumer_key_code": "ac_keyboard_layout_select" }]
+    },
+    {
         "category": "Remote control buttons"
     },
     {
