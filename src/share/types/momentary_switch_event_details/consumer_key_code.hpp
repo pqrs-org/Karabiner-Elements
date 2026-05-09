@@ -142,6 +142,7 @@ constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value
     {"ac_zoom_out", pqrs::hid::usage::consumer::ac_zoom_out},
     {"ac_zoom_in", pqrs::hid::usage::consumer::ac_zoom_in},
     // Do not include ac_pan since it is used as mouse wheel, not button.
+    {"ac_keyboard_layout_select", pqrs::hid::usage::value_t(0x029d)},
 
     // Aliases
     {"fastforward", pqrs::hid::usage::consumer::fast_forward},
