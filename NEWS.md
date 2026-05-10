@@ -2,6 +2,8 @@
 
 ## Beta
 
+- ✨ New Features
+    - Added filtering functionality to the log viewer.
 - ⚡️ Improvements
     - Supported the following keys:
         - consumer_key_code::ac_keyboard_layout_select (Thanks to @PedroSebastiao)
