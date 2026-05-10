@@ -3,6 +3,7 @@ import SwiftUI
 struct LogView: View {
   @ObservedObject private var logMessages = LogMessages.shared
   @State private var filterKeyword = ""
+  @State private var filterContextLineCount = 5
   private let bottomAnchorID = "bottomAnchor"
 
   private var filteredEntries: [FilteredLogMessageEntry] {
@@ -20,9 +21,10 @@ struct LogView: View {
     where logMessages.entries[index].text.localizedCaseInsensitiveContains(keyword) {
       matchedIndexes.insert(index)
 
-      let lowerBound = max(logMessages.entries.startIndex, index - 5)
+      let lowerBound = max(logMessages.entries.startIndex, index - filterContextLineCount)
       let upperBound = min(
-        logMessages.entries.index(before: logMessages.entries.endIndex), index + 5)
+        logMessages.entries.index(before: logMessages.entries.endIndex),
+        index + filterContextLineCount)
 
       for contextIndex in lowerBound...upperBound {
         indexes.insert(contextIndex)
@@ -72,6 +74,13 @@ struct LogView: View {
       HStack {
         SearchField(text: $filterKeyword)
           .frame(maxWidth: .infinity)
+
+        Stepper(
+          "Context: \(filterContextLineCount)",
+          value: $filterContextLineCount,
+          in: 0...20
+        )
+        .disabled(filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
         Button(
           action: {
