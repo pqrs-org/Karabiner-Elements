@@ -1,4 +1,5 @@
 all:
+	/bin/bash ../../../scripts/check-env.sh
 	/usr/bin/python3 ../../../scripts/update_version.py
 	$(MAKE) -C ../../../vendor build
 	xcodegen generate

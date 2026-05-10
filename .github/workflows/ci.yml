@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: macos-15
+    env:
+      PQRS_ORG_CODE_SIGN_IDENTITY: dummy
+      PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY: dummy
 
     steps:
       - uses: actions/checkout@v6

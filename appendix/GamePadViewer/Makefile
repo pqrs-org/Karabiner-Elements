@@ -1,4 +1,5 @@
 all:
+	/bin/bash ../../scripts/check-env.sh
 	/usr/bin/python3 ../../scripts/update_version.py
 	make -C ../../src/lib/libkrbn
 	xcodegen generate
