@@ -2,13 +2,98 @@ import SwiftUI
 
 struct LogView: View {
   @ObservedObject private var logMessages = LogMessages.shared
+  @State private var filterKeyword = ""
+  private let bottomAnchorID = "bottomAnchor"
+
+  private var filteredEntries: [FilteredLogMessageEntry] {
+    let keyword = filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
+    if keyword.isEmpty {
+      return logMessages.entries.map {
+        FilteredLogMessageEntry(logMessageEntry: $0, isMatched: false)
+      }
+    }
+
+    var indexes = Set<Int>()
+    var matchedIndexes = Set<Int>()
+
+    for index in logMessages.entries.indices
+    where logMessages.entries[index].text.localizedCaseInsensitiveContains(keyword) {
+      matchedIndexes.insert(index)
+
+      let lowerBound = max(logMessages.entries.startIndex, index - 5)
+      let upperBound = min(
+        logMessages.entries.index(before: logMessages.entries.endIndex), index + 5)
+
+      for contextIndex in lowerBound...upperBound {
+        indexes.insert(contextIndex)
+      }
+    }
+
+    var filteredEntries: [FilteredLogMessageEntry] = []
+    var previousIndex: Int?
+
+    for index in indexes.sorted() {
+      if let previousIndex {
+        if index > previousIndex + 1 {
+          filteredEntries.append(
+            FilteredLogMessageEntry.omittedLinesMarker(
+              from: previousIndex + 1,
+              to: index - 1))
+        }
+      } else if index > logMessages.entries.startIndex {
+        filteredEntries.append(
+          FilteredLogMessageEntry.omittedLinesMarker(
+            from: logMessages.entries.startIndex,
+            to: index - 1))
+      }
+
+      filteredEntries.append(
+        FilteredLogMessageEntry(
+          logMessageEntry: logMessages.entries[index],
+          isMatched: matchedIndexes.contains(index)))
+
+      previousIndex = index
+    }
+
+    if let previousIndex,
+      previousIndex < logMessages.entries.index(before: logMessages.entries.endIndex)
+    {
+      filteredEntries.append(
+        FilteredLogMessageEntry.omittedLinesMarker(
+          from: previousIndex + 1,
+          to: logMessages.entries.index(before: logMessages.entries.endIndex)))
+    }
+
+    return filteredEntries
+  }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
-      ScrollView {
-        ScrollViewReader { proxy in
+      HStack {
+        SearchField(text: $filterKeyword)
+          .frame(maxWidth: .infinity)
+
+        Button(
+          action: {
+            var text = ""
+            for e in filteredEntries {
+              text += e.text + "\n"
+            }
+
+            let pboard = NSPasteboard.general
+            pboard.clearContents()
+            pboard.writeObjects([text as NSString])
+          },
+          label: {
+            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+          })
+      }
+      .padding()
+
+      ScrollViewReader { proxy in
+        ScrollView {
           VStack(alignment: .leading, spacing: 0) {
-            ForEach(logMessages.entries) { e in
+            ForEach(filteredEntries) { e in
               Text(e.text)
                 .id(e.id)
                 .font(.callout)
@@ -17,12 +102,26 @@ struct LogView: View {
                 .background(e.backgroundColor)
                 .textSelection(.enabled)
             }
+
+            Color.clear
+              .frame(height: 1)
+              .id(bottomAnchorID)
           }
           .padding()
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-          .onChange(of: logMessages.entries.count) { _ in
-            if let last = logMessages.entries.last {
-              proxy.scrollTo(last.id, anchor: .bottom)
+        }
+        .onAppear {
+          if filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            Task { @MainActor in
+              proxy.scrollTo(bottomAnchorID, anchor: .bottom)
+            }
+          }
+        }
+        .onChange(of: logMessages.entries) { _ in
+          // Keep the filtered view at the current position while new non-matching lines arrive.
+          if filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            Task { @MainActor in
+              proxy.scrollTo(bottomAnchorID, anchor: .bottom)
             }
           }
         }
@@ -43,23 +142,6 @@ struct LogView: View {
           label: {
             Label("Add divider", systemImage: "scissors")
           })
-
-        Spacer()
-
-        Button(
-          action: {
-            var text = ""
-            for e in logMessages.entries {
-              text += e.text + "\n"
-            }
-
-            let pboard = NSPasteboard.general
-            pboard.clearContents()
-            pboard.writeObjects([text as NSString])
-          },
-          label: {
-            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
-          })
       }
       .padding()
     }
@@ -68,6 +150,77 @@ struct LogView: View {
     }
     .onDisappear {
       logMessages.unwatch()
+    }
+  }
+}
+
+private struct FilteredLogMessageEntry: Identifiable {
+  let id: String
+  let text: String
+  let foregroundColor: Color
+  let backgroundColor: Color
+
+  init(id: String, text: String, foregroundColor: Color, backgroundColor: Color) {
+    self.id = id
+    self.text = text
+    self.foregroundColor = foregroundColor
+    self.backgroundColor = backgroundColor
+  }
+
+  @MainActor
+  init(logMessageEntry: LogMessageEntry, isMatched: Bool) {
+    id = logMessageEntry.id.uuidString
+    text = logMessageEntry.text
+
+    if isMatched {
+      foregroundColor = Color.infoForeground
+      backgroundColor = Color.infoBackground
+    } else {
+      foregroundColor = logMessageEntry.foregroundColor
+      backgroundColor = logMessageEntry.backgroundColor
+    }
+  }
+
+  static func omittedLinesMarker(from startIndex: Int, to endIndex: Int) -> FilteredLogMessageEntry
+  {
+    FilteredLogMessageEntry(
+      id: "omittedLines:\(startIndex)-\(endIndex)",
+      text: String(repeating: "~", count: 80),
+      foregroundColor: Color(NSColor.textBackgroundColor),
+      backgroundColor: Color(NSColor.textColor))
+  }
+}
+
+private struct SearchField: NSViewRepresentable {
+  @Binding var text: String
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(text: $text)
+  }
+
+  func makeNSView(context: Context) -> NSSearchField {
+    let searchField = NSSearchField()
+    searchField.placeholderString = "Filter"
+    searchField.delegate = context.coordinator
+    return searchField
+  }
+
+  func updateNSView(_ searchField: NSSearchField, context _: Context) {
+    if searchField.stringValue != text {
+      searchField.stringValue = text
+    }
+  }
+
+  final class Coordinator: NSObject, NSSearchFieldDelegate {
+    @Binding private var text: String
+
+    init(text: Binding<String>) {
+      _text = text
+    }
+
+    func controlTextDidChange(_ notification: Notification) {
+      guard let searchField = notification.object as? NSSearchField else { return }
+      text = searchField.stringValue
     }
   }
 }
