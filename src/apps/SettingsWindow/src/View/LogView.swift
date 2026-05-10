@@ -76,9 +76,9 @@ struct LogView: View {
           .frame(maxWidth: .infinity)
 
         Stepper(
-          "Context: \(filterContextLineCount)",
+          "Show \(filterContextLineCount) surrounding lines",
           value: $filterContextLineCount,
-          in: 0...20
+          in: 0...50
         )
         .disabled(filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
