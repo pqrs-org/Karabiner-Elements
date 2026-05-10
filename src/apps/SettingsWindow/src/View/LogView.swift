@@ -185,7 +185,6 @@ private struct LogMessageText: View {
 private struct FilteredLogMessageEntry: Identifiable {
   let id: String
   let text: String
-  let isMatched: Bool
   let showsMatchIndicator: Bool
   let foregroundColor: Color
   let backgroundColor: Color
@@ -193,14 +192,12 @@ private struct FilteredLogMessageEntry: Identifiable {
   init(
     id: String,
     text: String,
-    isMatched: Bool,
     showsMatchIndicator: Bool,
     foregroundColor: Color,
     backgroundColor: Color
   ) {
     self.id = id
     self.text = text
-    self.isMatched = isMatched
     self.showsMatchIndicator = showsMatchIndicator
     self.foregroundColor = foregroundColor
     self.backgroundColor = backgroundColor
@@ -210,7 +207,6 @@ private struct FilteredLogMessageEntry: Identifiable {
   init(logMessageEntry: LogMessageEntry, isMatched: Bool) {
     id = logMessageEntry.id.uuidString
     text = logMessageEntry.text
-    self.isMatched = isMatched
     // Show an indicator for warn and error logs when they match the filter,
     // instead of changing their colors.
     showsMatchIndicator =
@@ -232,7 +228,6 @@ private struct FilteredLogMessageEntry: Identifiable {
     FilteredLogMessageEntry(
       id: "omittedLines:\(startIndex)-\(endIndex)",
       text: String(repeating: "~", count: 80),
-      isMatched: false,
       showsMatchIndicator: false,
       foregroundColor: Color(NSColor.textBackgroundColor),
       backgroundColor: Color(NSColor.textColor))
