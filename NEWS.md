@@ -1,5 +1,11 @@
 # Changelog
 
+## Beta
+
+- ⚡️ Improvements
+    - Supported the following keys:
+        - consumer_key_code::ac_keyboard_layout_select (Thanks to @PedroSebastiao)
+
 ## Karabiner-Elements 16.0.0
 
 - [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v16.0.0/Karabiner-Elements-16.0.0.dmg)
