@@ -29,3 +29,5 @@ targets:
           - .gitignore
           - '*.plist.in'
       - path: ../share/Resources/app.icns
+    dependencies:
+      - package: Sparkle

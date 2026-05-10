@@ -1,7 +1,7 @@
 all:
 	/bin/bash ../../../scripts/check-env.sh
 	/usr/bin/python3 ../../../scripts/update_version.py
-	bash run-xcodegen.sh
+	xcodegen generate
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 
 clean: purge-swift-package-manager-cache

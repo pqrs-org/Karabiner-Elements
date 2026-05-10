@@ -26,11 +26,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   public func applicationDidFinishLaunching(_: Notification) {
     Task { @MainActor in
       var command = ""
-      #if USE_SPARKLE
-        if CommandLine.arguments.count > 1 {
-          command = CommandLine.arguments[1]
-        }
-      #endif
+      if CommandLine.arguments.count > 1 {
+        command = CommandLine.arguments[1]
+      }
 
       switch command {
       case "checkForUpdatesInBackground":

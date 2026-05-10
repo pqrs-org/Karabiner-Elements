@@ -1,115 +1,98 @@
 import AppKit
 import OSLog
-
-#if USE_SPARKLE
-  import Sparkle
-#endif
+import Sparkle
 
 @MainActor
 final class Updater: ObservableObject {
   public static let shared = Updater()
 
-  #if USE_SPARKLE
-    private let updaterController: SPUStandardUpdaterController
-    private let delegate = SparkleDelegate()
-  #endif
+  private let updaterController: SPUStandardUpdaterController
+  private let delegate = SparkleDelegate()
 
   private init() {
-    #if USE_SPARKLE
-      updaterController = SPUStandardUpdaterController(
-        updaterDelegate: delegate,
-        userDriverDelegate: nil
-      )
+    updaterController = SPUStandardUpdaterController(
+      updaterDelegate: delegate,
+      userDriverDelegate: nil
+    )
 
-      updaterController.updater.clearFeedURLFromUserDefaults()
-    #endif
+    updaterController.updater.clearFeedURLFromUserDefaults()
   }
 
   isolated deinit {
-    #if USE_SPARKLE
-      delegate.cancelUserAttentionRequest()
-    #endif
+    delegate.cancelUserAttentionRequest()
   }
 
   func checkForUpdatesInBackground() {
-    #if USE_SPARKLE
-      delegate.includingBetaVersions = false
-      updaterController.updater.checkForUpdatesInBackground()
-    #endif
+    delegate.includingBetaVersions = false
+    updaterController.updater.checkForUpdatesInBackground()
   }
 
   func checkForUpdatesStableOnly() {
-    #if USE_SPARKLE
-      delegate.includingBetaVersions = false
-      updaterController.checkForUpdates(nil)
-    #endif
+    delegate.includingBetaVersions = false
+    updaterController.checkForUpdates(nil)
   }
 
   func checkForUpdatesWithBetaVersion() {
-    #if USE_SPARKLE
-      delegate.includingBetaVersions = true
-      updaterController.checkForUpdates(nil)
-    #endif
+    delegate.includingBetaVersions = true
+    updaterController.checkForUpdates(nil)
   }
 
-  #if USE_SPARKLE
-    private class SparkleDelegate: NSObject, SPUUpdaterDelegate {
-      private let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "unknown",
-        category: String(describing: SparkleDelegate.self))
+  private class SparkleDelegate: NSObject, SPUUpdaterDelegate {
+    private let logger = Logger(
+      subsystem: Bundle.main.bundleIdentifier ?? "unknown",
+      category: String(describing: SparkleDelegate.self))
 
-      var includingBetaVersions = false
-      private var userAttentionRequestIdentifier: Int?
+    var includingBetaVersions = false
+    private var userAttentionRequestIdentifier: Int?
 
-      func feedURLString(for updater: SPUUpdater) -> String? {
-        var url = "https://appcast.pqrs.org/karabiner-elements-appcast.xml"
-        if includingBetaVersions {
-          url = "https://appcast.pqrs.org/karabiner-elements-appcast-devel.xml"
-        }
-
-        logger.info("feedURLString \(url, privacy: .public)")
-
-        return url
+    func feedURLString(for updater: SPUUpdater) -> String? {
+      var url = "https://appcast.pqrs.org/karabiner-elements-appcast.xml"
+      if includingBetaVersions {
+        url = "https://appcast.pqrs.org/karabiner-elements-appcast-devel.xml"
       }
 
-      func updaterShouldRelaunchApplication(_ updater: SPUUpdater) -> Bool {
-        return false
+      logger.info("feedURLString \(url, privacy: .public)")
+
+      return url
+    }
+
+    func updaterShouldRelaunchApplication(_ updater: SPUUpdater) -> Bool {
+      return false
+    }
+
+    func updaterDidNotFindUpdate(_: SPUUpdater) {
+      Task { @MainActor in
+        cancelUserAttentionRequest()
       }
+    }
 
-      func updaterDidNotFindUpdate(_: SPUUpdater) {
-        Task { @MainActor in
-          cancelUserAttentionRequest()
-        }
-      }
+    func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
+      Task { @MainActor in
+        // Just in case, wait until the update notification window is shown.
+        try await Task.sleep(for: .seconds(1))
 
-      func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
-        Task { @MainActor in
-          // Just in case, wait until the update notification window is shown.
-          try await Task.sleep(for: .seconds(1))
-
-          if userAttentionRequestIdentifier == nil {
-            userAttentionRequestIdentifier = NSApp.requestUserAttention(.criticalRequest)
-          }
-        }
-      }
-
-      func updater(
-        _: SPUUpdater, didFinishUpdateCycleFor _: SPUUpdateCheck, error: Error?
-      ) {
-        // Exit after completing the check.
-        Task { @MainActor in
-          cancelUserAttentionRequest()
-          NSApplication.shared.terminate(nil)
-        }
-      }
-
-      @MainActor
-      func cancelUserAttentionRequest() {
-        if let identifier = userAttentionRequestIdentifier {
-          NSApp.cancelUserAttentionRequest(identifier)
-          userAttentionRequestIdentifier = nil
+        if userAttentionRequestIdentifier == nil {
+          userAttentionRequestIdentifier = NSApp.requestUserAttention(.criticalRequest)
         }
       }
     }
-  #endif
+
+    func updater(
+      _: SPUUpdater, didFinishUpdateCycleFor _: SPUUpdateCheck, error: Error?
+    ) {
+      // Exit after completing the check.
+      Task { @MainActor in
+        cancelUserAttentionRequest()
+        NSApplication.shared.terminate(nil)
+      }
+    }
+
+    @MainActor
+    func cancelUserAttentionRequest() {
+      if let identifier = userAttentionRequestIdentifier {
+        NSApp.cancelUserAttentionRequest(identifier)
+        userAttentionRequestIdentifier = nil
+      }
+    }
+  }
 }
