@@ -103,13 +103,19 @@ struct LogView: View {
         ScrollView {
           VStack(alignment: .leading, spacing: 0) {
             ForEach(filteredEntries) { e in
-              Text(e.text)
+              if e.showsMatchIndicator {
+                HStack(spacing: 0) {
+                  Rectangle()
+                    .fill(Color.infoBackground)
+                    .frame(width: 10)
+
+                  LogMessageText(e: e)
+                }
                 .id(e.id)
-                .font(.callout)
-                .monospaced()
-                .foregroundColor(e.foregroundColor)
-                .background(e.backgroundColor)
-                .textSelection(.enabled)
+              } else {
+                LogMessageText(e: e)
+                  .id(e.id)
+              }
             }
 
             Color.clear
@@ -163,15 +169,39 @@ struct LogView: View {
   }
 }
 
+private struct LogMessageText: View {
+  let e: FilteredLogMessageEntry
+
+  var body: some View {
+    Text(e.text)
+      .font(.callout)
+      .monospaced()
+      .foregroundColor(e.foregroundColor)
+      .background(e.backgroundColor)
+      .textSelection(.enabled)
+  }
+}
+
 private struct FilteredLogMessageEntry: Identifiable {
   let id: String
   let text: String
+  let isMatched: Bool
+  let showsMatchIndicator: Bool
   let foregroundColor: Color
   let backgroundColor: Color
 
-  init(id: String, text: String, foregroundColor: Color, backgroundColor: Color) {
+  init(
+    id: String,
+    text: String,
+    isMatched: Bool,
+    showsMatchIndicator: Bool,
+    foregroundColor: Color,
+    backgroundColor: Color
+  ) {
     self.id = id
     self.text = text
+    self.isMatched = isMatched
+    self.showsMatchIndicator = showsMatchIndicator
     self.foregroundColor = foregroundColor
     self.backgroundColor = backgroundColor
   }
@@ -180,8 +210,15 @@ private struct FilteredLogMessageEntry: Identifiable {
   init(logMessageEntry: LogMessageEntry, isMatched: Bool) {
     id = logMessageEntry.id.uuidString
     text = logMessageEntry.text
+    self.isMatched = isMatched
+    // Show an indicator for warn and error logs when they match the filter,
+    // instead of changing their colors.
+    showsMatchIndicator =
+      isMatched
+      && (logMessageEntry.logLevel == .warn || logMessageEntry.logLevel == .error)
 
-    if isMatched {
+    if isMatched, !showsMatchIndicator {
+      // Use info colors for entries that match the filter.
       foregroundColor = Color.infoForeground
       backgroundColor = Color.infoBackground
     } else {
@@ -195,6 +232,8 @@ private struct FilteredLogMessageEntry: Identifiable {
     FilteredLogMessageEntry(
       id: "omittedLines:\(startIndex)-\(endIndex)",
       text: String(repeating: "~", count: 80),
+      isMatched: false,
+      showsMatchIndicator: false,
       foregroundColor: Color(NSColor.textBackgroundColor),
       backgroundColor: Color(NSColor.textColor))
   }

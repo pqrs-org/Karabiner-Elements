@@ -43,12 +43,14 @@ private func callback() {
 public class LogMessageEntry: Identifiable, Equatable {
   nonisolated public let id = UUID()
   public var text = ""
+  let logLevel: LogLevel
   public var dateNumber: UInt64
   public var foregroundColor = Color.primary
   public var backgroundColor = Color.clear
 
   init(text: String, logLevel: LogLevel, dateNumber: UInt64) {
     self.text = text
+    self.logLevel = logLevel
     self.dateNumber = dateNumber
 
     switch logLevel {
