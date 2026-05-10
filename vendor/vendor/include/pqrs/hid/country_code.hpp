@@ -9,9 +9,7 @@
 #include <iostream>
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace hid {
-namespace country_code {
+namespace pqrs::hid::country_code {
 struct value_t : type_safe::strong_typedef<value_t, uint64_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
                  type_safe::strong_typedef_op::relational_comparison<value_t> {
@@ -67,9 +65,7 @@ constexpr value_t uk(32);
 constexpr value_t us(33);
 constexpr value_t yugoslavia(34);
 constexpr value_t turkish_f(35);
-} // namespace country_code
-} // namespace hid
-} // namespace pqrs
+} // namespace pqrs::hid::country_code
 
 namespace std {
 template <>

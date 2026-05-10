@@ -6,84 +6,70 @@
 
 #include <pqrs/hid.hpp>
 #include <pqrs/json.hpp>
+#include <type_traits>
 
-namespace pqrs {
-namespace hid {
+namespace pqrs::hid {
+namespace detail {
+template <typename>
+inline constexpr bool always_false_v = false;
+
+template <typename T>
+  requires type_safe::is_strong_typedef<T>::value
+inline void to_json(nlohmann::json& j, const T& value) {
+  j = type_safe::get(value);
+}
+
+template <typename T>
+  requires type_safe::is_strong_typedef<T>::value
+inline void from_json(const nlohmann::json& j, T& value) {
+  using underlying_type = type_safe::underlying_type<T>;
+
+  if constexpr (std::is_arithmetic_v<underlying_type>) {
+    json::requires_number(j, "json");
+
+  } else if constexpr (std::is_same_v<underlying_type, std::string>) {
+    json::requires_string(j, "json");
+
+  } else {
+    static_assert(always_false_v<underlying_type>, "unsupported strong_typedef underlying type");
+  }
+
+  value = T(j.get<underlying_type>());
+}
+} // namespace detail
 
 //
 // number values
 //
 
 namespace country_code {
-inline void to_json(nlohmann::json& j, const value_t& value) {
-  j = type_safe::get(value);
-}
-
-inline void from_json(const nlohmann::json& j, value_t& value) {
-  json::requires_number(j, "json");
-
-  value = value_t(j.get<type_safe::underlying_type<value_t>>());
-}
+using detail::from_json;
+using detail::to_json;
 } // namespace country_code
 
 namespace product_id {
-inline void to_json(nlohmann::json& j, const value_t& value) {
-  j = type_safe::get(value);
-}
-
-inline void from_json(const nlohmann::json& j, value_t& value) {
-  json::requires_number(j, "json");
-
-  value = value_t(j.get<type_safe::underlying_type<value_t>>());
-}
+using detail::from_json;
+using detail::to_json;
 } // namespace product_id
 
 namespace report_id {
-inline void to_json(nlohmann::json& j, const value_t& value) {
-  j = type_safe::get(value);
-}
-
-inline void from_json(const nlohmann::json& j, value_t& value) {
-  json::requires_number(j, "json");
-
-  value = value_t(j.get<type_safe::underlying_type<value_t>>());
-}
+using detail::from_json;
+using detail::to_json;
 } // namespace report_id
 
 namespace usage_page {
-inline void to_json(nlohmann::json& j, const value_t& value) {
-  j = type_safe::get(value);
-}
-
-inline void from_json(const nlohmann::json& j, value_t& value) {
-  json::requires_number(j, "json");
-
-  value = value_t(j.get<type_safe::underlying_type<value_t>>());
-}
+using detail::from_json;
+using detail::to_json;
 } // namespace usage_page
 
 namespace usage {
-inline void to_json(nlohmann::json& j, const value_t& value) {
-  j = type_safe::get(value);
-}
-
-inline void from_json(const nlohmann::json& j, value_t& value) {
-  json::requires_number(j, "json");
-
-  value = value_t(j.get<type_safe::underlying_type<value_t>>());
-}
+using detail::from_json;
+using detail::to_json;
 } // namespace usage
 
 namespace vendor_id {
-inline void to_json(nlohmann::json& j, const value_t& value) {
-  j = type_safe::get(value);
-}
-
-inline void from_json(const nlohmann::json& j, value_t& value) {
-  json::requires_number(j, "json");
-
-  value = value_t(j.get<type_safe::underlying_type<value_t>>());
-}
+using detail::from_json;
+using detail::to_json;
 } // namespace vendor_id
 
 //
@@ -91,27 +77,13 @@ inline void from_json(const nlohmann::json& j, value_t& value) {
 //
 
 namespace manufacturer_string {
-inline void to_json(nlohmann::json& j, const value_t& value) {
-  j = type_safe::get(value);
-}
-
-inline void from_json(const nlohmann::json& j, value_t& value) {
-  json::requires_string(j, "json");
-
-  value = value_t(j.get<type_safe::underlying_type<value_t>>());
-}
+using detail::from_json;
+using detail::to_json;
 } // namespace manufacturer_string
 
 namespace product_string {
-inline void to_json(nlohmann::json& j, const value_t& value) {
-  j = type_safe::get(value);
-}
-
-inline void from_json(const nlohmann::json& j, value_t& value) {
-  json::requires_string(j, "json");
-
-  value = value_t(j.get<type_safe::underlying_type<value_t>>());
-}
+using detail::from_json;
+using detail::to_json;
 } // namespace product_string
 
 //
@@ -141,5 +113,4 @@ inline void from_json(const nlohmann::json& j, usage_pair& usage_pair) {
   }
 }
 
-} // namespace hid
-} // namespace pqrs
+} // namespace pqrs::hid

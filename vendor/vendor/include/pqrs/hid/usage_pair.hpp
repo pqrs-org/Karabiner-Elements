@@ -7,14 +7,10 @@
 #include "usage.hpp"
 #include "usage_page.hpp"
 
-namespace pqrs {
-namespace hid {
+namespace pqrs::hid {
 class usage_pair final {
 public:
-  constexpr usage_pair(void)
-      : usage_page_(usage_page::undefined),
-        usage_(usage::undefined) {
-  }
+  constexpr usage_pair() = default;
 
   constexpr usage_pair(usage_page::value_t usage_page,
                        usage::value_t usage)
@@ -22,7 +18,7 @@ public:
         usage_(usage) {
   }
 
-  usage_page::value_t get_usage_page(void) const {
+  usage_page::value_t get_usage_page() const {
     return usage_page_;
   }
 
@@ -31,7 +27,7 @@ public:
     return *this;
   }
 
-  usage::value_t get_usage(void) const {
+  usage::value_t get_usage() const {
     return usage_;
   }
 
@@ -43,11 +39,10 @@ public:
   constexpr auto operator<=>(const usage_pair&) const = default;
 
 private:
-  usage_page::value_t usage_page_;
-  usage::value_t usage_;
+  usage_page::value_t usage_page_ = usage_page::undefined;
+  usage::value_t usage_ = usage::undefined;
 };
-} // namespace hid
-} // namespace pqrs
+} // namespace pqrs::hid
 
 //
 // hash

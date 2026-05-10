@@ -9,9 +9,7 @@
 #include <iostream>
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace hid {
-namespace manufacturer_string {
+namespace pqrs::hid::manufacturer_string {
 struct value_t : type_safe::strong_typedef<value_t, std::string>,
                  type_safe::strong_typedef_op::equality_comparison<value_t> {
   using strong_typedef::strong_typedef;
@@ -20,9 +18,7 @@ struct value_t : type_safe::strong_typedef<value_t, std::string>,
 inline std::ostream& operator<<(std::ostream& stream, const value_t& value) {
   return stream << type_safe::get(value);
 }
-} // namespace manufacturer_string
-} // namespace hid
-} // namespace pqrs
+} // namespace pqrs::hid::manufacturer_string
 
 namespace std {
 template <>

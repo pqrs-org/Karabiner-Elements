@@ -9,9 +9,7 @@
 #include <iostream>
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace hid {
-namespace usage {
+namespace pqrs::hid::usage {
 struct value_t : type_safe::strong_typedef<value_t, int32_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
                  type_safe::strong_typedef_op::relational_comparison<value_t>,
@@ -664,6 +662,7 @@ constexpr value_t ac_bookmarks(0x022a);
 constexpr value_t ac_zoom_out(0x22d);
 constexpr value_t ac_zoom_in(0x22e);
 constexpr value_t ac_pan(0x0238); // Horizontal mouse wheel
+constexpr value_t ac_keyboard_layout_select(0x029d);
 
 } // namespace consumer
 
@@ -748,9 +747,7 @@ constexpr value_t illumination_down(0x0009);
 constexpr value_t clamshell_latched(0x000a);
 constexpr value_t reserved_mouse_data(0x00c0);
 } // namespace apple_vendor_top_case
-} // namespace usage
-} // namespace hid
-} // namespace pqrs
+} // namespace pqrs::hid::usage
 
 namespace std {
 template <>

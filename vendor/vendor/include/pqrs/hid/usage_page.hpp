@@ -9,9 +9,7 @@
 #include <iostream>
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace hid {
-namespace usage_page {
+namespace pqrs::hid::usage_page {
 struct value_t : type_safe::strong_typedef<value_t, int32_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
                  type_safe::strong_typedef_op::relational_comparison<value_t> {
@@ -76,9 +74,7 @@ constexpr value_t apple_vendor_filtered_event(0xff50);
 constexpr value_t apple_vendor_multitouch(0xff60);
 constexpr value_t apple_vendor_display(0xff92);
 constexpr value_t apple_vendor_top_case(0x00ff);
-} // namespace usage_page
-} // namespace hid
-} // namespace pqrs
+} // namespace pqrs::hid::usage_page
 
 namespace std {
 template <>
