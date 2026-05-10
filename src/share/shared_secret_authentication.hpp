@@ -106,7 +106,7 @@ public:
             [](auto&& peer_pid,
                auto&& peer_socket_file_path) {
               if (get_shared_codesign_manager()->same_team_id(peer_pid)) {
-                logger::get_logger()->info("verified peer connected");
+                // logger::get_logger()->info("verified peer connected");
                 return true;
               } else {
                 logger::get_logger()->warn("peer is not code-signed with same Team ID");
