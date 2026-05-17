@@ -30,7 +30,6 @@ jobs:
           days-before-close: 7
           days-before-pr-stale: -1
           days-before-pr-close: -1
-          exempt-issue-labels: 'bug,enhancement,help wanted,needs to be addressed,question'
           stale-issue-label: stale
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
