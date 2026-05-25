@@ -338,15 +338,13 @@ public:
   }
 
 private:
-  void async_send_message(nlohmann::json&& json,
-                          std::function<void()> processed = nullptr) const {
+  void async_send_message(nlohmann::json&& json) const {
     if (!client_) {
       return;
     }
 
     shared_secret_authentication_client_.async_send_message(*client_,
-                                                            std::move(json),
-                                                            processed);
+                                                            std::move(json));
   }
 
   std::filesystem::path find_console_user_server_socket_file_path() const {
