@@ -4,8 +4,8 @@
 #include "constants.hpp"
 #include "logger.hpp"
 #include <pqrs/filesystem.hpp>
-#include <vector>
 #include <string_view>
+#include <vector>
 
 namespace krbn {
 namespace filesystem_utility {

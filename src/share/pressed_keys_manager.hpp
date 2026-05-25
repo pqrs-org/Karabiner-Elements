@@ -3,8 +3,8 @@
 // `krbn::pressed_keys_manager` can be used safely in a multi-threaded environment.
 
 #include "types.hpp"
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 namespace krbn {
 class pressed_keys_manager {

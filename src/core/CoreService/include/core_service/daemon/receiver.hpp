@@ -14,8 +14,8 @@
 #include "types.hpp"
 #include "types/core_service_daemon_state.hpp"
 #include <array>
-#include <pqrs/karabiner/driverkit/virtual_hid_device_service/utility.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/karabiner/driverkit/virtual_hid_device_service/utility.hpp>
 #include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences.hpp>
