@@ -1,5 +1,16 @@
 VERSION = `head -n 1 version`
 
+CLANG_FORMAT_FILES = \
+	'appendix/*.cpp' \
+	'appendix/*.h' \
+	'appendix/*.hpp' \
+	'src/*.cpp' \
+	'src/*.h' \
+	'src/*.hpp' \
+	'tests/*.cpp' \
+	'tests/*.h' \
+	'tests/*.hpp'
+
 all:
 	@echo "Read a document at the following URL to build a distributable package."
 	@echo "https://github.com/pqrs-org/Karabiner-Elements/#how-to-build"
@@ -35,6 +46,11 @@ notarize:
 
 staple:
 	xcrun stapler staple Karabiner-Elements-$(VERSION).dmg
+
+format: clang-format swift-format
+
+clang-format:
+	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
 
 swift-format:
 	find src/apps -name '*.swift' -print0 | xargs -0 swift-format -i
