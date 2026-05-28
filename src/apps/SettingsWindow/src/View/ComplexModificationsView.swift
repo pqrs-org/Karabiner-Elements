@@ -48,7 +48,7 @@ struct ComplexModificationsView: View {
 
         Spacer()
 
-        Label("For export", systemImage: "flame")
+        Label("For expert", systemImage: "flame")
 
         Button(
           action: {
