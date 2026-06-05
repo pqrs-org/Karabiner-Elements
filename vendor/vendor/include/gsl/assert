@@ -47,13 +47,14 @@
 //
 #if defined(__clang__)
 #define GSL_SUPPRESS(x) [[gsl::suppress(#x)]]
-#else
-#if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
+#elif defined(_MSC_VER) && _MSC_VER >= 1950
+// Visual Studio versions after 2022 (_MSC_VER > 1944) support the justification message.
+#define GSL_SUPPRESS(x) [[gsl::suppress(#x)]]
+#elif defined(_MSC_VER) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
 #define GSL_SUPPRESS(x) [[gsl::suppress(x)]]
 #else
 #define GSL_SUPPRESS(x)
-#endif // _MSC_VER
-#endif // __clang__
+#endif // defined(__clang__)
 
 #if defined(__clang__) || defined(__GNUC__)
 #define GSL_LIKELY(x) __builtin_expect(!!(x), 1)
