@@ -4,9 +4,14 @@
 
 - ✨ New Features
     - Added filtering functionality to the log viewer.
+- 🐛 Bug Fixes
+    - Fixed the ac_zoom_in and ac_zoom_out key codes being swapped.
 - ⚡️ Improvements
     - Supported the following keys:
         - consumer_key_code::ac_keyboard_layout_select (Thanks to @PedroSebastiao)
+        - consumer_key_code::ac_desktop_show_all_windows (Thanks to @omor1)
+        - consumer_key_code::ac_soft_key_left
+        - consumer_key_code::ac_desktop_show_all_applications
 
 ## Karabiner-Elements 16.0.0
 

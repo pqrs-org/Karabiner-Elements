@@ -2941,18 +2941,30 @@
     },
     {
         "not_to": true,
-        "label": "ac_zoom_out",
-        "data": [{ "consumer_key_code": "ac_zoom_out" }]
-    },
-    {
-        "not_to": true,
         "label": "ac_zoom_in",
         "data": [{ "consumer_key_code": "ac_zoom_in" }]
     },
     {
         "not_to": true,
+        "label": "ac_zoom_out",
+        "data": [{ "consumer_key_code": "ac_zoom_out" }]
+    },
+    {
+        "not_to": true,
         "label": "ac_keyboard_layout_select",
         "data": [{ "consumer_key_code": "ac_keyboard_layout_select" }]
+    },
+    {
+        "label": "ac_desktop_show_all_windows",
+        "data": [{ "consumer_key_code": "ac_desktop_show_all_windows" }]
+    },
+    {
+        "label": "ac_soft_key_left",
+        "data": [{ "consumer_key_code": "ac_soft_key_left" }]
+    },
+    {
+        "label": "ac_desktop_show_all_applications",
+        "data": [{ "consumer_key_code": "ac_desktop_show_all_applications" }]
     },
     {
         "category": "Remote control buttons"
