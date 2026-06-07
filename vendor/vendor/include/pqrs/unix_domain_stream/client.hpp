@@ -88,6 +88,12 @@ public:
     });
   }
 
+  void async_invalidate_connection() {
+    enqueue_to_dispatcher([this] {
+      invalidate_connection();
+    });
+  }
+
   void async_send(const std::vector<uint8_t>& data) {
     asio::post(io_ctx_,
                [this, data] {
@@ -147,6 +153,8 @@ private:
                [this] {
                  complete_all_requests(asio::error::operation_aborted);
 
+                 close_connecting_socket();
+
                  if (peer_) {
                    peer_->async_close();
                    peer_.reset();
@@ -159,22 +167,28 @@ private:
     asio::post(io_ctx_,
                [this] {
                  if (stopped_ ||
+                     connecting_socket_ ||
                      peer_) {
                    return;
                  }
 
                  auto socket = std::make_shared<asio::local::stream_protocol::socket>(io_ctx_);
+                 connecting_socket_ = socket;
 
                  socket->async_connect(
                      asio::local::stream_protocol::endpoint(socket_file_path_),
                      [this, socket](auto&& error_code) mutable {
-                       if (stopped_) {
+                       // A newer connect attempt or invalidate_connection has replaced this socket.
+                       if (stopped_ ||
+                           connecting_socket_ != socket) {
                          asio::error_code close_error_code;
                          socket->close(close_error_code);
                          return;
                        }
 
                        if (error_code) {
+                         connecting_socket_.reset();
+
                          enqueue_to_dispatcher([this, error_code] {
                            connect_failed(error_code);
                            start_reconnect_timer();
@@ -192,6 +206,8 @@ private:
                                           handle_connected_socket(socket, credentials, verified);
                                         });
                            })) {
+                         connecting_socket_.reset();
+
                          asio::error_code close_error_code;
                          socket->close(close_error_code);
                        }
@@ -199,10 +215,49 @@ private:
                });
   }
 
+  // This method is executed in the dispatcher thread.
+  void invalidate_connection() {
+    reconnect_timer_.stop();
+
+    asio::post(io_ctx_,
+               [this] {
+                 complete_all_requests(asio::error::operation_aborted);
+
+                 close_connecting_socket();
+
+                 if (peer_) {
+                   peer_->async_close();
+                   peer_.reset();
+                 }
+
+                 enqueue_to_dispatcher([this] {
+                   start_reconnect_timer();
+                 });
+               });
+  }
+
+  // This method is executed in `io_ctx_thread_`.
+  void close_connecting_socket() {
+    if (connecting_socket_) {
+      asio::error_code close_error_code;
+      connecting_socket_->close(close_error_code);
+      connecting_socket_.reset();
+    }
+  }
+
   // This method is executed in `io_ctx_thread_`.
   void handle_connected_socket(std::shared_ptr<asio::local::stream_protocol::socket> socket,
                                const peer_credentials& credentials,
                                bool verified) {
+    // A newer connect attempt or invalidate_connection has replaced this socket.
+    if (connecting_socket_ != socket) {
+      asio::error_code close_error_code;
+      socket->close(close_error_code);
+      return;
+    }
+
+    connecting_socket_.reset();
+
     if (stopped_) {
       asio::error_code close_error_code;
       socket->close(close_error_code);
@@ -317,6 +372,11 @@ private:
   asio::io_context io_ctx_;
   asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
   std::thread io_ctx_thread_;
+
+  // Keeps the current async_connect attempt alive and lets stop/invalidate
+  // close it. Completion handlers compare against this pointer so stale
+  // connect attempts are ignored after async_invalidate_connection.
+  std::shared_ptr<asio::local::stream_protocol::socket> connecting_socket_;
   std::shared_ptr<impl::peer> peer_;
   request_id next_request_id_ = 0;
   std::unordered_map<request_id, pending_request> pending_requests_;
