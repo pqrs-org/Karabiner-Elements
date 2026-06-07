@@ -1,5 +1,6 @@
 all:
 	rm -fr vendor
+	git -C cpm-cmake-package-lock pull
 	cmake -S . -B build
 	cmake --build build
 
