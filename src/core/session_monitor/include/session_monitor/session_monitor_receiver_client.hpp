@@ -97,6 +97,10 @@ public:
         });
       });
 
+      client_->received.connect([](auto&&) {
+        // Do nothing
+      });
+
       client_->async_start();
 
       logger::get_logger()->info("session_monitor_receiver_client is started.");

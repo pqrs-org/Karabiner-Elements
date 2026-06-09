@@ -62,13 +62,11 @@ public:
       logger::get_logger()->info("session_monitor_receiver: closed");
     });
 
-    server_->peer_connected.connect([](auto peer_id, auto&&) {
-      logger::get_logger()->info("session_monitor_receiver: peer_connected ({0})", peer_id);
+    server_->peer_connected.connect([](auto, auto&&) {
+      // Do nothing
     });
 
     server_->peer_closed.connect([this](auto peer_id) {
-      logger::get_logger()->info("session_monitor_receiver: peer_closed ({0})", peer_id);
-
       if (auto it = session_monitor_peer_states_.find(peer_id);
           it != std::end(session_monitor_peer_states_)) {
         auto state = it->second;
@@ -84,6 +82,10 @@ public:
 
     server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
       logger::get_logger()->error("session_monitor_receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
+    });
+
+    server_->received.connect([](auto, auto&&) {
+      // Do nothing
     });
 
     server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
