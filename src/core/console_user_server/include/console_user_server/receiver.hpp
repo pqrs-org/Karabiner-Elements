@@ -8,18 +8,16 @@
 #include "send_user_command_handler.hpp"
 #include "services_utility.hpp"
 #include "settings_window_guidance_manager.hpp"
-#include "shared_secret_authentication.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/input_source_selector.hpp>
 #include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
+#include <pqrs/unix_domain_stream.hpp>
 
-namespace krbn {
-namespace console_user_server {
+namespace krbn::console_user_server {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
@@ -32,20 +30,29 @@ public:
         input_source_selector_(std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_)),
         shell_command_handler_(std::make_unique<shell_command_handler>()),
         send_user_command_handler_(std::make_unique<send_user_command_handler>()) {
-    // Remove old files and prepare a socket directory.
+    // Prepare socket directories.
     prepare_console_user_server_socket_directory();
 
-    shared_secret_authentication_receiver_ =
-        std::make_unique<shared_secret_authentication::receiver>(weak_dispatcher_,
-                                                                 constants::local_datagram_buffer_size);
+    auto options = pqrs::unix_domain_stream::options(
+        pqrs::unix_domain_stream::options::initialization_parameters{
+            .max_message_size = constants::unix_domain_stream_max_message_size,
+            .reconnect_interval = std::chrono::milliseconds(1000),
+            .server_check_interval = std::chrono::milliseconds(3000),
+        });
 
     auto socket_file_path = console_user_server_socket_file_path();
 
-    server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
-                                                             socket_file_path,
-                                                             constants::local_datagram_buffer_size);
-    server_->set_server_check_interval(std::chrono::milliseconds(3000));
-    server_->set_reconnect_interval(std::chrono::milliseconds(1000));
+    server_ = std::make_unique<pqrs::unix_domain_stream::server>(
+        weak_dispatcher_,
+        socket_file_path,
+        options,
+        [](const auto& peer_credentials) {
+          auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
+          if (!result) {
+            logger::get_logger()->warn("receiver: peer is not code-signed with same Team ID");
+          }
+          return result;
+        });
 
     server_->bound.connect([socket_file_path] {
       logger::get_logger()->info("receiver: bound");
@@ -63,193 +70,26 @@ public:
       logger::get_logger()->info("receiver: closed");
     });
 
-    server_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
-      if (buffer->empty()) {
-        return;
-      }
+    server_->peer_connected.connect([](auto, auto&&) {
+      // Do nothing
+    });
 
-      try {
-        nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-        auto ot = json.at("operation_type").get<operation_type>();
-        switch (ot) {
-          case operation_type::handshake:
-            if (shared_secret_authentication_receiver_) {
-              shared_secret_authentication_receiver_->handle_handshake(sender_endpoint->path());
-            }
-            break;
+    server_->peer_closed.connect([](auto) {
+      // Do nothing
+    });
 
-          case operation_type::get_user_core_configuration_file_path:
-          case operation_type::core_service_daemon_state:
-          case operation_type::get_settings_window_guidance:
-          case operation_type::get_frontmost_application_history:
-          case operation_type::check_for_updates_on_startup:
-          case operation_type::register_menu_agent:
-          case operation_type::unregister_menu_agent:
-          case operation_type::register_multitouch_extension_agent:
-          case operation_type::unregister_multitouch_extension_agent:
-          case operation_type::register_notification_window_agent:
-          case operation_type::unregister_notification_window_agent:
-          case operation_type::frontmost_application_changed:
-          case operation_type::focused_ui_element_changed:
-          case operation_type::select_input_source:
-          case operation_type::shell_command_execution:
-          case operation_type::send_user_command:
-          case operation_type::software_function:
-            if (shared_secret_authentication_receiver_ &&
-                shared_secret_authentication_receiver_->verify_shared_secret(sender_endpoint->path(),
-                                                                             json,
-                                                                             ot)) {
-              switch (ot) {
-                case operation_type::get_user_core_configuration_file_path:
-                  if (shared_secret_authentication_receiver_) {
-                    shared_secret_authentication_receiver_->async_send(sender_endpoint->path(),
-                                                                       nlohmann::json{
-                                                                           {"operation_type", operation_type::user_core_configuration_file_path},
-                                                                           {"user_core_configuration_file_path", constants::get_user_core_configuration_file_path()},
-                                                                       });
-                  }
-                  break;
+    server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
+      logger::get_logger()->error("receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
+    });
 
-                case operation_type::get_settings_window_guidance:
-                  if (auto m = weak_settings_window_guidance_manager_.lock()) {
-                    if (shared_secret_authentication_receiver_) {
-                      shared_secret_authentication_receiver_->async_send(
-                          sender_endpoint->path(),
-                          nlohmann::json{
-                              {"operation_type", operation_type::settings_window_guidance},
-                              {"settings_window_guidance", m->get_guidance_state()}});
-                    }
-                  }
-                  break;
+    server_->received.connect([](auto, auto&&) {
+      // Do nothing
+    });
 
-                case operation_type::get_frontmost_application_history:
-                  if (auto h = weak_software_function_handler_.lock()) {
-                    h->async_invoke_with_frontmost_application_history(
-                        [this, sender_endpoint](auto&& frontmost_application_history) {
-                          if (shared_secret_authentication_receiver_) {
-                            shared_secret_authentication_receiver_->async_send(
-                                sender_endpoint->path(),
-                                nlohmann::json{
-                                    {"operation_type", operation_type::frontmost_application_history},
-                                    {"frontmost_application_history", frontmost_application_history}});
-                          }
-                        });
-                  }
-                  break;
-
-                case operation_type::core_service_daemon_state:
-                  if (auto m = weak_settings_window_guidance_manager_.lock()) {
-                    m->async_update_core_service_daemon_state(
-                        json.at("core_service_daemon_state").get<core_service_daemon_state>());
-                  }
-                  break;
-
-                case operation_type::check_for_updates_on_startup: {
-                  static bool checked = false;
-                  if (!checked) {
-                    checked = true;
-
-                    logger::get_logger()->info("operation_type::check_for_updates_on_startup was received; waiting 30 seconds before checking for updates.");
-
-                    // Note:
-                    //
-                    // During the updates, Karabiner-Updater.app and console_user_server binaries are overwritten asynchronous.
-                    // And console_user_server will be restarted via version check.
-                    // If console_user_server is restarted before Karabiner-Updater.app overwritten,
-                    // checking for updates runs with the old version of Karabiner-Updater.app,
-                    // and the update dialog is shown again even though the update was just completed.
-                    //
-                    // Wait before checking for updates to avoid it.
-
-                    enqueue_to_dispatcher(
-                        [] {
-                          logger::get_logger()->info("Check for updates...");
-                          update_utility::check_for_updates_in_background();
-                        },
-                        when_now() + std::chrono::seconds(30));
-                  }
-
-                  break;
-                }
-
-                case operation_type::register_menu_agent:
-                  services_utility::register_menu_agent();
-                  break;
-
-                case operation_type::unregister_menu_agent:
-                  services_utility::unregister_menu_agent();
-                  break;
-
-                case operation_type::register_multitouch_extension_agent:
-                  services_utility::register_multitouch_extension_agent();
-                  break;
-
-                case operation_type::unregister_multitouch_extension_agent:
-                  services_utility::unregister_multitouch_extension_agent();
-                  break;
-
-                case operation_type::register_notification_window_agent:
-                  services_utility::register_notification_window_agent();
-                  break;
-
-                case operation_type::unregister_notification_window_agent:
-                  services_utility::unregister_notification_window_agent();
-                  break;
-
-                case operation_type::frontmost_application_changed:
-                  if (auto h = weak_software_function_handler_.lock()) {
-                    auto app = json.at("frontmost_application").get<application>();
-                    h->add_frontmost_application_history(app);
-                  }
-                  break;
-
-                case operation_type::focused_ui_element_changed:
-                  if (auto h = weak_software_function_handler_.lock()) {
-                    auto element = json.at("focused_ui_element").get<focused_ui_element>();
-                    h->set_focused_ui_element(element);
-                  }
-                  break;
-
-                case operation_type::select_input_source:
-                  if (input_source_selector_) {
-                    using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
-                    auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
-                    input_source_selector_->async_select(std::make_shared<specifiers_t>(specifiers));
-                  }
-                  break;
-
-                case operation_type::shell_command_execution:
-                  if (shell_command_handler_) {
-                    auto shell_command = json.at("shell_command").get<std::string>();
-                    shell_command_handler_->run(shell_command);
-                  }
-                  break;
-
-                case operation_type::send_user_command:
-                  if (send_user_command_handler_) {
-                    auto user_command = json.at("user_command").get<nlohmann::json>();
-                    send_user_command_handler_->run(user_command);
-                  }
-                  break;
-
-                case operation_type::software_function:
-                  if (auto h = weak_software_function_handler_.lock()) {
-                    h->execute_software_function(json.at("software_function").get<software_function>());
-                  }
-                  break;
-
-                default:
-                  break;
-              }
-            }
-            break;
-
-          default:
-            break;
-        }
-      } catch (std::exception& e) {
-        logger::get_logger()->error("received data is corrupted");
-      }
+    server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
+      handle_request(peer_id,
+                     request_id,
+                     buffer);
     });
 
     server_->async_start();
@@ -257,31 +97,232 @@ public:
     logger::get_logger()->info("receiver is initialized");
   }
 
-  virtual ~receiver(void) {
+  virtual ~receiver() {
     detach_from_dispatcher([this] {
       input_source_selector_ = nullptr;
       shell_command_handler_ = nullptr;
       send_user_command_handler_ = nullptr;
 
       server_ = nullptr;
-      shared_secret_authentication_receiver_ = nullptr;
     });
 
     logger::get_logger()->info("receiver is terminated");
   }
 
 private:
-  std::filesystem::path console_user_server_socket_file_path(void) const {
-    return constants::get_console_user_server_socket_directory_path(geteuid()) / filesystem_utility::make_socket_file_basename();
+  std::filesystem::path console_user_server_socket_file_path() const {
+    return constants::get_console_user_server_socket_file_path(geteuid());
   }
 
-  void prepare_console_user_server_socket_directory(void) const {
-    auto directory_path = console_user_server_socket_file_path().parent_path();
+  void prepare_console_user_server_socket_directory() const {
+    filesystem_utility::create_base_directories(geteuid());
+  }
 
-    std::error_code ec;
-    std::filesystem::remove_all(directory_path, ec);
-    std::filesystem::create_directory(directory_path, ec);
-    chmod(directory_path.c_str(), 0755);
+  void async_respond(pqrs::unix_domain_stream::peer_id peer_id,
+                     pqrs::unix_domain_stream::request_id request_id,
+                     nlohmann::json json) {
+    if (server_) {
+      server_->async_respond(peer_id,
+                             request_id,
+                             nlohmann::json::to_msgpack(json));
+    }
+  }
+
+  void async_respond_none(pqrs::unix_domain_stream::peer_id peer_id,
+                          pqrs::unix_domain_stream::request_id request_id) {
+    async_respond(peer_id,
+                  request_id,
+                  nlohmann::json{
+                      {"operation_type", operation_type::none},
+                  });
+  }
+
+  void handle_request(pqrs::unix_domain_stream::peer_id peer_id,
+                      pqrs::unix_domain_stream::request_id request_id,
+                      pqrs::not_null_shared_ptr_t<std::vector<uint8_t>> buffer) {
+    if (buffer->empty()) {
+      server_->async_close_peer(peer_id);
+      return;
+    }
+
+    try {
+      nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+      switch (json.at("operation_type").get<operation_type>()) {
+        case operation_type::get_user_core_configuration_file_path:
+          async_respond(peer_id,
+                        request_id,
+                        nlohmann::json{
+                            {"operation_type", operation_type::user_core_configuration_file_path},
+                            {"user_core_configuration_file_path", constants::get_user_core_configuration_file_path()},
+                        });
+          break;
+
+        case operation_type::get_settings_window_guidance:
+          if (auto m = weak_settings_window_guidance_manager_.lock()) {
+            async_respond(peer_id,
+                          request_id,
+                          nlohmann::json{
+                              {"operation_type", operation_type::settings_window_guidance},
+                              {"settings_window_guidance", m->get_guidance_state()}});
+          } else {
+            async_respond_none(peer_id,
+                               request_id);
+          }
+          break;
+
+        case operation_type::get_frontmost_application_history:
+          if (auto h = weak_software_function_handler_.lock()) {
+            h->async_invoke_with_frontmost_application_history(
+                [this, peer_id, request_id](auto&& frontmost_application_history) {
+                  async_respond(peer_id,
+                                request_id,
+                                nlohmann::json{
+                                    {"operation_type", operation_type::frontmost_application_history},
+                                    {"frontmost_application_history", frontmost_application_history}});
+                });
+          } else {
+            async_respond_none(peer_id,
+                               request_id);
+          }
+          break;
+
+        case operation_type::core_service_daemon_state:
+          if (auto m = weak_settings_window_guidance_manager_.lock()) {
+            m->async_update_core_service_daemon_state(
+                json.at("core_service_daemon_state").get<core_service_daemon_state>());
+          }
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::check_for_updates_on_startup: {
+          static bool checked = false;
+          if (!checked) {
+            checked = true;
+
+            logger::get_logger()->info("operation_type::check_for_updates_on_startup was received; waiting 30 seconds before checking for updates.");
+
+            // Note:
+            //
+            // During the updates, Karabiner-Updater.app and console_user_server binaries are overwritten asynchronous.
+            // And console_user_server will be restarted via version check.
+            // If console_user_server is restarted before Karabiner-Updater.app overwritten,
+            // checking for updates runs with the old version of Karabiner-Updater.app,
+            // and the update dialog is shown again even though the update was just completed.
+            //
+            // Wait before checking for updates to avoid it.
+
+            enqueue_to_dispatcher(
+                [] {
+                  logger::get_logger()->info("Check for updates...");
+                  update_utility::check_for_updates_in_background();
+                },
+                when_now() + std::chrono::seconds(30));
+          }
+
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+        }
+
+        case operation_type::register_menu_agent:
+          services_utility::register_menu_agent();
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::unregister_menu_agent:
+          services_utility::unregister_menu_agent();
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::register_multitouch_extension_agent:
+          services_utility::register_multitouch_extension_agent();
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::unregister_multitouch_extension_agent:
+          services_utility::unregister_multitouch_extension_agent();
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::register_notification_window_agent:
+          services_utility::register_notification_window_agent();
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::unregister_notification_window_agent:
+          services_utility::unregister_notification_window_agent();
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::frontmost_application_changed:
+          if (auto h = weak_software_function_handler_.lock()) {
+            auto app = json.at("frontmost_application").get<application>();
+            h->add_frontmost_application_history(app);
+          }
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::focused_ui_element_changed:
+          if (auto h = weak_software_function_handler_.lock()) {
+            auto element = json.at("focused_ui_element").get<focused_ui_element>();
+            h->set_focused_ui_element(element);
+          }
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::select_input_source:
+          if (input_source_selector_) {
+            using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
+            auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
+            input_source_selector_->async_select(std::make_shared<specifiers_t>(specifiers));
+          }
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::shell_command_execution:
+          if (shell_command_handler_) {
+            auto shell_command = json.at("shell_command").get<std::string>();
+            shell_command_handler_->run(shell_command);
+          }
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::send_user_command:
+          if (send_user_command_handler_) {
+            auto user_command = json.at("user_command").get<nlohmann::json>();
+            send_user_command_handler_->run(user_command);
+          }
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        case operation_type::software_function:
+          if (auto h = weak_software_function_handler_.lock()) {
+            h->execute_software_function(json.at("software_function").get<software_function>());
+          }
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+
+        default:
+          server_->async_close_peer(peer_id);
+          break;
+      }
+    } catch (std::exception& e) {
+      logger::get_logger()->error("received data is corrupted");
+      server_->async_close_peer(peer_id);
+    }
   }
 
   std::weak_ptr<settings_window_guidance_manager> weak_settings_window_guidance_manager_;
@@ -289,8 +330,6 @@ private:
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::unique_ptr<shell_command_handler> shell_command_handler_;
   std::unique_ptr<send_user_command_handler> send_user_command_handler_;
-  std::unique_ptr<shared_secret_authentication::receiver> shared_secret_authentication_receiver_;
-  std::unique_ptr<pqrs::local_datagram::server> server_;
+  std::unique_ptr<pqrs::unix_domain_stream::server> server_;
 };
-} // namespace console_user_server
-} // namespace krbn
+} // namespace krbn::console_user_server

@@ -445,8 +445,7 @@ public:
     //
 
     if (current_console_user_id_) {
-      console_user_server_client_ = std::make_unique<console_user_server_client>(*current_console_user_id_,
-                                                                                 "cs_con_usr_srv_clnt");
+      console_user_server_client_ = std::make_unique<console_user_server_client>(*current_console_user_id_);
 
       console_user_server_client_->connected.connect([this] {
         console_user_server_client_->async_get_user_core_configuration_file_path();

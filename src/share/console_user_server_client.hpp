@@ -2,20 +2,18 @@
 
 // `krbn::console_user_server_client` can be used safely in a multi-threaded environment.
 
+#include "codesign_manager.hpp"
 #include "constants.hpp"
-#include "filesystem_utility.hpp"
 #include "logger.hpp"
-#include "shared_secret_authentication.hpp"
 #include "types.hpp"
-#include <glob/glob.hpp>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/filesystem.hpp>
-#include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
+#include <pqrs/unix_domain_stream.hpp>
 #include <unistd.h>
+#include <utility>
 #include <vector>
 
 namespace krbn {
@@ -32,11 +30,9 @@ public:
 
   console_user_server_client(const console_user_server_client&) = delete;
 
-  console_user_server_client(uid_t uid,
-                             const std::string& client_socket_directory_name)
+  explicit console_user_server_client(uid_t uid)
       : dispatcher_client(),
-        uid_(uid),
-        client_socket_directory_name_(client_socket_directory_name) {
+        uid_(uid) {
   }
 
   virtual ~console_user_server_client() {
@@ -52,32 +48,34 @@ public:
         return;
       }
 
-      prepare_console_user_server_client_socket_directory();
+      auto options = pqrs::unix_domain_stream::options(
+          pqrs::unix_domain_stream::options::initialization_parameters{
+              .max_message_size = constants::unix_domain_stream_max_message_size,
+              .reconnect_interval = std::chrono::milliseconds(1000),
+              .server_check_interval = std::chrono::milliseconds(3000),
+          });
 
-      auto client_socket_file_path = console_user_server_client_socket_file_path();
+      client_ = std::make_unique<pqrs::unix_domain_stream::client>(
+          weak_dispatcher_,
+          constants::get_console_user_server_socket_file_path(uid_),
+          options,
+          [](const auto& peer_credentials) {
+            auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
+            if (!result) {
+              logger::get_logger()->warn("console_user_server_client: peer is not code-signed with same Team ID");
+            }
+            return result;
+          });
 
-      client_ = std::make_unique<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                               find_console_user_server_socket_file_path(),
-                                                               client_socket_file_path,
-                                                               constants::local_datagram_buffer_size);
-      client_->set_server_check_interval(std::chrono::milliseconds(3000));
-      client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
-      client_->set_reconnect_interval(std::chrono::milliseconds(1000));
-      client_->set_server_socket_file_path_resolver([this] {
-        return find_console_user_server_socket_file_path();
-      });
-
-      client_->connected.connect([this, client_socket_file_path](auto&& peer_pid) {
+      client_->connected.connect([this](auto&&) {
         logger::get_logger()->info("console_user_server_client is connected.");
 
-        if (uid_ != geteuid()) {
-          chown(client_socket_file_path.c_str(), uid_, 0);
-        }
-
         enqueue_to_dispatcher([this] {
-          if (client_) {
-            shared_secret_authentication_client_.connected(*client_);
-          }
+          ++connection_generation_;
+          connection_ready_ = true;
+
+          flush_pending_messages();
+          connected();
         });
       });
 
@@ -85,49 +83,47 @@ public:
         logger::get_logger()->error("console_user_server_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
+          make_connection_not_ready();
+
           connect_failed(error_code);
         });
-
-        // connect_failed will be triggered if console_user_server_client_socket_directory does not exist
-        // due to the parent directory (system_user_directory) is not ready.
-        // For this case, we have to create console_user_server_client_socket_directory each time.
-        prepare_console_user_server_client_socket_directory();
       });
 
       client_->closed.connect([this] {
         logger::get_logger()->info("console_user_server_client is closed.");
 
         enqueue_to_dispatcher([this] {
+          make_connection_not_ready();
+
           closed();
         });
       });
 
-      client_->error_occurred.connect([](auto&& error_code) {
+      client_->error_occurred.connect([this](auto&& error_code) {
         logger::get_logger()->error("console_user_server_client error: {0}", error_code.message());
+
+        enqueue_to_dispatcher([this] {
+          make_connection_not_ready();
+        });
       });
 
-      client_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
+      client_->peer_verification_failed.connect([this](auto&&) {
+        logger::get_logger()->error("console_user_server_client peer_verification_failed");
+
+        enqueue_to_dispatcher([this] {
+          make_connection_not_ready();
+        });
+      });
+
+      client_->received.connect([this](auto&& buffer) {
         enqueue_to_dispatcher([this, buffer] {
           if (buffer->empty()) {
             return;
           }
 
           try {
-            if (client_ &&
-                shared_secret_authentication_client_.handle_shared_secret_payload(*buffer,
-                                                                                  *client_,
-                                                                                  [this] {
-                                                                                    connected();
-                                                                                  })) {
-              return;
-            }
-
             auto json = nlohmann::json::from_msgpack(*buffer);
             auto ot = json.at("operation_type").template get<operation_type>();
-            if (!shared_secret_authentication_client_.verify_shared_secret(json,
-                                                                           ot)) {
-              return;
-            }
 
             received(ot,
                      json);
@@ -343,41 +339,58 @@ private:
       return;
     }
 
-    shared_secret_authentication_client_.async_send_message(*client_,
-                                                            std::move(json));
+    if (!connection_ready_) {
+      pending_messages_.push_back(std::move(json));
+      return;
+    }
+
+    auto connection_generation = connection_generation_;
+    client_->async_request(
+        nlohmann::json::to_msgpack(json),
+        [this, connection_generation](auto&& error_code, auto&& buffer) {
+          enqueue_to_dispatcher([this, connection_generation, error_code, buffer] {
+            if (connection_generation_ != connection_generation) {
+              return;
+            }
+
+            if (error_code) {
+              logger::get_logger()->error("console_user_server_client request failed: {0}", error_code.message());
+
+              make_connection_not_ready();
+
+              if (client_) {
+                client_->async_invalidate_connection();
+              }
+            }
+
+            if (buffer &&
+                !buffer->empty()) {
+              handle_response(buffer);
+            }
+          });
+        });
   }
 
-  std::filesystem::path find_console_user_server_socket_file_path() const {
-    return filesystem_utility::find_socket_file_path(
-        constants::get_console_user_server_socket_directory_path(uid_));
+  void handle_response(pqrs::not_null_shared_ptr_t<std::vector<uint8_t>> buffer) const {
+    try {
+      auto json = nlohmann::json::from_msgpack(*buffer);
+      auto ot = json.at("operation_type").template get<operation_type>();
+      if (ot == operation_type::none) {
+        return;
+      }
+
+      received(ot,
+               json);
+    } catch (std::exception& e) {
+      logger::get_logger()->error("received data is corrupted");
+    }
   }
 
-  std::filesystem::path console_user_server_client_socket_directory_path() const {
-    return constants::get_system_user_directory(uid_) / client_socket_directory_name_;
-  }
+  void flush_pending_messages() const {
+    auto pending_messages = std::exchange(pending_messages_, {});
 
-  std::filesystem::path console_user_server_client_socket_file_path() const {
-    return console_user_server_client_socket_directory_path() / filesystem_utility::make_socket_file_basename();
-  }
-
-  void prepare_console_user_server_client_socket_directory() {
-    auto d = console_user_server_client_socket_directory_path();
-
-    //
-    // Remove old socket files.
-    //
-
-    std::error_code ec;
-    std::filesystem::remove_all(d, ec);
-
-    //
-    // Create directory.
-    //
-
-    std::filesystem::create_directory(d, ec);
-
-    if (uid_ != geteuid()) {
-      chown(d.c_str(), uid_, 0);
+    for (auto& message : pending_messages) {
+      async_send_message(std::move(message));
     }
   }
 
@@ -386,16 +399,23 @@ private:
       return;
     }
 
-    shared_secret_authentication_client_.reset();
     client_ = nullptr;
+    pending_messages_.clear();
+    make_connection_not_ready();
 
     logger::get_logger()->info("console_user_server_client is stopped.");
   }
 
-  uid_t uid_;
-  std::string client_socket_directory_name_;
+  void make_connection_not_ready() const {
+    connection_ready_ = false;
+    ++connection_generation_;
+  }
 
-  std::unique_ptr<pqrs::local_datagram::client> client_;
-  mutable shared_secret_authentication::client shared_secret_authentication_client_;
+  uid_t uid_;
+
+  std::unique_ptr<pqrs::unix_domain_stream::client> client_;
+  mutable std::vector<nlohmann::json> pending_messages_;
+  mutable bool connection_ready_ = false;
+  mutable uint64_t connection_generation_ = 0;
 };
 } // namespace krbn

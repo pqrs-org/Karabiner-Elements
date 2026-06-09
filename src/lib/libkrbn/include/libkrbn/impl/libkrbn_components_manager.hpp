@@ -171,11 +171,9 @@ public:
   // console_user_server_client_
   //
 
-  void enable_console_user_server_client(uid_t uid,
-                                         const std::string& client_socket_directory_name) {
+  void enable_console_user_server_client(uid_t uid) {
     if (!console_user_server_client_) {
-      console_user_server_client_ = std::make_shared<libkrbn_console_user_server_client>(uid,
-                                                                                         client_socket_directory_name);
+      console_user_server_client_ = std::make_shared<libkrbn_console_user_server_client>(uid);
     }
   }
 

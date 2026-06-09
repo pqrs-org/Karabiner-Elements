@@ -791,8 +791,7 @@ void libkrbn_enable_console_user_server_client(uid_t uid,
                                                const char* client_socket_directory_name) {
   if (auto manager = libkrbn_components_manager_) {
     if (client_socket_directory_name) {
-      manager->enable_console_user_server_client(uid,
-                                                 client_socket_directory_name);
+      manager->enable_console_user_server_client(uid);
     }
   }
 }

@@ -19,22 +19,22 @@ public:
   static constexpr size_t local_datagram_buffer_size = 32 * 1024;
   static constexpr size_t unix_domain_stream_max_message_size = 32 * 1024;
 
-  static const std::filesystem::path& get_version_file_path(void) {
+  static const std::filesystem::path& get_version_file_path() {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/Karabiner-Elements/version");
     return path;
   }
 
-  static const std::filesystem::path& get_tmp_directory(void) {
+  static const std::filesystem::path& get_tmp_directory() {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/tmp");
     return path;
   }
 
-  static const std::filesystem::path& get_rootonly_directory(void) {
+  static const std::filesystem::path& get_rootonly_directory() {
     static auto path = get_tmp_directory() / "rootonly";
     return path;
   }
 
-  static const std::filesystem::path& get_system_user_directory(void) {
+  static const std::filesystem::path& get_system_user_directory() {
     static auto path = get_tmp_directory() / "user";
     return path;
   }
@@ -43,7 +43,7 @@ public:
     return get_system_user_directory() / fmt::format("{0}", uid);
   }
 
-  static const std::filesystem::path& get_karabiner_core_service_socket_directory_path(void) {
+  static const std::filesystem::path& get_karabiner_core_service_socket_directory_path() {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
     // So we use the shorten name Karabiner-Core-Service -> krbn_core_service.
@@ -55,7 +55,7 @@ public:
     return path;
   }
 
-  static const std::filesystem::path& get_session_monitor_receiver_socket_file_path(void) {
+  static const std::filesystem::path& get_session_monitor_receiver_socket_file_path() {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
     // "/Library/Application Support/org.pqrs/tmp/rootonly/karabiner_session_monitor_receiver.sock" length is 90.
@@ -64,43 +64,40 @@ public:
     return path;
   }
 
-  static std::filesystem::path get_console_user_server_socket_directory_path(uid_t uid) {
+  static std::filesystem::path get_console_user_server_socket_file_path(uid_t uid) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name console_user_server -> con_usr_srv.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/con_usr_srv/1880fdaa305fe8f0.sock`
+    // "/Library/Application Support/org.pqrs/tmp/user/501/karabiner_console_user_server.sock" length is 85.
 
-    return constants::get_system_user_directory(uid) / std::filesystem::path("con_usr_srv");
+    return constants::get_system_user_directory(uid) / std::filesystem::path("karabiner_console_user_server.sock");
   }
 
-  static const std::filesystem::path& get_karabiner_machine_identifier_json_file_path(void) {
+  static const std::filesystem::path& get_karabiner_machine_identifier_json_file_path() {
     static auto path = get_tmp_directory() / "karabiner_machine_identifier.json";
     return path;
   }
 
-  static const std::filesystem::path& get_system_configuration_directory(void) {
+  static const std::filesystem::path& get_system_configuration_directory() {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/config");
     return path;
   }
 
-  static const std::filesystem::path& get_system_app_icon_configuration_file_path(void) {
+  static const std::filesystem::path& get_system_app_icon_configuration_file_path() {
     static auto path = get_system_configuration_directory() / "karabiner_app_icon.json";
     return path;
   }
 
-  static const std::filesystem::path& get_system_core_configuration_file_path(void) {
+  static const std::filesystem::path& get_system_core_configuration_file_path() {
     static auto path = get_system_configuration_directory() / "karabiner.json";
     return path;
   }
 
-  static const std::filesystem::path& get_system_environment_file_path(void) {
+  static const std::filesystem::path& get_system_environment_file_path() {
     static auto path = get_system_configuration_directory() / "karabiner_environment";
     return path;
   }
 
-  static const std::filesystem::path& get_user_configuration_directory(void) {
+  static const std::filesystem::path& get_user_configuration_directory() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -126,7 +123,7 @@ public:
     return directory;
   }
 
-  static const std::filesystem::path& get_user_data_directory(void) {
+  static const std::filesystem::path& get_user_data_directory() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -152,7 +149,7 @@ public:
     return directory;
   }
 
-  static const std::filesystem::path& get_user_core_configuration_file_path(void) {
+  static const std::filesystem::path& get_user_core_configuration_file_path() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -170,7 +167,7 @@ public:
     return file_path;
   }
 
-  static const std::filesystem::path& get_user_core_configuration_automatic_backups_directory(void) {
+  static const std::filesystem::path& get_user_core_configuration_automatic_backups_directory() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -188,7 +185,7 @@ public:
     return directory;
   }
 
-  static const std::filesystem::path& get_user_complex_modifications_assets_directory(void) {
+  static const std::filesystem::path& get_user_complex_modifications_assets_directory() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -206,7 +203,7 @@ public:
     return directory;
   }
 
-  static const std::filesystem::path& get_user_log_directory(void) {
+  static const std::filesystem::path& get_user_log_directory() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -224,7 +221,7 @@ public:
     return directory;
   }
 
-  static const std::filesystem::path& get_user_tmp_directory(void) {
+  static const std::filesystem::path& get_user_tmp_directory() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
@@ -242,7 +239,7 @@ public:
     return directory;
   }
 
-  static const karabiner_machine_identifier& get_karabiner_machine_identifier(void) {
+  static const karabiner_machine_identifier& get_karabiner_machine_identifier() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 
