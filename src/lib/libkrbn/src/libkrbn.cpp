@@ -787,12 +787,9 @@ void libkrbn_core_service_client_async_clear_user_variables() {
 // console_user_server_client
 //
 
-void libkrbn_enable_console_user_server_client(uid_t uid,
-                                               const char* client_socket_directory_name) {
+void libkrbn_enable_console_user_server_client(uid_t uid) {
   if (auto manager = libkrbn_components_manager_) {
-    if (client_socket_directory_name) {
-      manager->enable_console_user_server_client(uid);
-    }
+    manager->enable_console_user_server_client(uid);
   }
 }
 

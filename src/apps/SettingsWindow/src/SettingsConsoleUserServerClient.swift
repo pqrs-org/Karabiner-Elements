@@ -37,7 +37,7 @@ final class SettingsConsoleUserServerClient {
   }
 
   public func start() {
-    libkrbn_enable_console_user_server_client(geteuid(), "settings_cus_clnt")
+    libkrbn_enable_console_user_server_client(geteuid())
 
     libkrbn_register_console_user_server_client_status_changed_callback(
       consoleUserServerClientStatusChangedCallback)
