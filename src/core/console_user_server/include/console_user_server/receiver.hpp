@@ -30,7 +30,6 @@ public:
         input_source_selector_(std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_)),
         shell_command_handler_(std::make_unique<shell_command_handler>()),
         send_user_command_handler_(std::make_unique<send_user_command_handler>()) {
-    // Prepare socket directories.
     prepare_console_user_server_socket_directory();
 
     auto options = pqrs::unix_domain_stream::options(
