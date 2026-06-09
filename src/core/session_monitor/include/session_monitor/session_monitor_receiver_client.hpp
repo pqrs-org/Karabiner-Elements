@@ -12,24 +12,24 @@ class session_monitor_receiver_client final : public pqrs::dispatcher::extra::di
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  nod::signal<void(void)> connected;
+  nod::signal<void()> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
-  nod::signal<void(void)> closed;
+  nod::signal<void()> closed;
 
   // Methods
 
   session_monitor_receiver_client(const session_monitor_receiver_client&) = delete;
 
-  session_monitor_receiver_client(void) : dispatcher_client() {
+  session_monitor_receiver_client() : dispatcher_client() {
   }
 
-  virtual ~session_monitor_receiver_client(void) {
+  virtual ~session_monitor_receiver_client() {
     detach_from_dispatcher([this] {
       stop();
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       if (client_) {
         logger::get_logger()->warn("session_monitor_receiver_client is already started.");
@@ -107,7 +107,7 @@ public:
     });
   }
 
-  void async_stop(void) {
+  void async_stop() {
     enqueue_to_dispatcher([this] {
       stop();
     });
@@ -133,7 +133,7 @@ private:
     bool operator==(const console_user_id_changed_state&) const = default;
   };
 
-  void stop(void) {
+  void stop() {
     if (!client_) {
       return;
     }
@@ -147,13 +147,13 @@ private:
     logger::get_logger()->info("session_monitor_receiver_client is stopped.");
   }
 
-  void make_connection_not_ready(void) {
+  void make_connection_not_ready() {
     connection_ready_ = false;
     console_user_id_changed_request_in_flight_ = false;
     ++connection_generation_;
   }
 
-  void async_send_pending_console_user_id_changed(void) {
+  void async_send_pending_console_user_id_changed() {
     if (!client_ ||
         !connection_ready_ ||
         !pending_console_user_id_changed_ ||

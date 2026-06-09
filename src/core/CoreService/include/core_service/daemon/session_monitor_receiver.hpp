@@ -11,9 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace krbn {
-namespace core_service {
-namespace daemon {
+namespace krbn::core_service::daemon {
 class session_monitor_receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
@@ -24,7 +22,7 @@ public:
 
   session_monitor_receiver(const session_monitor_receiver&) = delete;
 
-  session_monitor_receiver(void) : dispatcher_client() {
+  session_monitor_receiver() : dispatcher_client() {
     prepare_session_monitor_receiver_socket_parent_directory();
 
     auto options = pqrs::unix_domain_stream::options(
@@ -136,7 +134,7 @@ public:
     logger::get_logger()->info("session_monitor_receiver is initialized");
   }
 
-  virtual ~session_monitor_receiver(void) {
+  virtual ~session_monitor_receiver() {
     detach_from_dispatcher([this] {
       session_monitor_peer_states_.clear();
       server_ = nullptr;
@@ -145,7 +143,7 @@ public:
     logger::get_logger()->info("session_monitor_receiver is terminated");
   }
 
-  void async_start(void) {
+  void async_start() {
     server_->async_start();
   }
 
@@ -155,7 +153,7 @@ private:
     bool on_console;
   };
 
-  void prepare_session_monitor_receiver_socket_parent_directory(void) const {
+  void prepare_session_monitor_receiver_socket_parent_directory() const {
     filesystem_utility::create_base_directories(std::nullopt);
   }
 
@@ -186,6 +184,4 @@ private:
   std::optional<uid_t> current_console_user_id_;
   std::unordered_map<pqrs::unix_domain_stream::peer_id, session_monitor_peer_state> session_monitor_peer_states_;
 };
-} // namespace daemon
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::daemon
