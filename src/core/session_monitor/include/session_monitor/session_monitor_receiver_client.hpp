@@ -1,7 +1,8 @@
 #pragma once
 
-#include "filesystem_utility.hpp"
-#include <pqrs/local_datagram.hpp>
+#include <cstdint>
+#include <optional>
+#include <pqrs/unix_domain_stream.hpp>
 #include <types/operation_type.hpp>
 
 // `krbn::session_monitor_receiver_client` can be used safely in a multi-threaded environment.
@@ -35,36 +36,37 @@ public:
         return;
       }
 
-      prepare_client_socket_directory();
+      auto options = pqrs::unix_domain_stream::options(
+          pqrs::unix_domain_stream::options::initialization_parameters{
+              .max_message_size = constants::unix_domain_stream_max_message_size,
+              .reconnect_interval = std::chrono::milliseconds(1000),
+              .server_check_interval = std::chrono::milliseconds(3000),
+          });
 
-      client_ = std::make_unique<pqrs::local_datagram::client>(
+      client_ = std::make_unique<pqrs::unix_domain_stream::client>(
           weak_dispatcher_,
-          get_session_monitor_receiver_socket_file_path(),
-          get_client_socket_directory() / filesystem_utility::make_socket_file_basename(),
-          constants::local_datagram_buffer_size);
-      client_->set_server_check_interval(std::chrono::milliseconds(3000));
-      client_->set_client_socket_check_interval(std::chrono::milliseconds(3000));
-      client_->set_reconnect_interval(std::chrono::milliseconds(1000));
-      client_->set_server_socket_file_path_resolver([this] {
-        return get_session_monitor_receiver_socket_file_path();
-      });
+          constants::get_session_monitor_receiver_socket_file_path(),
+          options);
 
-      client_->connected.connect([this](auto&& peer_pid) {
+      client_->connected.connect([this](auto&&) {
         logger::get_logger()->info("session_monitor_receiver_client is connected.");
 
         enqueue_to_dispatcher([this] {
+          ++connection_generation_;
+          console_user_id_changed_request_in_flight_ = false;
+          connection_ready_ = true;
+
           connected();
+          async_send_pending_console_user_id_changed();
         });
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
         logger::get_logger()->info("session_monitor_receiver_client connect_failed: {0}", error_code.message());
 
-        // If the socket directory is deleted for any reason,
-        // connect_failed will be triggered, so recreate the directory each time.
-        prepare_client_socket_directory();
-
         enqueue_to_dispatcher([this, error_code] {
+          make_connection_not_ready();
+
           connect_failed(error_code);
         });
       });
@@ -73,12 +75,26 @@ public:
         logger::get_logger()->info("session_monitor_receiver_client is closed.");
 
         enqueue_to_dispatcher([this] {
+          make_connection_not_ready();
+
           closed();
         });
       });
 
-      client_->error_occurred.connect([](auto&& error_code) {
+      client_->error_occurred.connect([this](auto&& error_code) {
         logger::get_logger()->error("session_monitor_receiver_client error: {0}", error_code.message());
+
+        enqueue_to_dispatcher([this] {
+          make_connection_not_ready();
+        });
+      });
+
+      client_->peer_verification_failed.connect([this](auto&&) {
+        logger::get_logger()->error("session_monitor_receiver_client peer_verification_failed");
+
+        enqueue_to_dispatcher([this] {
+          make_connection_not_ready();
+        });
       });
 
       client_->async_start();
@@ -94,45 +110,24 @@ public:
   }
 
   void async_console_user_id_changed(uid_t uid,
-                                     bool on_console) const {
+                                     bool on_console) {
     enqueue_to_dispatcher([this, uid, on_console] {
-      nlohmann::json json{
-          {"operation_type", operation_type::console_user_id_changed},
-          {"user_id", uid},
-          {"on_console", on_console},
+      pending_console_user_id_changed_ = console_user_id_changed_state{
+          .uid = uid,
+          .on_console = on_console,
       };
 
-      if (client_) {
-        client_->async_send(nlohmann::json::to_msgpack(json));
-      }
+      async_send_pending_console_user_id_changed();
     });
   }
 
 private:
-  void prepare_client_socket_directory(void) const {
-    // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
-    // (We have to make a socket directory which includes the real user ID in the file path.)
-    filesystem_utility::create_base_directories(getuid());
+  struct console_user_id_changed_state final {
+    uid_t uid;
+    bool on_console;
 
-    auto directory_path = get_client_socket_directory();
-
-    // Remove old socket files.
-    std::error_code ec;
-    std::filesystem::remove_all(directory_path, ec);
-    std::filesystem::create_directory(directory_path, ec);
-    chmod(directory_path.c_str(), 0700);
-  }
-
-  std::filesystem::path get_client_socket_directory(void) const {
-    // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
-    // (We have to make a socket file which includes the real user ID in the file path.)
-    return constants::get_session_monitor_receiver_client_socket_directory_path(getuid());
-  }
-
-  std::filesystem::path get_session_monitor_receiver_socket_file_path(void) const {
-    return filesystem_utility::find_socket_file_path(
-        constants::get_session_monitor_receiver_socket_directory_path());
-  }
+    bool operator==(const console_user_id_changed_state&) const = default;
+  };
 
   void stop(void) {
     if (!client_) {
@@ -140,10 +135,72 @@ private:
     }
 
     client_ = nullptr;
+    pending_console_user_id_changed_ = std::nullopt;
+    console_user_id_changed_request_in_flight_ = false;
+    connection_ready_ = false;
+    ++connection_generation_;
 
     logger::get_logger()->info("session_monitor_receiver_client is stopped.");
   }
 
-  std::unique_ptr<pqrs::local_datagram::client> client_;
+  void make_connection_not_ready(void) {
+    connection_ready_ = false;
+    console_user_id_changed_request_in_flight_ = false;
+    ++connection_generation_;
+  }
+
+  void async_send_pending_console_user_id_changed(void) {
+    if (!client_ ||
+        !connection_ready_ ||
+        !pending_console_user_id_changed_ ||
+        console_user_id_changed_request_in_flight_) {
+      return;
+    }
+
+    auto state = *pending_console_user_id_changed_;
+    nlohmann::json json{
+        {"operation_type", operation_type::console_user_id_changed},
+        {"user_id", state.uid},
+        {"on_console", state.on_console},
+    };
+
+    console_user_id_changed_request_in_flight_ = true;
+    auto connection_generation = connection_generation_;
+    client_->async_request(
+        nlohmann::json::to_msgpack(json),
+        [this, state, connection_generation](auto&& error_code, auto&& buffer) {
+          enqueue_to_dispatcher([this, state, connection_generation, error_code] {
+            if (connection_generation_ != connection_generation) {
+              return;
+            }
+
+            console_user_id_changed_request_in_flight_ = false;
+
+            if (error_code) {
+              logger::get_logger()->error("session_monitor_receiver_client request failed: {0}", error_code.message());
+
+              make_connection_not_ready();
+
+              if (client_) {
+                client_->async_invalidate_connection();
+              }
+
+              return;
+            }
+
+            if (pending_console_user_id_changed_ == state) {
+              pending_console_user_id_changed_ = std::nullopt;
+            } else {
+              async_send_pending_console_user_id_changed();
+            }
+          });
+        });
+  }
+
+  std::unique_ptr<pqrs::unix_domain_stream::client> client_;
+  std::optional<console_user_id_changed_state> pending_console_user_id_changed_;
+  bool console_user_id_changed_request_in_flight_ = false;
+  bool connection_ready_ = false;
+  uint64_t connection_generation_ = 0;
 };
 } // namespace krbn

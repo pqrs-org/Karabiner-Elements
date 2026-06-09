@@ -17,6 +17,7 @@ namespace krbn {
 class constants final {
 public:
   static constexpr size_t local_datagram_buffer_size = 32 * 1024;
+  static constexpr size_t unix_domain_stream_max_message_size = 32 * 1024;
 
   static const std::filesystem::path& get_version_file_path(void) {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/Karabiner-Elements/version");
@@ -54,27 +55,13 @@ public:
     return path;
   }
 
-  static const std::filesystem::path& get_session_monitor_receiver_socket_directory_path(void) {
+  static const std::filesystem::path& get_session_monitor_receiver_socket_file_path(void) {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name karabiner_session_monitor_receiver -> krbn_session.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/rootonly/krbn_session/17d528684c113450.sock`
+    // "/Library/Application Support/org.pqrs/tmp/rootonly/karabiner_session_monitor_receiver.sock" length is 90.
 
-    static auto path = get_rootonly_directory() / std::filesystem::path("krbn_session");
+    static auto path = get_rootonly_directory() / std::filesystem::path("karabiner_session_monitor_receiver.sock");
     return path;
-  }
-
-  static std::filesystem::path get_session_monitor_receiver_client_socket_directory_path(uid_t uid) {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name karabiner_session_monitor_receiver_client -> krbn_session.501.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/rootonly/krbn_session.501/17d4e667c981d270.sock`
-
-    return get_rootonly_directory() / fmt::format("krbn_session.{0}", uid);
   }
 
   static std::filesystem::path get_console_user_server_socket_directory_path(uid_t uid) {

@@ -2,11 +2,13 @@
 
 // `krbn::core_service::daemon::session_monitor_receiver` can be used safely in a multi-threaded environment.
 
+#include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "types.hpp"
-#include <pqrs/local_datagram.hpp>
 #include <pqrs/osx/session.hpp>
+#include <pqrs/unix_domain_stream.hpp>
+#include <unordered_map>
 #include <vector>
 
 namespace krbn {
@@ -23,16 +25,26 @@ public:
   session_monitor_receiver(const session_monitor_receiver&) = delete;
 
   session_monitor_receiver(void) : dispatcher_client() {
-    // Remove old files and prepare a socket directory.
-    prepare_session_monitor_receiver_socket_directory();
+    prepare_session_monitor_receiver_socket_parent_directory();
 
-    auto socket_file_path = constants::get_session_monitor_receiver_socket_directory_path() / filesystem_utility::make_socket_file_basename();
+    auto options = pqrs::unix_domain_stream::options(
+        pqrs::unix_domain_stream::options::initialization_parameters{
+            .max_message_size = constants::unix_domain_stream_max_message_size,
+            .reconnect_interval = std::chrono::milliseconds(1000),
+            .server_check_interval = std::chrono::milliseconds(3000),
+        });
 
-    server_ = std::make_unique<pqrs::local_datagram::server>(weak_dispatcher_,
-                                                             socket_file_path,
-                                                             constants::local_datagram_buffer_size);
-    server_->set_server_check_interval(std::chrono::milliseconds(3000));
-    server_->set_reconnect_interval(std::chrono::milliseconds(1000));
+    server_ = std::make_unique<pqrs::unix_domain_stream::server>(
+        weak_dispatcher_,
+        constants::get_session_monitor_receiver_socket_file_path(),
+        options,
+        [](const auto& peer_credentials) {
+          auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
+          if (!result) {
+            logger::get_logger()->warn("session_monitor_receiver: peer is not code-signed with same Team ID");
+          }
+          return result;
+        });
 
     server_->bound.connect([] {
       logger::get_logger()->info("session_monitor_receiver: bound");
@@ -41,17 +53,42 @@ public:
     server_->bind_failed.connect([this](auto&& error_code) {
       logger::get_logger()->error("session_monitor_receiver: bind_failed");
 
-      // If the socket directory is deleted for any reason,
+      // If the socket parent directory is deleted for any reason,
       // bind_failed will be triggered, so recreate the directory each time.
-      prepare_session_monitor_receiver_socket_directory();
+      prepare_session_monitor_receiver_socket_parent_directory();
     });
 
     server_->closed.connect([] {
       logger::get_logger()->info("session_monitor_receiver: closed");
     });
 
-    server_->received.connect([this](auto&& buffer, auto&& sender_endpoint) {
+    server_->peer_connected.connect([](auto peer_id, auto&&) {
+      logger::get_logger()->info("session_monitor_receiver: peer_connected ({0})", peer_id);
+    });
+
+    server_->peer_closed.connect([this](auto peer_id) {
+      logger::get_logger()->info("session_monitor_receiver: peer_closed ({0})", peer_id);
+
+      if (auto it = session_monitor_peer_states_.find(peer_id);
+          it != std::end(session_monitor_peer_states_)) {
+        auto state = it->second;
+        session_monitor_peer_states_.erase(it);
+
+        if (state.on_console &&
+            current_console_user_id_ == state.uid &&
+            !has_on_console_peer(state.uid)) {
+          update_current_console_user_id(std::nullopt);
+        }
+      }
+    });
+
+    server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
+      logger::get_logger()->error("session_monitor_receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
+    });
+
+    server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
       if (buffer->empty()) {
+        server_->async_close_peer(peer_id);
         return;
       }
 
@@ -59,45 +96,39 @@ public:
         nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
         switch (json.at("operation_type").get<operation_type>()) {
           case operation_type::console_user_id_changed: {
-            auto new_value = current_console_user_id_;
-
             auto uid = json.at("user_id").get<uid_t>();
+            auto on_console = json.at("on_console").get<bool>();
 
-            if (json.at("on_console").get<bool>()) {
-              new_value = uid;
+            session_monitor_peer_states_[peer_id] = session_monitor_peer_state{
+                .uid = uid,
+                .on_console = on_console,
+            };
+
+            if (on_console) {
+              update_current_console_user_id(uid);
             } else {
               if (current_console_user_id_ == uid) {
-                new_value = std::nullopt;
+                if (!has_on_console_peer(uid)) {
+                  update_current_console_user_id(std::nullopt);
+                }
               }
             }
 
-            if (current_console_user_id_ != new_value) {
-              current_console_user_id_ = new_value;
-
-              filesystem_utility::create_base_directories(new_value);
-
-              enqueue_to_dispatcher([this, new_value] {
-                current_console_user_id_changed(new_value);
-              });
-            }
-
-            // manage session_monitor_client_
-
-            if (!sender_endpoint->path().empty()) {
-              register_session_monitor_client(uid,
-                                              sender_endpoint->path());
-            }
+            server_->async_respond(peer_id, request_id, {});
 
             break;
           }
 
           default:
+            server_->async_close_peer(peer_id);
             break;
         }
         return;
       } catch (std::exception& e) {
         logger::get_logger()->error("session_monitor_receiver: received data is corrupted");
       }
+
+      server_->async_close_peer(peer_id);
     });
 
     logger::get_logger()->info("session_monitor_receiver is initialized");
@@ -105,7 +136,7 @@ public:
 
   virtual ~session_monitor_receiver(void) {
     detach_from_dispatcher([this] {
-      session_monitor_clients_.clear();
+      session_monitor_peer_states_.clear();
       server_ = nullptr;
     });
 
@@ -117,51 +148,41 @@ public:
   }
 
 private:
-  void prepare_session_monitor_receiver_socket_directory(void) const {
-    filesystem_utility::create_base_directories(current_console_user_id_);
+  struct session_monitor_peer_state final {
+    uid_t uid;
+    bool on_console;
+  };
 
-    auto directory_path = constants::get_session_monitor_receiver_socket_directory_path();
-    std::error_code ec;
-    std::filesystem::remove_all(directory_path, ec);
-    std::filesystem::create_directory(directory_path, ec);
-    chmod(directory_path.c_str(), 0700);
+  void prepare_session_monitor_receiver_socket_parent_directory(void) const {
+    filesystem_utility::create_base_directories(std::nullopt);
   }
 
-  void register_session_monitor_client(uid_t uid,
-                                       const std::string& endpoint_path) {
-    if (session_monitor_clients_.find(uid) == std::end(session_monitor_clients_)) {
-      auto client = std::make_shared<pqrs::local_datagram::client>(weak_dispatcher_,
-                                                                   endpoint_path,
-                                                                   std::nullopt,
-                                                                   constants::local_datagram_buffer_size);
-      session_monitor_clients_[uid] = client;
+  bool has_on_console_peer(uid_t uid) const {
+    for (const auto& [_, state] : session_monitor_peer_states_) {
+      if (state.uid == uid &&
+          state.on_console) {
+        return true;
+      }
+    }
 
-      client->set_server_check_interval(std::chrono::milliseconds(3000));
-      client->set_client_socket_check_interval(std::chrono::milliseconds(3000));
+    return false;
+  }
 
-      client->closed.connect([this, uid] {
-        logger::get_logger()->info("session_monitor_client is closed (uid:{0})", uid);
+  void update_current_console_user_id(std::optional<uid_t> value) {
+    if (current_console_user_id_ != value) {
+      current_console_user_id_ = value;
 
-        if (current_console_user_id_ == uid) {
-          current_console_user_id_ = std::nullopt;
+      filesystem_utility::create_base_directories(value);
 
-          enqueue_to_dispatcher([this] {
-            current_console_user_id_changed(current_console_user_id_);
-          });
-        }
-
-        enqueue_to_dispatcher([this, uid] {
-          session_monitor_clients_.erase(uid);
-        });
+      enqueue_to_dispatcher([this, value] {
+        current_console_user_id_changed(value);
       });
-
-      client->async_start();
     }
   }
 
-  std::unique_ptr<pqrs::local_datagram::server> server_;
+  std::unique_ptr<pqrs::unix_domain_stream::server> server_;
   std::optional<uid_t> current_console_user_id_;
-  std::unordered_map<uid_t, std::shared_ptr<pqrs::local_datagram::client>> session_monitor_clients_;
+  std::unordered_map<pqrs::unix_domain_stream::peer_id, session_monitor_peer_state> session_monitor_peer_states_;
 };
 } // namespace daemon
 } // namespace core_service
