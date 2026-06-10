@@ -101,14 +101,7 @@ private:
       return;
     }
 
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name console_user_server_core_service_client -> con_usr_srv_cs_clnt.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/con_usr_srv_cs_clnt/17d502ed0dd6f828.sock`
-
-    core_service_client_ = std::make_shared<core_service_client>("con_usr_srv_cs_clnt");
+    core_service_client_ = std::make_shared<core_service_client>();
 
     core_service_client_->connected.connect([this] {
       version_monitor_->async_manual_check();

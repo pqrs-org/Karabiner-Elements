@@ -8,10 +8,10 @@ class libkrbn_core_service_client final : public pqrs::dispatcher::extra::dispat
 public:
   libkrbn_core_service_client(const libkrbn_core_service_client&) = delete;
 
-  libkrbn_core_service_client(const std::string& client_socket_directory_name)
+  libkrbn_core_service_client()
       : dispatcher_client(),
         status_(libkrbn_core_service_client_status_none) {
-    core_service_client_ = std::make_unique<krbn::core_service_client>(client_socket_directory_name);
+    core_service_client_ = std::make_unique<krbn::core_service_client>();
 
     core_service_client_->connected.connect([this] {
       set_status(libkrbn_core_service_client_status_connected);

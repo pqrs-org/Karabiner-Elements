@@ -220,14 +220,7 @@ private:
       return;
     }
 
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name core_service_agent_core_service_client -> cs_agent_cs_clnt.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/cs_agent_cs_clnt/189df82be335bb38.sock`
-
-    core_service_client_ = std::make_shared<core_service_client>("cs_agent_cs_clnt");
+    core_service_client_ = std::make_shared<core_service_client>();
 
     core_service_client_->connected.connect([this] {
       refresh_bundle_permission_check_result();

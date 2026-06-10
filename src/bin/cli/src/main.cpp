@@ -71,7 +71,7 @@ void list_connected_devices() {
   try {
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client("cli_cs_clnt");
+    krbn::core_service_client client;
 
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "list-connected-devices error:" << error_code << std::endl;
@@ -111,7 +111,7 @@ void list_system_variables() {
   try {
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client("cli_cs_clnt");
+    krbn::core_service_client client;
 
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "list-system-variables error:" << error_code << std::endl;
@@ -151,7 +151,7 @@ void list_multitouch_extension_variables() {
   try {
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client("cli_cs_clnt");
+    krbn::core_service_client client;
 
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "list-multitouch-extension-variables error:" << error_code << std::endl;
@@ -192,7 +192,7 @@ void watch_multitouch_extension_variables(int interval) {
     auto wait = pqrs::make_thread_wait();
     std::string json_string;
 
-    krbn::core_service_client client("cli_mev_watch");
+    krbn::core_service_client client;
 
     client.connect_failed.connect([](auto&& error_code) {
       std::cerr << "watch-multitouch-extension-variables error:" << error_code << std::endl;
@@ -239,7 +239,7 @@ void set_variables(const std::string& variables) {
 
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client("cli_cs_clnt");
+    krbn::core_service_client client;
     client.async_start();
     client.async_set_variables(json, [&wait] {
       wait->notify();

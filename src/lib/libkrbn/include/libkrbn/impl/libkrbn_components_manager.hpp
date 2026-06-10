@@ -153,9 +153,9 @@ public:
   // core_service_client_
   //
 
-  void enable_core_service_client(const std::string& client_socket_directory_name) {
+  void enable_core_service_client() {
     if (!core_service_client_) {
-      core_service_client_ = std::make_shared<libkrbn_core_service_client>(client_socket_directory_name);
+      core_service_client_ = std::make_shared<libkrbn_core_service_client>();
     }
   }
 

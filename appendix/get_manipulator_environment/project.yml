@@ -26,3 +26,4 @@ targets:
           - '-std=c++23'
     dependencies:
       - sdk: CoreFoundation.framework
+      - sdk: Security.framework

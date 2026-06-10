@@ -599,7 +599,7 @@ bool libkrbn_hid_value_monitor_observed() {
 void libkrbn_enable_core_service_client(const char* client_socket_directory_name) {
   if (auto manager = libkrbn_components_manager_) {
     if (client_socket_directory_name) {
-      manager->enable_core_service_client(client_socket_directory_name);
+      manager->enable_core_service_client();
     }
   }
 }
