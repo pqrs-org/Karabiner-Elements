@@ -18,6 +18,8 @@ namespace console_user_server {
 
 class send_user_command_handler final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
+  static constexpr int send_buffer_size = 32 * 1024;
+
   send_user_command_handler(const send_user_command_handler&) = delete;
 
   send_user_command_handler(void)
@@ -84,7 +86,7 @@ private:
       return false;
     }
 
-    socket_.set_option(asio::socket_base::send_buffer_size(static_cast<int>(constants::local_datagram_buffer_size)),
+    socket_.set_option(asio::socket_base::send_buffer_size(send_buffer_size),
                        error_code);
     if (error_code) {
       logger::get_logger()->warn("send_user_command: set_option(send_buffer_size) failed: {}", error_code.message());

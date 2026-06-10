@@ -16,7 +16,6 @@
 namespace krbn {
 class constants final {
 public:
-  static constexpr size_t local_datagram_buffer_size = 32 * 1024;
   static constexpr size_t unix_domain_stream_max_message_size = 32 * 1024;
 
   static const std::filesystem::path& get_version_file_path() {
