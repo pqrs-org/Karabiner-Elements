@@ -525,7 +525,7 @@ typedef enum {
   libkrbn_core_service_client_status_closed,
 } libkrbn_core_service_client_status;
 
-void libkrbn_enable_core_service_client(const char* _Nonnull client_socket_directory_name);
+void libkrbn_enable_core_service_client(void);
 void libkrbn_disable_core_service_client(void);
 
 void libkrbn_core_service_client_async_start(void);

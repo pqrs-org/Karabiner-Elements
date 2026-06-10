@@ -41,7 +41,7 @@ final class NotificationWindowCoreServiceClient: ObservableObject {
     // Example:
     // `/Library/Application Support/org.pqrs/tmp/user/501/nw_cs_clnt/1875f6b751b3bc98.sock`
 
-    libkrbn_enable_core_service_client("nw_cs_clnt")
+    libkrbn_enable_core_service_client()
 
     libkrbn_register_core_service_client_notification_message_received_callback(
       notificationMessageReceivedCallback)

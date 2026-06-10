@@ -48,7 +48,7 @@ int main(int argc, const char* argv[]) {
     global_wait->notify();
   });
 
-  libkrbn_enable_core_service_client("appendix_get_me");
+  libkrbn_enable_core_service_client();
 
   libkrbn_register_core_service_client_status_changed_callback(status_changed_callback);
   libkrbn_register_core_service_client_manipulator_environment_received_callback(manipulator_environment_received_callback);

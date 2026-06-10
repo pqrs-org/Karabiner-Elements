@@ -64,7 +64,7 @@ final class EVCoreServiceClient: ObservableObject {
     // Example:
     // `/Library/Application Support/org.pqrs/tmp/user/501/ev_cs_clnt/186745e8160a7b98.sock`
 
-    libkrbn_enable_core_service_client("ev_cs_clnt")
+    libkrbn_enable_core_service_client()
 
     libkrbn_register_core_service_client_status_changed_callback(statusChangedCallback)
 

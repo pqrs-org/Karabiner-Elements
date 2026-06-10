@@ -156,7 +156,7 @@ final class MECoreServiceClient {
     // Example:
     // `/Library/Application Support/org.pqrs/tmp/user/501/mt_ext_cs_clnt/17d5344d2176c048.sock`
 
-    libkrbn_enable_core_service_client("mt_ext_cs_clnt")
+    libkrbn_enable_core_service_client()
 
     libkrbn_register_core_service_client_status_changed_callback(callback)
 
