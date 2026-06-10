@@ -96,7 +96,7 @@ public:
     logger::get_logger()->info("receiver is initialized");
   }
 
-  virtual ~receiver() {
+  ~receiver() override {
     detach_from_dispatcher([this] {
       input_source_selector_ = nullptr;
       shell_command_handler_ = nullptr;

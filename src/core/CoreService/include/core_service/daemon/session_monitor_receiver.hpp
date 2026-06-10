@@ -134,7 +134,7 @@ public:
     logger::get_logger()->info("session_monitor_receiver is initialized");
   }
 
-  virtual ~session_monitor_receiver() {
+  ~session_monitor_receiver() override {
     detach_from_dispatcher([this] {
       session_monitor_peer_states_.clear();
       server_ = nullptr;

@@ -23,7 +23,7 @@ public:
   session_monitor_receiver_client() : dispatcher_client() {
   }
 
-  virtual ~session_monitor_receiver_client() {
+  ~session_monitor_receiver_client() override {
     detach_from_dispatcher([this] {
       stop();
     });

@@ -35,7 +35,7 @@ public:
         uid_(uid) {
   }
 
-  virtual ~console_user_server_client() {
+  ~console_user_server_client() override {
     detach_from_dispatcher([this] {
       stop();
     });
