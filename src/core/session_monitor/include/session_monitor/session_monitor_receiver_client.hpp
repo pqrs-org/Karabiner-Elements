@@ -36,11 +36,12 @@ public:
         return;
       }
 
-      auto options = pqrs::unix_domain_stream::options(
-          pqrs::unix_domain_stream::options::initialization_parameters{
+      auto options = pqrs::unix_domain_stream::client_options(
+          {
               .max_message_size = constants::unix_domain_stream_max_message_size,
+          },
+          {
               .reconnect_interval = std::chrono::milliseconds(1000),
-              .server_check_interval = std::chrono::milliseconds(3000),
           });
 
       client_ = std::make_unique<pqrs::unix_domain_stream::client>(
@@ -52,7 +53,6 @@ public:
         logger::get_logger()->info("session_monitor_receiver_client is connected.");
 
         enqueue_to_dispatcher([this] {
-          ++connection_generation_;
           console_user_id_changed_request_in_flight_ = false;
           connection_ready_ = true;
 
@@ -142,7 +142,6 @@ private:
     pending_console_user_id_changed_ = std::nullopt;
     console_user_id_changed_request_in_flight_ = false;
     connection_ready_ = false;
-    ++connection_generation_;
 
     logger::get_logger()->info("session_monitor_receiver_client is stopped.");
   }
@@ -150,7 +149,6 @@ private:
   void make_connection_not_ready() {
     connection_ready_ = false;
     console_user_id_changed_request_in_flight_ = false;
-    ++connection_generation_;
   }
 
   void async_send_pending_console_user_id_changed() {
@@ -169,25 +167,16 @@ private:
     };
 
     console_user_id_changed_request_in_flight_ = true;
-    auto connection_generation = connection_generation_;
     client_->async_request(
         nlohmann::json::to_msgpack(json),
-        [this, state, connection_generation](auto&& error_code, auto&& buffer) {
-          enqueue_to_dispatcher([this, state, connection_generation, error_code] {
-            if (connection_generation_ != connection_generation) {
-              return;
-            }
-
+        [this, state](auto&& error_code, auto&& buffer) {
+          enqueue_to_dispatcher([this, state, error_code] {
             console_user_id_changed_request_in_flight_ = false;
 
             if (error_code) {
               logger::get_logger()->error("session_monitor_receiver_client request failed: {0}", error_code.message());
 
               make_connection_not_ready();
-
-              if (client_) {
-                client_->async_invalidate_connection();
-              }
 
               return;
             }
@@ -205,6 +194,5 @@ private:
   std::optional<console_user_id_changed_state> pending_console_user_id_changed_;
   bool console_user_id_changed_request_in_flight_ = false;
   bool connection_ready_ = false;
-  uint64_t connection_generation_ = 0;
 };
 } // namespace krbn

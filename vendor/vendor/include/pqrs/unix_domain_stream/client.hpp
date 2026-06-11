@@ -43,7 +43,7 @@ public:
 
   client(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
          const std::filesystem::path& socket_file_path,
-         const options& options = {},
+         const client_options& options = {},
          std::function<bool(const peer_credentials&)> verify_peer = default_client_verify_peer)
       : dispatcher_client(weak_dispatcher),
         socket_file_path_(socket_file_path),
@@ -120,21 +120,9 @@ public:
                    return;
                  }
 
-                 auto id = ++next_request_id_;
-                 auto timer = std::make_shared<asio::steady_timer>(io_ctx_);
-                 timer->expires_after(timeout);
-                 timer->async_wait([this, id](const auto& error_code) {
-                   if (!error_code) {
-                     complete_request(id, asio::error::timed_out, nullptr);
-                   }
-                 });
-
-                 pending_requests_.emplace(id, pending_request{
-                                                   .callback = callback,
-                                                   .timer = timer,
-                                               });
-
-                 peer_->async_send_request(id, data);
+                 send_request(data,
+                              timeout,
+                              callback);
                });
   }
 
@@ -151,14 +139,8 @@ private:
 
     asio::post(io_ctx_,
                [this] {
-                 complete_all_requests(asio::error::operation_aborted);
-
                  close_connecting_socket();
-
-                 if (peer_) {
-                   peer_->async_close();
-                   peer_.reset();
-                 }
+                 close_peer(asio::error::operation_aborted);
                });
   }
 
@@ -221,14 +203,8 @@ private:
 
     asio::post(io_ctx_,
                [this] {
-                 complete_all_requests(asio::error::operation_aborted);
-
                  close_connecting_socket();
-
-                 if (peer_) {
-                   peer_->async_close();
-                   peer_.reset();
-                 }
+                 close_peer(asio::error::operation_aborted);
 
                  enqueue_to_dispatcher([this] {
                    start_reconnect_timer();
@@ -275,52 +251,84 @@ private:
       return;
     }
 
-    peer_ = std::make_shared<impl::peer>(weak_dispatcher_,
-                                         std::move(*socket),
-                                         options_);
+    auto p = std::make_shared<impl::peer>(weak_dispatcher_,
+                                          std::move(*socket),
+                                          options_);
+    peer_ = p;
+    std::weak_ptr<impl::peer> weak_p(p);
 
-    peer_->received.connect([this](auto&& buffer) {
-      enqueue_to_dispatcher([this, buffer] {
-        received(buffer);
-      });
+    p->received.connect([this, weak_p](auto&& buffer) {
+      if (auto p = weak_p.lock()) {
+        asio::post(io_ctx_,
+                   [this, p, buffer] {
+                     if (peer_ != p) {
+                       return;
+                     }
+
+                     enqueue_to_dispatcher([this, buffer] {
+                       received(buffer);
+                     });
+                   });
+      }
     });
 
-    peer_->response_received.connect([this](auto request_id, auto&& buffer) {
-      asio::post(io_ctx_,
-                 [this, request_id, buffer] {
-                   complete_request(request_id, asio::error_code(), buffer);
-                 });
+    p->response_received.connect([this, weak_p](auto request_id, auto&& buffer) {
+      if (auto p = weak_p.lock()) {
+        asio::post(io_ctx_,
+                   [this, p, request_id, buffer] {
+                     if (peer_ == p) {
+                       complete_request(request_id, asio::error_code(), buffer);
+                     }
+                   });
+      }
     });
 
-    peer_->error_occurred.connect([this](auto&& error_code) {
-      asio::post(io_ctx_,
-                 [this, error_code] {
-                   complete_all_requests(error_code);
-                 });
+    p->error_occurred.connect([this, weak_p](auto&& error_code) {
+      if (auto p = weak_p.lock()) {
+        asio::post(io_ctx_,
+                   [this, p, error_code] {
+                     if (peer_ != p) {
+                       return;
+                     }
 
-      enqueue_to_dispatcher([this, error_code] {
-        error_occurred(error_code);
-      });
+                     complete_all_requests(error_code);
+
+                     enqueue_to_dispatcher([this, error_code] {
+                       error_occurred(error_code);
+                     });
+                   });
+      }
     });
 
-    peer_->closed.connect([this] {
-      asio::post(io_ctx_,
-                 [this] {
-                   complete_all_requests(asio::error::connection_reset);
-                   peer_.reset();
-                 });
+    p->closed.connect([this, weak_p] {
+      if (auto p = weak_p.lock()) {
+        asio::post(io_ctx_,
+                   [this, p] {
+                     if (peer_ != p) {
+                       return;
+                     }
 
-      enqueue_to_dispatcher([this] {
-        closed();
-        start_reconnect_timer();
-      });
+                     complete_all_requests(asio::error::connection_reset);
+                     peer_.reset();
+
+                     enqueue_to_dispatcher([this] {
+                       closed();
+                       start_reconnect_timer();
+                     });
+                   });
+      }
     });
 
-    peer_->async_start();
+    p->async_start();
 
-    enqueue_to_dispatcher([this, credentials] {
-      connected(credentials);
-    });
+    asio::post(io_ctx_,
+               [this, p, credentials] {
+                 if (peer_ == p) {
+                   enqueue_to_dispatcher([this, credentials] {
+                     connected(credentials);
+                   });
+                 }
+               });
   }
 
   // This method is executed in the dispatcher thread.
@@ -352,6 +360,43 @@ private:
   }
 
   // This method is executed in `io_ctx_thread_`.
+  void send_request(const std::vector<uint8_t>& data,
+                    std::chrono::milliseconds timeout,
+                    async_request_callback callback) {
+    if (!peer_) {
+      enqueue_to_dispatcher([callback] {
+        callback(asio::error::not_connected, nullptr);
+      });
+      return;
+    }
+
+    auto id = ++next_request_id_;
+    auto timer = std::make_shared<asio::steady_timer>(io_ctx_);
+    timer->expires_after(timeout);
+    timer->async_wait([this, id](const auto& error_code) {
+      if (!error_code) {
+        complete_request(id, asio::error::timed_out, nullptr);
+
+        if (options_.invalidate_connection_on_request_error) {
+          if (close_peer(asio::error::connection_reset)) {
+            enqueue_to_dispatcher([this] {
+              closed();
+              start_reconnect_timer();
+            });
+          }
+        }
+      }
+    });
+
+    pending_requests_.emplace(id, pending_request{
+                                      .callback = callback,
+                                      .timer = timer,
+                                  });
+
+    peer_->async_send_request(id, data);
+  }
+
+  // This method is executed in `io_ctx_thread_`.
   void complete_all_requests(const asio::error_code& error_code) {
     auto pending_requests = std::exchange(pending_requests_, {});
 
@@ -363,8 +408,21 @@ private:
     }
   }
 
+  // This method is executed in `io_ctx_thread_`.
+  bool close_peer(const asio::error_code& pending_request_error_code) {
+    if (peer_) {
+      complete_all_requests(pending_request_error_code);
+      peer_->async_close();
+      peer_.reset();
+
+      return true;
+    }
+
+    return false;
+  }
+
   std::filesystem::path socket_file_path_;
-  options options_;
+  client_options options_;
   std::function<bool(const peer_credentials&)> verify_peer_;
   dispatcher::extra::timer reconnect_timer_;
   std::atomic_bool stopped_ = true;

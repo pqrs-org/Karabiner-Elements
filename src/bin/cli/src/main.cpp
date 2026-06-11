@@ -15,6 +15,7 @@
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "run_loop_thread_utility.hpp"
+#include <atomic>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <pqrs/thread_wait.hpp>
@@ -78,6 +79,10 @@ void list_connected_devices() {
       wait->notify();
     });
 
+    client.connected.connect([&client] {
+      client.async_get_connected_devices();
+    });
+
     client.received.connect([&wait](auto&& operation_type,
                                     auto&& json) {
       try {
@@ -98,7 +103,6 @@ void list_connected_devices() {
     });
 
     client.async_start();
-    client.async_get_connected_devices();
 
     wait->wait_notice();
   } catch (std::exception& e) {
@@ -116,6 +120,10 @@ void list_system_variables() {
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "list-system-variables error:" << error_code << std::endl;
       wait->notify();
+    });
+
+    client.connected.connect([&client] {
+      client.async_get_system_variables();
     });
 
     client.received.connect([&wait](auto&& operation_type,
@@ -138,7 +146,6 @@ void list_system_variables() {
     });
 
     client.async_start();
-    client.async_get_system_variables();
 
     wait->wait_notice();
   } catch (std::exception& e) {
@@ -156,6 +163,10 @@ void list_multitouch_extension_variables() {
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "list-multitouch-extension-variables error:" << error_code << std::endl;
       wait->notify();
+    });
+
+    client.connected.connect([&client] {
+      client.async_get_multitouch_extension_variables();
     });
 
     client.received.connect([&wait](auto&& operation_type,
@@ -178,7 +189,6 @@ void list_multitouch_extension_variables() {
     });
 
     client.async_start();
-    client.async_get_multitouch_extension_variables();
 
     wait->wait_notice();
   } catch (std::exception& e) {
@@ -191,12 +201,22 @@ void watch_multitouch_extension_variables(int interval) {
   try {
     auto wait = pqrs::make_thread_wait();
     std::string json_string;
+    std::atomic_bool connected = false;
 
     krbn::core_service_client client;
 
     client.connect_failed.connect([](auto&& error_code) {
       std::cerr << "watch-multitouch-extension-variables error:" << error_code << std::endl;
       exit(1);
+    });
+
+    client.connected.connect([&client, &connected] {
+      connected = true;
+      client.async_get_multitouch_extension_variables();
+    });
+
+    client.closed.connect([&connected] {
+      connected = false;
     });
 
     client.received.connect([&json_string](auto&& operation_type,
@@ -224,7 +244,9 @@ void watch_multitouch_extension_variables(int interval) {
     client.async_start();
 
     while (true) {
-      client.async_get_multitouch_extension_variables();
+      if (connected) {
+        client.async_get_multitouch_extension_variables();
+      }
       std::this_thread::sleep_for(std::chrono::milliseconds(interval));
     }
   } catch (std::exception& e) {
@@ -240,10 +262,17 @@ void set_variables(const std::string& variables) {
     auto wait = pqrs::make_thread_wait();
 
     krbn::core_service_client client;
-    client.async_start();
-    client.async_set_variables(json, [&wait] {
+    client.connect_failed.connect([&wait](auto&& error_code) {
+      std::cerr << "set-variables error:" << error_code << std::endl;
       wait->notify();
     });
+    client.connected.connect([&client, &json, &wait] {
+      client.async_set_variables(json, [&wait] {
+        wait->notify();
+      });
+    });
+
+    client.async_start();
 
     wait->wait_notice();
   } catch (std::exception& e) {
@@ -288,6 +317,10 @@ void show_settings_window_guidance() {
       wait->notify();
     });
 
+    client.connected.connect([&client] {
+      client.async_get_settings_window_guidance();
+    });
+
     client.received.connect([&wait](auto&& operation_type,
                                     auto&& json) {
       switch (operation_type) {
@@ -303,7 +336,6 @@ void show_settings_window_guidance() {
     });
 
     client.async_start();
-    client.async_get_settings_window_guidance();
 
     wait->wait_notice();
   } catch (std::exception& e) {

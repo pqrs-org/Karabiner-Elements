@@ -49,11 +49,13 @@ public:
     // Setup server_
     //
 
-    auto options = pqrs::unix_domain_stream::options(
-        pqrs::unix_domain_stream::options::initialization_parameters{
+    auto options = pqrs::unix_domain_stream::server_options(
+        {
             .max_message_size = constants::unix_domain_stream_max_message_size,
-            .reconnect_interval = std::chrono::milliseconds(1000),
-            .server_check_interval = std::chrono::milliseconds(3000),
+        },
+        {
+            .bind_retry_interval = std::chrono::milliseconds(1000),
+            .socket_path_health_check_interval = std::chrono::milliseconds(3000),
         });
 
     auto socket_file_path = karabiner_core_service_socket_file_path();

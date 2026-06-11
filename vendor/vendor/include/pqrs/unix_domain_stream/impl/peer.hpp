@@ -31,7 +31,7 @@ public:
 
   peer(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
        asio::local::stream_protocol::socket socket,
-       const options& options)
+       const common_options& options)
       : dispatcher_client(weak_dispatcher),
         socket_(std::move(socket)),
         options_(options),
@@ -426,7 +426,7 @@ private:
   }
 
   asio::local::stream_protocol::socket socket_;
-  options options_;
+  common_options options_;
   std::atomic_bool closed_on_executor_ = false;
   bool ready_ = false;
   bool close_after_write_ = false;

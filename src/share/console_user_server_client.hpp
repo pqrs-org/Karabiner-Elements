@@ -48,11 +48,12 @@ public:
         return;
       }
 
-      auto options = pqrs::unix_domain_stream::options(
-          pqrs::unix_domain_stream::options::initialization_parameters{
+      auto options = pqrs::unix_domain_stream::client_options(
+          {
               .max_message_size = constants::unix_domain_stream_max_message_size,
+          },
+          {
               .reconnect_interval = std::chrono::milliseconds(1000),
-              .server_check_interval = std::chrono::milliseconds(3000),
           });
 
       client_ = std::make_unique<pqrs::unix_domain_stream::client>(
@@ -71,10 +72,6 @@ public:
         logger::get_logger()->info("console_user_server_client is connected.");
 
         enqueue_to_dispatcher([this] {
-          ++connection_generation_;
-          connection_ready_ = true;
-
-          flush_pending_messages();
           connected();
         });
       });
@@ -83,8 +80,6 @@ public:
         logger::get_logger()->error("console_user_server_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
-          make_connection_not_ready();
-
           connect_failed(error_code);
         });
       });
@@ -93,26 +88,16 @@ public:
         logger::get_logger()->info("console_user_server_client is closed.");
 
         enqueue_to_dispatcher([this] {
-          make_connection_not_ready();
-
           closed();
         });
       });
 
-      client_->error_occurred.connect([this](auto&& error_code) {
+      client_->error_occurred.connect([](auto&& error_code) {
         logger::get_logger()->error("console_user_server_client error: {0}", error_code.message());
-
-        enqueue_to_dispatcher([this] {
-          make_connection_not_ready();
-        });
       });
 
-      client_->peer_verification_failed.connect([this](auto&&) {
+      client_->peer_verification_failed.connect([](auto&&) {
         logger::get_logger()->error("console_user_server_client peer_verification_failed");
-
-        enqueue_to_dispatcher([this] {
-          make_connection_not_ready();
-        });
       });
 
       client_->received.connect([this](auto&& buffer) {
@@ -339,28 +324,12 @@ private:
       return;
     }
 
-    if (!connection_ready_) {
-      pending_messages_.push_back(std::move(json));
-      return;
-    }
-
-    auto connection_generation = connection_generation_;
     client_->async_request(
         nlohmann::json::to_msgpack(json),
-        [this, connection_generation](auto&& error_code, auto&& buffer) {
-          enqueue_to_dispatcher([this, connection_generation, error_code, buffer] {
-            if (connection_generation_ != connection_generation) {
-              return;
-            }
-
+        [this](auto&& error_code, auto&& buffer) {
+          enqueue_to_dispatcher([this, error_code, buffer] {
             if (error_code) {
               logger::get_logger()->error("console_user_server_client request failed: {0}", error_code.message());
-
-              make_connection_not_ready();
-
-              if (client_) {
-                client_->async_invalidate_connection();
-              }
             }
 
             if (buffer &&
@@ -386,36 +355,18 @@ private:
     }
   }
 
-  void flush_pending_messages() const {
-    auto pending_messages = std::exchange(pending_messages_, {});
-
-    for (auto& message : pending_messages) {
-      async_send_message(std::move(message));
-    }
-  }
-
   void stop() {
     if (!client_) {
       return;
     }
 
     client_ = nullptr;
-    pending_messages_.clear();
-    make_connection_not_ready();
 
     logger::get_logger()->info("console_user_server_client is stopped.");
-  }
-
-  void make_connection_not_ready() const {
-    connection_ready_ = false;
-    ++connection_generation_;
   }
 
   uid_t uid_;
 
   std::unique_ptr<pqrs::unix_domain_stream::client> client_;
-  mutable std::vector<nlohmann::json> pending_messages_;
-  mutable bool connection_ready_ = false;
-  mutable uint64_t connection_generation_ = 0;
 };
 } // namespace krbn

@@ -40,7 +40,7 @@ public:
 
   server(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
          const std::filesystem::path& socket_file_path,
-         const options& options = {},
+         const server_options& options = {},
          std::function<bool(const peer_credentials&)> verify_peer = default_verify_peer)
       : dispatcher_client(weak_dispatcher),
         socket_file_path_(socket_file_path),
@@ -311,7 +311,7 @@ private:
         [this] {
           bind();
         },
-        options_.reconnect_interval);
+        options_.bind_retry_interval);
   }
 
   // This method is executed in the dispatcher thread.
@@ -324,7 +324,7 @@ private:
         [this] {
           server_check();
         },
-        options_.server_check_interval);
+        options_.socket_path_health_check_interval);
   }
 
   // This method is executed in the dispatcher thread.
@@ -342,7 +342,7 @@ private:
                  auto socket = std::make_shared<asio::local::stream_protocol::socket>(io_ctx_);
                  auto timeout = std::make_shared<asio::steady_timer>(io_ctx_);
 
-                 timeout->expires_after(options_.server_check_timeout);
+                 timeout->expires_after(options_.socket_path_health_check_timeout);
                  timeout->async_wait([this, socket](const auto& error_code) {
                    if (!error_code) {
                      asio::error_code close_error_code;
@@ -447,7 +447,7 @@ private:
   }
 
   std::filesystem::path socket_file_path_;
-  options options_;
+  server_options options_;
   std::function<bool(const peer_credentials&)> verify_peer_;
   dispatcher::extra::timer reconnect_timer_;
   dispatcher::extra::timer server_check_timer_;
