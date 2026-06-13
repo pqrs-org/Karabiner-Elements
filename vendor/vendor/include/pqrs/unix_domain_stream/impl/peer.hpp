@@ -53,64 +53,70 @@ public:
   }
 
   void async_start() {
-    asio::post(socket_.get_executor(),
-               [self = shared_from_this()] {
-                 self->start_ready_deadline();
-                 self->start_heartbeat_timer();
-                 self->refresh_heartbeat_deadline();
-                 self->read_header();
-               });
+    asio::post(
+        socket_.get_executor(),
+        [self = shared_from_this()] {
+          self->start_ready_deadline();
+          self->start_heartbeat_timer();
+          self->refresh_heartbeat_deadline();
+          self->read_header();
+        });
   }
 
   void async_close() {
-    asio::post(socket_.get_executor(),
-               [self = shared_from_this()] {
-                 self->close();
-               });
+    asio::post(
+        socket_.get_executor(),
+        [self = shared_from_this()] {
+          self->close();
+        });
   }
 
   void async_send(const std::vector<uint8_t>& data) {
     auto frame = protocol::make_user_data_frame(data);
 
-    asio::post(socket_.get_executor(),
-               [self = shared_from_this(), frame = std::move(frame)] {
-                 self->push_frame(frame);
-               });
+    asio::post(
+        socket_.get_executor(),
+        [self = shared_from_this(), frame = std::move(frame)] {
+          self->push_frame(frame);
+        });
   }
 
   void async_send_request(uint64_t request_id,
                           const std::vector<uint8_t>& data) {
     auto frame = protocol::make_request_frame(request_id, data);
 
-    asio::post(socket_.get_executor(),
-               [self = shared_from_this(), frame = std::move(frame)] {
-                 self->push_frame(frame);
-               });
+    asio::post(
+        socket_.get_executor(),
+        [self = shared_from_this(), frame = std::move(frame)] {
+          self->push_frame(frame);
+        });
   }
 
   void async_send_response(uint64_t request_id,
                            const std::vector<uint8_t>& data) {
     auto frame = protocol::make_response_frame(request_id, data);
 
-    asio::post(socket_.get_executor(),
-               [self = shared_from_this(), frame = std::move(frame)] {
-                 self->push_frame(frame);
-               });
+    asio::post(
+        socket_.get_executor(),
+        [self = shared_from_this(), frame = std::move(frame)] {
+          self->push_frame(frame);
+        });
   }
 
   void async_send_health_check() {
     auto frame = protocol::make_health_check_frame();
 
-    asio::post(socket_.get_executor(),
-               [self = shared_from_this(), frame = std::move(frame)] {
-                 self->push_frame(frame);
-               });
+    asio::post(
+        socket_.get_executor(),
+        [self = shared_from_this(), frame = std::move(frame)] {
+          self->push_frame(frame);
+        });
   }
 
 private:
   // This method is executed in `io_ctx_thread_`.
   void start_heartbeat_timer() {
-    heartbeat_timer_.expires_after(options_.heartbeat_interval);
+    heartbeat_timer_.expires_after(normalize_scheduling_interval(options_.heartbeat_interval));
 
     heartbeat_timer_.async_wait([self = shared_from_this()](const auto& error_code) {
       if (!error_code &&
@@ -165,124 +171,126 @@ private:
 
     start_read_deadline();
 
-    asio::async_read(socket_,
-                     asio::buffer(read_header_),
-                     [self = shared_from_this()](auto&& error_code, auto bytes_transferred) {
-                       self->read_deadline_.cancel();
+    asio::async_read(
+        socket_,
+        asio::buffer(read_header_),
+        [self = shared_from_this()](auto&& error_code, auto bytes_transferred) {
+          self->read_deadline_.cancel();
 
-                       if (error_code) {
-                         self->handle_error(error_code);
-                         return;
-                       }
+          if (error_code) {
+            self->handle_error(error_code);
+            return;
+          }
 
-                       if (bytes_transferred != protocol::header_size) {
-                         self->handle_error(asio::error::message_size);
-                         return;
-                       }
+          if (bytes_transferred != protocol::header_size) {
+            self->handle_error(asio::error::message_size);
+            return;
+          }
 
-                       auto body_size = protocol::decode_uint32(self->read_header_);
-                       if (body_size < protocol::type_size ||
-                           body_size > self->options_.max_message_size + protocol::type_size + protocol::request_id_size) {
-                         self->handle_error(asio::error::message_size);
-                         return;
-                       }
+          auto body_size = protocol::decode_uint32(self->read_header_);
+          if (body_size < protocol::type_size ||
+              body_size > self->options_.max_message_size + protocol::type_size + protocol::request_id_size) {
+            self->handle_error(asio::error::message_size);
+            return;
+          }
 
-                       self->read_body_.resize(body_size);
-                       self->read_body();
-                     });
+          self->read_body_.resize(body_size);
+          self->read_body();
+        });
   }
 
   // This method is executed in `io_ctx_thread_`.
   void read_body() {
     start_read_deadline();
 
-    asio::async_read(socket_,
-                     asio::buffer(read_body_),
-                     [self = shared_from_this()](auto&& error_code, auto bytes_transferred) {
-                       self->read_deadline_.cancel();
+    asio::async_read(
+        socket_,
+        asio::buffer(read_body_),
+        [self = shared_from_this()](auto&& error_code, auto bytes_transferred) {
+          self->read_deadline_.cancel();
 
-                       if (error_code) {
-                         self->handle_error(error_code);
-                         return;
-                       }
+          if (error_code) {
+            self->handle_error(error_code);
+            return;
+          }
 
-                       if (bytes_transferred != self->read_body_.size()) {
-                         self->handle_error(asio::error::message_size);
-                         return;
-                       }
+          if (bytes_transferred != self->read_body_.size()) {
+            self->handle_error(asio::error::message_size);
+            return;
+          }
 
-                       self->refresh_heartbeat_deadline();
+          self->refresh_heartbeat_deadline();
 
-                       auto type = static_cast<protocol::message_type>(self->read_body_[0]);
-                       switch (type) {
-                         case protocol::message_type::heartbeat:
-                           break;
+          auto type = static_cast<protocol::message_type>(self->read_body_[0]);
+          switch (type) {
+            case protocol::message_type::heartbeat:
+              break;
 
-                         case protocol::message_type::user_data: {
-                           self->ensure_ready();
+            case protocol::message_type::user_data: {
+              self->ensure_ready();
 
-                           if (self->read_body_.size() > self->options_.max_message_size + protocol::type_size) {
-                             self->handle_error(asio::error::message_size);
-                             return;
-                           }
+              if (self->read_body_.size() > self->options_.max_message_size + protocol::type_size) {
+                self->handle_error(asio::error::message_size);
+                return;
+              }
 
-                           auto v = std::make_shared<std::vector<uint8_t>>(std::begin(self->read_body_) + protocol::type_size,
-                                                                           std::end(self->read_body_));
-                           self->enqueue_to_dispatcher([p = self.get(), v] {
-                             p->received(v);
-                           });
-                           break;
-                         }
+              auto v = std::make_shared<std::vector<uint8_t>>(std::begin(self->read_body_) + protocol::type_size,
+                                                              std::end(self->read_body_));
+              self->enqueue_to_dispatcher([p = self.get(), v] {
+                p->received(v);
+              });
+              break;
+            }
 
-                         case protocol::message_type::request:
-                         case protocol::message_type::response: {
-                           self->ensure_ready();
+            case protocol::message_type::request:
+            case protocol::message_type::response: {
+              self->ensure_ready();
 
-                           if (self->read_body_.size() < protocol::type_size + protocol::request_id_size ||
-                               self->read_body_.size() > self->options_.max_message_size + protocol::type_size + protocol::request_id_size) {
-                             self->handle_error(asio::error::message_size);
-                             return;
-                           }
+              if (self->read_body_.size() < protocol::type_size + protocol::request_id_size ||
+                  self->read_body_.size() > self->options_.max_message_size + protocol::type_size + protocol::request_id_size) {
+                self->handle_error(asio::error::message_size);
+                return;
+              }
 
-                           auto request_id = protocol::decode_uint64(self->read_body_,
-                                                                     protocol::type_size);
-                           auto v = std::make_shared<std::vector<uint8_t>>(std::begin(self->read_body_) + protocol::type_size + protocol::request_id_size,
-                                                                           std::end(self->read_body_));
+              auto request_id = protocol::decode_uint64(self->read_body_,
+                                                        protocol::type_size);
+              auto v = std::make_shared<std::vector<uint8_t>>(std::begin(self->read_body_) + protocol::type_size + protocol::request_id_size,
+                                                              std::end(self->read_body_));
 
-                           if (type == protocol::message_type::request) {
-                             self->enqueue_to_dispatcher([p = self.get(), request_id, v] {
-                               p->request_received(request_id, v);
-                             });
-                           } else {
-                             self->enqueue_to_dispatcher([p = self.get(), request_id, v] {
-                               p->response_received(request_id, v);
-                             });
-                           }
-                           break;
-                         }
+              if (type == protocol::message_type::request) {
+                self->enqueue_to_dispatcher([p = self.get(), request_id, v] {
+                  p->request_received(request_id, v);
+                });
+              } else {
+                self->enqueue_to_dispatcher([p = self.get(), request_id, v] {
+                  p->response_received(request_id, v);
+                });
+              }
+              break;
+            }
 
-                         case protocol::message_type::health_check:
-                           if (self->ready_) {
-                             self->handle_error(asio::error::operation_not_supported);
-                           } else {
-                             self->close_after_write_ = true;
-                             self->push_frame(protocol::make_health_check_response_frame());
-                           }
-                           return;
+            case protocol::message_type::health_check:
+              if (self->ready_) {
+                self->handle_error(asio::error::operation_not_supported);
+              } else {
+                self->close_after_write_ = true;
+                self->push_frame(protocol::make_health_check_response_frame());
+              }
+              return;
 
-                         case protocol::message_type::health_check_response:
-                           self->enqueue_to_dispatcher([p = self.get()] {
-                             p->health_check_response_received();
-                           });
-                           break;
+            case protocol::message_type::health_check_response:
+              self->enqueue_to_dispatcher([p = self.get()] {
+                p->health_check_response_received();
+              });
+              break;
 
-                         default:
-                           self->handle_error(asio::error::invalid_argument);
-                           return;
-                       }
+            default:
+              self->handle_error(asio::error::invalid_argument);
+              return;
+          }
 
-                       self->read_header();
-                     });
+          self->read_header();
+        });
   }
 
   // This method is executed in `io_ctx_thread_`.
@@ -363,26 +371,27 @@ private:
       }
     });
 
-    asio::async_write(socket_,
-                      asio::buffer(write_queue_.front()),
-                      [self = shared_from_this()](auto&& error_code, auto) {
-                        self->write_deadline_.cancel();
+    asio::async_write(
+        socket_,
+        asio::buffer(write_queue_.front()),
+        [self = shared_from_this()](auto&& error_code, auto) {
+          self->write_deadline_.cancel();
 
-                        if (error_code) {
-                          self->handle_error(error_code);
-                          return;
-                        }
+          if (error_code) {
+            self->handle_error(error_code);
+            return;
+          }
 
-                        self->write_queue_.pop_front();
+          self->write_queue_.pop_front();
 
-                        if (self->write_queue_.empty() &&
-                            self->close_after_write_) {
-                          self->close();
-                          return;
-                        }
+          if (self->write_queue_.empty() &&
+              self->close_after_write_) {
+            self->close();
+            return;
+          }
 
-                        self->write();
-                      });
+          self->write();
+        });
   }
 
   // This method is executed in `io_ctx_thread_`.

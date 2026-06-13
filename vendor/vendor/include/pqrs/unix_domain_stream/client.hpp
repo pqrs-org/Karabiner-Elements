@@ -49,7 +49,6 @@ public:
         socket_file_path_(socket_file_path),
         options_(options),
         verify_peer_(verify_peer),
-        reconnect_timer_(*this),
         work_guard_(asio::make_work_guard(io_ctx_)) {
     io_ctx_thread_ = std::thread([this] {
       io_ctx_.run();
@@ -61,14 +60,15 @@ public:
       stop();
     });
 
-    asio::post(io_ctx_,
-               [this] {
-                 if (peer_) {
-                   peer_->async_close();
-                   peer_.reset();
-                 }
-                 work_guard_.reset();
-               });
+    asio::post(
+        io_ctx_,
+        [this] {
+          if (peer_) {
+            peer_->async_close();
+            peer_.reset();
+          }
+          work_guard_.reset();
+        });
 
     if (io_ctx_thread_.joinable()) {
       io_ctx_thread_.join();
@@ -95,12 +95,13 @@ public:
   }
 
   void async_send(const std::vector<uint8_t>& data) {
-    asio::post(io_ctx_,
-               [this, data] {
-                 if (peer_) {
-                   peer_->async_send(data);
-                 }
-               });
+    asio::post(
+        io_ctx_,
+        [this, data] {
+          if (peer_) {
+            peer_->async_send(data);
+          }
+        });
   }
 
   void async_request(const std::vector<uint8_t>& data,
@@ -111,19 +112,20 @@ public:
   void async_request(const std::vector<uint8_t>& data,
                      std::chrono::milliseconds timeout,
                      async_request_callback callback) {
-    asio::post(io_ctx_,
-               [this, data, timeout, callback] {
-                 if (!peer_) {
-                   enqueue_to_dispatcher([callback] {
-                     callback(asio::error::not_connected, nullptr);
-                   });
-                   return;
-                 }
+    asio::post(
+        io_ctx_,
+        [this, data, timeout, callback] {
+          if (!peer_) {
+            enqueue_to_dispatcher([callback] {
+              callback(asio::error::not_connected, nullptr);
+            });
+            return;
+          }
 
-                 send_request(data,
-                              timeout,
-                              callback);
-               });
+          send_request(data,
+                       timeout,
+                       callback);
+        });
   }
 
 private:
@@ -135,81 +137,85 @@ private:
   // This method is executed in the dispatcher thread.
   void stop() {
     stopped_ = true;
-    reconnect_timer_.stop();
+    ++reconnect_generation_;
 
-    asio::post(io_ctx_,
-               [this] {
-                 close_connecting_socket();
-                 close_peer(asio::error::operation_aborted);
-               });
+    asio::post(
+        io_ctx_,
+        [this] {
+          close_connecting_socket();
+          close_peer(asio::error::operation_aborted);
+        });
   }
 
   // This method is executed in the dispatcher thread.
   void connect() {
-    asio::post(io_ctx_,
-               [this] {
-                 if (stopped_ ||
-                     connecting_socket_ ||
-                     peer_) {
-                   return;
-                 }
+    asio::post(
+        io_ctx_,
+        [this] {
+          if (stopped_ ||
+              connecting_socket_ ||
+              peer_) {
+            return;
+          }
 
-                 auto socket = std::make_shared<asio::local::stream_protocol::socket>(io_ctx_);
-                 connecting_socket_ = socket;
+          auto socket = std::make_shared<asio::local::stream_protocol::socket>(io_ctx_);
+          connecting_socket_ = socket;
 
-                 socket->async_connect(
-                     asio::local::stream_protocol::endpoint(socket_file_path_),
-                     [this, socket](auto&& error_code) mutable {
-                       // A newer connect attempt or invalidate_connection has replaced this socket.
-                       if (stopped_ ||
-                           connecting_socket_ != socket) {
-                         asio::error_code close_error_code;
-                         socket->close(close_error_code);
-                         return;
-                       }
+          socket->async_connect(
+              asio::local::stream_protocol::endpoint(socket_file_path_),
+              [this, socket](auto&& error_code) mutable {
+                // A newer connect attempt or invalidate_connection has replaced this socket.
+                if (stopped_ ||
+                    connecting_socket_ != socket) {
+                  asio::error_code close_error_code;
+                  socket->close(close_error_code);
+                  return;
+                }
 
-                       if (error_code) {
-                         connecting_socket_.reset();
+                if (error_code) {
+                  connecting_socket_.reset();
 
-                         enqueue_to_dispatcher([this, error_code] {
-                           connect_failed(error_code);
-                           start_reconnect_timer();
-                         });
-                         return;
-                       }
+                  enqueue_to_dispatcher([this, error_code] {
+                    connect_failed(error_code);
+                    schedule_reconnect();
+                  });
+                  return;
+                }
 
-                       auto credentials = impl::make_peer_credentials(*socket);
+                auto credentials = impl::make_peer_credentials(*socket);
 
-                       if (!enqueue_to_dispatcher([this, socket, credentials] {
-                             auto verified = verify_peer_(credentials);
+                if (!enqueue_to_dispatcher([this, socket, credentials] {
+                      auto verified = verify_peer_(credentials);
 
-                             asio::post(io_ctx_,
-                                        [this, socket, credentials, verified] {
-                                          handle_connected_socket(socket, credentials, verified);
-                                        });
-                           })) {
-                         connecting_socket_.reset();
+                      asio::post(
+                          io_ctx_,
+                          [this, socket, credentials, verified] {
+                            handle_connected_socket(socket, credentials, verified);
+                          });
+                    })) {
+                  connecting_socket_.reset();
 
-                         asio::error_code close_error_code;
-                         socket->close(close_error_code);
-                       }
-                     });
-               });
+                  asio::error_code close_error_code;
+                  socket->close(close_error_code);
+                }
+              });
+        });
   }
 
   // This method is executed in the dispatcher thread.
   void invalidate_connection() {
-    reconnect_timer_.stop();
+    ++reconnect_generation_;
 
-    asio::post(io_ctx_,
-               [this] {
-                 close_connecting_socket();
-                 close_peer(asio::error::operation_aborted);
+    asio::post(
+        io_ctx_,
+        [this] {
+          close_connecting_socket();
+          close_peer(asio::error::operation_aborted);
 
-                 enqueue_to_dispatcher([this] {
-                   start_reconnect_timer();
-                 });
-               });
+          enqueue_to_dispatcher([this] {
+            schedule_reconnect();
+          });
+        });
   }
 
   // This method is executed in `io_ctx_thread_`.
@@ -246,7 +252,7 @@ private:
 
       enqueue_to_dispatcher([this, credentials] {
         peer_verification_failed(credentials);
-        start_reconnect_timer();
+        schedule_reconnect();
       });
       return;
     }
@@ -259,89 +265,102 @@ private:
 
     p->received.connect([this, weak_p](auto&& buffer) {
       if (auto p = weak_p.lock()) {
-        asio::post(io_ctx_,
-                   [this, p, buffer] {
-                     if (peer_ != p) {
-                       return;
-                     }
+        asio::post(
+            io_ctx_,
+            [this, p, buffer] {
+              if (peer_ != p) {
+                return;
+              }
 
-                     enqueue_to_dispatcher([this, buffer] {
-                       received(buffer);
-                     });
-                   });
+              enqueue_to_dispatcher([this, buffer] {
+                received(buffer);
+              });
+            });
       }
     });
 
     p->response_received.connect([this, weak_p](auto request_id, auto&& buffer) {
       if (auto p = weak_p.lock()) {
-        asio::post(io_ctx_,
-                   [this, p, request_id, buffer] {
-                     if (peer_ == p) {
-                       complete_request(request_id, asio::error_code(), buffer);
-                     }
-                   });
+        asio::post(
+            io_ctx_,
+            [this, p, request_id, buffer] {
+              if (peer_ == p) {
+                complete_request(request_id, asio::error_code(), buffer);
+              }
+            });
       }
     });
 
     p->error_occurred.connect([this, weak_p](auto&& error_code) {
       if (auto p = weak_p.lock()) {
-        asio::post(io_ctx_,
-                   [this, p, error_code] {
-                     if (peer_ != p) {
-                       return;
-                     }
+        asio::post(
+            io_ctx_,
+            [this, p, error_code] {
+              if (peer_ != p) {
+                return;
+              }
 
-                     complete_all_requests(error_code);
+              complete_all_requests(error_code);
 
-                     enqueue_to_dispatcher([this, error_code] {
-                       error_occurred(error_code);
-                     });
-                   });
+              enqueue_to_dispatcher([this, error_code] {
+                error_occurred(error_code);
+              });
+            });
       }
     });
 
     p->closed.connect([this, weak_p] {
       if (auto p = weak_p.lock()) {
-        asio::post(io_ctx_,
-                   [this, p] {
-                     if (peer_ != p) {
-                       return;
-                     }
+        asio::post(
+            io_ctx_,
+            [this, p] {
+              if (peer_ != p) {
+                return;
+              }
 
-                     complete_all_requests(asio::error::connection_reset);
-                     peer_.reset();
+              complete_all_requests(asio::error::connection_reset);
+              peer_.reset();
 
-                     enqueue_to_dispatcher([this] {
-                       closed();
-                       start_reconnect_timer();
-                     });
-                   });
+              enqueue_to_dispatcher([this] {
+                closed();
+                schedule_reconnect();
+              });
+            });
       }
     });
 
     p->async_start();
 
-    asio::post(io_ctx_,
-               [this, p, credentials] {
-                 if (peer_ == p) {
-                   enqueue_to_dispatcher([this, credentials] {
-                     connected(credentials);
-                   });
-                 }
-               });
+    asio::post(
+        io_ctx_,
+        [this, p, credentials] {
+          if (peer_ == p) {
+            enqueue_to_dispatcher([this, credentials] {
+              connected(credentials);
+            });
+          }
+        });
   }
 
   // This method is executed in the dispatcher thread.
-  void start_reconnect_timer() {
+  void schedule_reconnect() {
+    ++reconnect_generation_;
+
     if (stopped_) {
       return;
     }
 
-    reconnect_timer_.start(
-        [this] {
+    auto scheduled_reconnect_generation = reconnect_generation_;
+    enqueue_to_dispatcher(
+        [this, scheduled_reconnect_generation] {
+          if (stopped_ ||
+              reconnect_generation_ != scheduled_reconnect_generation) {
+            return;
+          }
+
           connect();
         },
-        options_.reconnect_interval);
+        when_now() + impl::normalize_scheduling_interval(options_.reconnect_interval));
   }
 
   // This method is executed in `io_ctx_thread_`.
@@ -381,7 +400,7 @@ private:
           if (close_peer(asio::error::connection_reset)) {
             enqueue_to_dispatcher([this] {
               closed();
-              start_reconnect_timer();
+              schedule_reconnect();
             });
           }
         }
@@ -424,8 +443,8 @@ private:
   std::filesystem::path socket_file_path_;
   client_options options_;
   std::function<bool(const peer_credentials&)> verify_peer_;
-  dispatcher::extra::timer reconnect_timer_;
   std::atomic_bool stopped_ = true;
+  int reconnect_generation_ = 0;
 
   asio::io_context io_ctx_;
   asio::executor_work_guard<asio::io_context::executor_type> work_guard_;

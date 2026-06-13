@@ -9,6 +9,18 @@
 
 namespace pqrs::unix_domain_stream {
 
+namespace impl {
+inline std::chrono::milliseconds normalize_scheduling_interval(std::chrono::milliseconds value) {
+  constexpr auto minimum_interval = std::chrono::milliseconds(100);
+
+  if (value < minimum_interval) {
+    return minimum_interval;
+  }
+
+  return value;
+}
+} // namespace impl
+
 struct common_options {
   struct initialization_parameters final {
     // Soft limit for one application message payload.
