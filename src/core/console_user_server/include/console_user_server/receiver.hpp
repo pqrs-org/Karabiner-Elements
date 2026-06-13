@@ -60,7 +60,8 @@ public:
     });
 
     server_->bind_failed.connect([this](auto&& error_code) {
-      logger::get_logger()->error("receiver: bind_failed");
+      logger::get_logger()->error("receiver: bind_failed: {0}",
+                                  error_code.message());
 
       // If the socket directory is deleted for any reason,
       // bind_failed will be triggered, so recreate the directory each time.

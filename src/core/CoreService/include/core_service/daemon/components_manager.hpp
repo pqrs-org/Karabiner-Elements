@@ -5,6 +5,7 @@
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
+#include "filesystem_utility.hpp"
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
@@ -71,6 +72,7 @@ public:
       version_monitor_->async_start();
 
       start_receiver(std::nullopt);
+      enqueue_ensure_base_directories();
 
       session_monitor_receiver_->async_start();
     });
@@ -78,6 +80,8 @@ public:
 
 private:
   void start_receiver(std::optional<uid_t> uid) {
+    current_console_user_id_ = uid;
+
     version_monitor_->async_manual_check();
 
     // receiver_
@@ -87,7 +91,37 @@ private:
                                            weak_core_service_daemon_state_manager_);
   }
 
+  void enqueue_ensure_base_directories() {
+    enqueue_to_dispatcher(
+        [this] {
+          if (base_directories_missing()) {
+            filesystem_utility::create_base_directories(current_console_user_id_);
+          }
+
+          enqueue_ensure_base_directories();
+        },
+        when_now() + std::chrono::seconds(3));
+  }
+
+  bool base_directories_missing() const {
+    std::error_code error_code;
+    if (!std::filesystem::exists(constants::get_tmp_directory(), error_code) ||
+        !std::filesystem::exists(constants::get_rootonly_directory(), error_code)) {
+      return true;
+    }
+
+    if (current_console_user_id_) {
+      if (!std::filesystem::exists(constants::get_system_user_directory(), error_code) ||
+          !std::filesystem::exists(constants::get_system_user_directory(*current_console_user_id_), error_code)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;
+  std::optional<uid_t> current_console_user_id_;
 
   std::unique_ptr<version_monitor> version_monitor_;
   std::unique_ptr<session_monitor_receiver> session_monitor_receiver_;
