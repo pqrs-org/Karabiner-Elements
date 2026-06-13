@@ -7,6 +7,7 @@
 - 🐛 Bug Fixes
     - Fixed the ac_zoom_in and ac_zoom_out key codes being swapped.
 - ⚡️ Improvements
+    - Improved internal communication between Karabiner-Elements processes by replacing the IPC backend with `pqrs::unix_domain_stream`.
     - Supported the following keys:
         - consumer_key_code::ac_keyboard_layout_select (Thanks to @PedroSebastiao)
         - consumer_key_code::ac_desktop_show_all_windows (Thanks to @omor1)
