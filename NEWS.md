@@ -6,6 +6,7 @@
     - Added filtering functionality to the log viewer.
 - 🐛 Bug Fixes
     - Fixed the ac_zoom_in and ac_zoom_out key codes being swapped.
+    - Fixed an issue where the settings window could open at login when the system default configuration used an old format.
 - ⚡️ Improvements
     - Improved internal communication between Karabiner-Elements processes by replacing the IPC backend with `pqrs::unix_domain_stream`.
     - Supported the following keys:
