@@ -36,6 +36,7 @@
 #include <pqrs/osx/iokit_power_management.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/spdlog.hpp>
+#include <ranges>
 #include <string_view>
 #include <thread>
 #include <time.h>
@@ -43,9 +44,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace krbn {
-namespace core_service {
-namespace daemon {
+namespace krbn::core_service::daemon {
 class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
@@ -261,8 +260,8 @@ public:
         });
 
         entry->get_hid_queue_value_monitor()->started.connect([this, device_id] {
-          auto it = entries_.find(device_id);
-          if (it != std::end(entries_)) {
+          if (auto it = entries_.find(device_id);
+              it != entries_.end()) {
             logger::get_logger()->info("{0} hid queue value monitor is started ({1}).",
                                        it->second->get_device_name(),
                                        it->second->seized() ? "grabbed" : "observed");
@@ -277,8 +276,8 @@ public:
         });
 
         entry->get_hid_queue_value_monitor()->stopped.connect([this, device_id] {
-          auto it = entries_.find(device_id);
-          if (it != std::end(entries_)) {
+          if (auto it = entries_.find(device_id);
+              it != entries_.end()) {
             logger::get_logger()->info("{0} hid queue value monitor is stopped.",
                                        it->second->get_device_name());
             logger_unique_filter_.reset();
@@ -316,8 +315,8 @@ public:
       // entries_
 
       {
-        auto it = entries_.find(device_id);
-        if (it != std::end(entries_)) {
+        if (auto it = entries_.find(device_id);
+            it != entries_.end()) {
           logger::get_logger()->info("{0} is terminated.",
                                      it->second->get_device_name());
           logger_unique_filter_.reset();
@@ -497,8 +496,8 @@ public:
                 core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2().empty());
           }
 
-          for (auto&& e : entries_) {
-            e.second->set_core_configuration(core_configuration);
+          for (auto&& entry : entries_ | std::views::values) {
+            entry->set_core_configuration(core_configuration);
           }
 
           manipulator_managers_connector_.set_manipulator_environment_core_configuration(core_configuration);
@@ -590,19 +589,9 @@ public:
 
   void async_grab_devices(void) {
     enqueue_to_dispatcher([this] {
-      for (auto&& e : entries_) {
-        grab_device(*(e.second));
+      for (auto&& entry : entries_ | std::views::values) {
+        grab_device(*entry);
       }
-    });
-  }
-
-  void async_ungrab_devices(void) {
-    enqueue_to_dispatcher([this] {
-      for (auto&& e : entries_) {
-        e.second->get_hid_queue_value_monitor()->async_stop();
-      }
-
-      logger::get_logger()->info("Connected devices are ungrabbed");
     });
   }
 
@@ -610,8 +599,8 @@ public:
     enqueue_to_dispatcher([this, value] {
       temporarily_ignore_all_devices_ = value;
 
-      for (auto&& e : entries_) {
-        e.second->set_temporarily_ignore(value);
+      for (auto&& entry : entries_ | std::views::values) {
+        entry->set_temporarily_ignore(value);
       }
 
       async_grab_devices();
@@ -733,8 +722,8 @@ public:
   void async_invoke_with_connected_devices(std::function<void(const nlohmann::json&)> function) const {
     enqueue_to_dispatcher([this, function] {
       connected_devices connected_devices;
-      for (const auto& e : entries_) {
-        connected_devices.push_back_device(e.second->get_device_properties());
+      for (const auto& entry : entries_ | std::views::values) {
+        connected_devices.push_back_device(entry->get_device_properties());
       }
 
       function(nlohmann::json(connected_devices));
@@ -753,7 +742,13 @@ private:
   void stop(void) {
     configuration_monitor_ = nullptr;
 
-    async_ungrab_devices();
+    enqueue_to_dispatcher([this] {
+      for (auto&& entry : entries_ | std::views::values) {
+        entry->get_hid_queue_value_monitor()->async_stop();
+      }
+
+      logger::get_logger()->info("Connected devices are ungrabbed");
+    });
 
     event_tap_monitor_ = nullptr;
 
@@ -933,8 +928,8 @@ private:
 
   // This method is executed in the shared dispatcher thread.
   void grab_device(device_id device_id) const {
-    auto it = entries_.find(device_id);
-    if (it != std::end(entries_)) {
+    if (auto it = entries_.find(device_id);
+        it != entries_.end()) {
       grab_device(*(it->second));
     }
   }
@@ -1006,8 +1001,8 @@ private:
       state = *last_caps_lock_state_ ? led_state::on : led_state::off;
     }
 
-    for (auto&& e : entries_) {
-      e.second->set_caps_lock_led_state(state);
+    for (auto&& entry : entries_ | std::views::values) {
+      entry->set_caps_lock_led_state(state);
     }
   }
 
@@ -1017,9 +1012,9 @@ private:
     // (The game pad also sends mouse events, so a virtual pointing device should be prepared as well.)
     //
 
-    for (const auto& e : entries_) {
-      if (e.second->needs_to_seize_device()) {
-        auto device_properties = e.second->get_device_properties();
+    for (const auto& entry : entries_ | std::views::values) {
+      if (entry->needs_to_seize_device()) {
+        auto device_properties = entry->get_device_properties();
         if (device_properties->get_device_identifiers().get_is_pointing_device() ||
             device_properties->get_device_identifiers().get_is_game_pad()) {
           return true;
@@ -1071,8 +1066,8 @@ private:
   }
 
   bool need_to_disable_built_in_keyboard(void) const {
-    for (const auto& e : entries_) {
-      if (e.second->is_disable_built_in_keyboard_if_exists()) {
+    for (const auto& entry : entries_ | std::views::values) {
+      if (entry->is_disable_built_in_keyboard_if_exists()) {
         return true;
       }
     }
@@ -1080,12 +1075,12 @@ private:
   }
 
   void update_devices_disabled(void) {
-    for (const auto& e : entries_) {
-      if (e.second->determine_is_built_in_keyboard() &&
+    for (const auto& entry : entries_ | std::views::values) {
+      if (entry->determine_is_built_in_keyboard() &&
           need_to_disable_built_in_keyboard()) {
-        e.second->set_disabled(true);
+        entry->set_disabled(true);
       } else {
-        e.second->set_disabled(false);
+        entry->set_disabled(false);
       }
     }
   }
@@ -1265,6 +1260,4 @@ private:
 
   mutable pqrs::spdlog::unique_filter logger_unique_filter_;
 };
-} // namespace daemon
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::daemon
