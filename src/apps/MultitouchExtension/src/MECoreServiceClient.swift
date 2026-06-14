@@ -149,13 +149,6 @@ final class MECoreServiceClient {
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name multitouch_extension_core_service_client -> mt_ext_cs_clnt.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/mt_ext_cs_clnt/17d5344d2176c048.sock`
-
     libkrbn_enable_core_service_client()
 
     libkrbn_register_core_service_client_status_changed_callback(callback)

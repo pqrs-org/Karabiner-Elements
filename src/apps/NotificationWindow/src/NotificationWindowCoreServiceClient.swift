@@ -34,13 +34,6 @@ final class NotificationWindowCoreServiceClient: ObservableObject {
   // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name notification_window_core_service_client -> nw_cs_clnt.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/nw_cs_clnt/1875f6b751b3bc98.sock`
-
     libkrbn_enable_core_service_client()
 
     libkrbn_register_core_service_client_notification_message_received_callback(

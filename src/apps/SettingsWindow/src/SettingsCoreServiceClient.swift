@@ -90,13 +90,6 @@ final class SettingsCoreServiceClient: ObservableObject {
   }
 
   public func start() {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // So we use the shorten name settings_core_service_client -> settings_cs_clnt.
-    //
-    // Example:
-    // `/Library/Application Support/org.pqrs/tmp/user/501/settings_cs_clnt/18675138fbaed328.sock`
-
     libkrbn_enable_core_service_client()
 
     libkrbn_register_core_service_client_system_variables_received_callback(
