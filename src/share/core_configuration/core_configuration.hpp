@@ -30,9 +30,15 @@ using namespace std::string_literals;
 
 class core_configuration final {
 public:
+  enum class source {
+    default_configuration,
+    user_file,
+    system_file,
+  };
+
   core_configuration(const core_configuration&) = delete;
 
-  core_configuration(void)
+  core_configuration()
       : core_configuration("",
                            0,
                            krbn::core_configuration::error_handling::loose) {
@@ -44,6 +50,7 @@ public:
       : json_(nlohmann::json::object()),
         error_handling_(error_handling),
         loaded_(false),
+        source_(source::default_configuration),
         global_configuration_(std::make_shared<details::global_configuration>(nlohmann::json::object(),
                                                                               error_handling)),
         machine_specific_(std::make_shared<details::machine_specific>(nlohmann::json::object(),
@@ -82,6 +89,9 @@ public:
                                         error_handling);
 
             loaded_ = true;
+            source_ = file_path == constants::get_system_core_configuration_file_path().string()
+                          ? source::system_file
+                          : source::user_file;
 
           } catch (std::exception& e) {
             logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
@@ -103,7 +113,7 @@ public:
     }
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = json_;
 
     helper_values_.update_json(j);
@@ -111,27 +121,31 @@ public:
     return j;
   }
 
-  bool is_loaded(void) const { return loaded_; }
+  bool is_loaded() const { return loaded_; }
 
-  const std::string& get_parse_error_message(void) const {
+  source get_source() const {
+    return source_;
+  }
+
+  const std::string& get_parse_error_message() const {
     return parse_error_message_;
   }
 
-  const details::global_configuration& get_global_configuration(void) const {
+  const details::global_configuration& get_global_configuration() const {
     return *global_configuration_;
   }
-  details::global_configuration& get_global_configuration(void) {
+  details::global_configuration& get_global_configuration() {
     return *global_configuration_;
   }
 
-  const details::machine_specific& get_machine_specific(void) const {
+  const details::machine_specific& get_machine_specific() const {
     return *machine_specific_;
   }
-  details::machine_specific& get_machine_specific(void) {
+  details::machine_specific& get_machine_specific() {
     return *machine_specific_;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<details::profile>>& get_profiles(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<details::profile>>& get_profiles() const {
     return profiles_;
   }
 
@@ -153,7 +167,7 @@ public:
     }
   }
 
-  void push_back_profile(void) {
+  void push_back_profile() {
     profiles_.push_back(std::make_shared<details::profile>(nlohmann::json({
                                                                {"name", "New profile"},
                                                            }),
@@ -181,7 +195,7 @@ public:
     vector_utility::move_element(profiles_, source_index, destination_index);
   }
 
-  const details::profile& get_selected_profile(void) const {
+  const details::profile& get_selected_profile() const {
     for (auto&& p : profiles_) {
       if (p->get_selected()) {
         return *p;
@@ -189,7 +203,7 @@ public:
     }
     return *(profiles_[0]);
   }
-  details::profile& get_selected_profile(void) {
+  details::profile& get_selected_profile() {
     return const_cast<details::profile&>(static_cast<const core_configuration&>(*this).get_selected_profile());
   }
 
@@ -199,7 +213,7 @@ public:
   // the user data will be lost by the `save` method.
   // Thus, we should call the `save` method only when it is neccessary.
 
-  void sync_save_to_file(void) {
+  void sync_save_to_file() {
     pqrs::osx::process_info::scoped_sudden_termination_blocker sudden_termination_blocker;
 
     make_backup_file();
@@ -207,10 +221,13 @@ public:
 
     auto file_path = constants::get_user_core_configuration_file_path();
     json_writer::sync_save_to_file(to_json(), file_path, 0700, 0600);
+
+    loaded_ = true;
+    source_ = source::user_file;
   }
 
 private:
-  void make_backup_file(void) {
+  void make_backup_file() {
     auto file_path = constants::get_user_core_configuration_file_path();
 
     if (!pqrs::filesystem::exists(file_path)) {
@@ -233,7 +250,7 @@ private:
     pqrs::filesystem::copy(file_path, backup_file_path);
   }
 
-  void remove_old_backup_files(void) {
+  void remove_old_backup_files() {
     auto backups_directory = constants::get_user_core_configuration_automatic_backups_directory();
     if (backups_directory.empty()) {
       return;
@@ -252,7 +269,7 @@ private:
     }
   }
 
-  static std::string make_current_local_yyyymmdd_string(void) {
+  static std::string make_current_local_yyyymmdd_string() {
     auto t = time(nullptr);
 
     tm tm;
@@ -267,6 +284,7 @@ private:
   nlohmann::json json_;
   error_handling error_handling_;
   bool loaded_;
+  source source_;
   std::string parse_error_message_;
 
   pqrs::not_null_shared_ptr_t<details::global_configuration> global_configuration_;

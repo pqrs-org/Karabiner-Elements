@@ -443,7 +443,7 @@ public:
     });
   }
 
-  virtual ~device_grabber(void) {
+  ~device_grabber() override {
     detach_from_dispatcher([this] {
       stop();
 
@@ -491,9 +491,20 @@ public:
         if (auto core_configuration = weak_core_configuration.lock()) {
           core_configuration_ = core_configuration;
 
+          auto using_system_core_configuration =
+              core_configuration_->get_source() == core_configuration::core_configuration::source::system_file;
+
+          // If an old core_configuration is stored in system_file,
+          // Settings is opened to show an alert when the user logs in.
+          // However, the configuration is then loaded from user_file in the new format, and the alert disappears.
+          // From the user's perspective, Settings opens unnecessarily after login in this case,
+          // so configuration errors in system_file should not be reflected in settings_window_guidance or trigger opening Settings.
+          auto virtual_hid_keyboard_type_not_set =
+              !using_system_core_configuration &&
+              core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2().empty();
+
           if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-            m->set_virtual_hid_keyboard_type_not_set(
-                core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2().empty());
+            m->set_virtual_hid_keyboard_type_not_set(virtual_hid_keyboard_type_not_set);
           }
 
           for (auto&& entry : entries_ | std::views::values) {
@@ -540,7 +551,7 @@ public:
             // Open Settings if needed
             //
 
-            if (core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2() == "") {
+            if (virtual_hid_keyboard_type_not_set) {
               software_function_details::open_application a;
               a.set_file_path("/Applications/Karabiner-Elements.app");
 
@@ -587,7 +598,7 @@ public:
     });
   }
 
-  void async_grab_devices(void) {
+  void async_grab_devices() {
     enqueue_to_dispatcher([this] {
       for (auto&& entry : entries_ | std::views::values) {
         grab_device(*entry);
@@ -678,7 +689,7 @@ public:
     });
   }
 
-  void async_post_system_preferences_properties_changed_event(void) {
+  void async_post_system_preferences_properties_changed_event() {
     enqueue_to_dispatcher([this] {
       auto event = event_queue::event::make_system_preferences_properties_changed_event(
           system_preferences_properties_);
@@ -696,7 +707,7 @@ public:
     });
   }
 
-  void async_post_virtual_hid_devices_state_changed_event(void) {
+  void async_post_virtual_hid_devices_state_changed_event() {
     enqueue_to_dispatcher([this] {
       auto event = event_queue::event::make_virtual_hid_devices_state_changed_event(virtual_hid_devices_state_);
       event_queue::entry entry(device_id(0),
@@ -739,7 +750,7 @@ public:
   }
 
 private:
-  void stop(void) {
+  void stop() {
     configuration_monitor_ = nullptr;
 
     enqueue_to_dispatcher([this] {
@@ -880,7 +891,7 @@ private:
     krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
   }
 
-  void post_device_keys_and_pointing_buttons_are_released_event(void) {
+  void post_device_keys_and_pointing_buttons_are_released_event() {
     auto event = event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
     event_queue::entry entry(device_id(0),
                              event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
@@ -995,7 +1006,7 @@ private:
     return grabbable_state::state::grabbable;
   }
 
-  void update_caps_lock_led(void) {
+  void update_caps_lock_led() {
     std::optional<led_state> state;
     if (last_caps_lock_state_) {
       state = *last_caps_lock_state_ ? led_state::on : led_state::off;
@@ -1006,7 +1017,7 @@ private:
     }
   }
 
-  bool needs_prepare_virtual_hid_pointing_device(void) const {
+  bool needs_prepare_virtual_hid_pointing_device() const {
     //
     // Check if there is a pointing device to grab
     // (The game pad also sends mouse events, so a virtual pointing device should be prepared as well.)
@@ -1033,7 +1044,7 @@ private:
     return false;
   }
 
-  void update_virtual_hid_keyboard(void) {
+  void update_virtual_hid_keyboard() {
     pqrs::karabiner::driverkit::virtual_hid_device_service::virtual_hid_keyboard_parameters parameters;
 
     auto t = core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_iokit_keyboard_type();
@@ -1056,7 +1067,7 @@ private:
     virtual_hid_device_service_client_->async_virtual_hid_keyboard_initialize(parameters);
   }
 
-  void update_virtual_hid_pointing(void) {
+  void update_virtual_hid_pointing() {
     if (needs_prepare_virtual_hid_pointing_device()) {
       virtual_hid_device_service_client_->async_virtual_hid_pointing_initialize();
       return;
@@ -1065,7 +1076,7 @@ private:
     virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
   }
 
-  bool need_to_disable_built_in_keyboard(void) const {
+  bool need_to_disable_built_in_keyboard() const {
     for (const auto& entry : entries_ | std::views::values) {
       if (entry->is_disable_built_in_keyboard_if_exists()) {
         return true;
@@ -1074,7 +1085,7 @@ private:
     return false;
   }
 
-  void update_devices_disabled(void) {
+  void update_devices_disabled() {
     for (const auto& entry : entries_ | std::views::values) {
       if (entry->determine_is_built_in_keyboard() &&
           need_to_disable_built_in_keyboard()) {
@@ -1085,7 +1096,7 @@ private:
     }
   }
 
-  void update_complex_modifications_manipulators(void) {
+  void update_complex_modifications_manipulators() {
     complex_modifications_manipulator_manager_->invalidate_manipulators();
 
     for (const auto& rule : core_configuration_->get_selected_profile().get_complex_modifications()->get_rules()) {

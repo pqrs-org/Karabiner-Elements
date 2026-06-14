@@ -6,7 +6,7 @@
 #include <boost/ut.hpp>
 #include <iostream>
 
-void run_core_configuration_test(void) {
+void run_core_configuration_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::literals;
@@ -116,6 +116,7 @@ void run_core_configuration_test(void) {
     expect(configuration.get_global_configuration().get_enable_cgeventtap_fallback() == true);
 
     expect(configuration.is_loaded() == true);
+    expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::user_file);
 
     {
       std::ifstream input("json/to_json_example.json");
@@ -131,6 +132,7 @@ void run_core_configuration_test(void) {
                                                                  krbn::core_configuration::error_handling::strict);
       expect(configuration.get_selected_profile().get_name() == "Default profile");
       expect(configuration.is_loaded() == false);
+      expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
     }
   };
 
@@ -142,6 +144,7 @@ void run_core_configuration_test(void) {
 
       expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
       expect(configuration.is_loaded() == false);
+      expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
       expect(configuration.get_parse_error_message() == "[json.exception.parse_error.101] parse error at line 7, column 1: syntax error while parsing object key - unexpected end of input; expected string literal");
 
       expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
@@ -172,6 +175,7 @@ void run_core_configuration_test(void) {
 
       expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
       expect(configuration.is_loaded() == false);
+      expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
     }
   };
 
