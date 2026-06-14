@@ -5,9 +5,6 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
-  // any -> any
-  handshake,
-  shared_secret, // The response to the `handshake`
   // session_monitor -> core_service (daemon)
   console_user_id_changed,
   // core_service (agent) -> core_service (deamon) -> console_user_server
@@ -70,8 +67,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     operation_type,
     {
         {operation_type::none, nullptr},
-        {operation_type::handshake, "handshake"},
-        {operation_type::shared_secret, "shared_secret"},
         {operation_type::console_user_id_changed, "console_user_id_changed"},
         {operation_type::core_service_bundle_permission_check_result, "core_service_bundle_permission_check_result"},
         {operation_type::refresh_core_service_bundle_permission_check_result, "refresh_core_service_bundle_permission_check_result"},
