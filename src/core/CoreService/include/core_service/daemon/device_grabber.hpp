@@ -142,7 +142,7 @@ public:
           m->set_virtual_hid_keyboard_ready(ready);
         }
 
-        // The virtual_hid_keyboard might be terminated due to virtual_hid_device_service_client_ error.
+        // The virtual_hid_keyboard might have been terminated or become unavailable.
         // We try to reinitialize the device.
         if (!ready) {
           if (post_event_to_virtual_devices_manipulator_) {
@@ -164,7 +164,7 @@ public:
         virtual_hid_devices_state_.set_virtual_hid_pointing_ready(ready);
         async_post_virtual_hid_devices_state_changed_event();
 
-        // The virtual_hid_pointing might be terminated due to virtual_hid_device_service_client_ error.
+        // The virtual_hid_pointing might have been terminated or become unavailable.
         // We try to reinitialize the device.
         if (!ready) {
           virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
@@ -321,15 +321,6 @@ public:
           logger::get_logger()->info("{0} is terminated.",
                                      it->second->get_device_name());
           logger_unique_filter_.reset();
-
-          auto device_properties = it->second->get_device_properties();
-          if (device_properties->get_device_identifiers().get_is_keyboard() &&
-              device_properties->get_device_identifiers().get_is_virtual_device()) {
-            virtual_hid_device_service_client_->async_stop();
-            async_ungrab_devices();
-
-            virtual_hid_device_service_client_->async_start();
-          }
 
           entries_.erase(it);
         }
