@@ -499,12 +499,10 @@ public:
           // However, the configuration is then loaded from user_file in the new format, and the alert disappears.
           // From the user's perspective, Settings opens unnecessarily after login in this case,
           // so configuration errors in system_file should not be reflected in settings_window_guidance or trigger opening Settings.
-          auto virtual_hid_keyboard_type_not_set =
-              !using_system_core_configuration &&
-              core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2().empty();
-
           if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-            m->set_virtual_hid_keyboard_type_not_set(virtual_hid_keyboard_type_not_set);
+            m->set_virtual_hid_keyboard_type_not_set(
+                !using_system_core_configuration &&
+                core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2().empty());
           }
 
           for (auto&& entry : entries_ | std::views::values) {
@@ -545,19 +543,6 @@ public:
               c->async_unregister_notification_window_agent();
             }
 
-            //
-            // Open Settings if needed
-            //
-
-            if (virtual_hid_keyboard_type_not_set) {
-              software_function_details::open_application a;
-              a.set_file_path("/Applications/Karabiner-Elements.app");
-
-              software_function f;
-              f.set_value(a);
-
-              c->async_software_function(f);
-            }
           }
 
           //
