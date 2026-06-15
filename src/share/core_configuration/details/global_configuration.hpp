@@ -13,8 +13,8 @@ public:
   global_configuration(const nlohmann::json& json,
                        error_handling error_handling)
       : json_(json) {
-    helper_values_.push_back_value<bool>("check_for_updates_on_startup",
-                                         check_for_updates_on_startup_,
+    helper_values_.push_back_value<bool>("check_for_updates",
+                                         check_for_updates_,
                                          true);
 
     helper_values_.push_back_value<bool>("show_in_menu_bar",
@@ -55,7 +55,13 @@ public:
 
     pqrs::json::requires_object(json, "json");
 
-    helper_values_.update_value(json, error_handling);
+    if (!json_.contains("check_for_updates") &&
+        json_.contains("check_for_updates_on_startup")) {
+      json_["check_for_updates"] = json_["check_for_updates_on_startup"];
+    }
+    json_.erase("check_for_updates_on_startup");
+
+    helper_values_.update_value(json_, error_handling);
   }
 
   nlohmann::json to_json(void) const {
@@ -66,11 +72,11 @@ public:
     return j;
   }
 
-  const bool& get_check_for_updates_on_startup(void) const {
-    return check_for_updates_on_startup_;
+  const bool& get_check_for_updates(void) const {
+    return check_for_updates_;
   }
-  void set_check_for_updates_on_startup(bool value) {
-    check_for_updates_on_startup_ = value;
+  void set_check_for_updates(bool value) {
+    check_for_updates_ = value;
   }
 
   const bool& get_show_in_menu_bar(void) const {
@@ -138,7 +144,7 @@ public:
 
 private:
   nlohmann::json json_;
-  bool check_for_updates_on_startup_;
+  bool check_for_updates_;
   bool show_in_menu_bar_;
   bool show_profile_name_in_menu_bar_;
   bool show_additional_menu_items_;

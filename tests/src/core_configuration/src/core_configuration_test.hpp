@@ -105,7 +105,7 @@ void run_core_configuration_test() {
       expect(actual[1]->get_disable_built_in_keyboard_if_exists() == true);
     }
 
-    expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == false);
+    expect(configuration.get_global_configuration().get_check_for_updates() == false);
     expect(configuration.get_global_configuration().get_show_in_menu_bar() == false);
     expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
     expect(configuration.get_global_configuration().get_show_additional_menu_items() == false);
@@ -147,7 +147,7 @@ void run_core_configuration_test() {
       expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
       expect(configuration.get_parse_error_message() == "[json.exception.parse_error.101] parse error at line 7, column 1: syntax error while parsing object key - unexpected end of input; expected string literal");
 
-      expect(configuration.get_global_configuration().get_check_for_updates_on_startup() == true);
+      expect(configuration.get_global_configuration().get_check_for_updates() == true);
       expect(configuration.get_global_configuration().get_show_in_menu_bar() == true);
       expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
       expect(configuration.get_global_configuration().get_show_additional_menu_items() == false);
@@ -213,7 +213,7 @@ void run_core_configuration_test() {
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      global_configuration.set_check_for_updates_on_startup(false);
+      global_configuration.set_check_for_updates(false);
       global_configuration.set_show_in_menu_bar(false);
       global_configuration.set_show_profile_name_in_menu_bar(true);
       global_configuration.set_show_additional_menu_items(true);
@@ -223,7 +223,7 @@ void run_core_configuration_test() {
       global_configuration.set_reorder_same_timestamp_input_events_to_prioritize_modifiers(false);
       global_configuration.set_enable_cgeventtap_fallback(true);
       nlohmann::json expected({
-          {"check_for_updates_on_startup", false},
+          {"check_for_updates", false},
           {"dummy", {{"keep_me", true}}},
           {"show_in_menu_bar", false},
           {"show_profile_name_in_menu_bar", true},

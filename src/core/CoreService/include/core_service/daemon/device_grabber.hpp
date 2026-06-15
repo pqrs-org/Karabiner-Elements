@@ -520,9 +520,7 @@ public:
             // Check for updates
             //
 
-            if (core_configuration_->get_global_configuration().get_check_for_updates_on_startup()) {
-              c->async_check_for_updates_on_startup();
-            }
+            c->async_check_for_updates(core_configuration_->get_global_configuration().get_check_for_updates());
 
             //
             // Manage agents

@@ -19,7 +19,7 @@ enum class operation_type : uint8_t {
   // core_service (daemon) -> console_user_server
   get_user_core_configuration_file_path,
   core_service_daemon_state,
-  check_for_updates_on_startup,
+  check_for_updates,
   register_menu_agent,
   unregister_menu_agent,
   register_multitouch_extension_agent,
@@ -84,7 +84,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::get_settings_window_guidance, "get_settings_window_guidance"},
         {operation_type::settings_window_guidance, "settings_window_guidance"},
         {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},
-        {operation_type::check_for_updates_on_startup, "check_for_updates_on_startup"},
+        {operation_type::check_for_updates, "check_for_updates"},
         {operation_type::register_menu_agent, "register_menu_agent"},
         {operation_type::unregister_menu_agent, "unregister_menu_agent"},
         {operation_type::register_multitouch_extension_agent, "register_multitouch_extension_agent"},

@@ -11,7 +11,7 @@ void run_global_configuration_test(void) {
       auto json = nlohmann::json::object();
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      expect(global_configuration.get_check_for_updates_on_startup() == true);
+      expect(global_configuration.get_check_for_updates() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
       expect(global_configuration.get_show_additional_menu_items() == false);
@@ -26,7 +26,7 @@ void run_global_configuration_test(void) {
     // load values from json
     {
       nlohmann::json json{
-          {"check_for_updates_on_startup", false},
+          {"check_for_updates", false},
           {"show_in_menu_bar", false},
           {"show_profile_name_in_menu_bar", true},
           {"show_additional_menu_items", true},
@@ -39,7 +39,7 @@ void run_global_configuration_test(void) {
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::strict);
-      expect(global_configuration.get_check_for_updates_on_startup() == false);
+      expect(global_configuration.get_check_for_updates() == false);
       expect(global_configuration.get_show_in_menu_bar() == false);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == true);
       expect(global_configuration.get_show_additional_menu_items() == true);
@@ -54,7 +54,7 @@ void run_global_configuration_test(void) {
       // Set default values
       //
 
-      global_configuration.set_check_for_updates_on_startup(true);
+      global_configuration.set_check_for_updates(true);
       global_configuration.set_show_in_menu_bar(true);
       global_configuration.set_show_profile_name_in_menu_bar(false);
       global_configuration.set_show_additional_menu_items(false);
@@ -71,7 +71,7 @@ void run_global_configuration_test(void) {
     // invalid values in json
     {
       nlohmann::json json{
-          {"check_for_updates_on_startup", nlohmann::json::array()},
+          {"check_for_updates", nlohmann::json::array()},
           {"show_in_menu_bar", 0},
           {"show_profile_name_in_menu_bar", nlohmann::json::object()},
           {"show_additional_menu_items", nlohmann::json::object()},
@@ -83,7 +83,7 @@ void run_global_configuration_test(void) {
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::loose);
-      expect(global_configuration.get_check_for_updates_on_startup() == true);
+      expect(global_configuration.get_check_for_updates() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
       expect(global_configuration.get_show_additional_menu_items() == false);
@@ -93,6 +93,21 @@ void run_global_configuration_test(void) {
       expect(global_configuration.get_filter_useless_events_from_specific_devices() == true);
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
       expect(global_configuration.get_enable_cgeventtap_fallback() == false);
+    }
+
+    // migrate from check_for_updates_on_startup
+    {
+      nlohmann::json json{
+          {"check_for_updates_on_startup", false},
+      };
+      krbn::core_configuration::details::global_configuration global_configuration(json,
+                                                                                   krbn::core_configuration::error_handling::strict);
+      expect(global_configuration.get_check_for_updates() == false);
+
+      nlohmann::json expected({
+          {"check_for_updates", false},
+      });
+      expect(global_configuration.to_json() == expected);
     }
   };
 }

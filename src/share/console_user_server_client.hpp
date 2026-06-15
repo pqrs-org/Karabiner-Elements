@@ -140,10 +140,11 @@ public:
     });
   }
 
-  void async_check_for_updates_on_startup() const {
-    enqueue_to_dispatcher([this] {
+  void async_check_for_updates(bool enabled) const {
+    enqueue_to_dispatcher([this, enabled] {
       nlohmann::json json{
-          {"operation_type", operation_type::check_for_updates_on_startup},
+          {"operation_type", operation_type::check_for_updates},
+          {"enabled", enabled},
       };
 
       async_send_message(std::move(json));

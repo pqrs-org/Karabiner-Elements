@@ -124,8 +124,8 @@ extension LibKrbn {
 
       updateProfiles()
 
-      checkForUpdatesOnStartup =
-        libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup()
+      checkForUpdates =
+        libkrbn_core_configuration_get_global_configuration_check_for_updates()
       showIconInMenuBar = libkrbn_core_configuration_get_global_configuration_show_in_menu_bar()
       showProfileNameInMenuBar =
         libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar()
@@ -754,11 +754,11 @@ extension LibKrbn {
     // Misc
     //
 
-    @Published var checkForUpdatesOnStartup: Bool = false {
+    @Published var checkForUpdates: Bool = false {
       didSet {
         if didSetEnabled {
-          libkrbn_core_configuration_set_global_configuration_check_for_updates_on_startup(
-            checkForUpdatesOnStartup
+          libkrbn_core_configuration_set_global_configuration_check_for_updates(
+            checkForUpdates
           )
           save()
         }

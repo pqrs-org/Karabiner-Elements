@@ -16,6 +16,7 @@
 #include <pqrs/osx/input_source_selector.hpp>
 #include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <pqrs/unix_domain_stream.hpp>
+#include <random>
 
 namespace krbn::console_user_server {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -197,35 +198,11 @@ private:
                              request_id);
           break;
 
-        case operation_type::check_for_updates_on_startup: {
-          static bool checked = false;
-          if (!checked) {
-            checked = true;
-
-            logger::get_logger()->info("operation_type::check_for_updates_on_startup was received; waiting 30 seconds before checking for updates.");
-
-            // Note:
-            //
-            // During the updates, Karabiner-Updater.app and console_user_server binaries are overwritten asynchronous.
-            // And console_user_server will be restarted via version check.
-            // If console_user_server is restarted before Karabiner-Updater.app overwritten,
-            // checking for updates runs with the old version of Karabiner-Updater.app,
-            // and the update dialog is shown again even though the update was just completed.
-            //
-            // Wait before checking for updates to avoid it.
-
-            enqueue_to_dispatcher(
-                [] {
-                  logger::get_logger()->info("Check for updates...");
-                  update_utility::check_for_updates_in_background();
-                },
-                when_now() + std::chrono::seconds(30));
-          }
-
+        case operation_type::check_for_updates:
+          set_check_for_updates_enabled(json.at("enabled").get<bool>());
           async_respond_none(peer_id,
                              request_id);
           break;
-        }
 
         case operation_type::register_menu_agent:
           services_utility::register_menu_agent();
@@ -327,11 +304,66 @@ private:
     }
   }
 
+  void set_check_for_updates_enabled(bool enabled) {
+    if (check_for_updates_enabled_ == enabled) {
+      return;
+    }
+
+    check_for_updates_enabled_ = enabled;
+    ++check_for_updates_generation_;
+
+    if (enabled) {
+      logger::get_logger()->info("Check for updates is enabled; waiting 30 seconds before checking for updates.");
+
+      // Note:
+      //
+      // During the updates, Karabiner-Updater.app and console_user_server binaries are overwritten asynchronous.
+      // And console_user_server will be restarted via version check.
+      // If console_user_server is restarted before Karabiner-Updater.app overwritten,
+      // checking for updates runs with the old version of Karabiner-Updater.app,
+      // and the update dialog is shown again even though the update was just completed.
+      //
+      // Wait before checking for updates to avoid it.
+
+      schedule_check_for_updates(check_for_updates_generation_,
+                                 std::chrono::seconds(30));
+    }
+  }
+
+  void schedule_check_for_updates(uint64_t generation,
+                                  std::chrono::milliseconds delay) {
+    enqueue_to_dispatcher(
+        [this, generation] {
+          if (!check_for_updates_enabled_ ||
+              generation != check_for_updates_generation_) {
+            return;
+          }
+
+          logger::get_logger()->info("Check for updates...");
+          update_utility::check_for_updates_in_background();
+
+          schedule_check_for_updates(generation,
+                                     make_next_check_for_updates_interval());
+        },
+        when_now() + delay);
+  }
+
+  static std::chrono::milliseconds make_next_check_for_updates_interval() {
+    static std::random_device random_device;
+    static std::mt19937 engine(random_device());
+    static std::uniform_int_distribution<int> jitter_minutes(0, 60);
+
+    return std::chrono::hours(24) +
+           std::chrono::minutes(jitter_minutes(engine));
+  }
+
   std::weak_ptr<settings_window_guidance_manager> weak_settings_window_guidance_manager_;
   std::weak_ptr<software_function_handler> weak_software_function_handler_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::unique_ptr<shell_command_handler> shell_command_handler_;
   std::unique_ptr<send_user_command_handler> send_user_command_handler_;
   std::unique_ptr<pqrs::unix_domain_stream::server> server_;
+  bool check_for_updates_enabled_ = false;
+  uint64_t check_for_updates_generation_ = 0;
 };
 } // namespace krbn::console_user_server

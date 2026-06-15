@@ -66,14 +66,14 @@ bool libkrbn_core_configuration_save(char* error_message_buffer,
   return false;
 }
 
-bool libkrbn_core_configuration_get_global_configuration_check_for_updates_on_startup(void) {
+bool libkrbn_core_configuration_get_global_configuration_check_for_updates(void) {
   auto c = get_current_core_configuration();
-  return c->get_global_configuration().get_check_for_updates_on_startup();
+  return c->get_global_configuration().get_check_for_updates();
 }
 
-void libkrbn_core_configuration_set_global_configuration_check_for_updates_on_startup(bool value) {
+void libkrbn_core_configuration_set_global_configuration_check_for_updates(bool value) {
   auto c = get_current_core_configuration();
-  c->get_global_configuration().set_check_for_updates_on_startup(value);
+  c->get_global_configuration().set_check_for_updates(value);
 }
 
 bool libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(void) {
