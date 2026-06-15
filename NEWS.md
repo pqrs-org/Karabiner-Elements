@@ -9,6 +9,7 @@
     - Fixed an issue where the settings window could open at login when the system default configuration used an old format.
 - ⚡️ Improvements
     - Improved internal communication between Karabiner-Elements processes by replacing the IPC backend with `pqrs::unix_domain_stream`.
+    - Changed update checks to run periodically, not only at startup.
     - Supported the following keys:
         - consumer_key_code::ac_keyboard_layout_select (Thanks to @PedroSebastiao)
         - consumer_key_code::ac_desktop_show_all_windows (Thanks to @omor1)
