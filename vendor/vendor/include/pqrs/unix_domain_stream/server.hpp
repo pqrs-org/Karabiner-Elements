@@ -230,10 +230,10 @@ private:
 
     auto credentials = impl::make_peer_credentials(socket);
     auto id = ++next_peer_id_;
-    auto p = std::make_shared<impl::peer>(weak_dispatcher_,
-                                          std::move(socket),
-                                          options_);
-    peers_[id] = p;
+    not_null_shared_ptr_t<impl::peer> p(std::make_shared<impl::peer>(weak_dispatcher_,
+                                                                     std::move(socket),
+                                                                     options_));
+    peers_.emplace(id, p);
 
     p->ready.connect([this, id, credentials] {
       enqueue_to_dispatcher([this, id, credentials] {
@@ -354,8 +354,8 @@ private:
 
           socket_path_health_check_in_progress_ = true;
 
-          auto socket = std::make_shared<asio::local::stream_protocol::socket>(io_ctx_);
-          auto timeout = std::make_shared<asio::steady_timer>(io_ctx_);
+          not_null_shared_ptr_t<asio::local::stream_protocol::socket> socket(std::make_shared<asio::local::stream_protocol::socket>(io_ctx_));
+          not_null_shared_ptr_t<asio::steady_timer> timeout(std::make_shared<asio::steady_timer>(io_ctx_));
 
           timeout->expires_after(options_.socket_path_health_check_timeout);
           timeout->async_wait([this, socket](const auto& error_code) {
@@ -375,11 +375,12 @@ private:
                   return;
                 }
 
-                socket_path_health_check_peer_ = std::make_shared<impl::peer>(weak_dispatcher_,
-                                                                              std::move(*socket),
-                                                                              options_);
+                not_null_shared_ptr_t<impl::peer> p(std::make_shared<impl::peer>(weak_dispatcher_,
+                                                                                 std::move(*socket),
+                                                                                 options_));
+                socket_path_health_check_peer_ = p;
 
-                socket_path_health_check_peer_->health_check_response_received.connect([this, timeout] {
+                p->health_check_response_received.connect([this, timeout] {
                   asio::post(
                       io_ctx_,
                       [this, timeout] {
@@ -391,7 +392,7 @@ private:
                       });
                 });
 
-                socket_path_health_check_peer_->error_occurred.connect([this, timeout](auto&& error_code) {
+                p->error_occurred.connect([this, timeout](auto&& error_code) {
                   asio::post(
                       io_ctx_,
                       [this, timeout, error_code] {
@@ -400,7 +401,7 @@ private:
                       });
                 });
 
-                socket_path_health_check_peer_->closed.connect([this, timeout] {
+                p->closed.connect([this, timeout] {
                   asio::post(
                       io_ctx_,
                       [this, timeout] {
@@ -412,8 +413,8 @@ private:
                       });
                 });
 
-                socket_path_health_check_peer_->async_start();
-                socket_path_health_check_peer_->async_send_health_check();
+                p->async_start();
+                p->async_send_health_check();
               });
         });
   }
@@ -456,9 +457,7 @@ private:
   // This method is executed in `io_ctx_thread_`.
   void close_all_peers() {
     for (auto& [_, p] : peers_) {
-      if (p) {
-        p->async_close();
-      }
+      p->async_close();
     }
 
     peers_.clear();
@@ -475,7 +474,7 @@ private:
   asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
   std::thread io_ctx_thread_;
   std::unique_ptr<asio::local::stream_protocol::acceptor> acceptor_;
-  std::unordered_map<peer_id, std::shared_ptr<impl::peer>> peers_;
+  std::unordered_map<peer_id, not_null_shared_ptr_t<impl::peer>> peers_;
   std::unordered_set<peer_id> exposed_peer_ids_;
   std::shared_ptr<impl::peer> socket_path_health_check_peer_;
   bool socket_path_health_check_in_progress_ = false;

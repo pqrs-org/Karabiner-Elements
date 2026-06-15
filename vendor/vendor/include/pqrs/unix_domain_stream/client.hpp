@@ -131,7 +131,7 @@ public:
 private:
   struct pending_request final {
     async_request_callback callback;
-    std::shared_ptr<asio::steady_timer> timer;
+    not_null_shared_ptr_t<asio::steady_timer> timer;
   };
 
   // This method is executed in the dispatcher thread.
@@ -158,7 +158,7 @@ private:
             return;
           }
 
-          auto socket = std::make_shared<asio::local::stream_protocol::socket>(io_ctx_);
+          not_null_shared_ptr_t<asio::local::stream_protocol::socket> socket(std::make_shared<asio::local::stream_protocol::socket>(io_ctx_));
           connecting_socket_ = socket;
 
           socket->async_connect(
@@ -166,7 +166,7 @@ private:
               [this, socket](auto&& error_code) mutable {
                 // A newer connect attempt or invalidate_connection has replaced this socket.
                 if (stopped_ ||
-                    connecting_socket_ != socket) {
+                    connecting_socket_ != socket.get()) {
                   asio::error_code close_error_code;
                   socket->close(close_error_code);
                   return;
@@ -228,11 +228,11 @@ private:
   }
 
   // This method is executed in `io_ctx_thread_`.
-  void handle_connected_socket(std::shared_ptr<asio::local::stream_protocol::socket> socket,
+  void handle_connected_socket(not_null_shared_ptr_t<asio::local::stream_protocol::socket> socket,
                                const peer_credentials& credentials,
                                bool verified) {
     // A newer connect attempt or invalidate_connection has replaced this socket.
-    if (connecting_socket_ != socket) {
+    if (connecting_socket_ != socket.get()) {
       asio::error_code close_error_code;
       socket->close(close_error_code);
       return;
@@ -257,11 +257,11 @@ private:
       return;
     }
 
-    auto p = std::make_shared<impl::peer>(weak_dispatcher_,
-                                          std::move(*socket),
-                                          options_);
+    not_null_shared_ptr_t<impl::peer> p(std::make_shared<impl::peer>(weak_dispatcher_,
+                                                                     std::move(*socket),
+                                                                     options_));
     peer_ = p;
-    std::weak_ptr<impl::peer> weak_p(p);
+    auto weak_p = make_weak(p);
 
     p->received.connect([this, weak_p](auto&& buffer) {
       if (auto p = weak_p.lock()) {
@@ -334,7 +334,7 @@ private:
     asio::post(
         io_ctx_,
         [this, p, credentials] {
-          if (peer_ == p) {
+          if (peer_ == p.get()) {
             enqueue_to_dispatcher([this, credentials] {
               connected(credentials);
             });
@@ -390,7 +390,7 @@ private:
     }
 
     auto id = ++next_request_id_;
-    auto timer = std::make_shared<asio::steady_timer>(io_ctx_);
+    not_null_shared_ptr_t<asio::steady_timer> timer(std::make_shared<asio::steady_timer>(io_ctx_));
     timer->expires_after(timeout);
     timer->async_wait([this, id](const auto& error_code) {
       if (!error_code) {
