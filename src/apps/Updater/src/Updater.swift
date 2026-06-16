@@ -74,6 +74,8 @@ final class Updater: ObservableObject {
         if userAttentionRequestIdentifier == nil {
           userAttentionRequestIdentifier = NSApp.requestUserAttention(.criticalRequest)
         }
+
+        NSApp.dockTile.badgeLabel = "!"
       }
     }
 
@@ -93,6 +95,8 @@ final class Updater: ObservableObject {
         NSApp.cancelUserAttentionRequest(identifier)
         userAttentionRequestIdentifier = nil
       }
+
+      NSApp.dockTile.badgeLabel = nil
     }
   }
 }
