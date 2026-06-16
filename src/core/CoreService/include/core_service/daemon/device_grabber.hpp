@@ -542,7 +542,6 @@ public:
             } else {
               c->async_unregister_notification_window_agent();
             }
-
           }
 
           //
