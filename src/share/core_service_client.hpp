@@ -76,7 +76,7 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
-        logger::get_logger()->error("core_service_client connect_failed: {0}", error_code.message());
+        logger::get_logger()->debug("core_service_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
@@ -92,7 +92,7 @@ public:
       });
 
       client_->error_occurred.connect([](auto&& error_code) {
-        logger::get_logger()->error("core_service_client error: {0}", error_code.message());
+        logger::get_logger()->debug("core_service_client error: {0}", error_code.message());
       });
 
       client_->peer_verification_failed.connect([](auto&&) {
@@ -314,7 +314,7 @@ private:
         [this, processed](auto&& error_code, auto&& buffer) {
           enqueue_to_dispatcher([this, error_code, buffer, processed] {
             if (error_code) {
-              logger::get_logger()->error("core_service_client request failed: {0}", error_code.message());
+              logger::get_logger()->debug("core_service_client request failed: {0}", error_code.message());
             }
 
             if (buffer &&

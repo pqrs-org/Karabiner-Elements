@@ -77,7 +77,7 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
-        logger::get_logger()->error("console_user_server_client connect_failed: {0}", error_code.message());
+        logger::get_logger()->debug("console_user_server_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
@@ -93,7 +93,7 @@ public:
       });
 
       client_->error_occurred.connect([](auto&& error_code) {
-        logger::get_logger()->error("console_user_server_client error: {0}", error_code.message());
+        logger::get_logger()->debug("console_user_server_client error: {0}", error_code.message());
       });
 
       client_->peer_verification_failed.connect([](auto&&) {
@@ -330,7 +330,7 @@ private:
         [this](auto&& error_code, auto&& buffer) {
           enqueue_to_dispatcher([this, error_code, buffer] {
             if (error_code) {
-              logger::get_logger()->error("console_user_server_client request failed: {0}", error_code.message());
+              logger::get_logger()->debug("console_user_server_client request failed: {0}", error_code.message());
             }
 
             if (buffer &&

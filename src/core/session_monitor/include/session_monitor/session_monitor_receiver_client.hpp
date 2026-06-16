@@ -62,7 +62,7 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
-        logger::get_logger()->info("session_monitor_receiver_client connect_failed: {0}", error_code.message());
+        logger::get_logger()->debug("session_monitor_receiver_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
           make_connection_not_ready();
@@ -82,7 +82,7 @@ public:
       });
 
       client_->error_occurred.connect([this](auto&& error_code) {
-        logger::get_logger()->error("session_monitor_receiver_client error: {0}", error_code.message());
+        logger::get_logger()->debug("session_monitor_receiver_client error: {0}", error_code.message());
 
         enqueue_to_dispatcher([this] {
           make_connection_not_ready();
@@ -174,7 +174,7 @@ private:
             console_user_id_changed_request_in_flight_ = false;
 
             if (error_code) {
-              logger::get_logger()->error("session_monitor_receiver_client request failed: {0}", error_code.message());
+              logger::get_logger()->debug("session_monitor_receiver_client request failed: {0}", error_code.message());
 
               make_connection_not_ready();
 

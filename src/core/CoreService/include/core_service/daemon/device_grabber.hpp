@@ -92,7 +92,7 @@ public:
     });
 
     virtual_hid_device_service_client_->connect_failed.connect([weak_core_service_daemon_state_manager](auto&& error_code) {
-      logger::get_logger()->info("virtual_hid_device_service_client_ connect_failed: {0}", error_code.message());
+      logger::get_logger()->debug("virtual_hid_device_service_client_ connect_failed: {0}", error_code.message());
 
       if (auto m = weak_core_service_daemon_state_manager.lock()) {
         m->set_virtual_hid_device_service_client_connected(false);
@@ -115,7 +115,7 @@ public:
     });
 
     virtual_hid_device_service_client_->error_occurred.connect([](auto&& error_code) {
-      logger::get_logger()->info("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
+      logger::get_logger()->debug("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
     });
 
     virtual_hid_device_service_client_->driver_connected.connect([weak_core_service_daemon_state_manager](auto&& driver_connected) {

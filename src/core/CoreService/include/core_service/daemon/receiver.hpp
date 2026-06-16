@@ -103,7 +103,7 @@ public:
     });
 
     server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
-      logger::get_logger()->error("receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
+      logger::get_logger()->debug("receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
     });
 
     server_->received.connect([](auto, auto&&) {
