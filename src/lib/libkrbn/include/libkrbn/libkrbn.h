@@ -20,9 +20,6 @@ typedef struct {
   bool is_virtual_device;
 } libkrbn_device_identifiers;
 
-void libkrbn_set_logging_level_off(void);
-void libkrbn_set_logging_level_info(void);
-
 void libkrbn_initialize(void);
 void libkrbn_terminate(void);
 
@@ -489,6 +486,7 @@ size_t libkrbn_log_lines_get_size(void);
 bool libkrbn_log_lines_get_line(size_t index,
                                 char* _Nonnull buffer,
                                 size_t length);
+bool libkrbn_log_lines_is_debug_line(const char* _Nonnull line);
 bool libkrbn_log_lines_is_warn_line(const char* _Nonnull line);
 bool libkrbn_log_lines_is_error_line(const char* _Nonnull line);
 uint64_t libkrbn_log_lines_get_date_number(const char* _Nonnull line);

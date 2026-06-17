@@ -26,14 +26,6 @@ std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> s
 
 std::shared_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 
-void libkrbn_set_logging_level_off() {
-  krbn::logger::get_logger()->set_level(spdlog::level::off);
-}
-
-void libkrbn_set_logging_level_info() {
-  krbn::logger::get_logger()->set_level(spdlog::level::info);
-}
-
 void libkrbn_initialize() {
   krbn::logger::get_logger()->info(__func__);
 

@@ -37,6 +37,10 @@ bool libkrbn_log_lines_get_line(size_t index,
   return false;
 }
 
+bool libkrbn_log_lines_is_debug_line(const char* line) {
+  return pqrs::spdlog::find_level(line) == spdlog::level::debug;
+}
+
 bool libkrbn_log_lines_is_warn_line(const char* line) {
   return pqrs::spdlog::find_level(line) == spdlog::level::warn;
 }
