@@ -969,14 +969,14 @@ private:
 
     if (!virtual_hid_devices_state_.get_virtual_hid_keyboard_ready()) {
       std::string message = "virtual_hid_keyboard is not ready. Please wait for a while.";
-      logger_unique_filter_.warn(message);
+      logger_unique_filter_.debug(message);
       return grabbable_state::state::ungrabbable;
     }
 
     if (needs_prepare_virtual_hid_pointing_device()) {
       if (!virtual_hid_devices_state_.get_virtual_hid_pointing_ready()) {
         std::string message = "virtual_hid_pointing is not ready. Please wait for a while.";
-        logger_unique_filter_.warn(message);
+        logger_unique_filter_.debug(message);
         return grabbable_state::state::ungrabbable;
       }
     }
