@@ -40,6 +40,7 @@ public:
                                                                   256 * 1024,
                                                                   3);
     if (l) {
+      l->set_level(spdlog::level::debug);
       l->flush_on(spdlog::level::info);
       l->set_pattern(pqrs::spdlog::get_pattern());
 

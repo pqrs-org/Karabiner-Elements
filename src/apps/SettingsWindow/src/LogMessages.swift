@@ -2,6 +2,7 @@ import AsyncAlgorithms
 import SwiftUI
 
 enum LogLevel {
+  case debug
   case info
   case warn
   case error
@@ -20,6 +21,9 @@ private func callback() {
 
       if line != "" {
         var logLevel = LogLevel.info
+        if libkrbn_log_lines_is_debug_line(line) {
+          logLevel = LogLevel.debug
+        }
         if libkrbn_log_lines_is_warn_line(line) {
           logLevel = LogLevel.warn
         }
@@ -54,6 +58,9 @@ public class LogMessageEntry: Identifiable, Equatable {
     self.dateNumber = dateNumber
 
     switch logLevel {
+    case LogLevel.debug:
+      foregroundColor = Color.debugForeground
+      backgroundColor = Color.debugBackground
     case LogLevel.info:
       break
     case LogLevel.warn:

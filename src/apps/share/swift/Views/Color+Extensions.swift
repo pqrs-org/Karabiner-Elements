@@ -569,6 +569,8 @@ extension Color {
       UInt8(components.opacity * 255))
   }
 
+  public static let debugBackground: Color = Color.clear
+  public static let debugForeground: Color = Color.gray
   public static let infoBackground: Color = Color(colorString: "#cff4fcff")
   public static let infoForeground: Color = Color(colorString: "#055160ff")
   public static let errorBackground: Color = Color(colorString: "#f2dedeff")
