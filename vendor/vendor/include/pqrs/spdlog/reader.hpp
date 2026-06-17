@@ -5,13 +5,15 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include "spdlog.hpp"
+#include <algorithm>
 #include <deque>
 #include <fstream>
+#include <pqrs/gsl.hpp>
+#include <ranges>
 #include <utf8cpp/utf8.h>
 #include <vector>
 
-namespace pqrs {
-namespace spdlog {
+namespace pqrs::spdlog {
 namespace impl {
 class merge_log_file final {
 public:
@@ -19,15 +21,15 @@ public:
     read_next_line();
   }
 
-  const std::string& get_line(void) const {
+  const std::string& get_line() const {
     return line_;
   }
 
-  const std::optional<uint64_t>& get_sort_key(void) const {
+  const std::optional<uint64_t>& get_sort_key() const {
     return sort_key_;
   }
 
-  void read_next_line(void) {
+  void read_next_line() {
     if (stream_) {
       if (std::getline(stream_, line_)) {
         line_ = utf8::replace_invalid(line_);
@@ -55,31 +57,27 @@ private:
 };
 } // namespace impl
 
-inline std::shared_ptr<std::deque<std::string>> read_log_files(const std::vector<::spdlog::filename_t>& target_file_paths,
-                                                               size_t max_line_count) {
+inline pqrs::not_null_shared_ptr_t<std::deque<std::string>> read_log_files(const std::vector<::spdlog::filename_t>& target_file_paths,
+                                                                           size_t max_line_count) {
   auto result = std::make_shared<std::deque<std::string>>();
 
-  std::vector<std::shared_ptr<impl::merge_log_file>> files;
+  std::vector<not_null_shared_ptr_t<impl::merge_log_file>> files;
   for (const auto& file_path : target_file_paths) {
     files.push_back(std::make_shared<impl::merge_log_file>(file_path));
     files.push_back(std::make_shared<impl::merge_log_file>(spdlog::make_rotated_file_path(file_path)));
   }
 
   while (true) {
-    auto it = std::min_element(std::begin(files),
-                               std::end(files),
-                               [](auto&& a, auto&& b) {
-                                 if (a->get_sort_key() && b->get_sort_key()) {
-                                   return a->get_sort_key() < b->get_sort_key();
-                                 }
+    auto it = std::ranges::min_element(
+        files,
+        [](const auto& a, const auto& b) {
+          if (a->get_sort_key() && b->get_sort_key()) {
+            return a->get_sort_key() < b->get_sort_key();
+          }
 
-                                 if (a->get_sort_key()) {
-                                   return true;
-                                 }
-
-                                 return false;
-                               });
-    if (it == std::end(files)) {
+          return a->get_sort_key().has_value();
+        });
+    if (it == files.end()) {
       break;
     }
 
@@ -101,7 +99,6 @@ inline std::shared_ptr<std::deque<std::string>> read_log_files(const std::vector
     }
   }
 
-  return result;
+  return pqrs::not_null_shared_ptr_t<std::deque<std::string>>(result);
 }
-} // namespace spdlog
-} // namespace pqrs
+} // namespace pqrs::spdlog

@@ -4,116 +4,76 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
+#include <cctype>
+#include <charconv>
 #include <optional>
 #include <spdlog/common.h>
 #include <spdlog/sinks/rotating_file_sink.h>
-#include <sstream>
+#include <string>
+#include <string_view>
 
-namespace pqrs {
-namespace spdlog {
-inline const char* get_pattern(void) {
+namespace pqrs::spdlog {
+inline const char* get_pattern() {
   return "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v";
 }
 
-inline std::optional<uint64_t> find_date_number(const std::string& line) {
+inline std::optional<uint64_t> find_date_number(std::string_view line) {
   // line == "[2016-09-22 20:18:37.649] [info] [<name>] <message>"
   // return 20160922201837649
 
-  if (line.size() < strlen("[0000-00-00 00:00:00.000]")) {
+  constexpr std::string_view timestamp_format = "[0000-00-00 00:00:00.000]";
+
+  if (line.size() < timestamp_format.size()) {
     return std::nullopt;
   }
 
-  if (line.empty()) {
+  if (line[0] != '[' ||
+      line[5] != '-' ||
+      line[8] != '-' ||
+      line[11] != ' ' ||
+      line[14] != ':' ||
+      line[17] != ':' ||
+      line[20] != '.' ||
+      line[24] != ']') {
     return std::nullopt;
   }
 
-  std::stringstream ss;
-  size_t pos = 0;
+  std::string date_number;
+  date_number.reserve(17);
 
-  if (line[pos++] != '[') {
+  for (auto index : {1, 2, 3, 4,
+                     6, 7,
+                     9, 10,
+                     12, 13,
+                     15, 16,
+                     18, 19,
+                     21, 22, 23}) {
+    if (!std::isdigit(static_cast<unsigned char>(line[index]))) {
+      return std::nullopt;
+    }
+
+    date_number.push_back(line[index]);
+  }
+
+  uint64_t result = 0;
+  const auto [ptr, ec] = std::from_chars(date_number.data(),
+                                         date_number.data() + date_number.size(),
+                                         result);
+  if (ec != std::errc{} ||
+      ptr != date_number.data() + date_number.size()) {
     return std::nullopt;
   }
 
-  // years
-
-  ss << line[pos++];
-  ss << line[pos++];
-  ss << line[pos++];
-  ss << line[pos++];
-
-  if (line[pos++] != '-') {
-    return std::nullopt;
-  }
-
-  // months
-
-  ss << line[pos++];
-  ss << line[pos++];
-
-  if (line[pos++] != '-') {
-    return std::nullopt;
-  }
-
-  // days
-
-  ss << line[pos++];
-  ss << line[pos++];
-
-  if (line[pos++] != ' ') {
-    return std::nullopt;
-  }
-
-  // hours
-
-  ss << line[pos++];
-  ss << line[pos++];
-
-  if (line[pos++] != ':') {
-    return std::nullopt;
-  }
-
-  // minutes
-
-  ss << line[pos++];
-  ss << line[pos++];
-
-  if (line[pos++] != ':') {
-    return std::nullopt;
-  }
-
-  // seconds
-
-  ss << line[pos++];
-  ss << line[pos++];
-
-  if (line[pos++] != '.') {
-    return std::nullopt;
-  }
-
-  // milliseconds
-
-  ss << line[pos++];
-  ss << line[pos++];
-  ss << line[pos++];
-
-  if (line[pos++] != ']') {
-    return std::nullopt;
-  }
-
-  try {
-    return std::stoll(ss.str());
-  } catch (...) {
-  }
-
-  return std::nullopt;
+  return result;
 }
 
-inline std::optional<uint64_t> make_sort_key(const std::string& line) {
+inline std::optional<uint64_t> make_sort_key(std::string_view line) {
   return find_date_number(line);
 }
 
-inline std::optional<::spdlog::level::level_enum> find_level(const std::string& line) {
-  auto front = strlen("[0000-00-00 00:00:00.000] [");
+inline std::optional<::spdlog::level::level_enum> find_level(std::string_view line) {
+  constexpr std::string_view prefix = "[0000-00-00 00:00:00.000] [";
+  auto front = prefix.size();
   if (line.size() <= front) {
     return std::nullopt;
   }
@@ -125,7 +85,7 @@ inline std::optional<::spdlog::level::level_enum> find_level(const std::string& 
     std::string level_name_string(level_name.data(), level_name.size());
     level_name_string += "]";
 
-    if (line.compare(front, level_name_string.size(), level_name_string) == 0) {
+    if (line.substr(front).starts_with(level_name_string)) {
       return level;
     }
   }
@@ -136,5 +96,4 @@ inline std::optional<::spdlog::level::level_enum> find_level(const std::string& 
 inline ::spdlog::filename_t make_rotated_file_path(::spdlog::filename_t file_path) {
   return ::spdlog::sinks::rotating_file_sink<std::mutex>::calc_filename(file_path, 1);
 }
-} // namespace spdlog
-} // namespace pqrs
+} // namespace pqrs::spdlog

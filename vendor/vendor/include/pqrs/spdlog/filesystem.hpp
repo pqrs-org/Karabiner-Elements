@@ -6,9 +6,7 @@
 
 #include <filesystem>
 
-namespace pqrs {
-namespace spdlog {
-namespace filesystem {
+namespace pqrs::spdlog::filesystem {
 //
 // owner
 //
@@ -41,6 +39,4 @@ constexpr std::filesystem::perms log_directory_perms_0755(
     std::filesystem::perms::owner_all |
     std::filesystem::perms::group_read | std::filesystem::perms::group_exec |
     std::filesystem::perms::others_read | std::filesystem::perms::others_exec);
-} // namespace filesystem
-} // namespace spdlog
-} // namespace pqrs
+} // namespace pqrs::spdlog::filesystem

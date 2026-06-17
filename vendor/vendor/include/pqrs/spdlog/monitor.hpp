@@ -11,14 +11,14 @@
 #include <filesystem>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/gsl.hpp>
 
-namespace pqrs {
-namespace spdlog {
+namespace pqrs::spdlog {
 class monitor final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(std::shared_ptr<std::deque<std::string>> lines)> log_file_updated;
+  nod::signal<void(pqrs::not_null_shared_ptr_t<std::deque<std::string>> lines)> log_file_updated;
 
   // Methods
 
@@ -32,7 +32,7 @@ public:
                                    timer_(*this) {
   }
 
-  virtual ~monitor(void) {
+  ~monitor() override {
     detach_from_dispatcher([this] {
       timer_.stop();
     });
@@ -45,14 +45,20 @@ public:
             bool updated = false;
 
             for (const auto& file_path : target_file_paths_) {
-              std::error_code error_code;
-              auto file_size = std::filesystem::file_size(file_path, error_code);
-              if (!error_code) {
-                auto it = file_sizes_.find(file_path);
-                if (it == std::end(file_sizes_) ||
-                    it->second != file_size) {
-                  file_sizes_[file_path] = file_size;
-                  updated = true;
+              for (const auto& monitored_file_path : {
+                       file_path,
+                       spdlog::make_rotated_file_path(file_path),
+                   }) {
+                // Log files are expected to be append-only, so file size is enough to detect updates.
+                std::error_code error_code;
+                auto file_size = std::filesystem::file_size(monitored_file_path, error_code);
+                if (!error_code) {
+                  if (auto it = file_sizes_.find(monitored_file_path);
+                      it == file_sizes_.end() ||
+                      it->second != file_size) {
+                    file_sizes_[monitored_file_path] = file_size;
+                    updated = true;
+                  }
                 }
               }
             }
@@ -73,5 +79,4 @@ private:
   dispatcher::extra::timer timer_;
   std::unordered_map<std::string, std::uintmax_t> file_sizes_;
 };
-} // namespace spdlog
-} // namespace pqrs
+} // namespace pqrs::spdlog
