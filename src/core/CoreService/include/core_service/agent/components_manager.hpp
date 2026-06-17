@@ -225,6 +225,11 @@ private:
     core_service_client_->connected.connect([this] {
       refresh_bundle_permission_check_result();
       version_monitor_->async_manual_check();
+
+      // Core Service may restart while the agent keeps running, so resend the current accessibility state after reconnecting.
+      if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
+        m->async_trigger();
+      }
     });
 
     core_service_client_->connect_failed.connect([this](auto&& error_code) {
