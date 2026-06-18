@@ -29,13 +29,13 @@ public:
     }
   }
 
-  std::shared_ptr<run_loop_thread> get_run_loop_thread() const {
+  [[nodiscard]] std::shared_ptr<run_loop_thread> get_run_loop_thread() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return run_loop_thread_;
   }
 
-  static pqrs::not_null_shared_ptr_t<shared_run_loop_thread> get_shared_run_loop_thread() {
+  [[nodiscard]] static pqrs::not_null_shared_ptr_t<shared_run_loop_thread> get_shared_run_loop_thread() {
     static pqrs::not_null_shared_ptr_t<shared_run_loop_thread> p = std::make_shared<shared_run_loop_thread>();
     return p;
   }
@@ -55,7 +55,7 @@ static void terminate_shared_run_loop_thread() {
   p->terminate();
 }
 
-static std::shared_ptr<run_loop_thread> get_shared_run_loop_thread() {
+[[nodiscard]] static std::shared_ptr<run_loop_thread> get_shared_run_loop_thread() {
   auto p = shared_run_loop_thread::get_shared_run_loop_thread();
   return p->get_run_loop_thread();
 }

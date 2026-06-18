@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v3.0.0
+// pqrs::cf::run_loop_thread v3.1.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -31,6 +31,7 @@ public:
   };
 
   run_loop_thread(const run_loop_thread&) = delete;
+  run_loop_thread& operator=(const run_loop_thread&) = delete;
 
   run_loop_thread(failure_policy policy = failure_policy::abort)
       : failure_policy_(policy) {
@@ -53,10 +54,9 @@ public:
 
         run_loop_ = CFRunLoopGetCurrent();
 
-        initial_source_ = CFRunLoopSourceCreate(kCFAllocatorDefault,
-                                                0,
-                                                &context);
-        CFRelease(*initial_source_);
+        initial_source_ = adopt_cf_ptr(CFRunLoopSourceCreate(kCFAllocatorDefault,
+                                                             0,
+                                                             &context));
 
         CFRunLoopAddSource(*run_loop_,
                            *initial_source_,
@@ -105,7 +105,7 @@ public:
     }
   }
 
-  ~run_loop_thread() {
+  ~run_loop_thread() noexcept {
     if (thread_.joinable()) {
       // We have to call `terminate` before destroy run_loop_thread.
       abort();
@@ -127,16 +127,16 @@ public:
     }
   }
 
-  CFRunLoopRef _Nonnull get_run_loop() const {
+  [[nodiscard]] CFRunLoopRef _Nonnull get_run_loop() const noexcept {
     return *run_loop_;
   }
 
-  void wake() const {
+  void wake() const noexcept {
     CFRunLoopWakeUp(*run_loop_);
   }
 
   void add_source(CFRunLoopSourceRef _Nullable source,
-                  CFRunLoopMode _Nonnull mode = kCFRunLoopCommonModes) {
+                  CFRunLoopMode _Nonnull mode = kCFRunLoopCommonModes) noexcept {
     if (source) {
       CFRunLoopAddSource(*run_loop_,
                          source,
@@ -147,7 +147,7 @@ public:
   }
 
   void remove_source(CFRunLoopSourceRef _Nullable source,
-                     CFRunLoopMode _Nonnull mode = kCFRunLoopCommonModes) {
+                     CFRunLoopMode _Nonnull mode = kCFRunLoopCommonModes) noexcept {
     if (source) {
       CFRunLoopRemoveSource(*run_loop_,
                             source,
@@ -157,7 +157,7 @@ public:
     }
   }
 
-  void enqueue(void (^_Nonnull block)()) const {
+  void enqueue(void (^_Nonnull block)()) const noexcept {
     CFRunLoopPerformBlock(*run_loop_,
                           kCFRunLoopCommonModes,
                           block);
