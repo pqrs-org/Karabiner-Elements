@@ -2,7 +2,7 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <optional>
 #include <pqrs/hash.hpp>
@@ -10,12 +10,10 @@
 #include <regex>
 #include <string>
 
-namespace pqrs {
-namespace osx {
-namespace input_source_selector {
+namespace pqrs::osx::input_source_selector {
 class specifier {
 public:
-  const std::optional<std::string>& get_language_string(void) const {
+  const std::optional<std::string>& get_language_string() const {
     return language_string_;
   }
 
@@ -31,7 +29,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_input_source_id_string(void) const {
+  const std::optional<std::string>& get_input_source_id_string() const {
     return input_source_id_string_;
   }
 
@@ -47,7 +45,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_input_mode_id_string(void) const {
+  const std::optional<std::string>& get_input_mode_id_string() const {
     return input_mode_id_string_;
   }
 
@@ -109,10 +107,6 @@ public:
            input_mode_id_string_ == other.input_mode_id_string_;
   }
 
-  bool operator!=(const specifier& other) const {
-    return !(*this == other);
-  }
-
 private:
   std::optional<std::string> language_string_;
   std::optional<std::string> input_source_id_string_;
@@ -122,9 +116,7 @@ private:
   std::optional<std::regex> input_source_id_regex_;
   std::optional<std::regex> input_mode_id_regex_;
 };
-} // namespace input_source_selector
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::input_source_selector
 
 namespace std {
 template <>

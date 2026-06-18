@@ -263,8 +263,7 @@ private:
         case operation_type::select_input_source:
           if (input_source_selector_) {
             using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
-            auto specifiers = json.at("input_source_specifiers").get<specifiers_t>();
-            input_source_selector_->async_select(std::make_shared<specifiers_t>(specifiers));
+            input_source_selector_->async_select(json.at("input_source_specifiers").get<specifiers_t>());
           }
           async_respond_none(peer_id,
                              request_id);

@@ -35,8 +35,8 @@ public:
     return run_loop_thread_;
   }
 
-  static std::shared_ptr<shared_run_loop_thread> get_shared_run_loop_thread() {
-    static auto p = std::make_shared<shared_run_loop_thread>();
+  static pqrs::not_null_shared_ptr_t<shared_run_loop_thread> get_shared_run_loop_thread() {
+    static pqrs::not_null_shared_ptr_t<shared_run_loop_thread> p = std::make_shared<shared_run_loop_thread>();
     return p;
   }
 

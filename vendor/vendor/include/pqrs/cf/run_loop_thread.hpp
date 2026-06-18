@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::run_loop_thread v2.11
+// pqrs::cf::run_loop_thread v3.0.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -8,8 +8,12 @@
 
 // `pqrs::cf::run_loop_thread` can be used safely in a multi-threaded environment.
 
+#include <atomic>
+#include <chrono>
 #include <cstdlib>
+#include <mutex>
 #include <pqrs/cf/cf_ptr.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <thread>
 
@@ -32,22 +36,22 @@ public:
       : failure_policy_(policy) {
     using namespace std::chrono_literals;
 
-    std::atomic<bool> ready = false;
+    std::atomic<bool> ready{false};
 
     thread_ = std::thread([this, &ready] {
-      run_loop_ = CFRunLoopGetCurrent();
-
       // Append a source to prevent immediately quitting of `CFRunLoopRun`.
 
       auto context = CFRunLoopSourceContext();
       context.info = reinterpret_cast<void*>(&ready);
       context.perform = [](void* _Nullable info) {
         auto ready = reinterpret_cast<std::atomic<bool>*>(info);
-        *ready = true;
+        ready->store(true);
       };
 
       {
         std::lock_guard<std::mutex> lock(initial_source_mutex_);
+
+        run_loop_ = CFRunLoopGetCurrent();
 
         initial_source_ = CFRunLoopSourceCreate(kCFAllocatorDefault,
                                                 0,
@@ -112,11 +116,13 @@ public:
   }
 
   void terminate() {
-    enqueue(^{
-      CFRunLoopStop(*run_loop_);
-    });
+    std::lock_guard<std::mutex> lock(thread_mutex_);
 
     if (thread_.joinable()) {
+      enqueue(^{
+        CFRunLoopStop(*run_loop_);
+      });
+
       thread_.join();
     }
   }
@@ -151,7 +157,7 @@ public:
     }
   }
 
-  void enqueue(void (^_Nonnull block)(void)) const {
+  void enqueue(void (^_Nonnull block)()) const {
     CFRunLoopPerformBlock(*run_loop_,
                           kCFRunLoopCommonModes,
                           block);
@@ -161,6 +167,7 @@ public:
 
 private:
   std::thread thread_;
+  std::mutex thread_mutex_;
   cf_ptr<CFRunLoopRef> run_loop_;
 
   cf_ptr<CFRunLoopSourceRef> initial_source_;
