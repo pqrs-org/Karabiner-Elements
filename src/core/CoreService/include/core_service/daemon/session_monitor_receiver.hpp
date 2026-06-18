@@ -41,7 +41,9 @@ public:
         [](const auto& peer_credentials) {
           auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
           if (!result) {
-            logger::get_logger()->warn("session_monitor_receiver: peer is not code-signed with same Team ID");
+            // During an update, retrieving the Team ID may fail, causing an error once.
+            // Since this can occur during normal use, treat it as debug rather than warn.
+            logger::get_logger()->debug("session_monitor_receiver: peer is not code-signed with same Team ID");
           }
           return result;
         });
