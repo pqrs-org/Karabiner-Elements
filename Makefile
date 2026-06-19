@@ -1,15 +1,14 @@
 VERSION = `head -n 1 version`
 
 CLANG_FORMAT_FILES = \
-	'appendix/*.cpp' \
-	'appendix/*.h' \
-	'appendix/*.hpp' \
-	'src/*.cpp' \
-	'src/*.h' \
-	'src/*.hpp' \
-	'tests/*.cpp' \
-	'tests/*.h' \
-	'tests/*.hpp'
+	'*.h' \
+	'*.hpp' \
+	'*.hpp.in' \
+	'*.iig' \
+	'*.mm' \
+	'*.cpp' \
+	':(exclude)docs/vendor/**' \
+	':(exclude)vendor/**'
 
 all:
 	@echo "Read a document at the following URL to build a distributable package."
