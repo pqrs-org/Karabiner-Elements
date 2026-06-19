@@ -1,72 +1,78 @@
 #pragma once
 
-// pqrs::osx::iokit_iterator v1.1
+// pqrs::osx::iokit_iterator v1.2.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
-#include <optional>
 #include <pqrs/osx/iokit_object_ptr.hpp>
+#include <utility>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 class iokit_iterator final {
 public:
   //
   // Constructors
   //
 
-  iokit_iterator(void) : iokit_iterator(IO_OBJECT_NULL) {
+  iokit_iterator() noexcept
+      : iokit_iterator(IO_OBJECT_NULL) {
   }
 
-  explicit iokit_iterator(io_iterator_t iterator) : iterator_(iterator) {
+  explicit iokit_iterator(io_iterator_t iterator) noexcept
+      : iterator_(iterator) {
   }
 
-  explicit iokit_iterator(const iokit_object_ptr& iterator) : iterator_(iterator) {
+  explicit iokit_iterator(const iokit_object_ptr& iterator) noexcept
+      : iterator_(iterator) {
+  }
+
+  explicit iokit_iterator(iokit_object_ptr&& iterator) noexcept
+      : iterator_(std::move(iterator)) {
   }
 
   //
   // Methods
   //
 
-  const iokit_object_ptr& get(void) const {
+  [[nodiscard]] const iokit_object_ptr& get() const noexcept {
     return iterator_;
   }
 
-  iokit_object_ptr next(void) const {
+  [[nodiscard]] iokit_object_ptr next() const noexcept {
     iokit_object_ptr result;
 
     if (iterator_) {
-      auto it = IOIteratorNext(*iterator_);
-      if (it) {
-        result = iokit_object_ptr(it);
-        IOObjectRelease(it);
-      }
+      result = adopt_iokit_object_ptr(IOIteratorNext(*iterator_));
     }
 
     return result;
   }
 
-  void reset(void) const {
+  void reset() const noexcept {
     if (iterator_) {
       IOIteratorReset(*iterator_);
     }
   }
 
-  bool valid(void) const {
+  [[nodiscard]] bool valid() const noexcept {
     if (iterator_) {
       return IOIteratorIsValid(*iterator_);
     }
     return false;
   }
 
-  operator bool(void) const {
+  [[nodiscard]] explicit operator bool() const noexcept {
     return valid();
   }
 
 private:
   iokit_object_ptr iterator_;
 };
-} // namespace osx
-} // namespace pqrs
+
+// Wrap an IOKit iterator returned with a +1 retain count.
+[[nodiscard]] inline iokit_iterator adopt_iokit_iterator(io_iterator_t iterator) noexcept {
+  return iokit_iterator(adopt_iokit_object_ptr(iterator));
+}
+} // namespace pqrs::osx
