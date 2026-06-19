@@ -10,13 +10,20 @@
 #include <limits>
 #include <mutex>
 #include <ostream>
+#include <stdexcept>
 #include <unordered_set>
+#include <utility>
 
 namespace pqrs::dispatcher {
 class object_id final {
 public:
   object_id(const object_id&) = delete;
-  object_id(object_id&&) = default;
+  object_id& operator=(const object_id&) = delete;
+  object_id& operator=(object_id&&) = delete;
+
+  object_id(object_id&& other) noexcept
+      : value_(std::exchange(other.value_, 0)) {
+  }
 
   ~object_id() {
     manager::erase(value_);
@@ -30,7 +37,7 @@ public:
     return manager::size();
   }
 
-  uint64_t get() const {
+  [[nodiscard]] uint64_t get() const noexcept {
     return value_;
   }
 
@@ -67,7 +74,7 @@ private:
     }
 
   private:
-    static std::mutex& mutex() {
+    static std::mutex& mutex() noexcept {
       static std::mutex mutex;
       return mutex;
     }
@@ -77,16 +84,17 @@ private:
       return set;
     }
 
-    static uint64_t& last_value() {
+    static uint64_t& last_value() noexcept {
       static uint64_t value = 0;
       return value;
     }
   };
 
-  object_id(uint64_t value) : value_(value) {
+  explicit object_id(uint64_t value) noexcept
+      : value_(value) {
   }
 
-  uint64_t value_;
+  uint64_t value_ = 0;
 };
 
 inline object_id make_new_object_id() {

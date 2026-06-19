@@ -40,13 +40,13 @@ public:
     }
   }
 
-  std::shared_ptr<dispatcher> get_dispatcher() const {
+  [[nodiscard]] std::shared_ptr<dispatcher> get_dispatcher() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return dispatcher_;
   }
 
-  static std::shared_ptr<shared_dispatcher> get_shared_dispatcher() {
+  [[nodiscard]] static std::shared_ptr<shared_dispatcher> get_shared_dispatcher() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> lock(mutex);
 
@@ -74,7 +74,7 @@ inline void terminate_shared_dispatcher() {
   p->terminate();
 }
 
-inline std::shared_ptr<dispatcher> get_shared_dispatcher() {
+[[nodiscard]] inline std::shared_ptr<dispatcher> get_shared_dispatcher() {
   auto p = shared_dispatcher::get_shared_dispatcher();
   return p->get_dispatcher();
 }

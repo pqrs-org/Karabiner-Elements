@@ -7,6 +7,7 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 namespace pqrs::unix_domain_stream::impl::protocol {
@@ -25,14 +26,14 @@ constexpr size_t type_size = sizeof(uint8_t);
 constexpr size_t request_id_size = sizeof(uint64_t);
 
 inline void encode_uint32(std::array<uint8_t, header_size>& output,
-                          uint32_t value) {
+                          uint32_t value) noexcept {
   output[0] = static_cast<uint8_t>((value >> 24) & 0xff);
   output[1] = static_cast<uint8_t>((value >> 16) & 0xff);
   output[2] = static_cast<uint8_t>((value >> 8) & 0xff);
   output[3] = static_cast<uint8_t>(value & 0xff);
 }
 
-inline uint32_t decode_uint32(const std::array<uint8_t, header_size>& input) {
+[[nodiscard]] inline uint32_t decode_uint32(const std::array<uint8_t, header_size>& input) noexcept {
   return (static_cast<uint32_t>(input[0]) << 24) |
          (static_cast<uint32_t>(input[1]) << 16) |
          (static_cast<uint32_t>(input[2]) << 8) |
@@ -40,7 +41,7 @@ inline uint32_t decode_uint32(const std::array<uint8_t, header_size>& input) {
 }
 
 inline void encode_uint64(std::array<uint8_t, request_id_size>& output,
-                          uint64_t value) {
+                          uint64_t value) noexcept {
   output[0] = static_cast<uint8_t>((value >> 56) & 0xff);
   output[1] = static_cast<uint8_t>((value >> 48) & 0xff);
   output[2] = static_cast<uint8_t>((value >> 40) & 0xff);
@@ -51,8 +52,8 @@ inline void encode_uint64(std::array<uint8_t, request_id_size>& output,
   output[7] = static_cast<uint8_t>(value & 0xff);
 }
 
-inline uint64_t decode_uint64(const std::vector<uint8_t>& input,
-                              size_t offset) {
+[[nodiscard]] inline uint64_t decode_uint64(const std::vector<uint8_t>& input,
+                                            size_t offset) noexcept {
   return (static_cast<uint64_t>(input[offset]) << 56) |
          (static_cast<uint64_t>(input[offset + 1]) << 48) |
          (static_cast<uint64_t>(input[offset + 2]) << 40) |
@@ -63,9 +64,9 @@ inline uint64_t decode_uint64(const std::vector<uint8_t>& input,
          static_cast<uint64_t>(input[offset + 7]);
 }
 
-inline std::vector<uint8_t> make_frame(message_type type,
-                                       const uint8_t* data,
-                                       size_t size) {
+[[nodiscard]] inline std::vector<uint8_t> make_frame(message_type type,
+                                                     const uint8_t* data,
+                                                     size_t size) {
   auto body_size = type_size + size;
 
   std::array<uint8_t, header_size> header;
@@ -74,7 +75,7 @@ inline std::vector<uint8_t> make_frame(message_type type,
   std::vector<uint8_t> frame;
   frame.reserve(header_size + body_size);
   frame.insert(frame.end(), header.begin(), header.end());
-  frame.push_back(static_cast<uint8_t>(type));
+  frame.push_back(std::to_underlying(type));
 
   if (data && size > 0) {
     frame.insert(frame.end(), data, data + size);
@@ -83,15 +84,15 @@ inline std::vector<uint8_t> make_frame(message_type type,
   return frame;
 }
 
-inline std::vector<uint8_t> make_user_data_frame(const std::vector<uint8_t>& data) {
+[[nodiscard]] inline std::vector<uint8_t> make_user_data_frame(const std::vector<uint8_t>& data) {
   return make_frame(message_type::user_data,
                     data.data(),
                     data.size());
 }
 
-inline std::vector<uint8_t> make_request_response_frame(message_type type,
-                                                        uint64_t request_id,
-                                                        const std::vector<uint8_t>& data) {
+[[nodiscard]] inline std::vector<uint8_t> make_request_response_frame(message_type type,
+                                                                      uint64_t request_id,
+                                                                      const std::vector<uint8_t>& data) {
   auto body_size = type_size + request_id_size + data.size();
 
   std::array<uint8_t, header_size> header;
@@ -103,40 +104,40 @@ inline std::vector<uint8_t> make_request_response_frame(message_type type,
   std::vector<uint8_t> frame;
   frame.reserve(header_size + body_size);
   frame.insert(frame.end(), header.begin(), header.end());
-  frame.push_back(static_cast<uint8_t>(type));
+  frame.push_back(std::to_underlying(type));
   frame.insert(frame.end(), encoded_request_id.begin(), encoded_request_id.end());
   frame.insert(frame.end(), data.begin(), data.end());
 
   return frame;
 }
 
-inline std::vector<uint8_t> make_request_frame(uint64_t request_id,
-                                               const std::vector<uint8_t>& data) {
+[[nodiscard]] inline std::vector<uint8_t> make_request_frame(uint64_t request_id,
+                                                             const std::vector<uint8_t>& data) {
   return make_request_response_frame(message_type::request,
                                      request_id,
                                      data);
 }
 
-inline std::vector<uint8_t> make_response_frame(uint64_t request_id,
-                                                const std::vector<uint8_t>& data) {
+[[nodiscard]] inline std::vector<uint8_t> make_response_frame(uint64_t request_id,
+                                                              const std::vector<uint8_t>& data) {
   return make_request_response_frame(message_type::response,
                                      request_id,
                                      data);
 }
 
-inline std::vector<uint8_t> make_heartbeat_frame() {
+[[nodiscard]] inline std::vector<uint8_t> make_heartbeat_frame() {
   return make_frame(message_type::heartbeat,
                     nullptr,
                     0);
 }
 
-inline std::vector<uint8_t> make_health_check_frame() {
+[[nodiscard]] inline std::vector<uint8_t> make_health_check_frame() {
   return make_frame(message_type::health_check,
                     nullptr,
                     0);
 }
 
-inline std::vector<uint8_t> make_health_check_response_frame() {
+[[nodiscard]] inline std::vector<uint8_t> make_health_check_response_frame() {
   return make_frame(message_type::health_check_response,
                     nullptr,
                     0);

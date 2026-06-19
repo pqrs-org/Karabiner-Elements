@@ -9,12 +9,14 @@
 #include "../dispatcher.hpp"
 #include "shared_dispatcher.hpp"
 #include <memory>
+#include <utility>
 
 namespace pqrs::dispatcher::extra {
 class dispatcher_client {
 public:
-  dispatcher_client(std::weak_ptr<dispatcher> weak_dispatcher = get_shared_dispatcher()) : weak_dispatcher_(weak_dispatcher),
-                                                                                           object_id_(make_new_object_id()) {
+  explicit dispatcher_client(std::weak_ptr<dispatcher> weak_dispatcher = get_shared_dispatcher())
+      : weak_dispatcher_(std::move(weak_dispatcher)),
+        object_id_(make_new_object_id()) {
     if (auto d = weak_dispatcher_.lock()) {
       // `attach` may fail if the dispatcher is terminating or already terminated.
       d->attach(object_id_);
@@ -47,7 +49,7 @@ public:
   bool enqueue_to_dispatcher(std::function<void()> function,
                              time_point when = dispatcher::when_immediately()) const {
     if (auto d = weak_dispatcher_.lock()) {
-      return d->enqueue(object_id_, function, when);
+      return d->enqueue(object_id_, std::move(function), when);
     }
 
     return false;
@@ -63,14 +65,14 @@ public:
     return dispatcher::when_immediately();
   }
 
-  bool attached() {
+  [[nodiscard]] bool attached() const {
     if (auto d = weak_dispatcher_.lock()) {
       return d->attached(object_id_);
     }
     return false;
   }
 
-  bool dispatcher_thread() const {
+  [[nodiscard]] bool dispatcher_thread() const {
     if (auto d = weak_dispatcher_.lock()) {
       return d->dispatcher_thread();
     }

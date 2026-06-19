@@ -15,11 +15,11 @@
 namespace pqrs::unix_domain_stream::impl::asio_helper {
 
 namespace time_point {
-inline asio::steady_timer::time_point now() {
+[[nodiscard]] inline asio::steady_timer::time_point now() noexcept {
   return asio::steady_timer::clock_type::now();
 }
 
-inline asio::steady_timer::time_point pos_infin() {
+[[nodiscard]] inline asio::steady_timer::time_point pos_infin() noexcept {
   return asio::steady_timer::time_point::max();
 }
 } // namespace time_point

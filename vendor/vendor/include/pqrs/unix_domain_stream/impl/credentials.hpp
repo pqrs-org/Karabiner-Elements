@@ -17,7 +17,7 @@
 
 namespace pqrs::unix_domain_stream::impl {
 
-inline peer_credentials make_peer_credentials(asio::local::stream_protocol::socket& socket) {
+[[nodiscard]] inline peer_credentials make_peer_credentials(asio::local::stream_protocol::socket& socket) {
   peer_credentials result;
 
 #if defined(__APPLE__)

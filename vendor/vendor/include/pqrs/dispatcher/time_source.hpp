@@ -26,7 +26,8 @@ public:
 
 class pseudo_time_source final : public time_source {
 public:
-  pseudo_time_source() : now_(duration::zero()) {
+  pseudo_time_source() noexcept
+      : now_(duration::zero()) {
   }
 
   time_point now() override {

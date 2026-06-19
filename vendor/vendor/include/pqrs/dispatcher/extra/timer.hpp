@@ -8,6 +8,7 @@
 
 #include "dispatcher_client.hpp"
 #include <atomic>
+#include <utility>
 
 namespace pqrs::dispatcher::extra {
 
@@ -20,10 +21,11 @@ namespace pqrs::dispatcher::extra {
 
 class timer final {
 public:
-  timer(dispatcher_client& dispatcher_client) : dispatcher_client_(dispatcher_client),
-                                                current_function_id_(0),
-                                                interval_(duration::zero()),
-                                                enabled_(false) {
+  timer(dispatcher_client& dispatcher_client)
+      : dispatcher_client_(dispatcher_client),
+        current_function_id_(0),
+        interval_(duration::zero()),
+        enabled_(false) {
   }
 
   ~timer() {
@@ -36,7 +38,7 @@ public:
   // First, `function` is called once, and then `function` is called every interval specified by `interval`.
   void start(std::function<void()> function,
              duration interval) {
-    enabled_ = dispatcher_client_.enqueue_to_dispatcher([this, function, interval] {
+    enabled_ = dispatcher_client_.enqueue_to_dispatcher([this, function = std::move(function), interval] {
       ++current_function_id_;
       function_ = function;
       interval_ = interval;
@@ -55,7 +57,7 @@ public:
     });
   }
 
-  bool enabled() const {
+  [[nodiscard]] bool enabled() const {
     // `enabled_` represents the last requested state from the caller thread.
     return enabled_;
   }
@@ -78,7 +80,9 @@ public:
             ++current_function_id_;
             interval_ = interval;
 
-            enqueue(current_function_id_);
+            if (!enqueue(current_function_id_)) {
+              enabled_ = false;
+            }
           })) {
         enabled_ = false;
       }

@@ -331,7 +331,7 @@ private:
   }
 
   // This method is executed in `io_ctx_thread_`.
-  bool valid_outgoing_frame(const std::vector<uint8_t>& frame) const {
+  [[nodiscard]] bool valid_outgoing_frame(const std::vector<uint8_t>& frame) const {
     if (frame.size() < protocol::header_size + protocol::type_size) {
       return false;
     }

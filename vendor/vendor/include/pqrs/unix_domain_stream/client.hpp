@@ -23,7 +23,7 @@
 
 namespace pqrs::unix_domain_stream {
 
-inline bool default_client_verify_peer(const peer_credentials&) {
+[[nodiscard]] inline bool default_client_verify_peer(const peer_credentials&) noexcept {
   return true;
 }
 
@@ -49,6 +49,7 @@ public:
         socket_file_path_(socket_file_path),
         options_(options),
         verify_peer_(verify_peer),
+        reconnect_task_(*this),
         work_guard_(asio::make_work_guard(io_ctx_)) {
     io_ctx_thread_ = std::thread([this] {
       io_ctx_.run();
@@ -137,7 +138,7 @@ private:
   // This method is executed in the dispatcher thread.
   void stop() {
     stopped_ = true;
-    ++reconnect_generation_;
+    reconnect_task_.cancel();
 
     asio::post(
         io_ctx_,
@@ -204,7 +205,7 @@ private:
 
   // This method is executed in the dispatcher thread.
   void invalidate_connection() {
-    ++reconnect_generation_;
+    reconnect_task_.cancel();
 
     asio::post(
         io_ctx_,
@@ -344,23 +345,19 @@ private:
 
   // This method is executed in the dispatcher thread.
   void schedule_reconnect() {
-    ++reconnect_generation_;
-
     if (stopped_) {
       return;
     }
 
-    auto scheduled_reconnect_generation = reconnect_generation_;
-    enqueue_to_dispatcher(
-        [this, scheduled_reconnect_generation] {
-          if (stopped_ ||
-              reconnect_generation_ != scheduled_reconnect_generation) {
+    reconnect_task_.debounce_after(
+        [this] {
+          if (stopped_) {
             return;
           }
 
           connect();
         },
-        when_now() + impl::normalize_scheduling_interval(options_.reconnect_interval));
+        impl::normalize_scheduling_interval(options_.reconnect_interval));
   }
 
   // This method is executed in `io_ctx_thread_`.
@@ -443,8 +440,8 @@ private:
   std::filesystem::path socket_file_path_;
   client_options options_;
   std::function<bool(const peer_credentials&)> verify_peer_;
+  dispatcher::extra::debounced_task reconnect_task_;
   std::atomic_bool stopped_ = true;
-  int reconnect_generation_ = 0;
 
   asio::io_context io_ctx_;
   asio::executor_work_guard<asio::io_context::executor_type> work_guard_;

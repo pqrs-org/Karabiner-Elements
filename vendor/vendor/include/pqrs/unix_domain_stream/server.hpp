@@ -21,7 +21,7 @@
 
 namespace pqrs::unix_domain_stream {
 
-inline bool default_verify_peer(const peer_credentials&) {
+[[nodiscard]] inline bool default_verify_peer(const peer_credentials&) noexcept {
   return true;
 }
 
@@ -46,6 +46,7 @@ public:
         socket_file_path_(socket_file_path),
         options_(options),
         verify_peer_(verify_peer),
+        bind_retry_task_(*this),
         socket_path_health_check_timer_(*this),
         work_guard_(asio::make_work_guard(io_ctx_)) {
     io_ctx_thread_ = std::thread([this] {
@@ -122,7 +123,7 @@ private:
   // This method is executed in the dispatcher thread.
   void stop() {
     stopped_ = true;
-    ++bind_retry_generation_;
+    bind_retry_task_.cancel();
     socket_path_health_check_timer_.stop();
     exposed_peer_ids_.clear();
 
@@ -309,23 +310,20 @@ private:
   // This method is executed in the dispatcher thread.
   void schedule_bind_retry() {
     socket_path_health_check_timer_.stop();
-    ++bind_retry_generation_;
 
     if (stopped_) {
       return;
     }
 
-    auto scheduled_bind_retry_generation = bind_retry_generation_;
-    enqueue_to_dispatcher(
-        [this, scheduled_bind_retry_generation] {
-          if (stopped_ ||
-              bind_retry_generation_ != scheduled_bind_retry_generation) {
+    bind_retry_task_.debounce_after(
+        [this] {
+          if (stopped_) {
             return;
           }
 
           bind();
         },
-        when_now() + impl::normalize_scheduling_interval(options_.bind_retry_interval));
+        impl::normalize_scheduling_interval(options_.bind_retry_interval));
   }
 
   // This method is executed in the dispatcher thread.
@@ -466,9 +464,9 @@ private:
   std::filesystem::path socket_file_path_;
   server_options options_;
   std::function<bool(const peer_credentials&)> verify_peer_;
+  dispatcher::extra::debounced_task bind_retry_task_;
   dispatcher::extra::timer socket_path_health_check_timer_;
   std::atomic_bool stopped_ = true;
-  int bind_retry_generation_ = 0;
 
   asio::io_context io_ctx_;
   asio::executor_work_guard<asio::io_context::executor_type> work_guard_;

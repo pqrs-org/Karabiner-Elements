@@ -12,25 +12,29 @@
 #include <deque>
 #include <exception>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <pqrs/thread_wait.hpp>
 #include <thread>
+#include <utility>
 
 namespace pqrs::dispatcher {
 class dispatcher final {
 public:
   dispatcher(const dispatcher&) = delete;
+  dispatcher& operator=(const dispatcher&) = delete;
 
-  dispatcher(std::weak_ptr<time_source> weak_time_source) : weak_time_source_(weak_time_source),
-                                                            worker_thread_id_wait_(make_thread_wait()),
-                                                            object_id_(make_new_object_id()) {
+  explicit dispatcher(std::weak_ptr<time_source> weak_time_source)
+      : weak_time_source_(std::move(weak_time_source)),
+        worker_thread_id_wait_(make_thread_wait()),
+        object_id_(make_new_object_id()) {
     worker_thread_ = std::thread([this] {
       worker_thread_id_ = std::this_thread::get_id();
       worker_thread_id_wait_->notify();
 
       while (true) {
-        std::shared_ptr<entry> e;
+        std::unique_ptr<entry> e;
 
         {
           std::unique_lock<std::mutex> lock(mutex_);
@@ -105,7 +109,7 @@ public:
           // ----------------------------------------
 
           if (!queue_.empty()) {
-            e = queue_.front();
+            e = std::move(queue_.front());
             queue_.pop_front();
           }
         }
@@ -143,7 +147,7 @@ public:
     attach(object_id_);
   }
 
-  ~dispatcher() {
+  ~dispatcher() noexcept {
     if (worker_thread_.joinable()) {
       terminate();
     }
@@ -238,17 +242,17 @@ public:
     }
   }
 
-  bool attached(const object_id& object_id) {
+  [[nodiscard]] bool attached(const object_id& object_id) {
     std::lock_guard<std::mutex> lock(object_ids_mutex_);
 
     return object_ids_.contains(object_id.get());
   }
 
-  bool dispatcher_thread() const {
+  [[nodiscard]] bool dispatcher_thread() const noexcept {
     return std::this_thread::get_id() == worker_thread_id_;
   }
 
-  bool running_detached_function() const {
+  [[nodiscard]] bool running_detached_function() const {
     std::lock_guard<std::mutex> lock(running_function_object_id_mutex_);
 
     return running_function_object_id_ == object_id_.get();
@@ -322,9 +326,9 @@ public:
         return false;
       }
 
-      auto new_entry = std::make_shared<entry>(
+      auto new_entry = std::make_unique<entry>(
           id,
-          [this, id, function] {
+          [this, id, function = std::move(function)] {
             // Check `id` is attached.
 
             {
@@ -342,7 +346,7 @@ public:
           when);
 
       if (when == when_internal_detached()) {
-        queue_.push_front(new_entry);
+        queue_.push_front(std::move(new_entry));
       } else {
         // queue_ must be sorted by when_.
         auto it = std::ranges::upper_bound(
@@ -352,7 +356,7 @@ public:
             [](const auto& e) {
               return e->get_when();
             });
-        queue_.insert(it, new_entry);
+        queue_.insert(it, std::move(new_entry));
       }
     }
 
@@ -360,15 +364,15 @@ public:
     return true;
   }
 
-  void invoke() {
+  void invoke() noexcept {
     cv_.notify_all();
   }
 
-  static constexpr time_point when_internal_detached() {
+  static constexpr time_point when_internal_detached() noexcept {
     return time_point(duration::zero());
   }
 
-  static constexpr time_point when_immediately() {
+  static constexpr time_point when_immediately() noexcept {
     return time_point(duration(1));
   }
 
@@ -377,16 +381,17 @@ private:
   public:
     entry(uint64_t object_id_value,
           std::function<void()> function,
-          time_point when) : object_id_value_(object_id_value),
-                             function_(function),
-                             when_(when) {
+          time_point when)
+        : object_id_value_(object_id_value),
+          function_(std::move(function)),
+          when_(when) {
     }
 
-    uint64_t get_object_id_value() const {
+    [[nodiscard]] uint64_t get_object_id_value() const noexcept {
       return object_id_value_;
     }
 
-    time_point get_when() const {
+    [[nodiscard]] time_point get_when() const noexcept {
       return when_;
     }
 
@@ -407,7 +412,7 @@ private:
   std::thread::id worker_thread_id_;
   std::shared_ptr<thread_wait> worker_thread_id_wait_;
 
-  std::deque<std::shared_ptr<entry>> queue_;
+  std::deque<std::unique_ptr<entry>> queue_;
   bool exit_ = false;
 
   // Protects queue_, exit_, and the worker thread wait condition.

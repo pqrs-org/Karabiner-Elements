@@ -10,7 +10,7 @@
 namespace pqrs::unix_domain_stream {
 
 namespace impl {
-inline std::chrono::milliseconds normalize_scheduling_interval(std::chrono::milliseconds value) {
+[[nodiscard]] inline std::chrono::milliseconds normalize_scheduling_interval(std::chrono::milliseconds value) noexcept {
   constexpr auto minimum_interval = std::chrono::milliseconds(100);
 
   if (value < minimum_interval) {
