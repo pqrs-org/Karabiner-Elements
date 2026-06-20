@@ -17,8 +17,9 @@ public:
   static bool is_karabiner_virtual_hid_device(const pqrs::hid::manufacturer_string::value_t& manufacturer,
                                               const pqrs::hid::product_string::value_t& product) {
     if (manufacturer == pqrs::hid::manufacturer_string::value_t("pqrs.org")) {
-      if (pqrs::string::starts_with(type_safe::get(product), "Karabiner DriverKit VirtualHIDKeyboard") ||
-          pqrs::string::starts_with(type_safe::get(product), "Karabiner DriverKit VirtualHIDPointing")) {
+      const auto& product_name = type_safe::get(product);
+      if (product_name.starts_with("Karabiner DriverKit VirtualHIDKeyboard") ||
+          product_name.starts_with("Karabiner DriverKit VirtualHIDPointing")) {
         return true;
       }
     }

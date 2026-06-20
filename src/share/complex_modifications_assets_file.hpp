@@ -5,7 +5,6 @@
 #include "core_configuration/core_configuration.hpp"
 #include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
-#include <pqrs/string.hpp>
 
 namespace krbn {
 class complex_modifications_assets_file final {
@@ -94,8 +93,7 @@ public:
   }
 
   bool user_file(void) const {
-    return pqrs::string::starts_with(file_path_.string(),
-                                     constants::get_user_complex_modifications_assets_directory().string());
+    return file_path_.string().starts_with(constants::get_user_complex_modifications_assets_directory().string());
   }
 
   std::vector<std::string> lint(void) const {
