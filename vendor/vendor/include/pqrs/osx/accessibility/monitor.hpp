@@ -16,9 +16,7 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/gsl.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace accessibility {
+namespace pqrs::osx::accessibility {
 class monitor final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
@@ -61,7 +59,7 @@ public:
 
   // Return a weak_ptr instead of a shared_ptr to keep the use_count of shared_monitor_ as close to 1 as possible,
   // ensuring that terminate_shared_monitor will properly release shared_monitor_.
-  static std::weak_ptr<monitor> get_shared_monitor() {
+  [[nodiscard]] static std::weak_ptr<monitor> get_shared_monitor() {
     std::lock_guard<std::mutex> guard(shared_monitor_mutex_);
 
     return shared_monitor_;
@@ -82,7 +80,7 @@ private:
   }
 
   static pqrs::not_null_shared_ptr_t<application> make_application(const pqrs_osx_accessibility_snapshot& snapshot) {
-    auto result = std::make_shared<application>();
+    pqrs::not_null_shared_ptr_t<application> result(std::make_shared<application>());
 
     if (snapshot.application_name) {
       result->set_name(snapshot.application_name);
@@ -115,7 +113,7 @@ private:
   }
 
   static pqrs::not_null_shared_ptr_t<focused_ui_element> make_focused_ui_element(const pqrs_osx_accessibility_snapshot& snapshot) {
-    auto result = std::make_shared<focused_ui_element>();
+    pqrs::not_null_shared_ptr_t<focused_ui_element> result(std::make_shared<focused_ui_element>());
 
     if (snapshot.role) {
       result->set_role(snapshot.role);
@@ -177,6 +175,4 @@ private:
   pqrs::not_null_shared_ptr_t<application> last_application_;
   pqrs::not_null_shared_ptr_t<focused_ui_element> last_focused_ui_element_;
 };
-} // namespace accessibility
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::accessibility

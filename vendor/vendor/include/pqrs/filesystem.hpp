@@ -1,10 +1,10 @@
 #pragma once
 
-// pqrs::filesystem v1.2
+// pqrs::filesystem v1.3.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include "filesystem/impl.hpp"
 #include <array>
@@ -14,14 +14,14 @@
 #include <sys/stat.h>
 #include <vector>
 
-namespace pqrs {
-namespace filesystem {
-inline bool exists(const std::string& path) {
+namespace pqrs::filesystem {
+
+[[nodiscard]] inline bool exists(const std::string& path) noexcept {
   struct stat s;
   return (stat(path.c_str(), &s) == 0);
 }
 
-inline std::optional<uid_t> uid(const std::string& path) {
+[[nodiscard]] inline std::optional<uid_t> uid(const std::string& path) noexcept {
   struct stat s;
   if (stat(path.c_str(), &s) == 0) {
     return s.st_uid;
@@ -29,7 +29,7 @@ inline std::optional<uid_t> uid(const std::string& path) {
   return std::nullopt;
 }
 
-inline std::optional<gid_t> gid(const std::string& path) {
+[[nodiscard]] inline std::optional<gid_t> gid(const std::string& path) noexcept {
   struct stat s;
   if (stat(path.c_str(), &s) == 0) {
     return s.st_gid;
@@ -37,7 +37,7 @@ inline std::optional<gid_t> gid(const std::string& path) {
   return std::nullopt;
 }
 
-inline bool is_directory(const std::string& path) {
+[[nodiscard]] inline bool is_directory(const std::string& path) noexcept {
   struct stat s;
   if (stat(path.c_str(), &s) == 0) {
     return S_ISDIR(s.st_mode);
@@ -45,7 +45,7 @@ inline bool is_directory(const std::string& path) {
   return false;
 }
 
-inline bool is_owned(const std::string& path, uid_t uid) {
+[[nodiscard]] inline bool is_owned(const std::string& path, uid_t uid) noexcept {
   struct stat s;
   if (stat(path.c_str(), &s) == 0) {
     return s.st_uid == uid;
@@ -53,7 +53,7 @@ inline bool is_owned(const std::string& path, uid_t uid) {
   return false;
 }
 
-inline std::string dirname(const std::string& path) {
+[[nodiscard]] inline std::string dirname(const std::string& path) {
   size_t pos = impl::get_dirname_position(path);
   if (pos == 0) {
     return ".";
@@ -61,15 +61,15 @@ inline std::string dirname(const std::string& path) {
   return path.substr(0, pos);
 }
 
-inline std::optional<std::string> realpath(const std::string& path) {
+[[nodiscard]] inline std::optional<std::string> realpath(const std::string& path) {
   std::array<char, PATH_MAX> resolved_path;
-  if (!::realpath(path.c_str(), &(resolved_path[0]))) {
+  if (!::realpath(path.c_str(), resolved_path.data())) {
     return std::nullopt;
   }
-  return std::string(&(resolved_path[0]));
+  return std::string(resolved_path.data());
 }
 
-inline std::optional<mode_t> file_access_permissions(const std::string& path) {
+[[nodiscard]] inline std::optional<mode_t> file_access_permissions(const std::string& path) noexcept {
   struct stat s;
   if (stat(path.c_str(), &s) != 0) {
     return std::nullopt;
@@ -77,7 +77,7 @@ inline std::optional<mode_t> file_access_permissions(const std::string& path) {
   return s.st_mode & ACCESSPERMS;
 }
 
-inline std::optional<off_t> file_size(const std::string& path) {
+[[nodiscard]] inline std::optional<off_t> file_size(const std::string& path) noexcept {
   struct stat s;
   if (stat(path.c_str(), &s) != 0) {
     return std::nullopt;
@@ -103,9 +103,7 @@ inline bool create_directory_with_intermediate_directories(const std::string& pa
     return false;
   }
 
-  chmod(path.c_str(), mode);
-
-  return true;
+  return (chmod(path.c_str(), mode) == 0);
 }
 
 inline void copy(const std::string& from_file_path,
@@ -120,5 +118,5 @@ inline void copy(const std::string& from_file_path,
   }
   ofstream << ifstream.rdbuf();
 }
-} // namespace filesystem
-} // namespace pqrs
+
+} // namespace pqrs::filesystem

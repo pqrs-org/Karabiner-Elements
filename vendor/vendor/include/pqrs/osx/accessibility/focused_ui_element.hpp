@@ -7,12 +7,10 @@
 #include <optional>
 #include <string>
 
-namespace pqrs {
-namespace osx {
-namespace accessibility {
+namespace pqrs::osx::accessibility {
 class focused_ui_element final {
 public:
-  const std::optional<std::string>& get_role() const {
+  [[nodiscard]] const std::optional<std::string>& get_role() const noexcept {
     return role_;
   }
 
@@ -21,7 +19,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_subrole() const {
+  [[nodiscard]] const std::optional<std::string>& get_subrole() const noexcept {
     return subrole_;
   }
 
@@ -30,7 +28,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_role_description() const {
+  [[nodiscard]] const std::optional<std::string>& get_role_description() const noexcept {
     return role_description_;
   }
 
@@ -39,7 +37,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_title() const {
+  [[nodiscard]] const std::optional<std::string>& get_title() const noexcept {
     return title_;
   }
 
@@ -48,7 +46,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_description() const {
+  [[nodiscard]] const std::optional<std::string>& get_description() const noexcept {
     return description_;
   }
 
@@ -57,7 +55,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_identifier() const {
+  [[nodiscard]] const std::optional<std::string>& get_identifier() const noexcept {
     return identifier_;
   }
 
@@ -66,7 +64,7 @@ public:
     return *this;
   }
 
-  const std::optional<double>& get_window_position_x() const {
+  [[nodiscard]] const std::optional<double>& get_window_position_x() const noexcept {
     return window_position_x_;
   }
 
@@ -75,7 +73,7 @@ public:
     return *this;
   }
 
-  const std::optional<double>& get_window_position_y() const {
+  [[nodiscard]] const std::optional<double>& get_window_position_y() const noexcept {
     return window_position_y_;
   }
 
@@ -84,7 +82,7 @@ public:
     return *this;
   }
 
-  const std::optional<double>& get_window_size_width() const {
+  [[nodiscard]] const std::optional<double>& get_window_size_width() const noexcept {
     return window_size_width_;
   }
 
@@ -93,7 +91,7 @@ public:
     return *this;
   }
 
-  const std::optional<double>& get_window_size_height() const {
+  [[nodiscard]] const std::optional<double>& get_window_size_height() const noexcept {
     return window_size_height_;
   }
 
@@ -102,7 +100,7 @@ public:
     return *this;
   }
 
-  bool operator==(const focused_ui_element& other) const = default;
+  [[nodiscard]] bool operator==(const focused_ui_element& other) const = default;
 
 private:
   std::optional<std::string> role_;
@@ -116,6 +114,4 @@ private:
   std::optional<double> window_size_width_;
   std::optional<double> window_size_height_;
 };
-} // namespace accessibility
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::accessibility

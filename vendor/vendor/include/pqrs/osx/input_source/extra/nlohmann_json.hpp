@@ -2,14 +2,12 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <pqrs/json.hpp>
 #include <pqrs/osx/input_source/properties.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace input_source {
+namespace pqrs::osx::input_source {
 inline void to_json(nlohmann::json& j, const properties& p) {
   j = nlohmann::json::object();
 
@@ -76,6 +74,4 @@ inline void from_json(const nlohmann::json& j, properties& p) {
     }
   }
 }
-} // namespace input_source
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::input_source

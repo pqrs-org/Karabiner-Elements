@@ -20,8 +20,9 @@ public:
   unique_filter(const unique_filter&) = delete;
 
   unique_filter(std::weak_ptr<::spdlog::logger> weak_logger,
-                size_t max_history_count = 16) : weak_logger_(weak_logger),
-                                                 max_history_count_(max_history_count) {
+                size_t max_history_count = 16)
+      : weak_logger_(weak_logger),
+        max_history_count_(max_history_count) {
   }
 
   void reset() {

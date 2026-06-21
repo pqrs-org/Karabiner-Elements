@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::gsl v1.1
+// pqrs::gsl v1.2.0
 
 // (C) Copyright Takayama Fumihiko 2025.
 // Distributed under the Boost Software License, Version 1.0.
@@ -8,18 +8,22 @@
 
 #include <gsl/gsl>
 
+#include <cstddef>
+#include <functional>
+#include <memory>
+
 namespace pqrs {
 
 template <typename T>
 using not_null_shared_ptr_t = gsl::not_null<std::shared_ptr<T>>;
 
 template <typename T>
-inline std::shared_ptr<T> unwrap_not_null(not_null_shared_ptr_t<T> p) {
+[[nodiscard]] inline std::shared_ptr<T> unwrap_not_null(not_null_shared_ptr_t<T> p) noexcept {
   return p.get();
 }
 
 template <typename T>
-inline std::weak_ptr<T> make_weak(not_null_shared_ptr_t<T> p) {
+[[nodiscard]] inline std::weak_ptr<T> make_weak(not_null_shared_ptr_t<T> p) noexcept {
   return std::weak_ptr<T>(p.get());
 }
 
@@ -33,7 +37,7 @@ namespace std {
 // ```
 template <typename T>
 struct hash<pqrs::not_null_shared_ptr_t<T>> final {
-  std::size_t operator()(const pqrs::not_null_shared_ptr_t<T>& value) const {
+  [[nodiscard]] std::size_t operator()(const pqrs::not_null_shared_ptr_t<T>& value) const noexcept(noexcept(std::hash<T>{}(*value))) {
     return std::hash<T>{}(*value);
   }
 };

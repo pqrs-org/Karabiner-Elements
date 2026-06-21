@@ -2,7 +2,7 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <Carbon/Carbon.h>
 #include <optional>
@@ -10,46 +10,31 @@
 #include <pqrs/cf/dictionary.hpp>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/gcd.hpp>
+#include <string>
 #include <vector>
 
-namespace pqrs {
-namespace osx {
-namespace input_source {
-inline cf::cf_ptr<TISInputSourceRef> make_current_keyboard_input_source(void) {
-  cf::cf_ptr<TISInputSourceRef> result;
-
+namespace pqrs::osx::input_source {
+[[nodiscard]] inline cf::cf_ptr<TISInputSourceRef> make_current_keyboard_input_source() {
   __block TISInputSourceRef input_source = nullptr;
 
   gcd::dispatch_sync_on_main_queue(^{
     input_source = TISCopyCurrentKeyboardInputSource();
   });
 
-  if (input_source) {
-    result = input_source;
-    CFRelease(input_source);
-  }
-
-  return result;
+  return cf::adopt_cf_ptr(input_source);
 }
 
-inline cf::cf_ptr<TISInputSourceRef> make_input_method_keyboard_layout_override(void) {
-  cf::cf_ptr<TISInputSourceRef> result;
-
+[[nodiscard]] inline cf::cf_ptr<TISInputSourceRef> make_input_method_keyboard_layout_override() {
   __block TISInputSourceRef input_source = nullptr;
 
   gcd::dispatch_sync_on_main_queue(^{
     input_source = TISCopyInputMethodKeyboardLayoutOverride();
   });
 
-  if (input_source) {
-    result = input_source;
-    CFRelease(input_source);
-  }
-
-  return result;
+  return cf::adopt_cf_ptr(input_source);
 }
 
-inline std::vector<cf::cf_ptr<TISInputSourceRef>> make_selectable_keyboard_input_sources(void) {
+[[nodiscard]] inline std::vector<cf::cf_ptr<TISInputSourceRef>> make_selectable_keyboard_input_sources() {
   std::vector<cf::cf_ptr<TISInputSourceRef>> result;
 
   if (auto properties = cf::make_cf_mutable_dictionary()) {
@@ -62,15 +47,13 @@ inline std::vector<cf::cf_ptr<TISInputSourceRef>> make_selectable_keyboard_input
       input_sources = TISCreateInputSourceList(*properties, false);
     });
 
-    if (input_sources) {
-      auto size = CFArrayGetCount(input_sources);
+    if (auto input_sources_ptr = cf::adopt_cf_ptr(input_sources)) {
+      auto size = CFArrayGetCount(*input_sources_ptr);
       for (CFIndex i = 0; i < size; ++i) {
-        if (auto s = cf::get_cf_array_value<TISInputSourceRef>(input_sources, i)) {
+        if (auto s = cf::get_cf_array_value<TISInputSourceRef>(*input_sources_ptr, i)) {
           result.emplace_back(s);
         }
       }
-
-      CFRelease(input_sources);
     }
   }
 
@@ -93,8 +76,8 @@ inline void set_input_method_keyboard_layout_override(TISInputSourceRef input_so
   }
 }
 
-inline std::optional<std::string> make_property_string(TISInputSourceRef input_source,
-                                                       CFStringRef key) {
+[[nodiscard]] inline std::optional<std::string> make_property_string(TISInputSourceRef input_source,
+                                                                     CFStringRef key) {
   if (input_source) {
     __block CFStringRef s = nullptr;
 
@@ -110,22 +93,22 @@ inline std::optional<std::string> make_property_string(TISInputSourceRef input_s
   return std::nullopt;
 }
 
-inline std::optional<std::string> make_input_source_id(TISInputSourceRef input_source) {
+[[nodiscard]] inline std::optional<std::string> make_input_source_id(TISInputSourceRef input_source) {
   return make_property_string(input_source,
                               kTISPropertyInputSourceID);
 }
 
-inline std::optional<std::string> make_localized_name(TISInputSourceRef input_source) {
+[[nodiscard]] inline std::optional<std::string> make_localized_name(TISInputSourceRef input_source) {
   return make_property_string(input_source,
                               kTISPropertyLocalizedName);
 }
 
-inline std::optional<std::string> make_input_mode_id(TISInputSourceRef input_source) {
+[[nodiscard]] inline std::optional<std::string> make_input_mode_id(TISInputSourceRef input_source) {
   return make_property_string(input_source,
                               kTISPropertyInputModeID);
 }
 
-inline std::vector<std::string> make_languages(TISInputSourceRef input_source) {
+[[nodiscard]] inline std::vector<std::string> make_languages(TISInputSourceRef input_source) {
   std::vector<std::string> result;
 
   if (input_source) {
@@ -151,7 +134,7 @@ inline std::vector<std::string> make_languages(TISInputSourceRef input_source) {
   return result;
 }
 
-inline std::optional<std::string> make_first_language(TISInputSourceRef input_source) {
+[[nodiscard]] inline std::optional<std::string> make_first_language(TISInputSourceRef input_source) {
   auto languages = make_languages(input_source);
   if (!languages.empty()) {
     return languages.front();
@@ -159,6 +142,4 @@ inline std::optional<std::string> make_first_language(TISInputSourceRef input_so
 
   return std::nullopt;
 }
-} // namespace input_source
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::input_source

@@ -2,28 +2,19 @@
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <optional>
 #include <pqrs/cf/cf_ptr.hpp>
 
-namespace pqrs {
-namespace cf {
-namespace impl {
+namespace pqrs::cf::impl {
 template <typename T>
-inline cf_ptr<CFNumberRef> make_cf_number(T value, CFNumberType type) {
-  cf_ptr<CFNumberRef> result;
-
-  if (auto number = CFNumberCreate(kCFAllocatorDefault, type, &value)) {
-    result = number;
-    CFRelease(number);
-  }
-
-  return result;
+[[nodiscard]] inline cf_ptr<CFNumberRef> make_cf_number(T value, CFNumberType type) noexcept {
+  return adopt_cf_ptr(CFNumberCreate(kCFAllocatorDefault, type, &value));
 }
 
 template <typename T>
-inline std::optional<T> make_number(CFTypeRef value, CFNumberType type) {
+[[nodiscard]] inline std::optional<T> make_number(CFTypeRef value, CFNumberType type) noexcept {
   if (!value) {
     return std::nullopt;
   }
@@ -39,6 +30,4 @@ inline std::optional<T> make_number(CFTypeRef value, CFNumberType type) {
 
   return std::nullopt;
 }
-} // namespace impl
-} // namespace cf
-} // namespace pqrs
+} // namespace pqrs::cf::impl

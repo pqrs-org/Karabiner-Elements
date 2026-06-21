@@ -15,7 +15,7 @@
 namespace std {
 template <>
 struct hash<std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>> {
-  size_t operator()(const std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>& pair) const {
+  [[nodiscard]] size_t operator()(const std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>& pair) const {
     size_t h = 0;
     pqrs::hash::combine(h, type_safe::get(pair.first));
     pqrs::hash::combine(h, type_safe::get(pair.second));
@@ -25,7 +25,7 @@ struct hash<std::pair<pqrs::hid::usage_page::value_t, pqrs::hid::usage::value_t>
 
 template <>
 struct hash<std::pair<pqrs::hid::vendor_id::value_t, pqrs::hid::product_id::value_t>> {
-  size_t operator()(const std::pair<pqrs::hid::vendor_id::value_t, pqrs::hid::product_id::value_t>& pair) const {
+  [[nodiscard]] size_t operator()(const std::pair<pqrs::hid::vendor_id::value_t, pqrs::hid::product_id::value_t>& pair) const {
     size_t h = 0;
     pqrs::hash::combine(h, type_safe::get(pair.first));
     pqrs::hash::combine(h, type_safe::get(pair.second));

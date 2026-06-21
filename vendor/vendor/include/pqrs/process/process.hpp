@@ -7,6 +7,8 @@
 #include "file_actions.hpp"
 #include "pipe.hpp"
 #include <algorithm>
+#include <atomic>
+#include <cerrno>
 #include <csignal>
 #include <nod/nod.hpp>
 #include <optional>
@@ -48,17 +50,24 @@ public:
   }
 
   ~process() {
-    detach_from_dispatcher([this] {
-      kill(SIGKILL);
-      wait();
+    bool cleanup_done = false;
 
-      file_actions_ = nullptr;
-      stderr_pipe_ = nullptr;
-      stdout_pipe_ = nullptr;
+    detach_from_dispatcher([this, &cleanup_done] {
+      cleanup_process_resources();
+      cleanup_done = true;
     });
+
+    if (!cleanup_done) {
+      cleanup_process_resources();
+    }
   }
 
-  std::optional<pid_t> get_pid() const {
+  process(const process&) = delete;
+  process(process&&) = delete;
+  process& operator=(const process&) = delete;
+  process& operator=(process&&) = delete;
+
+  [[nodiscard]] std::optional<pid_t> get_pid() const {
     std::lock_guard<std::mutex> lock(pid_mutex_);
 
     return pid_;
@@ -128,8 +137,8 @@ public:
 
       thread_ = std::make_shared<std::thread>([this] {
         std::vector<pollfd> poll_file_descriptors;
-        auto stdout_fd = stdout_pipe_->get_read_end();
-        auto stderr_fd = stderr_pipe_->get_read_end();
+        const auto stdout_fd = stdout_pipe_->get_read_end();
+        const auto stderr_fd = stderr_pipe_->get_read_end();
 
         if (stdout_fd) {
           poll_file_descriptors.push_back({*stdout_fd, POLLIN, 0});
@@ -140,7 +149,7 @@ public:
 
         if (!poll_file_descriptors.empty()) {
           std::vector<uint8_t> buffer(32 * 1024);
-          int timeout = 500;
+          constexpr int timeout = 500;
           while (true) {
             if (std::none_of(std::begin(poll_file_descriptors),
                              std::end(poll_file_descriptors),
@@ -150,10 +159,15 @@ public:
               break;
             }
 
-            auto poll_result = poll(poll_file_descriptors.data(), poll_file_descriptors.size(), timeout);
+            const auto poll_result = poll(poll_file_descriptors.data(), poll_file_descriptors.size(), timeout);
 
             if (poll_result < 0) {
-              // error
+              // Signals can interrupt poll/read while the child process is still
+              // running. If we stop draining pipes on EINTR, the child may block
+              // on a full pipe and waitpid can wait forever.
+              if (errno == EINTR) {
+                continue;
+              }
               break;
             } else if (poll_result == 0) {
               // timeout
@@ -182,7 +196,7 @@ public:
                 continue;
               }
 
-              auto n = read(poll_file_descriptor.fd, &(buffer[0]), buffer.size());
+              const auto n = read(poll_file_descriptor.fd, buffer.data(), buffer.size());
               if (n == 0) {
                 poll_file_descriptor.fd = -1;
                 poll_file_descriptor.events = 0;
@@ -190,13 +204,17 @@ public:
                 continue;
               }
               if (n < 0) {
+                if (errno == EINTR) {
+                  poll_file_descriptor.revents = 0;
+                  continue;
+                }
                 poll_file_descriptor.fd = -1;
                 poll_file_descriptor.events = 0;
                 poll_file_descriptor.revents = 0;
                 break;
               }
 
-              auto b = std::make_shared<std::vector<uint8_t>>(std::begin(buffer), std::begin(buffer) + n);
+              const auto b = std::make_shared<std::vector<uint8_t>>(std::begin(buffer), std::begin(buffer) + n);
 
               if (stdout_fd && poll_file_descriptor.fd == *stdout_fd) {
                 enqueue_to_dispatcher([this, b] {
@@ -222,7 +240,12 @@ public:
 
         if (const auto pid = get_pid()) {
           int stat;
-          if (waitpid(*pid, &stat, 0) == *pid) {
+          pid_t waitpid_result;
+          do {
+            waitpid_result = waitpid(*pid, &stat, 0);
+          } while (waitpid_result == -1 && errno == EINTR);
+
+          if (waitpid_result == *pid) {
             set_pid(std::nullopt);
 
             enqueue_to_dispatcher([this, stat] {
@@ -237,7 +260,7 @@ public:
   void kill(int signal) {
     killed_ = true;
 
-    if (auto pid = get_pid()) {
+    if (const auto pid = get_pid()) {
       ::kill(*pid, signal);
     }
   }
@@ -248,7 +271,7 @@ public:
     {
       std::lock_guard<std::mutex> lock(thread_mutex_);
 
-      t = thread_;
+      t = std::move(thread_);
     }
 
     if (t && t->joinable()) {
@@ -257,6 +280,15 @@ public:
   }
 
 private:
+  void cleanup_process_resources() {
+    kill(SIGKILL);
+    wait();
+
+    file_actions_ = nullptr;
+    stderr_pipe_ = nullptr;
+    stdout_pipe_ = nullptr;
+  }
+
   static std::vector<std::vector<char>> make_argv_buffer(const std::vector<std::string>& argv) {
     std::vector<std::vector<char>> buffer;
     buffer.reserve(argv.size());
@@ -287,20 +319,20 @@ private:
                                                          const pipe& stderr_pipe) {
     auto actions = std::make_unique<file_actions>();
 
-    if (auto fd = stdout_pipe.get_read_end()) {
+    if (const auto fd = stdout_pipe.get_read_end()) {
       actions->addclose(*fd);
     }
 
-    if (auto fd = stdout_pipe.get_write_end()) {
+    if (const auto fd = stdout_pipe.get_write_end()) {
       actions->adddup2(*fd, 1);
       actions->addclose(*fd);
     }
 
-    if (auto fd = stderr_pipe.get_read_end()) {
+    if (const auto fd = stderr_pipe.get_read_end()) {
       actions->addclose(*fd);
     }
 
-    if (auto fd = stderr_pipe.get_write_end()) {
+    if (const auto fd = stderr_pipe.get_write_end()) {
       actions->adddup2(*fd, 2);
       actions->addclose(*fd);
     }

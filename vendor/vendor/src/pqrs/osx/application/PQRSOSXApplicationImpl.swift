@@ -34,6 +34,13 @@ func PQRSOSXApplicationRun() {
 
 @_cdecl("pqrs_osx_application_stop")
 func PQRSOSXApplicationStop() {
+  if !Thread.isMainThread {
+    DispatchQueue.main.async {
+      PQRSOSXApplicationStop()
+    }
+    return
+  }
+
   NSApplication.shared.stop(nil)
 
   // Post a synthetic event to trigger the loop to process and exit.

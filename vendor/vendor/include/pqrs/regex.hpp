@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::regex v1.1
+// pqrs::regex v1.2.0
 
 // (C) Copyright Takayama Fumihiko 2025.
 // Distributed under the Boost Software License, Version 1.0.
@@ -9,38 +9,41 @@
 #include <pqrs/hash.hpp>
 #include <pqrs/json.hpp>
 #include <regex>
+#include <string>
 
 namespace pqrs {
 class regex final {
 public:
-  regex(void)
-      : flags_(std::regex_constants::ECMAScript) {
-  }
+  regex() = default;
 
   regex(const std::string& s,
-        std::regex_constants::syntax_option_type flags = std::regex_constants::ECMAScript) {
-    std::regex r(s, flags);
-    string_ = s;
-    regex_ = r;
-    flags_ = flags;
+        std::regex_constants::syntax_option_type flags = std::regex_constants::ECMAScript)
+      : string_(s),
+        regex_(s, flags),
+        flags_(flags) {
   }
 
-  const std::regex& get_regex(void) const {
+  [[nodiscard]] const std::regex& get_regex() const noexcept {
     return regex_;
   }
 
-  const std::string& get_string(void) const {
+  [[nodiscard]] const std::string& get_string() const noexcept {
     return string_;
   }
 
-  bool operator==(const regex& other) const {
-    return string_ == other.string_;
+  [[nodiscard]] std::regex_constants::syntax_option_type get_flags() const noexcept {
+    return flags_;
+  }
+
+  [[nodiscard]] bool operator==(const regex& other) const {
+    return string_ == other.string_ &&
+           flags_ == other.flags_;
   }
 
 private:
   std::string string_;
   std::regex regex_;
-  std::regex_constants::syntax_option_type flags_;
+  std::regex_constants::syntax_option_type flags_ = std::regex_constants::ECMAScript;
 };
 
 inline void to_json(nlohmann::json& json, const regex& value) {
@@ -54,7 +57,7 @@ inline void from_json(const nlohmann::json& json, regex& value) {
 
   try {
     value = regex(s);
-  } catch (std::exception& e) {
+  } catch (const std::exception& e) {
     throw pqrs::json::unmarshal_error(std::string(e.what()) + ": `" + s + "`");
   }
 }
@@ -67,6 +70,7 @@ struct hash<pqrs::regex> final {
     std::size_t h = 0;
 
     pqrs::hash::combine(h, value.get_string());
+    pqrs::hash::combine(h, value.get_flags());
 
     return h;
   }

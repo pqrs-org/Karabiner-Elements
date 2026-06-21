@@ -26,10 +26,11 @@ public:
 
   monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
           const std::vector<::spdlog::filename_t>& target_file_paths,
-          size_t max_line_count) : dispatcher_client(weak_dispatcher),
-                                   target_file_paths_(target_file_paths),
-                                   max_line_count_(max_line_count),
-                                   timer_(*this) {
+          size_t max_line_count)
+      : dispatcher_client(weak_dispatcher),
+        target_file_paths_(target_file_paths),
+        max_line_count_(max_line_count),
+        timer_(*this) {
   }
 
   ~monitor() override {

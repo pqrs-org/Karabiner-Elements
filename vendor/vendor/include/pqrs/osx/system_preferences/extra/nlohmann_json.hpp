@@ -9,9 +9,7 @@
 #include <pqrs/osx/iokit_types/extra/nlohmann_json.hpp>
 #include <pqrs/osx/system_preferences/properties.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace system_preferences {
+namespace pqrs::osx::system_preferences {
 
 //
 // properties
@@ -45,6 +43,4 @@ inline void from_json(const nlohmann::json& j, properties& value) {
     }
   }
 }
-} // namespace system_preferences
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::system_preferences

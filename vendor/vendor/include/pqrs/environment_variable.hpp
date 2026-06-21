@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::environment_variable v1.2
+// pqrs::environment_variable v2.0.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -14,10 +14,12 @@
 #include <optional>
 #include <string>
 
-namespace pqrs {
-namespace environment_variable {
+namespace pqrs::environment_variable {
 
-inline std::optional<std::string> find(const std::string& name) {
+// These functions read and modify the process-global environment through
+// getenv and setenv. Avoid concurrent environment access from multiple threads.
+
+[[nodiscard]] inline std::optional<std::string> find(const std::string& name) {
   if (const char* p = std::getenv(name.c_str())) {
     return p;
   }
@@ -25,7 +27,7 @@ inline std::optional<std::string> find(const std::string& name) {
 }
 
 inline void load_environment_variables_from_file(const std::filesystem::path& path,
-                                                 const std::function<void(std::string_view name, std::string_view value)>& callback) {
+                                                 const std::function<void(const std::string& name, const std::string& value)>& callback) {
   std::ifstream in(path);
   if (in) {
     std::string line;
@@ -41,5 +43,4 @@ inline void load_environment_variables_from_file(const std::filesystem::path& pa
   }
 }
 
-} // namespace environment_variable
-} // namespace pqrs
+} // namespace pqrs::environment_variable

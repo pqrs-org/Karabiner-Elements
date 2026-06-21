@@ -2,14 +2,14 @@
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <string>
 
-namespace pqrs {
-namespace filesystem {
-namespace impl {
-inline size_t get_dirname_position(const std::string& path, size_t pos = std::string::npos) {
+namespace pqrs::filesystem::impl {
+
+[[nodiscard]] inline size_t get_dirname_position(const std::string& path,
+                                                 size_t pos = std::string::npos) noexcept {
   if (path.empty()) return 0;
 
   if (pos == std::string::npos) {
@@ -41,6 +41,5 @@ inline size_t get_dirname_position(const std::string& path, size_t pos = std::st
   }
   return i;
 }
-} // namespace impl
-} // namespace filesystem
-} // namespace pqrs
+
+} // namespace pqrs::filesystem::impl

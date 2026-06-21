@@ -1,27 +1,27 @@
 #pragma once
 
-// pqrs::osx::iokit_return v1.3
+// pqrs::osx::iokit_return v1.4.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <IOKit/IOKitLib.h>
 #include <iostream>
 #include <string>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
+
 class iokit_return final {
 public:
-  iokit_return(IOReturn r) : return_(r) {
+  iokit_return(IOReturn r) noexcept : return_(r) {
   }
 
-  IOReturn get(void) const {
+  [[nodiscard]] IOReturn get() const noexcept {
     return return_;
   }
 
-  std::string to_string(void) const {
+  [[nodiscard]] std::string to_string() const {
 #define PQRS_OSX_IOKIT_RETURN_TO_STRING(IORETURN) \
   case IORETURN:                                  \
     return #IORETURN;
@@ -87,19 +87,19 @@ public:
     return std::string("Unknown IOReturn (") + std::to_string(return_) + ")";
   }
 
-  bool success(void) const {
+  [[nodiscard]] bool success() const noexcept {
     return return_ == kIOReturnSuccess;
   }
 
-  bool exclusive_access(void) const {
+  [[nodiscard]] bool exclusive_access() const noexcept {
     return return_ == kIOReturnExclusiveAccess;
   }
 
-  bool not_permitted(void) const {
+  [[nodiscard]] bool not_permitted() const noexcept {
     return return_ == kIOReturnNotPermitted;
   }
 
-  operator bool(void) const {
+  [[nodiscard]] operator bool() const noexcept {
     return return_ == kIOReturnSuccess;
   }
 
@@ -110,5 +110,5 @@ private:
 inline std::ostream& operator<<(std::ostream& stream, const iokit_return& value) {
   return stream << value.to_string();
 }
-} // namespace osx
-} // namespace pqrs
+
+} // namespace pqrs::osx

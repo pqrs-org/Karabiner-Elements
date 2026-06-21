@@ -7,7 +7,7 @@
 #include <pqrs/osx/input_source_selector/specifier.hpp>
 
 namespace pqrs::osx::input_source_selector {
-inline std::size_t hash_value(const specifier& value) {
+[[nodiscard]] inline std::size_t hash_value(const specifier& value) {
   return std::hash<specifier>{}(value);
 }
 } // namespace pqrs::osx::input_source_selector

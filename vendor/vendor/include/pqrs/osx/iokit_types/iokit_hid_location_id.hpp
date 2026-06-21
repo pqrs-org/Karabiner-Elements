@@ -9,15 +9,13 @@
 #include <iostream>
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace iokit_hid_location_id {
+namespace pqrs::osx::iokit_hid_location_id {
 struct value_t : type_safe::strong_typedef<value_t, uint64_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
                  type_safe::strong_typedef_op::relational_comparison<value_t> {
   using strong_typedef::strong_typedef;
 
-  constexpr auto operator<=>(const value_t& other) const {
+  [[nodiscard]] constexpr auto operator<=>(const value_t& other) const noexcept {
     return type_safe::get(*this) <=> type_safe::get(other);
   }
 };
@@ -25,9 +23,7 @@ struct value_t : type_safe::strong_typedef<value_t, uint64_t>,
 inline std::ostream& operator<<(std::ostream& stream, const value_t& value) {
   return stream << type_safe::get(value);
 }
-} // namespace iokit_hid_location_id
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::iokit_hid_location_id
 
 namespace std {
 template <>

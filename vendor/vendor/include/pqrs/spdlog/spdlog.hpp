@@ -5,7 +5,7 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <cctype>
-#include <charconv>
+#include <cstdint>
 #include <optional>
 #include <spdlog/common.h>
 #include <spdlog/sinks/rotating_file_sink.h>
@@ -13,11 +13,11 @@
 #include <string_view>
 
 namespace pqrs::spdlog {
-inline const char* get_pattern() {
+[[nodiscard]] inline const char* get_pattern() noexcept {
   return "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v";
 }
 
-inline std::optional<uint64_t> find_date_number(std::string_view line) {
+[[nodiscard]] inline std::optional<uint64_t> find_date_number(std::string_view line) noexcept {
   // line == "[2016-09-22 20:18:37.649] [info] [<name>] <message>"
   // return 20160922201837649
 
@@ -38,8 +38,7 @@ inline std::optional<uint64_t> find_date_number(std::string_view line) {
     return std::nullopt;
   }
 
-  std::string date_number;
-  date_number.reserve(17);
+  uint64_t result = 0;
 
   for (auto index : {1, 2, 3, 4,
                      6, 7,
@@ -52,26 +51,17 @@ inline std::optional<uint64_t> find_date_number(std::string_view line) {
       return std::nullopt;
     }
 
-    date_number.push_back(line[index]);
-  }
-
-  uint64_t result = 0;
-  const auto [ptr, ec] = std::from_chars(date_number.data(),
-                                         date_number.data() + date_number.size(),
-                                         result);
-  if (ec != std::errc{} ||
-      ptr != date_number.data() + date_number.size()) {
-    return std::nullopt;
+    result = result * 10 + static_cast<uint64_t>(line[index] - '0');
   }
 
   return result;
 }
 
-inline std::optional<uint64_t> make_sort_key(std::string_view line) {
+[[nodiscard]] inline std::optional<uint64_t> make_sort_key(std::string_view line) noexcept {
   return find_date_number(line);
 }
 
-inline std::optional<::spdlog::level::level_enum> find_level(std::string_view line) {
+[[nodiscard]] inline std::optional<::spdlog::level::level_enum> find_level(std::string_view line) {
   constexpr std::string_view prefix = "[0000-00-00 00:00:00.000] [";
   auto front = prefix.size();
   if (line.size() <= front) {
@@ -93,7 +83,7 @@ inline std::optional<::spdlog::level::level_enum> find_level(std::string_view li
   return std::nullopt;
 }
 
-inline ::spdlog::filename_t make_rotated_file_path(::spdlog::filename_t file_path) {
+[[nodiscard]] inline ::spdlog::filename_t make_rotated_file_path(::spdlog::filename_t file_path) {
   return ::spdlog::sinks::rotating_file_sink<std::mutex>::calc_filename(file_path, 1);
 }
 } // namespace pqrs::spdlog

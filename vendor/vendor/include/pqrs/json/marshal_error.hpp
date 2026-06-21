@@ -5,13 +5,12 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <stdexcept>
+#include <string>
 
-namespace pqrs {
-namespace json {
+namespace pqrs::json {
 class marshal_error : public std::runtime_error {
 public:
-  marshal_error(const std::string& message) : std::runtime_error(message) {
+  explicit marshal_error(const std::string& message) : std::runtime_error(message) {
   }
 };
-} // namespace json
-} // namespace pqrs
+} // namespace pqrs::json

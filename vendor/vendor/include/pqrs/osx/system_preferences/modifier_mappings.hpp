@@ -9,31 +9,31 @@
 #include <pqrs/cf/array.hpp>
 #include <pqrs/cf/number.hpp>
 #include <pqrs/hid.hpp>
+#include <pqrs/osx/iokit_object_ptr.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 #include <pqrs/osx/kern_return.hpp>
 #include <vector>
 
-namespace pqrs {
-namespace osx {
-namespace system_preferences {
+namespace pqrs::osx::system_preferences {
 
 struct modifier_mapping {
   pqrs::hid::usage_pair src;
   pqrs::hid::usage_pair dst;
 };
 
-inline std::vector<modifier_mapping> get_modifier_mappings(CFDictionaryRef _Nonnull matching_dictionary) {
+[[nodiscard]] inline std::vector<modifier_mapping> get_modifier_mappings(CFDictionaryRef _Nonnull matching_dictionary) {
   std::vector<modifier_mapping> result;
 
+  // IOServiceGetMatchingService consumes one reference to the matching dictionary.
   CFRetain(matching_dictionary);
-  if (auto service = IOServiceGetMatchingService(type_safe::get(iokit_mach_port::null),
-                                                 matching_dictionary)) {
-    if (auto cf_hid_event_service_properties = IORegistryEntryCreateCFProperty(service,
-                                                                               CFSTR("HIDEventServiceProperties"),
-                                                                               kCFAllocatorDefault,
-                                                                               0)) {
-      if (CFDictionaryGetTypeID() == CFGetTypeID(cf_hid_event_service_properties)) {
-        auto hid_event_service_properties = static_cast<CFDictionaryRef>(cf_hid_event_service_properties);
+  if (auto service = adopt_iokit_object_ptr(IOServiceGetMatchingService(type_safe::get(iokit_mach_port::null),
+                                                                        matching_dictionary))) {
+    if (auto cf_hid_event_service_properties = cf::adopt_cf_ptr(IORegistryEntryCreateCFProperty(*service,
+                                                                                                CFSTR("HIDEventServiceProperties"),
+                                                                                                kCFAllocatorDefault,
+                                                                                                0))) {
+      if (CFDictionaryGetTypeID() == CFGetTypeID(*cf_hid_event_service_properties)) {
+        auto hid_event_service_properties = static_cast<CFDictionaryRef>(*cf_hid_event_service_properties);
         if (auto cf_pairs = CFDictionaryGetValue(hid_event_service_properties, CFSTR("HIDKeyboardModifierMappingPairs"))) {
           if (CFArrayGetTypeID() == CFGetTypeID(cf_pairs)) {
             auto pairs = static_cast<CFArrayRef>(cf_pairs);
@@ -86,16 +86,10 @@ inline std::vector<modifier_mapping> get_modifier_mappings(CFDictionaryRef _Nonn
           }
         }
       }
-
-      CFRelease(cf_hid_event_service_properties);
     }
-
-    IOObjectRelease(service);
   }
 
   return result;
 }
 
-} // namespace system_preferences
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::system_preferences

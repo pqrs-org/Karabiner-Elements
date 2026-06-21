@@ -13,7 +13,7 @@
 namespace pqrs::osx::input_source_selector {
 class specifier {
 public:
-  const std::optional<std::string>& get_language_string() const {
+  [[nodiscard]] const std::optional<std::string>& get_language_string() const noexcept {
     return language_string_;
   }
 
@@ -29,7 +29,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_input_source_id_string() const {
+  [[nodiscard]] const std::optional<std::string>& get_input_source_id_string() const noexcept {
     return input_source_id_string_;
   }
 
@@ -45,7 +45,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_input_mode_id_string() const {
+  [[nodiscard]] const std::optional<std::string>& get_input_mode_id_string() const noexcept {
     return input_mode_id_string_;
   }
 
@@ -61,7 +61,7 @@ public:
     return *this;
   }
 
-  bool test(const input_source::properties& properties) const {
+  [[nodiscard]] bool test(const input_source::properties& properties) const {
     if (language_regex_) {
       if (auto& v = properties.get_first_language()) {
         if (!regex_search(std::begin(*v),
@@ -101,7 +101,7 @@ public:
     return true;
   }
 
-  bool operator==(const specifier& other) const {
+  [[nodiscard]] bool operator==(const specifier& other) const noexcept {
     return language_string_ == other.language_string_ &&
            input_source_id_string_ == other.input_source_id_string_ &&
            input_mode_id_string_ == other.input_mode_id_string_;
@@ -121,7 +121,7 @@ private:
 namespace std {
 template <>
 struct hash<pqrs::osx::input_source_selector::specifier> final {
-  std::size_t operator()(const pqrs::osx::input_source_selector::specifier& value) const {
+  [[nodiscard]] std::size_t operator()(const pqrs::osx::input_source_selector::specifier& value) const {
     size_t h = 0;
 
     if (auto& s = value.get_language_string()) {

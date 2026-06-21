@@ -55,15 +55,20 @@ public:
     dispatcher_ = nullptr;
   }
 
-  const std::string& get_stdout() const {
+  execute(const execute&) = delete;
+  execute(execute&&) = delete;
+  execute& operator=(const execute&) = delete;
+  execute& operator=(execute&&) = delete;
+
+  [[nodiscard]] const std::string& get_stdout() const noexcept {
     return stdout_;
   }
 
-  const std::string& get_stderr() const {
+  [[nodiscard]] const std::string& get_stderr() const noexcept {
     return stderr_;
   }
 
-  const std::optional<int>& get_exit_code() const {
+  [[nodiscard]] const std::optional<int>& get_exit_code() const noexcept {
     return exit_code_;
   }
 

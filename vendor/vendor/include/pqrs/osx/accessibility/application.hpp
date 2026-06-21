@@ -8,9 +8,7 @@
 #include <string>
 #include <unistd.h>
 
-namespace pqrs {
-namespace osx {
-namespace accessibility {
+namespace pqrs::osx::accessibility {
 class application final {
 public:
   enum class detection_source {
@@ -19,7 +17,7 @@ public:
     ax_observer,
   };
 
-  const std::optional<std::string>& get_name() const {
+  [[nodiscard]] const std::optional<std::string>& get_name() const noexcept {
     return name_;
   }
 
@@ -28,7 +26,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_bundle_identifier() const {
+  [[nodiscard]] const std::optional<std::string>& get_bundle_identifier() const noexcept {
     return bundle_identifier_;
   }
 
@@ -37,7 +35,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_bundle_path() const {
+  [[nodiscard]] const std::optional<std::string>& get_bundle_path() const noexcept {
     return bundle_path_;
   }
 
@@ -46,7 +44,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_file_path() const {
+  [[nodiscard]] const std::optional<std::string>& get_file_path() const noexcept {
     return file_path_;
   }
 
@@ -55,7 +53,7 @@ public:
     return *this;
   }
 
-  const std::optional<pid_t>& get_pid() const {
+  [[nodiscard]] const std::optional<pid_t>& get_pid() const noexcept {
     return pid_;
   }
 
@@ -64,7 +62,7 @@ public:
     return *this;
   }
 
-  detection_source get_detection_source() const {
+  [[nodiscard]] detection_source get_detection_source() const noexcept {
     return detection_source_;
   }
 
@@ -73,7 +71,7 @@ public:
     return *this;
   }
 
-  bool operator==(const application& other) const = default;
+  [[nodiscard]] bool operator==(const application& other) const = default;
 
 private:
   std::optional<std::string> name_;
@@ -83,6 +81,4 @@ private:
   std::optional<pid_t> pid_;
   detection_source detection_source_ = detection_source::none;
 };
-} // namespace accessibility
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::accessibility

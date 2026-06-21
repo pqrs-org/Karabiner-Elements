@@ -5,20 +5,22 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <filesystem>
+#include <memory>
 #include <spdlog/async.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
+#include <string>
 
 namespace pqrs::spdlog::factory {
-inline std::shared_ptr<::spdlog::logger> make_stdout_logger_mt(const std::string& logger_name) {
+[[nodiscard]] inline std::shared_ptr<::spdlog::logger> make_stdout_logger_mt(const std::string& logger_name) {
   return ::spdlog::stdout_logger_mt(logger_name);
 }
 
-inline std::shared_ptr<::spdlog::logger> make_async_rotating_logger_mt(const std::string& logger_name,
-                                                                       const std::filesystem::path& log_file_path,
-                                                                       const std::filesystem::perms& log_directory_perms,
-                                                                       std::size_t max_size = 256 * 1024,
-                                                                       std::size_t max_files = 3) {
+[[nodiscard]] inline std::shared_ptr<::spdlog::logger> make_async_rotating_logger_mt(const std::string& logger_name,
+                                                                                     const std::filesystem::path& log_file_path,
+                                                                                     const std::filesystem::perms& log_directory_perms,
+                                                                                     std::size_t max_size = 256 * 1024,
+                                                                                     std::size_t max_files = 3) {
   auto log_directory = log_file_path.parent_path();
 
   if (!log_directory.empty()) {

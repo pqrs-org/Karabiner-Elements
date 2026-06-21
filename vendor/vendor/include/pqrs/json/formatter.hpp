@@ -7,5 +7,5 @@
 #include <nlohmann/json.hpp>
 
 namespace nlohmann {
-inline auto format_as(const json& value) { return value.dump(); }
+[[nodiscard]] inline auto format_as(const json& value) { return value.dump(); }
 } // namespace nlohmann

@@ -23,7 +23,12 @@ public:
     close_write_end();
   }
 
-  std::optional<int> get_read_end() const {
+  pipe(const pipe&) = delete;
+  pipe(pipe&&) = delete;
+  pipe& operator=(const pipe&) = delete;
+  pipe& operator=(pipe&&) = delete;
+
+  [[nodiscard]] std::optional<int> get_read_end() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (const auto fd = file_descriptors_[0];
@@ -33,7 +38,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<int> get_write_end() const {
+  [[nodiscard]] std::optional<int> get_write_end() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (const auto fd = file_descriptors_[1];

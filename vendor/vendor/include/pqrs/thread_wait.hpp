@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::thread_wait v2.0.0
+// pqrs::thread_wait v2.1.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -28,7 +28,7 @@ public:
     return std::make_shared<thread_wait>(constructor_key{});
   }
 
-  explicit thread_wait(constructor_key) {
+  explicit thread_wait(constructor_key) noexcept {
   }
 
   ~thread_wait() = default;
@@ -38,13 +38,13 @@ public:
   thread_wait& operator=(const thread_wait&) = delete;
   thread_wait& operator=(thread_wait&&) = delete;
 
-  void wait_notice() {
+  void wait_notice() noexcept {
     while (!notify_.load(std::memory_order_acquire)) {
       notify_.wait(false, std::memory_order_acquire);
     }
   }
 
-  void notify() {
+  void notify() noexcept {
     notify_.store(true, std::memory_order_release);
     notify_.notify_all();
   }

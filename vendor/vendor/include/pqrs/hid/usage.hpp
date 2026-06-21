@@ -17,7 +17,7 @@ struct value_t : type_safe::strong_typedef<value_t, int32_t>,
                  type_safe::strong_typedef_op::decrement<value_t> {
   using strong_typedef::strong_typedef;
 
-  constexpr auto operator<=>(const value_t& other) const {
+  [[nodiscard]] constexpr auto operator<=>(const value_t& other) const noexcept {
     return type_safe::get(*this) <=> type_safe::get(other);
   }
 };

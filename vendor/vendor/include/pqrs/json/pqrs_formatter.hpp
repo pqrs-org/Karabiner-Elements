@@ -4,13 +4,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
+#include <iomanip>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <sstream>
 #include <unordered_set>
 
-namespace pqrs {
-namespace json {
-namespace pqrs_formatter {
+namespace pqrs::json::pqrs_formatter {
 
 // The custom JSON formatter follows these rules:
 //
@@ -69,11 +69,11 @@ struct options {
 namespace impl {
 
 template <typename T>
-inline bool multi_line(const T& json,
-                       const options& options,
-                       std::optional<std::string> parent_object_key) {
+[[nodiscard]] inline bool multi_line(const T& json,
+                                     const options& options,
+                                     std::optional<std::string> parent_object_key) {
   if (json.is_object()) {
-    if (json.size() == 0) {
+    if (json.empty()) {
       return false;
     }
 
@@ -94,7 +94,7 @@ inline bool multi_line(const T& json,
       }
     }
 
-    if (json.size() == 0) {
+    if (json.empty()) {
       return false;
     }
 
@@ -254,13 +254,11 @@ inline void format(std::ostringstream& ss,
 } // namespace impl
 
 template <typename T>
-inline std::string format(const T& json,
-                          const options& options) {
+[[nodiscard]] inline std::string format(const T& json,
+                                        const options& options) {
   std::ostringstream ss;
   impl::format(ss, json, options, std::nullopt, 0);
   return ss.str();
 }
 
-} // namespace pqrs_formatter
-} // namespace json
-} // namespace pqrs
+} // namespace pqrs::json::pqrs_formatter

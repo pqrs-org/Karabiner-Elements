@@ -7,17 +7,16 @@
 #include <compare>
 #include <functional>
 #include <iostream>
+#include <string>
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace iokit_keyboard_type {
+namespace pqrs::osx::iokit_keyboard_type {
 struct value_t : type_safe::strong_typedef<value_t, uint64_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
                  type_safe::strong_typedef_op::relational_comparison<value_t> {
   using strong_typedef::strong_typedef;
 
-  constexpr auto operator<=>(const value_t& other) const {
+  [[nodiscard]] constexpr auto operator<=>(const value_t& other) const noexcept {
     return type_safe::get(*this) <=> type_safe::get(other);
   }
 };
@@ -38,7 +37,7 @@ constexpr value_t jis(42);
 // methods
 //
 
-inline std::string make_string(value_t t) {
+[[nodiscard]] inline std::string make_string(value_t t) {
   if (t == iso) {
     return "iso";
   } else if (t == jis) {
@@ -46,9 +45,7 @@ inline std::string make_string(value_t t) {
   }
   return "ansi";
 }
-} // namespace iokit_keyboard_type
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::iokit_keyboard_type
 
 namespace std {
 template <>

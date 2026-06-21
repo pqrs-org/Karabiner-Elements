@@ -6,6 +6,7 @@
 
 #include "spdlog.hpp"
 #include <algorithm>
+#include <cstdint>
 #include <deque>
 #include <fstream>
 #include <pqrs/gsl.hpp>
@@ -13,19 +14,19 @@
 #include <utf8cpp/utf8.h>
 #include <vector>
 
-namespace pqrs::spdlog {
-namespace impl {
+namespace pqrs::spdlog::impl {
 class merge_log_file final {
 public:
-  merge_log_file(const ::spdlog::filename_t& file_path) : stream_(file_path) {
+  merge_log_file(const ::spdlog::filename_t& file_path)
+      : stream_(file_path) {
     read_next_line();
   }
 
-  const std::string& get_line() const {
+  [[nodiscard]] const std::string& get_line() const noexcept {
     return line_;
   }
 
-  const std::optional<uint64_t>& get_sort_key() const {
+  [[nodiscard]] const std::optional<uint64_t>& get_sort_key() const noexcept {
     return sort_key_;
   }
 
@@ -55,16 +56,17 @@ private:
   std::string line_;
   std::optional<uint64_t> sort_key_;
 };
-} // namespace impl
+} // namespace pqrs::spdlog::impl
 
-inline pqrs::not_null_shared_ptr_t<std::deque<std::string>> read_log_files(const std::vector<::spdlog::filename_t>& target_file_paths,
-                                                                           size_t max_line_count) {
-  auto result = std::make_shared<std::deque<std::string>>();
+namespace pqrs::spdlog {
+[[nodiscard]] inline pqrs::not_null_shared_ptr_t<std::deque<std::string>> read_log_files(const std::vector<::spdlog::filename_t>& target_file_paths,
+                                                                                         size_t max_line_count) {
+  pqrs::not_null_shared_ptr_t<std::deque<std::string>> result(std::make_shared<std::deque<std::string>>());
 
   std::vector<not_null_shared_ptr_t<impl::merge_log_file>> files;
   for (const auto& file_path : target_file_paths) {
-    files.push_back(std::make_shared<impl::merge_log_file>(file_path));
-    files.push_back(std::make_shared<impl::merge_log_file>(spdlog::make_rotated_file_path(file_path)));
+    files.emplace_back(std::make_shared<impl::merge_log_file>(file_path));
+    files.emplace_back(std::make_shared<impl::merge_log_file>(spdlog::make_rotated_file_path(file_path)));
   }
 
   while (true) {
@@ -99,6 +101,6 @@ inline pqrs::not_null_shared_ptr_t<std::deque<std::string>> read_log_files(const
     }
   }
 
-  return pqrs::not_null_shared_ptr_t<std::deque<std::string>>(result);
+  return result;
 }
 } // namespace pqrs::spdlog

@@ -4,16 +4,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
-#include <cctype>
 #include <cstdlib>
 #include <optional>
 #include <pqrs/string.hpp>
+#include <string>
 #include <string_view>
 #include <utility>
 
-namespace pqrs {
-namespace environment_variable {
-namespace parser {
+namespace pqrs::environment_variable::parser {
 
 enum class quote_kind {
   none,
@@ -21,18 +19,21 @@ enum class quote_kind {
   dquote
 };
 
-inline bool env_name_start(unsigned char c) {
-  return std::isalpha(c) || c == '_';
+[[nodiscard]] inline bool env_name_start(unsigned char c) noexcept {
+  return (c >= 'A' && c <= 'Z') ||
+         (c >= 'a' && c <= 'z') ||
+         c == '_';
 }
 
-inline bool env_name_char(unsigned char c) {
-  return std::isalnum(c) || c == '_';
+[[nodiscard]] inline bool env_name_char(unsigned char c) noexcept {
+  return env_name_start(c) ||
+         (c >= '0' && c <= '9');
 }
 
 // Scan an environment variable name from s[pos]; return end index [pos, end).
 // If the first character is invalid, return std::nullopt.
-inline std::optional<size_t> scan_env_name(std::string_view s,
-                                           size_t pos) {
+[[nodiscard]] inline std::optional<size_t> scan_env_name(std::string_view s,
+                                                         size_t pos) noexcept {
   if (pos >= s.size() || !env_name_start(static_cast<unsigned char>(s[pos]))) {
     return std::nullopt;
   }
@@ -46,7 +47,7 @@ inline std::optional<size_t> scan_env_name(std::string_view s,
 }
 
 // Check whether the whole string is a valid environment variable name.
-inline bool is_valid_env_name(std::string_view name) {
+[[nodiscard]] inline bool is_valid_env_name(std::string_view name) noexcept {
   if (auto end = scan_env_name(name, 0)) {
     return (*end == name.size());
   }
@@ -59,7 +60,7 @@ inline bool is_valid_env_name(std::string_view name) {
 //
 
 // Strip surrounding quotes only and return both the inner string and the quote kind.
-inline std::pair<std::string, quote_kind> strip_quotes_no_decode(const std::string& s) {
+[[nodiscard]] inline std::pair<std::string, quote_kind> strip_quotes_no_decode(const std::string& s) {
   if (s.size() >= 2 && s.front() == '"' && s.back() == '"') {
     return {
         s.substr(1, s.size() - 2),
@@ -130,8 +131,8 @@ inline void strip_eol_comment_inplace(std::string& s) {
 // - '\$' prevents expansion (odd/even rule on preceding backslashes).
 // - Undefined variables expand to an empty string.
 // - Inside single quotes, nothing is processed.
-inline std::string parse_value_with_expansion(const std::string& src,
-                                              quote_kind qk) {
+[[nodiscard]] inline std::string parse_value_with_expansion(const std::string& src,
+                                                            quote_kind qk) {
   if (qk == quote_kind::single) {
     return src;
   }
@@ -253,7 +254,7 @@ inline std::string parse_value_with_expansion(const std::string& src,
 }
 
 // Parse a single line into (key, value). Return std::nullopt for ignorable lines.
-inline std::optional<std::pair<std::string, std::string>> parse_line(std::string_view line_view) {
+[[nodiscard]] inline std::optional<std::pair<std::string, std::string>> parse_line(std::string_view line_view) {
   std::string line(line_view);
   strip_eol_comment_inplace(line);
   pqrs::string::trim(line);
@@ -281,6 +282,4 @@ inline std::optional<std::pair<std::string, std::string>> parse_line(std::string
   return std::make_pair(key, value);
 }
 
-} // namespace parser
-} // namespace environment_variable
-} // namespace pqrs
+} // namespace pqrs::environment_variable::parser

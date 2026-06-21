@@ -5,18 +5,21 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <pqrs/osx/input_source.hpp>
+#include <utility>
 
 namespace pqrs::osx::input_source_selector::impl {
 struct entry {
 public:
   // You have to call this method in main thread since pqrs::osx::input_source requires it.
-  entry(cf::cf_ptr<TISInputSourceRef> input_source_ptr) : input_source_(input_source_ptr) {
+  explicit entry(cf::cf_ptr<TISInputSourceRef> input_source_ptr) {
     if (input_source_ptr) {
       properties_ = input_source::properties(*input_source_ptr);
     }
+
+    input_source_ = std::move(input_source_ptr);
   }
 
-  const input_source::properties& get_properties() const {
+  [[nodiscard]] const input_source::properties& get_properties() const noexcept {
     return properties_;
   }
 

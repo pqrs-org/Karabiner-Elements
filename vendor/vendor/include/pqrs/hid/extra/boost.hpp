@@ -10,7 +10,7 @@ namespace pqrs::hid {
 namespace detail {
 template <typename T>
   requires type_safe::is_strong_typedef<T>::value
-inline std::size_t hash_value(const T& value) {
+[[nodiscard]] inline std::size_t hash_value(const T& value) {
   return std::hash<T>{}(value);
 }
 } // namespace detail
@@ -59,15 +59,15 @@ using detail::hash_value;
 // usage_pair
 //
 
-inline std::size_t hash_value(const usage_pair& value) {
+[[nodiscard]] inline std::size_t hash_value(const usage_pair& value) {
   return std::hash<usage_pair>{}(value);
 }
 
-inline std::size_t hash_value(const std::pair<usage_page::value_t, usage::value_t>& value) {
+[[nodiscard]] inline std::size_t hash_value(const std::pair<usage_page::value_t, usage::value_t>& value) {
   return std::hash<std::pair<usage_page::value_t, usage::value_t>>{}(value);
 }
 
-inline std::size_t hash_value(const std::pair<vendor_id::value_t, product_id::value_t>& value) {
+[[nodiscard]] inline std::size_t hash_value(const std::pair<vendor_id::value_t, product_id::value_t>& value) {
   return std::hash<std::pair<vendor_id::value_t, product_id::value_t>>{}(value);
 }
 } // namespace pqrs::hid

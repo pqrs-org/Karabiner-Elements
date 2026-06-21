@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::json v1.7
+// pqrs::json v1.8.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -14,24 +14,23 @@
 #include <optional>
 #include <pqrs/string.hpp>
 
-namespace pqrs {
-namespace json {
+namespace pqrs::json {
 template <typename T>
-inline std::optional<T> find(const nlohmann::json& json,
-                             const std::string& key) {
+[[nodiscard]] inline std::optional<T> find(const nlohmann::json& json,
+                                           const std::string& key) {
   auto it = json.find(key);
   if (it != std::end(json)) {
     try {
       return it.value().get<T>();
-    } catch (std::exception&) {
+    } catch (const std::exception&) {
     }
   }
 
   return std::nullopt;
 }
 
-inline std::optional<nlohmann::json::const_iterator> find_array(const nlohmann::json& json,
-                                                                const std::string& key) {
+[[nodiscard]] inline std::optional<nlohmann::json::const_iterator> find_array(const nlohmann::json& json,
+                                                                              const std::string& key) {
   auto it = json.find(key);
   if (it != std::end(json)) {
     if (it->is_array()) {
@@ -41,8 +40,8 @@ inline std::optional<nlohmann::json::const_iterator> find_array(const nlohmann::
   return std::nullopt;
 }
 
-inline std::optional<nlohmann::json::const_iterator> find_object(const nlohmann::json& json,
-                                                                 const std::string& key) {
+[[nodiscard]] inline std::optional<nlohmann::json::const_iterator> find_object(const nlohmann::json& json,
+                                                                               const std::string& key) {
   auto it = json.find(key);
   if (it != std::end(json)) {
     if (it->is_object()) {
@@ -52,8 +51,8 @@ inline std::optional<nlohmann::json::const_iterator> find_object(const nlohmann:
   return std::nullopt;
 }
 
-inline std::optional<nlohmann::json::const_iterator> find_json(const nlohmann::json& json,
-                                                               const std::string& key) {
+[[nodiscard]] inline std::optional<nlohmann::json::const_iterator> find_json(const nlohmann::json& json,
+                                                                             const std::string& key) {
   auto it = json.find(key);
   if (it != std::end(json)) {
     return it;
@@ -61,9 +60,9 @@ inline std::optional<nlohmann::json::const_iterator> find_json(const nlohmann::j
   return std::nullopt;
 }
 
-inline nlohmann::json find_copy(const nlohmann::json& json,
-                                const std::string& key,
-                                const nlohmann::json& fallback_value) {
+[[nodiscard]] inline nlohmann::json find_copy(const nlohmann::json& json,
+                                              const std::string& key,
+                                              const nlohmann::json& fallback_value) {
   auto it = json.find(key);
   if (it != std::end(json)) {
     return it.value();
@@ -75,7 +74,7 @@ inline nlohmann::json find_copy(const nlohmann::json& json,
 // type checks
 //
 
-inline std::string dump_for_error_message(const nlohmann::json& json) {
+[[nodiscard]] inline std::string dump_for_error_message(const nlohmann::json& json) {
   return string::truncate(json.dump(), 256);
 }
 
@@ -118,5 +117,4 @@ inline void requires_string(const nlohmann::json& json, const std::string& error
     throw unmarshal_error(error_message_name + " must be string, but is `"s + dump_for_error_message(json) + "`"s);
   }
 }
-} // namespace json
-} // namespace pqrs
+} // namespace pqrs::json

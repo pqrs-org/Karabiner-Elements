@@ -19,8 +19,10 @@ namespace pqrs::osx::input_source_selector {
 class selector final : public dispatcher::extra::dispatcher_client {
 public:
   selector(const selector&) = delete;
+  selector& operator=(const selector&) = delete;
 
-  selector(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher) {
+  explicit selector(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher)
+      : dispatcher_client(std::move(weak_dispatcher)) {
     CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(),
                                     this,
                                     static_enabled_input_sources_changed_callback,
@@ -56,26 +58,30 @@ public:
   }
 
 private:
-  static void static_enabled_input_sources_changed_callback(CFNotificationCenterRef center,
+  static void static_enabled_input_sources_changed_callback(CFNotificationCenterRef,
                                                             void* observer,
-                                                            CFStringRef notification_name,
-                                                            const void* observed_object,
-                                                            CFDictionaryRef user_info) {
-    auto self = static_cast<selector*>(observer);
-    if (self) {
+                                                            CFStringRef,
+                                                            const void*,
+                                                            CFDictionaryRef) {
+    if (auto self = static_cast<selector*>(observer)) {
       self->enabled_input_sources_changed_callback();
     }
   }
 
   void enabled_input_sources_changed_callback() {
     enqueue_to_dispatcher([this] {
-      entries_.clear();
+      auto input_source_ptrs = osx::input_source::make_selectable_keyboard_input_sources();
 
-      for (const auto& input_source_ptr : osx::input_source::make_selectable_keyboard_input_sources()) {
+      std::vector<impl::entry> entries;
+      entries.reserve(input_source_ptrs.size());
+
+      for (auto& input_source_ptr : input_source_ptrs) {
         if (input_source_ptr) {
-          entries_.emplace_back(*input_source_ptr);
+          entries.emplace_back(std::move(input_source_ptr));
         }
       }
+
+      entries_ = std::move(entries);
     });
   }
 

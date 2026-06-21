@@ -10,33 +10,30 @@
 #include <pqrs/cf/string.hpp>
 #include <pqrs/hash.hpp>
 #include <pqrs/hid.hpp>
+#include <pqrs/osx/iokit_object_ptr.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace system_preferences {
+namespace pqrs::osx::system_preferences {
 class properties final {
 public:
-  properties(void) : use_fkeys_as_standard_function_keys_(false),
-                     scroll_direction_is_natural_(true) {
-  }
+  properties() noexcept = default;
 
-  bool get_use_fkeys_as_standard_function_keys(void) const {
+  [[nodiscard]] bool get_use_fkeys_as_standard_function_keys() const noexcept {
     return use_fkeys_as_standard_function_keys_;
   }
 
-  void set_use_fkeys_as_standard_function_keys(bool value) {
+  void set_use_fkeys_as_standard_function_keys(bool value) noexcept {
     use_fkeys_as_standard_function_keys_ = value;
   }
 
-  bool get_scroll_direction_is_natural(void) const {
+  [[nodiscard]] bool get_scroll_direction_is_natural() const noexcept {
     return scroll_direction_is_natural_;
   }
 
-  void set_scroll_direction_is_natural(bool value) {
+  void set_scroll_direction_is_natural(bool value) noexcept {
     scroll_direction_is_natural_ = value;
   }
 
-  void update(void) {
+  void update() {
     //
     // use_fkeys_as_standard_function_keys_
     //
@@ -48,23 +45,19 @@ public:
     // Therefore, instead of retrieving the setting from CFPreferences,
     // we'll get it from the corresponding parameter in IOHIDSystem, which stays in sync with that setting.
 
-    if (auto entry = IORegistryEntryFromPath(kIOMainPortDefault,
-                                             "IOService:/IOResources/IOHIDSystem")) {
-      if (auto property = IORegistryEntryCreateCFProperty(entry,
-                                                          CFSTR("HIDParameters"),
-                                                          kCFAllocatorDefault,
-                                                          0)) {
-        if (CFDictionaryGetTypeID() == CFGetTypeID(property)) {
-          auto dict = static_cast<CFDictionaryRef>(property);
+    if (auto entry = pqrs::osx::adopt_iokit_object_ptr(IORegistryEntryFromPath(kIOMainPortDefault,
+                                                                               "IOService:/IOResources/IOHIDSystem"))) {
+      if (auto property = pqrs::cf::adopt_cf_ptr(IORegistryEntryCreateCFProperty(*entry,
+                                                                                 CFSTR("HIDParameters"),
+                                                                                 kCFAllocatorDefault,
+                                                                                 0))) {
+        if (CFDictionaryGetTypeID() == CFGetTypeID(*property)) {
+          auto dict = static_cast<CFDictionaryRef>(*property);
           if (auto value = pqrs::cf::make_number<int32_t>(CFDictionaryGetValue(dict, CFSTR("HIDFKeyMode")))) {
             use_fkeys_as_standard_function_keys_ = *value;
           }
         }
-
-        CFRelease(property);
       }
-
-      IOObjectRelease(entry);
     }
 
     //
@@ -80,27 +73,18 @@ public:
     }
   }
 
-  bool operator==(const properties& other) const {
-    return use_fkeys_as_standard_function_keys_ == other.use_fkeys_as_standard_function_keys_ &&
-           scroll_direction_is_natural_ == other.scroll_direction_is_natural_;
-  }
-
-  bool operator!=(const properties& other) const {
-    return !(*this == other);
-  }
+  [[nodiscard]] bool operator==(const properties& other) const noexcept = default;
 
 private:
-  bool use_fkeys_as_standard_function_keys_;
-  bool scroll_direction_is_natural_;
+  bool use_fkeys_as_standard_function_keys_ = false;
+  bool scroll_direction_is_natural_ = true;
 };
-} // namespace system_preferences
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::system_preferences
 
 namespace std {
 template <>
 struct hash<pqrs::osx::system_preferences::properties> final {
-  std::size_t operator()(const pqrs::osx::system_preferences::properties& value) const {
+  [[nodiscard]] std::size_t operator()(const pqrs::osx::system_preferences::properties& value) const noexcept {
     std::size_t h = 0;
 
     pqrs::hash::combine(h, value.get_use_fkeys_as_standard_function_keys());
