@@ -8,9 +8,7 @@
 #include <sstream>
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace launchctl {
+namespace pqrs::osx::launchctl {
 struct service_path : type_safe::strong_typedef<service_path, std::string>,
                       type_safe::strong_typedef_op::equality_comparison<service_path> {
   using strong_typedef::strong_typedef;
@@ -19,6 +17,4 @@ struct service_path : type_safe::strong_typedef<service_path, std::string>,
 inline std::ostream& operator<<(std::ostream& os, const service_path& value) {
   return os << type_safe::get(value);
 }
-} // namespace launchctl
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::launchctl

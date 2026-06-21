@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::launchctl v5.0
+// pqrs::osx::launchctl v5.1.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -15,11 +15,10 @@
 #include <optional>
 #include <pqrs/process.hpp>
 #include <pqrs/string.hpp>
+#include <sstream>
 #include <type_safe/flag_set.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace launchctl {
+namespace pqrs::osx::launchctl {
 inline void bootstrap(const domain_target& domain_target,
                       const service_path& service_path) {
   auto command = (std::stringstream() << "/bin/launchctl bootstrap " << domain_target << " " << service_path).str();
@@ -82,22 +81,13 @@ inline void kickstart(const domain_target& domain_target,
   system(command.c_str());
 }
 
-inline std::optional<pid_t> find_pid(const domain_target& domain_target,
-                                     const service_name& service_name) {
-  auto service_target = make_service_target(domain_target, service_name);
-
-  pqrs::process::execute e(std::vector<std::string>{
-      "/bin/launchctl",
-      "print",
-      type_safe::get(service_target),
-  });
-
-  std::istringstream ss(e.get_stdout());
+[[nodiscard]] inline std::optional<pid_t> parse_pid(std::string_view launchctl_print_output) {
+  std::istringstream ss{std::string(launchctl_print_output)};
   std::string line;
   while (std::getline(ss, line)) {
     pqrs::string::trim(line);
-    std::string_view pattern = "pid = ";
-    if (pqrs::string::starts_with(line, pattern)) {
+    constexpr std::string_view pattern = "pid = ";
+    if (line.starts_with(pattern)) {
       line = line.substr(pattern.size());
       return pid_t(std::stoi(line));
     }
@@ -106,6 +96,17 @@ inline std::optional<pid_t> find_pid(const domain_target& domain_target,
   return std::nullopt;
 }
 
-} // namespace launchctl
-} // namespace osx
-} // namespace pqrs
+[[nodiscard]] inline std::optional<pid_t> find_pid(const domain_target& domain_target,
+                                                   const service_name& service_name) {
+  auto service_target = make_service_target(domain_target, service_name);
+
+  pqrs::process::execute e(std::vector<std::string>{
+      "/bin/launchctl",
+      "print",
+      type_safe::get(service_target),
+  });
+
+  return parse_pid(e.get_stdout());
+}
+
+} // namespace pqrs::osx::launchctl

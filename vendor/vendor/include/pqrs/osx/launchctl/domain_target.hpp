@@ -9,9 +9,7 @@
 #include <type_safe/strong_typedef.hpp>
 #include <unistd.h>
 
-namespace pqrs {
-namespace osx {
-namespace launchctl {
+namespace pqrs::osx::launchctl {
 struct domain_target : type_safe::strong_typedef<domain_target, std::string>,
                        type_safe::strong_typedef_op::equality_comparison<domain_target> {
   using strong_typedef::strong_typedef;
@@ -21,13 +19,11 @@ inline std::ostream& operator<<(std::ostream& os, const domain_target& value) {
   return os << type_safe::get(value);
 }
 
-inline domain_target make_system_domain_target(void) {
+[[nodiscard]] inline domain_target make_system_domain_target() {
   return domain_target("system/");
 }
 
-inline domain_target make_gui_domain_target(uid_t uid = getuid()) {
+[[nodiscard]] inline domain_target make_gui_domain_target(uid_t uid = getuid()) {
   return domain_target((std::stringstream() << "gui/" << uid << "/").str());
 }
-} // namespace launchctl
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::launchctl
