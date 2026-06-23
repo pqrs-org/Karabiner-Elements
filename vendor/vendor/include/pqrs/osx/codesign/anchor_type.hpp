@@ -7,9 +7,7 @@
 #include <ostream>
 #include <string_view>
 
-namespace pqrs {
-namespace osx {
-namespace codesign {
+namespace pqrs::osx::codesign {
 
 enum class anchor_type {
   none,
@@ -17,7 +15,7 @@ enum class anchor_type {
   apple_generic,
 };
 
-inline std::string_view to_string(anchor_type value) {
+[[nodiscard]] inline std::string_view to_string(anchor_type value) noexcept {
   switch (value) {
     case anchor_type::none:
       return "none";
@@ -33,6 +31,4 @@ inline std::ostream& operator<<(std::ostream& stream, anchor_type value) {
   return stream << to_string(value);
 }
 
-} // namespace codesign
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::codesign

@@ -2,12 +2,11 @@
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <IOKit/hid/IOHIDElement.h>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 enum class iokit_hid_element_type {
   input_misc = kIOHIDElementTypeInput_Misc,
   input_button = kIOHIDElementTypeInput_Button,
@@ -19,7 +18,7 @@ enum class iokit_hid_element_type {
   collection = kIOHIDElementTypeCollection,
 };
 
-inline const char* get_iokit_hid_element_type_name(iokit_hid_element_type type) {
+[[nodiscard]] inline const char* get_iokit_hid_element_type_name(iokit_hid_element_type type) noexcept {
   switch (type) {
 #define GET_IOKIT_HID_ELEMENT_TYPE_NAME_RETURN_NAME(TYPE) \
   case iokit_hid_element_type::TYPE:                      \
@@ -39,5 +38,4 @@ inline const char* get_iokit_hid_element_type_name(iokit_hid_element_type type) 
 
   return "unknown";
 }
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx

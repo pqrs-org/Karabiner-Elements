@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::workspace v3.0
+// pqrs::osx::workspace v3.1.0
 
 // (C) Copyright Takayama Fumihiko 2022.
 // Distributed under the Boost Software License, Version 1.0.
@@ -10,9 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace pqrs {
-namespace osx {
-namespace workspace {
+namespace pqrs::osx::workspace {
 
 struct open_configuration final {
   bool activates = true;
@@ -26,7 +24,7 @@ struct open_configuration final {
   // so even the temporary variable for the `c_struct` method is exposed as public.
   mutable std::vector<const char*> internal_c_str_arguments_;
 
-  pqrs_osx_workspace_open_configuration c_struct(void) const {
+  [[nodiscard]] pqrs_osx_workspace_open_configuration c_struct() const {
     internal_c_str_arguments_.clear();
     for (const auto& arg : arguments) {
       internal_c_str_arguments_.push_back(arg.c_str());
@@ -47,8 +45,9 @@ struct open_configuration final {
 
 inline void open_application_by_bundle_identifier(const std::string& bundle_identifier,
                                                   const open_configuration& configuration) {
+  const auto c = configuration.c_struct();
   pqrs_osx_workspace_open_application_by_bundle_identifier(bundle_identifier.c_str(),
-                                                           &(configuration.c_struct()));
+                                                           &c);
 }
 
 inline void open_application_by_bundle_identifier(const std::string& bundle_identifier) {
@@ -58,8 +57,9 @@ inline void open_application_by_bundle_identifier(const std::string& bundle_iden
 
 inline void open_application_by_bundle_path(const std::string& bundle_path,
                                             const open_configuration& configuration) {
+  const auto c = configuration.c_struct();
   pqrs_osx_workspace_open_application_by_bundle_path(bundle_path.c_str(),
-                                                     &(configuration.c_struct()));
+                                                     &c);
 }
 
 inline void open_application_by_bundle_path(const std::string& bundle_path) {
@@ -67,7 +67,7 @@ inline void open_application_by_bundle_path(const std::string& bundle_path) {
                                   open_configuration());
 }
 
-inline std::string find_application_url_by_bundle_identifier(const std::string& bundle_identifier) {
+[[nodiscard]] inline std::string find_application_url_by_bundle_identifier(const std::string& bundle_identifier) {
   char buffer[512];
 
   pqrs_osx_workspace_find_application_url_by_bundle_identifier(bundle_identifier.c_str(),
@@ -77,14 +77,12 @@ inline std::string find_application_url_by_bundle_identifier(const std::string& 
   return buffer;
 }
 
-inline bool application_running_by_bundle_identifier(const std::string& bundle_identifier) {
+[[nodiscard]] inline bool application_running_by_bundle_identifier(const std::string& bundle_identifier) noexcept {
   return pqrs_osx_workspace_application_running_by_bundle_identifier(bundle_identifier.c_str());
 }
 
-inline bool application_running_by_bundle_path(const std::string& bundle_path) {
+[[nodiscard]] inline bool application_running_by_bundle_path(const std::string& bundle_path) noexcept {
   return pqrs_osx_workspace_application_running_by_bundle_path(bundle_path.c_str());
 }
 
-} // namespace workspace
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::workspace

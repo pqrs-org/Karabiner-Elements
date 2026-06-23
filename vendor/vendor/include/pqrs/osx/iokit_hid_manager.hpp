@@ -1,22 +1,23 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_manager v6.0
+// pqrs::osx::iokit_hid_manager v6.1.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 // `pqrs::osx::iokit_hid_manager` can be used safely in a multi-threaded environment.
 
 #include <IOKit/hid/IOHIDDevice.h>
 #include <pqrs/cf/number.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/hid.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 class iokit_hid_manager final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
@@ -30,7 +31,7 @@ public:
   iokit_hid_manager(const iokit_hid_manager&) = delete;
 
   iokit_hid_manager(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                    std::shared_ptr<cf::run_loop_thread> run_loop_thread,
+                    pqrs::not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread,
                     const std::vector<cf::cf_ptr<CFDictionaryRef>>& matching_dictionaries,
                     pqrs::dispatcher::duration device_matched_delay = pqrs::dispatcher::duration(0))
       : dispatcher_client(weak_dispatcher),
@@ -39,19 +40,19 @@ public:
         device_matched_delay_(device_matched_delay) {
   }
 
-  virtual ~iokit_hid_manager(void) {
+  ~iokit_hid_manager() override {
     detach_from_dispatcher([this] {
       stop();
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       start();
     });
   }
 
-  void async_stop(void) {
+  void async_stop() {
     enqueue_to_dispatcher([this] {
       stop();
     });
@@ -63,10 +64,8 @@ public:
     });
   }
 
-  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(hid::usage_page::value_t hid_usage_page,
-                                                              hid::usage::value_t hid_usage) {
-    cf::cf_ptr<CFDictionaryRef> result;
-
+  [[nodiscard]] static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(hid::usage_page::value_t hid_usage_page,
+                                                                            hid::usage::value_t hid_usage) {
     if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
       if (auto number = cf::make_cf_number(type_safe::get(hid_usage_page))) {
         CFDictionarySetValue(matching_dictionary,
@@ -79,17 +78,13 @@ public:
                              *number);
       }
 
-      result = matching_dictionary;
-
-      CFRelease(matching_dictionary);
+      return cf::adopt_cf_ptr(static_cast<CFDictionaryRef>(matching_dictionary));
     }
 
-    return result;
+    return nullptr;
   }
 
-  static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(hid::usage_page::value_t hid_usage_page) {
-    cf::cf_ptr<CFDictionaryRef> result;
-
+  [[nodiscard]] static cf::cf_ptr<CFDictionaryRef> make_matching_dictionary(hid::usage_page::value_t hid_usage_page) {
     if (auto matching_dictionary = IOServiceMatching(kIOHIDDeviceKey)) {
       if (auto number = cf::make_cf_number(type_safe::get(hid_usage_page))) {
         CFDictionarySetValue(matching_dictionary,
@@ -97,17 +92,15 @@ public:
                              *number);
       }
 
-      result = matching_dictionary;
-
-      CFRelease(matching_dictionary);
+      return cf::adopt_cf_ptr(static_cast<CFDictionaryRef>(matching_dictionary));
     }
 
-    return result;
+    return nullptr;
   }
 
 private:
   // This method is executed in the dispatcher thread.
-  void start(void) {
+  void start() {
     if (!service_monitors_.empty()) {
       // already started
       return;
@@ -115,14 +108,14 @@ private:
 
     for (const auto& matching_dictionary : matching_dictionaries_) {
       if (matching_dictionary) {
-        auto monitor = std::make_shared<iokit_service_monitor>(weak_dispatcher_,
-                                                               run_loop_thread_,
-                                                               *matching_dictionary);
+        pqrs::not_null_shared_ptr_t<iokit_service_monitor> monitor = std::make_shared<iokit_service_monitor>(weak_dispatcher_,
+                                                                                                             run_loop_thread_,
+                                                                                                             *matching_dictionary);
 
         monitor->service_matched.connect([this](auto&& registry_entry_id, auto&& service_ptr) {
           if (devices_.find(registry_entry_id) == std::end(devices_)) {
             if (auto device = IOHIDDeviceCreate(kCFAllocatorDefault, *service_ptr)) {
-              auto device_ptr = cf::cf_ptr<IOHIDDeviceRef>(device);
+              auto device_ptr = cf::adopt_cf_ptr(device);
               devices_[registry_entry_id] = device_ptr;
 
               auto when = when_now() + device_matched_delay_;
@@ -134,14 +127,10 @@ private:
                       return;
                     }
 
-                    enqueue_to_dispatcher([this, registry_entry_id, device_ptr] {
-                      device_matched(registry_entry_id, device_ptr);
-                    });
+                    device_matched(registry_entry_id, device_ptr);
                     device_matched_called_ids_.insert(registry_entry_id);
                   },
                   when);
-
-              CFRelease(device);
             }
           }
         });
@@ -158,17 +147,13 @@ private:
               return;
             }
 
-            enqueue_to_dispatcher([this, registry_entry_id] {
-              device_terminated(registry_entry_id);
-            });
+            device_terminated(registry_entry_id);
             device_matched_called_ids_.erase(registry_entry_id);
           }
         });
 
         monitor->error_occurred.connect([this](auto&& message, auto&& r) {
-          enqueue_to_dispatcher([this, message, r] {
-            error_occurred(message, r);
-          });
+          error_occurred(message, r);
         });
 
         monitor->async_start();
@@ -179,18 +164,17 @@ private:
   }
 
   // This method is executed in the dispatcher thread.
-  void stop(void) {
+  void stop() {
     service_monitors_.clear();
     devices_.clear();
     device_matched_called_ids_.clear();
   }
 
-  std::shared_ptr<cf::run_loop_thread> run_loop_thread_;
+  pqrs::not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread_;
   std::vector<cf::cf_ptr<CFDictionaryRef>> matching_dictionaries_;
   pqrs::dispatcher::duration device_matched_delay_;
-  std::vector<std::shared_ptr<iokit_service_monitor>> service_monitors_;
+  std::vector<pqrs::not_null_shared_ptr_t<iokit_service_monitor>> service_monitors_;
   std::unordered_map<iokit_registry_entry_id::value_t, cf::cf_ptr<IOHIDDeviceRef>> devices_;
   std::unordered_set<iokit_registry_entry_id::value_t> device_matched_called_ids_;
 };
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx

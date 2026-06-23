@@ -16,19 +16,19 @@ public:
     set().erase(p);
   }
 
-  static bool alive(file_monitor* p) {
+  [[nodiscard]] static bool alive(file_monitor* p) {
     std::lock_guard<std::mutex> lock(mutex());
 
     return set().contains(p);
   }
 
 private:
-  static std::mutex& mutex() {
+  [[nodiscard]] static std::mutex& mutex() {
     static std::mutex mutex;
     return mutex;
   }
 
-  static std::unordered_set<file_monitor*>& set() {
+  [[nodiscard]] static std::unordered_set<file_monitor*>& set() {
     static std::unordered_set<file_monitor*> set;
     return set;
   }

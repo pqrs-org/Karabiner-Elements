@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service_monitor v6.1.0
+// pqrs::osx::iokit_service_monitor v6.2.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -13,6 +13,7 @@
 #include <optional>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_iterator.hpp>
 #include <pqrs/osx/iokit_object_ptr.hpp>
 #include <pqrs/osx/iokit_registry_entry.hpp>
@@ -39,7 +40,7 @@ public:
   // If monitor owned its own cf::run_loop_thread, repeated monitor construction would also repeatedly expose that failure path.
   // For that reason, cf::run_loop_thread is injected from the outside.
   iokit_service_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                        std::shared_ptr<cf::run_loop_thread> run_loop_thread,
+                        pqrs::not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread,
                         CFDictionaryRef _Nonnull matching_dictionary)
       : dispatcher_client(weak_dispatcher),
         run_loop_thread_(run_loop_thread),
@@ -48,7 +49,7 @@ public:
         scan_timer_(*this) {
   }
 
-  virtual ~iokit_service_monitor() {
+  ~iokit_service_monitor() override {
     // dispatcher_client
 
     detach_from_dispatcher([this] {
@@ -120,8 +121,7 @@ private:
                                                        static_cast<void*>(this),
                                                        &it);
       if (r) {
-        matched_notification_ = iokit_iterator(it);
-        IOObjectRelease(it);
+        matched_notification_ = adopt_iokit_iterator(it);
         matched_callback(make_services(matched_notification_));
       } else {
         enqueue_to_dispatcher([this, r] {
@@ -143,8 +143,7 @@ private:
                                                        static_cast<void*>(this),
                                                        &it);
       if (r) {
-        terminated_notification_ = iokit_iterator(it);
-        IOObjectRelease(it);
+        terminated_notification_ = adopt_iokit_iterator(it);
         terminated_callback(make_services(terminated_notification_));
       } else {
         enqueue_to_dispatcher([this, r] {
@@ -174,8 +173,7 @@ private:
                                                          *matching_dictionary_,
                                                          &it);
             if (r) {
-              auto services = make_services(iokit_iterator(it));
-              IOObjectRelease(it);
+              auto services = make_services(adopt_iokit_iterator(it));
 
               // Call service_matched
 
@@ -296,7 +294,7 @@ private:
     }
   }
 
-  static std::vector<iokit_registry_entry> make_services(const iokit_iterator& iterator) {
+  [[nodiscard]] static std::vector<iokit_registry_entry> make_services(const iokit_iterator& iterator) {
     std::vector<iokit_registry_entry> services;
 
     while (auto next = iterator.next()) {
@@ -306,7 +304,7 @@ private:
     return services;
   }
 
-  std::shared_ptr<cf::run_loop_thread> run_loop_thread_;
+  pqrs::not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread_;
   cf::cf_ptr<CFDictionaryRef> matching_dictionary_;
 
   IONotificationPortRef _Nullable notification_port_;

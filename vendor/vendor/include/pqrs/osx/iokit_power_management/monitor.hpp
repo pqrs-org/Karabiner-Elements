@@ -3,9 +3,13 @@
 #include <IOKit/IOMessage.h>
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #include <atomic>
+#include <chrono>
+#include <cstddef>
+#include <memory>
 #include <nod/nod.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/kern_return.hpp>
 #include <pqrs/thread_wait.hpp>
@@ -16,14 +20,17 @@ class monitor final : dispatcher::extra::dispatcher_client {
 public:
   class lifetime final {};
 
+  static constexpr auto sleep_prevention_wait_timeout = std::chrono::seconds(30);
+
   // Signals (invoked from the dispatcher thread)
+  // Important: Connect or disconnect these signals before async_start.
 
   // wait->notify() must be called in callback.
-  nod::signal<void(io_connect_t, intptr_t, std::shared_ptr<thread_wait>)> system_will_sleep;
+  nod::signal<void(io_connect_t, intptr_t, not_null_shared_ptr_t<thread_wait>)> system_will_sleep;
   nod::signal<void()> system_will_power_on;
   nod::signal<void()> system_has_powered_on;
   // wait->notify() must be called in callback.
-  nod::signal<void(io_connect_t, intptr_t, std::shared_ptr<thread_wait>)> can_system_sleep;
+  nod::signal<void(io_connect_t, intptr_t, not_null_shared_ptr_t<thread_wait>)> can_system_sleep;
   nod::signal<void()> system_will_not_sleep;
 
   nod::signal<void(const std::string&)> error_occurred;
@@ -42,7 +49,7 @@ public:
   // Note 2:
   // If `async_start` has been called, destroy `monitor` before terminating `run_loop_thread`.
   monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-          std::shared_ptr<cf::run_loop_thread> run_loop_thread)
+          not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread)
       : dispatcher_client(weak_dispatcher),
         run_loop_thread_(std::move(run_loop_thread)) {
   }
@@ -53,31 +60,46 @@ public:
     detach_from_dispatcher();
     lifetime_.reset();
 
-    if (registered_) {
-      auto wait = make_thread_wait();
-      run_loop_thread_->enqueue(^{
+    // `registered_` covers cleanup after start() has finished.
+    // `run_loop_tasks_` covers queued or running start()/stop() before registration state is updated.
+    if (registered_ ||
+        *run_loop_tasks_ > 0) {
+      if (CFRunLoopGetCurrent() == run_loop_thread_->get_run_loop()) {
         stop();
-        wait->notify();
-      });
-      wait->wait_notice();
+      } else {
+        not_null_shared_ptr_t<thread_wait> wait = make_thread_wait();
+        run_loop_thread_->enqueue(^{
+          stop();
+          wait->notify();
+        });
+        wait->wait_notice();
+      }
     }
   }
 
   void async_start() {
+    auto run_loop_tasks = run_loop_tasks_;
+    ++(*run_loop_tasks);
+
     auto weak_lifetime = std::weak_ptr<lifetime>(lifetime_);
     run_loop_thread_->enqueue(^{
       if (weak_lifetime.lock()) {
         start();
       }
+      --(*run_loop_tasks);
     });
   }
 
   void async_stop() {
+    auto run_loop_tasks = run_loop_tasks_;
+    ++(*run_loop_tasks);
+
     auto weak_lifetime = std::weak_ptr<lifetime>(lifetime_);
     run_loop_thread_->enqueue(^{
       if (weak_lifetime.lock()) {
         stop();
       }
+      --(*run_loop_tasks);
     });
   }
 
@@ -173,14 +195,15 @@ private:
           IOAllowPowerChange(kernel_port,
                              notification_id);
         } else {
-          auto wait = make_thread_wait();
+          not_null_shared_ptr_t<thread_wait> wait = make_thread_wait();
 
           if (enqueue_to_dispatcher([this, kernel_port, notification_id, wait] {
                 system_will_sleep(kernel_port,
                                   notification_id,
                                   wait);
               })) {
-            wait->wait_notice();
+            // Stop blocking the IOKit power callback after the expected response window.
+            wait->wait_notice_for(sleep_prevention_wait_timeout);
           } else {
             IOAllowPowerChange(kernel_port,
                                notification_id);
@@ -210,14 +233,15 @@ private:
           IOAllowPowerChange(kernel_port,
                              notification_id);
         } else {
-          auto wait = make_thread_wait();
+          not_null_shared_ptr_t<thread_wait> wait = make_thread_wait();
 
           if (enqueue_to_dispatcher([this, kernel_port, notification_id, wait] {
                 can_system_sleep(kernel_port,
                                  notification_id,
                                  wait);
               })) {
-            wait->wait_notice();
+            // Stop blocking the IOKit power callback after the expected response window.
+            wait->wait_notice_for(sleep_prevention_wait_timeout);
           } else {
             IOAllowPowerChange(kernel_port,
                                notification_id);
@@ -234,8 +258,9 @@ private:
     }
   }
 
-  std::shared_ptr<cf::run_loop_thread> run_loop_thread_;
+  not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread_;
   std::shared_ptr<lifetime> lifetime_ = std::make_shared<lifetime>();
+  not_null_shared_ptr_t<std::atomic<std::size_t>> run_loop_tasks_ = std::make_shared<std::atomic<std::size_t>>(0);
   std::atomic<bool> registered_ = false;
 
   IONotificationPortRef _Nullable notification_port_ = nullptr;

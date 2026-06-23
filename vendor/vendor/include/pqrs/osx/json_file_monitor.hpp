@@ -1,16 +1,15 @@
 #pragma once
 
-// pqrs::osx::json_file_monitor v1.1
+// pqrs::osx::json_file_monitor v1.2.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <nlohmann/json.hpp>
 #include <pqrs/osx/file_monitor.hpp>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 class json_file_monitor final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
@@ -34,28 +33,22 @@ public:
           json = std::make_shared<nlohmann::json>(
               nlohmann::json::parse(std::begin(*changed_file_body),
                                     std::end(*changed_file_body)));
-        } catch (std::exception& e) {
+        } catch (const std::exception& e) {
           std::string message(e.what());
-          enqueue_to_dispatcher([this, changed_file_path, message] {
-            json_error_occurred(changed_file_path, message);
-          });
+          json_error_occurred(changed_file_path, message);
           return;
         }
       }
 
-      enqueue_to_dispatcher([this, changed_file_path, json] {
-        json_file_changed(changed_file_path, json);
-      });
+      json_file_changed(changed_file_path, json);
     });
 
     file_monitor_->error_occurred.connect([this](auto&& message) {
-      enqueue_to_dispatcher([this, message] {
-        error_occurred(message);
-      });
+      error_occurred(message);
     });
   }
 
-  virtual ~json_file_monitor(void) {
+  ~json_file_monitor() override {
     // dispatcher_client
 
     detach_from_dispatcher([this] {
@@ -63,12 +56,11 @@ public:
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     file_monitor_->async_start();
   }
 
 private:
   std::unique_ptr<file_monitor> file_monitor_;
 };
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx

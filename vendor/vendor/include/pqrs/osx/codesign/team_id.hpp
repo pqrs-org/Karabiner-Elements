@@ -6,9 +6,7 @@
 
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace codesign {
+namespace pqrs::osx::codesign {
 
 struct team_id : type_safe::strong_typedef<team_id, std::string>,
                  type_safe::strong_typedef_op::equality_comparison<team_id> {
@@ -19,6 +17,4 @@ inline std::ostream& operator<<(std::ostream& stream, const team_id& value) {
   return stream << type_safe::get(value);
 }
 
-} // namespace codesign
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::codesign

@@ -2,15 +2,13 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <cstdint>
 #include <ostream>
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace chrono {
+namespace pqrs::osx::chrono {
 struct absolute_time_duration : type_safe::strong_typedef<absolute_time_duration, int64_t>,
                                 type_safe::strong_typedef_op::equality_comparison<absolute_time_duration>,
                                 type_safe::strong_typedef_op::relational_comparison<absolute_time_duration>,
@@ -26,9 +24,7 @@ struct absolute_time_duration : type_safe::strong_typedef<absolute_time_duration
 inline std::ostream& operator<<(std::ostream& stream, const absolute_time_duration& value) {
   return stream << type_safe::get(value);
 }
-} // namespace chrono
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::chrono
 
 namespace std {
 template <>

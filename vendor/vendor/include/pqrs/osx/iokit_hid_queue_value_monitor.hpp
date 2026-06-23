@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_queue_value_monitor v2.2
+// pqrs::osx::iokit_hid_queue_value_monitor v2.3.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -13,19 +13,20 @@
 #include <optional>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/iokit_types.hpp>
+#include <utility>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 class iokit_hid_queue_value_monitor final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(void)> started;
-  nod::signal<void(void)> stopped;
-  nod::signal<void(std::shared_ptr<std::vector<cf::cf_ptr<IOHIDValueRef>>>)> values_arrived;
+  nod::signal<void()> started;
+  nod::signal<void()> stopped;
+  nod::signal<void(not_null_shared_ptr_t<std::vector<cf::cf_ptr<IOHIDValueRef>>>)> values_arrived;
   nod::signal<void(const std::string&, iokit_return)> error_occurred;
 
   // Methods
@@ -36,7 +37,7 @@ public:
   // If such a condition occurs, cf::run_loop_thread detects it and calls abort to avoid it.
   // However, to avoid the problem itself, cf::run_loop_thread should be provided externally instead of having it internally.
   iokit_hid_queue_value_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
-                                std::shared_ptr<cf::run_loop_thread> run_loop_thread,
+                                not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread,
                                 IOHIDDeviceRef device)
       : dispatcher_client(weak_dispatcher),
         run_loop_thread_(run_loop_thread),
@@ -64,7 +65,7 @@ public:
     wait->wait_notice();
   }
 
-  virtual ~iokit_hid_queue_value_monitor(void) {
+  ~iokit_hid_queue_value_monitor() override {
     //
     // dispatcher_client
     //
@@ -111,7 +112,7 @@ public:
     });
   }
 
-  void async_stop(void) {
+  void async_stop() {
     {
       std::lock_guard<std::mutex> lock(open_options_mutex_);
 
@@ -123,7 +124,7 @@ public:
     });
   }
 
-  bool seized() const {
+  [[nodiscard]] bool seized() const {
     std::lock_guard<std::mutex> lock(open_options_mutex_);
 
     return current_open_options_ != std::nullopt
@@ -132,7 +133,7 @@ public:
   }
 
 private:
-  void start(void) {
+  void start() {
     bool needs_stop = false;
     IOOptionBits open_options = kIOHIDOptionsTypeNone;
 
@@ -246,7 +247,7 @@ private:
     });
   }
 
-  void start_queue(void) {
+  void start_queue() {
     if (!queue_) {
       const CFIndex depth = 1024;
       queue_ = hid_device_.make_queue(depth);
@@ -269,7 +270,7 @@ private:
     }
   }
 
-  void stop_queue(void) {
+  void stop_queue() {
     if (queue_) {
       IOHIDQueueStop(*queue_);
 
@@ -298,7 +299,7 @@ private:
     self->device_removal_callback();
   }
 
-  void device_removal_callback(void) {
+  void device_removal_callback() {
     stop({.check_requested_open_options = false});
   }
 
@@ -317,14 +318,12 @@ private:
     self->queue_value_available_callback();
   }
 
-  void queue_value_available_callback(void) {
+  void queue_value_available_callback() {
     if (queue_) {
-      auto values = std::make_shared<std::vector<cf::cf_ptr<IOHIDValueRef>>>();
+      not_null_shared_ptr_t<std::vector<cf::cf_ptr<IOHIDValueRef>>> values = std::make_shared<std::vector<cf::cf_ptr<IOHIDValueRef>>>();
 
-      while (auto v = IOHIDQueueCopyNextValueWithTimeout(*queue_, 0.0)) {
-        values->emplace_back(v);
-
-        CFRelease(v);
+      while (auto v = cf::adopt_cf_ptr(IOHIDQueueCopyNextValueWithTimeout(*queue_, 0.0))) {
+        values->emplace_back(std::move(v));
       }
 
       // macOS Catalina (10.15) call the `ValueAvailableCallback`
@@ -346,7 +345,7 @@ private:
     }
   }
 
-  std::shared_ptr<cf::run_loop_thread> run_loop_thread_;
+  not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread_;
 
   iokit_hid_device hid_device_;
   dispatcher::extra::timer open_timer_;
@@ -356,5 +355,4 @@ private:
   iokit_return last_open_error_;
   cf::cf_ptr<IOHIDQueueRef> queue_;
 };
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx

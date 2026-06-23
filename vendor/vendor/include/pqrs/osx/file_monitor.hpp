@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::file_monitor v2.0.0
+// pqrs::osx::file_monitor v2.1.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -17,20 +17,27 @@
 #include <CoreServices/CoreServices.h>
 #include <algorithm>
 #include <atomic>
+#include <cstddef>
+#include <cstdint>
+#include <fstream>
+#include <memory>
+#include <mutex>
 #include <nod/nod.hpp>
+#include <optional>
 #include <ostream>
 #include <pqrs/cf/array.hpp>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/filesystem.hpp>
+#include <pqrs/gsl.hpp>
+#include <string>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 class file_monitor final : public dispatcher::extra::dispatcher_client {
 public:
   enum class availability {
@@ -45,6 +52,8 @@ public:
       case availability::available:
         return stream << "available";
     }
+
+    std::unreachable();
   }
 
   // Signals (invoked from the dispatcher thread)
@@ -89,7 +98,7 @@ public:
     });
   }
 
-  bool ready() const noexcept {
+  [[nodiscard]] bool ready() const noexcept {
     return ready_.load();
   }
 
@@ -106,7 +115,7 @@ public:
     });
   }
 
-  static std::shared_ptr<std::vector<uint8_t>> read_file(const std::string& path) {
+  [[nodiscard]] static std::shared_ptr<std::vector<uint8_t>> read_file(const std::string& path) {
     std::ifstream ifstream(path);
     if (!ifstream) {
       return nullptr;
@@ -289,7 +298,7 @@ private:
       return;
     }
 
-    auto fs_events = std::make_shared<std::vector<fs_event>>();
+    pqrs::not_null_shared_ptr_t<std::vector<fs_event>> fs_events(std::make_shared<std::vector<fs_event>>());
 
     auto paths = static_cast<const char**>(event_paths);
     for (size_t i = 0; i < num_events; ++i) {
@@ -305,7 +314,7 @@ private:
   }
 
   // This method is executed in the dispatcher thread.
-  void stream_callback(std::shared_ptr<std::vector<fs_event>> fs_events) {
+  void stream_callback(pqrs::not_null_shared_ptr_t<std::vector<fs_event>> fs_events) {
     update_watched_directory_availabilities();
 
     for (const auto& e : *fs_events) {
@@ -404,7 +413,7 @@ private:
     }
   }
 
-  cf::cf_ptr<CFMutableArrayRef> make_stream_directories() const {
+  [[nodiscard]] cf::cf_ptr<CFMutableArrayRef> make_stream_directories() const {
     auto directories = cf::make_cf_mutable_array();
     if (!directories) {
       return nullptr;
@@ -424,7 +433,7 @@ private:
     return directories;
   }
 
-  std::string find_stream_directory(std::string directory_path) const {
+  [[nodiscard]] std::string find_stream_directory(std::string directory_path) const {
     while (!directory_path.empty()) {
       if (filesystem::realpath(directory_path)) {
         return directory_path;
@@ -461,7 +470,7 @@ private:
   }
 
   // This method is executed in the dispatcher thread.
-  std::tuple<bool, std::shared_ptr<std::vector<uint8_t>>, std::optional<availability>> update_file_bodies(const std::string& file_path) {
+  [[nodiscard]] std::tuple<bool, std::shared_ptr<std::vector<uint8_t>>, std::optional<availability>> update_file_bodies(const std::string& file_path) {
     auto file_body = read_file(file_path);
     auto it = file_bodies_.find(file_path);
     auto previous_available = it != std::end(file_bodies_) && static_cast<bool>(it->second);
@@ -505,5 +514,4 @@ private:
 #include "file_monitor/impl/file_monitors_manager.hpp"
   };
 };
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx

@@ -10,9 +10,7 @@
 #include <pqrs/hid.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace cg_event {
+namespace pqrs::osx::cg_event {
 namespace aux_control_button {
 struct value_t : type_safe::strong_typedef<value_t, uint16_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
@@ -88,7 +86,7 @@ constexpr auto usage_page_apple_vendor_top_case_map = mapbox::eternal::map<hid::
 });
 
 template <typename T>
-inline std::optional<value_t> find(T& map, hid::usage::value_t usage) {
+[[nodiscard]] inline std::optional<value_t> find(const T& map, hid::usage::value_t usage) noexcept {
   auto it = map.find(usage);
   if (it != std::end(map)) {
     return it->second;
@@ -97,7 +95,8 @@ inline std::optional<value_t> find(T& map, hid::usage::value_t usage) {
 }
 
 template <typename T>
-inline std::optional<hid::usage::value_t> find_usage(T& map, aux_control_button::value_t aux_control_button) {
+[[nodiscard]] inline std::optional<hid::usage::value_t> find_usage(const T& map,
+                                                                   aux_control_button::value_t aux_control_button) noexcept {
   for (const auto& [usage, mapped_aux_control_button] : map) {
     if (mapped_aux_control_button == aux_control_button) {
       return usage;
@@ -108,7 +107,8 @@ inline std::optional<hid::usage::value_t> find_usage(T& map, aux_control_button:
 } // namespace impl
 } // namespace aux_control_button
 
-inline std::optional<aux_control_button::value_t> make_aux_control_button(hid::usage_page::value_t usage_page, hid::usage::value_t usage) {
+[[nodiscard]] inline std::optional<aux_control_button::value_t> make_aux_control_button(hid::usage_page::value_t usage_page,
+                                                                                        hid::usage::value_t usage) noexcept {
   if (usage_page == hid::usage_page::keyboard_or_keypad) {
     return aux_control_button::impl::find(aux_control_button::impl::usage_page_keyboard_or_keypad_map, usage);
   } else if (usage_page == hid::usage_page::consumer) {
@@ -122,7 +122,7 @@ inline std::optional<aux_control_button::value_t> make_aux_control_button(hid::u
   return std::nullopt;
 }
 
-inline std::optional<hid::usage_pair> make_usage_pair(aux_control_button::value_t aux_control_button) {
+[[nodiscard]] inline std::optional<hid::usage_pair> make_usage_pair(aux_control_button::value_t aux_control_button) noexcept {
   // Some usage_pair values share a single aux_control_button::value_t.
   // Use the following priority so the reverse conversion stays deterministic:
   //
@@ -161,9 +161,7 @@ inline std::optional<hid::usage_pair> make_usage_pair(aux_control_button::value_
 
   return std::nullopt;
 }
-} // namespace cg_event
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::cg_event
 
 namespace std {
 template <>

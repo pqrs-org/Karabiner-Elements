@@ -13,10 +13,8 @@
 #include "impl/impl.h"
 #include "key_code.hpp"
 
-namespace pqrs {
-namespace osx {
-namespace cg_event {
-inline std::optional<event_type> make_event_type(CGEventRef event) {
+namespace pqrs::osx::cg_event {
+[[nodiscard]] inline std::optional<event_type> make_event_type(CGEventRef event) noexcept {
   if (!event) {
     return std::nullopt;
   }
@@ -49,7 +47,7 @@ inline std::optional<event_type> make_event_type(CGEventRef event) {
   return std::nullopt;
 }
 
-inline std::optional<hid::usage_pair> make_usage_pair(CGEventRef event) {
+[[nodiscard]] inline std::optional<hid::usage_pair> make_usage_pair(CGEventRef event) noexcept {
   if (!event) {
     return std::nullopt;
   }
@@ -72,6 +70,4 @@ inline std::optional<hid::usage_pair> make_usage_pair(CGEventRef event) {
 
   return std::nullopt;
 }
-} // namespace cg_event
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::cg_event

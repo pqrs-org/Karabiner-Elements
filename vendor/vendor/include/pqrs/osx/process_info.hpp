@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::process_info v2.3
+// pqrs::osx::process_info v2.4.0
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
@@ -9,12 +9,13 @@
 // `pqrs::osx::process_info` can be used safely in a multi-threaded environment.
 
 #include "process_info/impl/impl.h"
-#include <pqrs/cf/string.hpp>
+#include <string>
 
-namespace pqrs {
-namespace osx {
-namespace process_info {
-inline std::string globally_unique_string(void) {
+namespace pqrs::osx::process_info {
+[[nodiscard]] inline std::string globally_unique_string() {
+  // ProcessInfo.globallyUniqueString is UUID-like in current Foundation
+  // implementations, but the API does not document a maximum length. Use a
+  // comfortably larger buffer to leave room for future format changes.
   char buffer[256];
 
   pqrs_osx_process_info_create_globally_unique_string(buffer, sizeof(buffer));
@@ -22,28 +23,26 @@ inline std::string globally_unique_string(void) {
   return buffer;
 }
 
-inline int process_identifier(void) {
+[[nodiscard]] inline int process_identifier() noexcept {
   return pqrs_osx_process_info_process_identifier();
 }
 
-inline void disable_sudden_termination(void) {
+inline void disable_sudden_termination() noexcept {
   pqrs_osx_process_info_disable_sudden_termination();
 }
 
-inline void enable_sudden_termination(void) {
+inline void enable_sudden_termination() noexcept {
   pqrs_osx_process_info_enable_sudden_termination();
 }
 
 class scoped_sudden_termination_blocker final {
 public:
-  scoped_sudden_termination_blocker(void) {
+  scoped_sudden_termination_blocker() noexcept {
     disable_sudden_termination();
   }
 
-  ~scoped_sudden_termination_blocker(void) {
+  ~scoped_sudden_termination_blocker() noexcept {
     enable_sudden_termination();
   }
 };
-} // namespace process_info
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::process_info

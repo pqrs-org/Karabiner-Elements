@@ -1,10 +1,10 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_event_system_client v1.1
+// pqrs::osx::iokit_hid_event_system_client v1.2.0
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <IOKit/hidsystem/IOHIDEventSystemClient.h>
 #include <IOKit/hidsystem/IOHIDParameter.h>
@@ -16,46 +16,39 @@
 #include <unordered_map>
 #include <vector>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 class iokit_hid_event_system_client final {
 public:
   iokit_hid_event_system_client(const iokit_hid_event_system_client&) = delete;
 
-  iokit_hid_event_system_client(void) {
+  iokit_hid_event_system_client() {
     reload_service_clients();
   }
 
-  virtual ~iokit_hid_event_system_client(void) {
+  ~iokit_hid_event_system_client() noexcept {
     clear();
   }
 
-  void reload_service_clients(void) {
+  void reload_service_clients() {
     clear();
 
-    if (auto c = IOHIDEventSystemClientCreateSimpleClient(kCFAllocatorDefault)) {
-      event_system_client_ = c;
-
-      CFRelease(c);
-    }
+    event_system_client_ = cf::adopt_cf_ptr(IOHIDEventSystemClientCreateSimpleClient(kCFAllocatorDefault));
 
     if (event_system_client_) {
-      if (CFArrayRef services = IOHIDEventSystemClientCopyServices(*event_system_client_)) {
-        for (CFIndex i = 0; i < CFArrayGetCount(services); i++) {
-          if (auto c = cf::get_cf_array_value<IOHIDServiceClientRef>(services, i)) {
+      if (auto services = cf::adopt_cf_ptr(IOHIDEventSystemClientCopyServices(*event_system_client_))) {
+        for (CFIndex i = 0; i < CFArrayGetCount(*services); i++) {
+          if (auto c = cf::get_cf_array_value<IOHIDServiceClientRef>(*services, i)) {
             if (auto id = cf::make_number<int64_t>(IOHIDServiceClientGetRegistryID(c))) {
               iokit_registry_entry_id::value_t registry_entry_id(*id);
-              service_clients_[registry_entry_id] = cf::cf_ptr(c);
+              service_clients_.insert_or_assign(registry_entry_id, cf::cf_ptr(c));
             }
           }
         }
-
-        CFRelease(services);
       }
     }
   }
 
-  std::vector<iokit_registry_entry_id::value_t> make_registry_entry_ids(void) const {
+  [[nodiscard]] std::vector<iokit_registry_entry_id::value_t> make_registry_entry_ids() const {
     std::vector<iokit_registry_entry_id::value_t> registry_entry_ids;
 
     for (const auto& it : service_clients_) {
@@ -66,15 +59,14 @@ public:
   }
 
   template <typename T>
-  std::optional<T> get_integer_property(iokit_registry_entry_id::value_t registry_entry_id,
-                                        CFStringRef key) const {
+  [[nodiscard]] std::optional<T> get_integer_property(iokit_registry_entry_id::value_t registry_entry_id,
+                                                      CFStringRef key) const noexcept {
     std::optional<T> result;
 
     auto it = service_clients_.find(registry_entry_id);
     if (it != std::end(service_clients_)) {
-      if (auto value = IOHIDServiceClientCopyProperty(*(it->second), key)) {
-        result = cf::make_number<T>(value);
-        CFRelease(value);
+      if (auto value = cf::adopt_cf_ptr(IOHIDServiceClientCopyProperty(*(it->second), key))) {
+        result = cf::make_number<T>(*value);
       }
     }
 
@@ -84,7 +76,7 @@ public:
   template <typename T>
   void set_integer_property(iokit_registry_entry_id::value_t registry_entry_id,
                             CFStringRef key,
-                            T value) const {
+                            T value) const noexcept {
     auto it = service_clients_.find(registry_entry_id);
     if (it != std::end(service_clients_)) {
       if (auto v = cf::make_cf_number(value)) {
@@ -93,44 +85,44 @@ public:
     }
   }
 
-  std::optional<int64_t> get_initial_key_repeat(iokit_registry_entry_id::value_t registry_entry_id) const {
+  [[nodiscard]] std::optional<int64_t> get_initial_key_repeat(iokit_registry_entry_id::value_t registry_entry_id) const noexcept {
     return get_integer_property<int64_t>(registry_entry_id,
                                          CFSTR(kIOHIDServiceInitialKeyRepeatDelayKey));
   }
 
   void set_initial_key_repeat(iokit_registry_entry_id::value_t registry_entry_id,
-                              int64_t value) const {
+                              int64_t value) const noexcept {
     set_integer_property(registry_entry_id,
                          CFSTR(kIOHIDServiceInitialKeyRepeatDelayKey),
                          value);
   }
 
-  std::optional<int64_t> get_key_repeat(iokit_registry_entry_id::value_t registry_entry_id) const {
+  [[nodiscard]] std::optional<int64_t> get_key_repeat(iokit_registry_entry_id::value_t registry_entry_id) const noexcept {
     return get_integer_property<int64_t>(registry_entry_id,
                                          CFSTR(kIOHIDServiceKeyRepeatDelayKey));
   }
 
   void set_key_repeat(iokit_registry_entry_id::value_t registry_entry_id,
-                      int64_t value) const {
+                      int64_t value) const noexcept {
     set_integer_property(registry_entry_id,
                          CFSTR(kIOHIDServiceKeyRepeatDelayKey),
                          value);
   }
 
-  std::optional<int64_t> get_caps_lock_delay_override(iokit_registry_entry_id::value_t registry_entry_id) const {
+  [[nodiscard]] std::optional<int64_t> get_caps_lock_delay_override(iokit_registry_entry_id::value_t registry_entry_id) const noexcept {
     return get_integer_property<int64_t>(registry_entry_id,
                                          CFSTR(kIOHIDKeyboardCapsLockDelayOverrideKey));
   }
 
   void set_caps_lock_delay_override(iokit_registry_entry_id::value_t registry_entry_id,
-                                    int32_t value) const {
+                                    int32_t value) const noexcept {
     set_integer_property(registry_entry_id,
                          CFSTR(kIOHIDKeyboardCapsLockDelayOverrideKey),
                          value);
   }
 
 private:
-  void clear(void) {
+  void clear() noexcept {
     service_clients_.clear();
     event_system_client_.reset();
   }
@@ -138,5 +130,4 @@ private:
   cf::cf_ptr<IOHIDEventSystemClientRef> event_system_client_;
   std::unordered_map<iokit_registry_entry_id::value_t, cf::cf_ptr<IOHIDServiceClientRef>> service_clients_;
 };
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx

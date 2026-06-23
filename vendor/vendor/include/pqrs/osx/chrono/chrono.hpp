@@ -2,7 +2,7 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include "absolute_time_point.hpp"
 #include "impl/chrono.hpp"
@@ -10,14 +10,12 @@
 #include <mach/mach_time.h>
 #include <time.h>
 
-namespace pqrs {
-namespace osx {
-namespace chrono {
-inline absolute_time_point mach_absolute_time_point(void) {
+namespace pqrs::osx::chrono {
+[[nodiscard]] inline absolute_time_point mach_absolute_time_point() noexcept {
   return absolute_time_point(mach_absolute_time());
 }
 
-inline std::chrono::nanoseconds make_nanoseconds(absolute_time_duration time) {
+[[nodiscard]] inline std::chrono::nanoseconds make_nanoseconds(absolute_time_duration time) noexcept {
   auto& t = impl::get_mach_timebase_info_data();
   if (t.numer != t.denom && t.denom != 0) {
     auto f = static_cast<double>(t.numer) / t.denom;
@@ -26,11 +24,11 @@ inline std::chrono::nanoseconds make_nanoseconds(absolute_time_duration time) {
   return std::chrono::nanoseconds(type_safe::get(time));
 }
 
-inline std::chrono::milliseconds make_milliseconds(absolute_time_duration time) {
+[[nodiscard]] inline std::chrono::milliseconds make_milliseconds(absolute_time_duration time) noexcept {
   return std::chrono::duration_cast<std::chrono::milliseconds>(make_nanoseconds(time));
 }
 
-inline absolute_time_duration make_absolute_time_duration(std::chrono::nanoseconds time) {
+[[nodiscard]] inline absolute_time_duration make_absolute_time_duration(std::chrono::nanoseconds time) noexcept {
   auto& t = impl::get_mach_timebase_info_data();
   if (t.numer != t.denom && t.numer != 0) {
     auto f = static_cast<double>(t.denom) / t.numer;
@@ -38,6 +36,4 @@ inline absolute_time_duration make_absolute_time_duration(std::chrono::nanosecon
   }
   return absolute_time_duration(time.count());
 }
-} // namespace chrono
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::chrono

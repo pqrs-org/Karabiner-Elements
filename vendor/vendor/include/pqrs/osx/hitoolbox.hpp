@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::hitoolbox v1.0
+// pqrs::osx::hitoolbox v1.1.0
 
 // (C) Copyright Takayama Fumihiko 2026.
 // Distributed under the Boost Software License, Version 1.0.

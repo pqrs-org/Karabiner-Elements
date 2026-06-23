@@ -2,7 +2,7 @@
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <CoreGraphics/CoreGraphics.h>
 #include <optional>
@@ -10,12 +10,10 @@
 #include <pqrs/cf/number.hpp>
 #include <pqrs/cf/string.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace session {
+namespace pqrs::osx::session {
 class cg_attributes final {
 public:
-  cg_attributes(CFDictionaryRef dictionary) {
+  explicit cg_attributes(CFDictionaryRef dictionary) {
     if (auto v = pqrs::cf::make_number<int64_t>(CFDictionaryGetValue(dictionary, kCGSessionConsoleSetKey))) {
       console_set_ = static_cast<uint32_t>(*v);
     }
@@ -31,23 +29,23 @@ public:
     user_name_ = pqrs::cf::make_string(CFDictionaryGetValue(dictionary, kCGSessionUserNameKey));
   }
 
-  const std::optional<uint32_t>& get_console_set(void) const {
+  [[nodiscard]] const std::optional<uint32_t>& get_console_set() const noexcept {
     return console_set_;
   }
 
-  const std::optional<bool>& get_login_done(void) const {
+  [[nodiscard]] const std::optional<bool>& get_login_done() const noexcept {
     return login_done_;
   }
 
-  const std::optional<bool>& get_on_console(void) const {
+  [[nodiscard]] const std::optional<bool>& get_on_console() const noexcept {
     return on_console_;
   }
 
-  const std::optional<uid_t>& get_user_id(void) const {
+  [[nodiscard]] const std::optional<uid_t>& get_user_id() const noexcept {
     return user_id_;
   }
 
-  const std::optional<std::string>& get_user_name(void) const {
+  [[nodiscard]] const std::optional<std::string>& get_user_name() const noexcept {
     return user_name_;
   }
 
@@ -58,6 +56,4 @@ private:
   std::optional<uid_t> user_id_;
   std::optional<std::string> user_name_;
 };
-} // namespace session
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::session

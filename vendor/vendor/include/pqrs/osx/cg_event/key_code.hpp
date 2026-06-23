@@ -8,9 +8,7 @@
 #include <optional>
 #include <pqrs/osx/iokit_types.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace cg_event {
+namespace pqrs::osx::cg_event {
 namespace key_code {
 // NXEventData.key.keyCode is uint16_t.
 struct value_t : type_safe::strong_typedef<value_t, uint16_t>,
@@ -446,7 +444,7 @@ constexpr auto usage_page_generic_desktop_map = mapbox::eternal::map<hid::usage:
 #undef PQRS_OSX_CG_EVENT_KEY_CODE_PAIR
 
 template <typename T>
-inline std::optional<key_code::value_t> find(T& map, hid::usage::value_t usage) {
+[[nodiscard]] inline std::optional<key_code::value_t> find(const T& map, hid::usage::value_t usage) noexcept {
   auto it = map.find(usage);
   if (it != std::end(map)) {
     return it->second;
@@ -455,7 +453,7 @@ inline std::optional<key_code::value_t> find(T& map, hid::usage::value_t usage) 
 }
 
 template <typename T>
-inline std::optional<hid::usage::value_t> find_usage(T& map, key_code::value_t key_code) {
+[[nodiscard]] inline std::optional<hid::usage::value_t> find_usage(const T& map, key_code::value_t key_code) noexcept {
   for (const auto& [usage, mapped_key_code] : map) {
     if (mapped_key_code == key_code) {
       return usage;
@@ -466,7 +464,8 @@ inline std::optional<hid::usage::value_t> find_usage(T& map, key_code::value_t k
 } // namespace impl
 } // namespace key_code
 
-inline std::optional<key_code::value_t> make_key_code(hid::usage_page::value_t usage_page, hid::usage::value_t usage) {
+[[nodiscard]] inline std::optional<key_code::value_t> make_key_code(hid::usage_page::value_t usage_page,
+                                                                    hid::usage::value_t usage) noexcept {
   if (usage_page == hid::usage_page::keyboard_or_keypad) {
     return key_code::impl::find(key_code::impl::usage_page_keyboard_or_keypad_map, usage);
   } else if (usage_page == hid::usage_page::consumer) {
@@ -482,7 +481,7 @@ inline std::optional<key_code::value_t> make_key_code(hid::usage_page::value_t u
   return std::nullopt;
 }
 
-inline std::optional<hid::usage_pair> make_usage_pair(key_code::value_t key_code) {
+[[nodiscard]] inline std::optional<hid::usage_pair> make_usage_pair(key_code::value_t key_code) noexcept {
   // There is only one exceptional case where multiple usage_pair values share a single key_code::value_t.
   // The following two usage_pair values both map to key_code::value_t(0x3f).
   // Check apple_vendor_top_case first so that apple_vendor_top_case_keyboard_fn is preferred.
@@ -504,9 +503,7 @@ inline std::optional<hid::usage_pair> make_usage_pair(key_code::value_t key_code
 
   return std::nullopt;
 }
-} // namespace cg_event
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::cg_event
 
 namespace std {
 template <>

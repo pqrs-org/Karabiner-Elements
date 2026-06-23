@@ -7,22 +7,18 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <pqrs/cf/cf_ptr.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace cg_event {
-namespace mouse {
-inline CGPoint cursor_position() {
+namespace pqrs::osx::cg_event::mouse {
+[[nodiscard]] inline CGPoint cursor_position() noexcept {
   auto point = CGPointZero;
 
-  if (auto e = CGEventCreate(nullptr)) {
-    point = CGEventGetLocation(e);
-    CFRelease(e);
+  if (auto e = cf::adopt_cf_ptr(CGEventCreate(nullptr))) {
+    point = CGEventGetLocation(*e);
   }
 
   return point;
 }
 
-inline CGEventType mouse_down_event_type(CGMouseButton mouse_button) {
+[[nodiscard]] inline CGEventType mouse_down_event_type(CGMouseButton mouse_button) noexcept {
   switch (mouse_button) {
     case kCGMouseButtonLeft:
       return kCGEventLeftMouseDown;
@@ -33,7 +29,7 @@ inline CGEventType mouse_down_event_type(CGMouseButton mouse_button) {
   }
 }
 
-inline CGEventType mouse_up_event_type(CGMouseButton mouse_button) {
+[[nodiscard]] inline CGEventType mouse_up_event_type(CGMouseButton mouse_button) noexcept {
   switch (mouse_button) {
     case kCGMouseButtonLeft:
       return kCGEventLeftMouseUp;
@@ -47,17 +43,15 @@ inline CGEventType mouse_up_event_type(CGMouseButton mouse_button) {
 inline void post_event(CGEventType mouse_type,
                        const CGPoint& mouse_cursor_position,
                        CGMouseButton mouse_button,
-                       int click_count) {
-  if (auto e = CGEventCreateMouseEvent(nullptr, mouse_type, mouse_cursor_position, mouse_button)) {
-    CGEventSetIntegerValueField(e, kCGMouseEventClickState, click_count);
-    CGEventPost(kCGHIDEventTap, e);
-
-    CFRelease(e);
+                       int click_count) noexcept {
+  if (auto e = cf::adopt_cf_ptr(CGEventCreateMouseEvent(nullptr, mouse_type, mouse_cursor_position, mouse_button))) {
+    CGEventSetIntegerValueField(*e, kCGMouseEventClickState, click_count);
+    CGEventPost(kCGHIDEventTap, *e);
   }
 }
 
 inline void post_single_click(const CGPoint& mouse_cursor_position,
-                              CGMouseButton mouse_button) {
+                              CGMouseButton mouse_button) noexcept {
   post_event(mouse_down_event_type(mouse_button),
              mouse_cursor_position,
              mouse_button,
@@ -70,7 +64,7 @@ inline void post_single_click(const CGPoint& mouse_cursor_position,
 }
 
 inline void post_double_click(const CGPoint& mouse_cursor_position,
-                              CGMouseButton mouse_button) {
+                              CGMouseButton mouse_button) noexcept {
   for (auto i = 1; i <= 2; ++i) {
     post_event(mouse_down_event_type(mouse_button),
                mouse_cursor_position,
@@ -83,7 +77,4 @@ inline void post_double_click(const CGPoint& mouse_cursor_position,
                i);
   }
 }
-} // namespace mouse
-} // namespace cg_event
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::cg_event::mouse

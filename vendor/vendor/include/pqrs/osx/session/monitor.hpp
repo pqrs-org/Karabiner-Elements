@@ -2,7 +2,7 @@
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 // `pqrs::osx::session::monitor` can be used safely in a multi-threaded environment.
 
@@ -11,9 +11,7 @@
 #include <optional>
 #include <pqrs/dispatcher.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace session {
+namespace pqrs::osx::session {
 class monitor final : public dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the dispatcher thread)
@@ -24,11 +22,11 @@ public:
 
   monitor(const monitor&) = delete;
 
-  monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
-                                                                   timer_(*this) {
+  explicit monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
+                                                                            timer_(*this) {
   }
 
-  virtual ~monitor(void) {
+  ~monitor() override {
     detach_from_dispatcher();
   }
 
@@ -55,7 +53,7 @@ public:
         check_interval);
   }
 
-  void async_stop(void) {
+  void async_stop() {
     timer_.stop();
   }
 
@@ -63,6 +61,4 @@ private:
   dispatcher::extra::timer timer_;
   std::optional<bool> on_console_;
 };
-} // namespace session
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::session

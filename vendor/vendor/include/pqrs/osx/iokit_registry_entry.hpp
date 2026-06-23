@@ -1,77 +1,82 @@
 #pragma once
 
-// pqrs::osx::iokit_service v3.0
+// pqrs::osx::iokit_service v3.1.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <optional>
 #include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/osx/iokit_iterator.hpp>
 #include <pqrs/osx/iokit_types.hpp>
+#include <utility>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 class iokit_registry_entry final {
 public:
   //
   // Constructors
   //
 
-  iokit_registry_entry(void) : iokit_registry_entry(IO_OBJECT_NULL) {
+  iokit_registry_entry() noexcept
+      : iokit_registry_entry(IO_OBJECT_NULL) {
   }
 
-  explicit iokit_registry_entry(io_registry_entry_t registry_entry) : registry_entry_(registry_entry) {
+  explicit iokit_registry_entry(io_registry_entry_t registry_entry) noexcept
+      : registry_entry_(registry_entry) {
   }
 
-  explicit iokit_registry_entry(const iokit_object_ptr& registry_entry) : registry_entry_(registry_entry) {
+  explicit iokit_registry_entry(const iokit_object_ptr& registry_entry) noexcept
+      : registry_entry_(registry_entry) {
   }
 
-  static iokit_registry_entry get_root_entry(iokit_mach_port::value_t port = iokit_mach_port::null) {
-    return iokit_registry_entry(IORegistryGetRootEntry(type_safe::get(port)));
+  explicit iokit_registry_entry(iokit_object_ptr&& registry_entry) noexcept
+      : registry_entry_(std::move(registry_entry)) {
+  }
+
+  [[nodiscard]] static iokit_registry_entry get_root_entry(iokit_mach_port::value_t port = iokit_mach_port::null) noexcept {
+    return iokit_registry_entry(adopt_iokit_object_ptr(IORegistryGetRootEntry(type_safe::get(port))));
   }
 
   //
   // Methods
   //
 
-  const iokit_object_ptr& get(void) const {
+  [[nodiscard]] const iokit_object_ptr& get() const noexcept {
     return registry_entry_;
   }
 
-  iokit_iterator get_child_iterator(const io_name_t plane) const {
+  [[nodiscard]] iokit_iterator get_child_iterator(const io_name_t plane) const noexcept {
     iokit_iterator result;
 
     if (registry_entry_) {
       io_iterator_t it = IO_OBJECT_NULL;
       kern_return r = IORegistryEntryGetChildIterator(*registry_entry_, plane, &it);
       if (r) {
-        result = iokit_iterator(it);
-        IOObjectRelease(it);
+        result = adopt_iokit_iterator(it);
       }
     }
 
     return result;
   }
 
-  iokit_iterator get_parent_iterator(const io_name_t plane) const {
+  [[nodiscard]] iokit_iterator get_parent_iterator(const io_name_t plane) const noexcept {
     iokit_iterator result;
 
     if (registry_entry_) {
       io_iterator_t it = IO_OBJECT_NULL;
       kern_return r = IORegistryEntryGetParentIterator(*registry_entry_, plane, &it);
       if (r) {
-        result = iokit_iterator(it);
-        IOObjectRelease(it);
+        result = adopt_iokit_iterator(it);
       }
     }
 
     return result;
   }
 
-  std::optional<std::string> find_location_in_plane(const io_name_t plane) const {
+  [[nodiscard]] std::optional<std::string> find_location_in_plane(const io_name_t plane) const {
     if (registry_entry_) {
       io_name_t location;
       kern_return r = IORegistryEntryGetLocationInPlane(*registry_entry_, plane, location);
@@ -83,7 +88,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::string> find_name(void) const {
+  [[nodiscard]] std::optional<std::string> find_name() const {
     if (registry_entry_) {
       io_name_t name;
       kern_return r = IORegistryEntryGetName(*registry_entry_, name);
@@ -95,7 +100,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::string> find_name_in_plane(const io_name_t plane) const {
+  [[nodiscard]] std::optional<std::string> find_name_in_plane(const io_name_t plane) const {
     if (registry_entry_) {
       io_name_t name;
       kern_return r = IORegistryEntryGetNameInPlane(*registry_entry_, plane, name);
@@ -107,53 +112,50 @@ public:
     return std::nullopt;
   }
 
-  cf::cf_ptr<CFMutableDictionaryRef> find_properties(void) const {
+  [[nodiscard]] cf::cf_ptr<CFMutableDictionaryRef> find_properties() const noexcept {
     cf::cf_ptr<CFMutableDictionaryRef> result;
 
     if (registry_entry_) {
-      CFMutableDictionaryRef properties;
+      CFMutableDictionaryRef properties = nullptr;
       kern_return r = IORegistryEntryCreateCFProperties(*registry_entry_, &properties, kCFAllocatorDefault, kNilOptions);
       if (r) {
-        result = properties;
-        CFRelease(properties);
+        result = cf::adopt_cf_ptr(properties);
       }
     }
 
     return result;
   }
 
-  std::optional<int64_t> find_int64_property(CFStringRef key) const {
+  [[nodiscard]] std::optional<int64_t> find_int64_property(CFStringRef key) const noexcept {
     std::optional<int64_t> result;
 
     if (registry_entry_) {
-      if (auto property = IORegistryEntryCreateCFProperty(*registry_entry_, key, kCFAllocatorDefault, kNilOptions)) {
-        if (CFGetTypeID(property) == CFNumberGetTypeID()) {
+      if (auto property = cf::adopt_cf_ptr(IORegistryEntryCreateCFProperty(*registry_entry_, key, kCFAllocatorDefault, kNilOptions))) {
+        if (CFGetTypeID(*property) == CFNumberGetTypeID()) {
           int64_t value = 0;
-          if (CFNumberGetValue(static_cast<CFNumberRef>(property), kCFNumberSInt64Type, &value)) {
+          if (CFNumberGetValue(static_cast<CFNumberRef>(*property), kCFNumberSInt64Type, &value)) {
             result = value;
           }
         }
-        CFRelease(property);
       }
     }
 
     return result;
   }
 
-  std::optional<std::string> find_string_property(CFStringRef key) const {
+  [[nodiscard]] std::optional<std::string> find_string_property(CFStringRef key) const {
     std::optional<std::string> result;
 
     if (registry_entry_) {
-      if (auto property = IORegistryEntryCreateCFProperty(*registry_entry_, key, kCFAllocatorDefault, kNilOptions)) {
-        result = cf::make_string(property);
-        CFRelease(property);
+      if (auto property = cf::adopt_cf_ptr(IORegistryEntryCreateCFProperty(*registry_entry_, key, kCFAllocatorDefault, kNilOptions))) {
+        result = cf::make_string(*property);
       }
     }
 
     return result;
   }
 
-  std::optional<std::string> find_path(const io_name_t plane) const {
+  [[nodiscard]] std::optional<std::string> find_path(const io_name_t plane) const {
     if (registry_entry_) {
       io_string_t path;
       kern_return r = IORegistryEntryGetPath(*registry_entry_, plane, path);
@@ -165,7 +167,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<iokit_registry_entry_id::value_t> find_registry_entry_id(void) const {
+  [[nodiscard]] std::optional<iokit_registry_entry_id::value_t> find_registry_entry_id() const noexcept {
     if (registry_entry_) {
       uint64_t id;
       kern_return r = IORegistryEntryGetRegistryEntryID(*registry_entry_, &id);
@@ -177,7 +179,7 @@ public:
     return std::nullopt;
   }
 
-  bool in_plane(const io_name_t plane) const {
+  [[nodiscard]] bool in_plane(const io_name_t plane) const noexcept {
     if (registry_entry_) {
       return IORegistryEntryInPlane(*registry_entry_, plane);
     }
@@ -185,12 +187,11 @@ public:
     return false;
   }
 
-  operator bool(void) const {
+  [[nodiscard]] explicit operator bool() const noexcept {
     return registry_entry_;
   }
 
 private:
   iokit_object_ptr registry_entry_;
 };
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx

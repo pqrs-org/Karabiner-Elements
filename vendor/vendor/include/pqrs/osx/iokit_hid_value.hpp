@@ -1,10 +1,10 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_value v4.0
+// pqrs::osx::iokit_hid_value v4.1.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
-// (See http://www.boost.org/LICENSE_1_0.txt)
+// (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <IOKit/hid/IOHIDValue.h>
 #include <optional>
@@ -12,12 +12,12 @@
 #include <pqrs/osx/chrono.hpp>
 #include <pqrs/osx/iokit_hid_element.hpp>
 
-namespace pqrs {
-namespace osx {
+namespace pqrs::osx {
 class iokit_hid_value final {
 public:
-  iokit_hid_value(void) : time_stamp_(chrono::absolute_time_point(0)),
-                          integer_value_(0) {
+  iokit_hid_value() noexcept
+      : time_stamp_(chrono::absolute_time_point(0)),
+        integer_value_(0) {
   }
 
   iokit_hid_value(chrono::absolute_time_point time_stamp,
@@ -25,15 +25,17 @@ public:
                   std::optional<hid::usage_page::value_t> usage_page,
                   std::optional<hid::usage::value_t> usage,
                   std::optional<CFIndex> logical_max,
-                  std::optional<CFIndex> logical_min) : time_stamp_(time_stamp),
-                                                        integer_value_(integer_value),
-                                                        usage_page_(usage_page),
-                                                        usage_(usage),
-                                                        logical_max_(logical_max),
-                                                        logical_min_(logical_min) {
+                  std::optional<CFIndex> logical_min)
+      : time_stamp_(time_stamp),
+        integer_value_(integer_value),
+        usage_page_(usage_page),
+        usage_(usage),
+        logical_max_(logical_max),
+        logical_min_(logical_min) {
   }
 
-  iokit_hid_value(IOHIDValueRef value) : iokit_hid_value() {
+  iokit_hid_value(IOHIDValueRef value)
+      : iokit_hid_value() {
     if (value) {
       time_stamp_ = chrono::absolute_time_point(IOHIDValueGetTimeStamp(value));
       integer_value_ = IOHIDValueGetIntegerValue(value);
@@ -46,7 +48,7 @@ public:
     }
   }
 
-  chrono::absolute_time_point get_time_stamp(void) const {
+  [[nodiscard]] chrono::absolute_time_point get_time_stamp() const noexcept {
     return time_stamp_;
   }
 
@@ -55,7 +57,7 @@ public:
     return *this;
   }
 
-  CFIndex get_integer_value(void) const {
+  [[nodiscard]] CFIndex get_integer_value() const noexcept {
     return integer_value_;
   }
 
@@ -64,7 +66,7 @@ public:
     return *this;
   }
 
-  std::optional<hid::usage_page::value_t> get_usage_page(void) const {
+  [[nodiscard]] std::optional<hid::usage_page::value_t> get_usage_page() const noexcept {
     return usage_page_;
   }
 
@@ -73,7 +75,7 @@ public:
     return *this;
   }
 
-  std::optional<hid::usage::value_t> get_usage(void) const {
+  [[nodiscard]] std::optional<hid::usage::value_t> get_usage() const noexcept {
     return usage_;
   }
 
@@ -82,7 +84,7 @@ public:
     return *this;
   }
 
-  std::optional<CFIndex> get_logical_max(void) const {
+  [[nodiscard]] std::optional<CFIndex> get_logical_max() const noexcept {
     return logical_max_;
   }
 
@@ -91,7 +93,7 @@ public:
     return *this;
   }
 
-  std::optional<CFIndex> get_logical_min(void) const {
+  [[nodiscard]] std::optional<CFIndex> get_logical_min() const noexcept {
     return logical_min_;
   }
 
@@ -100,24 +102,13 @@ public:
     return *this;
   }
 
-  bool conforms_to(hid::usage_page::value_t usage_page,
-                   hid::usage::value_t usage) const {
+  [[nodiscard]] bool conforms_to(hid::usage_page::value_t usage_page,
+                                 hid::usage::value_t usage) const noexcept {
     return usage_page_ == usage_page &&
            usage_ == usage;
   }
 
-  bool operator==(const iokit_hid_value& other) const {
-    return time_stamp_ == other.time_stamp_ &&
-           integer_value_ == other.integer_value_ &&
-           usage_page_ == other.usage_page_ &&
-           usage_ == other.usage_ &&
-           logical_max_ == other.logical_max_ &&
-           logical_min_ == other.logical_min_;
-  }
-
-  bool operator!=(const iokit_hid_value& other) const {
-    return !(*this == other);
-  }
+  [[nodiscard]] bool operator==(const iokit_hid_value& other) const noexcept = default;
 
 private:
   chrono::absolute_time_point time_stamp_;
@@ -127,5 +118,4 @@ private:
   std::optional<CFIndex> logical_max_;
   std::optional<CFIndex> logical_min_;
 };
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx

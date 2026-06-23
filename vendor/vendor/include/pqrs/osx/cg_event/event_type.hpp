@@ -6,13 +6,9 @@
 
 #include <type_safe/strong_typedef.hpp>
 
-namespace pqrs {
-namespace osx {
-namespace cg_event {
+namespace pqrs::osx::cg_event {
 enum class event_type {
   key_down,
   key_up,
 };
-} // namespace cg_event
-} // namespace osx
-} // namespace pqrs
+} // namespace pqrs::osx::cg_event

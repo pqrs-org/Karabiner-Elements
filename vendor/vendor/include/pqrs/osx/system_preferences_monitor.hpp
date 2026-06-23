@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::system_preferences_monitor v1.2.0
+// pqrs::osx::system_preferences_monitor v1.3.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -8,6 +8,7 @@
 
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 
 namespace pqrs::osx {
@@ -15,7 +16,7 @@ class system_preferences_monitor final : public dispatcher::extra::dispatcher_cl
 public:
   // Signals (invoked from the dispatcher thread)
 
-  nod::signal<void(std::shared_ptr<system_preferences::properties> value)> system_preferences_changed;
+  nod::signal<void(pqrs::not_null_shared_ptr_t<system_preferences::properties> value)> system_preferences_changed;
 
   // Methods
 
@@ -49,13 +50,13 @@ public:
   }
 
 private:
-  std::shared_ptr<system_preferences::properties> make_current_properties() const {
-    auto p = std::make_shared<system_preferences::properties>();
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<system_preferences::properties> make_current_properties() const {
+    pqrs::not_null_shared_ptr_t<system_preferences::properties> p = std::make_shared<system_preferences::properties>();
     p->update();
     return p;
   }
 
-  void emit_system_preferences_changed(std::shared_ptr<system_preferences::properties> properties) {
+  void emit_system_preferences_changed(pqrs::not_null_shared_ptr_t<system_preferences::properties> properties) {
     last_properties_ = properties;
 
     enqueue_to_dispatcher([this, properties] {
