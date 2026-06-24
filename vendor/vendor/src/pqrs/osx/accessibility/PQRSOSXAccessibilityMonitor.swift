@@ -5,7 +5,8 @@
 import AppKit
 import ApplicationServices
 
-actor PQRSOSXAccessibilityMonitor {
+@MainActor
+final class PQRSOSXAccessibilityMonitor {
   static let shared = PQRSOSXAccessibilityMonitor()
 
   private var callback: PQRSOSXAccessibilityMonitorCallback?
@@ -16,35 +17,40 @@ actor PQRSOSXAccessibilityMonitor {
   private var refreshInFlight = false
   private var refreshPending = false
   private var forcePending = false
+  private var callbackGeneration = 0
 
-  func setCallback(_ callback: @escaping PQRSOSXAccessibilityMonitorCallback) async {
+  func setCallback(_ callback: @escaping PQRSOSXAccessibilityMonitorCallback) {
+    if self.callback == nil {
+      callbackGeneration += 1
+    }
+
     self.callback = callback
 
     if observationController == nil {
-      observationController = await MainActor.run {
-        PQRSOSXAccessibilityObservationController()
-      }
+      observationController = PQRSOSXAccessibilityObservationController()
     }
 
-    let observationController = observationController
-    await MainActor.run {
-      observationController?.start()
-    }
+    let callbackGeneration = callbackGeneration
+
+    observationController?.start(callbackGeneration: callbackGeneration)
 
     if fallbackPollingTask == nil {
+      let callbackGeneration = callbackGeneration
       fallbackPollingTask = Task {
-        await listenLoop()
+        await listenLoop(callbackGeneration: callbackGeneration)
       }
     }
 
     if staleProcessCleanupTask == nil {
+      let callbackGeneration = callbackGeneration
       staleProcessCleanupTask = Task {
-        await cleanupLoop()
+        await cleanupLoop(callbackGeneration: callbackGeneration)
       }
     }
   }
 
-  func unsetCallback() async {
+  func unsetCallback() {
+    callbackGeneration += 1
     callback = nil
     fallbackPollingTask?.cancel()
     fallbackPollingTask = nil
@@ -57,16 +63,15 @@ actor PQRSOSXAccessibilityMonitor {
 
     let observationController = observationController
     self.observationController = nil
-    await MainActor.run {
-      observationController?.stop()
-    }
+    observationController?.stop()
+    frontmostWindowGeometryCache.removeAll()
   }
 
-  func asyncTrigger() async {
-    await requestRefresh(force: true)
+  func trigger() {
+    requestRefresh(force: true)
   }
 
-  private func listenLoop() async {
+  private func listenLoop(callbackGeneration: Int) async {
     while !Task.isCancelled {
       do {
         try await Task.sleep(for: fallbackPollingInterval)
@@ -74,11 +79,15 @@ actor PQRSOSXAccessibilityMonitor {
         break
       }
 
-      await refreshIfPollingNeedsSnapshot()
+      guard isCurrentCallbackGeneration(callbackGeneration) else {
+        break
+      }
+
+      refreshIfPollingNeedsSnapshot()
     }
   }
 
-  private func cleanupLoop() async {
+  private func cleanupLoop(callbackGeneration: Int) async {
     while !Task.isCancelled {
       do {
         try await Task.sleep(for: staleProcessCleanupInterval)
@@ -86,14 +95,19 @@ actor PQRSOSXAccessibilityMonitor {
         break
       }
 
-      let observationController = observationController
-      await MainActor.run {
-        observationController?.pruneStaleProcessIdentifiers()
+      guard isCurrentCallbackGeneration(callbackGeneration) else {
+        break
       }
+
+      observationController?.pruneStaleProcessIdentifiers()
     }
   }
 
-  func requestRefresh(force: Bool) async {
+  func requestRefresh(force: Bool) {
+    guard callback != nil else {
+      return
+    }
+
     forcePending = forcePending || force
     refreshPending = true
 
@@ -111,29 +125,37 @@ actor PQRSOSXAccessibilityMonitor {
 
       let cachedApplication = lastSnapshot.application
       let observationController = observationController
-      let snapshot = await MainActor.run {
-        copySnapshot(
-          cachedApplication: cachedApplication,
-          handleProcessIdentifier: { processIdentifier, detectionSource in
-            observationController?.registerProcessIdentifier(
-              processIdentifier,
-              detectionSource: detectionSource
-            )
-          }
-        )
-      }
-      await MainActor.run {
-        observationController?.syncObservers(
-          frontmostProcessIdentifier: snapshot.application?.processIdentifier
-        )
-      }
+      let snapshot = copySnapshot(
+        cachedApplication: cachedApplication,
+        handleProcessIdentifier: { processIdentifier, detectionSource in
+          observationController?.registerProcessIdentifier(
+            processIdentifier,
+            detectionSource: detectionSource
+          )
+        }
+      )
+      observationController?.syncObservers(
+        frontmostProcessIdentifier: snapshot.application?.processIdentifier
+      )
 
       if force || snapshot != lastSnapshot {
-        await commitSnapshotAndEmit(snapshot, force: force)
+        commitSnapshotAndEmit(snapshot, force: force)
       }
     }
 
     refreshInFlight = false
+  }
+
+  func requestRefresh(force: Bool, callbackGeneration: Int) {
+    guard isCurrentCallbackGeneration(callbackGeneration) else {
+      return
+    }
+
+    requestRefresh(force: force)
+  }
+
+  private func isCurrentCallbackGeneration(_ callbackGeneration: Int) -> Bool {
+    self.callbackGeneration == callbackGeneration && callback != nil
   }
 
   // In general, information about the currently focused application can be obtained through the following mechanisms:
@@ -159,21 +181,19 @@ actor PQRSOSXAccessibilityMonitor {
   // - When polling detects an application switch.
   // - When the current application's window position or size could not be obtained through the Accessibility API.
   //   (requestRefresh is called in order to fetch the latest window position and size.)
-  private func refreshIfPollingNeedsSnapshot() async {
-    let frontmostProcessIdentifier = await MainActor.run {
-      copyFrontmostProcessIdentifier()
-    }
+  private func refreshIfPollingNeedsSnapshot() {
+    let frontmostProcessIdentifier = copyFrontmostProcessIdentifier()
     let applicationChanged =
       frontmostProcessIdentifier != lastSnapshot.application?.processIdentifier
     let needsGeometryPolling =
       lastSnapshot.focusedUIElement?.windowGeometrySource == .coreGraphics
 
     if applicationChanged || needsGeometryPolling {
-      await requestRefresh(force: false)
+      requestRefresh(force: false)
     }
   }
 
-  private func commitSnapshotAndEmit(_ snapshot: Snapshot, force: Bool) async {
+  private func commitSnapshotAndEmit(_ snapshot: Snapshot, force: Bool) {
     lastSnapshot = snapshot
 
     guard let callback else {

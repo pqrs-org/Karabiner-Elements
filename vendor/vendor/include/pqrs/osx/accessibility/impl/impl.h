@@ -42,7 +42,7 @@ typedef void (*pqrs_osx_accessibility_monitor_callback)(int32_t force,
 
 void pqrs_osx_accessibility_monitor_set_callback(pqrs_osx_accessibility_monitor_callback callback);
 void pqrs_osx_accessibility_monitor_unset_callback(void);
-void pqrs_osx_accessibility_monitor_async_trigger(void);
+void pqrs_osx_accessibility_monitor_trigger(void);
 
 #ifdef __cplusplus
 }

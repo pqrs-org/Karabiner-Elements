@@ -228,7 +228,7 @@ private:
 
       // Core Service may restart while the agent keeps running, so resend the current accessibility state after reconnecting.
       if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
-        m->async_trigger();
+        m->trigger();
       }
     });
 

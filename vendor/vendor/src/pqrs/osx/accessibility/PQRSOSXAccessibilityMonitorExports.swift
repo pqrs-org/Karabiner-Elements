@@ -4,25 +4,40 @@
 
 import Foundation
 
+@inline(__always)
+private func syncMainActorCall(_ operation: @MainActor () -> Void) {
+  if Thread.isMainThread {
+    MainActor.assumeIsolated {
+      operation()
+    }
+  } else {
+    DispatchQueue.main.sync {
+      MainActor.assumeIsolated {
+        operation()
+      }
+    }
+  }
+}
+
 @_cdecl("pqrs_osx_accessibility_monitor_set_callback")
 func PQRSOSXAccessibilityMonitorSetCallback(
   _ callback: @escaping PQRSOSXAccessibilityMonitorCallback
 ) {
-  Task {
-    await PQRSOSXAccessibilityMonitor.shared.setCallback(callback)
+  syncMainActorCall {
+    PQRSOSXAccessibilityMonitor.shared.setCallback(callback)
   }
 }
 
 @_cdecl("pqrs_osx_accessibility_monitor_unset_callback")
 func PQRSOSXAccessibilityMonitorUnsetCallback() {
-  Task {
-    await PQRSOSXAccessibilityMonitor.shared.unsetCallback()
+  syncMainActorCall {
+    PQRSOSXAccessibilityMonitor.shared.unsetCallback()
   }
 }
 
-@_cdecl("pqrs_osx_accessibility_monitor_async_trigger")
-func PQRSOSXAccessibilityMonitorAsyncTrigger() {
-  Task {
-    await PQRSOSXAccessibilityMonitor.shared.asyncTrigger()
+@_cdecl("pqrs_osx_accessibility_monitor_trigger")
+func PQRSOSXAccessibilityMonitorTrigger() {
+  syncMainActorCall {
+    PQRSOSXAccessibilityMonitor.shared.trigger()
   }
 }

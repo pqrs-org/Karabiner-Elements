@@ -41,6 +41,8 @@ public:
     detach_from_dispatcher();
   }
 
+  // initialize_shared_monitor and terminate_shared_monitor are expected to be
+  // called serially during application lifecycle transitions.
   static void initialize_shared_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) {
     std::lock_guard<std::mutex> guard(shared_monitor_mutex_);
 
@@ -52,9 +54,16 @@ public:
   }
 
   static void terminate_shared_monitor() {
-    std::lock_guard<std::mutex> guard(shared_monitor_mutex_);
+    std::shared_ptr<monitor> monitor;
 
-    shared_monitor_ = nullptr;
+    {
+      std::lock_guard<std::mutex> guard(shared_monitor_mutex_);
+
+      // Move shared_monitor_ out so that the monitor destructor runs after releasing
+      // shared_monitor_mutex_. The destructor synchronously calls into Swift, which can
+      // re-enter static_cpp_callback and take this mutex via get_shared_monitor().
+      monitor = std::move(shared_monitor_);
+    }
   }
 
   // Return a weak_ptr instead of a shared_ptr to keep the use_count of shared_monitor_ as close to 1 as possible,
@@ -65,10 +74,10 @@ public:
     return shared_monitor_;
   }
 
-  // Schedules retrieval of a snapshot of the current state and asynchronously invokes the signals.
+  // Retrieves a snapshot of the current state, then asynchronously invokes the signals.
   // A typical use is to call this right after setting the signals.
-  void async_trigger() {
-    pqrs_osx_accessibility_monitor_async_trigger();
+  void trigger() {
+    pqrs_osx_accessibility_monitor_trigger();
   }
 
 private:
@@ -156,7 +165,7 @@ private:
     auto current_focused_ui_element = make_focused_ui_element(*snapshot);
 
     enqueue_to_dispatcher([this, forced, current_application, current_focused_ui_element] {
-      // `force` is non-zero when async_trigger() explicitly requests callbacks even if the snapshot is unchanged.
+      // `force` is non-zero when trigger() explicitly requests callbacks even if the snapshot is unchanged.
       if (forced || *last_application_ != *current_application) {
         last_application_ = current_application;
         frontmost_application_changed(current_application);

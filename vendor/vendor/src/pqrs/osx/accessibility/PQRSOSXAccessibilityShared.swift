@@ -170,7 +170,8 @@ func copyFrontmostProcessIdentifier() -> pid_t? {
     kAXFocusedUIElementAttribute as CFString
   )
 
-  return applicationElement
+  return
+    applicationElement
     .flatMap(copyPid(_:))
     ?? systemWideFocusedUIElement
     .flatMap(copyPid(_:))
