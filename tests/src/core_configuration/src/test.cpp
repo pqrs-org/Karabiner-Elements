@@ -6,7 +6,7 @@
 #include "global_configuration_test.hpp"
 #include "machine_specific_test.hpp"
 
-int main(void) {
+int main() {
   run_complex_modifications_rule_test();
   run_configuration_json_helper_test();
   run_core_configuration_test();

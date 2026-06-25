@@ -14,7 +14,7 @@ class queue {
 public:
   queue(const queue&) = delete;
 
-  queue(void) : time_stamp_delay_(0) {
+  queue() : time_stamp_delay_(0) {
   }
 
   void emplace_back_entry(device_id device_id,
@@ -193,35 +193,35 @@ public:
                        entry.get_validity());
   }
 
-  void clear_events(void) {
+  void clear_events() {
     events_.clear();
     time_stamp_delay_ = absolute_time_duration(0);
   }
 
-  entry& get_front_event(void) {
+  entry& get_front_event() {
     return events_.front();
   }
 
-  void erase_front_event(void) {
+  void erase_front_event() {
     events_.erase(std::begin(events_));
     if (events_.empty()) {
       time_stamp_delay_ = absolute_time_duration(0);
     }
   }
 
-  bool empty(void) const {
+  bool empty() const {
     return events_.empty();
   }
 
-  const std::vector<entry>& get_entries(void) const {
+  const std::vector<entry>& get_entries() const {
     return events_;
   }
 
-  const modifier_flag_manager& get_modifier_flag_manager(void) const {
+  const modifier_flag_manager& get_modifier_flag_manager() const {
     return modifier_flag_manager_;
   }
 
-  modifier_flag_manager& get_modifier_flag_manager(void) {
+  modifier_flag_manager& get_modifier_flag_manager() {
     return const_cast<modifier_flag_manager&>(static_cast<const queue&>(*this).get_modifier_flag_manager());
   }
 
@@ -233,7 +233,7 @@ public:
     modifier_flag_manager_.erase_all_active_modifier_flags(device_id);
   }
 
-  const pointing_button_manager& get_pointing_button_manager(void) const {
+  const pointing_button_manager& get_pointing_button_manager() const {
     return pointing_button_manager_;
   }
 
@@ -245,15 +245,15 @@ public:
     pointing_button_manager_.erase_all_active_pointing_buttons(device_id);
   }
 
-  const manipulator::manipulator_environment& get_manipulator_environment(void) const {
+  const manipulator::manipulator_environment& get_manipulator_environment() const {
     return manipulator_environment_;
   }
 
-  manipulator::manipulator_environment& get_manipulator_environment(void) {
+  manipulator::manipulator_environment& get_manipulator_environment() {
     return const_cast<manipulator::manipulator_environment&>(static_cast<const queue&>(*this).get_manipulator_environment());
   }
 
-  absolute_time_duration get_time_stamp_delay(void) const {
+  absolute_time_duration get_time_stamp_delay() const {
     return time_stamp_delay_;
   }
 
@@ -261,7 +261,7 @@ public:
     time_stamp_delay_ += value;
   }
 
-  void sort_events(void) {
+  void sort_events() {
     if (events_.empty()) {
       return;
     }

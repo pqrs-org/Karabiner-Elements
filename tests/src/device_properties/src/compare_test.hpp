@@ -1,7 +1,7 @@
 #include "device_properties.hpp"
 #include <boost/ut.hpp>
 
-void run_compare_test(void) {
+void run_compare_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

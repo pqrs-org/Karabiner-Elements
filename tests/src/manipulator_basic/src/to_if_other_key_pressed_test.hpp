@@ -2,7 +2,7 @@
 #include "manipulator/types.hpp"
 #include <boost/ut.hpp>
 
-void run_to_if_other_key_pressed_test(void) {
+void run_to_if_other_key_pressed_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

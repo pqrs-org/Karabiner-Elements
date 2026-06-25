@@ -21,12 +21,12 @@ class manipulator_environment final {
 public:
   manipulator_environment(const manipulator_environment&) = delete;
 
-  manipulator_environment(void)
+  manipulator_environment()
       : core_configuration_(std::make_shared<core_configuration::core_configuration>()) {
     karabiner_machine_identifier_ = constants::get_karabiner_machine_identifier();
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     nlohmann::json input_source_json;
     if (auto& v = input_source_properties_.get_first_language()) {
       input_source_json["language"] = *v;
@@ -47,7 +47,7 @@ public:
     });
   }
 
-  const karabiner_machine_identifier& get_karabiner_machine_identifier(void) const {
+  const karabiner_machine_identifier& get_karabiner_machine_identifier() const {
     return karabiner_machine_identifier_;
   }
 
@@ -55,7 +55,7 @@ public:
     karabiner_machine_identifier_ = value;
   }
 
-  const device_properties_manager& get_device_properties_manager(void) const {
+  const device_properties_manager& get_device_properties_manager() const {
     return device_properties_manager_;
   }
 
@@ -72,7 +72,7 @@ public:
     device_properties_manager_.erase(device_id);
   }
 
-  const application& get_frontmost_application(void) const {
+  const application& get_frontmost_application() const {
     return frontmost_application_;
   }
 
@@ -80,7 +80,7 @@ public:
     frontmost_application_ = value;
   }
 
-  const pqrs::osx::input_source::properties& get_input_source_properties(void) const {
+  const pqrs::osx::input_source::properties& get_input_source_properties() const {
     return input_source_properties_;
   }
 
@@ -107,7 +107,7 @@ public:
     unset_variable_names_.insert(name);
   }
 
-  std::vector<std::string> get_variable_names(void) const {
+  std::vector<std::string> get_variable_names() const {
     std::vector<std::string> names;
 
     names.reserve(variables_.size());
@@ -120,7 +120,7 @@ public:
     return names;
   }
 
-  void set_variable_system_now_milliseconds(void) {
+  void set_variable_system_now_milliseconds() {
     auto now = std::chrono::system_clock::now();
     auto now_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
     auto now_int64 = static_cast<int64_t>(now_milliseconds.count());
@@ -137,7 +137,7 @@ public:
     }
   }
 
-  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration(void) const {
+  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration() const {
     return core_configuration_;
   }
 

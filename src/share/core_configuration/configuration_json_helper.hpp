@@ -18,7 +18,7 @@ enum class value_origin {
 class base_t {
 public:
   virtual ~base_t() = default;
-  virtual const std::string& get_key(void) const = 0;
+  virtual const std::string& get_key() const = 0;
   virtual void update_value(const nlohmann::json& json,
                             error_handling error_handling) = 0;
   virtual void update_json(nlohmann::json& json) const = 0;
@@ -37,15 +37,15 @@ public:
     value_ = default_value_;
   }
 
-  const std::string& get_key(void) const override {
+  const std::string& get_key() const override {
     return key_;
   }
 
-  T& get_value(void) const {
+  T& get_value() const {
     return value_;
   }
 
-  const T& get_default_value(void) const {
+  const T& get_default_value() const {
     return default_value_;
   }
 
@@ -132,7 +132,7 @@ public:
         value_(value) {
   }
 
-  const std::string& get_key(void) const override {
+  const std::string& get_key() const override {
     return key_;
   }
 
@@ -174,7 +174,7 @@ public:
         value_(value) {
   }
 
-  const std::string& get_key(void) const override {
+  const std::string& get_key() const override {
     return key_;
   }
 

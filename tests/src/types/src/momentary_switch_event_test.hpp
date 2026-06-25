@@ -2,7 +2,7 @@
 #include <boost/ut.hpp>
 #include <set>
 
-void run_momentary_switch_event_test(void) {
+void run_momentary_switch_event_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::literals;

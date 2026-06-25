@@ -24,7 +24,7 @@ public:
     }
 
   private:
-    std::weak_ptr<event_queue::queue> get_weak_output_event_queue(void) const {
+    std::weak_ptr<event_queue::queue> get_weak_output_event_queue() const {
       return weak_output_event_queue_;
     }
 
@@ -43,7 +43,7 @@ public:
       }
     }
 
-    void invalidate_manipulators(void) const {
+    void invalidate_manipulators() const {
       if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
         manipulator_manager->invalidate_manipulators();
       }
@@ -58,14 +58,14 @@ public:
       }
     }
 
-    bool needs_virtual_hid_pointing(void) const {
+    bool needs_virtual_hid_pointing() const {
       if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
         return manipulator_manager->needs_virtual_hid_pointing();
       }
       return false;
     }
 
-    std::optional<absolute_time_point> make_input_event_time_stamp_with_input_delay(void) const {
+    std::optional<absolute_time_point> make_input_event_time_stamp_with_input_delay() const {
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
         if (!input_event_queue->get_entries().empty()) {
           return input_event_queue->get_entries().front().get_event_time_stamp().make_time_stamp_with_input_delay();
@@ -74,7 +74,7 @@ public:
       return std::nullopt;
     }
 
-    void log_events_sizes(void) const {
+    void log_events_sizes() const {
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
         if (auto output_event_queue = weak_output_event_queue_.lock()) {
           logger::get_logger()->info("connection events sizes: {0} -> {1}",
@@ -89,7 +89,7 @@ public:
     std::weak_ptr<event_queue::queue> weak_output_event_queue_;
   };
 
-  manipulator_managers_connector(void) {
+  manipulator_managers_connector() {
   }
 
   void emplace_back_connection(std::weak_ptr<manipulator_manager> weak_manipulator_manager,
@@ -125,7 +125,7 @@ public:
     }
   }
 
-  void invalidate_manipulators(void) const {
+  void invalidate_manipulators() const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     for (auto&& c : connections_) {
@@ -141,7 +141,7 @@ public:
     }
   }
 
-  bool needs_virtual_hid_pointing(void) const {
+  bool needs_virtual_hid_pointing() const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     return std::any_of(std::begin(connections_),
@@ -151,7 +151,7 @@ public:
                        });
   }
 
-  std::optional<absolute_time_point> min_input_event_time_stamp(void) const {
+  std::optional<absolute_time_point> min_input_event_time_stamp() const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     std::optional<absolute_time_point> result;
@@ -167,7 +167,7 @@ public:
     return result;
   }
 
-  void log_events_sizes(void) const {
+  void log_events_sizes() const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
     for (auto&& c : connections_) {

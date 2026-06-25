@@ -41,7 +41,7 @@ inline std::optional<bool> command_result_to_optional_bool(const std::optional<i
 // core_daemons
 //
 
-inline void register_core_daemons(void) {
+inline void register_core_daemons() {
   run_command(daemons_path,
               "register-core-daemons");
 }
@@ -50,12 +50,12 @@ inline void register_core_daemons(void) {
 // core_agents
 //
 
-inline void register_core_agents(void) {
+inline void register_core_agents() {
   run_command(agents_path,
               "register-core-agents");
 }
 
-inline void unregister_core_agents(void) {
+inline void unregister_core_agents() {
   run_command(agents_path,
               "unregister-core-agents");
 }
@@ -64,7 +64,7 @@ inline void unregister_core_agents(void) {
 // console_user_server_agent
 //
 
-inline void restart_console_user_server_agent(void) {
+inline void restart_console_user_server_agent() {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
   auto service_name = pqrs::osx::launchctl::service_name("org.pqrs.service.agent.karabiner_console_user_server");
 
@@ -79,12 +79,12 @@ inline void restart_console_user_server_agent(void) {
 // menu_agent
 //
 
-inline void register_menu_agent(void) {
+inline void register_menu_agent() {
   run_command(agents_path,
               "register-menu-agent");
 }
 
-inline void unregister_menu_agent(void) {
+inline void unregister_menu_agent() {
   run_command(agents_path,
               "unregister-menu-agent");
 }
@@ -93,12 +93,12 @@ inline void unregister_menu_agent(void) {
 // multitouch_extension_agent
 //
 
-inline void register_multitouch_extension_agent(void) {
+inline void register_multitouch_extension_agent() {
   run_command(agents_path,
               "register-multitouch-extension-agent");
 }
 
-inline void unregister_multitouch_extension_agent(void) {
+inline void unregister_multitouch_extension_agent() {
   run_command(agents_path,
               "unregister-multitouch-extension-agent");
 }
@@ -107,12 +107,12 @@ inline void unregister_multitouch_extension_agent(void) {
 // notification_window_agent
 //
 
-inline void register_notification_window_agent(void) {
+inline void register_notification_window_agent() {
   run_command(agents_path,
               "register-notification-window-agent");
 }
 
-inline void unregister_notification_window_agent(void) {
+inline void unregister_notification_window_agent() {
   run_command(agents_path,
               "unregister-notification-window-agent");
 }
@@ -124,7 +124,7 @@ inline void unregister_notification_window_agent(void) {
 // For old daemons, the installer can stop them, but for agents, the user needs to handle the stopping process, so the installer cannot do it.
 // Additionally, simply deleting /Library/LaunchAgents will not stop launchd from processing; the old services will continue to run until bootout is explicitly called or macOS is restarted.
 // Therefore, explicitly call bootout at the start of Settings and console_user_server to stop the old agents.
-inline void bootout_old_agents(void) {
+inline void bootout_old_agents() {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
 
   for (const auto& service_name : {
@@ -142,7 +142,7 @@ inline void bootout_old_agents(void) {
 // Utilities
 //
 
-inline void unregister_all_agents(void) {
+inline void unregister_all_agents() {
   unregister_core_agents();
   unregister_multitouch_extension_agent();
   unregister_notification_window_agent();
@@ -153,22 +153,22 @@ inline void unregister_all_agents(void) {
   unregister_menu_agent();
 }
 
-inline std::optional<bool> core_daemons_enabled(void) {
+inline std::optional<bool> core_daemons_enabled() {
   return command_result_to_optional_bool(run_command(daemons_path,
                                                      "core-daemons-enabled"));
 }
 
-inline std::optional<bool> core_agents_enabled(void) {
+inline std::optional<bool> core_agents_enabled() {
   return command_result_to_optional_bool(run_command(agents_path,
                                                      "core-agents-enabled"));
 }
 
-inline std::optional<bool> core_daemons_running(void) {
+inline std::optional<bool> core_daemons_running() {
   return command_result_to_optional_bool(run_command(daemons_path,
                                                      "running"));
 }
 
-inline std::optional<bool> core_agents_running(void) {
+inline std::optional<bool> core_agents_running() {
   return command_result_to_optional_bool(run_command(agents_path,
                                                      "running"));
 }

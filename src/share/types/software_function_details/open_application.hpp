@@ -11,10 +11,10 @@ namespace krbn {
 namespace software_function_details {
 class open_application {
 public:
-  open_application(void) {
+  open_application() {
   }
 
-  const std::optional<std::string>& get_bundle_identifier(void) const {
+  const std::optional<std::string>& get_bundle_identifier() const {
     return bundle_identifier_;
   }
 
@@ -22,7 +22,7 @@ public:
     bundle_identifier_ = value;
   }
 
-  const std::optional<std::string>& get_file_path(void) const {
+  const std::optional<std::string>& get_file_path() const {
     return file_path_;
   }
 
@@ -30,7 +30,7 @@ public:
     file_path_ = value;
   }
 
-  const std::optional<size_t>& get_frontmost_application_history_index(void) const {
+  const std::optional<size_t>& get_frontmost_application_history_index() const {
     return frontmost_application_history_index_;
   }
 
@@ -38,7 +38,7 @@ public:
     frontmost_application_history_index_ = value;
   }
 
-  const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_bundle_identifiers(void) const {
+  const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_bundle_identifiers() const {
     return frontmost_application_history_exclusion_bundle_identifiers_;
   }
 
@@ -46,7 +46,7 @@ public:
     frontmost_application_history_exclusion_bundle_identifiers_ = value;
   }
 
-  const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_file_paths(void) const {
+  const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_file_paths() const {
     return frontmost_application_history_exclusion_file_paths_;
   }
 

@@ -3,7 +3,7 @@
 #include "modifier_flag_manager.hpp"
 #include <boost/ut.hpp>
 
-void run_scoped_modifier_flags_test(void) {
+void run_scoped_modifier_flags_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

@@ -44,7 +44,7 @@ krbn::pointing_button_manager::active_pointing_button button0_1(
     krbn::device_id(1));
 } // namespace
 
-int main(void) {
+int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

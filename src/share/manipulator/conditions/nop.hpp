@@ -7,10 +7,10 @@ namespace manipulator {
 namespace conditions {
 class nop final : public base {
 public:
-  nop(void) : base() {
+  nop() : base() {
   }
 
-  virtual ~nop(void) {
+  virtual ~nop() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,

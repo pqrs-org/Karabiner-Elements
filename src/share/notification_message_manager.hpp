@@ -12,15 +12,15 @@
 namespace krbn {
 class notification_message_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  notification_message_manager(void)
+  notification_message_manager()
       : dispatcher_client() {
   }
 
-  virtual ~notification_message_manager(void) {
+  virtual ~notification_message_manager() {
     detach_from_dispatcher();
   }
 
-  const std::string& get_full_message(void) const {
+  const std::string& get_full_message() const {
     return full_message_;
   }
 
@@ -56,7 +56,7 @@ public:
     });
   }
 
-  void async_clear_sticky_modifiers_message(void) {
+  void async_clear_sticky_modifiers_message() {
     enqueue_to_dispatcher([this] {
       for (const auto& f : {
                modifier_flag::left_control,
@@ -88,7 +88,7 @@ public:
   }
 
 private:
-  void update_full_message(void) {
+  void update_full_message() {
     std::stringstream ss;
 
     for (const auto& m : messages_) {

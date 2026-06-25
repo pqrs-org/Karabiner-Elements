@@ -22,7 +22,7 @@ public:
       condition(const nlohmann::json& json) : json_(json) {
       }
 
-      const nlohmann::json& get_json(void) const {
+      const nlohmann::json& get_json() const {
         return json_;
       }
 
@@ -62,19 +62,19 @@ public:
       }
     }
 
-    nlohmann::json to_json(void) const {
+    nlohmann::json to_json() const {
       return json_;
     }
 
-    const std::vector<condition>& get_conditions(void) const {
+    const std::vector<condition>& get_conditions() const {
       return conditions_;
     }
 
-    pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters(void) const {
+    pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters() const {
       return parameters_;
     }
 
-    const std::string& get_description(void) const {
+    const std::string& get_description() const {
       return description_;
     }
 
@@ -160,7 +160,7 @@ public:
             error_handling) {
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = json_;
 
     helper_values_.update_json(j);
@@ -168,11 +168,11 @@ public:
     return j;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<manipulator>>& get_manipulators(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<manipulator>>& get_manipulators() const {
     return manipulators_;
   }
 
-  const bool& get_enabled(void) const {
+  const bool& get_enabled() const {
     return enabled_;
   }
 
@@ -180,15 +180,15 @@ public:
     enabled_ = value;
   }
 
-  const std::string& get_description(void) const {
+  const std::string& get_description() const {
     return description_;
   }
 
-  const code_type get_code_type(void) const {
+  const code_type get_code_type() const {
     return code_type_;
   }
 
-  const std::string get_code_string(void) const {
+  const std::string get_code_string() const {
     return code_string_;
   }
 

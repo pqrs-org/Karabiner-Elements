@@ -11,7 +11,7 @@ class complex_modifications final {
 public:
   complex_modifications(const complex_modifications&) = delete;
 
-  complex_modifications(void)
+  complex_modifications()
       : complex_modifications(nlohmann::json::object(),
                               krbn::core_configuration::error_handling::loose) {
   }
@@ -39,7 +39,7 @@ public:
     }
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = json_;
 
     helper_values_.update_json(j);
@@ -65,11 +65,11 @@ public:
     return j;
   }
 
-  pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters(void) const {
+  pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters() const {
     return parameters_;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_rule>>& get_rules(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_rule>>& get_rules() const {
     return rules_;
   }
 

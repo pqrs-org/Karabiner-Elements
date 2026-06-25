@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include <boost/ut.hpp>
 
-void run_event_queue_event_time_stamp_test(void) {
+void run_event_queue_event_time_stamp_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

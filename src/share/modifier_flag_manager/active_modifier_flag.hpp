@@ -41,19 +41,19 @@ public:
     }
   }
 
-  type get_type(void) const {
+  type get_type() const {
     return type_;
   }
 
-  modifier_flag get_modifier_flag(void) const {
+  modifier_flag get_modifier_flag() const {
     return modifier_flag_;
   }
 
-  device_id get_device_id(void) const {
+  device_id get_device_id() const {
     return device_id_;
   }
 
-  type get_inverse_type(void) const {
+  type get_inverse_type() const {
     switch (type_) {
       case type::increase:
         return type::decrease;
@@ -77,7 +77,7 @@ public:
     }
   }
 
-  int get_count(void) const {
+  int get_count() const {
     switch (type_) {
       case type::increase:
       case type::increase_lock:
@@ -92,7 +92,7 @@ public:
     }
   }
 
-  bool any_lock(void) const {
+  bool any_lock() const {
     switch (type_) {
       case type::increase_lock:
       case type::decrease_lock:
@@ -108,7 +108,7 @@ public:
     }
   }
 
-  bool led_lock(void) const {
+  bool led_lock() const {
     switch (type_) {
       case type::increase_led_lock:
       case type::decrease_led_lock:
@@ -124,7 +124,7 @@ public:
     }
   }
 
-  bool sticky(void) const {
+  bool sticky() const {
     switch (type_) {
       case type::increase_sticky:
       case type::decrease_sticky:
@@ -148,7 +148,7 @@ public:
 
   constexpr auto operator<=>(const active_modifier_flag&) const = default;
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     nlohmann::json json;
 
     switch (type_) {

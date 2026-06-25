@@ -15,15 +15,15 @@ public:
                                                            time_point_(time_point) {
   }
 
-  int get_x(void) const {
+  int get_x() const {
     return x_;
   }
 
-  int get_y(void) const {
+  int get_y() const {
     return y_;
   }
 
-  pqrs::dispatcher::time_point get_time_point(void) const {
+  pqrs::dispatcher::time_point get_time_point() const {
     return time_point_;
   }
 

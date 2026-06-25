@@ -52,7 +52,7 @@ public:
     }
   }
 
-  virtual ~keyboard_type(void) {
+  virtual ~keyboard_type() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,

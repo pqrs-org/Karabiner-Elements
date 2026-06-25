@@ -13,7 +13,7 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(void) : dispatcher_client(),
+  components_manager() : dispatcher_client(),
                              on_console_(false),
                              send_timer_(*this) {
     //
@@ -54,7 +54,7 @@ public:
     });
   }
 
-  virtual ~components_manager(void) {
+  virtual ~components_manager() {
     detach_from_dispatcher([this] {
       send_timer_.stop();
 
@@ -64,7 +64,7 @@ public:
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       if (version_monitor_) {
         version_monitor_->async_start();
@@ -89,7 +89,7 @@ public:
   }
 
 private:
-  void send_to_receiver(void) const {
+  void send_to_receiver() const {
     if (client_) {
       // We have to use `getuid` (not `geteuid`) since `karabiner_session_monitor` is run as root by suid.
       // (We have to send the real user ID to session_monitor_receiver.)

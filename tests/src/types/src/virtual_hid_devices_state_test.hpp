@@ -1,7 +1,7 @@
 #include "types.hpp"
 #include <boost/ut.hpp>
 
-void run_virtual_hid_devices_state_test(void) {
+void run_virtual_hid_devices_state_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

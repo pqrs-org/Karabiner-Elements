@@ -2,7 +2,7 @@
 #include <boost/ut.hpp>
 #include <iostream>
 
-void run_complex_modifications_assets_manager_test(void) {
+void run_complex_modifications_assets_manager_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

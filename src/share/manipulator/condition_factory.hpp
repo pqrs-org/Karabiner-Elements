@@ -74,7 +74,7 @@ inline pqrs::not_null_shared_ptr_t<conditions::base> make_device_if_condition(co
   return std::make_shared<conditions::device>(json);
 }
 
-inline pqrs::not_null_shared_ptr_t<conditions::base> make_device_unless_touch_bar_condition(void) {
+inline pqrs::not_null_shared_ptr_t<conditions::base> make_device_unless_touch_bar_condition() {
   nlohmann::json json;
   json["type"] = "device_unless";
   json["identifiers"] = nlohmann::json::array({

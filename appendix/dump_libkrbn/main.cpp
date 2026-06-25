@@ -5,7 +5,7 @@
 #include <thread>
 
 namespace {
-void version_updated_callback(void) {
+void version_updated_callback() {
   std::cout << __func__ << std::endl;
 
   char buffer[1024];

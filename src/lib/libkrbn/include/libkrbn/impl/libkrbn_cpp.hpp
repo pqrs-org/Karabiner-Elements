@@ -9,7 +9,7 @@ extern std::shared_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 
 class libkrbn_cpp final {
 public:
-  static std::shared_ptr<libkrbn_components_manager> get_components_manager(void) {
+  static std::shared_ptr<libkrbn_components_manager> get_components_manager() {
     return libkrbn_components_manager_;
   }
 

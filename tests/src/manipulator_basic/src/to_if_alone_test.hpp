@@ -2,7 +2,7 @@
 #include "manipulator/types.hpp"
 #include <boost/ut.hpp>
 
-void run_to_if_alone_test(void) {
+void run_to_if_alone_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

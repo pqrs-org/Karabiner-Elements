@@ -2,7 +2,7 @@
 #include "device_properties.hpp"
 #include <boost/ut.hpp>
 
-void run_json_test(void) {
+void run_json_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

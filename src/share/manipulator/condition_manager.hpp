@@ -8,10 +8,10 @@ class condition_manager final {
 public:
   condition_manager(const condition_manager&) = delete;
 
-  condition_manager(void) {
+  condition_manager() {
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<manipulator::conditions::base>>& get_conditions(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<manipulator::conditions::base>>& get_conditions() const {
     return conditions_;
   }
 

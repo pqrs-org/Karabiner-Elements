@@ -36,7 +36,7 @@ public:
       return static_cast<uint8_t>(result);
     }
 
-    void reset(void) {
+    void reset() {
       count_ = 0;
     }
 
@@ -55,7 +55,7 @@ public:
                                     timer_(*this) {
   }
 
-  virtual ~mouse_key_handler(void) {
+  virtual ~mouse_key_handler() {
     detach_from_dispatcher([this] {
       timer_.stop();
     });
@@ -103,7 +103,7 @@ public:
     start_timer(time_stamp);
   }
 
-  bool active(void) const {
+  bool active() const {
     return active_;
   }
 

@@ -10,7 +10,7 @@ namespace basic {
 namespace manipulated_original_event {
 class from_event final {
 public:
-  from_event(void) : device_id_(device_id(0)) {
+  from_event() : device_id_(device_id(0)) {
   }
 
   from_event(device_id device_id,
@@ -20,15 +20,15 @@ public:
                                                          original_event_(original_event) {
   }
 
-  device_id get_device_id(void) const {
+  device_id get_device_id() const {
     return device_id_;
   }
 
-  const event_queue::event& get_event(void) const {
+  const event_queue::event& get_event() const {
     return event_;
   }
 
-  const event_queue::event& get_original_event(void) const {
+  const event_queue::event& get_original_event() const {
     return original_event_;
   }
 

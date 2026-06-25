@@ -10,7 +10,7 @@ class parameters final {
 public:
   parameters(const parameters&) = delete;
 
-  parameters(void)
+  parameters()
       : parameters(nlohmann::json::object(),
                    krbn::core_configuration::error_handling::loose) {
   }
@@ -27,7 +27,7 @@ public:
     helper_values_.update_value(json, error_handling);
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = json_;
 
     helper_values_.update_json(j);
@@ -35,7 +35,7 @@ public:
     return j;
   }
 
-  const std::chrono::milliseconds& get_delay_milliseconds_before_open_device(void) const {
+  const std::chrono::milliseconds& get_delay_milliseconds_before_open_device() const {
     return delay_milliseconds_before_open_device_;
   }
 

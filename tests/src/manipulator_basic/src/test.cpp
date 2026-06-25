@@ -7,7 +7,7 @@
 #include "to_if_held_down_test.hpp"
 #include "to_if_other_key_pressed_test.hpp"
 
-int main(void) {
+int main() {
   run_errors_test();
   run_manipulator_basic_test();
   run_simultaneous_options_test();

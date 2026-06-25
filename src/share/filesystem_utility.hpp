@@ -9,7 +9,7 @@
 
 namespace krbn {
 namespace filesystem_utility {
-inline void mkdir_tmp_directory(void) {
+inline void mkdir_tmp_directory() {
   pqrs::filesystem::create_directory_with_intermediate_directories(
       constants::get_tmp_directory(),
       0755);
@@ -20,7 +20,7 @@ inline void mkdir_tmp_directory(void) {
   chmod(constants::get_tmp_directory().c_str(), 0755);
 }
 
-inline void mkdir_rootonly_directory(void) {
+inline void mkdir_rootonly_directory() {
   mkdir_tmp_directory();
 
   pqrs::filesystem::create_directory_with_intermediate_directories(
@@ -59,7 +59,7 @@ inline void mkdir_system_user_directory(uid_t uid) {
   }
 }
 
-inline void mkdir_user_directories(void) {
+inline void mkdir_user_directories() {
   pqrs::filesystem::create_directory_with_intermediate_directories(
       constants::get_user_configuration_directory(),
       0700);
@@ -85,7 +85,7 @@ inline void create_base_directories(std::optional<uid_t> uid) {
   }
 }
 
-inline std::filesystem::path make_socket_file_basename(void) {
+inline std::filesystem::path make_socket_file_basename() {
   std::stringstream ss;
   ss << std::hex
      << chrono_utility::nanoseconds_since_epoch()

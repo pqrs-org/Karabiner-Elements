@@ -48,7 +48,7 @@ public:
         timer_(*this) {
   }
 
-  ~counter(void) {
+  ~counter() {
     detach_from_dispatcher([this] {
       timer_.stop();
     });
@@ -75,7 +75,7 @@ public:
     });
   }
 
-  void async_reset(void) {
+  void async_reset() {
     enqueue_to_dispatcher([this] {
       entries_.clear();
       last_entry_time_point_ = std::nullopt;
@@ -93,7 +93,7 @@ public:
   }
 
 private:
-  bool process_entries(void) {
+  bool process_entries() {
     if (entries_.empty()) {
       return false;
     }
@@ -281,7 +281,7 @@ private:
     return true;
   }
 
-  bool scroll(void) {
+  bool scroll() {
     if (momentum_wait_ > 0) {
       --momentum_wait_;
       return true;

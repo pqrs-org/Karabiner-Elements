@@ -47,11 +47,11 @@ public:
 
   class stick_sensor {
   public:
-    stick_sensor(void)
+    stick_sensor()
         : value_(0) {
     }
 
-    double get_value(void) const {
+    double get_value() const {
       return value_;
     }
 
@@ -76,13 +76,13 @@ public:
     // Signals (invoked from the dispatcher thread)
     //
 
-    nod::signal<void(void)> values_updated;
+    nod::signal<void()> values_updated;
 
     //
     // Methods
     //
 
-    stick(void)
+    stick()
         : dispatcher_client(),
           radian_(0.0),
           absolute_magnitude_(0.0),
@@ -94,19 +94,19 @@ public:
           continued_movement_interval_milliseconds_(0) {
     }
 
-    ~stick(void) {
+    ~stick() {
       detach_from_dispatcher();
     }
 
-    double get_radian(void) const {
+    double get_radian() const {
       return radian_;
     }
 
-    double get_absolute_magnitude(void) const {
+    double get_absolute_magnitude() const {
       return absolute_magnitude_;
     }
 
-    double get_delta_magnitude(void) const {
+    double get_delta_magnitude() const {
       return delta_magnitude_;
     }
 
@@ -148,11 +148,11 @@ public:
       update_values();
     }
 
-    bool continued_movement(void) const {
+    bool continued_movement() const {
       return absolute_magnitude_ >= continued_movement_absolute_magnitude_threshold_;
     }
 
-    std::chrono::milliseconds get_continued_movement_interval_milliseconds(void) const {
+    std::chrono::milliseconds get_continued_movement_interval_milliseconds() const {
       if (continued_movement()) {
         return std::chrono::milliseconds(continued_movement_interval_milliseconds_);
       }
@@ -162,7 +162,7 @@ public:
 
   private:
     // This method is executed in the shared dispatcher thread.
-    void update_values(void) {
+    void update_values() {
       radian_ = std::atan2(vertical_stick_sensor_.get_value(),
                            horizontal_stick_sensor_.get_value());
       // When the stick is tilted diagonally, the distance from the centre may exceed 1.0 (e.g. 1.2).
@@ -222,7 +222,7 @@ public:
 
   class event_value final {
   public:
-    event_value(void)
+    event_value()
         : value_(0.0),
           remainder_(0.0) {
     }
@@ -232,7 +232,7 @@ public:
       // Keep remainder_.
     }
 
-    int truncated_value(void) {
+    int truncated_value() {
       auto truncated = std::trunc(value_ + remainder_);
       remainder_ += value_ - truncated;
 
@@ -266,18 +266,18 @@ public:
         horizontal_wheel_formula_(exprtk_utility::compile("")) {
     set_core_configuration(core_configuration);
 
-    xy_.values_updated.connect([this](void) {
+    xy_.values_updated.connect([this]() {
       auto interval = xy_.get_continued_movement_interval_milliseconds();
       update_continued_movement_timer(continued_movement_mode::xy, interval);
     });
 
-    wheels_.values_updated.connect([this](void) {
+    wheels_.values_updated.connect([this]() {
       auto interval = wheels_.get_continued_movement_interval_milliseconds();
       update_continued_movement_timer(continued_movement_mode::wheels, interval);
     });
   }
 
-  ~game_pad_stick_converter(void) {
+  ~game_pad_stick_converter() {
     detach_from_dispatcher([this] {
       continued_movement_timer_.stop();
     });
@@ -421,7 +421,7 @@ public:
   }
 
 private:
-  std::pair<double, double> xy_hid_values(void) const {
+  std::pair<double, double> xy_hid_values() const {
     auto x = x_formula_->value();
     if (std::isnan(x)) {
       logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0}",
@@ -439,7 +439,7 @@ private:
     return std::make_pair(x, y);
   }
 
-  std::pair<double, double> wheels_hid_values(void) const {
+  std::pair<double, double> wheels_hid_values() const {
     auto h = horizontal_wheel_formula_->value();
     if (std::isnan(h)) {
       logger::get_logger()->error("game_pad_stick_converter horizontal_wheel_formula returns nan: {0}",
@@ -570,7 +570,7 @@ private:
     }
   }
 
-  void post_xy_event(void) {
+  void post_xy_event() {
     pointing_motion m(x_value_.truncated_value(),
                       y_value_.truncated_value(),
                       0,
@@ -595,7 +595,7 @@ private:
     });
   }
 
-  void post_wheels_event(void) {
+  void post_wheels_event() {
     pointing_motion m(0,
                       0,
                       vertical_wheel_value_.truncated_value(),

@@ -13,18 +13,18 @@ public:
                                bool,
                                std::string>;
 
-  manipulator_environment_variable_value(void)
+  manipulator_environment_variable_value()
       : value_(0) {}
 
   manipulator_environment_variable_value(value_t value)
       : value_(value) {}
 
-  const value_t& get_value(void) const {
+  const value_t& get_value() const {
     return value_;
   }
 
   template <typename T>
-  const T* get_if(void) const {
+  const T* get_if() const {
     return std::get_if<T>(&value_);
   }
 

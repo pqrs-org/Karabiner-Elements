@@ -13,7 +13,7 @@ class to_event_definition final {
 public:
   to_event_definition(const to_event_definition&) = delete;
 
-  to_event_definition(void)
+  to_event_definition()
       : lazy_(false),
         repeat_(true),
         halt_(false),
@@ -89,7 +89,7 @@ public:
     }
   }
 
-  virtual ~to_event_definition(void) {
+  virtual ~to_event_definition() {
   }
 
   static pqrs::not_null_shared_ptr_t<to_event_definition> make_from_momentary_switch_event(const momentary_switch_event& value,
@@ -109,16 +109,16 @@ public:
     return result;
   }
 
-  const event_definition& get_event_definition(void) const {
+  const event_definition& get_event_definition() const {
     return event_definition_;
   }
 
-  event_definition& get_event_definition(void) {
+  event_definition& get_event_definition() {
     return const_cast<event_definition&>(
         static_cast<const to_event_definition&>(*this).get_event_definition());
   }
 
-  const std::set<modifier_definition::modifier>& get_modifiers(void) const {
+  const std::set<modifier_definition::modifier>& get_modifiers() const {
     return modifiers_;
   }
 
@@ -126,7 +126,7 @@ public:
     modifiers_ = value;
   }
 
-  bool get_lazy(void) const {
+  bool get_lazy() const {
     return lazy_;
   }
 
@@ -134,7 +134,7 @@ public:
     lazy_ = value;
   }
 
-  bool get_repeat(void) const {
+  bool get_repeat() const {
     return repeat_;
   }
 
@@ -142,7 +142,7 @@ public:
     repeat_ = value;
   }
 
-  bool get_halt(void) const {
+  bool get_halt() const {
     return halt_;
   }
 
@@ -150,7 +150,7 @@ public:
     halt_ = value;
   }
 
-  const std::chrono::milliseconds& get_hold_down_milliseconds(void) const {
+  const std::chrono::milliseconds& get_hold_down_milliseconds() const {
     return hold_down_milliseconds_;
   }
 
@@ -158,14 +158,14 @@ public:
     hold_down_milliseconds_ = value;
   }
 
-  const condition_manager& get_condition_manager(void) const {
+  const condition_manager& get_condition_manager() const {
     return condition_manager_;
   }
-  condition_manager& get_condition_manager(void) {
+  condition_manager& get_condition_manager() {
     return const_cast<condition_manager&>(static_cast<const to_event_definition&>(*this).get_condition_manager());
   }
 
-  bool needs_virtual_hid_pointing(void) const {
+  bool needs_virtual_hid_pointing() const {
     if (auto e = event_definition_.get_if<momentary_switch_event>()) {
       if (e->pointing_button()) {
         return true;
@@ -179,7 +179,7 @@ public:
     return false;
   }
 
-  std::vector<momentary_switch_event> make_modifier_events(void) const {
+  std::vector<momentary_switch_event> make_modifier_events() const {
     std::vector<momentary_switch_event> events;
 
     for (const auto& modifier : modifiers_) {

@@ -32,7 +32,7 @@ public:
     mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_);
   }
 
-  virtual ~post_event_to_virtual_devices(void) {
+  virtual ~post_event_to_virtual_devices() {
     detach_from_dispatcher([this] {
       mouse_key_handler_ = nullptr;
     });
@@ -272,11 +272,11 @@ public:
     return manipulate_result::passed;
   }
 
-  virtual bool active(void) const {
+  virtual bool active() const {
     return !queue_.empty();
   }
 
-  virtual bool needs_virtual_hid_pointing(void) const {
+  virtual bool needs_virtual_hid_pointing() const {
     return false;
   }
 
@@ -416,15 +416,15 @@ public:
         });
   }
 
-  pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_virtual_hid_keyboard_pressed_keys_manager(void) const {
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_virtual_hid_keyboard_pressed_keys_manager() const {
     return virtual_hid_keyboard_pressed_keys_manager_;
   }
 
-  pqrs::not_null_shared_ptr_t<keyboard_suppression> get_keyboard_suppression(void) const {
+  pqrs::not_null_shared_ptr_t<keyboard_suppression> get_keyboard_suppression() const {
     return keyboard_suppression_;
   }
 
-  void clear_virtual_hid_keyboard_pressed_keys(void) {
+  void clear_virtual_hid_keyboard_pressed_keys() {
     virtual_hid_keyboard_pressed_keys_manager_->clear();
   }
 
@@ -455,19 +455,19 @@ public:
         });
   }
 
-  const queue& get_queue(void) const {
+  const queue& get_queue() const {
     return queue_;
   }
 
-  void clear_queue(void) {
+  void clear_queue() {
     return queue_.clear();
   }
 
-  const key_event_dispatcher& get_key_event_dispatcher(void) const {
+  const key_event_dispatcher& get_key_event_dispatcher() const {
     return key_event_dispatcher_;
   }
 
-  key_event_dispatcher& get_key_event_dispatcher(void) {
+  key_event_dispatcher& get_key_event_dispatcher() {
     return key_event_dispatcher_;
   }
 

@@ -188,7 +188,7 @@ struct eval_context {
   std::shared_ptr<std::string> log_messages;
 };
 
-inline eval_context create_context_with_limits(void) {
+inline eval_context create_context_with_limits() {
   eval_context result{
       .heap_state = {
           .base = {

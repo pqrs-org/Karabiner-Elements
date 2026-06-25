@@ -9,7 +9,7 @@
 namespace krbn {
 class mouse_key final {
 public:
-  mouse_key(void) : x_(0),
+  mouse_key() : x_(0),
                     y_(0),
                     vertical_wheel_(0),
                     horizontal_wheel_(0),
@@ -27,7 +27,7 @@ public:
                                        speed_multiplier_(speed_multiplier) {
   }
 
-  int get_x(void) const {
+  int get_x() const {
     return x_;
   }
 
@@ -35,7 +35,7 @@ public:
     x_ = value;
   }
 
-  int get_y(void) const {
+  int get_y() const {
     return y_;
   }
 
@@ -43,7 +43,7 @@ public:
     y_ = value;
   }
 
-  int get_vertical_wheel(void) const {
+  int get_vertical_wheel() const {
     return vertical_wheel_;
   }
 
@@ -51,7 +51,7 @@ public:
     vertical_wheel_ = value;
   }
 
-  int get_horizontal_wheel(void) const {
+  int get_horizontal_wheel() const {
     return horizontal_wheel_;
   }
 
@@ -59,7 +59,7 @@ public:
     horizontal_wheel_ = value;
   }
 
-  double get_speed_multiplier(void) const {
+  double get_speed_multiplier() const {
     return speed_multiplier_;
   }
 
@@ -67,7 +67,7 @@ public:
     speed_multiplier_ = value;
   }
 
-  bool is_zero(void) const {
+  bool is_zero() const {
     // Do not check speed_multiplier_ here.
 
     return x_ == 0 &&
@@ -76,11 +76,11 @@ public:
            horizontal_wheel_ == 0;
   }
 
-  bool is_speed_multiplier(void) const {
+  bool is_speed_multiplier() const {
     return is_zero();
   }
 
-  void invert_wheel(void) {
+  void invert_wheel() {
     vertical_wheel_ = -vertical_wheel_;
     horizontal_wheel_ = -horizontal_wheel_;
   }

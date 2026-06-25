@@ -54,15 +54,15 @@ public:
     }
   }
 
-  const std::filesystem::path& get_file_path(void) const {
+  const std::filesystem::path& get_file_path() const {
     return file_path_;
   }
 
-  const std::string& get_title(void) const {
+  const std::string& get_title() const {
     return title_;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<core_configuration::details::complex_modifications_rule>>& get_rules(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<core_configuration::details::complex_modifications_rule>>& get_rules() const {
     return rules_;
   }
 
@@ -74,7 +74,7 @@ public:
     }
   }
 
-  std::optional<std::filesystem::file_time_type> last_write_time(void) const {
+  std::optional<std::filesystem::file_time_type> last_write_time() const {
     std::error_code error_code;
     auto result = std::filesystem::last_write_time(file_path_, error_code);
 
@@ -88,15 +88,15 @@ public:
     return result;
   }
 
-  void unlink_file(void) const {
+  void unlink_file() const {
     unlink(file_path_.c_str());
   }
 
-  bool user_file(void) const {
+  bool user_file() const {
     return file_path_.string().starts_with(constants::get_user_complex_modifications_assets_directory().string());
   }
 
-  std::vector<std::string> lint(void) const {
+  std::vector<std::string> lint() const {
     std::vector<std::string> error_messages;
 
     for (const auto& r : rules_) {

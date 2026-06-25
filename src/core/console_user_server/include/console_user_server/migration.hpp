@@ -6,7 +6,7 @@ namespace krbn {
 namespace console_user_server {
 class migration final {
 public:
-  static void migrate_v1(void) {
+  static void migrate_v1() {
     pqrs::osx::process_info::scoped_sudden_termination_blocker sudden_termination_blocker;
 
     // Move karabiner.json.
@@ -33,7 +33,7 @@ public:
   }
 
 private:
-  static std::string get_user_core_configuration_file_path_v1(void) {
+  static std::string get_user_core_configuration_file_path_v1() {
     std::string file_path;
 
     if (auto home = std::getenv("HOME")) {

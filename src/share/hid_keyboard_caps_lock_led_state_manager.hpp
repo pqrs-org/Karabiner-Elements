@@ -35,7 +35,7 @@ public:
     }
   }
 
-  ~hid_keyboard_caps_lock_led_state_manager(void) {
+  ~hid_keyboard_caps_lock_led_state_manager() {
     detach_from_dispatcher([this] {
       timer_.stop();
     });
@@ -56,7 +56,7 @@ public:
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       if (!started_) {
         started_ = true;
@@ -74,7 +74,7 @@ public:
     });
   }
 
-  void async_stop(void) {
+  void async_stop() {
     enqueue_to_dispatcher([this] {
       if (started_) {
         started_ = false;
@@ -89,7 +89,7 @@ public:
   }
 
 private:
-  void update_caps_lock_led(void) const {
+  void update_caps_lock_led() const {
     if (!started_) {
       return;
     }
@@ -125,7 +125,7 @@ private:
     }
   }
 
-  std::optional<CFIndex> make_integer_value(void) const {
+  std::optional<CFIndex> make_integer_value() const {
     std::lock_guard<std::mutex> lock(state_mutex_);
 
     if (state_ && element_) {

@@ -30,7 +30,7 @@ inline std::vector<std::string> lint_rule(const core_configuration::details::com
   return error_messages;
 }
 
-inline std::string get_new_rule_json_string(void) {
+inline std::string get_new_rule_json_string() {
   nlohmann::json json({{"description", "New Rule (change left_shift+caps_lock to page_down, right_shift+caps_lock to left_command+mission_control)"},
                        {"manipulators", nlohmann::json::array({
                                             nlohmann::json::object({
@@ -83,7 +83,7 @@ inline std::string get_new_rule_json_string(void) {
   return json_utility::dump(json);
 }
 
-inline std::string get_new_rule_eval_js_string(void) {
+inline std::string get_new_rule_eval_js_string() {
   return R"(// JavaScript must be written in ECMAScript 5.1.
 
 function main() {
@@ -128,7 +128,7 @@ main()
 }
 
 // Save .prettierrc.json to ~/.local/share/karabiner for external editors.
-void save_prettierrc(void) {
+void save_prettierrc() {
   auto directory = constants::get_user_data_directory();
   if (!directory.empty()) {
     auto json = nlohmann::ordered_json::object({

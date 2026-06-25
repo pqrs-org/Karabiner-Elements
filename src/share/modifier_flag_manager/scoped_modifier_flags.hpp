@@ -38,17 +38,17 @@ public:
     }
   }
 
-  ~scoped_modifier_flags(void) {
+  ~scoped_modifier_flags() {
     for (const auto& f : get_inverse_active_modifier_flags()) {
       modifier_flag_manager_.push_back_active_modifier_flag(f);
     }
   }
 
-  const std::vector<active_modifier_flag>& get_scoped_active_modifier_flags(void) const {
+  const std::vector<active_modifier_flag>& get_scoped_active_modifier_flags() const {
     return scoped_active_modifier_flags_;
   }
 
-  std::vector<active_modifier_flag> get_inverse_active_modifier_flags(void) const {
+  std::vector<active_modifier_flag> get_inverse_active_modifier_flags() const {
     std::vector<active_modifier_flag> flags;
 
     for (const auto& f : scoped_active_modifier_flags_) {

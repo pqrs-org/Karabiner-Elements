@@ -34,7 +34,7 @@ inline bool is_string_variable_name(const std::string& name) {
 
 // Treat undefined variables as 0.
 struct zeroing_unknown_symbol_resolver : public unknown_symbol_resolver_t {
-  zeroing_unknown_symbol_resolver(void)
+  zeroing_unknown_symbol_resolver()
       : unknown_symbol_resolver_t(unknown_symbol_resolver_t::e_usrmode_extended) {
   }
 
@@ -80,11 +80,11 @@ public:
     }
   }
 
-  const std::string& get_expression_string(void) const {
+  const std::string& get_expression_string() const {
     return expression_string_;
   }
 
-  std::optional<std::string> get_compile_error(void) const {
+  std::optional<std::string> get_compile_error() const {
     return compile_error_;
   }
 
@@ -125,7 +125,7 @@ public:
     return true;
   }
 
-  double value(void) const noexcept {
+  double value() const noexcept {
     std::lock_guard<std::mutex> lock(mutex_);
 
     try {

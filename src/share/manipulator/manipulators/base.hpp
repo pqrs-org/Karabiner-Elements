@@ -10,11 +10,11 @@ namespace manipulator {
 namespace manipulators {
 class base {
 protected:
-  base(void) : validity_(validity::valid) {
+  base() : validity_(validity::valid) {
   }
 
 public:
-  virtual ~base(void) {
+  virtual ~base() {
   }
 
   virtual bool already_manipulated(const event_queue::entry& front_input_event) = 0;
@@ -24,9 +24,9 @@ public:
                                        std::shared_ptr<event_queue::queue> output_event_queue,
                                        absolute_time_point now) = 0;
 
-  virtual bool active(void) const = 0;
+  virtual bool active() const = 0;
 
-  virtual bool needs_virtual_hid_pointing(void) const = 0;
+  virtual bool needs_virtual_hid_pointing() const = 0;
 
   virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
                                                                           event_queue::queue& output_event_queue) = 0;
@@ -38,7 +38,7 @@ public:
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
                                                            event_queue::queue& output_event_queue) = 0;
 
-  validity get_validity(void) const {
+  validity get_validity() const {
     return validity_;
   }
   virtual void set_validity(validity value) {

@@ -148,7 +148,7 @@ public:
         to_(to) {
   }
 
-  virtual ~basic(void) {
+  virtual ~basic() {
     detach_from_dispatcher();
   }
 
@@ -707,11 +707,11 @@ public:
     return manipulate_result::passed;
   }
 
-  virtual bool active(void) const {
+  virtual bool active() const {
     return !manipulated_original_events_.empty();
   }
 
-  virtual bool needs_virtual_hid_pointing(void) const {
+  virtual bool needs_virtual_hid_pointing() const {
     for (const auto& events : {to_,
                                to_after_key_up_,
                                to_if_alone_}) {
@@ -770,31 +770,31 @@ public:
                           front_input_event.get_event_type());
   }
 
-  const from_event_definition& get_from(void) const {
+  const from_event_definition& get_from() const {
     return from_;
   }
 
-  const to_event_definitions& get_to(void) const {
+  const to_event_definitions& get_to() const {
     return to_;
   }
 
-  const to_event_definitions& get_to_after_key_up(void) const {
+  const to_event_definitions& get_to_after_key_up() const {
     return to_after_key_up_;
   }
 
-  const to_event_definitions& get_to_if_alone(void) const {
+  const to_event_definitions& get_to_if_alone() const {
     return to_if_alone_;
   }
 
-  std::shared_ptr<to_if_held_down> get_to_if_held_down(void) const {
+  std::shared_ptr<to_if_held_down> get_to_if_held_down() const {
     return to_if_held_down_;
   }
 
-  std::shared_ptr<to_if_other_key_pressed> get_to_if_other_key_pressed(void) const {
+  std::shared_ptr<to_if_other_key_pressed> get_to_if_other_key_pressed() const {
     return to_if_other_key_pressed_;
   }
 
-  std::shared_ptr<to_delayed_action> get_to_delayed_action(void) const {
+  std::shared_ptr<to_delayed_action> get_to_delayed_action() const {
     return to_delayed_action_;
   }
 

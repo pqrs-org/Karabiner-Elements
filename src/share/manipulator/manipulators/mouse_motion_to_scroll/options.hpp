@@ -18,7 +18,7 @@ public:
   static constexpr std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_default_value =
       std::chrono::milliseconds(100);
 
-  options(void) : momentum_scroll_enabled_(true),
+  options() : momentum_scroll_enabled_(true),
                   speed_multiplier_(speed_multiplier_default_value),
                   recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
                   threshold_(threshold_default_value),
@@ -26,7 +26,7 @@ public:
                   scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
   }
 
-  bool get_momentum_scroll_enabled(void) const {
+  bool get_momentum_scroll_enabled() const {
     return momentum_scroll_enabled_;
   }
 
@@ -34,7 +34,7 @@ public:
     momentum_scroll_enabled_ = value;
   }
 
-  double get_speed_multiplier(void) const {
+  double get_speed_multiplier() const {
     return speed_multiplier_;
   }
 
@@ -46,7 +46,7 @@ public:
     speed_multiplier_ = value;
   }
 
-  std::chrono::milliseconds get_recent_time_duration_milliseconds(void) const {
+  std::chrono::milliseconds get_recent_time_duration_milliseconds() const {
     return recent_time_duration_milliseconds_;
   }
 
@@ -58,7 +58,7 @@ public:
     recent_time_duration_milliseconds_ = value;
   }
 
-  int get_threshold(void) const {
+  int get_threshold() const {
     return threshold_;
   }
 
@@ -70,7 +70,7 @@ public:
     threshold_ = value;
   }
 
-  int get_direction_lock_threshold(void) const {
+  int get_direction_lock_threshold() const {
     return direction_lock_threshold_;
   }
 
@@ -82,7 +82,7 @@ public:
     direction_lock_threshold_ = value;
   }
 
-  std::chrono::milliseconds get_scroll_event_interval_milliseconds_threshold(void) const {
+  std::chrono::milliseconds get_scroll_event_interval_milliseconds_threshold() const {
     return scroll_event_interval_milliseconds_threshold_;
   }
 

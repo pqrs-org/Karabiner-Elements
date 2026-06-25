@@ -1,7 +1,7 @@
 #include "core_configuration/core_configuration.hpp"
 #include <boost/ut.hpp>
 
-void run_global_configuration_test(void) {
+void run_global_configuration_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

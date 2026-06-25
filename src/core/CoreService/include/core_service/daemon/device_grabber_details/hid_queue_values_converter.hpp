@@ -8,7 +8,7 @@ namespace core_service {
 namespace daemon {
 class hid_queue_values_converter final {
 public:
-  hid_queue_values_converter(void)
+  hid_queue_values_converter()
       : last_time_stamp_(0) {
   }
 

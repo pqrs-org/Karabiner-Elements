@@ -47,7 +47,7 @@ auto caps_lock_state_changed_0_event = krbn::event_queue::event::make_caps_lock_
 auto device_keys_and_pointing_buttons_are_released_event = krbn::event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
 } // namespace
 
-void run_event_queue_test(void) {
+void run_event_queue_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

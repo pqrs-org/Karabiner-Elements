@@ -3,7 +3,7 @@
 #include "run_loop_thread_utility.hpp"
 #include <boost/ut.hpp>
 
-int main(void) {
+int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

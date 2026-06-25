@@ -12,7 +12,7 @@ public:
     unset,
   };
 
-  manipulator_environment_variable_set_variable(void)
+  manipulator_environment_variable_set_variable()
       : type_(manipulator_environment_variable_set_variable::type::set) {
   }
 
@@ -30,7 +30,7 @@ public:
         type_(type) {
   }
 
-  std::optional<std::string> get_name(void) const {
+  std::optional<std::string> get_name() const {
     return name_;
   }
 
@@ -38,7 +38,7 @@ public:
     name_ = value;
   }
 
-  std::optional<manipulator_environment_variable_value> get_value(void) const {
+  std::optional<manipulator_environment_variable_value> get_value() const {
     return value_;
   }
 
@@ -46,7 +46,7 @@ public:
     value_ = value;
   }
 
-  std::shared_ptr<exprtk_utility::expression_wrapper> get_expression(void) const {
+  std::shared_ptr<exprtk_utility::expression_wrapper> get_expression() const {
     return expression_;
   }
 
@@ -54,7 +54,7 @@ public:
     expression_ = value;
   }
 
-  std::optional<manipulator_environment_variable_value> get_key_up_value(void) const {
+  std::optional<manipulator_environment_variable_value> get_key_up_value() const {
     return key_up_value_;
   }
 
@@ -62,7 +62,7 @@ public:
     key_up_value_ = value;
   }
 
-  std::shared_ptr<exprtk_utility::expression_wrapper> get_key_up_expression(void) const {
+  std::shared_ptr<exprtk_utility::expression_wrapper> get_key_up_expression() const {
     return key_up_expression_;
   }
 
@@ -70,7 +70,7 @@ public:
     key_up_expression_ = value;
   }
 
-  type get_type(void) const {
+  type get_type() const {
     return type_;
   }
 

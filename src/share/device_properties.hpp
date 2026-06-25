@@ -125,7 +125,7 @@ public:
     }
   }
 
-  device_properties(void) : device_properties(initialization_parameters{}) {
+  device_properties() : device_properties(initialization_parameters{}) {
   }
 
   static pqrs::not_null_shared_ptr_t<device_properties> make_device_properties(device_id device_id,
@@ -261,7 +261,7 @@ public:
     return std::make_shared<device_properties>(parameters);
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     nlohmann::json json;
 
     json["device_id"] = type_safe::get(device_id_);
@@ -299,47 +299,47 @@ public:
     return json;
   }
 
-  device_id get_device_id(void) const {
+  device_id get_device_id() const {
     return device_id_;
   }
 
-  const device_identifiers& get_device_identifiers(void) const {
+  const device_identifiers& get_device_identifiers() const {
     return device_identifiers_;
   }
 
-  location_id get_location_id(void) const {
+  location_id get_location_id() const {
     return location_id_;
   }
 
-  const pqrs::hid::manufacturer_string::value_t& get_manufacturer(void) const {
+  const pqrs::hid::manufacturer_string::value_t& get_manufacturer() const {
     return manufacturer_;
   }
 
-  const pqrs::hid::product_string::value_t& get_product(void) const {
+  const pqrs::hid::product_string::value_t& get_product() const {
     return product_;
   }
 
-  const std::string& get_serial_number(void) const {
+  const std::string& get_serial_number() const {
     return serial_number_;
   }
 
-  const std::string& get_transport(void) const {
+  const std::string& get_transport() const {
     return transport_;
   }
 
-  bool get_is_built_in_keyboard(void) const {
+  bool get_is_built_in_keyboard() const {
     return is_built_in_keyboard_;
   }
 
-  bool get_is_built_in_pointing_device(void) const {
+  bool get_is_built_in_pointing_device() const {
     return is_built_in_pointing_device_;
   }
 
-  bool get_is_built_in_touch_bar(void) const {
+  bool get_is_built_in_touch_bar() const {
     return is_built_in_touch_bar_;
   }
 
-  bool get_is_apple(void) const {
+  bool get_is_apple() const {
     return is_apple_;
   }
 

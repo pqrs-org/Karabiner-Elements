@@ -59,7 +59,7 @@ public:
     hid_event_system_monitor_ = std::make_unique<hid_event_system_monitor>();
   }
 
-  virtual ~components_manager(void) {
+  virtual ~components_manager() {
     detach_from_dispatcher([this] {
       receiver_ = nullptr;
       session_monitor_receiver_ = nullptr;
@@ -67,7 +67,7 @@ public:
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
 

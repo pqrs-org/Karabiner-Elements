@@ -21,7 +21,7 @@ public:
     entries_.erase(value);
   }
 
-  bool empty(void) const {
+  bool empty() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return entries_.empty();
@@ -33,7 +33,7 @@ public:
     return entries_.contains(value);
   }
 
-  std::vector<momentary_switch_event> make_entries_and_clear(void) {
+  std::vector<momentary_switch_event> make_entries_and_clear() {
     std::lock_guard<std::mutex> lock(mutex_);
 
     std::vector<momentary_switch_event> result;
@@ -48,7 +48,7 @@ public:
     return result;
   }
 
-  std::vector<momentary_switch_event> make_entries(void) const {
+  std::vector<momentary_switch_event> make_entries() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     std::vector<momentary_switch_event> result;
@@ -61,7 +61,7 @@ public:
     return result;
   }
 
-  void clear(void) {
+  void clear() {
     std::lock_guard<std::mutex> lock(mutex_);
 
     entries_.clear();

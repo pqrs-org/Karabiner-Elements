@@ -7,7 +7,7 @@
 namespace krbn {
 class keyboard_repeat_detector final {
 public:
-  std::optional<momentary_switch_event> get_repeating_key(void) const {
+  std::optional<momentary_switch_event> get_repeating_key() const {
     return repeating_key_;
   }
 
@@ -37,11 +37,11 @@ public:
     }
   }
 
-  void clear(void) {
+  void clear() {
     repeating_key_ = std::nullopt;
   }
 
-  bool is_repeating(void) const {
+  bool is_repeating() const {
     return repeating_key_ != std::nullopt;
   }
 

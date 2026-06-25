@@ -8,11 +8,11 @@ namespace krbn {
 namespace software_function_details {
 class cg_event_double_click {
 public:
-  cg_event_double_click(void)
+  cg_event_double_click()
       : button_(0) {
   }
 
-  uint32_t get_button(void) const {
+  uint32_t get_button() const {
     return button_;
   }
 

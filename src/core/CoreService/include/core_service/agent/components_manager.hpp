@@ -102,7 +102,7 @@ public:
     }
   }
 
-  virtual ~components_manager(void) {
+  virtual ~components_manager() {
     detach_from_dispatcher([this] {
       stop_core_service_client();
 
@@ -113,7 +113,7 @@ public:
     });
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
@@ -121,7 +121,7 @@ public:
   }
 
 private:
-  void enqueue_check_permissions(void) {
+  void enqueue_check_permissions() {
     if (on_console_ != std::optional<bool>(true)) {
       return;
     }
@@ -133,7 +133,7 @@ private:
         when_now() + std::chrono::seconds(1));
   }
 
-  void refresh_bundle_permission_check_result(void) {
+  void refresh_bundle_permission_check_result() {
     auto result = core_service_utility::make_bundle_permission_check_result();
     if (!result) {
       return;
@@ -159,7 +159,7 @@ private:
     send_core_service_bundle_permission_check_result(*result);
   }
 
-  void check_permissions(void) {
+  void check_permissions() {
     if (on_console_ != std::optional<bool>(true)) {
       return;
     }
@@ -211,7 +211,7 @@ private:
     }
   }
 
-  void start_core_service_client(void) {
+  void start_core_service_client() {
     if (core_service_client_) {
       return;
     }
@@ -259,7 +259,7 @@ private:
     core_service_client_->async_start();
   }
 
-  void stop_core_service_client(void) {
+  void stop_core_service_client() {
     core_service_client_ = nullptr;
   }
 

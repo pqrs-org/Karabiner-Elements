@@ -119,7 +119,7 @@ public:
       return e;
     }
 
-    nlohmann::json to_json(void) const {
+    nlohmann::json to_json() const {
       nlohmann::json json;
       json["type"] = to_c_string(type_);
       json["time_stamp"] = pqrs::osx::chrono::make_milliseconds(time_stamp_ - absolute_time_point(0)).count();
@@ -199,85 +199,85 @@ public:
       return json;
     }
 
-    type get_type(void) const {
+    type get_type() const {
       return type_;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input> get_keyboard_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input> get_keyboard_input() const {
       if (type_ == type::keyboard_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input> get_consumer_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input> get_consumer_input() const {
       if (type_ == type::consumer_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input> get_apple_vendor_top_case_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input> get_apple_vendor_top_case_input() const {
       if (type_ == type::apple_vendor_top_case_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input> get_apple_vendor_keyboard_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input> get_apple_vendor_keyboard_input() const {
       if (type_ == type::apple_vendor_keyboard_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input> get_generic_desktop_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input> get_generic_desktop_input() const {
       if (type_ == type::generic_desktop_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input> get_pointing_input(void) const {
+    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input> get_pointing_input() const {
       if (type_ == type::pointing_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<std::string> get_shell_command(void) const {
+    std::optional<std::string> get_shell_command() const {
       if (type_ == type::shell_command) {
         return std::get<std::string>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<nlohmann::json> get_user_command(void) const {
+    std::optional<nlohmann::json> get_user_command() const {
       if (type_ == type::send_user_command) {
         return std::get<nlohmann::json>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
+    std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers() const {
       if (type_ == type::select_input_source) {
         return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<software_function> get_software_function(void) const {
+    std::optional<software_function> get_software_function() const {
       if (type_ == type::software_function) {
         return std::get<software_function>(value_);
       }
       return std::nullopt;
     }
 
-    absolute_time_point get_time_stamp(void) const {
+    absolute_time_point get_time_stamp() const {
       return time_stamp_;
     }
 
-    std::optional<std::pair<momentary_switch_event, event_type>> get_posted_momentary_switch_event(void) const {
+    std::optional<std::pair<momentary_switch_event, event_type>> get_posted_momentary_switch_event() const {
       return posted_momentary_switch_event_;
     }
 
@@ -289,7 +289,7 @@ public:
     }
 
   private:
-    event(void) {
+    event() {
     }
 
     static const char* to_c_string(type t) {
@@ -340,15 +340,15 @@ public:
         last_event_time_stamp_(0) {
   }
 
-  virtual ~queue(void) {
+  virtual ~queue() {
     detach_from_dispatcher();
   }
 
-  const std::vector<event>& get_events(void) const {
+  const std::vector<event>& get_events() const {
     return events_;
   }
 
-  const keyboard_repeat_detector& get_keyboard_repeat_detector(void) const {
+  const keyboard_repeat_detector& get_keyboard_repeat_detector() const {
     return keyboard_repeat_detector_;
   }
 
@@ -536,7 +536,7 @@ public:
     events_.push_back(e);
   }
 
-  bool empty(void) const {
+  bool empty() const {
     return events_.empty();
   }
 
@@ -647,7 +647,7 @@ public:
         });
   }
 
-  void clear(void) {
+  void clear() {
     events_.clear();
     keyboard_repeat_detector_.clear();
   }

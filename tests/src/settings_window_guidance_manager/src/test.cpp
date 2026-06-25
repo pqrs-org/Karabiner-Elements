@@ -65,7 +65,7 @@ struct manager_test_context final {
 };
 } // namespace
 
-int main(void) {
+int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

@@ -12,11 +12,11 @@ namespace daemon {
 namespace device_grabber_details {
 class simple_modifications_manipulator_manager final {
 public:
-  simple_modifications_manipulator_manager(void) {
+  simple_modifications_manipulator_manager() {
     manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
   }
 
-  std::shared_ptr<manipulator::manipulator_manager> get_manipulator_manager(void) const {
+  std::shared_ptr<manipulator::manipulator_manager> get_manipulator_manager() const {
     return manipulator_manager_;
   }
 

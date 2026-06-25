@@ -82,7 +82,7 @@ private:
   std::unordered_map<std::string, std::string> string_variables_;
 };
 
-inline pqrs::not_null_shared_ptr_t<condition_expression_manager> get_shared_condition_expression_manager(void) {
+inline pqrs::not_null_shared_ptr_t<condition_expression_manager> get_shared_condition_expression_manager() {
   static std::mutex mutex;
   std::lock_guard<std::mutex> lock(mutex);
 

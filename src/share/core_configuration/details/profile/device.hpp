@@ -14,7 +14,7 @@ class device final {
 public:
   device(const device&) = delete;
 
-  device(void)
+  device()
       : device(nlohmann::json::object(),
                krbn::core_configuration::error_handling::loose) {
   }
@@ -274,7 +274,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  static nlohmann::json make_default_fn_function_keys_json(void) {
+  static nlohmann::json make_default_fn_function_keys_json() {
     auto json = nlohmann::json::array();
 
     for (int i = 1; i <= 12; ++i) {
@@ -287,7 +287,7 @@ cos(radian) * m;
     return json;
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = json_;
 
     helper_values_.update_json(j);
@@ -323,11 +323,11 @@ cos(radian) * m;
     return j;
   }
 
-  const device_identifiers& get_identifiers(void) const {
+  const device_identifiers& get_identifiers() const {
     return identifiers_;
   }
 
-  const bool& get_ignore(void) const {
+  const bool& get_ignore() const {
     return ignore_;
   }
   void set_ignore(bool value) {
@@ -336,7 +336,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_manipulate_caps_lock_led(void) const {
+  const bool& get_manipulate_caps_lock_led() const {
     return manipulate_caps_lock_led_;
   }
   void set_manipulate_caps_lock_led(bool value) {
@@ -345,7 +345,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_ignore_vendor_events(void) const {
+  const bool& get_ignore_vendor_events() const {
     return ignore_vendor_events_;
   }
   void set_ignore_vendor_events(bool value) {
@@ -354,7 +354,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_treat_as_built_in_keyboard(void) const {
+  const bool& get_treat_as_built_in_keyboard() const {
     return treat_as_built_in_keyboard_;
   }
   void set_treat_as_built_in_keyboard(bool value) {
@@ -363,7 +363,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_disable_built_in_keyboard_if_exists(void) const {
+  const bool& get_disable_built_in_keyboard_if_exists() const {
     return disable_built_in_keyboard_if_exists_;
   }
   void set_disable_built_in_keyboard_if_exists(bool value) {
@@ -372,7 +372,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_pointing_motion_xy_multiplier(void) const {
+  const double& get_pointing_motion_xy_multiplier() const {
     return pointing_motion_xy_multiplier_;
   }
   void set_pointing_motion_xy_multiplier(double value) {
@@ -381,7 +381,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_pointing_motion_wheels_multiplier(void) const {
+  const double& get_pointing_motion_wheels_multiplier() const {
     return pointing_motion_wheels_multiplier_;
   }
   void set_pointing_motion_wheels_multiplier(double value) {
@@ -390,7 +390,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_flip_x(void) const {
+  const bool& get_mouse_flip_x() const {
     return mouse_flip_x_;
   }
   void set_mouse_flip_x(bool value) {
@@ -399,7 +399,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_flip_y(void) const {
+  const bool& get_mouse_flip_y() const {
     return mouse_flip_y_;
   }
   void set_mouse_flip_y(bool value) {
@@ -408,7 +408,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_flip_vertical_wheel(void) const {
+  const bool& get_mouse_flip_vertical_wheel() const {
     return mouse_flip_vertical_wheel_;
   }
   void set_mouse_flip_vertical_wheel(bool value) {
@@ -417,7 +417,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_flip_horizontal_wheel(void) const {
+  const bool& get_mouse_flip_horizontal_wheel() const {
     return mouse_flip_horizontal_wheel_;
   }
   void set_mouse_flip_horizontal_wheel(bool value) {
@@ -426,7 +426,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_swap_xy(void) const {
+  const bool& get_mouse_swap_xy() const {
     return mouse_swap_xy_;
   }
   void set_mouse_swap_xy(bool value) {
@@ -435,7 +435,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_swap_wheels(void) const {
+  const bool& get_mouse_swap_wheels() const {
     return mouse_swap_wheels_;
   }
   void set_mouse_swap_wheels(bool value) {
@@ -444,7 +444,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_discard_x(void) const {
+  const bool& get_mouse_discard_x() const {
     return mouse_discard_x_;
   }
   void set_mouse_discard_x(bool value) {
@@ -453,7 +453,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_discard_y(void) const {
+  const bool& get_mouse_discard_y() const {
     return mouse_discard_y_;
   }
   void set_mouse_discard_y(bool value) {
@@ -462,7 +462,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_discard_vertical_wheel(void) const {
+  const bool& get_mouse_discard_vertical_wheel() const {
     return mouse_discard_vertical_wheel_;
   }
   void set_mouse_discard_vertical_wheel(bool value) {
@@ -471,7 +471,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_discard_horizontal_wheel(void) const {
+  const bool& get_mouse_discard_horizontal_wheel() const {
     return mouse_discard_horizontal_wheel_;
   }
   void set_mouse_discard_horizontal_wheel(bool value) {
@@ -480,7 +480,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_game_pad_swap_sticks(void) const {
+  const bool& get_game_pad_swap_sticks() const {
     return game_pad_swap_sticks_;
   }
   void set_game_pad_swap_sticks(bool value) {
@@ -493,7 +493,7 @@ cos(radian) * m;
   // game_pad_xy_stick_XXX
   //
 
-  const double& get_game_pad_xy_stick_deadzone(void) const {
+  const double& get_game_pad_xy_stick_deadzone() const {
     return game_pad_xy_stick_deadzone_;
   }
   void set_game_pad_xy_stick_deadzone(double value) {
@@ -502,7 +502,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_game_pad_xy_stick_delta_magnitude_detection_threshold(void) const {
+  const double& get_game_pad_xy_stick_delta_magnitude_detection_threshold() const {
     return game_pad_xy_stick_delta_magnitude_detection_threshold_;
   }
   void set_game_pad_xy_stick_delta_magnitude_detection_threshold(double value) {
@@ -511,7 +511,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(void) const {
+  const double& get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold() const {
     return game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   }
   void set_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(double value) {
@@ -520,7 +520,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const int& get_game_pad_xy_stick_continued_movement_interval_milliseconds(void) const {
+  const int& get_game_pad_xy_stick_continued_movement_interval_milliseconds() const {
     return game_pad_xy_stick_continued_movement_interval_milliseconds_;
   }
   void set_game_pad_xy_stick_continued_movement_interval_milliseconds(int value) {
@@ -533,7 +533,7 @@ cos(radian) * m;
   // game_pad_wheels_stick_XXX
   //
 
-  const double& get_game_pad_wheels_stick_deadzone(void) const {
+  const double& get_game_pad_wheels_stick_deadzone() const {
     return game_pad_wheels_stick_deadzone_;
   }
   void set_game_pad_wheels_stick_deadzone(double value) {
@@ -542,7 +542,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_game_pad_wheels_stick_delta_magnitude_detection_threshold(void) const {
+  const double& get_game_pad_wheels_stick_delta_magnitude_detection_threshold() const {
     return game_pad_wheels_stick_delta_magnitude_detection_threshold_;
   }
   void set_game_pad_wheels_stick_delta_magnitude_detection_threshold(double value) {
@@ -551,7 +551,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(void) const {
+  const double& get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold() const {
     return game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   }
   void set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(double value) {
@@ -560,7 +560,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const int& get_game_pad_wheels_stick_continued_movement_interval_milliseconds(void) const {
+  const int& get_game_pad_wheels_stick_continued_movement_interval_milliseconds() const {
     return game_pad_wheels_stick_continued_movement_interval_milliseconds_;
   }
   void set_game_pad_wheels_stick_continued_movement_interval_milliseconds(int value) {
@@ -569,7 +569,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const std::string& get_game_pad_stick_x_formula(void) const {
+  const std::string& get_game_pad_stick_x_formula() const {
     return game_pad_stick_x_formula_;
   }
   void set_game_pad_stick_x_formula(const std::string& value) {
@@ -578,7 +578,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const std::string& get_game_pad_stick_y_formula(void) const {
+  const std::string& get_game_pad_stick_y_formula() const {
     return game_pad_stick_y_formula_;
   }
   void set_game_pad_stick_y_formula(const std::string& value) {
@@ -587,7 +587,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const std::string& get_game_pad_stick_vertical_wheel_formula(void) const {
+  const std::string& get_game_pad_stick_vertical_wheel_formula() const {
     return game_pad_stick_vertical_wheel_formula_;
   }
   void set_game_pad_stick_vertical_wheel_formula(const std::string& value) {
@@ -596,7 +596,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const std::string& get_game_pad_stick_horizontal_wheel_formula(void) const {
+  const std::string& get_game_pad_stick_horizontal_wheel_formula() const {
     return game_pad_stick_horizontal_wheel_formula_;
   }
   void set_game_pad_stick_horizontal_wheel_formula(const std::string& value) {
@@ -605,11 +605,11 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications(void) const {
+  pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications() const {
     return simple_modifications_;
   }
 
-  pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys(void) const {
+  pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys() const {
     return fn_function_keys_;
   }
 
@@ -628,7 +628,7 @@ cos(radian) * m;
   }
 
 private:
-  void coordinate_between_properties(void) {
+  void coordinate_between_properties() {
     // Set `disable_built_in_keyboard_if_exists_` false if `treat_as_built_in_keyboard_` is true.
     // If both settings are true, the device will always be disabled.
     // To avoid this situation, set `disable_built_in_keyboard_if_exists_` to false.

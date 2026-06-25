@@ -8,10 +8,10 @@ namespace manipulator {
 namespace manipulators {
 class nop final : public base {
 public:
-  nop(void) : base() {
+  nop() : base() {
   }
 
-  virtual ~nop(void) {
+  virtual ~nop() {
   }
 
   virtual bool already_manipulated(const event_queue::entry& front_input_event) {
@@ -25,11 +25,11 @@ public:
     return manipulate_result::passed;
   }
 
-  virtual bool active(void) const {
+  virtual bool active() const {
     return false;
   }
 
-  virtual bool needs_virtual_hid_pointing(void) const {
+  virtual bool needs_virtual_hid_pointing() const {
     return false;
   }
 

@@ -9,13 +9,13 @@ namespace krbn {
 namespace manipulator {
 class from_modifiers_definition final {
 public:
-  from_modifiers_definition(void) {
+  from_modifiers_definition() {
   }
 
-  virtual ~from_modifiers_definition(void) {
+  virtual ~from_modifiers_definition() {
   }
 
-  const std::set<modifier_definition::modifier>& get_mandatory_modifiers(void) const {
+  const std::set<modifier_definition::modifier>& get_mandatory_modifiers() const {
     return mandatory_modifiers_;
   }
 
@@ -23,7 +23,7 @@ public:
     mandatory_modifiers_ = value;
   }
 
-  const std::set<modifier_definition::modifier>& get_optional_modifiers(void) const {
+  const std::set<modifier_definition::modifier>& get_optional_modifiers() const {
     return optional_modifiers_;
   }
 

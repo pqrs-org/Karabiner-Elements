@@ -23,7 +23,7 @@ public:
 
   simultaneous_options(const simultaneous_options&) = delete;
 
-  simultaneous_options(void)
+  simultaneous_options()
       : detect_key_down_uninterruptedly_(false),
         key_down_order_(key_order::insensitive),
         key_up_order_(key_order::insensitive),
@@ -93,23 +93,23 @@ public:
     }
   }
 
-  bool get_detect_key_down_uninterruptedly(void) const {
+  bool get_detect_key_down_uninterruptedly() const {
     return detect_key_down_uninterruptedly_;
   }
 
-  key_order get_key_down_order(void) const {
+  key_order get_key_down_order() const {
     return key_down_order_;
   }
 
-  key_order get_key_up_order(void) const {
+  key_order get_key_up_order() const {
     return key_up_order_;
   }
 
-  key_up_when get_key_up_when(void) const {
+  key_up_when get_key_up_when() const {
     return key_up_when_;
   }
 
-  const to_event_definitions& get_to_after_key_up(void) const {
+  const to_event_definitions& get_to_after_key_up() const {
     return to_after_key_up_;
   }
 

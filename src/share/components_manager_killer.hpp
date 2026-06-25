@@ -8,32 +8,32 @@ class components_manager_killer final : public pqrs::dispatcher::extra::dispatch
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  nod::signal<void(void)> kill_called;
+  nod::signal<void()> kill_called;
 
   // Methods
 
-  components_manager_killer(void) : dispatcher_client() {
+  components_manager_killer() : dispatcher_client() {
   }
 
-  virtual ~components_manager_killer(void) {
+  virtual ~components_manager_killer() {
     detach_from_dispatcher();
   }
 
-  void async_kill(void) {
+  void async_kill() {
     enqueue_to_dispatcher([this] {
       kill_called();
     });
   }
 
-  static void initialize_shared_components_manager_killer(void) {
+  static void initialize_shared_components_manager_killer() {
     instance_ = std::make_shared<components_manager_killer>();
   }
 
-  static void terminate_shared_components_manager_killer(void) {
+  static void terminate_shared_components_manager_killer() {
     instance_ = nullptr;
   }
 
-  static std::shared_ptr<components_manager_killer> get_shared_components_manager_killer(void) {
+  static std::shared_ptr<components_manager_killer> get_shared_components_manager_killer() {
     return instance_;
   }
 

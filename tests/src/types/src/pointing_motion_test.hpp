@@ -1,7 +1,7 @@
 #include "types.hpp"
 #include <boost/ut.hpp>
 
-void run_pointing_motion_test(void) {
+void run_pointing_motion_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

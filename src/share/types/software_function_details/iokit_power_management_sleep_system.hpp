@@ -9,11 +9,11 @@ namespace krbn {
 namespace software_function_details {
 class iokit_power_management_sleep_system {
 public:
-  iokit_power_management_sleep_system(void)
+  iokit_power_management_sleep_system()
       : delay_milliseconds_(500) {
   }
 
-  std::chrono::milliseconds get_delay_milliseconds(void) const {
+  std::chrono::milliseconds get_delay_milliseconds() const {
     return delay_milliseconds_;
   }
 

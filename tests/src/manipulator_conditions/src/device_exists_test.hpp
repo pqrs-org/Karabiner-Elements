@@ -3,7 +3,7 @@
 #include "../../share/manipulator_conditions_helper.hpp"
 #include "actual_examples_helper.hpp"
 
-void run_device_exists_test(void) {
+void run_device_exists_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

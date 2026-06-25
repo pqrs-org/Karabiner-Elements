@@ -16,7 +16,7 @@
 namespace krbn {
 class app_icon final {
 public:
-  app_icon(void)
+  app_icon()
       : number_(0) {
   }
 
@@ -39,11 +39,11 @@ public:
     }
   }
 
-  int get_number(void) const {
+  int get_number() const {
     return number_;
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     return nlohmann::json::object({
         {"number", number_},
     });

@@ -4,7 +4,7 @@
 #include "actual_examples_helper.hpp"
 #include <pqrs/gsl.hpp>
 
-void run_manipulator_conditions_test(void) {
+void run_manipulator_conditions_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::literals;

@@ -16,12 +16,12 @@ namespace krbn {
 namespace console_user_server {
 class software_function_handler final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  software_function_handler(void)
+  software_function_handler()
       : dispatcher_client(),
         check_trusted_(false) {
   }
 
-  virtual ~software_function_handler(void) {
+  virtual ~software_function_handler() {
     detach_from_dispatcher();
   }
 
@@ -289,7 +289,7 @@ private:
     return std::nullopt;
   }
 
-  std::optional<CGRect> get_focused_window_bounds(void) const {
+  std::optional<CGRect> get_focused_window_bounds() const {
     if (auto x = focused_ui_element_.get_window_position_x()) {
       if (auto y = focused_ui_element_.get_window_position_y()) {
         if (auto width = focused_ui_element_.get_window_size_width()) {

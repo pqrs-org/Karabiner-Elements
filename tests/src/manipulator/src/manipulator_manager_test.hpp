@@ -2,7 +2,7 @@
 #include "../../share/manipulator_helper.hpp"
 #include <boost/ut.hpp>
 
-void run_manipulator_manager_test(void) {
+void run_manipulator_manager_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

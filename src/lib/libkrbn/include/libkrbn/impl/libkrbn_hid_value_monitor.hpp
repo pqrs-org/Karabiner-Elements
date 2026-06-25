@@ -11,7 +11,7 @@ class libkrbn_hid_value_monitor final : public pqrs::dispatcher::extra::dispatch
 public:
   libkrbn_hid_value_monitor(const libkrbn_hid_value_monitor&) = delete;
 
-  libkrbn_hid_value_monitor(void)
+  libkrbn_hid_value_monitor()
       : dispatcher_client(),
         observed_(false) {
     std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
@@ -91,14 +91,14 @@ public:
     hid_manager_->async_start();
   }
 
-  ~libkrbn_hid_value_monitor(void) {
+  ~libkrbn_hid_value_monitor() {
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
       hid_queue_value_monitors_.clear();
     });
   }
 
-  bool get_observed(void) const {
+  bool get_observed() const {
     return observed_;
   }
 

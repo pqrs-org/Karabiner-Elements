@@ -1,7 +1,7 @@
 #include "duktape_utility.hpp"
 #include <boost/ut.hpp>
 
-int main(void) {
+int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::literals;

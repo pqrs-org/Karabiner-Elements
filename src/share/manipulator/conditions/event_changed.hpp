@@ -52,7 +52,7 @@ public:
     }
   }
 
-  virtual ~event_changed(void) {
+  virtual ~event_changed() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,

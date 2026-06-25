@@ -82,7 +82,7 @@ public:
     }
   }
 
-  static nlohmann::json make_default_fn_function_keys_json(void) {
+  static nlohmann::json make_default_fn_function_keys_json() {
     auto json = nlohmann::json::array();
 
     json.push_back(nlohmann::json::object());
@@ -136,7 +136,7 @@ public:
     return json;
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = json_;
 
     helper_values_.update_json(j);
@@ -174,7 +174,7 @@ public:
     return j;
   }
 
-  const std::string& get_name(void) const {
+  const std::string& get_name() const {
     return name_;
   }
 
@@ -182,7 +182,7 @@ public:
     name_ = value;
   }
 
-  const bool& get_selected(void) const {
+  const bool& get_selected() const {
     return selected_;
   }
 
@@ -190,27 +190,27 @@ public:
     selected_ = value;
   }
 
-  pqrs::not_null_shared_ptr_t<details::parameters> get_parameters(void) const {
+  pqrs::not_null_shared_ptr_t<details::parameters> get_parameters() const {
     return parameters_;
   }
 
-  pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications(void) const {
+  pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications() const {
     return simple_modifications_;
   }
 
-  pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys(void) const {
+  pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys() const {
     return fn_function_keys_;
   }
 
-  pqrs::not_null_shared_ptr_t<details::complex_modifications> get_complex_modifications(void) const {
+  pqrs::not_null_shared_ptr_t<details::complex_modifications> get_complex_modifications() const {
     return complex_modifications_;
   }
 
-  pqrs::not_null_shared_ptr_t<details::virtual_hid_keyboard> get_virtual_hid_keyboard(void) const {
+  pqrs::not_null_shared_ptr_t<details::virtual_hid_keyboard> get_virtual_hid_keyboard() const {
     return virtual_hid_keyboard_;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<details::device>>& get_devices(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<details::device>>& get_devices() const {
     return devices_;
   }
 

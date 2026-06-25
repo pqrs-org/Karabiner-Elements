@@ -8,7 +8,7 @@ class libkrbn_version_monitor final : public pqrs::dispatcher::extra::dispatcher
 public:
   libkrbn_version_monitor(const libkrbn_version_monitor&) = delete;
 
-  libkrbn_version_monitor(void)
+  libkrbn_version_monitor()
       : dispatcher_client() {
     monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
@@ -25,13 +25,13 @@ public:
     // Do not wait `changed` callback here.
   }
 
-  ~libkrbn_version_monitor(void) {
+  ~libkrbn_version_monitor() {
     detach_from_dispatcher([this] {
       monitor_ = nullptr;
     });
   }
 
-  const std::string& get_version(void) const {
+  const std::string& get_version() const {
     return version_;
   }
 

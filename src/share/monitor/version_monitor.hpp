@@ -57,7 +57,7 @@ public:
     });
   }
 
-  virtual ~version_monitor(void) {
+  virtual ~version_monitor() {
     detach_from_dispatcher([this] {
       file_monitor_ = nullptr;
     });
@@ -67,7 +67,7 @@ public:
     file_monitor_->async_start();
   }
 
-  void async_manual_check(void) {
+  void async_manual_check() {
     file_monitor_->enqueue_file_changed(version_file_path_);
   }
 

@@ -7,7 +7,7 @@ namespace modifier_definition = krbn::manipulator::modifier_definition;
 using krbn::manipulator::event_definition;
 using krbn::manipulator::to_event_definition;
 
-void run_manipulator_factory_test(void) {
+void run_manipulator_factory_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

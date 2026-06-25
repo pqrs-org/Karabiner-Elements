@@ -17,7 +17,7 @@ public:
   using guidance_context_maker = std::function<settings_window_guidance_context()>;
   using launch_settings_handler = std::function<void()>;
 
-  static guidance_context_maker make_default_guidance_context_maker(void) {
+  static guidance_context_maker make_default_guidance_context_maker() {
     return [] {
       settings_window_guidance_context c;
 
@@ -32,7 +32,7 @@ public:
     };
   }
 
-  static launch_settings_handler make_default_launch_settings_handler(void) {
+  static launch_settings_handler make_default_launch_settings_handler() {
     return [] {
       application_launcher::launch_settings_without_activation();
     };

@@ -24,11 +24,11 @@ public:
     }
   }
 
-  const krbn::manipulator::condition_manager& get_condition_manager(void) const {
+  const krbn::manipulator::condition_manager& get_condition_manager() const {
     return condition_manager_;
   }
 
-  const std::vector<std::string> get_error_messages(void) const {
+  const std::vector<std::string> get_error_messages() const {
     return error_messages_;
   }
 

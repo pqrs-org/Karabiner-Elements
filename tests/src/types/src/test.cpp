@@ -12,7 +12,7 @@
 #include "software_function_test.hpp"
 #include "virtual_hid_devices_state_test.hpp"
 
-int main(void) {
+int main() {
   run_device_identifiers_test();
   run_errors_test();
   run_grabbable_state_test();

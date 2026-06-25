@@ -39,7 +39,7 @@ public:
     cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>(pqrs::cf::run_loop_thread::failure_policy::exit);
   }
 
-  ~event_tap_monitor(void) {
+  ~event_tap_monitor() {
     detach_from_dispatcher([this] {
       std::lock_guard<std::mutex> lock(event_tap_mutex_);
 
@@ -63,7 +63,7 @@ public:
     cf_run_loop_thread_ = nullptr;
   }
 
-  void async_start(void) {
+  void async_start() {
     enqueue_to_dispatcher([this] {
       {
         std::lock_guard<std::mutex> lock(event_tap_mutex_);
@@ -257,7 +257,7 @@ private:
     return nullptr;
   }
 
-  CGEventFlags make_virtual_hid_modifier_flags(void) const {
+  CGEventFlags make_virtual_hid_modifier_flags() const {
     CGEventFlags flags = 0;
 
     for (const auto& event : virtual_hid_keyboard_pressed_keys_manager_->make_entries()) {

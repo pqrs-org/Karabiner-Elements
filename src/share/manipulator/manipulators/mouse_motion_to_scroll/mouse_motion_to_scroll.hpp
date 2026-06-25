@@ -74,7 +74,7 @@ public:
     }
   }
 
-  virtual ~mouse_motion_to_scroll(void) {
+  virtual ~mouse_motion_to_scroll() {
     detach_from_dispatcher([this] {
       counter_ = nullptr;
     });
@@ -125,11 +125,11 @@ public:
     return manipulate_result::passed;
   }
 
-  virtual bool active(void) const {
+  virtual bool active() const {
     return false;
   }
 
-  virtual bool needs_virtual_hid_pointing(void) const {
+  virtual bool needs_virtual_hid_pointing() const {
     return true;
   }
 

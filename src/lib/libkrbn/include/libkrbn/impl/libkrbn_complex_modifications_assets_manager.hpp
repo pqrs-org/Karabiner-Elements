@@ -7,22 +7,22 @@ class libkrbn_complex_modifications_assets_manager final {
 public:
   libkrbn_complex_modifications_assets_manager(const libkrbn_complex_modifications_assets_manager&) = delete;
 
-  libkrbn_complex_modifications_assets_manager(void) {
+  libkrbn_complex_modifications_assets_manager() {
     krbn::logger::get_logger()->info(__func__);
 
     manager_ = std::make_unique<krbn::complex_modifications_assets_manager>();
   }
 
-  ~libkrbn_complex_modifications_assets_manager(void) {
+  ~libkrbn_complex_modifications_assets_manager() {
     krbn::logger::get_logger()->info(__func__);
   }
 
-  void reload(void) const {
+  void reload() const {
     manager_->reload(krbn::constants::get_user_complex_modifications_assets_directory(),
                      krbn::core_configuration::error_handling::loose);
   }
 
-  size_t get_files_size(void) const {
+  size_t get_files_size() const {
     return manager_->get_files().size();
   }
 

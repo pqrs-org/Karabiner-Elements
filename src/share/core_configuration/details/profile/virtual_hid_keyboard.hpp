@@ -12,7 +12,7 @@ class virtual_hid_keyboard final {
 public:
   virtual_hid_keyboard(const virtual_hid_keyboard&) = delete;
 
-  virtual_hid_keyboard(void)
+  virtual_hid_keyboard()
       : virtual_hid_keyboard(nlohmann::json::object(),
                              krbn::core_configuration::error_handling::loose) {
   }
@@ -37,7 +37,7 @@ public:
     helper_values_.update_value(json, error_handling);
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = json_;
 
     helper_values_.update_json(j);
@@ -45,7 +45,7 @@ public:
     return j;
   }
 
-  const std::string& get_keyboard_type_v2(void) const {
+  const std::string& get_keyboard_type_v2() const {
     return keyboard_type_v2_;
   }
 
@@ -53,7 +53,7 @@ public:
     keyboard_type_v2_ = value;
   }
 
-  pqrs::osx::iokit_keyboard_type::value_t get_iokit_keyboard_type(void) const {
+  pqrs::osx::iokit_keyboard_type::value_t get_iokit_keyboard_type() const {
     if (keyboard_type_v2_ == "iso") {
       return pqrs::osx::iokit_keyboard_type::iso;
     } else if (keyboard_type_v2_ == "jis") {
@@ -63,7 +63,7 @@ public:
     }
   }
 
-  const int& get_mouse_key_xy_scale(void) const {
+  const int& get_mouse_key_xy_scale() const {
     return mouse_key_xy_scale_;
   }
 
@@ -74,7 +74,7 @@ public:
     mouse_key_xy_scale_ = value;
   }
 
-  const bool& get_indicate_sticky_modifier_keys_state(void) const {
+  const bool& get_indicate_sticky_modifier_keys_state() const {
     return indicate_sticky_modifier_keys_state_;
   }
 

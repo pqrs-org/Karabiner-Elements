@@ -13,7 +13,7 @@ public:
       get_power_management_run_loop_thread() = std::make_shared<pqrs::cf::run_loop_thread>(failure_policy);
     }
 
-    ~scoped_run_loop_thread_manager(void) {
+    ~scoped_run_loop_thread_manager() {
       if (get_power_management_run_loop_thread()) {
         get_power_management_run_loop_thread()->terminate();
         get_power_management_run_loop_thread() = nullptr;
@@ -29,7 +29,7 @@ public:
 
   // pqrs::osx::iokit_power_management::monitor blocks in the system_will_sleep process until ready to sleep.
   // To allow shared_run_loop_thread to be used to prepare for sleep, pqrs::osx::iokit_power_management::monitor uses an independent run_loop_thread.
-  static std::shared_ptr<pqrs::cf::run_loop_thread>& get_power_management_run_loop_thread(void) {
+  static std::shared_ptr<pqrs::cf::run_loop_thread>& get_power_management_run_loop_thread() {
     static std::shared_ptr<pqrs::cf::run_loop_thread> p;
     return p;
   }

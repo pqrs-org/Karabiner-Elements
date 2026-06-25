@@ -8,7 +8,7 @@ class libkrbn_configuration_monitor final : public pqrs::dispatcher::extra::disp
 public:
   libkrbn_configuration_monitor(const libkrbn_configuration_monitor&) = delete;
 
-  libkrbn_configuration_monitor(void)
+  libkrbn_configuration_monitor()
       : dispatcher_client() {
     monitor_ = std::make_unique<krbn::configuration_monitor>(
         krbn::constants::get_user_core_configuration_file_path(),
@@ -32,13 +32,13 @@ public:
     wait->wait_notice();
   }
 
-  ~libkrbn_configuration_monitor(void) {
+  ~libkrbn_configuration_monitor() {
     detach_from_dispatcher([this] {
       monitor_ = nullptr;
     });
   }
 
-  std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration(void) const {
+  std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration() const {
     return weak_core_configuration_;
   }
 

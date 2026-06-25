@@ -77,17 +77,17 @@ public:
     });
   }
 
-  ~libkrbn_core_service_client(void) {
+  ~libkrbn_core_service_client() {
     detach_from_dispatcher([this] {
       core_service_client_ = nullptr;
     });
   }
 
-  void async_start(void) const {
+  void async_start() const {
     core_service_client_->async_start();
   }
 
-  libkrbn_core_service_client_status get_status(void) const {
+  libkrbn_core_service_client_status get_status() const {
     return status_;
   }
 
@@ -95,23 +95,23 @@ public:
     core_service_client_->async_temporarily_ignore_all_devices(value);
   }
 
-  void async_get_manipulator_environment(void) {
+  void async_get_manipulator_environment() {
     core_service_client_->async_get_manipulator_environment();
   }
 
-  void async_get_connected_devices(void) {
+  void async_get_connected_devices() {
     core_service_client_->async_get_connected_devices();
   }
 
-  void async_get_notification_message(void) {
+  void async_get_notification_message() {
     core_service_client_->async_get_notification_message();
   }
 
-  void async_get_system_variables(void) {
+  void async_get_system_variables() {
     core_service_client_->async_get_system_variables();
   }
 
-  void async_connect_multitouch_extension(void) {
+  void async_connect_multitouch_extension() {
     core_service_client_->async_connect_multitouch_extension();
   }
 
@@ -126,7 +126,7 @@ public:
     core_service_client_->async_set_variables(json);
   }
 
-  void async_clear_user_variables(void) const {
+  void async_clear_user_variables() const {
     core_service_client_->async_clear_user_variables();
   }
 

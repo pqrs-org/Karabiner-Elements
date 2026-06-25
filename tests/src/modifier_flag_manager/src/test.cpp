@@ -71,7 +71,7 @@ krbn::modifier_flag_manager::active_modifier_flag fn_1(krbn::modifier_flag_manag
                                                        krbn::device_id(1));
 } // namespace
 
-int main(void) {
+int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

@@ -22,19 +22,19 @@ public:
                                                   device_id_(device_id) {
     }
 
-    type get_type(void) const {
+    type get_type() const {
       return type_;
     }
 
-    const pqrs::hid::usage_pair& get_usage_pair(void) const {
+    const pqrs::hid::usage_pair& get_usage_pair() const {
       return usage_pair_;
     }
 
-    device_id get_device_id(void) const {
+    device_id get_device_id() const {
       return device_id_;
     }
 
-    type get_inverse_type(void) const {
+    type get_inverse_type() const {
       switch (type_) {
         case type::increase:
           return type::decrease;
@@ -43,7 +43,7 @@ public:
       }
     }
 
-    int get_count(void) const {
+    int get_count() const {
       if (type_ == type::increase) {
         return 1;
       } else {
@@ -100,7 +100,7 @@ public:
     erase_all_active_pointing_buttons(device_id);
   }
 
-  void reset(void) {
+  void reset() {
     active_pointing_buttons_.clear();
   }
 
@@ -116,7 +116,7 @@ public:
     return count > 0;
   }
 
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons make_hid_report_buttons(void) const {
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons make_hid_report_buttons() const {
     pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons buttons;
 
     pqrs::hid::usage_pair usage_pair(pqrs::hid::usage_page::button,

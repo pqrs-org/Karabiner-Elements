@@ -9,11 +9,11 @@ namespace krbn {
 
 class codesign_manager final {
 public:
-  codesign_manager(void)
+  codesign_manager()
       : current_process_signing_information_(pqrs::osx::codesign::get_signing_information_of_process(getpid())) {
   }
 
-  void log(void) {
+  void log() {
     auto team_id = current_process_signing_information_.get_verified_team_id().value_or(pqrs::osx::codesign::team_id("empty"));
 
     logger::get_logger()->info("signing_information team_id: {0}",
@@ -39,7 +39,7 @@ private:
   pqrs::osx::codesign::signing_information current_process_signing_information_;
 };
 
-inline pqrs::not_null_shared_ptr_t<codesign_manager> get_shared_codesign_manager(void) {
+inline pqrs::not_null_shared_ptr_t<codesign_manager> get_shared_codesign_manager() {
   static std::mutex mutex;
   std::lock_guard<std::mutex> lock(mutex);
 

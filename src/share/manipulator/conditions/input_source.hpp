@@ -54,7 +54,7 @@ public:
     }
   }
 
-  virtual ~input_source(void) {
+  virtual ~input_source() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,

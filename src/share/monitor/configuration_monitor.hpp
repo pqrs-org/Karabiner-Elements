@@ -96,7 +96,7 @@ public:
     });
   }
 
-  virtual ~configuration_monitor(void) {
+  virtual ~configuration_monitor() {
     detach_from_dispatcher([this] {
       file_monitor_ = nullptr;
     });

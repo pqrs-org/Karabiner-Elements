@@ -15,7 +15,7 @@ public:
     end_,
   };
 
-  grabbable_state(void) : grabbable_state(device_id(0),
+  grabbable_state() : grabbable_state(device_id(0),
                                           state::grabbable,
                                           absolute_time_point(0)) {
   }
@@ -27,7 +27,7 @@ public:
                                                     time_stamp_(time_stamp) {
   }
 
-  device_id get_device_id(void) const {
+  device_id get_device_id() const {
     return device_id_;
   }
 
@@ -35,7 +35,7 @@ public:
     device_id_ = value;
   }
 
-  state get_state(void) const {
+  state get_state() const {
     return state_;
   }
 
@@ -43,7 +43,7 @@ public:
     state_ = value;
   }
 
-  absolute_time_point get_time_stamp(void) const {
+  absolute_time_point get_time_stamp() const {
     return time_stamp_;
   }
 

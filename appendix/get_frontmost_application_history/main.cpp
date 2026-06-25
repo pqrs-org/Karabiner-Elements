@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 namespace {
-void status_changed_callback(void) {
+void status_changed_callback() {
   switch (libkrbn_console_user_server_client_get_status()) {
     case libkrbn_console_user_server_client_status_connected:
       std::cerr << "console_user_server_client connected" << std::endl;

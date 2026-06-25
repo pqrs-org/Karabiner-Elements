@@ -4,13 +4,13 @@
 
 namespace krbn {
 namespace chrono_utility {
-inline std::size_t milliseconds_since_epoch(void) {
+inline std::size_t milliseconds_since_epoch() {
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
   return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
-inline std::size_t nanoseconds_since_epoch(void) {
+inline std::size_t nanoseconds_since_epoch() {
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
   return std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();

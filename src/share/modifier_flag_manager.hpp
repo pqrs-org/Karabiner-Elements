@@ -14,7 +14,7 @@ public:
 
   modifier_flag_manager(const modifier_flag_manager&) = delete;
 
-  modifier_flag_manager(void) {
+  modifier_flag_manager() {
   }
 
   void push_back_active_modifier_flag(const active_modifier_flag& flag) {
@@ -72,7 +72,7 @@ public:
                                  std::end(active_modifier_flags_));
   }
 
-  void erase_caps_lock_sticky_modifier_flags(void) {
+  void erase_caps_lock_sticky_modifier_flags() {
     active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
                                                 std::end(active_modifier_flags_),
                                                 [&](const active_modifier_flag& f) {
@@ -81,7 +81,7 @@ public:
                                  std::end(active_modifier_flags_));
   }
 
-  void erase_all_sticky_modifier_flags(void) {
+  void erase_all_sticky_modifier_flags() {
     active_modifier_flags_.erase(std::remove_if(std::begin(active_modifier_flags_),
                                                 std::end(active_modifier_flags_),
                                                 [&](const active_modifier_flag& f) {
@@ -90,7 +90,7 @@ public:
                                  std::end(active_modifier_flags_));
   }
 
-  void reset(void) {
+  void reset() {
     active_modifier_flags_.clear();
   }
 
@@ -120,11 +120,11 @@ public:
     }
   }
 
-  const std::vector<active_modifier_flag>& get_active_modifier_flags(void) const {
+  const std::vector<active_modifier_flag>& get_active_modifier_flags() const {
     return active_modifier_flags_;
   }
 
-  size_t active_modifier_flags_size(void) const {
+  size_t active_modifier_flags_size() const {
     return active_modifier_flags_.size();
   }
 
@@ -157,7 +157,7 @@ public:
     return count > 0;
   }
 
-  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers make_hid_report_modifiers(void) const {
+  pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers make_hid_report_modifiers() const {
     pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::modifiers modifiers;
 
     std::array<modifier_flag, 8> modifier_flags{
@@ -181,7 +181,7 @@ public:
     return modifiers;
   }
 
-  std::unordered_set<modifier_flag> make_modifier_flags(void) const {
+  std::unordered_set<modifier_flag> make_modifier_flags() const {
     std::unordered_set<modifier_flag> modifier_flags;
 
     for (const auto& m : {
@@ -205,7 +205,7 @@ public:
   }
 
 private:
-  void erase_pairs(void) {
+  void erase_pairs() {
     for (size_t i1 = 0; i1 < active_modifier_flags_.size(); ++i1) {
       for (size_t i2 = i1 + 1; i2 < active_modifier_flags_.size(); ++i2) {
         if (active_modifier_flags_[i1].is_paired(active_modifier_flags_[i2])) {

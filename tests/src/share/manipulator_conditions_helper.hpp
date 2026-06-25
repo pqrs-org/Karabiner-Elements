@@ -9,20 +9,20 @@ namespace krbn {
 namespace unit_testing {
 class manipulator_conditions_helper final {
 public:
-  manipulator_conditions_helper(void) : last_device_id_(0) {
+  manipulator_conditions_helper() : last_device_id_(0) {
     core_configuration_ = std::make_shared<krbn::core_configuration::core_configuration>();
     manipulator_environment_.set_core_configuration(core_configuration_);
   }
 
-  const krbn::manipulator::manipulator_environment& get_manipulator_environment(void) const {
+  const krbn::manipulator::manipulator_environment& get_manipulator_environment() const {
     return manipulator_environment_;
   }
 
-  krbn::manipulator::manipulator_environment& get_manipulator_environment(void) {
+  krbn::manipulator::manipulator_environment& get_manipulator_environment() {
     return const_cast<krbn::manipulator::manipulator_environment&>(static_cast<const manipulator_conditions_helper&>(*this).get_manipulator_environment());
   }
 
-  std::shared_ptr<krbn::core_configuration::core_configuration> get_core_configuration(void) const {
+  std::shared_ptr<krbn::core_configuration::core_configuration> get_core_configuration() const {
     return core_configuration_;
   }
 

@@ -6,10 +6,10 @@
 namespace krbn {
 class notification_message final {
 public:
-  notification_message(void) {
+  notification_message() {
   }
 
-  const std::string& get_id(void) const {
+  const std::string& get_id() const {
     return id_;
   }
 
@@ -17,7 +17,7 @@ public:
     id_ = value;
   }
 
-  const std::string& get_text(void) const {
+  const std::string& get_text() const {
     return text_;
   }
 

@@ -25,7 +25,7 @@ public:
            momentary_switch_event_details::generic_desktop::target(usage_page, usage);
   }
 
-  momentary_switch_event(void) {
+  momentary_switch_event() {
   }
 
   momentary_switch_event(pqrs::hid::usage_page::value_t usage_page,
@@ -86,7 +86,7 @@ public:
     }
   }
 
-  const pqrs::hid::usage_pair& get_usage_pair(void) const {
+  const pqrs::hid::usage_pair& get_usage_pair() const {
     return usage_pair_;
   }
 
@@ -96,7 +96,7 @@ public:
     return *this;
   }
 
-  std::optional<krbn::modifier_flag> make_modifier_flag(void) const {
+  std::optional<krbn::modifier_flag> make_modifier_flag() const {
     auto usage_page = usage_pair_.get_usage_page();
     auto usage = usage_pair_.get_usage();
 
@@ -131,21 +131,21 @@ public:
     return std::nullopt;
   }
 
-  bool valid(void) const {
+  bool valid() const {
     return usage_pair_.get_usage_page() != pqrs::hid::usage_page::undefined &&
            usage_pair_.get_usage() != pqrs::hid::usage::undefined;
   }
 
-  bool modifier_flag(void) const {
+  bool modifier_flag() const {
     return make_modifier_flag() != std::nullopt;
   }
 
-  bool caps_lock(void) const {
+  bool caps_lock() const {
     return usage_pair_.get_usage_page() == pqrs::hid::usage_page::keyboard_or_keypad &&
            usage_pair_.get_usage() == pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock;
   }
 
-  bool pointing_button(void) const {
+  bool pointing_button() const {
     return usage_pair_.get_usage_page() == pqrs::hid::usage_page::button;
   }
 
@@ -158,7 +158,7 @@ public:
   // - false: Modifier keys
   // - false: Pointing Buttons
   // - false: D-pad
-  bool interrupts_key_repeat(void) const {
+  bool interrupts_key_repeat() const {
     if (!valid() ||
         modifier_flag() ||
         caps_lock() ||

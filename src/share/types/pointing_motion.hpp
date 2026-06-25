@@ -7,7 +7,7 @@
 namespace krbn {
 class pointing_motion final {
 public:
-  pointing_motion(void) : x_(0),
+  pointing_motion() : x_(0),
                           y_(0),
                           vertical_wheel_(0),
                           horizontal_wheel_(0) {
@@ -22,7 +22,7 @@ public:
                                           horizontal_wheel_(horizontal_wheel) {
   }
 
-  int get_x(void) const {
+  int get_x() const {
     return x_;
   }
 
@@ -30,7 +30,7 @@ public:
     x_ = value;
   }
 
-  int get_y(void) const {
+  int get_y() const {
     return y_;
   }
 
@@ -38,7 +38,7 @@ public:
     y_ = value;
   }
 
-  int get_vertical_wheel(void) const {
+  int get_vertical_wheel() const {
     return vertical_wheel_;
   }
 
@@ -46,7 +46,7 @@ public:
     vertical_wheel_ = value;
   }
 
-  int get_horizontal_wheel(void) const {
+  int get_horizontal_wheel() const {
     return horizontal_wheel_;
   }
 
@@ -54,14 +54,14 @@ public:
     horizontal_wheel_ = value;
   }
 
-  bool is_zero(void) const {
+  bool is_zero() const {
     return x_ == 0 &&
            y_ == 0 &&
            vertical_wheel_ == 0 &&
            horizontal_wheel_ == 0;
   }
 
-  void clear(void) {
+  void clear() {
     x_ = 0;
     y_ = 0;
     vertical_wheel_ = 0;

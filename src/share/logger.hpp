@@ -12,7 +12,7 @@
 namespace krbn {
 class logger final {
 public:
-  static std::shared_ptr<spdlog::logger> get_logger(void) {
+  static std::shared_ptr<spdlog::logger> get_logger() {
     std::lock_guard<std::mutex> guard(mutex_);
 
     if (logger_) {

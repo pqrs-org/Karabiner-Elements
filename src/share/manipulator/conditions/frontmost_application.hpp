@@ -63,7 +63,7 @@ public:
     }
   }
 
-  virtual ~frontmost_application(void) {
+  virtual ~frontmost_application() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,

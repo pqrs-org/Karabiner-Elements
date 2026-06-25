@@ -1,7 +1,7 @@
 #include "types.hpp"
 #include <boost/ut.hpp>
 
-void run_modifier_flag_test(void) {
+void run_modifier_flag_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

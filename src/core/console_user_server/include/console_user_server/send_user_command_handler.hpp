@@ -22,7 +22,7 @@ public:
 
   send_user_command_handler(const send_user_command_handler&) = delete;
 
-  send_user_command_handler(void)
+  send_user_command_handler()
       : dispatcher_client(),
         io_context_(),
         work_guard_(asio::make_work_guard(io_context_)),
@@ -32,7 +32,7 @@ public:
     });
   }
 
-  ~send_user_command_handler(void) {
+  ~send_user_command_handler() {
     detach_from_dispatcher();
 
     asio::post(io_context_, [this] {
@@ -74,7 +74,7 @@ public:
   }
 
 private:
-  bool ensure_socket_open(void) {
+  bool ensure_socket_open() {
     if (socket_.is_open()) {
       return true;
     }
@@ -133,7 +133,7 @@ private:
     return bytes_sent == payload.size();
   }
 
-  void close_socket(void) {
+  void close_socket() {
     if (socket_.is_open()) {
       socket_.close();
     }

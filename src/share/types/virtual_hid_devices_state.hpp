@@ -9,12 +9,12 @@
 namespace krbn {
 class virtual_hid_devices_state final {
 public:
-  virtual_hid_devices_state(void)
+  virtual_hid_devices_state()
       : virtual_hid_keyboard_ready_(false),
         virtual_hid_pointing_ready_(false) {
   }
 
-  bool get_virtual_hid_keyboard_ready(void) const {
+  bool get_virtual_hid_keyboard_ready() const {
     return virtual_hid_keyboard_ready_;
   }
 
@@ -22,7 +22,7 @@ public:
     virtual_hid_keyboard_ready_ = value;
   }
 
-  bool get_virtual_hid_pointing_ready(void) const {
+  bool get_virtual_hid_pointing_ready() const {
     return virtual_hid_pointing_ready_;
   }
 

@@ -14,7 +14,7 @@ class hid_event_system_monitor final : public pqrs::dispatcher::extra::dispatche
 public:
   hid_event_system_monitor(const hid_event_system_monitor&) = delete;
 
-  hid_event_system_monitor(void) : dispatcher_client(),
+  hid_event_system_monitor() : dispatcher_client(),
                                    set_property_timer_(*this) {
     if (auto matching_dictionary = IOServiceNameMatching("AppleUserHIDEventDriver")) {
       monitor_ = std::make_unique<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
@@ -53,7 +53,7 @@ public:
     }
   }
 
-  virtual ~hid_event_system_monitor(void) {
+  virtual ~hid_event_system_monitor() {
     detach_from_dispatcher([this] {
       set_property_timer_.stop();
 

@@ -9,15 +9,15 @@
 namespace krbn {
 class update_utility final {
 public:
-  static void check_for_updates_in_background(void) {
+  static void check_for_updates_in_background() {
     launch_updater("checkForUpdatesInBackground", false);
   }
 
-  static void check_for_updates_stable_only(void) {
+  static void check_for_updates_stable_only() {
     launch_updater("checkForUpdatesStableOnly", true);
   }
 
-  static void check_for_updates_with_beta_version(void) {
+  static void check_for_updates_with_beta_version() {
     launch_updater("checkForUpdatesWithBetaVersion", true);
   }
 

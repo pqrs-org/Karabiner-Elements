@@ -2,7 +2,7 @@
 #include "errors_test.hpp"
 #include "options_test.hpp"
 
-int main(void) {
+int main() {
   run_counter_test();
   run_errors_test();
   run_options_test();

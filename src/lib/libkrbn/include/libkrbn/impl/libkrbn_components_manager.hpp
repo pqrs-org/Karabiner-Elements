@@ -12,11 +12,11 @@
 
 class libkrbn_components_manager {
 public:
-  libkrbn_components_manager(void) {
+  libkrbn_components_manager() {
     dispatcher_client_ = std::make_shared<libkrbn_dispatcher_client>();
   }
 
-  void enqueue_callback(void (*callback)(void)) {
+  void enqueue_callback(void (*callback)()) {
     dispatcher_client_->enqueue(callback);
   }
 
@@ -24,21 +24,21 @@ public:
   // version_monitor_
   //
 
-  void enable_version_monitor(void) {
+  void enable_version_monitor() {
     if (!version_monitor_) {
       version_monitor_ = std::make_shared<libkrbn_version_monitor>();
     }
   }
 
-  void disable_version_monitor(void) {
+  void disable_version_monitor() {
     version_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_version_monitor> get_libkrbn_version_monitor(void) const {
+  std::shared_ptr<libkrbn_version_monitor> get_libkrbn_version_monitor() const {
     return version_monitor_;
   }
 
-  std::string get_current_version(void) const {
+  std::string get_current_version() const {
     if (auto m = version_monitor_) {
       return m->get_version();
     }
@@ -49,21 +49,21 @@ public:
   // configuration_monitor_
   //
 
-  void enable_configuration_monitor(void) {
+  void enable_configuration_monitor() {
     if (!configuration_monitor_) {
       configuration_monitor_ = std::make_shared<libkrbn_configuration_monitor>();
     }
   }
 
-  void disable_configuration_monitor(void) {
+  void disable_configuration_monitor() {
     configuration_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_configuration_monitor> get_libkrbn_configuration_monitor(void) const {
+  std::shared_ptr<libkrbn_configuration_monitor> get_libkrbn_configuration_monitor() const {
     return configuration_monitor_;
   }
 
-  std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration(void) const {
+  std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration() const {
     if (auto m = configuration_monitor_) {
       return m->get_weak_core_configuration().lock();
     }
@@ -74,17 +74,17 @@ public:
   // complex_modifications_assets_manager_;
   //
 
-  void enable_complex_modifications_assets_manager(void) {
+  void enable_complex_modifications_assets_manager() {
     if (!complex_modifications_assets_manager_) {
       complex_modifications_assets_manager_ = std::make_unique<libkrbn_complex_modifications_assets_manager>();
     }
   }
 
-  void disable_complex_modifications_assets_manager(void) {
+  void disable_complex_modifications_assets_manager() {
     complex_modifications_assets_manager_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_complex_modifications_assets_manager> get_complex_modifications_assets_manager(void) const {
+  std::shared_ptr<libkrbn_complex_modifications_assets_manager> get_complex_modifications_assets_manager() const {
     return complex_modifications_assets_manager_;
   }
 
@@ -92,17 +92,17 @@ public:
   // file_monitors_
   //
 
-  void enable_file_monitors(void) {
+  void enable_file_monitors() {
     if (!file_monitors_) {
       file_monitors_ = std::make_shared<libkrbn_file_monitors>();
     }
   }
 
-  void disable_file_monitors(void) {
+  void disable_file_monitors() {
     file_monitors_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_file_monitors> get_libkrbn_file_monitors(void) const {
+  std::shared_ptr<libkrbn_file_monitors> get_libkrbn_file_monitors() const {
     return file_monitors_;
   }
 
@@ -110,21 +110,21 @@ public:
   // log_monitor_
   //
 
-  void enable_log_monitor(void) {
+  void enable_log_monitor() {
     if (!log_monitor_) {
       log_monitor_ = std::make_shared<libkrbn_log_monitor>();
     }
   }
 
-  void disable_log_monitor(void) {
+  void disable_log_monitor() {
     log_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_log_monitor> get_libkrbn_log_monitor(void) const {
+  std::shared_ptr<libkrbn_log_monitor> get_libkrbn_log_monitor() const {
     return log_monitor_;
   }
 
-  std::shared_ptr<std::deque<std::string>> get_current_log_lines(void) const {
+  std::shared_ptr<std::deque<std::string>> get_current_log_lines() const {
     if (auto m = log_monitor_) {
       return m->get_lines();
     }
@@ -135,17 +135,17 @@ public:
   // hid_value_monitor_
   //
 
-  void enable_hid_value_monitor(void) {
+  void enable_hid_value_monitor() {
     if (!hid_value_monitor_) {
       hid_value_monitor_ = std::make_unique<libkrbn_hid_value_monitor>();
     }
   }
 
-  void disable_hid_value_monitor(void) {
+  void disable_hid_value_monitor() {
     hid_value_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_hid_value_monitor> get_libkrbn_hid_value_monitor(void) const {
+  std::shared_ptr<libkrbn_hid_value_monitor> get_libkrbn_hid_value_monitor() const {
     return hid_value_monitor_;
   }
 
@@ -159,11 +159,11 @@ public:
     }
   }
 
-  void disable_core_service_client(void) {
+  void disable_core_service_client() {
     core_service_client_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_core_service_client> get_libkrbn_core_service_client(void) const {
+  std::shared_ptr<libkrbn_core_service_client> get_libkrbn_core_service_client() const {
     return core_service_client_;
   }
 
@@ -177,11 +177,11 @@ public:
     }
   }
 
-  void disable_console_user_server_client(void) {
+  void disable_console_user_server_client() {
     console_user_server_client_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_console_user_server_client> get_libkrbn_console_user_server_client(void) const {
+  std::shared_ptr<libkrbn_console_user_server_client> get_libkrbn_console_user_server_client() const {
     return console_user_server_client_;
   }
 

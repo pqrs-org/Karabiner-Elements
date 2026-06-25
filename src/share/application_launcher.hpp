@@ -11,22 +11,22 @@
 namespace krbn {
 class application_launcher final {
 public:
-  static void launch_app_icon_switcher(void) {
+  static void launch_app_icon_switcher() {
     // Note:
     // Updating the icon may trigger Spotlight index updates, so only call it when necessary.
     // (Avoid calling it every time, such as during core_service startup.)
     system("'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'");
   }
 
-  static void launch_event_viewer(void) {
+  static void launch_event_viewer() {
     pqrs::osx::workspace::open_application_by_bundle_path("/Applications/Karabiner-EventViewer.app");
   }
 
-  static void launch_settings(void) {
+  static void launch_settings() {
     pqrs::osx::workspace::open_application_by_bundle_path("/Applications/Karabiner-Elements.app");
   }
 
-  static void launch_settings_without_activation(void) {
+  static void launch_settings_without_activation() {
     pqrs::osx::workspace::open_application_by_bundle_path(
         "/Applications/Karabiner-Elements.app",
         pqrs::osx::workspace::open_configuration{
@@ -34,11 +34,11 @@ public:
         });
   }
 
-  static void killall_settings(void) {
+  static void killall_settings() {
     system("/usr/bin/killall Karabiner-Elements");
   }
 
-  static void killall_system_settings(void) {
+  static void killall_system_settings() {
     system("/usr/bin/killall 'System Settings'");
     wait_for_process_termination("System Settings");
   }
@@ -67,7 +67,7 @@ public:
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 
-  static void launch_uninstaller(void) {
+  static void launch_uninstaller() {
     // Use nohup because uninstaller kill the Settings Window.
     system("/usr/bin/nohup osascript '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript' >/dev/null 2>&1 &");
   }

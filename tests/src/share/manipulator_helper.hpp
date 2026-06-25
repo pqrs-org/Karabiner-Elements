@@ -19,7 +19,7 @@ using namespace boost::ut::literals;
 class manipulator_helper final : pqrs::dispatcher::extra::dispatcher_client {
 
 public:
-  manipulator_helper(void) : dispatcher_client() {
+  manipulator_helper() : dispatcher_client() {
     pseudo_time_source_ = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
 
     if (auto d = weak_dispatcher_.lock()) {
@@ -28,7 +28,7 @@ public:
     }
   }
 
-  virtual ~manipulator_helper(void) {
+  virtual ~manipulator_helper() {
     detach_from_dispatcher([this] {
       if (auto d = weak_dispatcher_.lock()) {
         d->set_weak_time_source(original_weak_time_source_);

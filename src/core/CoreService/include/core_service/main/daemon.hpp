@@ -18,7 +18,7 @@ namespace krbn {
 namespace core_service {
 namespace main {
 
-int daemon(void) {
+int daemon() {
   // Note:
   // Processes running as root should not rely on environment variables,
   // so we do not load custom environment variables in the core_service daemon.

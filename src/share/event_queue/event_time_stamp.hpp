@@ -13,7 +13,7 @@ class event_time_stamp final {
 public:
   // Constructors
 
-  event_time_stamp(void) : event_time_stamp(absolute_time_point(0)) {
+  event_time_stamp() : event_time_stamp(absolute_time_point(0)) {
   }
 
   event_time_stamp(absolute_time_point time_stamp) : time_stamp_(time_stamp),
@@ -52,7 +52,7 @@ public:
 
   // Methods
 
-  absolute_time_point get_time_stamp(void) const {
+  absolute_time_point get_time_stamp() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return time_stamp_;
@@ -64,7 +64,7 @@ public:
     time_stamp_ = value;
   }
 
-  absolute_time_duration get_input_delay_duration(void) const {
+  absolute_time_duration get_input_delay_duration() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return input_delay_duration_;
@@ -76,13 +76,13 @@ public:
     input_delay_duration_ = value;
   }
 
-  absolute_time_point make_time_stamp_with_input_delay(void) const {
+  absolute_time_point make_time_stamp_with_input_delay() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return time_stamp_ + input_delay_duration_;
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     return nlohmann::json::object({
         {"time_stamp", pqrs::osx::chrono::make_milliseconds(get_time_stamp() - absolute_time_point(0)).count()},
         {"input_delay_duration", pqrs::osx::chrono::make_milliseconds(get_input_delay_duration()).count()},

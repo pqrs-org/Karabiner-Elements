@@ -29,7 +29,7 @@ void handle_json(const nlohmann::json& json) {
 }
 } // namespace
 
-void run_errors_test(void) {
+void run_errors_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

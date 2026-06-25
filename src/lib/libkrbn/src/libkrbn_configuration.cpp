@@ -9,7 +9,7 @@ namespace {
 auto empty_core_configuration = gsl::make_not_null(std::make_shared<krbn::core_configuration::core_configuration>());
 auto empty_device = gsl::make_not_null(std::make_shared<krbn::core_configuration::details::device>());
 
-pqrs::not_null_shared_ptr_t<krbn::core_configuration::core_configuration> get_current_core_configuration(void) {
+pqrs::not_null_shared_ptr_t<krbn::core_configuration::core_configuration> get_current_core_configuration() {
   if (auto manager = libkrbn_cpp::get_components_manager()) {
     if (auto c = manager->get_current_core_configuration()) {
       return c;
@@ -66,7 +66,7 @@ bool libkrbn_core_configuration_save(char* error_message_buffer,
   return false;
 }
 
-bool libkrbn_core_configuration_get_global_configuration_check_for_updates(void) {
+bool libkrbn_core_configuration_get_global_configuration_check_for_updates() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_check_for_updates();
 }
@@ -76,7 +76,7 @@ void libkrbn_core_configuration_set_global_configuration_check_for_updates(bool 
   c->get_global_configuration().set_check_for_updates(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_show_in_menu_bar(void) {
+bool libkrbn_core_configuration_get_global_configuration_show_in_menu_bar() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_show_in_menu_bar();
 }
@@ -86,7 +86,7 @@ void libkrbn_core_configuration_set_global_configuration_show_in_menu_bar(bool v
   c->get_global_configuration().set_show_in_menu_bar(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar(void) {
+bool libkrbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_show_profile_name_in_menu_bar();
 }
@@ -96,7 +96,7 @@ void libkrbn_core_configuration_set_global_configuration_show_profile_name_in_me
   c->get_global_configuration().set_show_profile_name_in_menu_bar(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_show_additional_menu_items(void) {
+bool libkrbn_core_configuration_get_global_configuration_show_additional_menu_items() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_show_additional_menu_items();
 }
@@ -106,7 +106,7 @@ void libkrbn_core_configuration_set_global_configuration_show_additional_menu_it
   c->get_global_configuration().set_show_additional_menu_items(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_enable_notification_window(void) {
+bool libkrbn_core_configuration_get_global_configuration_enable_notification_window() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_enable_notification_window();
 }
@@ -116,7 +116,7 @@ void libkrbn_core_configuration_set_global_configuration_enable_notification_win
   c->get_global_configuration().set_enable_notification_window(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting(void) {
+bool libkrbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_ask_for_confirmation_before_quitting();
 }
@@ -126,7 +126,7 @@ void libkrbn_core_configuration_set_global_configuration_ask_for_confirmation_be
   c->get_global_configuration().set_ask_for_confirmation_before_quitting(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_unsafe_ui(void) {
+bool libkrbn_core_configuration_get_global_configuration_unsafe_ui() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_unsafe_ui();
 }
@@ -136,7 +136,7 @@ void libkrbn_core_configuration_set_global_configuration_unsafe_ui(bool value) {
   c->get_global_configuration().set_unsafe_ui(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices(void) {
+bool libkrbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_filter_useless_events_from_specific_devices();
 }
@@ -146,7 +146,7 @@ void libkrbn_core_configuration_set_global_configuration_filter_useless_events_f
   c->get_global_configuration().set_filter_useless_events_from_specific_devices(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers(void) {
+bool libkrbn_core_configuration_get_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers();
 }
@@ -156,7 +156,7 @@ void libkrbn_core_configuration_set_global_configuration_reorder_same_timestamp_
   c->get_global_configuration().set_reorder_same_timestamp_input_events_to_prioritize_modifiers(value);
 }
 
-bool libkrbn_core_configuration_get_global_configuration_enable_cgeventtap_fallback(void) {
+bool libkrbn_core_configuration_get_global_configuration_enable_cgeventtap_fallback() {
   auto c = get_current_core_configuration();
   return c->get_global_configuration().get_enable_cgeventtap_fallback();
 }
@@ -166,7 +166,7 @@ void libkrbn_core_configuration_set_global_configuration_enable_cgeventtap_fallb
   c->get_global_configuration().set_enable_cgeventtap_fallback(value);
 }
 
-bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension(void) {
+bool libkrbn_core_configuration_get_machine_specific_enable_multitouch_extension() {
   auto c = get_current_core_configuration();
   return c->get_machine_specific().get_entry().get_enable_multitouch_extension();
 }
@@ -194,7 +194,7 @@ void libkrbn_core_configuration_set_machine_specific_external_editor_path(const 
   }
 }
 
-size_t libkrbn_core_configuration_get_profiles_size(void) {
+size_t libkrbn_core_configuration_get_profiles_size() {
   auto c = get_current_core_configuration();
   return c->get_profiles().size();
 }
@@ -248,7 +248,7 @@ bool libkrbn_core_configuration_get_selected_profile_name(char* buffer,
   return true;
 }
 
-void libkrbn_core_configuration_push_back_profile(void) {
+void libkrbn_core_configuration_push_back_profile() {
   auto c = get_current_core_configuration();
   c->push_back_profile();
 }
@@ -271,7 +271,7 @@ void libkrbn_core_configuration_erase_profile(size_t index) {
   c->erase_profile(index);
 }
 
-int libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device(void) {
+int libkrbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device() {
   auto c = get_current_core_configuration();
   auto count = c->get_selected_profile().get_parameters()->get_delay_milliseconds_before_open_device().count();
   return static_cast<int>(count);
@@ -397,7 +397,7 @@ void libkrbn_core_configuration_replace_selected_profile_fn_function_key(const c
   }
 }
 
-size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size(void) {
+size_t libkrbn_core_configuration_get_selected_profile_complex_modifications_rules_size() {
   auto c = get_current_core_configuration();
   return c->get_selected_profile().get_complex_modifications()->get_rules().size();
 }
@@ -573,7 +573,7 @@ void libkrbn_core_configuration_push_front_selected_profile_complex_modification
 // basic_simultaneous_threshold_milliseconds
 //
 
-int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds(void) {
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds() {
   auto c = get_current_core_configuration();
   auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
   return p->get_basic_simultaneous_threshold_milliseconds();
@@ -589,7 +589,7 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
 // basic_to_if_alone_timeout_milliseconds
 //
 
-int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds(void) {
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds() {
   auto c = get_current_core_configuration();
   auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
   return p->get_basic_to_if_alone_timeout_milliseconds();
@@ -605,7 +605,7 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
 // basic_to_if_held_down_threshold_milliseconds
 //
 
-int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds(void) {
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds() {
   auto c = get_current_core_configuration();
   auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
   return p->get_basic_to_if_held_down_threshold_milliseconds();
@@ -621,7 +621,7 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
 // basic_to_delayed_action_delay_milliseconds
 //
 
-int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds(void) {
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds() {
   auto c = get_current_core_configuration();
   auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
   return p->get_basic_to_delayed_action_delay_milliseconds();
@@ -637,7 +637,7 @@ void libkrbn_core_configuration_set_selected_profile_complex_modifications_param
 // mouse_motion_to_scroll_speed
 //
 
-int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(void) {
+int libkrbn_core_configuration_get_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed() {
   auto c = get_current_core_configuration();
   auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
   return p->get_mouse_motion_to_scroll_speed();
@@ -723,7 +723,7 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboa
       ->set_keyboard_type_v2(value);
 }
 
-int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(void) {
+int libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale() {
   auto c = get_current_core_configuration();
   return c->get_selected_profile()
       .get_virtual_hid_keyboard()
@@ -737,7 +737,7 @@ void libkrbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_
       ->set_mouse_key_xy_scale(value);
 }
 
-bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(void) {
+bool libkrbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state() {
   auto c = get_current_core_configuration();
   return c->get_selected_profile()
       .get_virtual_hid_keyboard()
@@ -829,7 +829,7 @@ void libkrbn_core_configuration_set_selected_profile_device_pointing_motion_xy_m
   d->set_pointing_motion_xy_multiplier(value);
 }
 
-double libkrbn_core_configuration_pointing_motion_xy_multiplier_default_value(void) {
+double libkrbn_core_configuration_pointing_motion_xy_multiplier_default_value() {
   return empty_device->find_default_value(
       empty_device->get_pointing_motion_xy_multiplier());
 }
@@ -847,7 +847,7 @@ void libkrbn_core_configuration_set_selected_profile_device_pointing_motion_whee
   d->set_pointing_motion_wheels_multiplier(value);
 }
 
-double libkrbn_core_configuration_pointing_motion_wheels_multiplier_default_value(void) {
+double libkrbn_core_configuration_pointing_motion_wheels_multiplier_default_value() {
   return empty_device->find_default_value(
       empty_device->get_pointing_motion_wheels_multiplier());
 }
@@ -1044,7 +1044,7 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_de
   d->set_game_pad_xy_stick_deadzone(value);
 }
 
-double libkrbn_core_configuration_game_pad_xy_stick_deadzone_default_value(void) {
+double libkrbn_core_configuration_game_pad_xy_stick_deadzone_default_value() {
   return empty_device->find_default_value(
       empty_device->get_game_pad_xy_stick_deadzone());
 }
@@ -1064,7 +1064,7 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_de
   d->set_game_pad_xy_stick_delta_magnitude_detection_threshold(value);
 }
 
-double libkrbn_core_configuration_game_pad_xy_stick_delta_magnitude_detection_threshold_default_value(void) {
+double libkrbn_core_configuration_game_pad_xy_stick_delta_magnitude_detection_threshold_default_value() {
   return empty_device->find_default_value(
       empty_device->get_game_pad_xy_stick_delta_magnitude_detection_threshold());
 }
@@ -1084,7 +1084,7 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_co
   d->set_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(value);
 }
 
-double libkrbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value(void) {
+double libkrbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value() {
   return empty_device->find_default_value(
       empty_device->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold());
 }
@@ -1104,7 +1104,7 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_co
   return d->set_game_pad_xy_stick_continued_movement_interval_milliseconds(value);
 }
 
-int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value(void) {
+int libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value() {
   return empty_device->find_default_value(
       empty_device->get_game_pad_xy_stick_continued_movement_interval_milliseconds());
 }
@@ -1124,7 +1124,7 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stic
   d->set_game_pad_wheels_stick_deadzone(value);
 }
 
-double libkrbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(void) {
+double libkrbn_core_configuration_game_pad_wheels_stick_deadzone_default_value() {
   return empty_device->find_default_value(
       empty_device->get_game_pad_wheels_stick_deadzone());
 }
@@ -1144,7 +1144,7 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stic
   d->set_game_pad_wheels_stick_delta_magnitude_detection_threshold(value);
 }
 
-double libkrbn_core_configuration_game_pad_wheels_stick_delta_magnitude_detection_threshold_default_value(void) {
+double libkrbn_core_configuration_game_pad_wheels_stick_delta_magnitude_detection_threshold_default_value() {
   return empty_device->find_default_value(
       empty_device->get_game_pad_wheels_stick_delta_magnitude_detection_threshold());
 }
@@ -1164,7 +1164,7 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stic
   d->set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(value);
 }
 
-double libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value(void) {
+double libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value() {
   return empty_device->find_default_value(
       empty_device->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold());
 }
@@ -1184,7 +1184,7 @@ void libkrbn_core_configuration_set_selected_profile_device_game_pad_wheels_stic
   d->set_game_pad_wheels_stick_continued_movement_interval_milliseconds(value);
 }
 
-int libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value(void) {
+int libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value() {
   return empty_device->find_default_value(
       empty_device->get_game_pad_wheels_stick_continued_movement_interval_milliseconds());
 }

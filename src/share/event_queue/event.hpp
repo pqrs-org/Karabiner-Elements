@@ -62,7 +62,7 @@ public:
                                virtual_hid_devices_state,                                // For virtual_hid_devices_state_changed
                                std::monostate>;                                          // For virtual events
 
-  event(void) : type_(type::none),
+  event() : type_(type::none),
                 value_(std::monostate()) {
   }
 
@@ -113,7 +113,7 @@ public:
     return result;
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     nlohmann::json json;
     json["type"] = to_c_string(type_);
 
@@ -290,11 +290,11 @@ public:
     return e;
   }
 
-  static event make_stop_keyboard_repeat_event(void) {
+  static event make_stop_keyboard_repeat_event() {
     return make_virtual_event(type::stop_keyboard_repeat);
   }
 
-  static event make_device_keys_and_pointing_buttons_are_released_event(void) {
+  static event make_device_keys_and_pointing_buttons_are_released_event() {
     return make_virtual_event(type::device_keys_and_pointing_buttons_are_released);
   }
 
@@ -305,7 +305,7 @@ public:
     return e;
   }
 
-  static event make_device_ungrabbed_event(void) {
+  static event make_device_ungrabbed_event() {
     return make_virtual_event(type::device_ungrabbed);
   }
 
@@ -316,7 +316,7 @@ public:
     return e;
   }
 
-  static event make_pointing_device_event_from_event_tap_event(void) {
+  static event make_pointing_device_event_from_event_tap_event() {
     return make_virtual_event(type::pointing_device_event_from_event_tap);
   }
 
@@ -348,20 +348,20 @@ public:
     return e;
   }
 
-  type get_type(void) const {
+  type get_type() const {
     return type_;
   }
 
-  const value_t& get_value(void) const {
+  const value_t& get_value() const {
     return value_;
   }
 
   template <typename T>
-  const T* get_if(void) const {
+  const T* get_if() const {
     return std::get_if<T>(&value_);
   }
 
-  std::optional<pointing_motion> get_pointing_motion(void) const {
+  std::optional<pointing_motion> get_pointing_motion() const {
     try {
       if (type_ == type::pointing_motion) {
         return std::get<pointing_motion>(value_);
@@ -371,7 +371,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<int64_t> get_integer_value(void) const {
+  std::optional<int64_t> get_integer_value() const {
     try {
       if (type_ == type::caps_lock_state_changed) {
         return std::get<int64_t>(value_);
@@ -381,7 +381,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::string> get_shell_command(void) const {
+  std::optional<std::string> get_shell_command() const {
     try {
       if (type_ == type::shell_command) {
         return std::get<std::string>(value_);
@@ -391,7 +391,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<nlohmann::json> get_user_command(void) const {
+  std::optional<nlohmann::json> get_user_command() const {
     try {
       if (type_ == type::send_user_command) {
         return std::get<nlohmann::json>(value_);
@@ -401,7 +401,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers(void) const {
+  std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers() const {
     try {
       if (type_ == type::select_input_source) {
         return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
@@ -411,7 +411,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<manipulator_environment_variable_set_variable> get_set_variable(void) const {
+  std::optional<manipulator_environment_variable_set_variable> get_set_variable() const {
     try {
       if (type_ == type::set_variable) {
         return std::get<manipulator_environment_variable_set_variable>(value_);
@@ -421,7 +421,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<mouse_key> get_mouse_key(void) const {
+  std::optional<mouse_key> get_mouse_key() const {
     try {
       if (type_ == type::mouse_key) {
         return std::get<mouse_key>(value_);
@@ -431,7 +431,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::pair<modifier_flag, sticky_modifier_type>> get_sticky_modifier(void) const {
+  std::optional<std::pair<modifier_flag, sticky_modifier_type>> get_sticky_modifier() const {
     try {
       if (type_ == type::sticky_modifier) {
         return std::get<std::pair<modifier_flag, sticky_modifier_type>>(value_);
@@ -441,7 +441,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<application> get_frontmost_application(void) const {
+  std::optional<application> get_frontmost_application() const {
     try {
       if (type_ == type::frontmost_application_changed) {
         return std::get<application>(value_);
@@ -451,7 +451,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<pqrs::osx::input_source::properties> get_input_source_properties(void) const {
+  std::optional<pqrs::osx::input_source::properties> get_input_source_properties() const {
     try {
       if (type_ == type::input_source_changed) {
         return std::get<pqrs::osx::input_source::properties>(value_);

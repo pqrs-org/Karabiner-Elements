@@ -70,15 +70,15 @@ public:
     }
   }
 
-  virtual ~to_delayed_action(void) {
+  virtual ~to_delayed_action() {
     detach_from_dispatcher();
   }
 
-  const to_event_definitions& get_to_if_invoked(void) const {
+  const to_event_definitions& get_to_if_invoked() const {
     return to_if_invoked_;
   }
 
-  const to_event_definitions& get_to_if_canceled(void) const {
+  const to_event_definitions& get_to_if_canceled() const {
     return to_if_canceled_;
   }
 
@@ -125,7 +125,7 @@ public:
     post_events(to_if_canceled_);
   }
 
-  bool needs_virtual_hid_pointing(void) const {
+  bool needs_virtual_hid_pointing() const {
     for (const auto& events : {to_if_invoked_,
                                to_if_canceled_}) {
       if (std::any_of(std::begin(events),

@@ -33,11 +33,11 @@ public:
     }
   }
 
-  virtual ~to_if_held_down(void) {
+  virtual ~to_if_held_down() {
     detach_from_dispatcher();
   }
 
-  const to_event_definitions& get_to(void) const {
+  const to_event_definitions& get_to() const {
     return to_;
   }
 
@@ -137,7 +137,7 @@ public:
     ++current_held_down_id_;
   }
 
-  bool needs_virtual_hid_pointing(void) const {
+  bool needs_virtual_hid_pointing() const {
     return std::any_of(std::begin(to_),
                        std::end(to_),
                        [](auto& e) {

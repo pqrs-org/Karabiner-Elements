@@ -8,10 +8,10 @@ class manipulator_manager final {
 public:
   manipulator_manager(const manipulator_manager&) = delete;
 
-  manipulator_manager(void) {
+  manipulator_manager() {
   }
 
-  ~manipulator_manager(void) {
+  ~manipulator_manager() {
   }
 
   void push_back_manipulator(const nlohmann::json& json,
@@ -173,7 +173,7 @@ public:
     return false;
   }
 
-  void invalidate_manipulators(void) {
+  void invalidate_manipulators() {
     {
       std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
@@ -185,13 +185,13 @@ public:
     remove_invalid_manipulators();
   }
 
-  size_t get_manipulators_size(void) {
+  size_t get_manipulators_size() {
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
     return manipulators_.size();
   }
 
-  bool needs_virtual_hid_pointing(void) const {
+  bool needs_virtual_hid_pointing() const {
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
     return std::any_of(std::begin(manipulators_),
@@ -202,7 +202,7 @@ public:
   }
 
 private:
-  void remove_invalid_manipulators(void) {
+  void remove_invalid_manipulators() {
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
     manipulators_.erase(std::remove_if(std::begin(manipulators_),

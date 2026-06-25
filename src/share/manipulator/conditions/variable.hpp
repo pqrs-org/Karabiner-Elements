@@ -59,7 +59,7 @@ public:
     }
   }
 
-  virtual ~variable(void) {
+  virtual ~variable() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,

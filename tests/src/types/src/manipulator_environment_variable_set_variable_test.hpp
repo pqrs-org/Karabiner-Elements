@@ -1,7 +1,7 @@
 #include "types.hpp"
 #include <boost/ut.hpp>
 
-void run_manipulator_environment_variable_set_variable_test(void) {
+void run_manipulator_environment_variable_set_variable_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::string_view_literals;

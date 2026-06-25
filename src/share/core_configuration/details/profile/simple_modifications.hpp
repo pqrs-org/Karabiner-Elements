@@ -10,7 +10,7 @@ using namespace std::string_literals;
 
 class simple_modifications final {
 public:
-  simple_modifications(void) {
+  simple_modifications() {
   }
 
   nlohmann::json to_json(const nlohmann::json& default_json) const {
@@ -61,7 +61,7 @@ public:
     return json;
   }
 
-  const std::vector<std::pair<std::string, std::string>>& get_pairs(void) const {
+  const std::vector<std::pair<std::string, std::string>>& get_pairs() const {
     return pairs_;
   }
 
@@ -69,7 +69,7 @@ public:
     handle_json(json);
   }
 
-  void push_back_pair(void) {
+  void push_back_pair() {
     pairs_.emplace_back(nlohmann::json::object().dump(),
                         nlohmann::json::array().dump());
   }

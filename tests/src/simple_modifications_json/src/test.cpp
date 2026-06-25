@@ -3,7 +3,7 @@
 #include <boost/ut.hpp>
 #include <pqrs/json.hpp>
 
-int main(void) {
+int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

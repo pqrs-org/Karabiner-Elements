@@ -8,10 +8,10 @@ class device_properties_manager final {
 public:
   device_properties_manager(const device_properties_manager&) = delete;
 
-  device_properties_manager(void) {
+  device_properties_manager() {
   }
 
-  const std::unordered_map<device_id, std::shared_ptr<device_properties>>& get_map(void) const {
+  const std::unordered_map<device_id, std::shared_ptr<device_properties>>& get_map() const {
     return map_;
   }
 
@@ -24,7 +24,7 @@ public:
     map_.erase(key);
   }
 
-  void clear(void) {
+  void clear() {
     map_.clear();
   }
 

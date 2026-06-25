@@ -15,7 +15,7 @@ public:
     left = 0x1 << 3
   } direction;
 
-  static std::shared_ptr<hat_switch_converter> get_global_hat_switch_converter(void) {
+  static std::shared_ptr<hat_switch_converter> get_global_hat_switch_converter() {
     if (!hat_switch_converter_) {
       hat_switch_converter_ = std::make_shared<hat_switch_converter>();
     }
@@ -27,7 +27,7 @@ public:
     last_directions_.erase(device_id);
   }
 
-  void clear(void) {
+  void clear() {
     last_directions_.clear();
   }
 

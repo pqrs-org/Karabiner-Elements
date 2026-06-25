@@ -105,23 +105,23 @@ public:
 
   // Methods
 
-  device_id get_device_id(void) const {
+  device_id get_device_id() const {
     // We don't have to use mutex since there is not setter.
 
     return device_id_;
   }
 
-  const event_time_stamp& get_event_time_stamp(void) const {
+  const event_time_stamp& get_event_time_stamp() const {
     // We don't have to use mutex since there is not setter.
 
     return event_time_stamp_;
   }
 
-  event_time_stamp& get_event_time_stamp(void) {
+  event_time_stamp& get_event_time_stamp() {
     return const_cast<event_time_stamp&>(static_cast<const entry&>(*this).get_event_time_stamp());
   }
 
-  validity get_validity(void) const {
+  validity get_validity() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return validity_;
@@ -133,7 +133,7 @@ public:
     validity_ = value;
   }
 
-  state get_state(void) const {
+  state get_state() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return state_;
@@ -145,7 +145,7 @@ public:
     state_ = value;
   }
 
-  bool get_lazy(void) const {
+  bool get_lazy() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return lazy_;
@@ -157,31 +157,31 @@ public:
     lazy_ = value;
   }
 
-  const event& get_event(void) const {
+  const event& get_event() const {
     // We don't have to use mutex since there is not setter.
 
     return event_;
   }
 
-  event_type get_event_type(void) const {
+  event_type get_event_type() const {
     // We don't have to use mutex since there is not setter.
 
     return event_type_;
   }
 
-  std::optional<event_integer_value::value_t> get_event_integer_value(void) const {
+  std::optional<event_integer_value::value_t> get_event_integer_value() const {
     // We don't have to use mutex since there is not setter.
 
     return event_integer_value_;
   }
 
-  const event& get_original_event(void) const {
+  const event& get_original_event() const {
     // We don't have to use mutex since there is not setter.
 
     return original_event_;
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto json = nlohmann::json({
         {"device_id", type_safe::get(get_device_id())},
         {"event_time_stamp", get_event_time_stamp()},

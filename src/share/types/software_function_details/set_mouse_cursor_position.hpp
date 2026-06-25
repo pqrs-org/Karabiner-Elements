@@ -17,12 +17,12 @@ public:
       percent,
     };
 
-    position_value(void)
+    position_value()
         : value_(0),
           type_(type::point) {
     }
 
-    int get_value(void) const {
+    int get_value() const {
       return value_;
     }
 
@@ -30,7 +30,7 @@ public:
       value_ = value;
     }
 
-    type get_type(void) const {
+    type get_type() const {
       return type_;
     }
 
@@ -64,10 +64,10 @@ public:
     screen,
   };
 
-  set_mouse_cursor_position(void) {
+  set_mouse_cursor_position() {
   }
 
-  const position_value& get_x(void) const {
+  const position_value& get_x() const {
     return x_;
   }
 
@@ -75,7 +75,7 @@ public:
     x_ = value;
   }
 
-  const position_value& get_y(void) const {
+  const position_value& get_y() const {
     return y_;
   }
 
@@ -83,7 +83,7 @@ public:
     y_ = value;
   }
 
-  std::optional<uint32_t> get_screen(void) const {
+  std::optional<uint32_t> get_screen() const {
     return screen_;
   }
 
@@ -91,7 +91,7 @@ public:
     screen_ = value;
   }
 
-  relative_to get_relative_to(void) const {
+  relative_to get_relative_to() const {
     return relative_to_;
   }
 
@@ -99,7 +99,7 @@ public:
     relative_to_ = value;
   }
 
-  fallback_to get_fallback_to(void) const {
+  fallback_to get_fallback_to() const {
     return fallback_to_;
   }
 

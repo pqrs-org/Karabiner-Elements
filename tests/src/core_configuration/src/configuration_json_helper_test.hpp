@@ -13,7 +13,7 @@ public:
     helper_values.update_value(json, error_handling);
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = nlohmann::json::object();
 
     helper_values.update_json(j);
@@ -41,7 +41,7 @@ public:
     helper_values.update_value(json, error_handling);
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = nlohmann::json::object();
 
     helper_values.update_json(j);
@@ -60,7 +60,7 @@ public:
 };
 } // namespace
 
-void run_configuration_json_helper_test(void) {
+void run_configuration_json_helper_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::literals;

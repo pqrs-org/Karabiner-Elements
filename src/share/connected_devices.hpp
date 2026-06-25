@@ -13,10 +13,10 @@
 namespace krbn {
 class connected_devices final {
 public:
-  connected_devices(void) {
+  connected_devices() {
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<device_properties>>& get_devices(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<device_properties>>& get_devices() const {
     return devices_;
   }
 
@@ -47,7 +47,7 @@ public:
               });
   }
 
-  void clear(void) {
+  void clear() {
     devices_.clear();
   }
 

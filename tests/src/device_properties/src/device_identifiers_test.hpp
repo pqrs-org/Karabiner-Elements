@@ -1,7 +1,7 @@
 #include "device_properties.hpp"
 #include <boost/ut.hpp>
 
-void run_device_identifiers_test(void) {
+void run_device_identifiers_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

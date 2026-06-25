@@ -3,7 +3,7 @@
 #include "from_modifiers_definition_test.hpp"
 #include "modifier_definition_test.hpp"
 
-int main(void) {
+int main() {
   run_errors_test();
   run_event_definition_test();
   run_from_modifiers_definition_test();

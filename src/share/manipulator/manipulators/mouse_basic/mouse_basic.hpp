@@ -84,7 +84,7 @@ public:
     }
   }
 
-  virtual ~mouse_basic(void) {
+  virtual ~mouse_basic() {
   }
 
   virtual bool already_manipulated(const event_queue::entry& front_input_event) {
@@ -203,11 +203,11 @@ public:
     return manipulate_result::passed;
   }
 
-  virtual bool active(void) const {
+  virtual bool active() const {
     return false;
   }
 
-  virtual bool needs_virtual_hid_pointing(void) const {
+  virtual bool needs_virtual_hid_pointing() const {
     return true;
   }
 

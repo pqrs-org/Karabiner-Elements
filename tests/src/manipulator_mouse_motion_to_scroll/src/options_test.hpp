@@ -2,7 +2,7 @@
 #include <boost/ut.hpp>
 #include <iostream>
 
-void run_options_test(void) {
+void run_options_test() {
   namespace mouse_motion_to_scroll = krbn::manipulator::manipulators::mouse_motion_to_scroll;
 
   "options"_test = [] {

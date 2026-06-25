@@ -32,11 +32,11 @@ public:
     });
   }
 
-  ~counter_test(void) {
+  ~counter_test() {
     detach_from_dispatcher();
   }
 
-  const nlohmann::json get_result(void) const {
+  const nlohmann::json get_result() const {
     return result_;
   }
 
@@ -78,7 +78,7 @@ private:
   nlohmann::json result_;
 };
 
-void run_counter_test(void) {
+void run_counter_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

@@ -7,10 +7,10 @@ class libkrbn_callback_manager final {
 public:
   libkrbn_callback_manager(const libkrbn_callback_manager&) = delete;
 
-  libkrbn_callback_manager(void) {
+  libkrbn_callback_manager() {
   }
 
-  const std::vector<T>& get_callbacks(void) const {
+  const std::vector<T>& get_callbacks() const {
     return callbacks_;
   }
 

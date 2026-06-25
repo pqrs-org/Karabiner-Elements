@@ -16,10 +16,10 @@ public:
                                software_function_details::set_mouse_cursor_position,
                                std::monostate>;
 
-  software_function(void) : value_(std::monostate()) {
+  software_function() : value_(std::monostate()) {
   }
 
-  const value_t& get_value(void) const {
+  const value_t& get_value() const {
     return value_;
   }
 
@@ -28,7 +28,7 @@ public:
   }
 
   template <typename T>
-  const T* get_if(void) const {
+  const T* get_if() const {
     return std::get_if<T>(&value_);
   }
 

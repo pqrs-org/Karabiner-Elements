@@ -47,7 +47,7 @@ public:
     }
   }
 
-  virtual ~expression(void) {
+  virtual ~expression() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,
@@ -69,7 +69,7 @@ public:
     return false;
   }
 
-  std::shared_ptr<exprtk_utility::expression_wrapper> get_expression(void) const {
+  std::shared_ptr<exprtk_utility::expression_wrapper> get_expression() const {
     return expression_;
   }
 

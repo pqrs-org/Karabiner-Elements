@@ -41,7 +41,7 @@ public:
     bool lazy_;
   };
 
-  const std::vector<entry>& get_events(void) const {
+  const std::vector<entry>& get_events() const {
     return events_;
   }
 
@@ -57,7 +57,7 @@ public:
                          lazy);
   }
 
-  void clear_events(void) {
+  void clear_events() {
     events_.clear();
   }
 

@@ -27,7 +27,7 @@ public:
       // Do not wait for the `changed` callback here to avoid a deadlock, as this method is called in the shared dispatcher thread.
     }
 
-    ~monitor(void) {
+    ~monitor() {
       monitor_ = nullptr;
     }
 
@@ -39,7 +39,7 @@ public:
       callback_manager_.unregister_callback(callback);
     }
 
-    size_t callbacks_empty(void) const {
+    size_t callbacks_empty() const {
       return callback_manager_.get_callbacks().empty();
     }
 
@@ -50,11 +50,11 @@ public:
 
   libkrbn_file_monitors(const libkrbn_file_monitors&) = delete;
 
-  libkrbn_file_monitors(void)
+  libkrbn_file_monitors()
       : dispatcher_client() {
   }
 
-  ~libkrbn_file_monitors(void) {
+  ~libkrbn_file_monitors() {
     detach_from_dispatcher([this] {
       monitors_.clear();
     });

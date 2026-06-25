@@ -14,7 +14,7 @@ namespace krbn {
 class async_file_writer final {
 public:
   async_file_writer(const async_file_writer&) = delete;
-  async_file_writer(void) = delete;
+  async_file_writer() = delete;
 
   static void enqueue(const std::string& file_path,
                       const std::string& body,
@@ -47,7 +47,7 @@ public:
     });
   }
 
-  static void wait(void) {
+  static void wait() {
     auto wait = pqrs::make_thread_wait();
 
     dispatcher_utility::enqueue_to_file_writer_dispatcher([wait] {

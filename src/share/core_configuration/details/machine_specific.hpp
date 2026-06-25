@@ -29,7 +29,7 @@ public:
       helper_values_.update_value(json, error_handling);
     }
 
-    nlohmann::json to_json(void) const {
+    nlohmann::json to_json() const {
       auto j = json_;
 
       helper_values_.update_json(j);
@@ -37,14 +37,14 @@ public:
       return j;
     }
 
-    const bool& get_enable_multitouch_extension(void) const {
+    const bool& get_enable_multitouch_extension() const {
       return enable_multitouch_extension_;
     }
     void set_enable_multitouch_extension(bool value) {
       enable_multitouch_extension_ = value;
     }
 
-    const std::string& get_external_editor_path(void) const {
+    const std::string& get_external_editor_path() const {
       return external_editor_path_;
     }
     void set_external_editor_path(const std::string& value) {
@@ -74,7 +74,7 @@ public:
     }
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto json = json_;
 
     for (const auto& [key, value] : entries_) {
@@ -89,7 +89,7 @@ public:
     return json;
   }
 
-  const entry& get_entry(void) const {
+  const entry& get_entry() const {
     return get_entry(constants::get_karabiner_machine_identifier());
   }
 
@@ -102,7 +102,7 @@ public:
     return *(entries_[identifier]);
   }
 
-  entry& get_entry(void) {
+  entry& get_entry() {
     return const_cast<entry&>(static_cast<const machine_specific&>(*this).get_entry());
   }
 

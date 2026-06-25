@@ -10,7 +10,7 @@ class libkrbn_log_monitor final : public pqrs::dispatcher::extra::dispatcher_cli
 public:
   libkrbn_log_monitor(const libkrbn_log_monitor&) = delete;
 
-  libkrbn_log_monitor(void)
+  libkrbn_log_monitor()
       : dispatcher_client() {
     std::vector<std::string> targets = {
         "/var/log/karabiner/core_service.log",
@@ -38,13 +38,13 @@ public:
     monitor_->async_start(std::chrono::milliseconds(1000));
   }
 
-  ~libkrbn_log_monitor(void) {
+  ~libkrbn_log_monitor() {
     detach_from_dispatcher([this] {
       monitor_ = nullptr;
     });
   }
 
-  std::shared_ptr<std::deque<std::string>> get_lines(void) const {
+  std::shared_ptr<std::deque<std::string>> get_lines() const {
     return lines_;
   }
 

@@ -20,7 +20,7 @@ krbn::modifier_flag_manager::active_modifier_flag right_shift_1(krbn::modifier_f
                                                                 krbn::device_id(1));
 } // namespace
 
-void run_manipulator_basic_test(void) {
+void run_manipulator_basic_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

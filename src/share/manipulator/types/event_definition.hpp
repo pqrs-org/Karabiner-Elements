@@ -45,11 +45,11 @@ public:
                                software_function,                                        // For type::software_function
                                std::monostate>;                                          // For type::from_event, type::none
 
-  event_definition(void) : type_(type::none),
+  event_definition() : type_(type::none),
                            value_(std::monostate()) {
   }
 
-  ~event_definition(void) {
+  ~event_definition() {
   }
 
   static event_definition make_from_momentary_switch_event(const momentary_switch_event& value) {
@@ -59,16 +59,16 @@ public:
     return result;
   }
 
-  type get_type(void) const {
+  type get_type() const {
     return type_;
   }
 
   template <typename T>
-  const T* get_if(void) const {
+  const T* get_if() const {
     return std::get_if<T>(&value_);
   }
 
-  std::optional<event_queue::event> to_event(void) const {
+  std::optional<event_queue::event> to_event() const {
     switch (type_) {
       case type::none:
         return std::nullopt;

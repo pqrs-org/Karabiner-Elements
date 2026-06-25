@@ -8,7 +8,7 @@
 namespace krbn {
 class device_identifiers final {
 public:
-  device_identifiers(void)
+  device_identifiers()
       : json_(nlohmann::json::object()),
         vendor_id_(pqrs::hid::vendor_id::value_t(0)),
         product_id_(pqrs::hid::product_id::value_t(0)),
@@ -99,43 +99,43 @@ public:
     }
   }
 
-  const nlohmann::json& get_json(void) const {
+  const nlohmann::json& get_json() const {
     return json_;
   }
 
-  pqrs::hid::vendor_id::value_t get_vendor_id(void) const {
+  pqrs::hid::vendor_id::value_t get_vendor_id() const {
     return vendor_id_;
   }
 
-  pqrs::hid::product_id::value_t get_product_id(void) const {
+  pqrs::hid::product_id::value_t get_product_id() const {
     return product_id_;
   }
 
-  bool get_is_keyboard(void) const {
+  bool get_is_keyboard() const {
     return is_keyboard_;
   }
 
-  bool get_is_pointing_device(void) const {
+  bool get_is_pointing_device() const {
     return is_pointing_device_;
   }
 
-  bool get_is_game_pad(void) const {
+  bool get_is_game_pad() const {
     return is_game_pad_;
   }
 
-  bool get_is_consumer(void) const {
+  bool get_is_consumer() const {
     return is_consumer_;
   }
 
-  bool get_is_virtual_device(void) const {
+  bool get_is_virtual_device() const {
     return is_virtual_device_;
   }
 
-  const std::string& get_device_address(void) const {
+  const std::string& get_device_address() const {
     return device_address_;
   }
 
-  bool empty(void) const {
+  bool empty() const {
     return vendor_id_ == pqrs::hid::vendor_id::value_t(0) &&
            product_id_ == pqrs::hid::product_id::value_t(0) &&
            !is_keyboard_ &&
@@ -161,7 +161,7 @@ public:
   // Helper methods
   //
 
-  bool is_nintendo_pro_controller_0x057e_0x2009(void) const {
+  bool is_nintendo_pro_controller_0x057e_0x2009() const {
     return get_vendor_id() == pqrs::hid::vendor_id::value_t(0x057e) &&
            get_product_id() == pqrs::hid::product_id::value_t(0x2009);
   }

@@ -143,12 +143,12 @@ public:
     pressed_modifier_flags_.erase(modifier_flag);
   }
 
-  void clear(void) {
+  void clear() {
     pressed_keys_.clear();
     pressed_modifier_flags_.clear();
   }
 
-  void clear_pressed_modifier_flags(void) {
+  void clear_pressed_modifier_flags() {
     pressed_modifier_flags_.clear();
   }
 

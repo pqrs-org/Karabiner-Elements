@@ -1,7 +1,7 @@
 #include "manipulator/types.hpp"
 #include <boost/ut.hpp>
 
-void run_event_definition_test(void) {
+void run_event_definition_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::string_view_literals;

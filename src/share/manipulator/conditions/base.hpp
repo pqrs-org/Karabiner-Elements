@@ -13,11 +13,11 @@ struct condition_context final {
 
 class base {
 protected:
-  base(void) {
+  base() {
   }
 
 public:
-  virtual ~base(void) {
+  virtual ~base() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,

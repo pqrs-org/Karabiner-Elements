@@ -2,7 +2,7 @@
 #include "json_utility.hpp"
 #include <boost/ut.hpp>
 
-void run_connected_devices_test(void) {
+void run_connected_devices_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

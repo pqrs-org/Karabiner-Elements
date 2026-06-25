@@ -10,13 +10,13 @@ namespace manipulators {
 namespace mouse_motion_to_scroll {
 class counter_chunk_value final {
 public:
-  counter_chunk_value(void) : plus_value_(0),
+  counter_chunk_value() : plus_value_(0),
                               minus_value_(0),
                               abs_total_(0),
                               last_sign_(pqrs::sign::zero) {
   }
 
-  int get_abs_total(void) const {
+  int get_abs_total() const {
     return abs_total_;
   }
 
@@ -31,7 +31,7 @@ public:
     abs_total_ += std::abs(value);
   }
 
-  int make_accumulated_value(void) const {
+  int make_accumulated_value() const {
     auto abs_p = std::abs(plus_value_);
     auto abs_m = std::abs(minus_value_);
 

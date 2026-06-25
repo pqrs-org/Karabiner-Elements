@@ -417,7 +417,7 @@ public:
                                              output_event_queue_);
   }
 
-  ~scoped_from_key_modifier_flags_state_restorer(void) {
+  ~scoped_from_key_modifier_flags_state_restorer() {
     //
     // Revert scoped modifier flags changes.
     //

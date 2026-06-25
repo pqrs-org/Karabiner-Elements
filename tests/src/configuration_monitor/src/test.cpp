@@ -5,7 +5,7 @@
 namespace {
 class test_configuration_monitor final {
 public:
-  test_configuration_monitor(void) : count_(0) {
+  test_configuration_monitor() : count_(0) {
     configuration_monitor_ = std::make_unique<krbn::configuration_monitor>("target/user.json",
                                                                            geteuid(),
                                                                            krbn::core_configuration::error_handling::loose,
@@ -23,19 +23,19 @@ public:
     wait();
   }
 
-  size_t get_count(void) const {
+  size_t get_count() const {
     return count_;
   }
 
-  std::shared_ptr<const krbn::core_configuration::core_configuration> get_last_core_configuration(void) const {
+  std::shared_ptr<const krbn::core_configuration::core_configuration> get_last_core_configuration() const {
     return last_core_configuration_;
   }
 
-  std::string get_selected_profile_name(void) const {
+  std::string get_selected_profile_name() const {
     return last_core_configuration_->get_selected_profile().get_name();
   }
 
-  void wait(void) const {
+  void wait() const {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 
@@ -46,7 +46,7 @@ private:
 };
 } // namespace
 
-int main(void) {
+int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 

@@ -59,7 +59,7 @@ public:
     }
   }
 
-  virtual ~device(void) {
+  virtual ~device() {
   }
 
   virtual bool is_fulfilled(const condition_context& condition_context,
@@ -131,7 +131,7 @@ private:
     std::optional<bool> is_touch_bar;
     std::optional<bool> is_built_in_keyboard;
 
-    bool valid(void) const {
+    bool valid() const {
       return vendor_id ||
              product_id ||
              location_id ||

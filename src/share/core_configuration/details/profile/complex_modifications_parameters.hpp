@@ -10,7 +10,7 @@ class complex_modifications_parameters final {
 public:
   complex_modifications_parameters(const complex_modifications_parameters&) = delete;
 
-  complex_modifications_parameters(void)
+  complex_modifications_parameters()
       : complex_modifications_parameters(nlohmann::json::object(),
                                          krbn::core_configuration::error_handling::loose) {
   }
@@ -45,7 +45,7 @@ public:
     adjust_values();
   }
 
-  nlohmann::json to_json(void) const {
+  nlohmann::json to_json() const {
     auto j = json_;
 
     helper_values_.update_json(j);
@@ -62,7 +62,7 @@ public:
     adjust_values();
   }
 
-  const int& get_basic_simultaneous_threshold_milliseconds(void) const {
+  const int& get_basic_simultaneous_threshold_milliseconds() const {
     return basic_simultaneous_threshold_milliseconds_;
   }
 
@@ -72,7 +72,7 @@ public:
     adjust_values();
   }
 
-  const int& get_basic_to_if_alone_timeout_milliseconds(void) const {
+  const int& get_basic_to_if_alone_timeout_milliseconds() const {
     return basic_to_if_alone_timeout_milliseconds_;
   }
 
@@ -82,7 +82,7 @@ public:
     adjust_values();
   }
 
-  const int& get_basic_to_if_held_down_threshold_milliseconds(void) const {
+  const int& get_basic_to_if_held_down_threshold_milliseconds() const {
     return basic_to_if_held_down_threshold_milliseconds_;
   }
 
@@ -92,7 +92,7 @@ public:
     adjust_values();
   }
 
-  const int& get_basic_to_delayed_action_delay_milliseconds(void) const {
+  const int& get_basic_to_delayed_action_delay_milliseconds() const {
     return basic_to_delayed_action_delay_milliseconds_;
   }
 
@@ -102,7 +102,7 @@ public:
     adjust_values();
   }
 
-  const int& get_mouse_motion_to_scroll_speed(void) const {
+  const int& get_mouse_motion_to_scroll_speed() const {
     return mouse_motion_to_scroll_speed_;
   }
 
@@ -112,12 +112,12 @@ public:
     adjust_values();
   }
 
-  double make_mouse_motion_to_scroll_speed_rate(void) const {
+  double make_mouse_motion_to_scroll_speed_rate() const {
     return static_cast<double>(mouse_motion_to_scroll_speed_) / 100;
   }
 
 private:
-  void adjust_values(void) {
+  void adjust_values() {
     adjust_value(basic_simultaneous_threshold_milliseconds_, 0, 1000);
     adjust_value(basic_to_if_alone_timeout_milliseconds_, 0, std::nullopt);
     adjust_value(basic_to_if_held_down_threshold_milliseconds_, 0, std::nullopt);

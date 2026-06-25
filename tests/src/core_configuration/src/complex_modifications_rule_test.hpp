@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <boost/ut.hpp>
 
-void run_complex_modifications_rule_test(void) {
+void run_complex_modifications_rule_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
   using namespace std::string_literals;

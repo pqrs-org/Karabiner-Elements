@@ -41,11 +41,11 @@ public:
       }
     }
 
-    const std::vector<pqrs::not_null_shared_ptr_t<from_event_definition>>& get_other_keys(void) const {
+    const std::vector<pqrs::not_null_shared_ptr_t<from_event_definition>>& get_other_keys() const {
       return other_keys_;
     }
 
-    const to_event_definitions& get_to(void) const {
+    const to_event_definitions& get_to() const {
       return to_;
     }
 
@@ -63,10 +63,10 @@ public:
     }
   }
 
-  virtual ~to_if_other_key_pressed(void) {
+  virtual ~to_if_other_key_pressed() {
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<entry>>& get_entries(void) const {
+  const std::vector<pqrs::not_null_shared_ptr_t<entry>>& get_entries() const {
     return entries_;
   }
 
@@ -211,7 +211,7 @@ public:
     }
   }
 
-  bool needs_virtual_hid_pointing(void) const {
+  bool needs_virtual_hid_pointing() const {
     for (const auto& entry : entries_) {
       if (std::ranges::any_of(entry->get_to(),
                               [](auto& e) {
@@ -224,7 +224,7 @@ public:
   }
 
 private:
-  void reset(void) {
+  void reset() {
     from_manipulated_original_event_.reset();
     from_device_id_ = std::nullopt;
     output_event_queue_.reset();

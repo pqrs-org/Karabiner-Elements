@@ -2,7 +2,7 @@
 #include "core_configuration/core_configuration.hpp"
 #include <boost/ut.hpp>
 
-void run_device_test(void) {
+void run_device_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 
