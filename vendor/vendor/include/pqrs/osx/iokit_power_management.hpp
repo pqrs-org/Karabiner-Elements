@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_power_management v2.0.0
+// pqrs::osx::iokit_power_management v2.1.0
 
 // (C) Copyright Takayama Fumihiko 2022.
 // Distributed under the Boost Software License, Version 1.0.
