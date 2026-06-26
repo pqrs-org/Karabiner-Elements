@@ -15,16 +15,18 @@ public:
     end_,
   };
 
-  grabbable_state() : grabbable_state(device_id(0),
-                                          state::grabbable,
-                                          absolute_time_point(0)) {
+  grabbable_state()
+      : grabbable_state(device_id(0),
+                        state::grabbable,
+                        absolute_time_point(0)) {
   }
 
   grabbable_state(device_id device_id,
                   state state,
-                  absolute_time_point time_stamp) : device_id_(device_id),
-                                                    state_(state),
-                                                    time_stamp_(time_stamp) {
+                  absolute_time_point time_stamp)
+      : device_id_(device_id),
+        state_(state),
+        time_stamp_(time_stamp) {
   }
 
   device_id get_device_id() const {

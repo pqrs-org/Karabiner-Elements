@@ -47,9 +47,10 @@ public:
 private:
   class file_writer final {
   public:
-    file_writer() : time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
-                        dispatcher_(std::make_shared<pqrs::dispatcher::dispatcher>(time_source_)),
-                        object_id_(pqrs::dispatcher::make_new_object_id()) {
+    file_writer()
+        : time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
+          dispatcher_(std::make_shared<pqrs::dispatcher::dispatcher>(time_source_)),
+          object_id_(pqrs::dispatcher::make_new_object_id()) {
       dispatcher_->attach(object_id_);
     }
 

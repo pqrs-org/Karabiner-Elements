@@ -7,19 +7,21 @@
 namespace krbn {
 class pointing_motion final {
 public:
-  pointing_motion() : x_(0),
-                          y_(0),
-                          vertical_wheel_(0),
-                          horizontal_wheel_(0) {
+  pointing_motion()
+      : x_(0),
+        y_(0),
+        vertical_wheel_(0),
+        horizontal_wheel_(0) {
   }
 
   pointing_motion(int x,
                   int y,
                   int vertical_wheel,
-                  int horizontal_wheel) : x_(x),
-                                          y_(y),
-                                          vertical_wheel_(vertical_wheel),
-                                          horizontal_wheel_(horizontal_wheel) {
+                  int horizontal_wheel)
+      : x_(x),
+        y_(y),
+        vertical_wheel_(vertical_wheel),
+        horizontal_wheel_(horizontal_wheel) {
   }
 
   int get_x() const {

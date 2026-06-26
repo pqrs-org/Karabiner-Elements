@@ -9,22 +9,24 @@
 namespace krbn {
 class mouse_key final {
 public:
-  mouse_key() : x_(0),
-                    y_(0),
-                    vertical_wheel_(0),
-                    horizontal_wheel_(0),
-                    speed_multiplier_(1.0) {
+  mouse_key()
+      : x_(0),
+        y_(0),
+        vertical_wheel_(0),
+        horizontal_wheel_(0),
+        speed_multiplier_(1.0) {
   }
 
   mouse_key(int x,
             int y,
             int vertical_wheel,
             int horizontal_wheel,
-            double speed_multiplier) : x_(x),
-                                       y_(y),
-                                       vertical_wheel_(vertical_wheel),
-                                       horizontal_wheel_(horizontal_wheel),
-                                       speed_multiplier_(speed_multiplier) {
+            double speed_multiplier)
+      : x_(x),
+        y_(y),
+        vertical_wheel_(vertical_wheel),
+        horizontal_wheel_(horizontal_wheel),
+        speed_multiplier_(speed_multiplier) {
   }
 
   int get_x() const {
