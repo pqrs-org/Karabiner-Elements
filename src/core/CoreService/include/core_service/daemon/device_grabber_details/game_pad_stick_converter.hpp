@@ -48,7 +48,7 @@ public:
         : value_(0) {
     }
 
-    double get_value() const {
+    [[nodiscard]] double get_value() const {
       return value_;
     }
 
@@ -95,15 +95,15 @@ public:
       detach_from_dispatcher();
     }
 
-    double get_radian() const {
+    [[nodiscard]] double get_radian() const {
       return radian_;
     }
 
-    double get_absolute_magnitude() const {
+    [[nodiscard]] double get_absolute_magnitude() const {
       return absolute_magnitude_;
     }
 
-    double get_delta_magnitude() const {
+    [[nodiscard]] double get_delta_magnitude() const {
       return delta_magnitude_;
     }
 
@@ -145,11 +145,11 @@ public:
       update_values();
     }
 
-    bool continued_movement() const {
+    [[nodiscard]] bool continued_movement() const {
       return absolute_magnitude_ >= continued_movement_absolute_magnitude_threshold_;
     }
 
-    std::chrono::milliseconds get_continued_movement_interval_milliseconds() const {
+    [[nodiscard]] std::chrono::milliseconds get_continued_movement_interval_milliseconds() const {
       if (continued_movement()) {
         return std::chrono::milliseconds(continued_movement_interval_milliseconds_);
       }

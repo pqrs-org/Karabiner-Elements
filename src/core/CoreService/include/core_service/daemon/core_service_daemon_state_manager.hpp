@@ -22,7 +22,7 @@ public:
     detach_from_dispatcher();
   }
 
-  std::optional<core_service_permission_check_result> copy_current_process_permission_check_result() const {
+  [[nodiscard]] std::optional<core_service_permission_check_result> copy_current_process_permission_check_result() const {
     std::lock_guard<std::mutex> guard(mutex_);
 
     return state_.get_current_process_permission_check_result();

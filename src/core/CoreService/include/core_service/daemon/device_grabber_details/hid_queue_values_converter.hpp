@@ -1,5 +1,6 @@
 #pragma once
 
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_value.hpp>
 #include <unordered_map>
 
@@ -10,8 +11,9 @@ public:
       : last_time_stamp_(0) {
   }
 
-  std::vector<pqrs::osx::iokit_hid_value> make_hid_values(device_id device_id,
-                                                          std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
+  [[nodiscard]] std::vector<pqrs::osx::iokit_hid_value> make_hid_values(
+      device_id device_id,
+      pqrs::not_null_shared_ptr_t<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
     std::vector<pqrs::osx::iokit_hid_value> hid_values;
 
     for (const auto& v : *values) {

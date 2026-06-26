@@ -27,9 +27,9 @@
 #include <array>
 #include <dlfcn.h>
 #include <fstream>
-#include <gsl/gsl>
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
 #include <pqrs/osx/hitoolbox/secure_event_input_monitor.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
@@ -246,10 +246,12 @@ public:
         // entries_
         //
 
-        auto entry = std::make_shared<device_grabber_details::entry>(device_id,
-                                                                     *device_ptr,
-                                                                     core_configuration_);
-        entries_[device_id] = entry;
+        pqrs::not_null_shared_ptr_t<device_grabber_details::entry> entry =
+            std::make_shared<device_grabber_details::entry>(device_id,
+                                                            *device_ptr,
+                                                            core_configuration_);
+        entries_.insert_or_assign(device_id,
+                                  entry);
 
         entry->set_temporarily_ignore(temporarily_ignore_all_devices_);
 
@@ -999,7 +1001,7 @@ private:
     }
   }
 
-  bool needs_prepare_virtual_hid_pointing_device() const {
+  [[nodiscard]] bool needs_prepare_virtual_hid_pointing_device() const {
     //
     // Check if there is a pointing device to grab
     // (The game pad also sends mouse events, so a virtual pointing device should be prepared as well.)
@@ -1058,7 +1060,7 @@ private:
     virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
   }
 
-  bool need_to_disable_built_in_keyboard() const {
+  [[nodiscard]] bool need_to_disable_built_in_keyboard() const {
     for (const auto& entry : entries_ | std::views::values) {
       if (entry->is_disable_built_in_keyboard_if_exists()) {
         return true;
@@ -1219,7 +1221,7 @@ private:
   std::unique_ptr<event_tap_monitor> event_tap_monitor_;
   std::optional<bool> last_caps_lock_state_;
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
-  std::unordered_map<device_id, std::shared_ptr<device_grabber_details::entry>> entries_;
+  std::unordered_map<device_id, pqrs::not_null_shared_ptr_t<device_grabber_details::entry>> entries_;
   bool temporarily_ignore_all_devices_;
 
   std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;

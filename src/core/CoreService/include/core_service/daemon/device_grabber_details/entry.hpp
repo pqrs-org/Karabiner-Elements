@@ -170,7 +170,7 @@ public:
     });
   }
 
-  device_id get_device_id() const {
+  [[nodiscard]] device_id get_device_id() const {
     return device_id_;
   }
 
@@ -185,15 +185,15 @@ public:
     }
   }
 
-  pqrs::not_null_shared_ptr_t<device_properties> get_device_properties() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<device_properties> get_device_properties() const {
     return device_properties_;
   }
 
-  std::shared_ptr<pressed_keys_manager> get_pressed_keys_manager() const {
+  [[nodiscard]] std::shared_ptr<pressed_keys_manager> get_pressed_keys_manager() const {
     return pressed_keys_manager_;
   }
 
-  std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> get_hid_queue_value_monitor() const {
+  [[nodiscard]] std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> get_hid_queue_value_monitor() const {
     return hid_queue_value_monitor_;
   }
 
@@ -201,15 +201,15 @@ public:
     caps_lock_led_state_manager_->set_state(state);
   }
 
-  const std::string& get_device_name() const {
+  [[nodiscard]] const std::string& get_device_name() const {
     return device_name_;
   }
 
-  const std::string& get_device_short_name() const {
+  [[nodiscard]] const std::string& get_device_short_name() const {
     return device_short_name_;
   }
 
-  bool get_disabled() const {
+  [[nodiscard]] bool get_disabled() const {
     return disabled_;
   }
 
@@ -221,7 +221,7 @@ public:
     disabled_ = value;
   }
 
-  bool get_temporarily_ignore() const {
+  [[nodiscard]] bool get_temporarily_ignore() const {
     return temporarily_ignore_;
   }
 
@@ -229,7 +229,7 @@ public:
     temporarily_ignore_ = value;
   }
 
-  bool is_disable_built_in_keyboard_if_exists() const {
+  [[nodiscard]] bool is_disable_built_in_keyboard_if_exists() const {
     if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return false;
     }
@@ -244,7 +244,7 @@ public:
     return d->get_disable_built_in_keyboard_if_exists();
   }
 
-  bool determine_is_built_in_keyboard() const {
+  [[nodiscard]] bool determine_is_built_in_keyboard() const {
     return device_utility::determine_is_built_in_keyboard(*core_configuration_, *device_properties_);
   }
 
@@ -281,11 +281,11 @@ public:
     hid_queue_value_monitor_->async_stop();
   }
 
-  bool seized() const {
+  [[nodiscard]] bool seized() const {
     return hid_queue_value_monitor_->seized();
   }
 
-  bool needs_to_observe_device() const {
+  [[nodiscard]] bool needs_to_observe_device() const {
     // We must monitor the {pqrs::hid::usage_page::leds, pqrs::hid::usage::led::caps_lock} event from the virtual HID keyboard to manage the caps lock LED on physical keyboards.
     if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return true;
@@ -295,7 +295,7 @@ public:
   }
 
   // Return whether the device is a target for modifying input events.
-  bool needs_to_seize_device() const {
+  [[nodiscard]] bool needs_to_seize_device() const {
     if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
       return false;
     }

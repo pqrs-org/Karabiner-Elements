@@ -14,7 +14,7 @@ public:
       : manipulator_manager_(std::make_shared<manipulator::manipulator_manager>()) {
   }
 
-  pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager> get_manipulator_manager() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager> get_manipulator_manager() const {
     return manipulator_manager_;
   }
 
@@ -312,7 +312,7 @@ private:
     return nullptr;
   }
 
-  bool f1_f12_key(const std::string key_code) const {
+  [[nodiscard]] bool f1_f12_key(const std::string key_code) const {
     return key_code == "f1" ||
            key_code == "f2" ||
            key_code == "f3" ||

@@ -161,7 +161,7 @@ private:
     filesystem_utility::create_base_directories(std::nullopt);
   }
 
-  bool has_on_console_peer(uid_t uid) const {
+  [[nodiscard]] bool has_on_console_peer(uid_t uid) const {
     for (const auto& [_, state] : session_monitor_peer_states_) {
       if (state.uid == uid &&
           state.on_console) {

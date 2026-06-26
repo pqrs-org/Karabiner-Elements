@@ -14,7 +14,7 @@ public:
       : manipulator_manager_(std::make_shared<manipulator::manipulator_manager>()) {
   }
 
-  pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager> get_manipulator_manager() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager> get_manipulator_manager() const {
     return manipulator_manager_;
   }
 

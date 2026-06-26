@@ -82,7 +82,7 @@ public:
     });
   }
 
-  settings_window_guidance_state get_guidance_state() const {
+  [[nodiscard]] settings_window_guidance_state get_guidance_state() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     auto state = settings_window_guidance_state();

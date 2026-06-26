@@ -267,7 +267,7 @@ private:
     }
   }
 
-  std::optional<CGDirectDisplayID> get_target_display_id(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
+  [[nodiscard]] std::optional<CGDirectDisplayID> get_target_display_id(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
     if (auto screen = set_mouse_cursor_position.get_screen()) {
       auto active_displays = pqrs::osx::cg_display::active_displays();
       if (*screen < active_displays.size()) {
@@ -280,7 +280,7 @@ private:
     return std::nullopt;
   }
 
-  std::optional<std::pair<CGDirectDisplayID, CGRect>> get_screen_bounds(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
+  [[nodiscard]] std::optional<std::pair<CGDirectDisplayID, CGRect>> get_screen_bounds(const software_function_details::set_mouse_cursor_position& set_mouse_cursor_position) {
     if (auto target_display_id = get_target_display_id(set_mouse_cursor_position)) {
       return std::make_pair(*target_display_id, CGDisplayBounds(*target_display_id));
     }
@@ -288,7 +288,7 @@ private:
     return std::nullopt;
   }
 
-  std::optional<CGRect> get_focused_window_bounds() const {
+  [[nodiscard]] std::optional<CGRect> get_focused_window_bounds() const {
     if (auto x = focused_ui_element_.get_window_position_x()) {
       if (auto y = focused_ui_element_.get_window_position_y()) {
         if (auto width = focused_ui_element_.get_window_size_width()) {

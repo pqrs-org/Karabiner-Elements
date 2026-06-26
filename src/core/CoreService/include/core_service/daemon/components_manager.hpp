@@ -101,7 +101,7 @@ private:
         when_now() + std::chrono::seconds(3));
   }
 
-  bool base_directories_missing() const {
+  [[nodiscard]] bool base_directories_missing() const {
     std::error_code error_code;
     if (!std::filesystem::exists(constants::get_tmp_directory(), error_code) ||
         !std::filesystem::exists(constants::get_rootonly_directory(), error_code)) {

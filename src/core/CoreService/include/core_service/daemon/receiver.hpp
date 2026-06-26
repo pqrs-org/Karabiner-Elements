@@ -626,7 +626,7 @@ private:
     logger::get_logger()->info("device_grabber is stopped.");
   }
 
-  bool required_permissions_granted() const {
+  [[nodiscard]] bool required_permissions_granted() const {
     if (auto m = weak_core_service_daemon_state_manager_.lock()) {
       if (auto result = m->copy_current_process_permission_check_result()) {
         return result->required_permissions_granted();
