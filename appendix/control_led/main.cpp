@@ -3,6 +3,7 @@
 #include "iokit_utility.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <csignal>
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/iokit_return.hpp>
 
@@ -35,8 +36,9 @@ public:
           return;
         }
 
-        auto manager = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(*device_ptr);
-        caps_lock_led_state_managers_[registry_entry_id] = manager;
+        pqrs::not_null_shared_ptr_t<krbn::hid_keyboard_caps_lock_led_state_manager> manager =
+            std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(*device_ptr);
+        caps_lock_led_state_managers_.insert_or_assign(registry_entry_id, manager);
 
         manager->set_state(led_state);
 
@@ -62,7 +64,7 @@ public:
 
 private:
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
-  std::unordered_map<pqrs::osx::iokit_registry_entry_id::value_t, std::shared_ptr<krbn::hid_keyboard_caps_lock_led_state_manager>> caps_lock_led_state_managers_;
+  std::unordered_map<pqrs::osx::iokit_registry_entry_id::value_t, pqrs::not_null_shared_ptr_t<krbn::hid_keyboard_caps_lock_led_state_manager>> caps_lock_led_state_managers_;
 };
 
 auto global_wait = pqrs::make_thread_wait();
