@@ -41,7 +41,7 @@ public:
                                                                   3);
     if (l) {
       l->set_level(spdlog::level::debug);
-      l->flush_on(spdlog::level::info);
+      l->flush_on(spdlog::level::debug);
       l->set_pattern(pqrs::spdlog::get_pattern());
 
       std::lock_guard<std::mutex> guard(mutex_);
