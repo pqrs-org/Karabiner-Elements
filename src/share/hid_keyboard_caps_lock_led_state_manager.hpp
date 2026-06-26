@@ -5,6 +5,7 @@
 #include "types.hpp"
 #include <mach/mach_time.h>
 #include <optional>
+#include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_hid_element.hpp>
@@ -101,15 +102,15 @@ private:
 
     if (auto integer_value = make_integer_value()) {
       if (device_ && element_) {
-        if (auto value = IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault,
-                                                          element_.get_raw_ptr(),
-                                                          mach_absolute_time(),
-                                                          *integer_value)) {
+        if (auto value = pqrs::cf::adopt_cf_ptr(IOHIDValueCreateWithIntegerValue(kCFAllocatorDefault,
+                                                                                 element_.get_raw_ptr(),
+                                                                                 mach_absolute_time(),
+                                                                                 *integer_value))) {
           // We have to use asynchronous method in order to prevent deadlock due to macOS issue.
           IOHIDDeviceSetValueWithCallback(
               *device_,
               element_.get_raw_ptr(),
-              value,
+              value.get(),
               0.1,
               [](void* context, IOReturn result, void* sender, IOHIDValueRef value) {
                 pqrs::osx::iokit_return r(result);
@@ -118,8 +119,6 @@ private:
                 }
               },
               nullptr);
-
-          CFRelease(value);
         }
       }
     }

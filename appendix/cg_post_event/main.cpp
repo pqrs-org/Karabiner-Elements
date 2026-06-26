@@ -1,16 +1,21 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <chrono>
+#include <pqrs/cf/cf_ptr.hpp>
 #include <thread>
 
 int main(int argc, const char* argv[]) {
-  if (auto source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState)) {
+  if (auto source = pqrs::cf::adopt_cf_ptr(CGEventSourceCreate(kCGEventSourceStateHIDSystemState))) {
     while (true) {
       // shift key
       {
-        auto ev = CGEventCreateKeyboardEvent(source, (CGKeyCode)56, true);
-        CGEventSetFlags(ev, static_cast<CGEventFlags>(kCGEventFlagMaskShift | CGEventGetFlags(ev)));
-        CGEventPost(kCGHIDEventTap, ev);
-        CFRelease(ev);
+        if (auto ev = pqrs::cf::adopt_cf_ptr(CGEventCreateKeyboardEvent(source.get(),
+                                                                        (CGKeyCode)56,
+                                                                        true))) {
+          CGEventSetFlags(ev.get(),
+                          static_cast<CGEventFlags>(kCGEventFlagMaskShift | CGEventGetFlags(ev.get())));
+          CGEventPost(kCGHIDEventTap,
+                      ev.get());
+        }
       }
 
       // We have to put wait between continous CGEventPost.
@@ -18,20 +23,28 @@ int main(int argc, const char* argv[]) {
 
       // z key
       {
-        auto ev = CGEventCreateKeyboardEvent(source, (CGKeyCode)6, true);
-        CGEventSetFlags(ev, static_cast<CGEventFlags>(kCGEventFlagMaskShift | CGEventGetFlags(ev)));
-        CGEventPost(kCGHIDEventTap, ev);
-        CFRelease(ev);
+        if (auto ev = pqrs::cf::adopt_cf_ptr(CGEventCreateKeyboardEvent(source.get(),
+                                                                        (CGKeyCode)6,
+                                                                        true))) {
+          CGEventSetFlags(ev.get(),
+                          static_cast<CGEventFlags>(kCGEventFlagMaskShift | CGEventGetFlags(ev.get())));
+          CGEventPost(kCGHIDEventTap,
+                      ev.get());
+        }
       }
 
       // We have to put wait between continous CGEventPost.
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
       {
-        auto ev = CGEventCreateKeyboardEvent(source, (CGKeyCode)6, false);
-        CGEventSetFlags(ev, static_cast<CGEventFlags>(kCGEventFlagMaskShift | CGEventGetFlags(ev)));
-        CGEventPost(kCGHIDEventTap, ev);
-        CFRelease(ev);
+        if (auto ev = pqrs::cf::adopt_cf_ptr(CGEventCreateKeyboardEvent(source.get(),
+                                                                        (CGKeyCode)6,
+                                                                        false))) {
+          CGEventSetFlags(ev.get(),
+                          static_cast<CGEventFlags>(kCGEventFlagMaskShift | CGEventGetFlags(ev.get())));
+          CGEventPost(kCGHIDEventTap,
+                      ev.get());
+        }
       }
 
       // We have to put wait between continous CGEventPost.
@@ -39,9 +52,12 @@ int main(int argc, const char* argv[]) {
 
       // shift key
       {
-        auto ev = CGEventCreateKeyboardEvent(source, (CGKeyCode)56, false);
-        CGEventPost(kCGHIDEventTap, ev);
-        CFRelease(ev);
+        if (auto ev = pqrs::cf::adopt_cf_ptr(CGEventCreateKeyboardEvent(source.get(),
+                                                                        (CGKeyCode)56,
+                                                                        false))) {
+          CGEventPost(kCGHIDEventTap,
+                      ev.get());
+        }
       }
 
       // We have to put wait between continous CGEventPost.
@@ -50,7 +66,6 @@ int main(int argc, const char* argv[]) {
 
 #if 0
     // comment out for -Wunreachable-code
-    CFRelease(source);
 #endif
   }
 

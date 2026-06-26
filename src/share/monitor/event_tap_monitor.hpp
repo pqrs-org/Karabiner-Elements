@@ -101,27 +101,21 @@ public:
       logger::get_logger()->info("event_tap_monitor start (enable_cgeventtap_fallback={0})",
                                  cgeventtap_fallback_enabled_);
 
-      auto event_tap = CGEventTapCreate(kCGHIDEventTap,
-                                        kCGTailAppendEventTap,
-                                        cgeventtap_fallback_enabled_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
-                                        mask,
-                                        event_tap_monitor::static_callback,
-                                        this);
+      auto event_tap = pqrs::cf::adopt_cf_ptr(CGEventTapCreate(kCGHIDEventTap,
+                                                               kCGTailAppendEventTap,
+                                                               cgeventtap_fallback_enabled_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
+                                                               mask,
+                                                               event_tap_monitor::static_callback,
+                                                               this));
       {
         std::lock_guard<std::mutex> lock(event_tap_mutex_);
 
-        event_tap_ = event_tap;
-        if (event_tap) {
-          CFRelease(event_tap);
-        }
+        event_tap_ = std::move(event_tap);
 
         if (event_tap_) {
-          auto run_loop_source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, event_tap_.get(), 0);
-          run_loop_source_ = run_loop_source;
-          if (run_loop_source) {
-            CFRelease(run_loop_source);
-          }
-
+          run_loop_source_ = pqrs::cf::adopt_cf_ptr(CFMachPortCreateRunLoopSource(kCFAllocatorDefault,
+                                                                                  event_tap_.get(),
+                                                                                  0));
           if (run_loop_source_) {
             CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
                                run_loop_source_.get(),

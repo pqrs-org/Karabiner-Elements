@@ -3,6 +3,7 @@
 // `krbn::core_service::daemon::hid_event_system_monitor` can be used safely in a multi-threaded environment.
 
 #include "run_loop_thread_utility.hpp"
+#include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_hid_event_system_client.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>
@@ -14,10 +15,10 @@ public:
 
   hid_event_system_monitor() : dispatcher_client(),
                                set_property_timer_(*this) {
-    if (auto matching_dictionary = IOServiceNameMatching("AppleUserHIDEventDriver")) {
+    if (auto matching_dictionary = pqrs::cf::adopt_cf_ptr(IOServiceNameMatching("AppleUserHIDEventDriver"))) {
       monitor_ = std::make_unique<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
                                                                     pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
-                                                                    matching_dictionary);
+                                                                    matching_dictionary.get());
 
       monitor_->service_matched.connect([&](auto&& registry_entry_id, auto&& service_ptr) {
         pqrs::osx::iokit_registry_entry entry(service_ptr);

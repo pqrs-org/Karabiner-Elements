@@ -1,12 +1,17 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <iostream>
+#include <pqrs/cf/cf_ptr.hpp>
 
 namespace {
-CFMachPortRef _Nullable event_tap;
+pqrs::cf::cf_ptr<CFMachPortRef> event_tap;
 
-CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event, void* _Nonnull refcon) {
+CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy,
+                              CGEventType type,
+                              CGEventRef _Nullable event,
+                              void* _Nonnull refcon) {
   if (type == kCGEventTapDisabledByTimeout) {
-    CGEventTapEnable(event_tap, true);
+    CGEventTapEnable(event_tap.get(),
+                     true);
     return event;
   }
 
@@ -15,7 +20,8 @@ CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type,
   }
 
   if (event) {
-    CGEventSetFlags(event, static_cast<CGEventFlags>(kCGEventFlagMaskNonCoalesced | kCGEventFlagMaskCommand));
+    CGEventSetFlags(event,
+                    static_cast<CGEventFlags>(kCGEventFlagMaskNonCoalesced | kCGEventFlagMaskCommand));
   }
   return event;
 }
@@ -37,16 +43,21 @@ int main(int argc, const char* argv[]) {
               CGEventMaskBit(kCGEventOtherMouseUp) |
               CGEventMaskBit(kCGEventOtherMouseDragged);
 
-  event_tap = CGEventTapCreate(kCGHIDEventTap,
-                               kCGHeadInsertEventTap,
-                               kCGEventTapOptionDefault,
-                               mask,
-                               callback,
-                               nullptr);
+  event_tap = pqrs::cf::adopt_cf_ptr(CGEventTapCreate(kCGHIDEventTap,
+                                                      kCGHeadInsertEventTap,
+                                                      kCGEventTapOptionDefault,
+                                                      mask,
+                                                      callback,
+                                                      nullptr));
   if (event_tap) {
-    if (auto run_loop_source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, event_tap, 0)) {
-      CFRunLoopAddSource(CFRunLoopGetMain(), run_loop_source, kCFRunLoopCommonModes);
-      CGEventTapEnable(event_tap, true);
+    if (auto run_loop_source = pqrs::cf::adopt_cf_ptr(CFMachPortCreateRunLoopSource(kCFAllocatorDefault,
+                                                                                    event_tap.get(),
+                                                                                    0))) {
+      CFRunLoopAddSource(CFRunLoopGetMain(),
+                         run_loop_source.get(),
+                         kCFRunLoopCommonModes);
+      CGEventTapEnable(event_tap.get(),
+                       true);
 
       std::cout << std::endl;
       std::cout << std::endl;
@@ -54,8 +65,6 @@ int main(int argc, const char* argv[]) {
       std::cout << "You can exit by right click." << std::endl;
       std::cout << std::endl;
       std::cout << std::endl;
-
-      CFRelease(run_loop_source);
     }
   }
 
