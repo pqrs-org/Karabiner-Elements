@@ -37,7 +37,7 @@ public:
     detach_from_dispatcher();
   }
 
-  const nlohmann::json get_result() const {
+  [[nodiscard]] const nlohmann::json& get_result() const {
     return result_;
   }
 

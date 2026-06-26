@@ -23,15 +23,15 @@ public:
     wait();
   }
 
-  size_t get_count() const {
+  [[nodiscard]] size_t get_count() const {
     return count_;
   }
 
-  std::shared_ptr<const krbn::core_configuration::core_configuration> get_last_core_configuration() const {
+  [[nodiscard]] std::shared_ptr<const krbn::core_configuration::core_configuration> get_last_core_configuration() const {
     return last_core_configuration_;
   }
 
-  std::string get_selected_profile_name() const {
+  [[nodiscard]] std::string get_selected_profile_name() const {
     return last_core_configuration_->get_selected_profile().get_name();
   }
 

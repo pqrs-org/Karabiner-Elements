@@ -10,6 +10,7 @@ void run_device_exists_test() {
   "device_exists_if"_test = [] {
     // true if {vid:2000, pid:1000} exists.
     actual_examples_helper helper("device_exists_if.jsonc");
+    expect(helper.get_error_messages().empty());
 
     krbn::unit_testing::manipulator_conditions_helper manipulator_conditions_helper;
     auto& environment = manipulator_conditions_helper.get_manipulator_environment();
@@ -40,6 +41,7 @@ void run_device_exists_test() {
   "device_exists_unless"_test = [] {
     // true if {vid:2000, pid:1000} does not exist.
     actual_examples_helper helper("device_exists_unless.jsonc");
+    expect(helper.get_error_messages().empty());
 
     krbn::unit_testing::manipulator_conditions_helper manipulator_conditions_helper;
     auto& environment = manipulator_conditions_helper.get_manipulator_environment();

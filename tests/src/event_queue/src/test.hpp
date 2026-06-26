@@ -2,7 +2,7 @@
 
 #include "event_queue.hpp"
 
-inline std::optional<krbn::event_integer_value::value_t> make_event_integer_value(krbn::event_type type) {
+[[nodiscard]] inline std::optional<krbn::event_integer_value::value_t> make_event_integer_value(krbn::event_type type) {
   if (type == krbn::event_type::key_down) {
     return krbn::event_integer_value::value_t(1);
   } else if (type == krbn::event_type::key_up) {

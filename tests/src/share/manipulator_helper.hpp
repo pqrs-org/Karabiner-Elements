@@ -18,12 +18,11 @@ using namespace boost::ut::literals;
 class manipulator_helper final : pqrs::dispatcher::extra::dispatcher_client {
 
 public:
-  manipulator_helper() : dispatcher_client() {
-    pseudo_time_source_ = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-
+  manipulator_helper() : dispatcher_client(),
+                         pseudo_time_source_(std::make_shared<pqrs::dispatcher::pseudo_time_source>()) {
     if (auto d = weak_dispatcher_.lock()) {
       original_weak_time_source_ = d->lock_weak_time_source();
-      d->set_weak_time_source(pseudo_time_source_);
+      d->set_weak_time_source(pqrs::make_weak(pseudo_time_source_));
     }
   }
 
@@ -48,8 +47,8 @@ public:
       auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(geteuid());
       auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
       auto connector = std::make_shared<manipulator::manipulator_managers_connector>();
-      auto manipulator_managers = std::make_shared<std::vector<std::shared_ptr<manipulator::manipulator_manager>>>();
-      auto event_queues = std::make_shared<std::vector<std::shared_ptr<event_queue::queue>>>();
+      auto manipulator_managers = std::make_shared<std::vector<pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager>>>();
+      auto event_queues = std::make_shared<std::vector<pqrs::not_null_shared_ptr_t<event_queue::queue>>>();
       std::shared_ptr<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices> post_event_to_virtual_devices_manipulator;
 
       // Build manipulators
@@ -80,14 +79,14 @@ public:
           event_queues->push_back(std::make_shared<event_queue::queue>());
           // complex modifications applied event queue
           event_queues->push_back(std::make_shared<event_queue::queue>());
-          connector->emplace_back_connection(manipulator_managers->back(),
-                                             (*event_queues)[0],
-                                             (*event_queues)[1]);
+          connector->emplace_back_connection(pqrs::make_weak(manipulator_managers->back()),
+                                             pqrs::make_weak((*event_queues)[0]),
+                                             pqrs::make_weak((*event_queues)[1]));
         } else {
           // complex modifications applied event queue
           event_queues->push_back(std::make_shared<event_queue::queue>());
-          connector->emplace_back_connection(manipulator_managers->back(),
-                                             event_queues->back());
+          connector->emplace_back_connection(pqrs::make_weak(manipulator_managers->back()),
+                                             pqrs::make_weak(event_queues->back()));
         }
       }
 
@@ -96,7 +95,7 @@ public:
       //
 
       {
-        manipulator_managers->push_back(std::make_unique<manipulator::manipulator_manager>());
+        manipulator_managers->push_back(std::make_shared<manipulator::manipulator_manager>());
 
         //
         // f10 -> mute
@@ -126,14 +125,14 @@ public:
           event_queues->push_back(std::make_shared<event_queue::queue>());
           // fn function keys applied event queue
           event_queues->push_back(std::make_shared<event_queue::queue>());
-          connector->emplace_back_connection(manipulator_managers->back(),
-                                             (*event_queues)[0],
-                                             (*event_queues)[1]);
+          connector->emplace_back_connection(pqrs::make_weak(manipulator_managers->back()),
+                                             pqrs::make_weak((*event_queues)[0]),
+                                             pqrs::make_weak((*event_queues)[1]));
         } else {
           // fn function keys applied event queue
           event_queues->push_back(std::make_shared<event_queue::queue>());
-          connector->emplace_back_connection(manipulator_managers->back(),
-                                             event_queues->back());
+          connector->emplace_back_connection(pqrs::make_weak(manipulator_managers->back()),
+                                             pqrs::make_weak(event_queues->back()));
         }
       }
 
@@ -143,13 +142,13 @@ public:
                 console_user_server_client,
                 notification_message_manager);
 
-        manipulator_managers->push_back(std::make_unique<manipulator::manipulator_manager>());
+        manipulator_managers->push_back(std::make_shared<manipulator::manipulator_manager>());
         manipulator_managers->back()->push_back_manipulator(post_event_to_virtual_devices_manipulator);
 
         // posted_event_queue
         event_queues->push_back(std::make_shared<event_queue::queue>());
-        connector->emplace_back_connection(manipulator_managers->back(),
-                                           event_queues->back());
+        connector->emplace_back_connection(pqrs::make_weak(manipulator_managers->back()),
+                                           pqrs::make_weak(event_queues->back()));
       }
 
       expect(!event_queues->empty());
@@ -310,7 +309,7 @@ private:
   }
 
   std::weak_ptr<pqrs::dispatcher::time_source> original_weak_time_source_;
-  std::shared_ptr<pqrs::dispatcher::pseudo_time_source> pseudo_time_source_;
+  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> pseudo_time_source_;
   absolute_time_point now_;
 };
 } // namespace krbn::unit_testing

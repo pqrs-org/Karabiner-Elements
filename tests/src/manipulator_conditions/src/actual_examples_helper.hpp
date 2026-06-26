@@ -19,16 +19,16 @@ public:
       } catch (pqrs::json::unmarshal_error& e) {
         error_messages_.push_back(e.what());
       } catch (std::exception& e) {
-        expect(false);
+        expect(false) << e.what();
       }
     }
   }
 
-  const krbn::manipulator::condition_manager& get_condition_manager() const {
+  [[nodiscard]] const krbn::manipulator::condition_manager& get_condition_manager() const {
     return condition_manager_;
   }
 
-  const std::vector<std::string> get_error_messages() const {
+  [[nodiscard]] const std::vector<std::string>& get_error_messages() const {
     return error_messages_;
   }
 

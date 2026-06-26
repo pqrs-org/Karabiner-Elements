@@ -15,15 +15,15 @@ public:
     manipulator_environment_.set_core_configuration(core_configuration_);
   }
 
-  const krbn::manipulator::manipulator_environment& get_manipulator_environment() const {
+  [[nodiscard]] const krbn::manipulator::manipulator_environment& get_manipulator_environment() const {
     return manipulator_environment_;
   }
 
-  krbn::manipulator::manipulator_environment& get_manipulator_environment() {
+  [[nodiscard]] krbn::manipulator::manipulator_environment& get_manipulator_environment() {
     return const_cast<krbn::manipulator::manipulator_environment&>(static_cast<const manipulator_conditions_helper&>(*this).get_manipulator_environment());
   }
 
-  pqrs::not_null_shared_ptr_t<krbn::core_configuration::core_configuration> get_core_configuration() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<krbn::core_configuration::core_configuration> get_core_configuration() const {
     return core_configuration_;
   }
 
@@ -39,7 +39,7 @@ public:
     return p.device_id;
   }
 
-  krbn::event_queue::entry make_event_queue_entry(krbn::device_id device_id) const {
+  [[nodiscard]] krbn::event_queue::entry make_event_queue_entry(krbn::device_id device_id) const {
     return krbn::event_queue::entry(device_id,
                                     krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
                                     krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,

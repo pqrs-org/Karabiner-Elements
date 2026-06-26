@@ -1,6 +1,7 @@
 #include "../../share/json_helper.hpp"
 #include "../../share/manipulator_helper.hpp"
 #include <boost/ut.hpp>
+#include <pqrs/gsl.hpp>
 
 void run_manipulator_manager_test() {
   using namespace boost::ut;
@@ -14,7 +15,7 @@ void run_manipulator_manager_test() {
   };
 
   "min_input_event_time_stamp"_test = [] {
-    std::vector<std::shared_ptr<krbn::event_queue::queue>> event_queues;
+    std::vector<pqrs::not_null_shared_ptr_t<krbn::event_queue::queue>> event_queues;
     event_queues.push_back(std::make_shared<krbn::event_queue::queue>());
     event_queues.push_back(std::make_shared<krbn::event_queue::queue>());
     event_queues.push_back(std::make_shared<krbn::event_queue::queue>());
@@ -23,15 +24,15 @@ void run_manipulator_manager_test() {
 
     krbn::manipulator::manipulator_managers_connector connector;
 
-    std::vector<std::shared_ptr<krbn::manipulator::manipulator_manager>> manipulator_managers;
+    std::vector<pqrs::not_null_shared_ptr_t<krbn::manipulator::manipulator_manager>> manipulator_managers;
     for (size_t i = 0; i < event_queues.size() - 1; ++i) {
       manipulator_managers.push_back(std::make_shared<krbn::manipulator::manipulator_manager>());
     }
 
     for (size_t i = 0; i < manipulator_managers.size(); ++i) {
-      connector.emplace_back_connection(manipulator_managers[i],
-                                        event_queues[i],
-                                        event_queues[i + 1]);
+      connector.emplace_back_connection(pqrs::make_weak(manipulator_managers[i]),
+                                        pqrs::make_weak(event_queues[i]),
+                                        pqrs::make_weak(event_queues[i + 1]));
     }
 
     expect(!connector.min_input_event_time_stamp());

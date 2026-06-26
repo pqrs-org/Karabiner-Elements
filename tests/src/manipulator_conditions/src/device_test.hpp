@@ -97,6 +97,9 @@ void run_device_test() {
 
     {
       actual_examples_helper helper("device_if.jsonc");
+      expect(helper.get_error_messages() == std::vector<std::string>{
+                                             R"(unknown key `unknown` in `{"unknown":"unknown"}`)",
+                                         });
 
       {
         krbn::manipulator::conditions::condition_context condition_context{
@@ -157,6 +160,9 @@ void run_device_test() {
     }
     {
       actual_examples_helper helper("device_unless.jsonc");
+      expect(helper.get_error_messages() == std::vector<std::string>{
+                                             R"(unknown key `unknown` in `{"unknown":"unknown"}`)",
+                                         });
 
       {
         krbn::manipulator::conditions::condition_context condition_context{
