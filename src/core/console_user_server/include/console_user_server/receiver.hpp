@@ -30,7 +30,8 @@ public:
         weak_software_function_handler_(weak_software_function_handler),
         input_source_selector_(std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_)),
         shell_command_handler_(std::make_unique<shell_command_handler>()),
-        send_user_command_handler_(std::make_unique<send_user_command_handler>()) {
+        send_user_command_handler_(std::make_unique<send_user_command_handler>()),
+        check_for_updates_task_(*this) {
     prepare_console_user_server_socket_directory();
 
     auto options = pqrs::unix_domain_stream::server_options(
@@ -311,7 +312,6 @@ private:
     }
 
     check_for_updates_enabled_ = enabled;
-    ++check_for_updates_generation_;
 
     if (enabled) {
       logger::get_logger()->info("Check for updates is enabled; waiting 30 seconds before checking for updates.");
@@ -326,27 +326,25 @@ private:
       //
       // Wait before checking for updates to avoid it.
 
-      schedule_check_for_updates(check_for_updates_generation_,
-                                 std::chrono::seconds(30));
+      schedule_check_for_updates(std::chrono::seconds(30));
+    } else {
+      check_for_updates_task_.cancel();
     }
   }
 
-  void schedule_check_for_updates(uint64_t generation,
-                                  std::chrono::milliseconds delay) {
-    enqueue_to_dispatcher(
-        [this, generation] {
-          if (!check_for_updates_enabled_ ||
-              generation != check_for_updates_generation_) {
+  void schedule_check_for_updates(std::chrono::milliseconds delay) {
+    check_for_updates_task_.debounce_after(
+        [this] {
+          if (!check_for_updates_enabled_) {
             return;
           }
 
           logger::get_logger()->info("Check for updates...");
           update_utility::check_for_updates_in_background();
 
-          schedule_check_for_updates(generation,
-                                     make_next_check_for_updates_interval());
+          schedule_check_for_updates(make_next_check_for_updates_interval());
         },
-        when_now() + delay);
+        delay);
   }
 
   static std::chrono::milliseconds make_next_check_for_updates_interval() {
@@ -364,7 +362,7 @@ private:
   std::unique_ptr<shell_command_handler> shell_command_handler_;
   std::unique_ptr<send_user_command_handler> send_user_command_handler_;
   std::unique_ptr<pqrs::unix_domain_stream::server> server_;
+  pqrs::dispatcher::extra::debounced_task check_for_updates_task_;
   bool check_for_updates_enabled_ = false;
-  uint64_t check_for_updates_generation_ = 0;
 };
 } // namespace krbn::console_user_server

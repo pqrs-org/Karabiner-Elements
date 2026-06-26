@@ -9,7 +9,7 @@ namespace krbn::manipulator::manipulators::basic {
 class to_delayed_action final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   to_delayed_action(const nlohmann::json& json) : dispatcher_client(),
-                                                  current_delayed_action_id_(0) {
+                                                  delayed_action_task_(*this) {
     try {
       pqrs::json::requires_object(json, "json");
 
@@ -92,24 +92,17 @@ public:
       return;
     }
 
-    ++current_delayed_action_id_;
-
     front_input_event_ = front_input_event;
     current_manipulated_original_event_ = current_manipulated_original_event;
     output_event_queue_ = output_event_queue;
 
-    auto delayed_action_id = current_delayed_action_id_;
     auto duration = pqrs::osx::chrono::make_absolute_time_duration(delay_milliseconds);
 
-    enqueue_to_dispatcher(
-        [this, delayed_action_id] {
-          if (current_delayed_action_id_ != delayed_action_id) {
-            return;
-          }
-
+    delayed_action_task_.debounce_after(
+        [this] {
           post_events(to_if_invoked_);
         },
-        when_now() + pqrs::osx::chrono::make_milliseconds(duration));
+        pqrs::osx::chrono::make_milliseconds(duration));
   }
 
   void cancel(const event_queue::entry& front_input_event) {
@@ -117,7 +110,7 @@ public:
       return;
     }
 
-    ++current_delayed_action_id_;
+    delayed_action_task_.cancel();
 
     post_events(to_if_canceled_);
   }
@@ -202,6 +195,6 @@ private:
   std::optional<event_queue::entry> front_input_event_;
   std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
-  int current_delayed_action_id_;
+  pqrs::dispatcher::extra::debounced_task delayed_action_task_;
 };
 } // namespace krbn::manipulator::manipulators::basic

@@ -10,7 +10,7 @@ namespace krbn::manipulator::manipulators::basic {
 class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   to_if_held_down(const nlohmann::json& json) : dispatcher_client(),
-                                                current_held_down_id_(0) {
+                                                held_down_task_(*this) {
     try {
       if (json.is_object()) {
         to_.push_back(std::make_shared<to_event_definition>(json));
@@ -42,7 +42,7 @@ public:
              std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event,
              std::weak_ptr<event_queue::queue> output_event_queue,
              std::chrono::milliseconds threshold_milliseconds) {
-    ++current_held_down_id_;
+    held_down_task_.cancel();
 
     if (front_input_event.get_event_type() != event_type::key_down) {
       return;
@@ -56,15 +56,10 @@ public:
     current_manipulated_original_event_ = current_manipulated_original_event;
     output_event_queue_ = output_event_queue;
 
-    auto held_down_id = current_held_down_id_;
     auto duration = pqrs::osx::chrono::make_absolute_time_duration(threshold_milliseconds);
 
-    enqueue_to_dispatcher(
-        [this, held_down_id] {
-          if (current_held_down_id_ != held_down_id) {
-            return;
-          }
-
+    held_down_task_.debounce_after(
+        [this] {
           if (front_input_event_) {
             if (auto oeq = output_event_queue_.lock()) {
               if (auto cmoe = current_manipulated_original_event_.lock()) {
@@ -123,7 +118,7 @@ public:
             }
           }
         },
-        when_now() + pqrs::osx::chrono::make_milliseconds(duration));
+        pqrs::osx::chrono::make_milliseconds(duration));
   }
 
   void cancel(const event_queue::entry& front_input_event) {
@@ -131,7 +126,7 @@ public:
       return;
     }
 
-    ++current_held_down_id_;
+    held_down_task_.cancel();
   }
 
   bool needs_virtual_hid_pointing() const {
@@ -147,6 +142,6 @@ private:
   std::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
-  int current_held_down_id_;
+  pqrs::dispatcher::extra::debounced_task held_down_task_;
 };
 } // namespace krbn::manipulator::manipulators::basic
