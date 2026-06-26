@@ -3,12 +3,12 @@
 #include "run_loop_thread_utility.hpp"
 #include <iostream>
 
-int main(int argc, const char* argv[]) {
+int main() {
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
 
-  signal(SIGINT, [](int) {
+  signal(SIGINT, [](int) noexcept {
     CFRunLoopStop(CFRunLoopGetMain());
   });
 

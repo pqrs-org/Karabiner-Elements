@@ -5,7 +5,7 @@
 #include <thread>
 
 namespace {
-void version_updated_callback() {
+void version_updated_callback() noexcept {
   std::cout << __func__ << std::endl;
 
   char buffer[1024];
@@ -17,13 +17,13 @@ void version_updated_callback() {
 auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
-int main(int argc, const char* argv[]) {
+int main() {
   char buffer[32 * 1024];
 
   libkrbn_initialize();
   libkrbn_load_custom_environment_variables();
 
-  signal(SIGINT, [](int) {
+  signal(SIGINT, [](int) noexcept {
     global_wait->notify();
   });
 

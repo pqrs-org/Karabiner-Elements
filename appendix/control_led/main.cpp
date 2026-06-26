@@ -75,7 +75,7 @@ int main(int argc, const char* argv[]) {
   auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
 
-  std::signal(SIGINT, [](int) {
+  std::signal(SIGINT, [](int) noexcept {
     global_wait->notify();
   });
 

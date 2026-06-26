@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 namespace {
-void status_changed_callback() {
+void status_changed_callback() noexcept {
   switch (libkrbn_console_user_server_client_get_status()) {
     case libkrbn_console_user_server_client_status_connected:
       std::cerr << "console_user_server_client connected" << std::endl;
@@ -27,14 +27,14 @@ void status_changed_callback() {
   }
 }
 
-void frontmost_application_history_received_callback(const char* json_string) {
+void frontmost_application_history_received_callback(const char* json_string) noexcept {
   std::cout << json_string << std::endl;
 }
 
 auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
-int main(int argc, const char* argv[]) {
+int main() {
   std::cout << std::endl
             << "Type control-c to quit" << std::endl
             << std::endl
@@ -45,7 +45,7 @@ int main(int argc, const char* argv[]) {
   libkrbn_initialize();
   libkrbn_load_custom_environment_variables();
 
-  signal(SIGINT, [](int) {
+  signal(SIGINT, [](int) noexcept {
     global_wait->notify();
   });
 
@@ -65,4 +65,4 @@ int main(int argc, const char* argv[]) {
   std::cout << "finished" << std::endl;
 
   return 0;
-} // namespace
+}

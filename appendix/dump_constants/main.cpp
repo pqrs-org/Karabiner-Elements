@@ -1,7 +1,7 @@
 #include "constants.hpp"
 #include <iostream>
 
-int main(int argc, const char* argv[]) {
+int main() {
   std::cout << "get_system_user_directory: " << krbn::constants::get_system_user_directory(geteuid()) << std::endl;
   std::cout << "get_user_configuration_directory: " << krbn::constants::get_user_configuration_directory() << std::endl;
   std::cout << "get_user_complex_modifications_assets_directory: " << krbn::constants::get_user_complex_modifications_assets_directory() << std::endl;

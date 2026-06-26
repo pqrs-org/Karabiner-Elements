@@ -8,7 +8,7 @@ pqrs::cf::cf_ptr<CFMachPortRef> event_tap;
 CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy,
                               CGEventType type,
                               CGEventRef _Nullable event,
-                              void* _Nonnull refcon) {
+                              void* _Nonnull refcon) noexcept {
   if (type == kCGEventTapDisabledByTimeout) {
     CGEventTapEnable(event_tap.get(),
                      true);
@@ -27,7 +27,7 @@ CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy,
 }
 } // namespace
 
-int main(int argc, const char* argv[]) {
+int main() {
   // Observe all mouse events
   auto mask = CGEventMaskBit(kCGEventLeftMouseDown) |
               CGEventMaskBit(kCGEventLeftMouseUp) |

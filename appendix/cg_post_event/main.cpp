@@ -3,7 +3,7 @@
 #include <pqrs/cf/cf_ptr.hpp>
 #include <thread>
 
-int main(int argc, const char* argv[]) {
+int main() {
   if (auto source = pqrs::cf::adopt_cf_ptr(CGEventSourceCreate(kCGEventSourceStateHIDSystemState))) {
     while (true) {
       // shift key
