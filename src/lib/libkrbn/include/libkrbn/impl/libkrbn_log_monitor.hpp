@@ -44,7 +44,7 @@ public:
     });
   }
 
-  std::shared_ptr<std::deque<std::string>> get_lines() const {
+  [[nodiscard]] std::shared_ptr<std::deque<std::string>> get_lines() const {
     return lines_;
   }
 

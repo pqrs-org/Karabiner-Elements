@@ -22,18 +22,18 @@ public:
                      krbn::core_configuration::error_handling::loose);
   }
 
-  size_t get_files_size() const {
+  [[nodiscard]] size_t get_files_size() const {
     return manager_->get_files().size();
   }
 
-  const char* get_file_title(size_t index) const {
+  [[nodiscard]] const char* get_file_title(size_t index) const {
     if (auto f = find_file(index)) {
       return f->get_title().c_str();
     }
     return nullptr;
   }
 
-  time_t get_file_last_write_time(size_t index) const {
+  [[nodiscard]] time_t get_file_last_write_time(size_t index) const {
     if (auto f = find_file(index)) {
       if (auto t = f->last_write_time()) {
         return std::chrono::duration_cast<std::chrono::seconds>(t->time_since_epoch()).count();
@@ -42,7 +42,7 @@ public:
     return 0;
   }
 
-  bool user_file(size_t index) const {
+  [[nodiscard]] bool user_file(size_t index) const {
     if (auto f = find_file(index)) {
       return f->user_file();
     }
@@ -55,15 +55,15 @@ public:
     }
   }
 
-  size_t get_rules_size(size_t file_index) const {
+  [[nodiscard]] size_t get_rules_size(size_t file_index) const {
     if (auto f = find_file(file_index)) {
       return f->get_rules().size();
     }
     return 0;
   }
 
-  const char* get_rule_description(size_t file_index,
-                                   size_t index) const {
+  [[nodiscard]] const char* get_rule_description(size_t file_index,
+                                                 size_t index) const {
     if (auto r = find_rule(file_index, index)) {
       return r->get_description().c_str();
     }
@@ -79,7 +79,7 @@ public:
   }
 
 private:
-  std::shared_ptr<krbn::complex_modifications_assets_file> find_file(size_t index) const {
+  [[nodiscard]] std::shared_ptr<krbn::complex_modifications_assets_file> find_file(size_t index) const {
     auto& files = manager_->get_files();
     if (index < files.size()) {
       return files[index];
@@ -87,8 +87,8 @@ private:
     return nullptr;
   }
 
-  std::shared_ptr<krbn::core_configuration::details::complex_modifications_rule> find_rule(size_t file_index,
-                                                                                           size_t index) const {
+  [[nodiscard]] std::shared_ptr<krbn::core_configuration::details::complex_modifications_rule> find_rule(size_t file_index,
+                                                                                                         size_t index) const {
     if (auto f = find_file(file_index)) {
       auto& rules = f->get_rules();
       if (index < rules.size()) {

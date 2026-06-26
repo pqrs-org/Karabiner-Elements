@@ -4,6 +4,7 @@
 #include "libkrbn/libkrbn.h"
 #include "libkrbn_callback_manager.hpp"
 #include <atomic>
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
@@ -56,10 +57,11 @@ public:
         auto device_properties = krbn::device_properties::make_device_properties(device_id,
                                                                                  *device_ptr);
 
-        auto hid_queue_value_monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
-                                                                                                  pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
-                                                                                                  *device_ptr);
-        hid_queue_value_monitors_[device_id] = hid_queue_value_monitor;
+        pqrs::not_null_shared_ptr_t<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor =
+            std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
+                                                                       pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+                                                                       *device_ptr);
+        hid_queue_value_monitors_.insert_or_assign(device_id, hid_queue_value_monitor);
 
         hid_queue_value_monitor->started.connect([this] {
           observed_ = true;
@@ -98,7 +100,7 @@ public:
     });
   }
 
-  bool get_observed() const {
+  [[nodiscard]] bool get_observed() const {
     return observed_;
   }
 
@@ -117,7 +119,7 @@ public:
 private:
   void values_arrived(krbn::device_id device_id,
                       pqrs::not_null_shared_ptr_t<krbn::device_properties> device_properties,
-                      std::shared_ptr<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
+                      pqrs::not_null_shared_ptr_t<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
     for (const auto& value : *values) {
       auto v = pqrs::osx::iokit_hid_value(*value);
 
@@ -144,7 +146,7 @@ private:
   }
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
-  std::unordered_map<krbn::device_id, std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
+  std::unordered_map<krbn::device_id, pqrs::not_null_shared_ptr_t<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
   std::atomic<bool> observed_;
   libkrbn_callback_manager<libkrbn_hid_value_arrived_t> callback_manager_;
 };

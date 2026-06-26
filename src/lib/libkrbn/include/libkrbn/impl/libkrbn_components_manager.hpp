@@ -35,11 +35,11 @@ public:
     version_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_version_monitor> get_libkrbn_version_monitor() const {
+  [[nodiscard]] std::shared_ptr<libkrbn_version_monitor> get_libkrbn_version_monitor() const {
     return version_monitor_;
   }
 
-  std::string get_current_version() const {
+  [[nodiscard]] std::string get_current_version() const {
     if (auto m = version_monitor_) {
       return m->get_version();
     }
@@ -60,11 +60,11 @@ public:
     configuration_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_configuration_monitor> get_libkrbn_configuration_monitor() const {
+  [[nodiscard]] std::shared_ptr<libkrbn_configuration_monitor> get_libkrbn_configuration_monitor() const {
     return configuration_monitor_;
   }
 
-  std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration() const {
+  [[nodiscard]] std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration() const {
     if (auto m = configuration_monitor_) {
       return m->get_weak_core_configuration().lock();
     }
@@ -85,7 +85,7 @@ public:
     complex_modifications_assets_manager_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_complex_modifications_assets_manager> get_complex_modifications_assets_manager() const {
+  [[nodiscard]] std::shared_ptr<libkrbn_complex_modifications_assets_manager> get_complex_modifications_assets_manager() const {
     return complex_modifications_assets_manager_;
   }
 
@@ -103,7 +103,7 @@ public:
     file_monitors_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_file_monitors> get_libkrbn_file_monitors() const {
+  [[nodiscard]] std::shared_ptr<libkrbn_file_monitors> get_libkrbn_file_monitors() const {
     return file_monitors_;
   }
 
@@ -121,11 +121,11 @@ public:
     log_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_log_monitor> get_libkrbn_log_monitor() const {
+  [[nodiscard]] std::shared_ptr<libkrbn_log_monitor> get_libkrbn_log_monitor() const {
     return log_monitor_;
   }
 
-  std::shared_ptr<std::deque<std::string>> get_current_log_lines() const {
+  [[nodiscard]] std::shared_ptr<std::deque<std::string>> get_current_log_lines() const {
     if (auto m = log_monitor_) {
       return m->get_lines();
     }
@@ -146,7 +146,7 @@ public:
     hid_value_monitor_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_hid_value_monitor> get_libkrbn_hid_value_monitor() const {
+  [[nodiscard]] std::shared_ptr<libkrbn_hid_value_monitor> get_libkrbn_hid_value_monitor() const {
     return hid_value_monitor_;
   }
 
@@ -164,7 +164,7 @@ public:
     core_service_client_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_core_service_client> get_libkrbn_core_service_client() const {
+  [[nodiscard]] std::shared_ptr<libkrbn_core_service_client> get_libkrbn_core_service_client() const {
     return core_service_client_;
   }
 
@@ -182,7 +182,7 @@ public:
     console_user_server_client_ = nullptr;
   }
 
-  std::shared_ptr<libkrbn_console_user_server_client> get_libkrbn_console_user_server_client() const {
+  [[nodiscard]] std::shared_ptr<libkrbn_console_user_server_client> get_libkrbn_console_user_server_client() const {
     return console_user_server_client_;
   }
 

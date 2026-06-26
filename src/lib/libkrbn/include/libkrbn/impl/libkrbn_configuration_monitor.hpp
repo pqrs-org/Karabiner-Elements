@@ -38,7 +38,7 @@ public:
     });
   }
 
-  std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration() const {
+  [[nodiscard]] std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration() const {
     return weak_core_configuration_;
   }
 
@@ -55,7 +55,7 @@ public:
   }
 
 private:
-  std::shared_ptr<krbn::configuration_monitor> monitor_;
+  std::unique_ptr<krbn::configuration_monitor> monitor_;
   std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
   libkrbn_callback_manager<libkrbn_core_configuration_updated_t> callback_manager_;
 };

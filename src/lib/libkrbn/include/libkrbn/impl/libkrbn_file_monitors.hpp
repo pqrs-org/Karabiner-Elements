@@ -2,6 +2,7 @@
 
 #include "libkrbn/libkrbn.h"
 #include "libkrbn_callback_manager.hpp"
+#include <pqrs/gsl.hpp>
 #include <pqrs/osx/file_monitor.hpp>
 
 class libkrbn_file_monitors final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -39,7 +40,7 @@ public:
       callback_manager_.unregister_callback(callback);
     }
 
-    size_t callbacks_empty() const {
+    [[nodiscard]] bool callbacks_empty() const {
       return callback_manager_.get_callbacks().empty();
     }
 
@@ -65,7 +66,8 @@ public:
     enqueue_to_dispatcher([this, file_path, callback] {
       auto it = monitors_.find(file_path);
       if (it == std::end(monitors_)) {
-        auto pair = monitors_.insert({file_path, std::make_shared<monitor>(file_path)});
+        pqrs::not_null_shared_ptr_t<monitor> file_monitor = std::make_shared<monitor>(file_path);
+        auto pair = monitors_.insert({file_path, file_monitor});
         it = pair.first;
       }
 
@@ -89,5 +91,5 @@ public:
   }
 
 private:
-  std::unordered_map<std::string, std::shared_ptr<monitor>> monitors_;
+  std::unordered_map<std::string, pqrs::not_null_shared_ptr_t<monitor>> monitors_;
 };

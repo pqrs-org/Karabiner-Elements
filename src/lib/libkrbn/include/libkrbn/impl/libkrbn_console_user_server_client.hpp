@@ -68,7 +68,7 @@ public:
     console_user_server_client_->async_start();
   }
 
-  libkrbn_console_user_server_client_status get_status() const {
+  [[nodiscard]] libkrbn_console_user_server_client_status get_status() const {
     return status_;
   }
 

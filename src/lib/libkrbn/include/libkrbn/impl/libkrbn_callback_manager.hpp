@@ -10,7 +10,7 @@ public:
   libkrbn_callback_manager() {
   }
 
-  const std::vector<T>& get_callbacks() const {
+  [[nodiscard]] const std::vector<T>& get_callbacks() const {
     return callbacks_;
   }
 

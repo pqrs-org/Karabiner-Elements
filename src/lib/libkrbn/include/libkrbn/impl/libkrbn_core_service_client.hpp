@@ -87,7 +87,7 @@ public:
     core_service_client_->async_start();
   }
 
-  libkrbn_core_service_client_status get_status() const {
+  [[nodiscard]] libkrbn_core_service_client_status get_status() const {
     return status_;
   }
 

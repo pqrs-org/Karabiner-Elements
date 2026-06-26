@@ -31,7 +31,7 @@ public:
     });
   }
 
-  const std::string& get_version() const {
+  [[nodiscard]] const std::string& get_version() const {
     return version_;
   }
 
