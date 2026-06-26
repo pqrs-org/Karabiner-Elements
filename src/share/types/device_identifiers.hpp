@@ -111,31 +111,31 @@ public:
     return product_id_;
   }
 
-  bool get_is_keyboard() const {
+  [[nodiscard]] bool get_is_keyboard() const {
     return is_keyboard_;
   }
 
-  bool get_is_pointing_device() const {
+  [[nodiscard]] bool get_is_pointing_device() const {
     return is_pointing_device_;
   }
 
-  bool get_is_game_pad() const {
+  [[nodiscard]] bool get_is_game_pad() const {
     return is_game_pad_;
   }
 
-  bool get_is_consumer() const {
+  [[nodiscard]] bool get_is_consumer() const {
     return is_consumer_;
   }
 
-  bool get_is_virtual_device() const {
+  [[nodiscard]] bool get_is_virtual_device() const {
     return is_virtual_device_;
   }
 
-  const std::string& get_device_address() const {
+  [[nodiscard]] const std::string& get_device_address() const {
     return device_address_;
   }
 
-  bool empty() const {
+  [[nodiscard]] bool empty() const {
     return vendor_id_ == pqrs::hid::vendor_id::value_t(0) &&
            product_id_ == pqrs::hid::product_id::value_t(0) &&
            !is_keyboard_ &&
@@ -161,7 +161,7 @@ public:
   // Helper methods
   //
 
-  bool is_nintendo_pro_controller_0x057e_0x2009() const {
+  [[nodiscard]] bool is_nintendo_pro_controller_0x057e_0x2009() const {
     return get_vendor_id() == pqrs::hid::vendor_id::value_t(0x057e) &&
            get_product_id() == pqrs::hid::product_id::value_t(0x2009);
   }

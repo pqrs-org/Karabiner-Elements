@@ -14,7 +14,7 @@ public:
         virtual_hid_pointing_ready_(false) {
   }
 
-  bool get_virtual_hid_keyboard_ready() const {
+  [[nodiscard]] bool get_virtual_hid_keyboard_ready() const {
     return virtual_hid_keyboard_ready_;
   }
 
@@ -22,7 +22,7 @@ public:
     virtual_hid_keyboard_ready_ = value;
   }
 
-  bool get_virtual_hid_pointing_ready() const {
+  [[nodiscard]] bool get_virtual_hid_pointing_ready() const {
     return virtual_hid_pointing_ready_;
   }
 

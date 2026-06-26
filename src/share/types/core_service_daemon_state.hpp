@@ -73,7 +73,7 @@ public:
     virtual_hid_keyboard_type_not_set_ = value;
   }
 
-  const std::string& get_karabiner_json_parse_error_message() const {
+  [[nodiscard]] const std::string& get_karabiner_json_parse_error_message() const {
     return karabiner_json_parse_error_message_;
   }
 

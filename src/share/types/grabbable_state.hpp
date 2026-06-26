@@ -45,7 +45,7 @@ public:
     state_ = value;
   }
 
-  absolute_time_point get_time_stamp() const {
+  [[nodiscard]] absolute_time_point get_time_stamp() const {
     return time_stamp_;
   }
 
@@ -53,7 +53,7 @@ public:
     time_stamp_ = value;
   }
 
-  bool equals_except_time_stamp(const grabbable_state& other) const {
+  [[nodiscard]] bool equals_except_time_stamp(const grabbable_state& other) const {
     return device_id_ == other.device_id_ &&
            state_ == other.state_;
   }

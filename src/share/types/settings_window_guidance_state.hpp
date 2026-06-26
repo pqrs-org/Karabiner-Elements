@@ -82,7 +82,7 @@ public:
     core_agents_running_ = value;
   }
 
-  std::optional<bool> services_enabled() const {
+  [[nodiscard]] std::optional<bool> services_enabled() const {
     if (core_daemons_enabled_ == std::optional<bool>(true) &&
         core_agents_enabled_ == std::optional<bool>(true)) {
       return true;
@@ -96,7 +96,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<bool> services_running() const {
+  [[nodiscard]] std::optional<bool> services_running() const {
     if (core_daemons_running_ == std::optional<bool>(true) &&
         core_agents_running_ == std::optional<bool>(true)) {
       return true;

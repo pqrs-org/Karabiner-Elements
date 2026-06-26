@@ -29,7 +29,7 @@ public:
         speed_multiplier_(speed_multiplier) {
   }
 
-  int get_x() const {
+  [[nodiscard]] int get_x() const {
     return x_;
   }
 
@@ -37,7 +37,7 @@ public:
     x_ = value;
   }
 
-  int get_y() const {
+  [[nodiscard]] int get_y() const {
     return y_;
   }
 
@@ -45,7 +45,7 @@ public:
     y_ = value;
   }
 
-  int get_vertical_wheel() const {
+  [[nodiscard]] int get_vertical_wheel() const {
     return vertical_wheel_;
   }
 
@@ -53,7 +53,7 @@ public:
     vertical_wheel_ = value;
   }
 
-  int get_horizontal_wheel() const {
+  [[nodiscard]] int get_horizontal_wheel() const {
     return horizontal_wheel_;
   }
 
@@ -61,7 +61,7 @@ public:
     horizontal_wheel_ = value;
   }
 
-  double get_speed_multiplier() const {
+  [[nodiscard]] double get_speed_multiplier() const {
     return speed_multiplier_;
   }
 
@@ -69,7 +69,7 @@ public:
     speed_multiplier_ = value;
   }
 
-  bool is_zero() const {
+  [[nodiscard]] bool is_zero() const {
     // Do not check speed_multiplier_ here.
 
     return x_ == 0 &&
@@ -78,7 +78,7 @@ public:
            horizontal_wheel_ == 0;
   }
 
-  bool is_speed_multiplier() const {
+  [[nodiscard]] bool is_speed_multiplier() const {
     return is_zero();
   }
 

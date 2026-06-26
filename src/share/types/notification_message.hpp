@@ -9,7 +9,7 @@ public:
   notification_message() {
   }
 
-  const std::string& get_id() const {
+  [[nodiscard]] const std::string& get_id() const {
     return id_;
   }
 
@@ -17,7 +17,7 @@ public:
     id_ = value;
   }
 
-  const std::string& get_text() const {
+  [[nodiscard]] const std::string& get_text() const {
     return text_;
   }
 

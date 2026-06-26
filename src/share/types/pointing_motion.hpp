@@ -24,7 +24,7 @@ public:
         horizontal_wheel_(horizontal_wheel) {
   }
 
-  int get_x() const {
+  [[nodiscard]] int get_x() const {
     return x_;
   }
 
@@ -32,7 +32,7 @@ public:
     x_ = value;
   }
 
-  int get_y() const {
+  [[nodiscard]] int get_y() const {
     return y_;
   }
 
@@ -40,7 +40,7 @@ public:
     y_ = value;
   }
 
-  int get_vertical_wheel() const {
+  [[nodiscard]] int get_vertical_wheel() const {
     return vertical_wheel_;
   }
 
@@ -48,7 +48,7 @@ public:
     vertical_wheel_ = value;
   }
 
-  int get_horizontal_wheel() const {
+  [[nodiscard]] int get_horizontal_wheel() const {
     return horizontal_wheel_;
   }
 
@@ -56,7 +56,7 @@ public:
     horizontal_wheel_ = value;
   }
 
-  bool is_zero() const {
+  [[nodiscard]] bool is_zero() const {
     return x_ == 0 &&
            y_ == 0 &&
            vertical_wheel_ == 0 &&

@@ -10,7 +10,7 @@ public:
         accessibility_process_trusted_(false) {
   }
 
-  bool get_iohid_listen_event_allowed() const {
+  [[nodiscard]] bool get_iohid_listen_event_allowed() const {
     return iohid_listen_event_allowed_;
   }
 
@@ -18,7 +18,7 @@ public:
     iohid_listen_event_allowed_ = value;
   }
 
-  bool get_accessibility_process_trusted() const {
+  [[nodiscard]] bool get_accessibility_process_trusted() const {
     return accessibility_process_trusted_;
   }
 
@@ -26,7 +26,7 @@ public:
     accessibility_process_trusted_ = value;
   }
 
-  bool required_permissions_granted() const {
+  [[nodiscard]] bool required_permissions_granted() const {
     return iohid_listen_event_allowed_ &&
            accessibility_process_trusted_;
   }

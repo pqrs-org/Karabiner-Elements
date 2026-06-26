@@ -21,7 +21,7 @@ public:
           type_(type::point) {
     }
 
-    int get_value() const {
+    [[nodiscard]] int get_value() const {
       return value_;
     }
 
@@ -37,7 +37,7 @@ public:
       type_ = value;
     }
 
-    int point_value(int bounds) const {
+    [[nodiscard]] int point_value(int bounds) const {
       switch (type_) {
         case type::point:
           return value_;
@@ -82,7 +82,7 @@ public:
     y_ = value;
   }
 
-  std::optional<uint32_t> get_screen() const {
+  [[nodiscard]] std::optional<uint32_t> get_screen() const {
     return screen_;
   }
 
@@ -106,7 +106,7 @@ public:
     fallback_to_ = value;
   }
 
-  CGPoint get_point(const CGRect& bounds) const {
+  [[nodiscard]] CGPoint get_point(const CGRect& bounds) const {
     return CGPointMake(x_.point_value(bounds.size.width),
                        y_.point_value(bounds.size.height));
   }
