@@ -110,7 +110,7 @@ public:
     adjust_values();
   }
 
-  double make_mouse_motion_to_scroll_speed_rate() const {
+  [[nodiscard]] double make_mouse_motion_to_scroll_speed_rate() const {
     return static_cast<double>(mouse_motion_to_scroll_speed_) / 100;
   }
 

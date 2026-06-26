@@ -43,7 +43,7 @@ public:
     return j;
   }
 
-  const std::string& get_keyboard_type_v2() const {
+  [[nodiscard]] const std::string& get_keyboard_type_v2() const {
     return keyboard_type_v2_;
   }
 

@@ -68,11 +68,11 @@ public:
       return conditions_;
     }
 
-    pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters() const {
+    [[nodiscard]] pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters() const {
       return parameters_;
     }
 
-    const std::string& get_description() const {
+    [[nodiscard]] const std::string& get_description() const {
       return description_;
     }
 
@@ -178,7 +178,7 @@ public:
     enabled_ = value;
   }
 
-  const std::string& get_description() const {
+  [[nodiscard]] const std::string& get_description() const {
     return description_;
   }
 
@@ -186,7 +186,7 @@ public:
     return code_type_;
   }
 
-  const std::string get_code_string() const {
+  [[nodiscard]] const std::string get_code_string() const {
     return code_string_;
   }
 

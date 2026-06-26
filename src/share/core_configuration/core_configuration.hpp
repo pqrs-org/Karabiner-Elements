@@ -120,27 +120,27 @@ public:
     return j;
   }
 
-  bool is_loaded() const { return loaded_; }
+  [[nodiscard]] bool is_loaded() const { return loaded_; }
 
-  source get_source() const {
+  [[nodiscard]] source get_source() const {
     return source_;
   }
 
-  const std::string& get_parse_error_message() const {
+  [[nodiscard]] const std::string& get_parse_error_message() const {
     return parse_error_message_;
   }
 
-  const details::global_configuration& get_global_configuration() const {
+  [[nodiscard]] const details::global_configuration& get_global_configuration() const {
     return *global_configuration_;
   }
-  details::global_configuration& get_global_configuration() {
+  [[nodiscard]] details::global_configuration& get_global_configuration() {
     return *global_configuration_;
   }
 
-  const details::machine_specific& get_machine_specific() const {
+  [[nodiscard]] const details::machine_specific& get_machine_specific() const {
     return *machine_specific_;
   }
-  details::machine_specific& get_machine_specific() {
+  [[nodiscard]] details::machine_specific& get_machine_specific() {
     return *machine_specific_;
   }
 
@@ -268,7 +268,7 @@ private:
     }
   }
 
-  static std::string make_current_local_yyyymmdd_string() {
+  [[nodiscard]] static std::string make_current_local_yyyymmdd_string() {
     auto t = time(nullptr);
 
     tm tm;

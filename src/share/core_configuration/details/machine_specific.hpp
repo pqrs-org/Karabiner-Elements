@@ -42,7 +42,7 @@ public:
       enable_multitouch_extension_ = value;
     }
 
-    const std::string& get_external_editor_path() const {
+    [[nodiscard]] const std::string& get_external_editor_path() const {
       return external_editor_path_;
     }
     void set_external_editor_path(const std::string& value) {

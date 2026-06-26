@@ -63,7 +63,7 @@ public:
     return j;
   }
 
-  pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<complex_modifications_parameters> get_parameters() const {
     return parameters_;
   }
 

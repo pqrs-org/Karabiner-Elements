@@ -172,7 +172,7 @@ public:
     return j;
   }
 
-  const std::string& get_name() const {
+  [[nodiscard]] const std::string& get_name() const {
     return name_;
   }
 
@@ -180,7 +180,7 @@ public:
     name_ = value;
   }
 
-  const bool& get_selected() const {
+  [[nodiscard]] const bool& get_selected() const {
     return selected_;
   }
 
@@ -188,31 +188,31 @@ public:
     selected_ = value;
   }
 
-  pqrs::not_null_shared_ptr_t<details::parameters> get_parameters() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<details::parameters> get_parameters() const {
     return parameters_;
   }
 
-  pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications() const {
     return simple_modifications_;
   }
 
-  pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys() const {
     return fn_function_keys_;
   }
 
-  pqrs::not_null_shared_ptr_t<details::complex_modifications> get_complex_modifications() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<details::complex_modifications> get_complex_modifications() const {
     return complex_modifications_;
   }
 
-  pqrs::not_null_shared_ptr_t<details::virtual_hid_keyboard> get_virtual_hid_keyboard() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<details::virtual_hid_keyboard> get_virtual_hid_keyboard() const {
     return virtual_hid_keyboard_;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<details::device>>& get_devices() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<details::device>>& get_devices() const {
     return devices_;
   }
 
-  pqrs::not_null_shared_ptr_t<details::device> get_device(const device_identifiers& identifiers) const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<details::device> get_device(const device_identifiers& identifiers) const {
     //
     // Find device
     //
@@ -237,7 +237,7 @@ public:
     return devices_.back();
   }
 
-  size_t not_connected_configured_devices_count(const connected_devices& connected_devices) const {
+  [[nodiscard]] size_t not_connected_configured_devices_count(const connected_devices& connected_devices) const {
     return std::count_if(std::begin(devices_),
                          std::end(devices_),
                          [&](auto& d) {

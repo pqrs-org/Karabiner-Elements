@@ -16,7 +16,7 @@ enum class value_origin {
 class base_t {
 public:
   virtual ~base_t() = default;
-  virtual const std::string& get_key() const = 0;
+  [[nodiscard]] virtual const std::string& get_key() const = 0;
   virtual void update_value(const nlohmann::json& json,
                             error_handling error_handling) = 0;
   virtual void update_json(nlohmann::json& json) const = 0;
@@ -35,15 +35,15 @@ public:
     value_ = default_value_;
   }
 
-  const std::string& get_key() const override {
+  [[nodiscard]] const std::string& get_key() const override {
     return key_;
   }
 
-  T& get_value() const {
+  [[nodiscard]] T& get_value() const {
     return value_;
   }
 
-  const T& get_default_value() const {
+  [[nodiscard]] const T& get_default_value() const {
     return default_value_;
   }
 
@@ -130,7 +130,7 @@ public:
         value_(value) {
   }
 
-  const std::string& get_key() const override {
+  [[nodiscard]] const std::string& get_key() const override {
     return key_;
   }
 
@@ -172,7 +172,7 @@ public:
         value_(value) {
   }
 
-  const std::string& get_key() const override {
+  [[nodiscard]] const std::string& get_key() const override {
     return key_;
   }
 
@@ -259,7 +259,7 @@ public:
   }
 
   template <typename T>
-  std::shared_ptr<value_t<T>> find_value(const T& value) const {
+  [[nodiscard]] std::shared_ptr<value_t<T>> find_value(const T& value) const {
     for (const auto& v : values_) {
       if (auto p = std::dynamic_pointer_cast<value_t<T>>(pqrs::unwrap_not_null(v))) {
         if (&(p->get_value()) == &value) {
@@ -272,7 +272,7 @@ public:
   }
 
   template <typename T>
-  T find_default_value(const T& value, T fallback_value) const {
+  [[nodiscard]] T find_default_value(const T& value, T fallback_value) const {
     if (auto v = find_value(value)) {
       return v->get_default_value();
     }
@@ -281,23 +281,23 @@ public:
     return fallback_value;
   }
 
-  bool find_default_value(const bool& value) const {
+  [[nodiscard]] bool find_default_value(const bool& value) const {
     return find_default_value(value, false);
   }
 
-  double find_default_value(const double& value) const {
+  [[nodiscard]] double find_default_value(const double& value) const {
     return find_default_value(value, 0.0);
   }
 
-  int find_default_value(const int& value) const {
+  [[nodiscard]] int find_default_value(const int& value) const {
     return find_default_value(value, 0);
   }
 
-  std::chrono::milliseconds find_default_value(const std::chrono::milliseconds& value) const {
+  [[nodiscard]] std::chrono::milliseconds find_default_value(const std::chrono::milliseconds& value) const {
     return find_default_value(value, std::chrono::milliseconds(0));
   }
 
-  std::string find_default_value(const std::string& value) const {
+  [[nodiscard]] std::string find_default_value(const std::string& value) const {
     return find_default_value(value, std::string(""));
   }
 

@@ -567,7 +567,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const std::string& get_game_pad_stick_x_formula() const {
+  [[nodiscard]] const std::string& get_game_pad_stick_x_formula() const {
     return game_pad_stick_x_formula_;
   }
   void set_game_pad_stick_x_formula(const std::string& value) {
@@ -576,7 +576,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const std::string& get_game_pad_stick_y_formula() const {
+  [[nodiscard]] const std::string& get_game_pad_stick_y_formula() const {
     return game_pad_stick_y_formula_;
   }
   void set_game_pad_stick_y_formula(const std::string& value) {
@@ -585,7 +585,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const std::string& get_game_pad_stick_vertical_wheel_formula() const {
+  [[nodiscard]] const std::string& get_game_pad_stick_vertical_wheel_formula() const {
     return game_pad_stick_vertical_wheel_formula_;
   }
   void set_game_pad_stick_vertical_wheel_formula(const std::string& value) {
@@ -594,7 +594,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const std::string& get_game_pad_stick_horizontal_wheel_formula() const {
+  [[nodiscard]] const std::string& get_game_pad_stick_horizontal_wheel_formula() const {
     return game_pad_stick_horizontal_wheel_formula_;
   }
   void set_game_pad_stick_horizontal_wheel_formula(const std::string& value) {
@@ -603,15 +603,15 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<simple_modifications> get_simple_modifications() const {
     return simple_modifications_;
   }
 
-  pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<simple_modifications> get_fn_function_keys() const {
     return fn_function_keys_;
   }
 
-  static bool validate_stick_formula(const std::string& formula) {
+  [[nodiscard]] static bool validate_stick_formula(const std::string& formula) {
     auto expression = krbn::exprtk_utility::compile(formula);
     expression->set_variable("radian", 0.0);
     expression->set_variable("delta_magnitude", 0.1);
