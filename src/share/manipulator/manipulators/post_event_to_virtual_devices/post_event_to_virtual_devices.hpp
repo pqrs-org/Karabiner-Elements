@@ -413,11 +413,11 @@ public:
         });
   }
 
-  pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_virtual_hid_keyboard_pressed_keys_manager() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_virtual_hid_keyboard_pressed_keys_manager() const {
     return virtual_hid_keyboard_pressed_keys_manager_;
   }
 
-  pqrs::not_null_shared_ptr_t<keyboard_suppression> get_keyboard_suppression() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<keyboard_suppression> get_keyboard_suppression() const {
     return keyboard_suppression_;
   }
 

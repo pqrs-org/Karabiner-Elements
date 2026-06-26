@@ -200,56 +200,56 @@ public:
       return type_;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input> get_keyboard_input() const {
+    [[nodiscard]] std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input> get_keyboard_input() const {
       if (type_ == type::keyboard_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input> get_consumer_input() const {
+    [[nodiscard]] std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input> get_consumer_input() const {
       if (type_ == type::consumer_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::consumer_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input> get_apple_vendor_top_case_input() const {
+    [[nodiscard]] std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input> get_apple_vendor_top_case_input() const {
       if (type_ == type::apple_vendor_top_case_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_top_case_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input> get_apple_vendor_keyboard_input() const {
+    [[nodiscard]] std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input> get_apple_vendor_keyboard_input() const {
       if (type_ == type::apple_vendor_keyboard_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::apple_vendor_keyboard_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input> get_generic_desktop_input() const {
+    [[nodiscard]] std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input> get_generic_desktop_input() const {
       if (type_ == type::generic_desktop_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::generic_desktop_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input> get_pointing_input() const {
+    [[nodiscard]] std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input> get_pointing_input() const {
       if (type_ == type::pointing_input) {
         return std::get<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<std::string> get_shell_command() const {
+    [[nodiscard]] std::optional<std::string> get_shell_command() const {
       if (type_ == type::shell_command) {
         return std::get<std::string>(value_);
       }
       return std::nullopt;
     }
 
-    std::optional<nlohmann::json> get_user_command() const {
+    [[nodiscard]] std::optional<nlohmann::json> get_user_command() const {
       if (type_ == type::send_user_command) {
         return std::get<nlohmann::json>(value_);
       }
@@ -263,14 +263,14 @@ public:
       return std::nullopt;
     }
 
-    std::optional<software_function> get_software_function() const {
+    [[nodiscard]] std::optional<software_function> get_software_function() const {
       if (type_ == type::software_function) {
         return std::get<software_function>(value_);
       }
       return std::nullopt;
     }
 
-    absolute_time_point get_time_stamp() const {
+    [[nodiscard]] absolute_time_point get_time_stamp() const {
       return time_stamp_;
     }
 
@@ -533,7 +533,7 @@ public:
     events_.push_back(e);
   }
 
-  bool empty() const {
+  [[nodiscard]] bool empty() const {
     return events_.empty();
   }
 

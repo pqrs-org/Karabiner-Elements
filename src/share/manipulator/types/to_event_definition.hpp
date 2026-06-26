@@ -125,7 +125,7 @@ public:
     modifiers_ = value;
   }
 
-  bool get_lazy() const {
+  [[nodiscard]] bool get_lazy() const {
     return lazy_;
   }
 
@@ -133,7 +133,7 @@ public:
     lazy_ = value;
   }
 
-  bool get_repeat() const {
+  [[nodiscard]] bool get_repeat() const {
     return repeat_;
   }
 
@@ -141,7 +141,7 @@ public:
     repeat_ = value;
   }
 
-  bool get_halt() const {
+  [[nodiscard]] bool get_halt() const {
     return halt_;
   }
 
@@ -164,7 +164,7 @@ public:
     return const_cast<condition_manager&>(static_cast<const to_event_definition&>(*this).get_condition_manager());
   }
 
-  bool needs_virtual_hid_pointing() const {
+  [[nodiscard]] bool needs_virtual_hid_pointing() const {
     if (auto e = event_definition_.get_if<momentary_switch_event>()) {
       if (e->pointing_button()) {
         return true;

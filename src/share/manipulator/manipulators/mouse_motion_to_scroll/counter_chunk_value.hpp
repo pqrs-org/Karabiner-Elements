@@ -13,7 +13,7 @@ public:
                           last_sign_(pqrs::sign::zero) {
   }
 
-  int get_abs_total() const {
+  [[nodiscard]] int get_abs_total() const {
     return abs_total_;
   }
 
@@ -28,7 +28,7 @@ public:
     abs_total_ += std::abs(value);
   }
 
-  int make_accumulated_value() const {
+  [[nodiscard]] int make_accumulated_value() const {
     auto abs_p = std::abs(plus_value_);
     auto abs_m = std::abs(minus_value_);
 

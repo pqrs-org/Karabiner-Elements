@@ -58,7 +58,7 @@ public:
     return device_properties_manager_;
   }
 
-  std::shared_ptr<device_properties> find_device_properties(device_id device_id) const {
+  [[nodiscard]] std::shared_ptr<device_properties> find_device_properties(device_id device_id) const {
     return device_properties_manager_.find(device_id);
   }
 
@@ -136,7 +136,7 @@ public:
     }
   }
 
-  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration() const {
     return core_configuration_;
   }
 

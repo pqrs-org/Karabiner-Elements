@@ -35,7 +35,7 @@ public:
     return key_up_posted_from_mandatory_modifiers_;
   }
 
-  absolute_time_point get_key_down_time_stamp() const {
+  [[nodiscard]] absolute_time_point get_key_down_time_stamp() const {
     return key_down_time_stamp_;
   }
 
@@ -43,11 +43,11 @@ public:
     return key_down_modifier_flags_;
   }
 
-  bool get_alone() const {
+  [[nodiscard]] bool get_alone() const {
     return alone_;
   }
 
-  bool get_halted() const {
+  [[nodiscard]] bool get_halted() const {
     return halted_;
   }
 
@@ -62,7 +62,7 @@ public:
     return const_cast<events_at_key_up&>(static_cast<const manipulated_original_event&>(*this).get_events_at_key_up());
   }
 
-  bool get_key_up_posted() const {
+  [[nodiscard]] bool get_key_up_posted() const {
     return key_up_posted_;
   }
 
@@ -74,7 +74,7 @@ public:
     alone_ = false;
   }
 
-  bool from_event_exists(const from_event& from_event) const {
+  [[nodiscard]] bool from_event_exists(const from_event& from_event) const {
     return std::ranges::contains(from_events_, from_event);
   }
 

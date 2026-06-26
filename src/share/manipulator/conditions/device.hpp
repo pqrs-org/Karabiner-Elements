@@ -85,17 +85,15 @@ public:
         case type::device_exists_if:
         case type::device_exists_unless:
           for (const auto& [device_id, dp] : manipulator_environment.get_device_properties_manager().get_map()) {
-            if (dp) {
-              for (const auto& d : definitions_) {
-                if (d.fulfilled(*dp, manipulator_environment)) {
-                  switch (type_) {
-                    case type::device_if:
-                    case type::device_exists_if:
-                      return true;
-                    case type::device_unless:
-                    case type::device_exists_unless:
-                      return false;
-                  }
+            for (const auto& d : definitions_) {
+              if (d.fulfilled(*dp, manipulator_environment)) {
+                switch (type_) {
+                  case type::device_if:
+                  case type::device_exists_if:
+                    return true;
+                  case type::device_unless:
+                  case type::device_exists_unless:
+                    return false;
                 }
               }
             }
@@ -129,7 +127,7 @@ private:
     std::optional<bool> is_touch_bar;
     std::optional<bool> is_built_in_keyboard;
 
-    bool valid() const {
+    [[nodiscard]] bool valid() const {
       return vendor_id ||
              product_id ||
              location_id ||

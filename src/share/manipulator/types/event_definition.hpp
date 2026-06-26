@@ -67,7 +67,7 @@ public:
     return std::get_if<T>(&value_);
   }
 
-  std::optional<event_queue::event> to_event() const {
+  [[nodiscard]] std::optional<event_queue::event> to_event() const {
     switch (type_) {
       case type::none:
         return std::nullopt;

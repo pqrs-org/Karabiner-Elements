@@ -36,7 +36,7 @@ public:
   virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
                                                            event_queue::queue& output_event_queue) = 0;
 
-  validity get_validity() const {
+  [[nodiscard]] validity get_validity() const {
     return validity_;
   }
   virtual void set_validity(validity value) {

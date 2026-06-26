@@ -208,7 +208,7 @@ public:
     }
   }
 
-  bool needs_virtual_hid_pointing() const {
+  [[nodiscard]] bool needs_virtual_hid_pointing() const {
     for (const auto& entry : entries_) {
       if (std::ranges::any_of(entry->get_to(),
                               [](auto& e) {

@@ -150,7 +150,7 @@ public:
   }
 
 private:
-  bool key_event_exists(const pqrs::hid::usage_pair& usage_pair) const {
+  [[nodiscard]] bool key_event_exists(const pqrs::hid::usage_pair& usage_pair) const {
     auto it = std::find_if(std::begin(pressed_keys_),
                            std::end(pressed_keys_),
                            [&](auto& k) {

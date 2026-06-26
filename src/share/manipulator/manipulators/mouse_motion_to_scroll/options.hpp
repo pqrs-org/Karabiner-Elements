@@ -23,7 +23,7 @@ public:
               scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
   }
 
-  bool get_momentum_scroll_enabled() const {
+  [[nodiscard]] bool get_momentum_scroll_enabled() const {
     return momentum_scroll_enabled_;
   }
 
@@ -31,7 +31,7 @@ public:
     momentum_scroll_enabled_ = value;
   }
 
-  double get_speed_multiplier() const {
+  [[nodiscard]] double get_speed_multiplier() const {
     return speed_multiplier_;
   }
 
@@ -55,7 +55,7 @@ public:
     recent_time_duration_milliseconds_ = value;
   }
 
-  int get_threshold() const {
+  [[nodiscard]] int get_threshold() const {
     return threshold_;
   }
 
@@ -67,7 +67,7 @@ public:
     threshold_ = value;
   }
 
-  int get_direction_lock_threshold() const {
+  [[nodiscard]] int get_direction_lock_threshold() const {
     return direction_lock_threshold_;
   }
 

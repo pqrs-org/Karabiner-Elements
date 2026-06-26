@@ -90,7 +90,7 @@ public:
     }
   }
 
-  bool get_detect_key_down_uninterruptedly() const {
+  [[nodiscard]] bool get_detect_key_down_uninterruptedly() const {
     return detect_key_down_uninterruptedly_;
   }
 

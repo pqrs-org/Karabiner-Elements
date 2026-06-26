@@ -100,7 +100,7 @@ public:
     start_timer(time_stamp);
   }
 
-  bool active() const {
+  [[nodiscard]] bool active() const {
     return active_;
   }
 
@@ -132,7 +132,7 @@ private:
         std::chrono::milliseconds(20));
   }
 
-  bool post_event(absolute_time_point time_stamp) {
+  [[nodiscard]] bool post_event(absolute_time_point time_stamp) {
     if (auto oeq = weak_output_event_queue_.lock()) {
       mouse_key total;
       for (const auto& pair : entries_) {

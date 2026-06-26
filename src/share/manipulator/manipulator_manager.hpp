@@ -184,13 +184,13 @@ public:
     remove_invalid_manipulators();
   }
 
-  size_t get_manipulators_size() {
+  [[nodiscard]] size_t get_manipulators_size() {
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
     return manipulators_.size();
   }
 
-  bool needs_virtual_hid_pointing() const {
+  [[nodiscard]] bool needs_virtual_hid_pointing() const {
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
     return std::any_of(std::begin(manipulators_),

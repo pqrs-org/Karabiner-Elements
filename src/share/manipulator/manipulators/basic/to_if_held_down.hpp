@@ -129,7 +129,7 @@ public:
     held_down_task_.cancel();
   }
 
-  bool needs_virtual_hid_pointing() const {
+  [[nodiscard]] bool needs_virtual_hid_pointing() const {
     return std::any_of(std::begin(to_),
                        std::end(to_),
                        [](auto& e) {

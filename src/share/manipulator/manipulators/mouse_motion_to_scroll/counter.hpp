@@ -90,7 +90,7 @@ public:
   }
 
 private:
-  bool process_entries() {
+  [[nodiscard]] bool process_entries() {
     if (entries_.empty()) {
       return false;
     }
@@ -278,7 +278,7 @@ private:
     return true;
   }
 
-  bool scroll() {
+  [[nodiscard]] bool scroll() {
     if (momentum_wait_ > 0) {
       --momentum_wait_;
       return true;
@@ -358,7 +358,7 @@ private:
                                    std::end(chunk_accumulated_values));
   }
 
-  int accumulate_abs_chunk_accumulated_values(const chunk_accumulated_values_t& chunk_accumulated_values) const {
+  [[nodiscard]] int accumulate_abs_chunk_accumulated_values(const chunk_accumulated_values_t& chunk_accumulated_values) const {
     return std::accumulate(std::begin(chunk_accumulated_values),
                            std::end(chunk_accumulated_values),
                            0,
@@ -367,7 +367,7 @@ private:
                            });
   }
 
-  int round_up(double value) const {
+  [[nodiscard]] int round_up(double value) const {
     if (value > 0) {
       return std::ceil(value);
     } else if (value < 0) {
@@ -376,7 +376,7 @@ private:
     return 0;
   }
 
-  int convert(int& value) const {
+  [[nodiscard]] int convert(int& value) const {
     int result = 0;
     int threshold = options_.get_threshold();
 

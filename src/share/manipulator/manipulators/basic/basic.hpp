@@ -783,20 +783,20 @@ public:
     return to_if_alone_;
   }
 
-  std::shared_ptr<to_if_held_down> get_to_if_held_down() const {
+  [[nodiscard]] std::shared_ptr<to_if_held_down> get_to_if_held_down() const {
     return to_if_held_down_;
   }
 
-  std::shared_ptr<to_if_other_key_pressed> get_to_if_other_key_pressed() const {
+  [[nodiscard]] std::shared_ptr<to_if_other_key_pressed> get_to_if_other_key_pressed() const {
     return to_if_other_key_pressed_;
   }
 
-  std::shared_ptr<to_delayed_action> get_to_delayed_action() const {
+  [[nodiscard]] std::shared_ptr<to_delayed_action> get_to_delayed_action() const {
     return to_delayed_action_;
   }
 
 private:
-  bool all_from_events_found(const std::vector<manipulated_original_event::from_event>& from_events) const {
+  [[nodiscard]] bool all_from_events_found(const std::vector<manipulated_original_event::from_event>& from_events) const {
     for (const auto& d : from_.get_event_definitions()) {
       if (std::ranges::none_of(from_events,
                                [&](auto& e) {

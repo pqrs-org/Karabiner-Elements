@@ -67,7 +67,7 @@ public:
     return false;
   }
 
-  std::shared_ptr<exprtk_utility::expression_wrapper> get_expression() const {
+  [[nodiscard]] std::shared_ptr<exprtk_utility::expression_wrapper> get_expression() const {
     return expression_;
   }
 

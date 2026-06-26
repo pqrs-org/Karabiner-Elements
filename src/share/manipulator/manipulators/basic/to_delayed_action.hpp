@@ -115,7 +115,7 @@ public:
     post_events(to_if_canceled_);
   }
 
-  bool needs_virtual_hid_pointing() const {
+  [[nodiscard]] bool needs_virtual_hid_pointing() const {
     for (const auto& events : {to_if_invoked_,
                                to_if_canceled_}) {
       if (std::any_of(std::begin(events),
