@@ -29,7 +29,7 @@ inline std::vector<std::string> lint_rule(const core_configuration::details::com
   return error_messages;
 }
 
-inline std::string get_new_rule_json_string() {
+[[nodiscard]] inline std::string get_new_rule_json_string() {
   nlohmann::json json({{"description", "New Rule (change left_shift+caps_lock to page_down, right_shift+caps_lock to left_command+mission_control)"},
                        {"manipulators", nlohmann::json::array({
                                             nlohmann::json::object({
@@ -82,7 +82,7 @@ inline std::string get_new_rule_json_string() {
   return json_utility::dump(json);
 }
 
-inline std::string get_new_rule_eval_js_string() {
+[[nodiscard]] inline std::string get_new_rule_eval_js_string() {
   return R"(// JavaScript must be written in ECMAScript 5.1.
 
 function main() {

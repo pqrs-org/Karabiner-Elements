@@ -39,7 +39,7 @@ public:
     }
   }
 
-  int get_number() const {
+  [[nodiscard]] int get_number() const {
     return number_;
   }
 

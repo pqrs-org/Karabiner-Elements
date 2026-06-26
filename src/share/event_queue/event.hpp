@@ -360,7 +360,7 @@ public:
     return std::get_if<T>(&value_);
   }
 
-  std::optional<pointing_motion> get_pointing_motion() const {
+  [[nodiscard]] std::optional<pointing_motion> get_pointing_motion() const {
     try {
       if (type_ == type::pointing_motion) {
         return std::get<pointing_motion>(value_);
@@ -370,7 +370,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<int64_t> get_integer_value() const {
+  [[nodiscard]] std::optional<int64_t> get_integer_value() const {
     try {
       if (type_ == type::caps_lock_state_changed) {
         return std::get<int64_t>(value_);
@@ -380,7 +380,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::string> get_shell_command() const {
+  [[nodiscard]] std::optional<std::string> get_shell_command() const {
     try {
       if (type_ == type::shell_command) {
         return std::get<std::string>(value_);
@@ -390,7 +390,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<nlohmann::json> get_user_command() const {
+  [[nodiscard]] std::optional<nlohmann::json> get_user_command() const {
     try {
       if (type_ == type::send_user_command) {
         return std::get<nlohmann::json>(value_);
@@ -410,7 +410,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<manipulator_environment_variable_set_variable> get_set_variable() const {
+  [[nodiscard]] std::optional<manipulator_environment_variable_set_variable> get_set_variable() const {
     try {
       if (type_ == type::set_variable) {
         return std::get<manipulator_environment_variable_set_variable>(value_);
@@ -420,7 +420,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<mouse_key> get_mouse_key() const {
+  [[nodiscard]] std::optional<mouse_key> get_mouse_key() const {
     try {
       if (type_ == type::mouse_key) {
         return std::get<mouse_key>(value_);
@@ -440,7 +440,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<application> get_frontmost_application() const {
+  [[nodiscard]] std::optional<application> get_frontmost_application() const {
     try {
       if (type_ == type::frontmost_application_changed) {
         return std::get<application>(value_);
@@ -450,7 +450,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<pqrs::osx::input_source::properties> get_input_source_properties() const {
+  [[nodiscard]] std::optional<pqrs::osx::input_source::properties> get_input_source_properties() const {
     try {
       if (type_ == type::input_source_changed) {
         return std::get<pqrs::osx::input_source::properties>(value_);

@@ -20,7 +20,7 @@ public:
     detach_from_dispatcher();
   }
 
-  const std::string& get_full_message() const {
+  [[nodiscard]] const std::string& get_full_message() const {
     return full_message_;
   }
 

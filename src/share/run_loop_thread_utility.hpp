@@ -23,7 +23,7 @@ public:
     }
   };
 
-  static std::shared_ptr<scoped_run_loop_thread_manager> initialize_scoped_run_loop_thread_manager(pqrs::cf::run_loop_thread::failure_policy failure_policy) {
+  [[nodiscard]] static std::shared_ptr<scoped_run_loop_thread_manager> initialize_scoped_run_loop_thread_manager(pqrs::cf::run_loop_thread::failure_policy failure_policy) {
     return std::make_shared<scoped_run_loop_thread_manager>(failure_policy);
   }
 

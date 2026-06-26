@@ -11,7 +11,7 @@
 namespace krbn {
 class event_tap_utility final {
 public:
-  static std::optional<event_queue::event> make_momentary_switch_event(CGEventRef event) {
+  [[nodiscard]] static std::optional<event_queue::event> make_momentary_switch_event(CGEventRef event) {
     if (!event) {
       return std::nullopt;
     }

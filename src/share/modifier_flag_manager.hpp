@@ -94,7 +94,7 @@ public:
     active_modifier_flags_.clear();
   }
 
-  bool is_pressed(modifier_flag modifier_flag) const {
+  [[nodiscard]] bool is_pressed(modifier_flag modifier_flag) const {
     int count = 0;
     size_t size = 0;
 
@@ -124,11 +124,11 @@ public:
     return active_modifier_flags_;
   }
 
-  size_t active_modifier_flags_size() const {
+  [[nodiscard]] size_t active_modifier_flags_size() const {
     return active_modifier_flags_.size();
   }
 
-  size_t led_lock_size(modifier_flag modifier_flag) const {
+  [[nodiscard]] size_t led_lock_size(modifier_flag modifier_flag) const {
     return std::count_if(std::begin(active_modifier_flags_),
                          std::end(active_modifier_flags_),
                          [&](const active_modifier_flag& f) {
@@ -136,7 +136,7 @@ public:
                          });
   }
 
-  size_t sticky_size(modifier_flag modifier_flag) const {
+  [[nodiscard]] size_t sticky_size(modifier_flag modifier_flag) const {
     return std::count_if(std::begin(active_modifier_flags_),
                          std::end(active_modifier_flags_),
                          [&](const active_modifier_flag& f) {
@@ -144,7 +144,7 @@ public:
                          });
   }
 
-  bool is_sticky_active(modifier_flag modifier_flag) const {
+  [[nodiscard]] bool is_sticky_active(modifier_flag modifier_flag) const {
     auto count = std::accumulate(std::begin(active_modifier_flags_),
                                  std::end(active_modifier_flags_),
                                  0,

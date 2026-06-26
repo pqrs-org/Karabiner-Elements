@@ -21,13 +21,13 @@ public:
     entries_.erase(value);
   }
 
-  bool empty() const {
+  [[nodiscard]] bool empty() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return entries_.empty();
   }
 
-  bool contains(const momentary_switch_event& value) const {
+  [[nodiscard]] bool contains(const momentary_switch_event& value) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return entries_.contains(value);

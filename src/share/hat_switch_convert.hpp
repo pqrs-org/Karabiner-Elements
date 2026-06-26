@@ -2,6 +2,7 @@
 
 #include "types/device_id.hpp"
 #include <memory>
+#include <pqrs/gsl.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -15,7 +16,7 @@ public:
     left = 0x1 << 3
   } direction;
 
-  static std::shared_ptr<hat_switch_converter> get_global_hat_switch_converter() {
+  [[nodiscard]] static pqrs::not_null_shared_ptr_t<hat_switch_converter> get_global_hat_switch_converter() {
     if (!hat_switch_converter_) {
       hat_switch_converter_ = std::make_shared<hat_switch_converter>();
     }

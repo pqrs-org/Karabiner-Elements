@@ -148,7 +148,7 @@ private:
       kCGEventFlagMaskAlphaShift |
       kCGEventFlagMaskSecondaryFn;
 
-  static std::optional<momentary_switch_event> remap_fn_modified_key_event(const momentary_switch_event& event) {
+  [[nodiscard]] static std::optional<momentary_switch_event> remap_fn_modified_key_event(const momentary_switch_event& event) {
     auto usage_pair = event.get_usage_pair();
     if (usage_pair.get_usage_page() != pqrs::hid::usage_page::keyboard_or_keypad) {
       return std::nullopt;

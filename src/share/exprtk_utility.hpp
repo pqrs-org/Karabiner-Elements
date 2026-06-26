@@ -79,11 +79,11 @@ public:
     }
   }
 
-  const std::string& get_expression_string() const {
+  [[nodiscard]] const std::string& get_expression_string() const {
     return expression_string_;
   }
 
-  std::optional<std::string> get_compile_error() const {
+  [[nodiscard]] std::optional<std::string> get_compile_error() const {
     return compile_error_;
   }
 

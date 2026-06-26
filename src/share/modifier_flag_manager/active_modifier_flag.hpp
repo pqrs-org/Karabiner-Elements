@@ -77,7 +77,7 @@ public:
     }
   }
 
-  int get_count() const {
+  [[nodiscard]] int get_count() const {
     switch (type_) {
       case type::increase:
       case type::increase_lock:
@@ -92,7 +92,7 @@ public:
     }
   }
 
-  bool any_lock() const {
+  [[nodiscard]] bool any_lock() const {
     switch (type_) {
       case type::increase_lock:
       case type::decrease_lock:
@@ -108,7 +108,7 @@ public:
     }
   }
 
-  bool led_lock() const {
+  [[nodiscard]] bool led_lock() const {
     switch (type_) {
       case type::increase_led_lock:
       case type::decrease_led_lock:
@@ -124,7 +124,7 @@ public:
     }
   }
 
-  bool sticky() const {
+  [[nodiscard]] bool sticky() const {
     switch (type_) {
       case type::increase_sticky:
       case type::decrease_sticky:
@@ -140,7 +140,7 @@ public:
     }
   }
 
-  bool is_paired(const active_modifier_flag& other) const {
+  [[nodiscard]] bool is_paired(const active_modifier_flag& other) const {
     return get_type() == other.get_inverse_type() &&
            get_modifier_flag() == other.get_modifier_flag() &&
            get_device_id() == other.get_device_id();

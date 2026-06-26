@@ -208,7 +208,7 @@ public:
     }
   }
 
-  bool empty() const {
+  [[nodiscard]] bool empty() const {
     return events_.empty();
   }
 
@@ -277,7 +277,7 @@ public:
     }
   }
 
-  static bool needs_swap(const entry& v1, const entry& v2) {
+  [[nodiscard]] static bool needs_swap(const entry& v1, const entry& v2) {
     // Some devices are send modifier flag and key at the same HID report.
     // For example, a key sends control+up-arrow by this reports.
     //

@@ -20,7 +20,7 @@ public:
                                type_safe::get(team_id));
   }
 
-  bool same_team_id(std::optional<pid_t> pid) {
+  [[nodiscard]] bool same_team_id(std::optional<pid_t> pid) {
     // If the binary is not code-signed (e.g., a self-build from source), always return true.
     auto current_team_id = current_process_signing_information_.get_verified_team_id();
     if (current_team_id == std::nullopt) {
@@ -39,7 +39,7 @@ private:
   pqrs::osx::codesign::signing_information current_process_signing_information_;
 };
 
-inline pqrs::not_null_shared_ptr_t<codesign_manager> get_shared_codesign_manager() {
+[[nodiscard]] inline pqrs::not_null_shared_ptr_t<codesign_manager> get_shared_codesign_manager() {
   static std::mutex mutex;
   std::lock_guard<std::mutex> lock(mutex);
 

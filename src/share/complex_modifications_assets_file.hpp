@@ -58,7 +58,7 @@ public:
     return file_path_;
   }
 
-  const std::string& get_title() const {
+  [[nodiscard]] const std::string& get_title() const {
     return title_;
   }
 
@@ -74,7 +74,7 @@ public:
     }
   }
 
-  std::optional<std::filesystem::file_time_type> last_write_time() const {
+  [[nodiscard]] std::optional<std::filesystem::file_time_type> last_write_time() const {
     std::error_code error_code;
     auto result = std::filesystem::last_write_time(file_path_, error_code);
 
@@ -92,7 +92,7 @@ public:
     unlink(file_path_.c_str());
   }
 
-  bool user_file() const {
+  [[nodiscard]] bool user_file() const {
     return file_path_.string().starts_with(constants::get_user_complex_modifications_assets_directory().string());
   }
 

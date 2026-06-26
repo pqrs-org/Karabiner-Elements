@@ -120,7 +120,7 @@ public:
     return const_cast<event_time_stamp&>(static_cast<const entry&>(*this).get_event_time_stamp());
   }
 
-  validity get_validity() const {
+  [[nodiscard]] validity get_validity() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return validity_;
@@ -144,7 +144,7 @@ public:
     state_ = value;
   }
 
-  bool get_lazy() const {
+  [[nodiscard]] bool get_lazy() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return lazy_;
@@ -168,7 +168,7 @@ public:
     return event_type_;
   }
 
-  std::optional<event_integer_value::value_t> get_event_integer_value() const {
+  [[nodiscard]] std::optional<event_integer_value::value_t> get_event_integer_value() const {
     // We don't have to use mutex since there is not setter.
 
     return event_integer_value_;

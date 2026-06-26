@@ -43,7 +43,7 @@ public:
       }
     }
 
-    int get_count() const {
+    [[nodiscard]] int get_count() const {
       if (type_ == type::increase) {
         return 1;
       } else {
@@ -51,7 +51,7 @@ public:
       }
     }
 
-    bool is_paired(const active_pointing_button& other) const {
+    [[nodiscard]] bool is_paired(const active_pointing_button& other) const {
       // ignore device_id_
       return get_type() == other.get_inverse_type() &&
              usage_pair_ == other.usage_pair_;
@@ -104,7 +104,7 @@ public:
     active_pointing_buttons_.clear();
   }
 
-  bool is_pressed(const pqrs::hid::usage_pair& usage_pair) const {
+  [[nodiscard]] bool is_pressed(const pqrs::hid::usage_pair& usage_pair) const {
     int count = 0;
 
     for (const auto& f : active_pointing_buttons_) {

@@ -33,7 +33,7 @@ public:
     instance_ = nullptr;
   }
 
-  static std::shared_ptr<components_manager_killer> get_shared_components_manager_killer() {
+  [[nodiscard]] static std::shared_ptr<components_manager_killer> get_shared_components_manager_killer() {
     return instance_;
   }
 

@@ -124,7 +124,7 @@ private:
     }
   }
 
-  std::optional<CFIndex> make_integer_value() const {
+  [[nodiscard]] std::optional<CFIndex> make_integer_value() const {
     std::lock_guard<std::mutex> lock(state_mutex_);
 
     if (state_ && element_) {

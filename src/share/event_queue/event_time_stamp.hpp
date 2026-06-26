@@ -51,7 +51,7 @@ public:
 
   // Methods
 
-  absolute_time_point get_time_stamp() const {
+  [[nodiscard]] absolute_time_point get_time_stamp() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return time_stamp_;
@@ -75,7 +75,7 @@ public:
     input_delay_duration_ = value;
   }
 
-  absolute_time_point make_time_stamp_with_input_delay() const {
+  [[nodiscard]] absolute_time_point make_time_stamp_with_input_delay() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return time_stamp_ + input_delay_duration_;

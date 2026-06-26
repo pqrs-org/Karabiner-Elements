@@ -16,11 +16,11 @@ public:
   connected_devices() {
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<device_properties>>& get_devices() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<device_properties>>& get_devices() const {
     return devices_;
   }
 
-  std::shared_ptr<device_properties> find_device(const device_identifiers& identifiers) const {
+  [[nodiscard]] std::shared_ptr<device_properties> find_device(const device_identifiers& identifiers) const {
     auto it = std::find_if(std::begin(devices_),
                            std::end(devices_),
                            [&](const auto& d) {

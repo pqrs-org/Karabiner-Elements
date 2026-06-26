@@ -27,7 +27,7 @@ public:
     return false;
   }
 
-  static std::string make_device_name(IOHIDDeviceRef _Nonnull device) {
+  [[nodiscard]] static std::string make_device_name(IOHIDDeviceRef _Nonnull device) {
     std::stringstream stream;
     pqrs::osx::iokit_hid_device hid_device(device);
 

@@ -213,7 +213,7 @@ public:
     });
   }
 
-  static pqrs::not_null_shared_ptr_t<device_properties> make_device_properties(const nlohmann::json& json) {
+  [[nodiscard]] static pqrs::not_null_shared_ptr_t<device_properties> make_device_properties(const nlohmann::json& json) {
     initialization_parameters parameters;
 
     pqrs::json::requires_object(json, "json");
@@ -319,31 +319,31 @@ public:
     return product_;
   }
 
-  const std::string& get_serial_number() const {
+  [[nodiscard]] const std::string& get_serial_number() const {
     return serial_number_;
   }
 
-  const std::string& get_transport() const {
+  [[nodiscard]] const std::string& get_transport() const {
     return transport_;
   }
 
-  bool get_is_built_in_keyboard() const {
+  [[nodiscard]] bool get_is_built_in_keyboard() const {
     return is_built_in_keyboard_;
   }
 
-  bool get_is_built_in_pointing_device() const {
+  [[nodiscard]] bool get_is_built_in_pointing_device() const {
     return is_built_in_pointing_device_;
   }
 
-  bool get_is_built_in_touch_bar() const {
+  [[nodiscard]] bool get_is_built_in_touch_bar() const {
     return is_built_in_touch_bar_;
   }
 
-  bool get_is_apple() const {
+  [[nodiscard]] bool get_is_apple() const {
     return is_apple_;
   }
 
-  bool compare(const device_properties& other) const {
+  [[nodiscard]] bool compare(const device_properties& other) const {
     // product
     {
       const auto& p1 = product_;

@@ -33,7 +33,7 @@ public:
     }
   };
 
-  static std::shared_ptr<scoped_dispatcher_manager> initialize_dispatchers() {
+  [[nodiscard]] static std::shared_ptr<scoped_dispatcher_manager> initialize_dispatchers() {
     return std::make_shared<scoped_dispatcher_manager>();
   }
 
