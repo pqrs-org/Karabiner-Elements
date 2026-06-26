@@ -3,8 +3,7 @@
 #include <pqrs/json.hpp>
 #include <spdlog/fmt/fmt.h>
 
-namespace krbn {
-namespace event_queue {
+namespace krbn::event_queue {
 enum class state {
   original,
   manipulated,
@@ -38,5 +37,4 @@ inline void from_json(const nlohmann::json& json, state& value) {
     throw pqrs::json::unmarshal_error(fmt::format("unknown state: `{0}`", json.get<std::string>()));
   }
 }
-} // namespace event_queue
-} // namespace krbn
+} // namespace krbn::event_queue

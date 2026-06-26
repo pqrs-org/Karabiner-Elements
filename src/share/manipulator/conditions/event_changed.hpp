@@ -4,9 +4,7 @@
 #include <optional>
 #include <string>
 
-namespace krbn {
-namespace manipulator {
-namespace conditions {
+namespace krbn::manipulator::conditions {
 class event_changed final : public base {
 public:
   enum class type {
@@ -81,6 +79,4 @@ private:
   type type_;
   std::optional<bool> value_;
 };
-} // namespace conditions
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::conditions

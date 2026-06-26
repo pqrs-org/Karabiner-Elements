@@ -10,8 +10,7 @@
 #include <optional>
 #include <pqrs/dispatcher.hpp>
 
-namespace krbn {
-namespace console_user_server {
+namespace krbn::console_user_server {
 class settings_window_guidance_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   using guidance_context_maker = std::function<settings_window_guidance_context()>;
@@ -331,5 +330,4 @@ private:
   std::optional<bool> driver_connected_;
   std::optional<pqrs::dispatcher::time_point> driver_not_connected_started_at_;
 };
-} // namespace console_user_server
-} // namespace krbn
+} // namespace krbn::console_user_server

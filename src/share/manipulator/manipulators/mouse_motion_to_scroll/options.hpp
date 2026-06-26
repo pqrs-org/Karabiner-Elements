@@ -4,10 +4,7 @@
 #include "types/absolute_time_duration.hpp"
 #include <pqrs/osx/chrono.hpp>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace mouse_motion_to_scroll {
+namespace krbn::manipulator::manipulators::mouse_motion_to_scroll {
 struct options final {
 public:
   static constexpr double speed_multiplier_default_value = 1.0;
@@ -19,11 +16,11 @@ public:
       std::chrono::milliseconds(100);
 
   options() : momentum_scroll_enabled_(true),
-                  speed_multiplier_(speed_multiplier_default_value),
-                  recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
-                  threshold_(threshold_default_value),
-                  direction_lock_threshold_(direction_lock_threshold_default_value),
-                  scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
+              speed_multiplier_(speed_multiplier_default_value),
+              recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
+              threshold_(threshold_default_value),
+              direction_lock_threshold_(direction_lock_threshold_default_value),
+              scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
   }
 
   bool get_momentum_scroll_enabled() const {
@@ -139,7 +136,4 @@ private:
   int direction_lock_threshold_;
   std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_;
 };
-} // namespace mouse_motion_to_scroll
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

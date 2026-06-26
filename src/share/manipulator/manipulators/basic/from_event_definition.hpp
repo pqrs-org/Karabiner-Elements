@@ -6,10 +6,7 @@
 #include <set>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
+namespace krbn::manipulator::manipulators::basic {
 class from_event_definition final {
 public:
   from_event_definition()
@@ -252,7 +249,4 @@ inline void from_json(const nlohmann::json& json, from_event_definition& d) {
 
   d.set_event_definitions(event_definitions);
 }
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic

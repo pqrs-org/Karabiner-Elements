@@ -13,10 +13,7 @@
 #include "types.hpp"
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
-namespace krbn {
-namespace core_service {
-namespace daemon {
-namespace device_grabber_details {
+namespace krbn::core_service::daemon::device_grabber_details {
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   //
@@ -352,7 +349,4 @@ private:
   // For ignoring all devices via EventViewer
   bool temporarily_ignore_;
 };
-} // namespace device_grabber_details
-} // namespace daemon
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::daemon::device_grabber_details

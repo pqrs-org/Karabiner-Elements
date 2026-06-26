@@ -6,8 +6,7 @@
 #include <pqrs/json.hpp>
 #include <spdlog/fmt/fmt.h>
 
-namespace krbn {
-namespace json_utility {
+namespace krbn::json_utility {
 
 template <typename T>
 inline nlohmann::json parse_jsonc(T&& input) {
@@ -112,5 +111,4 @@ pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> unmarshal_expres
   return e;
 }
 
-}; // namespace json_utility
-} // namespace krbn
+} // namespace krbn::json_utility

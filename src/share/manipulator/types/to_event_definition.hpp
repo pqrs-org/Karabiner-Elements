@@ -7,8 +7,7 @@
 #include "modifier_definition.hpp"
 #include <set>
 
-namespace krbn {
-namespace manipulator {
+namespace krbn::manipulator {
 class to_event_definition final {
 public:
   to_event_definition(const to_event_definition&) = delete;
@@ -211,5 +210,4 @@ private:
 };
 
 typedef std::vector<pqrs::not_null_shared_ptr_t<to_event_definition>> to_event_definitions;
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator

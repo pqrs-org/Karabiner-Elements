@@ -5,10 +5,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
+namespace krbn::manipulator::manipulators::basic {
 class to_delayed_action final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   to_delayed_action(const nlohmann::json& json) : dispatcher_client(),
@@ -207,7 +204,4 @@ private:
   std::weak_ptr<event_queue::queue> output_event_queue_;
   int current_delayed_action_id_;
 };
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic

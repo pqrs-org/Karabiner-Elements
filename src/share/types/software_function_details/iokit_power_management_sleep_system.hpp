@@ -5,8 +5,7 @@
 #include <pqrs/json.hpp>
 #include <string_view>
 
-namespace krbn {
-namespace software_function_details {
+namespace krbn::software_function_details {
 class iokit_power_management_sleep_system {
 public:
   iokit_power_management_sleep_system()
@@ -43,8 +42,7 @@ inline void from_json(const nlohmann::json& json, iokit_power_management_sleep_s
     }
   }
 }
-} // namespace software_function_details
-} // namespace krbn
+} // namespace krbn::software_function_details
 
 namespace std {
 template <>

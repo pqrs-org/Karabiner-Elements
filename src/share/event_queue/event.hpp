@@ -14,8 +14,7 @@
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 #include <variant>
 
-namespace krbn {
-namespace event_queue {
+namespace krbn::event_queue {
 class event {
 public:
   enum class type {
@@ -63,7 +62,7 @@ public:
                                std::monostate>;                                          // For virtual events
 
   event() : type_(type::none),
-                value_(std::monostate()) {
+            value_(std::monostate()) {
   }
 
   static event make_from_json(const nlohmann::json& json) {
@@ -549,8 +548,7 @@ private:
 inline void to_json(nlohmann::json& json, const event& value) {
   json = value.to_json();
 }
-} // namespace event_queue
-} // namespace krbn
+} // namespace krbn::event_queue
 
 namespace std {
 template <>

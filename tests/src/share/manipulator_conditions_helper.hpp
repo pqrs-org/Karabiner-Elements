@@ -5,8 +5,7 @@
 #include "manipulator/manipulator_environment.hpp"
 #include "types/device_id.hpp"
 
-namespace krbn {
-namespace unit_testing {
+namespace krbn::unit_testing {
 class manipulator_conditions_helper final {
 public:
   manipulator_conditions_helper() : last_device_id_(0) {
@@ -55,5 +54,4 @@ private:
   std::shared_ptr<krbn::core_configuration::core_configuration> core_configuration_;
   int last_device_id_;
 };
-} // namespace unit_testing
-} // namespace krbn
+} // namespace krbn::unit_testing

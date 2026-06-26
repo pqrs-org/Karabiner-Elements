@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace conditions {
+namespace krbn::manipulator::conditions {
 class input_source final : public base {
 public:
   enum class type {
@@ -100,6 +98,4 @@ private:
 
   mutable std::optional<std::pair<pqrs::osx::input_source::properties, bool>> cached_result_;
 };
-} // namespace conditions
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::conditions

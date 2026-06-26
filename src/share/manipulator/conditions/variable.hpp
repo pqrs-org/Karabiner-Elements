@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace conditions {
+namespace krbn::manipulator::conditions {
 class variable final : public base {
 public:
   enum class type {
@@ -77,6 +75,4 @@ private:
   std::optional<std::string> name_;
   std::optional<manipulator_environment_variable_value> value_;
 };
-} // namespace conditions
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::conditions

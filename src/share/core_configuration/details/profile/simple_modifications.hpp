@@ -3,9 +3,7 @@
 #include "json_utility.hpp"
 #include <natural_sort.hpp>
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 using namespace std::string_literals;
 
 class simple_modifications final {
@@ -221,6 +219,4 @@ private:
   std::vector<std::pair<std::string, std::string>> pairs_;
 };
 
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details

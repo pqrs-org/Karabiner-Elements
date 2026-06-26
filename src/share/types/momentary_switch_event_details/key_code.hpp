@@ -3,9 +3,7 @@
 #include "../modifier_flag.hpp"
 #include <pqrs/osx/iokit_hid_value.hpp>
 
-namespace krbn {
-namespace momentary_switch_event_details {
-namespace key_code {
+namespace krbn::momentary_switch_event_details::key_code {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
     // Aliases
 
@@ -270,6 +268,4 @@ inline pqrs::hid::usage_pair make_usage_pair(const std::string& key,
                                key,
                                json);
 }
-} // namespace key_code
-} // namespace momentary_switch_event_details
-} // namespace krbn
+} // namespace krbn::momentary_switch_event_details::key_code

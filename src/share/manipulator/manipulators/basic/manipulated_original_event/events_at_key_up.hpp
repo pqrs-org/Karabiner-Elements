@@ -2,11 +2,7 @@
 
 #include "event_queue.hpp"
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
-namespace manipulated_original_event {
+namespace krbn::manipulator::manipulators::basic::manipulated_original_event {
 class events_at_key_up final {
 public:
   class entry {
@@ -64,8 +60,4 @@ public:
 private:
   std::vector<entry> events_;
 };
-} // namespace manipulated_original_event
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic::manipulated_original_event

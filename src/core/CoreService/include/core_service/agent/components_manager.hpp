@@ -14,9 +14,7 @@
 #include <pqrs/osx/accessibility.hpp>
 #include <pqrs/osx/session.hpp>
 
-namespace krbn {
-namespace core_service {
-namespace agent {
+namespace krbn::core_service::agent {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -271,6 +269,4 @@ private:
   std::optional<core_service_permission_check_result> last_bundle_permission_check_result_;
   bool restart_required_after_permissions_granted_ = false;
 };
-} // namespace agent
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::agent

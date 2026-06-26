@@ -3,9 +3,7 @@
 #include "impl.hpp"
 #include <mapbox/eternal.hpp>
 
-namespace krbn {
-namespace momentary_switch_event_details {
-namespace generic_desktop {
+namespace krbn::momentary_switch_event_details::generic_desktop {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
     {"system_sleep", pqrs::hid::usage::generic_desktop::system_sleep},
     {"system_app_menu", pqrs::hid::usage::generic_desktop::system_app_menu},
@@ -41,6 +39,4 @@ inline pqrs::hid::usage_pair make_usage_pair(const std::string& key,
                                key,
                                json);
 }
-} // namespace generic_desktop
-} // namespace momentary_switch_event_details
-} // namespace krbn
+} // namespace krbn::momentary_switch_event_details::generic_desktop

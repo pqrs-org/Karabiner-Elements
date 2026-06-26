@@ -62,5 +62,5 @@ public:
 private:
   static inline std::mutex mutex_;
   static inline std::shared_ptr<spdlog::logger> logger_;
-}; // namespace krbn
+};
 } // namespace krbn

@@ -6,9 +6,7 @@
 #include <pqrs/gsl.hpp>
 #include <pqrs/json.hpp>
 
-namespace krbn {
-namespace core_configuration {
-namespace configuration_json_helper {
+namespace krbn::core_configuration::configuration_json_helper {
 
 enum class value_origin {
   default_value,
@@ -314,6 +312,4 @@ private:
   std::vector<pqrs::not_null_shared_ptr_t<base_t>> values_;
 };
 
-} // namespace configuration_json_helper
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::configuration_json_helper

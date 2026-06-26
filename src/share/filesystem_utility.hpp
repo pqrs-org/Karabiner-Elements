@@ -7,8 +7,7 @@
 #include <string_view>
 #include <vector>
 
-namespace krbn {
-namespace filesystem_utility {
+namespace krbn::filesystem_utility {
 inline void mkdir_tmp_directory() {
   pqrs::filesystem::create_directory_with_intermediate_directories(
       constants::get_tmp_directory(),
@@ -134,5 +133,4 @@ inline std::optional<std::string> read_file(const std::filesystem::path& path) {
 
   return std::nullopt;
 }
-} // namespace filesystem_utility
-} // namespace krbn
+} // namespace krbn::filesystem_utility

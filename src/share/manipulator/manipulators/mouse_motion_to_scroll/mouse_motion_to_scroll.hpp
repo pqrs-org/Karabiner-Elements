@@ -7,10 +7,7 @@
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace mouse_motion_to_scroll {
+namespace krbn::manipulator::manipulators::mouse_motion_to_scroll {
 class mouse_motion_to_scroll final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   mouse_motion_to_scroll(const nlohmann::json& json,
@@ -218,7 +215,4 @@ private:
   event_queue::event original_event_;
   std::weak_ptr<event_queue::queue> weak_output_event_queue_;
 };
-} // namespace mouse_motion_to_scroll
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

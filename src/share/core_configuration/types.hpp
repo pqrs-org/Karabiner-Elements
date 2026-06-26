@@ -1,12 +1,10 @@
 #pragma once
 
-namespace krbn {
-namespace core_configuration {
+namespace krbn::core_configuration {
 
 enum class error_handling {
   loose,  // ignore errors
   strict, // throw exception
 };
 
-}
-} // namespace krbn
+} // namespace krbn::core_configuration

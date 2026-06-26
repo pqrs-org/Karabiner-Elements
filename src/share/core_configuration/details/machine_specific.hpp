@@ -5,9 +5,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class machine_specific final {
 public:
   class entry final {
@@ -119,6 +117,4 @@ private:
 inline void to_json(nlohmann::json& json, const machine_specific& value) {
   json = value.to_json();
 }
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details

@@ -3,11 +3,7 @@
 #include "event_queue.hpp"
 #include <pqrs/hash.hpp>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
-namespace manipulated_original_event {
+namespace krbn::manipulator::manipulators::basic::manipulated_original_event {
 class from_event final {
 public:
   from_event() : device_id_(device_id(0)) {
@@ -43,11 +39,7 @@ private:
   event_queue::event event_;
   event_queue::event original_event_;
 };
-} // namespace manipulated_original_event
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic::manipulated_original_event
 
 namespace std {
 using krbn::manipulator::manipulators::basic::manipulated_original_event::from_event;

@@ -13,8 +13,7 @@
 #include <sys/un.h>
 #include <thread>
 
-namespace krbn {
-namespace console_user_server {
+namespace krbn::console_user_server {
 
 class send_user_command_handler final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -152,5 +151,4 @@ private:
   std::thread io_thread_;
 };
 
-} // namespace console_user_server
-} // namespace krbn
+} // namespace krbn::console_user_server

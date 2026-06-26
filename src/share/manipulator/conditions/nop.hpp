@@ -2,9 +2,7 @@
 
 #include "base.hpp"
 
-namespace krbn {
-namespace manipulator {
-namespace conditions {
+namespace krbn::manipulator::conditions {
 class nop final : public base {
 public:
   nop() : base() {
@@ -18,6 +16,4 @@ public:
     return true;
   }
 };
-} // namespace conditions
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::conditions

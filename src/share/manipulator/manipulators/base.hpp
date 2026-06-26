@@ -5,9 +5,7 @@
 #include "event_queue.hpp"
 #include "modifier_flag_manager.hpp"
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
+namespace krbn::manipulator::manipulators {
 class base {
 protected:
   base() : validity_(validity::valid) {
@@ -112,6 +110,4 @@ protected:
   validity validity_;
   condition_manager condition_manager_;
 };
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators

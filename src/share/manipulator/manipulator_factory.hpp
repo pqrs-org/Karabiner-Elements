@@ -9,9 +9,7 @@
 #include "manipulator/types.hpp"
 #include <memory>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulator_factory {
+namespace krbn::manipulator::manipulator_factory {
 inline pqrs::not_null_shared_ptr_t<manipulators::base> make_manipulator(const nlohmann::json& json,
                                                                         pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters) {
   auto it = json.find("type");
@@ -35,6 +33,4 @@ inline pqrs::not_null_shared_ptr_t<manipulators::base> make_manipulator(const nl
     throw pqrs::json::unmarshal_error(fmt::format("unknown type `{0}`", type));
   }
 }
-} // namespace manipulator_factory
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulator_factory

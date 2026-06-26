@@ -5,9 +5,7 @@
 #include <pqrs/json.hpp>
 #include <set>
 
-namespace krbn {
-namespace manipulator {
-namespace modifier_definition {
+namespace krbn::manipulator::modifier_definition {
 // Note:
 // We use `std::set` instead of `std::unordered_set` in order to use modifiers with to_event_definition.
 inline std::set<modifier> make_modifiers(const nlohmann::json& json) {
@@ -113,6 +111,4 @@ inline modifier get_modifier(modifier_flag modifier_flag) {
       return modifier::end_;
   }
 }
-} // namespace modifier_definition
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::modifier_definition

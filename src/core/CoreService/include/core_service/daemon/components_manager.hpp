@@ -14,9 +14,7 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/session.hpp>
 
-namespace krbn {
-namespace core_service {
-namespace daemon {
+namespace krbn::core_service::daemon {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -128,6 +126,4 @@ private:
   std::unique_ptr<hid_event_system_monitor> hid_event_system_monitor_;
   std::unique_ptr<receiver> receiver_;
 };
-} // namespace daemon
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::daemon

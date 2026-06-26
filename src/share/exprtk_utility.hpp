@@ -14,8 +14,7 @@
 #include <iostream>
 #include <pqrs/gsl.hpp>
 
-namespace krbn {
-namespace exprtk_utility {
+namespace krbn::exprtk_utility {
 
 typedef exprtk::symbol_table<double> symbol_table_t;
 typedef exprtk::expression<double> expression_t;
@@ -196,5 +195,4 @@ inline bool compare(const std::shared_ptr<expression_wrapper>& a,
   return a->get_expression_string() == b->get_expression_string();
 }
 
-} // namespace exprtk_utility
-} // namespace krbn
+} // namespace krbn::exprtk_utility

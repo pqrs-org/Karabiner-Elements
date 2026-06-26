@@ -3,9 +3,7 @@
 #include "../../configuration_json_helper.hpp"
 #include <pqrs/json.hpp>
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class complex_modifications_parameters final {
 public:
   complex_modifications_parameters(const complex_modifications_parameters&) = delete;
@@ -151,6 +149,4 @@ private:
   int mouse_motion_to_scroll_speed_;
   configuration_json_helper::helper_values helper_values_;
 };
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details

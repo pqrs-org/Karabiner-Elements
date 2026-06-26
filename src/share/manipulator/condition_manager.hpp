@@ -2,8 +2,7 @@
 
 #include "conditions/base.hpp"
 
-namespace krbn {
-namespace manipulator {
+namespace krbn::manipulator {
 class condition_manager final {
 public:
   condition_manager(const condition_manager&) = delete;
@@ -47,5 +46,4 @@ public:
 private:
   std::vector<pqrs::not_null_shared_ptr_t<manipulator::conditions::base>> conditions_;
 };
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator

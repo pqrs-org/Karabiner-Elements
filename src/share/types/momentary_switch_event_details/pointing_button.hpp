@@ -3,9 +3,7 @@
 #include "impl.hpp"
 #include <mapbox/eternal.hpp>
 
-namespace krbn {
-namespace momentary_switch_event_details {
-namespace pointing_button {
+namespace krbn::momentary_switch_event_details::pointing_button {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
     {"button1", pqrs::hid::usage::button::button_1},
     {"button2", pqrs::hid::usage::button::button_2},
@@ -286,6 +284,4 @@ inline pqrs::hid::usage_pair make_usage_pair(const std::string& key,
                                key,
                                json);
 }
-} // namespace pointing_button
-} // namespace momentary_switch_event_details
-} // namespace krbn
+} // namespace krbn::momentary_switch_event_details::pointing_button

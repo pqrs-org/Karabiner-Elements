@@ -11,9 +11,7 @@
 #include <pqrs/osx/accessibility.hpp>
 #include <pqrs/osx/application.hpp>
 
-namespace krbn {
-namespace core_service {
-namespace main {
+namespace krbn::core_service::main {
 int agent(std::vector<std::string> args) {
   auto log_cli_error = [](const std::string& message) {
     if (!constants::get_user_log_directory().empty()) {
@@ -149,6 +147,4 @@ int agent(std::vector<std::string> args) {
 
   return 0;
 }
-} // namespace main
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::main

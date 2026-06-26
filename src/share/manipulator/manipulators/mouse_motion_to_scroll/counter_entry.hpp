@@ -2,10 +2,7 @@
 
 #include "types/absolute_time_point.hpp"
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace mouse_motion_to_scroll {
+namespace krbn::manipulator::manipulators::mouse_motion_to_scroll {
 class counter_entry final {
 public:
   counter_entry(int x,
@@ -32,7 +29,4 @@ private:
   int y_;
   pqrs::dispatcher::time_point time_point_;
 };
-} // namespace mouse_motion_to_scroll
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

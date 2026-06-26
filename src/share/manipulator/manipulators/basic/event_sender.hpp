@@ -5,11 +5,7 @@
 #include "manipulated_original_event/manipulated_original_event.hpp"
 #include "types.hpp"
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
-namespace event_sender {
+namespace krbn::manipulator::manipulators::basic::event_sender {
 
 inline to_event_definitions filter_and_replace_events(const to_event_definitions& to_events,
                                                       const conditions::condition_context& condition_context,
@@ -439,8 +435,4 @@ private:
   std::vector<modifier_flag_manager::active_modifier_flag> inverse_active_modifier_flags_;
 };
 
-} // namespace event_sender
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic::event_sender

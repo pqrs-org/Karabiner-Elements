@@ -7,9 +7,7 @@
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
-namespace krbn {
-namespace core_service {
-namespace daemon {
+namespace krbn::core_service::daemon {
 class core_service_daemon_state_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   nod::signal<void(const core_service_daemon_state&)> core_service_daemon_state_changed;
@@ -115,6 +113,4 @@ private:
   core_service_daemon_state state_;
   mutable std::mutex mutex_;
 };
-} // namespace daemon
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::daemon

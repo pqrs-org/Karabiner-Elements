@@ -6,8 +6,7 @@
 #include <pqrs/json.hpp>
 #include <variant>
 
-namespace krbn {
-namespace manipulator {
+namespace krbn::manipulator {
 class event_definition final {
 public:
   enum class type {
@@ -46,7 +45,7 @@ public:
                                std::monostate>;                                          // For type::from_event, type::none
 
   event_definition() : type_(type::none),
-                           value_(std::monostate()) {
+                       value_(std::monostate()) {
   }
 
   ~event_definition() {
@@ -372,5 +371,4 @@ private:
   type type_;
   value_t value_;
 };
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator

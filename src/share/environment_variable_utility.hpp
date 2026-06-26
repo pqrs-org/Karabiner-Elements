@@ -4,8 +4,7 @@
 #include "logger.hpp"
 #include <pqrs/environment_variable.hpp>
 
-namespace krbn {
-namespace environment_variable_utility {
+namespace krbn::environment_variable_utility {
 
 inline std::vector<std::pair<std::string, std::string>> load_custom_environment_variables() {
   std::vector<std::pair<std::string, std::string>> result;
@@ -28,5 +27,4 @@ inline void log(std::vector<std::pair<std::string, std::string>>& variables) {
   }
 }
 
-} // namespace environment_variable_utility
-} // namespace krbn
+} // namespace krbn::environment_variable_utility

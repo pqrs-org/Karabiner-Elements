@@ -2,8 +2,7 @@
 
 #include <pqrs/osx/process_info.hpp>
 
-namespace krbn {
-namespace console_user_server {
+namespace krbn::console_user_server {
 class migration final {
 public:
   static void migrate_v1() {
@@ -44,5 +43,4 @@ private:
     return file_path;
   }
 };
-} // namespace console_user_server
-} // namespace krbn
+} // namespace krbn::console_user_server

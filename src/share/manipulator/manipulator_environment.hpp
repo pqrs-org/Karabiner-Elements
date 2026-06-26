@@ -15,8 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
+namespace krbn::manipulator {
 class manipulator_environment final {
 public:
   manipulator_environment(const manipulator_environment&) = delete;
@@ -160,5 +159,4 @@ private:
   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
   virtual_hid_devices_state virtual_hid_devices_state_;
 };
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator

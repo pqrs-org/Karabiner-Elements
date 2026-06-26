@@ -24,8 +24,7 @@
 
 // Example: tests/src/core_configuration/json/example.json
 
-namespace krbn {
-namespace core_configuration {
+namespace krbn::core_configuration {
 using namespace std::string_literals;
 
 class core_configuration final {
@@ -292,5 +291,4 @@ private:
   std::vector<pqrs::not_null_shared_ptr_t<details::profile>> profiles_;
   configuration_json_helper::helper_values helper_values_;
 };
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration

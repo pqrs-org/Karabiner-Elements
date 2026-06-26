@@ -9,9 +9,7 @@
 #include "profile/virtual_hid_keyboard.hpp"
 #include <pqrs/json.hpp>
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class profile final {
 public:
   profile(const profile&) = delete;
@@ -275,6 +273,4 @@ private:
 inline void to_json(nlohmann::json& json, const profile& profile) {
   json = profile.to_json();
 }
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details

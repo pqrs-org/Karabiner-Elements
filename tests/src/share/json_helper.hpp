@@ -8,8 +8,7 @@
 #include <sstream>
 #include <string>
 
-namespace krbn {
-namespace unit_testing {
+namespace krbn::unit_testing {
 class json_helper final {
 public:
   static bool compare_files(const std::string& file_path1,
@@ -46,5 +45,4 @@ public:
     return json_utility::parse_jsonc(json_file);
   }
 };
-} // namespace unit_testing
-} // namespace krbn
+} // namespace krbn::unit_testing

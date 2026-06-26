@@ -7,8 +7,7 @@
 #include <pqrs/hash.hpp>
 #include <pqrs/json.hpp>
 
-namespace krbn {
-namespace event_queue {
+namespace krbn::event_queue {
 class event_time_stamp final {
 public:
   // Constructors
@@ -116,8 +115,7 @@ inline std::ostream& operator<<(std::ostream& stream, const event_time_stamp& va
 inline void to_json(nlohmann::json& json, const event_time_stamp& value) {
   json = value.to_json();
 }
-} // namespace event_queue
-} // namespace krbn
+} // namespace krbn::event_queue
 
 namespace std {
 template <>

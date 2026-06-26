@@ -22,8 +22,7 @@
 #include <pqrs/osx/system_preferences_monitor.hpp>
 #include <thread>
 
-namespace krbn {
-namespace console_user_server {
+namespace krbn::console_user_server {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -186,5 +185,4 @@ private:
   std::unique_ptr<pqrs::osx::input_source_monitor> input_source_monitor_;
   std::unique_ptr<receiver> receiver_;
 };
-} // namespace console_user_server
-} // namespace krbn
+} // namespace krbn::console_user_server

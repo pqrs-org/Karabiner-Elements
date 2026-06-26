@@ -2,8 +2,7 @@
 
 #include "manipulator/manipulator_factory.hpp"
 
-namespace krbn {
-namespace manipulator {
+namespace krbn::manipulator {
 class manipulator_manager final {
 public:
   manipulator_manager(const manipulator_manager&) = delete;
@@ -217,5 +216,4 @@ private:
   std::vector<pqrs::not_null_shared_ptr_t<manipulators::base>> manipulators_;
   mutable std::mutex manipulators_mutex_;
 };
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator

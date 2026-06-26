@@ -7,11 +7,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
-namespace manipulated_original_event {
+namespace krbn::manipulator::manipulators::basic::manipulated_original_event {
 class manipulated_original_event final {
 public:
   manipulated_original_event(const std::vector<from_event>& from_events,
@@ -111,8 +107,4 @@ private:
   events_at_key_up events_at_key_up_;
   bool key_up_posted_;
 };
-} // namespace manipulated_original_event
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic::manipulated_original_event

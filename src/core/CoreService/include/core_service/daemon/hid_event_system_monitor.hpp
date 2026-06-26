@@ -7,15 +7,13 @@
 #include <pqrs/osx/iokit_hid_event_system_client.hpp>
 #include <pqrs/osx/iokit_service_monitor.hpp>
 
-namespace krbn {
-namespace core_service {
-namespace daemon {
+namespace krbn::core_service::daemon {
 class hid_event_system_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   hid_event_system_monitor(const hid_event_system_monitor&) = delete;
 
   hid_event_system_monitor() : dispatcher_client(),
-                                   set_property_timer_(*this) {
+                               set_property_timer_(*this) {
     if (auto matching_dictionary = IOServiceNameMatching("AppleUserHIDEventDriver")) {
       monitor_ = std::make_unique<pqrs::osx::iokit_service_monitor>(weak_dispatcher_,
                                                                     pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
@@ -66,6 +64,4 @@ private:
   std::unique_ptr<pqrs::osx::iokit_service_monitor> monitor_;
   pqrs::dispatcher::extra::timer set_property_timer_;
 };
-} // namespace daemon
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::daemon

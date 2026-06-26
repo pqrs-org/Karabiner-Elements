@@ -16,10 +16,7 @@
 #include <pqrs/osx/chrono.hpp>
 #include <pqrs/sign.hpp>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace mouse_motion_to_scroll {
+namespace krbn::manipulator::manipulators::mouse_motion_to_scroll {
 class counter final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   using chunk_accumulated_values_entry_t = std::pair<pqrs::dispatcher::time_point, int>;
@@ -432,7 +429,4 @@ private:
 
   pqrs::dispatcher::extra::timer timer_;
 };
-} // namespace mouse_motion_to_scroll
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

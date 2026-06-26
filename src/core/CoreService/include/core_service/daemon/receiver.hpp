@@ -23,9 +23,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace krbn {
-namespace core_service {
-namespace daemon {
+namespace krbn::core_service::daemon {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   receiver(const receiver&) = delete;
@@ -779,6 +777,4 @@ private:
   focused_ui_element focused_ui_element_;
   pqrs::osx::input_source::properties input_source_properties_;
 };
-} // namespace daemon
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::daemon

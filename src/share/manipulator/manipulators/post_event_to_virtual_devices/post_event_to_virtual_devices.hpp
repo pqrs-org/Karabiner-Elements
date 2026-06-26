@@ -13,10 +13,7 @@
 #include <algorithm>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace post_event_to_virtual_devices {
+namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   post_event_to_virtual_devices(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
@@ -541,7 +538,4 @@ private:
   std::unique_ptr<mouse_key_handler> mouse_key_handler_;
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons pressed_buttons_;
 };
-} // namespace post_event_to_virtual_devices
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::post_event_to_virtual_devices

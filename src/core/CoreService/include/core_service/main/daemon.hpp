@@ -14,9 +14,7 @@
 #include <mach/mach.h>
 #include <pqrs/osx/workspace.hpp>
 
-namespace krbn {
-namespace core_service {
-namespace main {
+namespace krbn::core_service::main {
 
 int daemon() {
   // Note:
@@ -134,6 +132,4 @@ int daemon() {
 
   return 0;
 }
-} // namespace main
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::main

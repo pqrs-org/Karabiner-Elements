@@ -7,8 +7,7 @@
 #include <pqrs/regex.hpp>
 #include <regex>
 
-namespace krbn {
-namespace software_function_details {
+namespace krbn::software_function_details {
 class open_application {
 public:
   open_application() {
@@ -106,8 +105,7 @@ inline void from_json(const nlohmann::json& json, open_application& value) {
     }
   }
 }
-} // namespace software_function_details
-} // namespace krbn
+} // namespace krbn::software_function_details
 
 namespace std {
 template <>

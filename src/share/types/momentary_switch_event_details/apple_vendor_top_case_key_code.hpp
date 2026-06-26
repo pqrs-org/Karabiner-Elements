@@ -5,9 +5,7 @@
 #include <pqrs/osx/iokit_hid_value.hpp>
 #include <spdlog/fmt/fmt.h>
 
-namespace krbn {
-namespace momentary_switch_event_details {
-namespace apple_vendor_top_case_key_code {
+namespace krbn::momentary_switch_event_details::apple_vendor_top_case_key_code {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
     {"keyboard_fn", pqrs::hid::usage::apple_vendor_top_case::keyboard_fn},
     {"brightness_up", pqrs::hid::usage::apple_vendor_top_case::brightness_up},
@@ -42,6 +40,4 @@ inline pqrs::hid::usage_pair make_usage_pair(const std::string& key,
                                key,
                                json);
 }
-} // namespace apple_vendor_top_case_key_code
-} // namespace momentary_switch_event_details
-} // namespace krbn
+} // namespace krbn::momentary_switch_event_details::apple_vendor_top_case_key_code

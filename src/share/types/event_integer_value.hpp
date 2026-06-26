@@ -6,8 +6,7 @@
 #include <pqrs/json.hpp>
 #include <type_safe/strong_typedef.hpp>
 
-namespace krbn {
-namespace event_integer_value {
+namespace krbn::event_integer_value {
 struct value_t : type_safe::strong_typedef<value_t, int64_t>,
                  type_safe::strong_typedef_op::equality_comparison<value_t>,
                  type_safe::strong_typedef_op::relational_comparison<value_t> {
@@ -31,8 +30,7 @@ inline void from_json(const nlohmann::json& j, value_t& value) {
 
   value = value_t(j.get<type_safe::underlying_type<value_t>>());
 }
-} // namespace event_integer_value
-} // namespace krbn
+} // namespace krbn::event_integer_value
 
 namespace std {
 template <>

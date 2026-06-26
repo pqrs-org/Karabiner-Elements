@@ -7,10 +7,7 @@
 #include <pqrs/json.hpp>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
+namespace krbn::manipulator::manipulators::basic {
 class to_if_other_key_pressed final {
 public:
   class entry final {
@@ -237,7 +234,4 @@ private:
   std::weak_ptr<event_queue::queue> output_event_queue_;
   std::shared_ptr<manipulated_original_event::manipulated_original_event> other_key_manipulated_original_event_;
 };
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic

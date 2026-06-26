@@ -3,9 +3,7 @@
 #include "../configuration_json_helper.hpp"
 #include <pqrs/json.hpp>
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class global_configuration final {
 public:
   global_configuration(const global_configuration&) = delete;
@@ -160,6 +158,4 @@ private:
 inline void to_json(nlohmann::json& json, const global_configuration& global_configuration) {
   json = global_configuration.to_json();
 }
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details

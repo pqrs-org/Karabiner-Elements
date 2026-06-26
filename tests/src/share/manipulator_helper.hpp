@@ -11,8 +11,7 @@
 #include <pqrs/json.hpp>
 #include <pqrs/thread_wait.hpp>
 
-namespace krbn {
-namespace unit_testing {
+namespace krbn::unit_testing {
 using namespace boost::ut;
 using namespace boost::ut::literals;
 
@@ -314,5 +313,4 @@ private:
   std::shared_ptr<pqrs::dispatcher::pseudo_time_source> pseudo_time_source_;
   absolute_time_point now_;
 };
-} // namespace unit_testing
-} // namespace krbn
+} // namespace krbn::unit_testing

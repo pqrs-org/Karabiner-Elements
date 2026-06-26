@@ -7,9 +7,7 @@
 #include <ranges>
 #include <string_view>
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class device final {
 public:
   device(const device&) = delete;
@@ -680,6 +678,4 @@ private:
 inline void to_json(nlohmann::json& json, const device& device) {
   json = device.to_json();
 }
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details

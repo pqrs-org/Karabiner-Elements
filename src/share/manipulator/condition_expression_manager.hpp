@@ -9,8 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
+namespace krbn::manipulator {
 
 // We manage all conditions::expression instances with a manager
 // because changing a variable via set_variable requires updating every instance.
@@ -94,5 +93,4 @@ inline pqrs::not_null_shared_ptr_t<condition_expression_manager> get_shared_cond
   return p;
 }
 
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator

@@ -12,8 +12,7 @@
 #include <pqrs/osx/workspace.hpp>
 #include <regex>
 
-namespace krbn {
-namespace console_user_server {
+namespace krbn::console_user_server {
 class software_function_handler final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   software_function_handler()
@@ -313,5 +312,4 @@ private:
   std::deque<application> frontmost_application_history_;
   focused_ui_element focused_ui_element_;
 };
-} // namespace console_user_server
-} // namespace krbn
+} // namespace krbn::console_user_server

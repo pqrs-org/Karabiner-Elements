@@ -2,8 +2,7 @@
 
 #include <vector>
 
-namespace krbn {
-namespace vector_utility {
+namespace krbn::vector_utility {
 template <typename T>
 inline void move_element(std::vector<T>& v, size_t source_index, size_t destination_index) {
   if (source_index >= v.size() ||
@@ -29,5 +28,4 @@ inline void move_element(std::vector<T>& v, size_t source_index, size_t destinat
     }
   }
 }
-} // namespace vector_utility
-} // namespace krbn
+} // namespace krbn::vector_utility

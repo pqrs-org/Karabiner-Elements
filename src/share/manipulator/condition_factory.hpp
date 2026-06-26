@@ -12,9 +12,7 @@
 #include "core_configuration/core_configuration.hpp"
 #include <memory>
 
-namespace krbn {
-namespace manipulator {
-namespace condition_factory {
+namespace krbn::manipulator::condition_factory {
 
 inline pqrs::not_null_shared_ptr_t<conditions::base> make_condition(const nlohmann::json& json) {
   auto it = json.find("type");
@@ -99,6 +97,4 @@ inline pqrs::not_null_shared_ptr_t<conditions::base> make_frontmost_application_
   return std::make_shared<conditions::frontmost_application>(json);
 }
 
-} // namespace condition_factory
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::condition_factory

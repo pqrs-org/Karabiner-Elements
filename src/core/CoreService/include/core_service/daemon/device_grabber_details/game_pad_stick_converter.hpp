@@ -8,10 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace krbn {
-namespace core_service {
-namespace daemon {
-namespace device_grabber_details {
+namespace krbn::core_service::daemon::device_grabber_details {
 //
 // game_pad_stick_converter takes value_arrived data as input and outputs poinitng motion.
 // Due to the following characteristics, it is not possible to directly convert HID values from a gamepad into poinitng motion without using a converter.
@@ -645,7 +642,4 @@ private:
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> vertical_wheel_formula_;
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> horizontal_wheel_formula_;
 };
-} // namespace device_grabber_details
-} // namespace daemon
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::daemon::device_grabber_details

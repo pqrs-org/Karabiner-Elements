@@ -4,9 +4,7 @@
 #include "complex_modifications_rule.hpp"
 #include "vector_utility.hpp"
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class complex_modifications final {
 public:
   complex_modifications(const complex_modifications&) = delete;
@@ -99,6 +97,4 @@ private:
   std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_rule>> rules_;
   configuration_json_helper::helper_values helper_values_;
 };
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details

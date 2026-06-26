@@ -3,9 +3,7 @@
 #include "../../configuration_json_helper.hpp"
 #include "types.hpp"
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class parameters final {
 public:
   parameters(const parameters&) = delete;
@@ -52,9 +50,7 @@ private:
   std::chrono::milliseconds delay_milliseconds_before_open_device_;
   configuration_json_helper::helper_values helper_values_;
 };
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details
 
 namespace std {
 template <>

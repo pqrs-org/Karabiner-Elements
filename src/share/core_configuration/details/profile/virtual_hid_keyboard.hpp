@@ -5,9 +5,7 @@
 #include <pqrs/hid.hpp>
 #include <pqrs/osx/iokit_types.hpp>
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class virtual_hid_keyboard final {
 public:
   virtual_hid_keyboard(const virtual_hid_keyboard&) = delete;
@@ -96,9 +94,7 @@ private:
   bool indicate_sticky_modifier_keys_state_;
   configuration_json_helper::helper_values helper_values_;
 };
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details
 
 namespace std {
 template <>

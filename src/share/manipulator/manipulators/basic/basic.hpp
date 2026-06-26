@@ -15,10 +15,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
+namespace krbn::manipulator::manipulators::basic {
 class basic final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
   basic(const nlohmann::json& json,
@@ -847,7 +844,4 @@ private:
 
   std::vector<pqrs::not_null_shared_ptr_t<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
 };
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic

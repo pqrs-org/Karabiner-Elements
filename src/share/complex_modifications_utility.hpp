@@ -7,8 +7,7 @@
 #include "manipulator/condition_factory.hpp"
 #include "manipulator/manipulator_factory.hpp"
 
-namespace krbn {
-namespace complex_modifications_utility {
+namespace krbn::complex_modifications_utility {
 inline std::vector<std::string> lint_rule(const core_configuration::details::complex_modifications_rule& rule) {
   std::vector<std::string> error_messages;
 
@@ -158,5 +157,4 @@ void save_prettierrc() {
                                    0600);
   }
 }
-}; // namespace complex_modifications_utility
-} // namespace krbn
+} // namespace krbn::complex_modifications_utility

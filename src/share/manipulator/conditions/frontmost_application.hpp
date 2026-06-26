@@ -6,9 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace conditions {
+namespace krbn::manipulator::conditions {
 class frontmost_application final : public base {
 public:
   enum class type {
@@ -135,6 +133,4 @@ private:
 
   mutable std::optional<std::pair<application, bool>> cached_result_;
 };
-} // namespace conditions
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::conditions

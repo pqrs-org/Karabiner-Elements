@@ -7,15 +7,14 @@
 #include "session_monitor_receiver_client.hpp"
 #include <pqrs/osx/session.hpp>
 
-namespace krbn {
-namespace session_monitor {
+namespace krbn::session_monitor {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
 
   components_manager() : dispatcher_client(),
-                             on_console_(false),
-                             send_timer_(*this) {
+                         on_console_(false),
+                         send_timer_(*this) {
     //
     // version_monitor_
     //
@@ -103,5 +102,4 @@ private:
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   pqrs::dispatcher::extra::timer send_timer_;
 };
-} // namespace session_monitor
-} // namespace krbn
+} // namespace krbn::session_monitor

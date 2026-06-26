@@ -5,8 +5,7 @@
 #include <set>
 #include <unordered_set>
 
-namespace krbn {
-namespace manipulator {
+namespace krbn::manipulator {
 class from_modifiers_definition final {
 public:
   from_modifiers_definition() {
@@ -140,5 +139,4 @@ inline void from_json(const nlohmann::json& json, from_modifiers_definition& val
     }
   }
 }
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator

@@ -6,8 +6,7 @@
 #include <pqrs/json.hpp>
 #include <regex>
 
-namespace krbn {
-namespace software_function_details {
+namespace krbn::software_function_details {
 class set_mouse_cursor_position {
 public:
   class position_value {
@@ -250,8 +249,7 @@ inline void from_json(const nlohmann::json& json, set_mouse_cursor_position& val
     }
   }
 }
-} // namespace software_function_details
-} // namespace krbn
+} // namespace krbn::software_function_details
 
 namespace std {
 template <>

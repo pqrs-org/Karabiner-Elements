@@ -3,8 +3,7 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/process.hpp>
 
-namespace krbn {
-namespace console_user_server {
+namespace krbn::console_user_server {
 class shell_command_handler final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   shell_command_handler(const shell_command_handler&) = delete;
@@ -55,5 +54,4 @@ private:
 
   std::unique_ptr<pqrs::process::process> process_;
 };
-} // namespace console_user_server
-} // namespace krbn
+} // namespace krbn::console_user_server

@@ -5,9 +5,7 @@
 #include "json_utility.hpp"
 #include <pqrs/json.hpp>
 
-namespace krbn {
-namespace core_configuration {
-namespace details {
+namespace krbn::core_configuration::details {
 class complex_modifications_rule final {
 public:
   enum class code_type {
@@ -227,6 +225,4 @@ private:
   std::string code_string_;
   configuration_json_helper::helper_values helper_values_;
 };
-} // namespace details
-} // namespace core_configuration
-} // namespace krbn
+} // namespace krbn::core_configuration::details

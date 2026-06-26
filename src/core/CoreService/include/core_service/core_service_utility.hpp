@@ -15,9 +15,7 @@
 #include <pqrs/osx/workspace.hpp>
 #include <thread>
 
-namespace krbn {
-namespace core_service {
-namespace core_service_utility {
+namespace krbn::core_service::core_service_utility {
 
 static constexpr const char* karabiner_core_service_bundle_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app";
 
@@ -89,6 +87,4 @@ inline std::optional<core_service_permission_check_result> make_bundle_permissio
   return std::nullopt;
 }
 
-} // namespace core_service_utility
-} // namespace core_service
-} // namespace krbn
+} // namespace krbn::core_service::core_service_utility

@@ -4,10 +4,7 @@
 #include <pqrs/json.hpp>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
+namespace krbn::manipulator::manipulators::basic {
 class simultaneous_options final {
 public:
   enum class key_order {
@@ -150,7 +147,4 @@ inline void from_json(const nlohmann::json& json, simultaneous_options::key_up_w
     throw pqrs::json::unmarshal_error(fmt::format("unknown value: `{0}`", s));
   }
 }
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic

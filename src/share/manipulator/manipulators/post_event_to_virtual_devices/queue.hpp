@@ -10,10 +10,7 @@
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 #include <variant>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace post_event_to_virtual_devices {
+namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
 class queue final : pqrs::dispatcher::extra::dispatcher_client {
 public:
   class event final {
@@ -790,7 +787,4 @@ inline std::ostream& operator<<(std::ostream& stream, const queue::event& event)
 inline void to_json(nlohmann::json& json, const queue::event& value) {
   json = value.to_json();
 }
-} // namespace post_event_to_virtual_devices
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::post_event_to_virtual_devices

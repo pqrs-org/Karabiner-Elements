@@ -6,9 +6,7 @@
 #include "queue.hpp"
 #include <gsl/gsl>
 
-namespace krbn {
-namespace event_queue {
-namespace utility {
+namespace krbn::event_queue::utility {
 
 static inline int adjust_pointing_motion_value(const pqrs::osx::iokit_hid_value& value,
                                                double multiplier) {
@@ -213,6 +211,4 @@ static inline not_null_entries_ptr_t insert_device_keys_and_pointing_buttons_are
   return result;
 }
 
-} // namespace utility
-} // namespace event_queue
-} // namespace krbn
+} // namespace krbn::event_queue::utility

@@ -4,9 +4,7 @@
 #include <pqrs/string.hpp>
 #include <sstream>
 
-namespace krbn {
-namespace momentary_switch_event_details {
-namespace impl {
+namespace krbn::momentary_switch_event_details::impl {
 //
 // name and value pairs
 //
@@ -70,6 +68,4 @@ inline pqrs::hid::usage_pair make_usage_pair(const T& name_value_map,
     throw pqrs::json::unmarshal_error(ss.str());
   }
 }
-} // namespace impl
-} // namespace momentary_switch_event_details
-} // namespace krbn
+} // namespace krbn::momentary_switch_event_details::impl

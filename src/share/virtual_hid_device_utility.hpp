@@ -69,11 +69,7 @@ public:
 };
 } // namespace krbn
 
-namespace pqrs {
-namespace karabiner {
-namespace driverkit {
-namespace virtual_hid_device_driver {
-namespace hid_report {
+namespace pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report {
 inline void to_json(nlohmann::json& json, const modifiers& v) {
   json = krbn::virtual_hid_device_utility::to_json(v);
 }
@@ -81,8 +77,4 @@ inline void to_json(nlohmann::json& json, const modifiers& v) {
 inline void to_json(nlohmann::json& json, const buttons& v) {
   json = krbn::virtual_hid_device_utility::to_json(v);
 }
-} // namespace hid_report
-} // namespace virtual_hid_device_driver
-} // namespace driverkit
-} // namespace karabiner
-} // namespace pqrs
+} // namespace pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report

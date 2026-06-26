@@ -4,9 +4,7 @@
 #include <pqrs/json.hpp>
 #include <unordered_set>
 
-namespace krbn {
-namespace manipulator {
-namespace modifier_definition {
+namespace krbn::manipulator::modifier_definition {
 enum class modifier {
   any,
   caps_lock,
@@ -143,6 +141,4 @@ inline std::ostream& operator<<(std::ostream& stream,
                                                 std::allocator<modifier>>& values) {
   return stream << nlohmann::json(values);
 }
-} // namespace modifier_definition
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::modifier_definition

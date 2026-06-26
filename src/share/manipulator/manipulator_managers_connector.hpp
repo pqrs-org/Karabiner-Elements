@@ -8,8 +8,7 @@
 #include <gsl/gsl>
 #include <mutex>
 
-namespace krbn {
-namespace manipulator {
+namespace krbn::manipulator {
 class manipulator_managers_connector final {
 public:
   class connection final {
@@ -179,5 +178,4 @@ private:
   std::vector<connection> connections_;
   mutable std::mutex connections_mutex_;
 };
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator

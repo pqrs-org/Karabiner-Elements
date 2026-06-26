@@ -2,10 +2,7 @@
 
 #include "queue.hpp"
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace post_event_to_virtual_devices {
+namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
 class key_event_dispatcher final {
 public:
   void dispatch_key_down_event(device_id device_id,
@@ -172,7 +169,4 @@ private:
   std::vector<std::pair<device_id, pqrs::hid::usage_pair>> pressed_keys_;
   std::unordered_set<modifier_flag> pressed_modifier_flags_;
 };
-} // namespace post_event_to_virtual_devices
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::post_event_to_virtual_devices

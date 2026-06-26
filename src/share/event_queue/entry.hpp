@@ -9,8 +9,7 @@
 #include <gsl/gsl>
 #include <pqrs/json.hpp>
 
-namespace krbn {
-namespace event_queue {
+namespace krbn::event_queue {
 
 class entry final {
 public:
@@ -256,5 +255,4 @@ inline void to_json(nlohmann::json& json, const entry& value) {
 typedef pqrs::not_null_shared_ptr_t<const entry> not_null_const_entry_ptr_t;
 typedef pqrs::not_null_shared_ptr_t<std::vector<not_null_const_entry_ptr_t>> not_null_entries_ptr_t;
 
-} // namespace event_queue
-} // namespace krbn
+} // namespace krbn::event_queue

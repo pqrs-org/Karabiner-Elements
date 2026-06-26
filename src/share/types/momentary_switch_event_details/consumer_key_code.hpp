@@ -3,9 +3,7 @@
 #include "impl.hpp"
 #include <mapbox/eternal.hpp>
 
-namespace krbn {
-namespace momentary_switch_event_details {
-namespace consumer_key_code {
+namespace krbn::momentary_switch_event_details::consumer_key_code {
 constexpr std::pair<const mapbox::eternal::string, const pqrs::hid::usage::value_t> name_value_pairs[] = {
     // High priority aliases
     {"dictation", pqrs::hid::usage::consumer::voice_command},
@@ -173,6 +171,4 @@ inline pqrs::hid::usage_pair make_usage_pair(const std::string& key,
                                key,
                                json);
 }
-} // namespace consumer_key_code
-} // namespace momentary_switch_event_details
-} // namespace krbn
+} // namespace krbn::momentary_switch_event_details::consumer_key_code

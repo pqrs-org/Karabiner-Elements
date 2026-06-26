@@ -9,9 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace conditions {
+namespace krbn::manipulator::conditions {
 class device final : public base {
 public:
   enum class type {
@@ -266,6 +264,4 @@ private:
   type type_;
   std::vector<definition> definitions_;
 };
-} // namespace conditions
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::conditions

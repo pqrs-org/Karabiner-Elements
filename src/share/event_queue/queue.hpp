@@ -8,8 +8,7 @@
 #include "pointing_button_manager.hpp"
 #include <string_view>
 
-namespace krbn {
-namespace event_queue {
+namespace krbn::event_queue {
 class queue {
 public:
   queue(const queue&) = delete;
@@ -364,5 +363,4 @@ private:
   manipulator::manipulator_environment manipulator_environment_;
   absolute_time_duration time_stamp_delay_;
 };
-} // namespace event_queue
-} // namespace krbn
+} // namespace krbn::event_queue

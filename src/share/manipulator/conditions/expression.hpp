@@ -5,9 +5,7 @@
 #include <optional>
 #include <string>
 
-namespace krbn {
-namespace manipulator {
-namespace conditions {
+namespace krbn::manipulator::conditions {
 class expression final : public base {
 public:
   enum class type {
@@ -77,6 +75,4 @@ private:
   type type_;
   std::shared_ptr<exprtk_utility::expression_wrapper> expression_;
 };
-} // namespace conditions
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::conditions

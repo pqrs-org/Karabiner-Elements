@@ -4,8 +4,7 @@
 #include <pqrs/json.hpp>
 #include <string_view>
 
-namespace krbn {
-namespace software_function_details {
+namespace krbn::software_function_details {
 class cg_event_double_click {
 public:
   cg_event_double_click()
@@ -42,8 +41,7 @@ inline void from_json(const nlohmann::json& json, cg_event_double_click& value) 
     }
   }
 }
-} // namespace software_function_details
-} // namespace krbn
+} // namespace krbn::software_function_details
 
 namespace std {
 template <>

@@ -6,10 +6,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace basic {
+namespace krbn::manipulator::manipulators::basic {
 class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   to_if_held_down(const nlohmann::json& json) : dispatcher_client(),
@@ -152,7 +149,4 @@ private:
   std::weak_ptr<event_queue::queue> output_event_queue_;
   int current_held_down_id_;
 };
-} // namespace basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::basic

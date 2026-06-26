@@ -3,10 +3,7 @@
 #include "../../types.hpp"
 #include "../base.hpp"
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace mouse_basic {
+namespace krbn::manipulator::manipulators::mouse_basic {
 class mouse_basic final : public base {
 public:
   mouse_basic(const nlohmann::json& json,
@@ -236,7 +233,4 @@ private:
   bool discard_vertical_wheel_;
   bool discard_horizontal_wheel_;
 };
-} // namespace mouse_basic
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::mouse_basic

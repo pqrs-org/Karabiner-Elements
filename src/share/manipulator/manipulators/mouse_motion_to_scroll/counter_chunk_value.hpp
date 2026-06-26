@@ -4,16 +4,13 @@
 #include <cstdlib>
 #include <pqrs/sign.hpp>
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
-namespace mouse_motion_to_scroll {
+namespace krbn::manipulator::manipulators::mouse_motion_to_scroll {
 class counter_chunk_value final {
 public:
   counter_chunk_value() : plus_value_(0),
-                              minus_value_(0),
-                              abs_total_(0),
-                              last_sign_(pqrs::sign::zero) {
+                          minus_value_(0),
+                          abs_total_(0),
+                          last_sign_(pqrs::sign::zero) {
   }
 
   int get_abs_total() const {
@@ -57,7 +54,4 @@ private:
   int abs_total_;
   pqrs::sign last_sign_;
 };
-} // namespace mouse_motion_to_scroll
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

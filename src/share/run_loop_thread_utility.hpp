@@ -33,5 +33,5 @@ public:
     static std::shared_ptr<pqrs::cf::run_loop_thread> p;
     return p;
   }
-}; // namespace run_loop_thread_utility
+};
 } // namespace krbn

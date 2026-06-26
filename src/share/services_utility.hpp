@@ -3,8 +3,7 @@
 #include <pqrs/osx/launchctl.hpp>
 #include <pqrs/process.hpp>
 
-namespace krbn {
-namespace services_utility {
+namespace krbn::services_utility {
 
 static constexpr const char* daemons_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons v2.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v2";
 static constexpr const char* agents_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents v2.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v2";
@@ -185,5 +184,4 @@ inline bool agent_running(const std::string& service_name) {
   return pid != std::nullopt;
 }
 
-} // namespace services_utility
-} // namespace krbn
+} // namespace krbn::services_utility

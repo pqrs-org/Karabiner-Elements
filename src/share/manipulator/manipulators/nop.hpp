@@ -3,9 +3,7 @@
 #include "../types.hpp"
 #include "base.hpp"
 
-namespace krbn {
-namespace manipulator {
-namespace manipulators {
+namespace krbn::manipulator::manipulators {
 class nop final : public base {
 public:
   nop() : base() {
@@ -46,6 +44,4 @@ public:
                                                    event_queue::queue& output_event_queue) override {
   }
 };
-} // namespace manipulators
-} // namespace manipulator
-} // namespace krbn
+} // namespace krbn::manipulator::manipulators

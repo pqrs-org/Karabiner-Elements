@@ -2,8 +2,7 @@
 
 #include <chrono>
 
-namespace krbn {
-namespace chrono_utility {
+namespace krbn::chrono_utility {
 inline std::size_t milliseconds_since_epoch() {
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
@@ -15,5 +14,4 @@ inline std::size_t nanoseconds_since_epoch() {
   auto duration = now.time_since_epoch();
   return std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
 }
-}; // namespace chrono_utility
-} // namespace krbn
+} // namespace krbn::chrono_utility
