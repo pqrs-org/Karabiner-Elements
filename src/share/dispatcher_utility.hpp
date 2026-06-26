@@ -3,6 +3,7 @@
 // `krbn::dispatcher_utility` can be used safely in a multi-threaded environment.
 
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/gsl.hpp>
 
 namespace krbn {
 class dispatcher_utility final {
@@ -49,7 +50,7 @@ private:
   public:
     file_writer()
         : time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
-          dispatcher_(std::make_shared<pqrs::dispatcher::dispatcher>(time_source_)),
+          dispatcher_(std::make_shared<pqrs::dispatcher::dispatcher>(time_source_.get())),
           object_id_(pqrs::dispatcher::make_new_object_id()) {
       dispatcher_->attach(object_id_);
     }
@@ -64,8 +65,8 @@ private:
     }
 
   private:
-    std::shared_ptr<pqrs::dispatcher::hardware_time_source> time_source_;
-    std::shared_ptr<pqrs::dispatcher::dispatcher> dispatcher_;
+    pqrs::not_null_shared_ptr_t<pqrs::dispatcher::hardware_time_source> time_source_;
+    pqrs::not_null_shared_ptr_t<pqrs::dispatcher::dispatcher> dispatcher_;
     pqrs::dispatcher::object_id object_id_;
   };
 

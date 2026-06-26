@@ -4,12 +4,14 @@
 #include "event_queue.hpp"
 #include "manipulator/manipulator_environment.hpp"
 #include "types/device_id.hpp"
+#include <pqrs/gsl.hpp>
 
 namespace krbn::unit_testing {
 class manipulator_conditions_helper final {
 public:
-  manipulator_conditions_helper() : last_device_id_(0) {
-    core_configuration_ = std::make_shared<krbn::core_configuration::core_configuration>();
+  manipulator_conditions_helper()
+      : core_configuration_(std::make_shared<krbn::core_configuration::core_configuration>()),
+        last_device_id_(0) {
     manipulator_environment_.set_core_configuration(core_configuration_);
   }
 
@@ -21,7 +23,7 @@ public:
     return const_cast<krbn::manipulator::manipulator_environment&>(static_cast<const manipulator_conditions_helper&>(*this).get_manipulator_environment());
   }
 
-  std::shared_ptr<krbn::core_configuration::core_configuration> get_core_configuration() const {
+  pqrs::not_null_shared_ptr_t<krbn::core_configuration::core_configuration> get_core_configuration() const {
     return core_configuration_;
   }
 
@@ -51,7 +53,7 @@ public:
 
 private:
   krbn::manipulator::manipulator_environment manipulator_environment_;
-  std::shared_ptr<krbn::core_configuration::core_configuration> core_configuration_;
+  pqrs::not_null_shared_ptr_t<krbn::core_configuration::core_configuration> core_configuration_;
   int last_device_id_;
 };
 } // namespace krbn::unit_testing

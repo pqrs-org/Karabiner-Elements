@@ -5,8 +5,8 @@
 #include "event_queue.hpp"
 #include "logger.hpp"
 #include "manipulator/manipulator_manager.hpp"
-#include <gsl/gsl>
 #include <mutex>
+#include <pqrs/gsl.hpp>
 
 namespace krbn::manipulator {
 class manipulator_managers_connector final {

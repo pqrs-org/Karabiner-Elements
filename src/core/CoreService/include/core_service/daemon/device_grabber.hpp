@@ -184,12 +184,12 @@ public:
 
     // Connect manipulator_managers
 
-    manipulator_managers_connector_.emplace_back_connection(simple_modifications_manipulator_manager_->get_manipulator_manager(),
+    manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(simple_modifications_manipulator_manager_->get_manipulator_manager()),
                                                             merged_input_event_queue_,
                                                             simple_modifications_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(complex_modifications_manipulator_manager_,
                                                             complex_modifications_applied_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(fn_function_keys_manipulator_manager_->get_manipulator_manager(),
+    manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(fn_function_keys_manipulator_manager_->get_manipulator_manager()),
                                                             fn_function_keys_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
                                                             posted_event_queue_);

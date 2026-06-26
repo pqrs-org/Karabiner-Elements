@@ -5,15 +5,16 @@
 #include "manipulator/condition_factory.hpp"
 #include "manipulator/manipulator_manager.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
+#include <pqrs/gsl.hpp>
 
 namespace krbn::core_service::daemon::device_grabber_details {
 class fn_function_keys_manipulator_manager final {
 public:
-  fn_function_keys_manipulator_manager() {
-    manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
+  fn_function_keys_manipulator_manager()
+      : manipulator_manager_(std::make_shared<manipulator::manipulator_manager>()) {
   }
 
-  std::shared_ptr<manipulator::manipulator_manager> get_manipulator_manager() const {
+  pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager> get_manipulator_manager() const {
     return manipulator_manager_;
   }
 
@@ -326,6 +327,6 @@ private:
            key_code == "f12";
   }
 
-  std::shared_ptr<manipulator::manipulator_manager> manipulator_manager_;
+  pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager> manipulator_manager_;
 };
 } // namespace krbn::core_service::daemon::device_grabber_details

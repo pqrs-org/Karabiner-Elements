@@ -227,7 +227,7 @@ int main() {
       auto output_event_queue = std::make_shared<krbn::event_queue::queue>();
 
       auto connector = std::make_shared<krbn::manipulator::manipulator_managers_connector>();
-      connector->emplace_back_connection(manager->get_manipulator_manager(),
+      connector->emplace_back_connection(pqrs::make_weak(manager->get_manipulator_manager()),
                                          input_event_queue_copy,
                                          intermediate_event_queue);
       connector->emplace_back_connection(post_event_to_virtual_devices_manipulator_manager,
@@ -341,7 +341,7 @@ int main() {
       auto output_event_queue = std::make_shared<krbn::event_queue::queue>();
 
       auto connector = std::make_shared<krbn::manipulator::manipulator_managers_connector>();
-      connector->emplace_back_connection(manager->get_manipulator_manager(),
+      connector->emplace_back_connection(pqrs::make_weak(manager->get_manipulator_manager()),
                                          input_event_queue_copy,
                                          intermediate_event_queue);
       connector->emplace_back_connection(post_event_to_virtual_devices_manipulator_manager,

@@ -2,12 +2,13 @@
 #include "manipulator/manipulators/mouse_motion_to_scroll/counter.hpp"
 #include <boost/ut.hpp>
 #include <iostream>
+#include <pqrs/gsl.hpp>
 
 namespace mouse_motion_to_scroll = krbn::manipulator::manipulators::mouse_motion_to_scroll;
 
 class counter_test final : pqrs::dispatcher::extra::dispatcher_client {
 public:
-  counter_test(std::shared_ptr<pqrs::dispatcher::pseudo_time_source> time_source,
+  counter_test(pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> time_source,
                std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
                pqrs::not_null_shared_ptr_t<const krbn::core_configuration::details::complex_modifications_parameters> parameters,
                const mouse_motion_to_scroll::options& options) : dispatcher_client(weak_dispatcher),
@@ -71,7 +72,7 @@ public:
   }
 
 private:
-  std::shared_ptr<pqrs::dispatcher::pseudo_time_source> time_source_;
+  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> time_source_;
   mouse_motion_to_scroll::counter counter_;
   int first_ms_;
   int last_ms_;

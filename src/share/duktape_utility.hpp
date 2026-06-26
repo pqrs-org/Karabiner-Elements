@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <pqrs/gsl.hpp>
 #include <spdlog/fmt/fmt.h>
 #include <sstream>
 #include <utf8cpp/utf8.h>
@@ -126,12 +127,12 @@ inline void free(void* udata, void* ptr) {
 }
 
 inline void setup_console(duk_context* ctx,
-                          const std::shared_ptr<std::string>& log_messages) {
+                          pqrs::not_null_shared_ptr_t<std::string> log_messages) {
   duk_console_init(ctx, DUK_CONSOLE_FLUSH);
 
   {
     duk_push_heap_stash(ctx);
-    duk_push_pointer(ctx, log_messages.get());
+    duk_push_pointer(ctx, log_messages.get().get());
     duk_put_prop_string(ctx, -2, "krbn_console_log_messages");
     duk_pop(ctx);
   }
@@ -185,7 +186,7 @@ inline std::string build_eval_error_message(const eval_heap_state& heap_state,
 struct eval_context {
   eval_heap_state heap_state;
   duk_context* ctx;
-  std::shared_ptr<std::string> log_messages;
+  pqrs::not_null_shared_ptr_t<std::string> log_messages;
 };
 
 inline eval_context create_context_with_limits() {

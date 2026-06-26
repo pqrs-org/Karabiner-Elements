@@ -1,5 +1,6 @@
 #include "../../../../src/core/console_user_server/include/console_user_server/settings_window_guidance_manager.hpp"
 #include <boost/ut.hpp>
+#include <pqrs/gsl.hpp>
 #include <pqrs/thread_wait.hpp>
 
 namespace {
@@ -41,7 +42,7 @@ struct manager_test_context final {
   manager_test_context(const initialization_parameters& parameters)
       : current_context(make_guidance_context(parameters.enabled,
                                               parameters.running)),
-        manager(dispatcher, [this] { return current_context; }, parameters.launch_settings_handler) {
+        manager(pqrs::make_weak(dispatcher), [this] { return current_context; }, parameters.launch_settings_handler) {
     time_source->set_now(pqrs::dispatcher::time_point(std::chrono::milliseconds(0)));
   }
 
@@ -58,8 +59,8 @@ struct manager_test_context final {
     wait->wait_notice();
   }
 
-  std::shared_ptr<pqrs::dispatcher::pseudo_time_source> time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-  std::shared_ptr<pqrs::dispatcher::dispatcher> dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
+  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
+  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::dispatcher> dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source.get());
   krbn::settings_window_guidance_context current_context;
   krbn::console_user_server::settings_window_guidance_manager manager;
 };
