@@ -70,7 +70,7 @@ public:
     }
   }
 
-  virtual ~to_delayed_action() {
+  ~to_delayed_action() override {
     detach_from_dispatcher();
   }
 

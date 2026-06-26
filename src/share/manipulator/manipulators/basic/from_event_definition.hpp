@@ -16,7 +16,7 @@ public:
       : simultaneous_options_(std::make_shared<simultaneous_options>()) {
   }
 
-  virtual ~from_event_definition() {
+  ~from_event_definition() {
   }
 
   const std::vector<event_definition>& get_event_definitions() const {

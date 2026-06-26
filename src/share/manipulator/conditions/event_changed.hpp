@@ -52,11 +52,11 @@ public:
     }
   }
 
-  virtual ~event_changed() {
+  ~event_changed() override {
   }
 
-  virtual bool is_fulfilled(const condition_context& condition_context,
-                            const manipulator_environment& manipulator_environment) const {
+  bool is_fulfilled(const condition_context& condition_context,
+                    const manipulator_environment& manipulator_environment) const override {
     if (value_) {
       switch (type_) {
         case type::event_changed_if:

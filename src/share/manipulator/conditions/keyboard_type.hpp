@@ -52,11 +52,11 @@ public:
     }
   }
 
-  virtual ~keyboard_type() {
+  ~keyboard_type() override {
   }
 
-  virtual bool is_fulfilled(const condition_context& condition_context,
-                            const manipulator_environment& manipulator_environment) const {
+  bool is_fulfilled(const condition_context& condition_context,
+                    const manipulator_environment& manipulator_environment) const override {
     auto c = manipulator_environment.get_core_configuration();
     auto&& current_keyboard_type = c->get_selected_profile().get_virtual_hid_keyboard()->get_keyboard_type_v2();
 

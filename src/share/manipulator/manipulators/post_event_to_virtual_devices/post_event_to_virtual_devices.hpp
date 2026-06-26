@@ -32,20 +32,20 @@ public:
     mouse_key_handler_ = std::make_unique<mouse_key_handler>(queue_);
   }
 
-  virtual ~post_event_to_virtual_devices() {
+  ~post_event_to_virtual_devices() override {
     detach_from_dispatcher([this] {
       mouse_key_handler_ = nullptr;
     });
   }
 
-  virtual bool already_manipulated(const event_queue::entry& front_input_event) {
+  bool already_manipulated(const event_queue::entry& front_input_event) override {
     return false;
   }
 
-  virtual manipulate_result manipulate(event_queue::entry& front_input_event,
-                                       const event_queue::queue& input_event_queue,
-                                       std::shared_ptr<event_queue::queue> output_event_queue,
-                                       absolute_time_point now) {
+  manipulate_result manipulate(event_queue::entry& front_input_event,
+                               const event_queue::queue& input_event_queue,
+                               std::shared_ptr<event_queue::queue> output_event_queue,
+                               absolute_time_point now) override {
     if (output_event_queue) {
       if (front_input_event.get_validity() == validity::invalid) {
         return manipulate_result::passed;
@@ -272,16 +272,16 @@ public:
     return manipulate_result::passed;
   }
 
-  virtual bool active() const {
+  bool active() const override {
     return !queue_.empty();
   }
 
-  virtual bool needs_virtual_hid_pointing() const {
+  bool needs_virtual_hid_pointing() const override {
     return false;
   }
 
-  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
-                                                                          event_queue::queue& output_event_queue) {
+  void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
+                                                                  event_queue::queue& output_event_queue) override {
     // modifier flags
 
     key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
@@ -330,9 +330,9 @@ public:
                                                       front_input_event.get_event_time_stamp().get_time_stamp());
   }
 
-  virtual void handle_device_ungrabbed_event(device_id device_id,
-                                             const event_queue::queue& output_event_queue,
-                                             absolute_time_point time_stamp) {
+  void handle_device_ungrabbed_event(device_id device_id,
+                                     const event_queue::queue& output_event_queue,
+                                     absolute_time_point time_stamp) override {
     // Release pressed keys
 
     key_event_dispatcher_.dispatch_key_up_events_by_device_id(device_id,
@@ -365,8 +365,8 @@ public:
                                                       time_stamp);
   }
 
-  virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
-                                                           event_queue::queue& output_event_queue) {
+  void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
+                                                   event_queue::queue& output_event_queue) override {
     // We should not dispatch modifier key events while key repeating.
     //
     // macOS does not ignore the modifier state change while key repeating.
@@ -399,7 +399,7 @@ public:
     }
   }
 
-  virtual void set_validity(validity value) {
+  void set_validity(validity value) override {
     // This manipulator is always valid.
   }
 

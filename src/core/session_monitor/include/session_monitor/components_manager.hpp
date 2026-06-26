@@ -54,7 +54,7 @@ public:
     });
   }
 
-  virtual ~components_manager() {
+  ~components_manager() override {
     detach_from_dispatcher([this] {
       send_timer_.stop();
 

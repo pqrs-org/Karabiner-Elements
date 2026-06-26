@@ -33,7 +33,7 @@ public:
     }
   }
 
-  virtual ~to_if_held_down() {
+  ~to_if_held_down() override {
     detach_from_dispatcher();
   }
 

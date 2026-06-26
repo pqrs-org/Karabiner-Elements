@@ -67,7 +67,7 @@ public:
     });
   }
 
-  virtual ~components_manager() {
+  ~components_manager() override {
     detach_from_dispatcher([this] {
       stop_core_service_client();
 

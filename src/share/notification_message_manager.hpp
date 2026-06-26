@@ -16,7 +16,7 @@ public:
       : dispatcher_client() {
   }
 
-  virtual ~notification_message_manager() {
+  ~notification_message_manager() override {
     detach_from_dispatcher();
   }
 

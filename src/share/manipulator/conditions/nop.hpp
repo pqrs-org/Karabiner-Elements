@@ -10,11 +10,11 @@ public:
   nop() : base() {
   }
 
-  virtual ~nop() {
+  ~nop() override {
   }
 
-  virtual bool is_fulfilled(const condition_context& condition_context,
-                            const manipulator_environment& manipulator_environment) const {
+  bool is_fulfilled(const condition_context& condition_context,
+                    const manipulator_environment& manipulator_environment) const override {
     return true;
   }
 };

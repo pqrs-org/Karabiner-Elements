@@ -148,11 +148,11 @@ public:
         to_(to) {
   }
 
-  virtual ~basic() {
+  ~basic() override {
     detach_from_dispatcher();
   }
 
-  virtual bool already_manipulated(const event_queue::entry& front_input_event) {
+  bool already_manipulated(const event_queue::entry& front_input_event) override {
     // Skip if the key_down event is already manipulated by `simultaneous`.
 
     manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
@@ -177,10 +177,10 @@ public:
     return false;
   }
 
-  virtual manipulate_result manipulate(event_queue::entry& front_input_event,
-                                       const event_queue::queue& input_event_queue,
-                                       std::shared_ptr<event_queue::queue> output_event_queue,
-                                       absolute_time_point now) {
+  manipulate_result manipulate(event_queue::entry& front_input_event,
+                               const event_queue::queue& input_event_queue,
+                               std::shared_ptr<event_queue::queue> output_event_queue,
+                               absolute_time_point now) override {
     if (output_event_queue) {
       unset_alone_if_needed(front_input_event.get_event(),
                             front_input_event.get_event_type());
@@ -707,11 +707,11 @@ public:
     return manipulate_result::passed;
   }
 
-  virtual bool active() const {
+  bool active() const override {
     return !manipulated_original_events_.empty();
   }
 
-  virtual bool needs_virtual_hid_pointing() const {
+  bool needs_virtual_hid_pointing() const override {
     for (const auto& events : {to_,
                                to_after_key_up_,
                                to_if_alone_}) {
@@ -745,13 +745,13 @@ public:
     return false;
   }
 
-  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
-                                                                          event_queue::queue& output_event_queue) {
+  void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
+                                                                  event_queue::queue& output_event_queue) override {
   }
 
-  virtual void handle_device_ungrabbed_event(device_id device_id,
-                                             const event_queue::queue& output_event_queue,
-                                             absolute_time_point time_stamp) {
+  void handle_device_ungrabbed_event(device_id device_id,
+                                     const event_queue::queue& output_event_queue,
+                                     absolute_time_point time_stamp) override {
     for (auto&& e : manipulated_original_events_) {
       e->erase_from_events_by_device_id(device_id);
     }
@@ -764,8 +764,8 @@ public:
                                        std::end(manipulated_original_events_));
   }
 
-  virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
-                                                           event_queue::queue& output_event_queue) {
+  void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
+                                                   event_queue::queue& output_event_queue) override {
     unset_alone_if_needed(front_input_event.get_original_event(),
                           front_input_event.get_event_type());
   }

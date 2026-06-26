@@ -89,7 +89,7 @@ public:
     }
   }
 
-  virtual ~to_event_definition() {
+  ~to_event_definition() {
   }
 
   static pqrs::not_null_shared_ptr_t<to_event_definition> make_from_momentary_switch_event(const momentary_switch_event& value,

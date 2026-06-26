@@ -53,7 +53,7 @@ public:
     }
   }
 
-  virtual ~hid_event_system_monitor() {
+  ~hid_event_system_monitor() override {
     detach_from_dispatcher([this] {
       set_property_timer_.stop();
 

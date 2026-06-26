@@ -21,7 +21,7 @@ public:
         check_trusted_(false) {
   }
 
-  virtual ~software_function_handler() {
+  ~software_function_handler() override {
     detach_from_dispatcher();
   }
 

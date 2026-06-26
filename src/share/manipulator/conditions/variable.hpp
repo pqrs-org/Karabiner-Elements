@@ -59,11 +59,11 @@ public:
     }
   }
 
-  virtual ~variable() {
+  ~variable() override {
   }
 
-  virtual bool is_fulfilled(const condition_context& condition_context,
-                            const manipulator_environment& manipulator_environment) const {
+  bool is_fulfilled(const condition_context& condition_context,
+                    const manipulator_environment& manipulator_environment) const override {
     switch (type_) {
       case type::variable_if:
         return manipulator_environment.get_variable(*name_) == *value_;

@@ -11,39 +11,39 @@ public:
   nop() : base() {
   }
 
-  virtual ~nop() {
+  ~nop() override {
   }
 
-  virtual bool already_manipulated(const event_queue::entry& front_input_event) {
+  bool already_manipulated(const event_queue::entry& front_input_event) override {
     return false;
   }
 
-  virtual manipulate_result manipulate(event_queue::entry& front_input_event,
-                                       const event_queue::queue& input_event_queue,
-                                       std::shared_ptr<event_queue::queue> output_event_queue,
-                                       absolute_time_point now) {
+  manipulate_result manipulate(event_queue::entry& front_input_event,
+                               const event_queue::queue& input_event_queue,
+                               std::shared_ptr<event_queue::queue> output_event_queue,
+                               absolute_time_point now) override {
     return manipulate_result::passed;
   }
 
-  virtual bool active() const {
+  bool active() const override {
     return false;
   }
 
-  virtual bool needs_virtual_hid_pointing() const {
+  bool needs_virtual_hid_pointing() const override {
     return false;
   }
 
-  virtual void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
-                                                                          event_queue::queue& output_event_queue) {
+  void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
+                                                                  event_queue::queue& output_event_queue) override {
   }
 
-  virtual void handle_device_ungrabbed_event(device_id device_id,
-                                             const event_queue::queue& output_event_queue,
-                                             absolute_time_point time_stamp) {
+  void handle_device_ungrabbed_event(device_id device_id,
+                                     const event_queue::queue& output_event_queue,
+                                     absolute_time_point time_stamp) override {
   }
 
-  virtual void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
-                                                           event_queue::queue& output_event_queue) {
+  void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
+                                                   event_queue::queue& output_event_queue) override {
   }
 };
 } // namespace manipulators

@@ -55,7 +55,7 @@ public:
                                     timer_(*this) {
   }
 
-  virtual ~mouse_key_handler() {
+  ~mouse_key_handler() override {
     detach_from_dispatcher([this] {
       timer_.stop();
     });

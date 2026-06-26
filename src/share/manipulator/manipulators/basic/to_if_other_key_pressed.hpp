@@ -63,7 +63,7 @@ public:
     }
   }
 
-  virtual ~to_if_other_key_pressed() {
+  ~to_if_other_key_pressed() {
   }
 
   const std::vector<pqrs::not_null_shared_ptr_t<entry>>& get_entries() const {

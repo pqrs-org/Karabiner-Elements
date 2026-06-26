@@ -15,7 +15,7 @@ public:
   components_manager_killer() : dispatcher_client() {
   }
 
-  virtual ~components_manager_killer() {
+  ~components_manager_killer() override {
     detach_from_dispatcher();
   }
 

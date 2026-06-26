@@ -63,11 +63,11 @@ public:
     }
   }
 
-  virtual ~frontmost_application() {
+  ~frontmost_application() override {
   }
 
-  virtual bool is_fulfilled(const condition_context& condition_context,
-                            const manipulator_environment& manipulator_environment) const {
+  bool is_fulfilled(const condition_context& condition_context,
+                    const manipulator_environment& manipulator_environment) const override {
     if (cached_result_ && cached_result_->first == manipulator_environment.get_frontmost_application()) {
       return cached_result_->second;
     }

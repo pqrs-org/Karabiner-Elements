@@ -12,7 +12,7 @@ public:
   from_modifiers_definition() {
   }
 
-  virtual ~from_modifiers_definition() {
+  ~from_modifiers_definition() {
   }
 
   const std::set<modifier_definition::modifier>& get_mandatory_modifiers() const {

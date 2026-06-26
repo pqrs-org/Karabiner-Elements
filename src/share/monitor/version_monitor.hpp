@@ -57,7 +57,7 @@ public:
     });
   }
 
-  virtual ~version_monitor() {
+  ~version_monitor() override {
     detach_from_dispatcher([this] {
       file_monitor_ = nullptr;
     });

@@ -59,11 +59,11 @@ public:
     }
   }
 
-  virtual ~device() {
+  ~device() override {
   }
 
-  virtual bool is_fulfilled(const condition_context& condition_context,
-                            const manipulator_environment& manipulator_environment) const {
+  bool is_fulfilled(const condition_context& condition_context,
+                    const manipulator_environment& manipulator_environment) const override {
     if (!definitions_.empty()) {
       switch (type_) {
         case type::device_if:

@@ -340,7 +340,7 @@ public:
         last_event_time_stamp_(0) {
   }
 
-  virtual ~queue() {
+  ~queue() override {
     detach_from_dispatcher();
   }
 

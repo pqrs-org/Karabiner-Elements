@@ -28,7 +28,7 @@ public:
     }
   }
 
-  virtual ~manipulator_helper() {
+  ~manipulator_helper() override {
     detach_from_dispatcher([this] {
       if (auto d = weak_dispatcher_.lock()) {
         d->set_weak_time_source(original_weak_time_source_);

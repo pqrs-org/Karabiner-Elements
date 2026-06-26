@@ -54,7 +54,7 @@ public:
     hid_manager_->async_start();
   }
 
-  virtual ~control_led() {
+  ~control_led() override {
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
     });
