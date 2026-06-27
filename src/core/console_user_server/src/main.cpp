@@ -1,5 +1,4 @@
 #include "console_user_server/components_manager.hpp"
-#include "console_user_server/migration.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
@@ -56,12 +55,6 @@ int main(int argc, const char* argv[]) {
   //
 
   krbn::get_shared_codesign_manager()->log();
-
-  //
-  // Migrate old configuration file
-  //
-
-  krbn::console_user_server::migration::migrate_v1();
 
   //
   // Activate driver
