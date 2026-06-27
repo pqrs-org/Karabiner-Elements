@@ -14,6 +14,7 @@
 #include "logger.hpp"
 #include "types.hpp"
 #include "vector_utility.hpp"
+#include <filesystem>
 #include <fstream>
 #include <glob/glob.hpp>
 #include <pqrs/filesystem.hpp>
@@ -66,7 +67,8 @@ public:
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
-    if (pqrs::filesystem::exists(file_path)) {
+    std::error_code exists_error_code;
+    if (std::filesystem::exists(file_path, exists_error_code)) {
       if (pqrs::filesystem::is_owned(file_path, 0)) {
         valid_file_owner = true;
       } else {
@@ -229,7 +231,8 @@ private:
   void make_backup_file() {
     auto file_path = constants::get_user_core_configuration_file_path();
 
-    if (!pqrs::filesystem::exists(file_path)) {
+    std::error_code exists_error_code;
+    if (!std::filesystem::exists(file_path, exists_error_code)) {
       return;
     }
 
@@ -242,7 +245,7 @@ private:
 
     auto backup_file_path = backups_directory /
                             fmt::format("karabiner_{0}.json", make_current_local_yyyymmdd_string());
-    if (pqrs::filesystem::exists(backup_file_path)) {
+    if (std::filesystem::exists(backup_file_path, exists_error_code)) {
       return;
     }
 

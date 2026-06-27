@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+#include <pqrs/filesystem.hpp>
 #include <pqrs/osx/process_info.hpp>
 
 namespace krbn::console_user_server {
@@ -15,10 +17,12 @@ public:
     auto new_file_path = constants::get_user_core_configuration_file_path();
 
     if (!old_file_path.empty() && !new_file_path.empty()) {
-      if (pqrs::filesystem::exists(old_file_path) && !pqrs::filesystem::exists(new_file_path)) {
+      std::error_code exists_error_code;
+      if (std::filesystem::exists(old_file_path, exists_error_code) &&
+          !std::filesystem::exists(new_file_path, exists_error_code)) {
         auto new_directory = pqrs::filesystem::dirname(new_file_path);
         pqrs::filesystem::create_directory_with_intermediate_directories(new_directory, 0700);
-        if (pqrs::filesystem::exists(new_directory)) {
+        if (std::filesystem::exists(new_directory, exists_error_code)) {
           rename(old_file_path.c_str(), new_file_path.c_str());
         }
       }

@@ -13,8 +13,8 @@
 #include "types.hpp"
 #include "types/core_service_daemon_state.hpp"
 #include <array>
+#include <filesystem>
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/filesystem.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service/utility.hpp>
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences.hpp>
@@ -583,7 +583,8 @@ private:
     }
 
     auto file_path = constants::get_system_core_configuration_file_path();
-    if (pqrs::filesystem::exists(file_path)) {
+    std::error_code exists_error_code;
+    if (std::filesystem::exists(file_path, exists_error_code)) {
       stop_device_grabber();
       start_device_grabber(file_path);
     }

@@ -5,6 +5,7 @@
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "logger.hpp"
+#include <filesystem>
 #include <nod/nod.hpp>
 #include <pqrs/osx/file_monitor.hpp>
 
@@ -37,8 +38,9 @@ public:
                                          system_core_configuration_file_path](auto&& changed_file_path,
                                                                               auto&& changed_file_body) {
       auto file_path = changed_file_path;
+      std::error_code exists_error_code;
 
-      if (pqrs::filesystem::exists(user_core_configuration_file_path)) {
+      if (std::filesystem::exists(user_core_configuration_file_path, exists_error_code)) {
         // Note:
         // user_core_configuration_file_path == system_core_configuration_file_path
         // if console_user_server is not running.
@@ -53,13 +55,13 @@ public:
         if (changed_file_path == user_core_configuration_file_path) {
           // user_core_configuration_file_path is removed.
 
-          if (pqrs::filesystem::exists(system_core_configuration_file_path)) {
+          if (std::filesystem::exists(system_core_configuration_file_path, exists_error_code)) {
             file_path = system_core_configuration_file_path;
           }
         }
       }
 
-      if (pqrs::filesystem::exists(file_path)) {
+      if (std::filesystem::exists(file_path, exists_error_code)) {
         logger::get_logger()->info("Load {0}...", file_path);
       }
 

@@ -16,6 +16,7 @@
 #include "monitor/configuration_monitor.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <atomic>
+#include <filesystem>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <pqrs/gsl.hpp>
@@ -290,7 +291,8 @@ int copy_current_profile_to_system_default_profile() {
 }
 
 int remove_system_default_profile() {
-  if (!pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path())) {
+  std::error_code exists_error_code;
+  if (!std::filesystem::exists(krbn::constants::get_system_core_configuration_file_path(), exists_error_code)) {
     krbn::logger::get_logger()->error("{0} is not found.",
                                       krbn::constants::get_system_core_configuration_file_path().string());
     return 1;

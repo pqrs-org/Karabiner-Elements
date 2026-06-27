@@ -11,6 +11,7 @@
 #include "services_utility.hpp"
 #include "types.hpp"
 #include "update_utility.hpp"
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -148,7 +149,8 @@ bool libkrbn_virtual_hid_pointing_exists() {
 }
 
 bool libkrbn_system_core_configuration_file_path_exists() {
-  return pqrs::filesystem::exists(krbn::constants::get_system_core_configuration_file_path());
+  std::error_code error_code;
+  return std::filesystem::exists(krbn::constants::get_system_core_configuration_file_path(), error_code);
 }
 
 bool libkrbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists() {

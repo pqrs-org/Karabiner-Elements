@@ -10,7 +10,6 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <optional>
-#include <pqrs/filesystem.hpp>
 #include <pqrs/osx/accessibility.hpp>
 #include <pqrs/osx/workspace.hpp>
 #include <thread>
@@ -70,7 +69,8 @@ inline std::optional<core_service_permission_check_result> make_bundle_permissio
   for (int i = 0; i < 50; ++i) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    if (!pqrs::filesystem::exists(result_json_file_path)) {
+    std::error_code exists_error_code;
+    if (!std::filesystem::exists(result_json_file_path, exists_error_code)) {
       continue;
     }
 
