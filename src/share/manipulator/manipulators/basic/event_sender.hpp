@@ -43,7 +43,7 @@ inline to_event_definitions filter_and_replace_events(const to_event_definitions
   return result;
 }
 
-inline bool is_last_to_event_modifier_key_event(const to_event_definitions& to_events) {
+[[nodiscard]] inline bool is_last_to_event_modifier_key_event(const to_event_definitions& to_events) {
   if (to_events.empty()) {
     return false;
   }

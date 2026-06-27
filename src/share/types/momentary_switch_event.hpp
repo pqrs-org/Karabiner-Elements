@@ -86,7 +86,7 @@ public:
     }
   }
 
-  const pqrs::hid::usage_pair& get_usage_pair() const {
+  [[nodiscard]] const pqrs::hid::usage_pair& get_usage_pair() const {
     return usage_pair_;
   }
 

@@ -45,7 +45,7 @@ inline std::optional<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_
   }
 }
 
-inline std::optional<std::string_view> get_modifier_flag_name(modifier_flag value) {
+[[nodiscard]] inline std::optional<std::string_view> get_modifier_flag_name(modifier_flag value) {
   switch (value) {
     case modifier_flag::zero:
       return "zero";

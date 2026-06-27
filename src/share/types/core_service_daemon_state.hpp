@@ -9,7 +9,7 @@
 namespace krbn {
 class core_service_daemon_state final {
 public:
-  const std::optional<core_service_permission_check_result>& get_current_process_permission_check_result() const {
+  [[nodiscard]] const std::optional<core_service_permission_check_result>& get_current_process_permission_check_result() const {
     return current_process_permission_check_result_;
   }
 
@@ -17,7 +17,7 @@ public:
     current_process_permission_check_result_ = value;
   }
 
-  const std::optional<core_service_permission_check_result>& get_bundle_permission_check_result() const {
+  [[nodiscard]] const std::optional<core_service_permission_check_result>& get_bundle_permission_check_result() const {
     return bundle_permission_check_result_;
   }
 
@@ -25,7 +25,7 @@ public:
     bundle_permission_check_result_ = value;
   }
 
-  const std::optional<bool>& get_virtual_hid_device_service_client_connected() const {
+  [[nodiscard]] const std::optional<bool>& get_virtual_hid_device_service_client_connected() const {
     return virtual_hid_device_service_client_connected_;
   }
 
@@ -33,7 +33,7 @@ public:
     virtual_hid_device_service_client_connected_ = value;
   }
 
-  const std::optional<bool>& get_driver_activated() const {
+  [[nodiscard]] const std::optional<bool>& get_driver_activated() const {
     return driver_activated_;
   }
 
@@ -41,7 +41,7 @@ public:
     driver_activated_ = value;
   }
 
-  const std::optional<bool>& get_driver_connected() const {
+  [[nodiscard]] const std::optional<bool>& get_driver_connected() const {
     return driver_connected_;
   }
 
@@ -49,7 +49,7 @@ public:
     driver_connected_ = value;
   }
 
-  const std::optional<bool>& get_driver_version_mismatched() const {
+  [[nodiscard]] const std::optional<bool>& get_driver_version_mismatched() const {
     return driver_version_mismatched_;
   }
 
@@ -57,7 +57,7 @@ public:
     driver_version_mismatched_ = value;
   }
 
-  const std::optional<bool>& get_virtual_hid_keyboard_ready() const {
+  [[nodiscard]] const std::optional<bool>& get_virtual_hid_keyboard_ready() const {
     return virtual_hid_keyboard_ready_;
   }
 
@@ -65,7 +65,7 @@ public:
     virtual_hid_keyboard_ready_ = value;
   }
 
-  const std::optional<bool>& get_virtual_hid_keyboard_type_not_set() const {
+  [[nodiscard]] const std::optional<bool>& get_virtual_hid_keyboard_type_not_set() const {
     return virtual_hid_keyboard_type_not_set_;
   }
 

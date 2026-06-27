@@ -16,7 +16,7 @@ public:
   ~from_event_definition() {
   }
 
-  const std::vector<event_definition>& get_event_definitions() const {
+  [[nodiscard]] const std::vector<event_definition>& get_event_definitions() const {
     return event_definitions_;
   }
 
@@ -24,7 +24,7 @@ public:
     event_definitions_ = value;
   }
 
-  const from_modifiers_definition& get_from_modifiers_definition() const {
+  [[nodiscard]] const from_modifiers_definition& get_from_modifiers_definition() const {
     return from_modifiers_definition_;
   }
 
@@ -32,7 +32,7 @@ public:
     from_modifiers_definition_ = value;
   }
 
-  const std::optional<event_integer_value::value_t>& get_event_integer_value() const {
+  [[nodiscard]] const std::optional<event_integer_value::value_t>& get_event_integer_value() const {
     return event_integer_value_;
   }
 
@@ -40,7 +40,7 @@ public:
     event_integer_value_ = value;
   }
 
-  const pqrs::not_null_shared_ptr_t<simultaneous_options>& get_simultaneous_options() const {
+  [[nodiscard]] const pqrs::not_null_shared_ptr_t<simultaneous_options>& get_simultaneous_options() const {
     return simultaneous_options_;
   }
 

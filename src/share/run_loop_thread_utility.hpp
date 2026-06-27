@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pqrs/cf/run_loop_thread.hpp>
+#include <pqrs/gsl.hpp>
 
 namespace krbn {
 class run_loop_thread_utility {
@@ -23,13 +24,13 @@ public:
     }
   };
 
-  [[nodiscard]] static std::shared_ptr<scoped_run_loop_thread_manager> initialize_scoped_run_loop_thread_manager(pqrs::cf::run_loop_thread::failure_policy failure_policy) {
+  [[nodiscard]] static pqrs::not_null_shared_ptr_t<scoped_run_loop_thread_manager> initialize_scoped_run_loop_thread_manager(pqrs::cf::run_loop_thread::failure_policy failure_policy) {
     return std::make_shared<scoped_run_loop_thread_manager>(failure_policy);
   }
 
   // pqrs::osx::iokit_power_management::monitor blocks in the system_will_sleep process until ready to sleep.
   // To allow shared_run_loop_thread to be used to prepare for sleep, pqrs::osx::iokit_power_management::monitor uses an independent run_loop_thread.
-  static std::shared_ptr<pqrs::cf::run_loop_thread>& get_power_management_run_loop_thread() {
+  [[nodiscard]] static std::shared_ptr<pqrs::cf::run_loop_thread>& get_power_management_run_loop_thread() {
     static std::shared_ptr<pqrs::cf::run_loop_thread> p;
     return p;
   }

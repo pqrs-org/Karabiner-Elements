@@ -13,7 +13,7 @@ public:
   open_application() {
   }
 
-  const std::optional<std::string>& get_bundle_identifier() const {
+  [[nodiscard]] const std::optional<std::string>& get_bundle_identifier() const {
     return bundle_identifier_;
   }
 
@@ -21,7 +21,7 @@ public:
     bundle_identifier_ = value;
   }
 
-  const std::optional<std::string>& get_file_path() const {
+  [[nodiscard]] const std::optional<std::string>& get_file_path() const {
     return file_path_;
   }
 
@@ -29,7 +29,7 @@ public:
     file_path_ = value;
   }
 
-  const std::optional<size_t>& get_frontmost_application_history_index() const {
+  [[nodiscard]] const std::optional<size_t>& get_frontmost_application_history_index() const {
     return frontmost_application_history_index_;
   }
 
@@ -37,7 +37,7 @@ public:
     frontmost_application_history_index_ = value;
   }
 
-  const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_bundle_identifiers() const {
+  [[nodiscard]] const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_bundle_identifiers() const {
     return frontmost_application_history_exclusion_bundle_identifiers_;
   }
 
@@ -45,7 +45,7 @@ public:
     frontmost_application_history_exclusion_bundle_identifiers_ = value;
   }
 
-  const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_file_paths() const {
+  [[nodiscard]] const std::vector<pqrs::regex>& get_frontmost_application_history_exclusion_file_paths() const {
     return frontmost_application_history_exclusion_file_paths_;
   }
 

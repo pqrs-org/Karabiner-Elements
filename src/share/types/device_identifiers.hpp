@@ -99,15 +99,15 @@ public:
     }
   }
 
-  const nlohmann::json& get_json() const {
+  [[nodiscard]] const nlohmann::json& get_json() const {
     return json_;
   }
 
-  pqrs::hid::vendor_id::value_t get_vendor_id() const {
+  [[nodiscard]] pqrs::hid::vendor_id::value_t get_vendor_id() const {
     return vendor_id_;
   }
 
-  pqrs::hid::product_id::value_t get_product_id() const {
+  [[nodiscard]] pqrs::hid::product_id::value_t get_product_id() const {
     return product_id_;
   }
 

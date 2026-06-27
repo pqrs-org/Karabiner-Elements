@@ -321,11 +321,11 @@ cos(radian) * m;
     return j;
   }
 
-  const device_identifiers& get_identifiers() const {
+  [[nodiscard]] const device_identifiers& get_identifiers() const {
     return identifiers_;
   }
 
-  const bool& get_ignore() const {
+  [[nodiscard]] const bool& get_ignore() const {
     return ignore_;
   }
   void set_ignore(bool value) {
@@ -334,7 +334,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_manipulate_caps_lock_led() const {
+  [[nodiscard]] const bool& get_manipulate_caps_lock_led() const {
     return manipulate_caps_lock_led_;
   }
   void set_manipulate_caps_lock_led(bool value) {
@@ -343,7 +343,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_ignore_vendor_events() const {
+  [[nodiscard]] const bool& get_ignore_vendor_events() const {
     return ignore_vendor_events_;
   }
   void set_ignore_vendor_events(bool value) {
@@ -352,7 +352,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_treat_as_built_in_keyboard() const {
+  [[nodiscard]] const bool& get_treat_as_built_in_keyboard() const {
     return treat_as_built_in_keyboard_;
   }
   void set_treat_as_built_in_keyboard(bool value) {
@@ -361,7 +361,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_disable_built_in_keyboard_if_exists() const {
+  [[nodiscard]] const bool& get_disable_built_in_keyboard_if_exists() const {
     return disable_built_in_keyboard_if_exists_;
   }
   void set_disable_built_in_keyboard_if_exists(bool value) {
@@ -370,7 +370,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_pointing_motion_xy_multiplier() const {
+  [[nodiscard]] const double& get_pointing_motion_xy_multiplier() const {
     return pointing_motion_xy_multiplier_;
   }
   void set_pointing_motion_xy_multiplier(double value) {
@@ -379,7 +379,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_pointing_motion_wheels_multiplier() const {
+  [[nodiscard]] const double& get_pointing_motion_wheels_multiplier() const {
     return pointing_motion_wheels_multiplier_;
   }
   void set_pointing_motion_wheels_multiplier(double value) {
@@ -388,7 +388,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_flip_x() const {
+  [[nodiscard]] const bool& get_mouse_flip_x() const {
     return mouse_flip_x_;
   }
   void set_mouse_flip_x(bool value) {
@@ -397,7 +397,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_flip_y() const {
+  [[nodiscard]] const bool& get_mouse_flip_y() const {
     return mouse_flip_y_;
   }
   void set_mouse_flip_y(bool value) {
@@ -406,7 +406,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_flip_vertical_wheel() const {
+  [[nodiscard]] const bool& get_mouse_flip_vertical_wheel() const {
     return mouse_flip_vertical_wheel_;
   }
   void set_mouse_flip_vertical_wheel(bool value) {
@@ -415,7 +415,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_flip_horizontal_wheel() const {
+  [[nodiscard]] const bool& get_mouse_flip_horizontal_wheel() const {
     return mouse_flip_horizontal_wheel_;
   }
   void set_mouse_flip_horizontal_wheel(bool value) {
@@ -424,7 +424,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_swap_xy() const {
+  [[nodiscard]] const bool& get_mouse_swap_xy() const {
     return mouse_swap_xy_;
   }
   void set_mouse_swap_xy(bool value) {
@@ -433,7 +433,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_swap_wheels() const {
+  [[nodiscard]] const bool& get_mouse_swap_wheels() const {
     return mouse_swap_wheels_;
   }
   void set_mouse_swap_wheels(bool value) {
@@ -442,7 +442,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_discard_x() const {
+  [[nodiscard]] const bool& get_mouse_discard_x() const {
     return mouse_discard_x_;
   }
   void set_mouse_discard_x(bool value) {
@@ -451,7 +451,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_discard_y() const {
+  [[nodiscard]] const bool& get_mouse_discard_y() const {
     return mouse_discard_y_;
   }
   void set_mouse_discard_y(bool value) {
@@ -460,7 +460,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_discard_vertical_wheel() const {
+  [[nodiscard]] const bool& get_mouse_discard_vertical_wheel() const {
     return mouse_discard_vertical_wheel_;
   }
   void set_mouse_discard_vertical_wheel(bool value) {
@@ -469,7 +469,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_mouse_discard_horizontal_wheel() const {
+  [[nodiscard]] const bool& get_mouse_discard_horizontal_wheel() const {
     return mouse_discard_horizontal_wheel_;
   }
   void set_mouse_discard_horizontal_wheel(bool value) {
@@ -478,7 +478,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const bool& get_game_pad_swap_sticks() const {
+  [[nodiscard]] const bool& get_game_pad_swap_sticks() const {
     return game_pad_swap_sticks_;
   }
   void set_game_pad_swap_sticks(bool value) {
@@ -491,7 +491,7 @@ cos(radian) * m;
   // game_pad_xy_stick_XXX
   //
 
-  const double& get_game_pad_xy_stick_deadzone() const {
+  [[nodiscard]] const double& get_game_pad_xy_stick_deadzone() const {
     return game_pad_xy_stick_deadzone_;
   }
   void set_game_pad_xy_stick_deadzone(double value) {
@@ -500,7 +500,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_game_pad_xy_stick_delta_magnitude_detection_threshold() const {
+  [[nodiscard]] const double& get_game_pad_xy_stick_delta_magnitude_detection_threshold() const {
     return game_pad_xy_stick_delta_magnitude_detection_threshold_;
   }
   void set_game_pad_xy_stick_delta_magnitude_detection_threshold(double value) {
@@ -509,7 +509,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold() const {
+  [[nodiscard]] const double& get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold() const {
     return game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_;
   }
   void set_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(double value) {
@@ -518,7 +518,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const int& get_game_pad_xy_stick_continued_movement_interval_milliseconds() const {
+  [[nodiscard]] const int& get_game_pad_xy_stick_continued_movement_interval_milliseconds() const {
     return game_pad_xy_stick_continued_movement_interval_milliseconds_;
   }
   void set_game_pad_xy_stick_continued_movement_interval_milliseconds(int value) {
@@ -531,7 +531,7 @@ cos(radian) * m;
   // game_pad_wheels_stick_XXX
   //
 
-  const double& get_game_pad_wheels_stick_deadzone() const {
+  [[nodiscard]] const double& get_game_pad_wheels_stick_deadzone() const {
     return game_pad_wheels_stick_deadzone_;
   }
   void set_game_pad_wheels_stick_deadzone(double value) {
@@ -540,7 +540,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_game_pad_wheels_stick_delta_magnitude_detection_threshold() const {
+  [[nodiscard]] const double& get_game_pad_wheels_stick_delta_magnitude_detection_threshold() const {
     return game_pad_wheels_stick_delta_magnitude_detection_threshold_;
   }
   void set_game_pad_wheels_stick_delta_magnitude_detection_threshold(double value) {
@@ -549,7 +549,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const double& get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold() const {
+  [[nodiscard]] const double& get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold() const {
     return game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_;
   }
   void set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(double value) {
@@ -558,7 +558,7 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
-  const int& get_game_pad_wheels_stick_continued_movement_interval_milliseconds() const {
+  [[nodiscard]] const int& get_game_pad_wheels_stick_continued_movement_interval_milliseconds() const {
     return game_pad_wheels_stick_continued_movement_interval_milliseconds_;
   }
   void set_game_pad_wheels_stick_continued_movement_interval_milliseconds(int value) {
@@ -621,7 +621,7 @@ cos(radian) * m;
   }
 
   template <typename T>
-  T find_default_value(const T& value) {
+  [[nodiscard]] T find_default_value(const T& value) {
     return helper_values_.find_default_value(value);
   }
 

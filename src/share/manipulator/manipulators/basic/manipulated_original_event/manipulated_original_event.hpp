@@ -23,15 +23,15 @@ public:
         key_up_posted_(false) {
   }
 
-  const std::vector<from_event>& get_from_events() const {
+  [[nodiscard]] const std::vector<from_event>& get_from_events() const {
     return from_events_;
   }
 
-  const std::unordered_set<modifier_flag>& get_from_mandatory_modifiers() const {
+  [[nodiscard]] const std::unordered_set<modifier_flag>& get_from_mandatory_modifiers() const {
     return from_mandatory_modifiers_;
   }
 
-  std::unordered_set<modifier_flag>& get_key_up_posted_from_mandatory_modifiers() {
+  [[nodiscard]] std::unordered_set<modifier_flag>& get_key_up_posted_from_mandatory_modifiers() {
     return key_up_posted_from_mandatory_modifiers_;
   }
 
@@ -39,7 +39,7 @@ public:
     return key_down_time_stamp_;
   }
 
-  const std::unordered_set<modifier_flag>& get_key_down_modifier_flags() const {
+  [[nodiscard]] const std::unordered_set<modifier_flag>& get_key_down_modifier_flags() const {
     return key_down_modifier_flags_;
   }
 
@@ -55,10 +55,10 @@ public:
     halted_ = true;
   }
 
-  const events_at_key_up& get_events_at_key_up() const {
+  [[nodiscard]] const events_at_key_up& get_events_at_key_up() const {
     return events_at_key_up_;
   }
-  events_at_key_up& get_events_at_key_up() {
+  [[nodiscard]] events_at_key_up& get_events_at_key_up() {
     return const_cast<events_at_key_up&>(static_cast<const manipulated_original_event&>(*this).get_events_at_key_up());
   }
 

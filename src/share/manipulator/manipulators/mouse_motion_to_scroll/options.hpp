@@ -43,7 +43,7 @@ public:
     speed_multiplier_ = value;
   }
 
-  std::chrono::milliseconds get_recent_time_duration_milliseconds() const {
+  [[nodiscard]] std::chrono::milliseconds get_recent_time_duration_milliseconds() const {
     return recent_time_duration_milliseconds_;
   }
 
@@ -79,7 +79,7 @@ public:
     direction_lock_threshold_ = value;
   }
 
-  std::chrono::milliseconds get_scroll_event_interval_milliseconds_threshold() const {
+  [[nodiscard]] std::chrono::milliseconds get_scroll_event_interval_milliseconds_threshold() const {
     return scroll_event_interval_milliseconds_threshold_;
   }
 

@@ -347,16 +347,16 @@ public:
     return e;
   }
 
-  type get_type() const {
+  [[nodiscard]] type get_type() const {
     return type_;
   }
 
-  const value_t& get_value() const {
+  [[nodiscard]] const value_t& get_value() const {
     return value_;
   }
 
   template <typename T>
-  const T* get_if() const {
+  [[nodiscard]] const T* get_if() const {
     return std::get_if<T>(&value_);
   }
 
@@ -400,7 +400,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers() const {
+  [[nodiscard]] std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers() const {
     try {
       if (type_ == type::select_input_source) {
         return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
@@ -430,7 +430,7 @@ public:
     return std::nullopt;
   }
 
-  std::optional<std::pair<modifier_flag, sticky_modifier_type>> get_sticky_modifier() const {
+  [[nodiscard]] std::optional<std::pair<modifier_flag, sticky_modifier_type>> get_sticky_modifier() const {
     try {
       if (type_ == type::sticky_modifier) {
         return std::get<std::pair<modifier_flag, sticky_modifier_type>>(value_);

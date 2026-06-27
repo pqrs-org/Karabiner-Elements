@@ -70,7 +70,7 @@ public:
     key_up_expression_ = value;
   }
 
-  type get_type() const {
+  [[nodiscard]] type get_type() const {
     return type_;
   }
 

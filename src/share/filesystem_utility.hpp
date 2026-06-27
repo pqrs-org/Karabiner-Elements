@@ -84,7 +84,7 @@ inline void create_base_directories(std::optional<uid_t> uid) {
   }
 }
 
-inline std::filesystem::path make_socket_file_basename() {
+[[nodiscard]] inline std::filesystem::path make_socket_file_basename() {
   std::stringstream ss;
   ss << std::hex
      << chrono_utility::nanoseconds_since_epoch()
@@ -93,7 +93,7 @@ inline std::filesystem::path make_socket_file_basename() {
   return ss.str();
 }
 
-inline std::filesystem::path find_socket_file_path(const std::filesystem::path& directory) {
+[[nodiscard]] inline std::filesystem::path find_socket_file_path(const std::filesystem::path& directory) {
   auto paths = std::vector<std::filesystem::path>();
 
   std::error_code ec;
@@ -116,7 +116,7 @@ inline std::filesystem::path find_socket_file_path(const std::filesystem::path& 
   return directory / "not_found.sock";
 }
 
-inline std::optional<std::string> read_file(const std::filesystem::path& path) {
+[[nodiscard]] inline std::optional<std::string> read_file(const std::filesystem::path& path) {
   std::ifstream input(path);
   if (input) {
     std::string code;

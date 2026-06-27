@@ -23,7 +23,7 @@ public:
     }
 
   private:
-    std::weak_ptr<event_queue::queue> get_weak_output_event_queue() const {
+    [[nodiscard]] std::weak_ptr<event_queue::queue> get_weak_output_event_queue() const {
       return weak_output_event_queue_;
     }
 

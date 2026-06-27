@@ -54,7 +54,7 @@ public:
     }
   }
 
-  const std::filesystem::path& get_file_path() const {
+  [[nodiscard]] const std::filesystem::path& get_file_path() const {
     return file_path_;
   }
 
@@ -62,7 +62,7 @@ public:
     return title_;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<core_configuration::details::complex_modifications_rule>>& get_rules() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<core_configuration::details::complex_modifications_rule>>& get_rules() const {
     return rules_;
   }
 

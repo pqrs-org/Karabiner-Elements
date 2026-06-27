@@ -196,7 +196,7 @@ public:
       return json;
     }
 
-    type get_type() const {
+    [[nodiscard]] type get_type() const {
       return type_;
     }
 
@@ -256,7 +256,7 @@ public:
       return std::nullopt;
     }
 
-    std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers() const {
+    [[nodiscard]] std::optional<std::vector<pqrs::osx::input_source_selector::specifier>> get_input_source_specifiers() const {
       if (type_ == type::select_input_source) {
         return std::get<std::vector<pqrs::osx::input_source_selector::specifier>>(value_);
       }
@@ -274,7 +274,7 @@ public:
       return time_stamp_;
     }
 
-    std::optional<std::pair<momentary_switch_event, event_type>> get_posted_momentary_switch_event() const {
+    [[nodiscard]] std::optional<std::pair<momentary_switch_event, event_type>> get_posted_momentary_switch_event() const {
       return posted_momentary_switch_event_;
     }
 
@@ -341,11 +341,11 @@ public:
     detach_from_dispatcher();
   }
 
-  const std::vector<event>& get_events() const {
+  [[nodiscard]] const std::vector<event>& get_events() const {
     return events_;
   }
 
-  const keyboard_repeat_detector& get_keyboard_repeat_detector() const {
+  [[nodiscard]] const keyboard_repeat_detector& get_keyboard_repeat_detector() const {
     return keyboard_repeat_detector_;
   }
 

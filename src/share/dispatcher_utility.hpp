@@ -33,7 +33,7 @@ public:
     }
   };
 
-  [[nodiscard]] static std::shared_ptr<scoped_dispatcher_manager> initialize_dispatchers() {
+  [[nodiscard]] static pqrs::not_null_shared_ptr_t<scoped_dispatcher_manager> initialize_dispatchers() {
     return std::make_shared<scoped_dispatcher_manager>();
   }
 
@@ -70,12 +70,12 @@ private:
     pqrs::dispatcher::object_id object_id_;
   };
 
-  static std::mutex& get_file_writer_mutex() {
+  [[nodiscard]] static std::mutex& get_file_writer_mutex() {
     static std::mutex mutex;
     return mutex;
   }
 
-  static std::shared_ptr<file_writer>& get_file_writer() {
+  [[nodiscard]] static std::shared_ptr<file_writer>& get_file_writer() {
     static std::shared_ptr<file_writer> p;
     return p;
   }

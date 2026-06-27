@@ -108,16 +108,16 @@ public:
     return result;
   }
 
-  const event_definition& get_event_definition() const {
+  [[nodiscard]] const event_definition& get_event_definition() const {
     return event_definition_;
   }
 
-  event_definition& get_event_definition() {
+  [[nodiscard]] event_definition& get_event_definition() {
     return const_cast<event_definition&>(
         static_cast<const to_event_definition&>(*this).get_event_definition());
   }
 
-  const std::set<modifier_definition::modifier>& get_modifiers() const {
+  [[nodiscard]] const std::set<modifier_definition::modifier>& get_modifiers() const {
     return modifiers_;
   }
 
@@ -149,7 +149,7 @@ public:
     halt_ = value;
   }
 
-  const std::chrono::milliseconds& get_hold_down_milliseconds() const {
+  [[nodiscard]] const std::chrono::milliseconds& get_hold_down_milliseconds() const {
     return hold_down_milliseconds_;
   }
 
@@ -157,10 +157,10 @@ public:
     hold_down_milliseconds_ = value;
   }
 
-  const condition_manager& get_condition_manager() const {
+  [[nodiscard]] const condition_manager& get_condition_manager() const {
     return condition_manager_;
   }
-  condition_manager& get_condition_manager() {
+  [[nodiscard]] condition_manager& get_condition_manager() {
     return const_cast<condition_manager&>(static_cast<const to_event_definition&>(*this).get_condition_manager());
   }
 

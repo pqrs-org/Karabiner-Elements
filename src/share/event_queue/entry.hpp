@@ -104,19 +104,19 @@ public:
 
   // Methods
 
-  device_id get_device_id() const {
+  [[nodiscard]] device_id get_device_id() const {
     // We don't have to use mutex since there is not setter.
 
     return device_id_;
   }
 
-  const event_time_stamp& get_event_time_stamp() const {
+  [[nodiscard]] const event_time_stamp& get_event_time_stamp() const {
     // We don't have to use mutex since there is not setter.
 
     return event_time_stamp_;
   }
 
-  event_time_stamp& get_event_time_stamp() {
+  [[nodiscard]] event_time_stamp& get_event_time_stamp() {
     return const_cast<event_time_stamp&>(static_cast<const entry&>(*this).get_event_time_stamp());
   }
 
@@ -132,7 +132,7 @@ public:
     validity_ = value;
   }
 
-  state get_state() const {
+  [[nodiscard]] state get_state() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return state_;
@@ -156,13 +156,13 @@ public:
     lazy_ = value;
   }
 
-  const event& get_event() const {
+  [[nodiscard]] const event& get_event() const {
     // We don't have to use mutex since there is not setter.
 
     return event_;
   }
 
-  event_type get_event_type() const {
+  [[nodiscard]] event_type get_event_type() const {
     // We don't have to use mutex since there is not setter.
 
     return event_type_;
@@ -174,7 +174,7 @@ public:
     return event_integer_value_;
   }
 
-  const event& get_original_event() const {
+  [[nodiscard]] const event& get_original_event() const {
     // We don't have to use mutex since there is not setter.
 
     return original_event_;

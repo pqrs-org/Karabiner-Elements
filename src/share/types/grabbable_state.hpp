@@ -29,7 +29,7 @@ public:
         time_stamp_(time_stamp) {
   }
 
-  device_id get_device_id() const {
+  [[nodiscard]] device_id get_device_id() const {
     return device_id_;
   }
 
@@ -37,7 +37,7 @@ public:
     device_id_ = value;
   }
 
-  state get_state() const {
+  [[nodiscard]] state get_state() const {
     return state_;
   }
 

@@ -63,7 +63,7 @@ public:
     time_stamp_ = value;
   }
 
-  absolute_time_duration get_input_delay_duration() const {
+  [[nodiscard]] absolute_time_duration get_input_delay_duration() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return input_delay_duration_;

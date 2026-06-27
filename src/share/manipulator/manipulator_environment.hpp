@@ -46,7 +46,7 @@ public:
     });
   }
 
-  const karabiner_machine_identifier& get_karabiner_machine_identifier() const {
+  [[nodiscard]] const karabiner_machine_identifier& get_karabiner_machine_identifier() const {
     return karabiner_machine_identifier_;
   }
 
@@ -54,7 +54,7 @@ public:
     karabiner_machine_identifier_ = value;
   }
 
-  const device_properties_manager& get_device_properties_manager() const {
+  [[nodiscard]] const device_properties_manager& get_device_properties_manager() const {
     return device_properties_manager_;
   }
 
@@ -71,7 +71,7 @@ public:
     device_properties_manager_.erase(device_id);
   }
 
-  const application& get_frontmost_application() const {
+  [[nodiscard]] const application& get_frontmost_application() const {
     return frontmost_application_;
   }
 
@@ -79,7 +79,7 @@ public:
     frontmost_application_ = value;
   }
 
-  const pqrs::osx::input_source::properties& get_input_source_properties() const {
+  [[nodiscard]] const pqrs::osx::input_source::properties& get_input_source_properties() const {
     return input_source_properties_;
   }
 
@@ -87,7 +87,7 @@ public:
     input_source_properties_ = value;
   }
 
-  manipulator_environment_variable_value get_variable(const std::string& name) const {
+  [[nodiscard]] manipulator_environment_variable_value get_variable(const std::string& name) const {
     auto it = variables_.find(name);
     if (it != std::end(variables_)) {
       return it->second;
@@ -106,7 +106,7 @@ public:
     unset_variable_names_.insert(name);
   }
 
-  std::vector<std::string> get_variable_names() const {
+  [[nodiscard]] std::vector<std::string> get_variable_names() const {
     std::vector<std::string> names;
 
     names.reserve(variables_.size());

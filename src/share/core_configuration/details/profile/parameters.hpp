@@ -33,7 +33,7 @@ public:
     return j;
   }
 
-  const std::chrono::milliseconds& get_delay_milliseconds_before_open_device() const {
+  [[nodiscard]] const std::chrono::milliseconds& get_delay_milliseconds_before_open_device() const {
     return delay_milliseconds_before_open_device_;
   }
 

@@ -71,11 +71,11 @@ public:
     detach_from_dispatcher();
   }
 
-  const to_event_definitions& get_to_if_invoked() const {
+  [[nodiscard]] const to_event_definitions& get_to_if_invoked() const {
     return to_if_invoked_;
   }
 
-  const to_event_definitions& get_to_if_canceled() const {
+  [[nodiscard]] const to_event_definitions& get_to_if_canceled() const {
     return to_if_canceled_;
   }
 

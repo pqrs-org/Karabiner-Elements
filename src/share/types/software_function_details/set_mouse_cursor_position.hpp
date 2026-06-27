@@ -29,7 +29,7 @@ public:
       value_ = value;
     }
 
-    type get_type() const {
+    [[nodiscard]] type get_type() const {
       return type_;
     }
 
@@ -66,7 +66,7 @@ public:
   set_mouse_cursor_position() {
   }
 
-  const position_value& get_x() const {
+  [[nodiscard]] const position_value& get_x() const {
     return x_;
   }
 
@@ -74,7 +74,7 @@ public:
     x_ = value;
   }
 
-  const position_value& get_y() const {
+  [[nodiscard]] const position_value& get_y() const {
     return y_;
   }
 
@@ -90,7 +90,7 @@ public:
     screen_ = value;
   }
 
-  relative_to get_relative_to() const {
+  [[nodiscard]] relative_to get_relative_to() const {
     return relative_to_;
   }
 
@@ -98,7 +98,7 @@ public:
     relative_to_ = value;
   }
 
-  fallback_to get_fallback_to() const {
+  [[nodiscard]] fallback_to get_fallback_to() const {
     return fallback_to_;
   }
 

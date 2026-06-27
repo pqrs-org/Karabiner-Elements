@@ -20,7 +20,7 @@ public:
       condition(const nlohmann::json& json) : json_(json) {
       }
 
-      const nlohmann::json& get_json() const {
+      [[nodiscard]] const nlohmann::json& get_json() const {
         return json_;
       }
 
@@ -64,7 +64,7 @@ public:
       return json_;
     }
 
-    const std::vector<condition>& get_conditions() const {
+    [[nodiscard]] const std::vector<condition>& get_conditions() const {
       return conditions_;
     }
 
@@ -166,11 +166,11 @@ public:
     return j;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<manipulator>>& get_manipulators() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<manipulator>>& get_manipulators() const {
     return manipulators_;
   }
 
-  const bool& get_enabled() const {
+  [[nodiscard]] const bool& get_enabled() const {
     return enabled_;
   }
 
@@ -182,7 +182,7 @@ public:
     return description_;
   }
 
-  const code_type get_code_type() const {
+  [[nodiscard]] const code_type get_code_type() const {
     return code_type_;
   }
 

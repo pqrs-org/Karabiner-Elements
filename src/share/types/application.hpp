@@ -18,7 +18,7 @@ public:
   application() {
   }
 
-  const std::optional<std::string>& get_bundle_identifier() const {
+  [[nodiscard]] const std::optional<std::string>& get_bundle_identifier() const {
     return bundle_identifier_;
   }
 
@@ -27,7 +27,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_bundle_path() const {
+  [[nodiscard]] const std::optional<std::string>& get_bundle_path() const {
     return bundle_path_;
   }
 
@@ -36,7 +36,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_file_path() const {
+  [[nodiscard]] const std::optional<std::string>& get_file_path() const {
     return file_path_;
   }
 
@@ -45,7 +45,7 @@ public:
     return *this;
   }
 
-  const std::optional<pid_t>& get_pid() const {
+  [[nodiscard]] const std::optional<pid_t>& get_pid() const {
     return pid_;
   }
 
@@ -54,7 +54,7 @@ public:
     return *this;
   }
 
-  detection_source get_detection_source() const {
+  [[nodiscard]] detection_source get_detection_source() const {
     return detection_source_;
   }
 

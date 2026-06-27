@@ -16,15 +16,15 @@ public:
                                                          original_event_(original_event) {
   }
 
-  device_id get_device_id() const {
+  [[nodiscard]] device_id get_device_id() const {
     return device_id_;
   }
 
-  const event_queue::event& get_event() const {
+  [[nodiscard]] const event_queue::event& get_event() const {
     return event_;
   }
 
-  const event_queue::event& get_original_event() const {
+  [[nodiscard]] const event_queue::event& get_original_event() const {
     return original_event_;
   }
 

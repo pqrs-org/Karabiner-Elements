@@ -19,7 +19,7 @@ public:
   software_function() : value_(std::monostate()) {
   }
 
-  const value_t& get_value() const {
+  [[nodiscard]] const value_t& get_value() const {
     return value_;
   }
 
@@ -28,7 +28,7 @@ public:
   }
 
   template <typename T>
-  const T* get_if() const {
+  [[nodiscard]] const T* get_if() const {
     return std::get_if<T>(&value_);
   }
 

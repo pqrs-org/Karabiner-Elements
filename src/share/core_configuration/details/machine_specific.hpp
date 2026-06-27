@@ -35,7 +35,7 @@ public:
       return j;
     }
 
-    const bool& get_enable_multitouch_extension() const {
+    [[nodiscard]] const bool& get_enable_multitouch_extension() const {
       return enable_multitouch_extension_;
     }
     void set_enable_multitouch_extension(bool value) {
@@ -87,11 +87,11 @@ public:
     return json;
   }
 
-  const entry& get_entry() const {
+  [[nodiscard]] const entry& get_entry() const {
     return get_entry(constants::get_karabiner_machine_identifier());
   }
 
-  const entry& get_entry(const karabiner_machine_identifier& identifier) const {
+  [[nodiscard]] const entry& get_entry(const karabiner_machine_identifier& identifier) const {
     if (!entries_.contains(identifier)) {
       entries_[identifier] = std::make_shared<entry>(nlohmann::json::object(),
                                                      error_handling_);
@@ -100,11 +100,11 @@ public:
     return *(entries_[identifier]);
   }
 
-  entry& get_entry() {
+  [[nodiscard]] entry& get_entry() {
     return const_cast<entry&>(static_cast<const machine_specific&>(*this).get_entry());
   }
 
-  entry& get_entry(const karabiner_machine_identifier& identifier) {
+  [[nodiscard]] entry& get_entry(const karabiner_machine_identifier& identifier) {
     return const_cast<entry&>(static_cast<const machine_specific&>(*this).get_entry(identifier));
   }
 

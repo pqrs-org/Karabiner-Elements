@@ -41,19 +41,19 @@ public:
     }
   }
 
-  type get_type() const {
+  [[nodiscard]] type get_type() const {
     return type_;
   }
 
-  modifier_flag get_modifier_flag() const {
+  [[nodiscard]] modifier_flag get_modifier_flag() const {
     return modifier_flag_;
   }
 
-  device_id get_device_id() const {
+  [[nodiscard]] device_id get_device_id() const {
     return device_id_;
   }
 
-  type get_inverse_type() const {
+  [[nodiscard]] type get_inverse_type() const {
     switch (type_) {
       case type::increase:
         return type::decrease;

@@ -70,70 +70,70 @@ public:
     return j;
   }
 
-  const bool& get_check_for_updates() const {
+  [[nodiscard]] const bool& get_check_for_updates() const {
     return check_for_updates_;
   }
   void set_check_for_updates(bool value) {
     check_for_updates_ = value;
   }
 
-  const bool& get_show_in_menu_bar() const {
+  [[nodiscard]] const bool& get_show_in_menu_bar() const {
     return show_in_menu_bar_;
   }
   void set_show_in_menu_bar(bool value) {
     show_in_menu_bar_ = value;
   }
 
-  const bool& get_show_profile_name_in_menu_bar() const {
+  [[nodiscard]] const bool& get_show_profile_name_in_menu_bar() const {
     return show_profile_name_in_menu_bar_;
   }
   void set_show_profile_name_in_menu_bar(bool value) {
     show_profile_name_in_menu_bar_ = value;
   }
 
-  const bool& get_show_additional_menu_items() const {
+  [[nodiscard]] const bool& get_show_additional_menu_items() const {
     return show_additional_menu_items_;
   }
   void set_show_additional_menu_items(bool value) {
     show_additional_menu_items_ = value;
   }
 
-  const bool& get_enable_notification_window() const {
+  [[nodiscard]] const bool& get_enable_notification_window() const {
     return enable_notification_window_;
   }
   void set_enable_notification_window(bool value) {
     enable_notification_window_ = value;
   }
 
-  const bool& get_ask_for_confirmation_before_quitting() const {
+  [[nodiscard]] const bool& get_ask_for_confirmation_before_quitting() const {
     return ask_for_confirmation_before_quitting_;
   }
   void set_ask_for_confirmation_before_quitting(bool value) {
     ask_for_confirmation_before_quitting_ = value;
   }
 
-  const bool& get_unsafe_ui() const {
+  [[nodiscard]] const bool& get_unsafe_ui() const {
     return unsafe_ui_;
   }
   void set_unsafe_ui(bool value) {
     unsafe_ui_ = value;
   }
 
-  const bool& get_filter_useless_events_from_specific_devices() const {
+  [[nodiscard]] const bool& get_filter_useless_events_from_specific_devices() const {
     return filter_useless_events_from_specific_devices_;
   }
   void set_filter_useless_events_from_specific_devices(bool value) {
     filter_useless_events_from_specific_devices_ = value;
   }
 
-  const bool& get_reorder_same_timestamp_input_events_to_prioritize_modifiers() const {
+  [[nodiscard]] const bool& get_reorder_same_timestamp_input_events_to_prioritize_modifiers() const {
     return reorder_same_timestamp_input_events_to_prioritize_modifiers_;
   }
   void set_reorder_same_timestamp_input_events_to_prioritize_modifiers(bool value) {
     reorder_same_timestamp_input_events_to_prioritize_modifiers_ = value;
   }
 
-  const bool& get_enable_cgeventtap_fallback() const {
+  [[nodiscard]] const bool& get_enable_cgeventtap_fallback() const {
     return enable_cgeventtap_fallback_;
   }
   void set_enable_cgeventtap_fallback(bool value) {

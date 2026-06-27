@@ -144,7 +144,7 @@ public:
     return *machine_specific_;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<details::profile>>& get_profiles() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<details::profile>>& get_profiles() const {
     return profiles_;
   }
 
@@ -194,7 +194,7 @@ public:
     vector_utility::move_element(profiles_, source_index, destination_index);
   }
 
-  const details::profile& get_selected_profile() const {
+  [[nodiscard]] const details::profile& get_selected_profile() const {
     for (auto&& p : profiles_) {
       if (p->get_selected()) {
         return *p;
@@ -202,7 +202,7 @@ public:
     }
     return *(profiles_[0]);
   }
-  details::profile& get_selected_profile() {
+  [[nodiscard]] details::profile& get_selected_profile() {
     return const_cast<details::profile&>(static_cast<const core_configuration&>(*this).get_selected_profile());
   }
 

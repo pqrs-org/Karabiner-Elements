@@ -50,7 +50,7 @@ public:
   settings_window_guidance_context() {
   }
 
-  const std::optional<bool>& get_core_daemons_enabled() const {
+  [[nodiscard]] const std::optional<bool>& get_core_daemons_enabled() const {
     return core_daemons_enabled_;
   }
 
@@ -58,7 +58,7 @@ public:
     core_daemons_enabled_ = value;
   }
 
-  const std::optional<bool>& get_core_agents_enabled() const {
+  [[nodiscard]] const std::optional<bool>& get_core_agents_enabled() const {
     return core_agents_enabled_;
   }
 
@@ -66,7 +66,7 @@ public:
     core_agents_enabled_ = value;
   }
 
-  const std::optional<bool>& get_core_daemons_running() const {
+  [[nodiscard]] const std::optional<bool>& get_core_daemons_running() const {
     return core_daemons_running_;
   }
 
@@ -74,7 +74,7 @@ public:
     core_daemons_running_ = value;
   }
 
-  const std::optional<bool>& get_core_agents_running() const {
+  [[nodiscard]] const std::optional<bool>& get_core_agents_running() const {
     return core_agents_running_;
   }
 
@@ -153,7 +153,7 @@ public:
         current_alert_(settings_window_guidance_alert::none) {
   }
 
-  settings_window_guidance_setup get_current_setup() const {
+  [[nodiscard]] settings_window_guidance_setup get_current_setup() const {
     return current_setup_;
   }
 
@@ -161,7 +161,7 @@ public:
     current_setup_ = value;
   }
 
-  settings_window_guidance_alert get_current_alert() const {
+  [[nodiscard]] settings_window_guidance_alert get_current_alert() const {
     return current_alert_;
   }
 
@@ -169,7 +169,7 @@ public:
     current_alert_ = value;
   }
 
-  const settings_window_guidance_context& get_guidance_context() const {
+  [[nodiscard]] const settings_window_guidance_context& get_guidance_context() const {
     return guidance_context_;
   }
 
@@ -177,7 +177,7 @@ public:
     guidance_context_ = value;
   }
 
-  const core_service_daemon_state& get_core_service_daemon_state() const {
+  [[nodiscard]] const core_service_daemon_state& get_core_service_daemon_state() const {
     return core_service_deamon_state_;
   }
 

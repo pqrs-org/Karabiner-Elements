@@ -17,7 +17,7 @@ public:
     }
   };
 
-  static core& get_instance() {
+  [[nodiscard]] static core& get_instance() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> guard(mutex);
 

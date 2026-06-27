@@ -34,7 +34,7 @@ public:
     detach_from_dispatcher();
   }
 
-  const to_event_definitions& get_to() const {
+  [[nodiscard]] const to_event_definitions& get_to() const {
     return to_;
   }
 

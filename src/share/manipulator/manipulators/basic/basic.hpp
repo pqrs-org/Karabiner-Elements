@@ -767,19 +767,19 @@ public:
                           front_input_event.get_event_type());
   }
 
-  const from_event_definition& get_from() const {
+  [[nodiscard]] const from_event_definition& get_from() const {
     return from_;
   }
 
-  const to_event_definitions& get_to() const {
+  [[nodiscard]] const to_event_definitions& get_to() const {
     return to_;
   }
 
-  const to_event_definitions& get_to_after_key_up() const {
+  [[nodiscard]] const to_event_definitions& get_to_after_key_up() const {
     return to_after_key_up_;
   }
 
-  const to_event_definitions& get_to_if_alone() const {
+  [[nodiscard]] const to_event_definitions& get_to_if_alone() const {
     return to_if_alone_;
   }
 

@@ -197,7 +197,7 @@ public:
     time_stamp_delay_ = absolute_time_duration(0);
   }
 
-  entry& get_front_event() {
+  [[nodiscard]] entry& get_front_event() {
     return events_.front();
   }
 
@@ -212,15 +212,15 @@ public:
     return events_.empty();
   }
 
-  const std::vector<entry>& get_entries() const {
+  [[nodiscard]] const std::vector<entry>& get_entries() const {
     return events_;
   }
 
-  const modifier_flag_manager& get_modifier_flag_manager() const {
+  [[nodiscard]] const modifier_flag_manager& get_modifier_flag_manager() const {
     return modifier_flag_manager_;
   }
 
-  modifier_flag_manager& get_modifier_flag_manager() {
+  [[nodiscard]] modifier_flag_manager& get_modifier_flag_manager() {
     return const_cast<modifier_flag_manager&>(static_cast<const queue&>(*this).get_modifier_flag_manager());
   }
 
@@ -232,7 +232,7 @@ public:
     modifier_flag_manager_.erase_all_active_modifier_flags(device_id);
   }
 
-  const pointing_button_manager& get_pointing_button_manager() const {
+  [[nodiscard]] const pointing_button_manager& get_pointing_button_manager() const {
     return pointing_button_manager_;
   }
 
@@ -244,15 +244,15 @@ public:
     pointing_button_manager_.erase_all_active_pointing_buttons(device_id);
   }
 
-  const manipulator::manipulator_environment& get_manipulator_environment() const {
+  [[nodiscard]] const manipulator::manipulator_environment& get_manipulator_environment() const {
     return manipulator_environment_;
   }
 
-  manipulator::manipulator_environment& get_manipulator_environment() {
+  [[nodiscard]] manipulator::manipulator_environment& get_manipulator_environment() {
     return const_cast<manipulator::manipulator_environment&>(static_cast<const queue&>(*this).get_manipulator_environment());
   }
 
-  absolute_time_duration get_time_stamp_delay() const {
+  [[nodiscard]] absolute_time_duration get_time_stamp_delay() const {
     return time_stamp_delay_;
   }
 

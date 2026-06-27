@@ -120,7 +120,7 @@ public:
     }
   }
 
-  const std::vector<active_modifier_flag>& get_active_modifier_flags() const {
+  [[nodiscard]] const std::vector<active_modifier_flag>& get_active_modifier_flags() const {
     return active_modifier_flags_;
   }
 

@@ -37,7 +37,7 @@ public:
     bool lazy_;
   };
 
-  const std::vector<entry>& get_events() const {
+  [[nodiscard]] const std::vector<entry>& get_events() const {
     return events_;
   }
 

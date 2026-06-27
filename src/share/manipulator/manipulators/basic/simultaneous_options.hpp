@@ -94,19 +94,19 @@ public:
     return detect_key_down_uninterruptedly_;
   }
 
-  key_order get_key_down_order() const {
+  [[nodiscard]] key_order get_key_down_order() const {
     return key_down_order_;
   }
 
-  key_order get_key_up_order() const {
+  [[nodiscard]] key_order get_key_up_order() const {
     return key_up_order_;
   }
 
-  key_up_when get_key_up_when() const {
+  [[nodiscard]] key_up_when get_key_up_when() const {
     return key_up_when_;
   }
 
-  const to_event_definitions& get_to_after_key_up() const {
+  [[nodiscard]] const to_event_definitions& get_to_after_key_up() const {
     return to_after_key_up_;
   }
 

@@ -58,12 +58,12 @@ public:
     return result;
   }
 
-  type get_type() const {
+  [[nodiscard]] type get_type() const {
     return type_;
   }
 
   template <typename T>
-  const T* get_if() const {
+  [[nodiscard]] const T* get_if() const {
     return std::get_if<T>(&value_);
   }
 

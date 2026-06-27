@@ -51,7 +51,7 @@ public:
     keyboard_type_v2_ = value;
   }
 
-  pqrs::osx::iokit_keyboard_type::value_t get_iokit_keyboard_type() const {
+  [[nodiscard]] pqrs::osx::iokit_keyboard_type::value_t get_iokit_keyboard_type() const {
     if (keyboard_type_v2_ == "iso") {
       return pqrs::osx::iokit_keyboard_type::iso;
     } else if (keyboard_type_v2_ == "jis") {
@@ -61,7 +61,7 @@ public:
     }
   }
 
-  const int& get_mouse_key_xy_scale() const {
+  [[nodiscard]] const int& get_mouse_key_xy_scale() const {
     return mouse_key_xy_scale_;
   }
 
@@ -72,7 +72,7 @@ public:
     mouse_key_xy_scale_ = value;
   }
 
-  const bool& get_indicate_sticky_modifier_keys_state() const {
+  [[nodiscard]] const bool& get_indicate_sticky_modifier_keys_state() const {
     return indicate_sticky_modifier_keys_state_;
   }
 

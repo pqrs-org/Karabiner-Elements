@@ -11,7 +11,7 @@ public:
       : button_(0) {
   }
 
-  uint32_t get_button() const {
+  [[nodiscard]] uint32_t get_button() const {
     return button_;
   }
 

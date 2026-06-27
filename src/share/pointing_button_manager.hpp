@@ -22,19 +22,19 @@ public:
                                                   device_id_(device_id) {
     }
 
-    type get_type() const {
+    [[nodiscard]] type get_type() const {
       return type_;
     }
 
-    const pqrs::hid::usage_pair& get_usage_pair() const {
+    [[nodiscard]] const pqrs::hid::usage_pair& get_usage_pair() const {
       return usage_pair_;
     }
 
-    device_id get_device_id() const {
+    [[nodiscard]] device_id get_device_id() const {
       return device_id_;
     }
 
-    type get_inverse_type() const {
+    [[nodiscard]] type get_inverse_type() const {
       switch (type_) {
         case type::increase:
           return type::decrease;

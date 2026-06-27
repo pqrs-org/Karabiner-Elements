@@ -10,7 +10,7 @@ public:
   condition_manager() {
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<manipulator::conditions::base>>& get_conditions() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<manipulator::conditions::base>>& get_conditions() const {
     return conditions_;
   }
 

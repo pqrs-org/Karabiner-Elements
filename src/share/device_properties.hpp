@@ -299,23 +299,23 @@ public:
     return json;
   }
 
-  device_id get_device_id() const {
+  [[nodiscard]] device_id get_device_id() const {
     return device_id_;
   }
 
-  const device_identifiers& get_device_identifiers() const {
+  [[nodiscard]] const device_identifiers& get_device_identifiers() const {
     return device_identifiers_;
   }
 
-  location_id get_location_id() const {
+  [[nodiscard]] location_id get_location_id() const {
     return location_id_;
   }
 
-  const pqrs::hid::manufacturer_string::value_t& get_manufacturer() const {
+  [[nodiscard]] const pqrs::hid::manufacturer_string::value_t& get_manufacturer() const {
     return manufacturer_;
   }
 
-  const pqrs::hid::product_string::value_t& get_product() const {
+  [[nodiscard]] const pqrs::hid::product_string::value_t& get_product() const {
     return product_;
   }
 

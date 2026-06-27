@@ -44,11 +44,11 @@ public:
     }
   }
 
-  const std::vector<active_modifier_flag>& get_scoped_active_modifier_flags() const {
+  [[nodiscard]] const std::vector<active_modifier_flag>& get_scoped_active_modifier_flags() const {
     return scoped_active_modifier_flags_;
   }
 
-  std::vector<active_modifier_flag> get_inverse_active_modifier_flags() const {
+  [[nodiscard]] std::vector<active_modifier_flag> get_inverse_active_modifier_flags() const {
     std::vector<active_modifier_flag> flags;
 
     for (const auto& f : scoped_active_modifier_flags_) {

@@ -22,7 +22,7 @@ inline std::set<modifier> make_modifiers(const nlohmann::json& json) {
   throw pqrs::json::unmarshal_error(fmt::format("json must be array or string, but is `{0}`", pqrs::json::dump_for_error_message(json)));
 }
 
-inline std::vector<modifier_flag> get_modifier_flags(modifier modifier) {
+[[nodiscard]] inline std::vector<modifier_flag> get_modifier_flags(modifier modifier) {
   switch (modifier) {
     case modifier::any:
       return {};
@@ -74,7 +74,7 @@ inline std::vector<modifier_flag> get_modifier_flags(modifier modifier) {
   }
 }
 
-inline modifier get_modifier(modifier_flag modifier_flag) {
+[[nodiscard]] inline modifier get_modifier(modifier_flag modifier_flag) {
   switch (modifier_flag) {
     case modifier_flag::caps_lock:
       return modifier::caps_lock;

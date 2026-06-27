@@ -10,7 +10,7 @@ public:
   focused_ui_element() {
   }
 
-  const std::optional<std::string>& get_role() const {
+  [[nodiscard]] const std::optional<std::string>& get_role() const {
     return role_;
   }
 
@@ -19,7 +19,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_subrole() const {
+  [[nodiscard]] const std::optional<std::string>& get_subrole() const {
     return subrole_;
   }
 
@@ -28,7 +28,7 @@ public:
     return *this;
   }
 
-  const std::optional<std::string>& get_title() const {
+  [[nodiscard]] const std::optional<std::string>& get_title() const {
     return title_;
   }
 
@@ -37,7 +37,7 @@ public:
     return *this;
   }
 
-  const std::optional<double>& get_window_position_x() const {
+  [[nodiscard]] const std::optional<double>& get_window_position_x() const {
     return window_position_x_;
   }
 
@@ -46,7 +46,7 @@ public:
     return *this;
   }
 
-  const std::optional<double>& get_window_position_y() const {
+  [[nodiscard]] const std::optional<double>& get_window_position_y() const {
     return window_position_y_;
   }
 
@@ -55,7 +55,7 @@ public:
     return *this;
   }
 
-  const std::optional<double>& get_window_size_width() const {
+  [[nodiscard]] const std::optional<double>& get_window_size_width() const {
     return window_size_width_;
   }
 
@@ -64,7 +64,7 @@ public:
     return *this;
   }
 
-  const std::optional<double>& get_window_size_height() const {
+  [[nodiscard]] const std::optional<double>& get_window_size_height() const {
     return window_size_height_;
   }
 

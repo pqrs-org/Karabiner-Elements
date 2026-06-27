@@ -12,7 +12,7 @@ public:
       : delay_milliseconds_(500) {
   }
 
-  std::chrono::milliseconds get_delay_milliseconds() const {
+  [[nodiscard]] std::chrono::milliseconds get_delay_milliseconds() const {
     return delay_milliseconds_;
   }
 

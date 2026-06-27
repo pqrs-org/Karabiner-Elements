@@ -54,7 +54,7 @@ public:
               });
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_assets_file>>& get_files() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_assets_file>>& get_files() const {
     return files_;
   }
 

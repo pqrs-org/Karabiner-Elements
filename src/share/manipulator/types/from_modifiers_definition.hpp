@@ -14,7 +14,7 @@ public:
   ~from_modifiers_definition() {
   }
 
-  const std::set<modifier_definition::modifier>& get_mandatory_modifiers() const {
+  [[nodiscard]] const std::set<modifier_definition::modifier>& get_mandatory_modifiers() const {
     return mandatory_modifiers_;
   }
 
@@ -22,7 +22,7 @@ public:
     mandatory_modifiers_ = value;
   }
 
-  const std::set<modifier_definition::modifier>& get_optional_modifiers() const {
+  [[nodiscard]] const std::set<modifier_definition::modifier>& get_optional_modifiers() const {
     return optional_modifiers_;
   }
 

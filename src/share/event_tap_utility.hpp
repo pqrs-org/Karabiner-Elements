@@ -23,8 +23,8 @@ public:
     return std::nullopt;
   }
 
-  static std::optional<std::pair<event_type, event_queue::event>> make_event(CGEventType type,
-                                                                             CGEventRef event) {
+  [[nodiscard]] static std::optional<std::pair<event_type, event_queue::event>> make_event(CGEventType type,
+                                                                                           CGEventRef event) {
     switch (type) {
       case kCGEventKeyDown:
         if (auto e = make_momentary_switch_event(event)) {
@@ -121,8 +121,8 @@ public:
   }
 
 private:
-  static std::optional<event_type> get_modifier_event_type(const event_queue::event& event,
-                                                           CGEventFlags flags) {
+  [[nodiscard]] static std::optional<event_type> get_modifier_event_type(const event_queue::event& event,
+                                                                         CGEventFlags flags) {
     auto m = event.get_if<momentary_switch_event>();
     if (!m) {
       return std::nullopt;

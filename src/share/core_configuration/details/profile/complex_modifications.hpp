@@ -67,7 +67,7 @@ public:
     return parameters_;
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_rule>>& get_rules() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<complex_modifications_rule>>& get_rules() const {
     return rules_;
   }
 

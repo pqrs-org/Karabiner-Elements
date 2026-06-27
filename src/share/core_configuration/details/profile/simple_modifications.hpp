@@ -59,7 +59,7 @@ public:
     return json;
   }
 
-  const std::vector<std::pair<std::string, std::string>>& get_pairs() const {
+  [[nodiscard]] const std::vector<std::pair<std::string, std::string>>& get_pairs() const {
     return pairs_;
   }
 

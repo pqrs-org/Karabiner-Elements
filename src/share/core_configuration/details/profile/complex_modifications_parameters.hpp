@@ -60,7 +60,7 @@ public:
     adjust_values();
   }
 
-  const int& get_basic_simultaneous_threshold_milliseconds() const {
+  [[nodiscard]] const int& get_basic_simultaneous_threshold_milliseconds() const {
     return basic_simultaneous_threshold_milliseconds_;
   }
 
@@ -70,7 +70,7 @@ public:
     adjust_values();
   }
 
-  const int& get_basic_to_if_alone_timeout_milliseconds() const {
+  [[nodiscard]] const int& get_basic_to_if_alone_timeout_milliseconds() const {
     return basic_to_if_alone_timeout_milliseconds_;
   }
 
@@ -80,7 +80,7 @@ public:
     adjust_values();
   }
 
-  const int& get_basic_to_if_held_down_threshold_milliseconds() const {
+  [[nodiscard]] const int& get_basic_to_if_held_down_threshold_milliseconds() const {
     return basic_to_if_held_down_threshold_milliseconds_;
   }
 
@@ -90,7 +90,7 @@ public:
     adjust_values();
   }
 
-  const int& get_basic_to_delayed_action_delay_milliseconds() const {
+  [[nodiscard]] const int& get_basic_to_delayed_action_delay_milliseconds() const {
     return basic_to_delayed_action_delay_milliseconds_;
   }
 
@@ -100,7 +100,7 @@ public:
     adjust_values();
   }
 
-  const int& get_mouse_motion_to_scroll_speed() const {
+  [[nodiscard]] const int& get_mouse_motion_to_scroll_speed() const {
     return mouse_motion_to_scroll_speed_;
   }
 

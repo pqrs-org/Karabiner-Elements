@@ -38,11 +38,11 @@ public:
       }
     }
 
-    const std::vector<pqrs::not_null_shared_ptr_t<from_event_definition>>& get_other_keys() const {
+    [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<from_event_definition>>& get_other_keys() const {
       return other_keys_;
     }
 
-    const to_event_definitions& get_to() const {
+    [[nodiscard]] const to_event_definitions& get_to() const {
       return to_;
     }
 
@@ -63,7 +63,7 @@ public:
   ~to_if_other_key_pressed() {
   }
 
-  const std::vector<pqrs::not_null_shared_ptr_t<entry>>& get_entries() const {
+  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<entry>>& get_entries() const {
     return entries_;
   }
 

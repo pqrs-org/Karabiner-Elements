@@ -10,8 +10,8 @@ namespace krbn::momentary_switch_event_details::impl {
 //
 
 template <typename T>
-inline auto find_pair(const T& name_value_pairs,
-                      pqrs::hid::usage::value_t usage) {
+[[nodiscard]] inline auto find_pair(const T& name_value_pairs,
+                                    pqrs::hid::usage::value_t usage) {
   return std::find_if(std::begin(name_value_pairs),
                       std::end(name_value_pairs),
                       [&](const auto& pair) {
@@ -31,8 +31,8 @@ inline std::string make_name(const T& name_value_pairs,
 }
 
 template <typename T>
-inline std::optional<pqrs::hid::usage::value_t> find_usage(const T& name_value_map,
-                                                           const std::string& name) {
+[[nodiscard]] inline std::optional<pqrs::hid::usage::value_t> find_usage(const T& name_value_map,
+                                                                         const std::string& name) {
   auto it = name_value_map.find(name.c_str());
   if (it != std::end(name_value_map)) {
     return it->second;

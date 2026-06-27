@@ -452,7 +452,7 @@ public:
         });
   }
 
-  const queue& get_queue() const {
+  [[nodiscard]] const queue& get_queue() const {
     return queue_;
   }
 
@@ -460,11 +460,11 @@ public:
     return queue_.clear();
   }
 
-  const key_event_dispatcher& get_key_event_dispatcher() const {
+  [[nodiscard]] const key_event_dispatcher& get_key_event_dispatcher() const {
     return key_event_dispatcher_;
   }
 
-  key_event_dispatcher& get_key_event_dispatcher() {
+  [[nodiscard]] key_event_dispatcher& get_key_event_dispatcher() {
     return key_event_dispatcher_;
   }
 
