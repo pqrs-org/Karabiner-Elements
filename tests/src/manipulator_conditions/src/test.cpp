@@ -1,5 +1,6 @@
 #include "device_exists_test.hpp"
 #include "device_test.hpp"
+#include "dispatcher_utility.hpp"
 #include "errors_test.hpp"
 #include "manipulator_conditions_test.hpp"
 #include "run_loop_thread_utility.hpp"

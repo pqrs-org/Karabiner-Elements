@@ -1,5 +1,6 @@
 #include "../../share/json_helper.hpp"
 #include "../../share/manipulator_helper.hpp"
+#include "dispatcher_utility.hpp"
 #include "run_loop_thread_utility.hpp"
 
 int main() {

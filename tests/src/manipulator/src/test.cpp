@@ -1,3 +1,4 @@
+#include "dispatcher_utility.hpp"
 #include "manipulator_factory_test.hpp"
 #include "manipulator_manager_test.hpp"
 #include "run_loop_thread_utility.hpp"

@@ -1,5 +1,6 @@
 #include "../../share/json_helper.hpp"
 #include "../../share/manipulator_helper.hpp"
+#include "dispatcher_utility.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include "run_loop_thread_utility.hpp"
 
