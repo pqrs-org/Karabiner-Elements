@@ -24,9 +24,6 @@ int main() {
 
   monitor = nullptr;
 
-  scoped_run_loop_thread_manager = nullptr;
-  scoped_dispatcher_manager = nullptr;
-
   std::cout << "finished" << std::endl;
 
   return 0;
