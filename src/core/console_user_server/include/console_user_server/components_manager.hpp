@@ -3,7 +3,6 @@
 // `krbn::console_user_server::components_manager` can be used safely in a multi-threaded environment.
 
 #include "application_launcher.hpp"
-#include "chrono_utility.hpp"
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "core_service_client.hpp"

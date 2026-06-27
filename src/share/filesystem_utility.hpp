@@ -1,8 +1,6 @@
 #pragma once
 
-#include "chrono_utility.hpp"
 #include "constants.hpp"
-#include "logger.hpp"
 #include <filesystem>
 #include <string_view>
 #include <sys/stat.h>
@@ -153,15 +151,6 @@ inline void create_base_directories(std::optional<uid_t> uid) {
   if (uid) {
     filesystem_utility::mkdir_system_user_directory(*uid);
   }
-}
-
-[[nodiscard]] inline std::filesystem::path make_socket_file_basename() {
-  std::stringstream ss;
-  ss << std::hex
-     << chrono_utility::nanoseconds_since_epoch()
-     << ".sock";
-
-  return ss.str();
 }
 
 [[nodiscard]] inline std::filesystem::path find_socket_file_path(const std::filesystem::path& directory) {

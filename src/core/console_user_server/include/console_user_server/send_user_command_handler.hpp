@@ -1,13 +1,10 @@
 #pragma once
 
 #include "constants.hpp"
-#include "filesystem_utility.hpp"
 #include "logger.hpp"
 #include <asio.hpp>
-#include <filesystem>
 #include <memory>
 #include <nlohmann/json.hpp>
-#include <optional>
 #include <pqrs/dispatcher.hpp>
 #include <string>
 #include <sys/un.h>
@@ -35,7 +32,9 @@ public:
     detach_from_dispatcher();
 
     asio::post(io_context_, [this] {
-      close_socket();
+      if (socket_.is_open()) {
+        socket_.close();
+      }
     });
 
     work_guard_.reset();
@@ -93,20 +92,6 @@ private:
       return false;
     }
 
-    auto path = constants::get_user_tmp_directory() / filesystem_utility::make_socket_file_basename();
-    socket_file_path_ = path;
-
-    std::error_code ec;
-    std::filesystem::remove(path, ec);
-
-    asio::local::datagram_protocol::endpoint local_endpoint(path.string());
-    socket_.bind(local_endpoint, error_code);
-    if (error_code) {
-      logger::get_logger()->warn("send_user_command: socket.bind failed: {}", error_code.message());
-      socket_.close();
-      return false;
-    }
-
     return true;
   }
 
@@ -132,22 +117,9 @@ private:
     return bytes_sent == payload.size();
   }
 
-  void close_socket() {
-    if (socket_.is_open()) {
-      socket_.close();
-    }
-
-    if (socket_file_path_) {
-      std::error_code ec;
-      std::filesystem::remove(*socket_file_path_, ec);
-      socket_file_path_.reset();
-    }
-  }
-
   asio::io_context io_context_;
   asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
   asio::local::datagram_protocol::socket socket_;
-  std::optional<std::filesystem::path> socket_file_path_;
   std::thread io_thread_;
 };
 
