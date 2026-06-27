@@ -56,7 +56,7 @@ int main(int argc, const char* argv[]) {
   // Make socket directory.
   //
 
-  krbn::filesystem_utility::create_base_directories(std::nullopt);
+  krbn::filesystem_utility::prepare_system_directories(std::nullopt);
 
   //
   // Run components_manager

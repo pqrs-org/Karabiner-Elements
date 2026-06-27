@@ -578,7 +578,7 @@ private:
   }
 
   void prepare_karabiner_core_service_socket_directory() const {
-    filesystem_utility::create_base_directories(current_console_user_id_);
+    filesystem_utility::prepare_system_directories(current_console_user_id_);
   }
 
   void start_grabbing_if_system_core_configuration_file_exists() {

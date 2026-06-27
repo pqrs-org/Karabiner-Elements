@@ -8,6 +8,7 @@
 #include "core_service_client.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
+#include "permission_checker.hpp"
 #include "services_utility.hpp"
 #include <optional>
 #include <pqrs/dispatcher.hpp>
@@ -15,6 +16,7 @@
 #include <pqrs/osx/session.hpp>
 
 namespace krbn::core_service::agent {
+
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   components_manager(const components_manager&) = delete;
@@ -34,6 +36,16 @@ public:
     });
 
     //
+    // permission_checker_
+    //
+
+    permission_checker_ = std::make_unique<permission_checker>();
+
+    permission_checker_->permission_check_result_changed.connect([this](auto&& result) {
+      send_core_service_bundle_permission_check_result(result);
+    });
+
+    //
     // session_monitor_
     //
 
@@ -46,9 +58,10 @@ public:
 
       version_monitor_->async_manual_check();
 
+      permission_checker_->async_set_on_console(on_console);
+
       stop_core_service_client();
       start_core_service_client();
-      enqueue_check_permissions();
     });
 
     //
@@ -107,6 +120,7 @@ public:
       pqrs::osx::accessibility::monitor::terminate_shared_monitor();
 
       session_monitor_ = nullptr;
+      permission_checker_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
@@ -119,88 +133,6 @@ public:
   }
 
 private:
-  void enqueue_check_permissions() {
-    if (on_console_ != std::optional<bool>(true)) {
-      return;
-    }
-
-    enqueue_to_dispatcher(
-        [this] {
-          check_permissions();
-        },
-        when_now() + std::chrono::seconds(1));
-  }
-
-  void refresh_bundle_permission_check_result() {
-    auto result = core_service_utility::make_bundle_permission_check_result();
-    if (!result) {
-      return;
-    }
-
-    // If permissions were revoked while the agent kept running, the cached bundle permission state can become stale.
-    // In that case, terminate the agent and let launchd restart the agent.
-    // The restarted process can re-enter the normal prompt-and-poll flow from a clean state.
-    if (last_bundle_permission_check_result_ &&
-        last_bundle_permission_check_result_->required_permissions_granted() &&
-        !result->required_permissions_granted()) {
-      logger::get_logger()->info("Required permissions were revoked. Terminating the agent.");
-
-      last_bundle_permission_check_result_ = *result;
-
-      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-        killer->async_kill();
-      }
-      return;
-    }
-
-    last_bundle_permission_check_result_ = *result;
-    send_core_service_bundle_permission_check_result(*result);
-  }
-
-  void check_permissions() {
-    if (on_console_ != std::optional<bool>(true)) {
-      return;
-    }
-
-    // `make_bundle_permission_check_result` blocks while waiting for the permission-check result file.
-    // This is acceptable here because this path is only relevant while the required permissions are not granted,
-    // and during that period the agent has little else to do besides prompting for and re-checking permissions.
-    auto result = core_service_utility::make_bundle_permission_check_result();
-    if (!result) {
-      enqueue_check_permissions();
-      return;
-    }
-
-    // On macOS 26, Accessibility permission may also cover Input Monitoring permission.
-    // (Note that on macOS 14, Input Monitoring permission is still required separately even if Accessibility is granted.)
-    // Therefore, request Accessibility permission first, and only request Input Monitoring permission
-    // if it is still needed after Accessibility has already been granted.
-    if (!result->get_accessibility_process_trusted()) {
-      core_service_utility::prompt_accessibility_permission_once();
-    } else {
-      if (!result->get_iohid_listen_event_allowed()) {
-        core_service_utility::prompt_input_monitoring_permission_once();
-      }
-    }
-
-    last_bundle_permission_check_result_ = *result;
-    send_core_service_bundle_permission_check_result(*result);
-
-    if (!result->required_permissions_granted()) {
-      restart_required_after_permissions_granted_ = true;
-      enqueue_check_permissions();
-      return;
-    }
-
-    if (restart_required_after_permissions_granted_) {
-      logger::get_logger()->info("The required permissions are granted. Restarting core daemons and terminating the agent.");
-
-      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-        killer->async_kill();
-      }
-    }
-  }
-
   void send_core_service_bundle_permission_check_result(const core_service_permission_check_result& result) {
     if (core_service_client_) {
       core_service_client_->async_core_service_bundle_permission_check_result(
@@ -221,8 +153,9 @@ private:
     core_service_client_ = std::make_shared<core_service_client>();
 
     core_service_client_->connected.connect([this] {
-      refresh_bundle_permission_check_result();
       version_monitor_->async_manual_check();
+
+      permission_checker_->enqueue_check_permissions();
 
       // Core Service may restart while the agent keeps running, so resend the current accessibility state after reconnecting.
       if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
@@ -243,7 +176,7 @@ private:
       try {
         switch (operation_type) {
           case operation_type::refresh_core_service_bundle_permission_check_result:
-            refresh_bundle_permission_check_result();
+            permission_checker_->enqueue_check_permissions();
             break;
 
           default:
@@ -263,10 +196,9 @@ private:
 
   std::unique_ptr<version_monitor> version_monitor_;
   std::optional<bool> on_console_;
+  std::unique_ptr<permission_checker> permission_checker_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
 
   std::shared_ptr<core_service_client> core_service_client_;
-  std::optional<core_service_permission_check_result> last_bundle_permission_check_result_;
-  bool restart_required_after_permissions_granted_ = false;
 };
 } // namespace krbn::core_service::agent

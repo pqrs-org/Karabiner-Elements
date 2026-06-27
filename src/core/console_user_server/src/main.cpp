@@ -76,7 +76,7 @@ int main(int argc, const char* argv[]) {
   // Create directories
   //
 
-  krbn::filesystem_utility::mkdir_user_directories();
+  krbn::filesystem_utility::prepare_user_directories();
 
   //
   // Run components_manager

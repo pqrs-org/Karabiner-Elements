@@ -4,6 +4,7 @@
 #include "core_service/core_service_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "filesystem_utility.hpp"
+#include "karabiner_version.h"
 #include "logger.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <fstream>

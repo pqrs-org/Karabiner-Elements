@@ -93,7 +93,7 @@ private:
     enqueue_to_dispatcher(
         [this] {
           if (base_directories_missing()) {
-            filesystem_utility::create_base_directories(current_console_user_id_);
+            filesystem_utility::prepare_system_directories(current_console_user_id_);
           }
 
           enqueue_ensure_base_directories();

@@ -158,7 +158,7 @@ private:
   };
 
   void prepare_session_monitor_receiver_socket_parent_directory() const {
-    filesystem_utility::create_base_directories(std::nullopt);
+    filesystem_utility::prepare_system_directories(std::nullopt);
   }
 
   [[nodiscard]] bool has_on_console_peer(uid_t uid) const {
@@ -176,7 +176,7 @@ private:
     if (current_console_user_id_ != value) {
       current_console_user_id_ = value;
 
-      filesystem_utility::create_base_directories(value);
+      filesystem_utility::prepare_system_directories(value);
 
       enqueue_to_dispatcher([this, value] {
         current_console_user_id_changed(value);

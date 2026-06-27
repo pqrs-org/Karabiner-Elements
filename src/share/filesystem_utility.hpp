@@ -29,6 +29,10 @@ inline constexpr auto permissions_0755 =
     std::filesystem::perms::others_read |
     std::filesystem::perms::others_exec;
 
+//
+// std::filesystem wrappers
+//
+
 inline bool create_directories(const std::filesystem::path& directory_path) {
   std::error_code error_code;
   std::filesystem::create_directories(directory_path,
@@ -195,7 +199,13 @@ inline bool chown(const std::filesystem::path& path,
   return true;
 }
 
-inline void mkdir_tmp_directory() {
+//
+// Utilities
+//
+
+namespace impl {
+
+inline void prepare_system_tmp_directory() {
   // /Library/Application Support/org.pqrs/tmp
   auto directory_path = constants::get_tmp_directory();
 
@@ -215,8 +225,8 @@ inline void mkdir_tmp_directory() {
   }
 }
 
-inline void mkdir_rootonly_directory() {
-  krbn::filesystem_utility::mkdir_tmp_directory();
+inline void prepare_system_rootonly_directory() {
+  prepare_system_tmp_directory();
 
   // /Library/Application Support/org.pqrs/tmp/rootonly
   auto directory_path = constants::get_rootonly_directory();
@@ -237,8 +247,8 @@ inline void mkdir_rootonly_directory() {
   }
 }
 
-inline void mkdir_system_user_directory(uid_t uid) {
-  krbn::filesystem_utility::mkdir_tmp_directory();
+inline void prepare_system_user_directory(uid_t uid) {
+  prepare_system_tmp_directory();
 
   {
     // /Library/Application Support/org.pqrs/tmp/user
@@ -279,7 +289,17 @@ inline void mkdir_system_user_directory(uid_t uid) {
   }
 }
 
-inline void mkdir_user_directories() {
+} // namespace impl
+
+inline void prepare_system_directories(std::optional<uid_t> uid) {
+  krbn::filesystem_utility::impl::prepare_system_tmp_directory();
+  krbn::filesystem_utility::impl::prepare_system_rootonly_directory();
+  if (uid) {
+    krbn::filesystem_utility::impl::prepare_system_user_directory(*uid);
+  }
+}
+
+inline void prepare_user_directories() {
   {
     // ~/.config/karabiner
     auto directory_path = constants::get_user_configuration_directory();
@@ -343,14 +363,6 @@ inline void mkdir_user_directories() {
         return;
       }
     }
-  }
-}
-
-inline void create_base_directories(std::optional<uid_t> uid) {
-  krbn::filesystem_utility::mkdir_tmp_directory();
-  krbn::filesystem_utility::mkdir_rootonly_directory();
-  if (uid) {
-    krbn::filesystem_utility::mkdir_system_user_directory(*uid);
   }
 }
 

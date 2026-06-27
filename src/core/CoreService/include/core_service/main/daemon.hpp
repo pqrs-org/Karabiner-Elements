@@ -86,7 +86,7 @@ int daemon() {
   // Make directories.
   //
 
-  filesystem_utility::create_base_directories(std::nullopt);
+  filesystem_utility::prepare_system_directories(std::nullopt);
 
   //
   // Run components_manager

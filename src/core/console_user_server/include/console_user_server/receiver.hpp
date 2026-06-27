@@ -4,7 +4,6 @@
 
 #include "codesign_manager.hpp"
 #include "constants.hpp"
-#include "filesystem_utility.hpp"
 #include "send_user_command_handler.hpp"
 #include "services_utility.hpp"
 #include "settings_window_guidance_manager.hpp"
@@ -32,8 +31,6 @@ public:
         shell_command_handler_(std::make_unique<shell_command_handler>()),
         send_user_command_handler_(std::make_unique<send_user_command_handler>()),
         check_for_updates_task_(*this) {
-    prepare_console_user_server_socket_directory();
-
     auto options = pqrs::unix_domain_stream::server_options(
         {
             .max_message_size = constants::unix_domain_stream_max_message_size,
@@ -63,13 +60,9 @@ public:
       logger::get_logger()->info("receiver: bound");
     });
 
-    server_->bind_failed.connect([this](auto&& error_code) {
+    server_->bind_failed.connect([](auto&& error_code) {
       logger::get_logger()->error("receiver: bind_failed: {0}",
                                   error_code.message());
-
-      // If the socket directory is deleted for any reason,
-      // bind_failed will be triggered, so recreate the directory each time.
-      prepare_console_user_server_socket_directory();
     });
 
     server_->closed.connect([] {
@@ -118,10 +111,6 @@ public:
 private:
   std::filesystem::path console_user_server_socket_file_path() const {
     return constants::get_console_user_server_socket_file_path(geteuid());
-  }
-
-  void prepare_console_user_server_socket_directory() const {
-    filesystem_utility::create_base_directories(geteuid());
   }
 
   void async_respond(pqrs::unix_domain_stream::peer_id peer_id,
