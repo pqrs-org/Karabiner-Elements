@@ -3,6 +3,7 @@
 #include "complex_modifications_utility.hpp"
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
+#include "filesystem_utility.hpp"
 #include "json_utility.hpp"
 #include "manipulator/manipulator_factory.hpp"
 
@@ -75,17 +76,7 @@ public:
   }
 
   [[nodiscard]] std::optional<std::filesystem::file_time_type> last_write_time() const {
-    std::error_code error_code;
-    auto result = std::filesystem::last_write_time(file_path_, error_code);
-
-    if (error_code) {
-      logger::get_logger()->error("Failed to get last_write_time of {0}: {1}.",
-                                  file_path_.string(),
-                                  error_code.message());
-      return std::nullopt;
-    }
-
-    return result;
+    return filesystem_utility::last_write_time(file_path_);
   }
 
   void unlink_file() const {

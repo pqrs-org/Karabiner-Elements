@@ -3,6 +3,7 @@
 #include "core_service/agent/components_manager.hpp"
 #include "core_service/core_service_utility.hpp"
 #include "environment_variable_utility.hpp"
+#include "filesystem_utility.hpp"
 #include "logger.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <fstream>
@@ -55,8 +56,10 @@ int agent(std::vector<std::string> args) {
         output << nlohmann::json(result).dump();
         output.close();
 
-        std::filesystem::rename(temporary_result_json_file_path,
-                                result_json_file_path);
+        if (!filesystem_utility::rename(temporary_result_json_file_path,
+                                        result_json_file_path)) {
+          return 1;
+        }
 
         return 0;
       } catch (const std::exception& e) {

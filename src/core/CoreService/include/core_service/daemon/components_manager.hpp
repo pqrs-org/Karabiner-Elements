@@ -102,15 +102,14 @@ private:
   }
 
   [[nodiscard]] bool base_directories_missing() const {
-    std::error_code error_code;
-    if (!std::filesystem::exists(constants::get_tmp_directory(), error_code) ||
-        !std::filesystem::exists(constants::get_rootonly_directory(), error_code)) {
+    if (!filesystem_utility::exists(constants::get_tmp_directory()) ||
+        !filesystem_utility::exists(constants::get_rootonly_directory())) {
       return true;
     }
 
     if (current_console_user_id_) {
-      if (!std::filesystem::exists(constants::get_system_user_directory(), error_code) ||
-          !std::filesystem::exists(constants::get_system_user_directory(*current_console_user_id_), error_code)) {
+      if (!filesystem_utility::exists(constants::get_system_user_directory()) ||
+          !filesystem_utility::exists(constants::get_system_user_directory(*current_console_user_id_))) {
         return true;
       }
     }

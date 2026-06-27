@@ -244,12 +244,17 @@ inline std::string eval_file_with_fs_access(const std::filesystem::path& path) n
     // Note:
     // `__filename` will be updated in duk_module_node.c when `require()` is called.
     // Since `__filename` is not set in the entry file, set it here.
-    duk_push_string(ctx, std::filesystem::absolute(path).c_str());
+    auto canonical_path = filesystem_utility::canonical(path);
+    if (!canonical_path) {
+      throw duktape_eval_error(fmt::format("failed to get canonical path: {0}", path.string()));
+    }
+
+    duk_push_string(ctx, canonical_path->c_str());
     duk_put_global_string(ctx, "__filename");
 
     // A custom extension in order to determine whether a script was executed directly from the command line or loaded with `require()`.
     // Although setting `require.main` is a more nodejs-compatible method, we take this method, which does not require any changes to `duk_module_node.c`.
-    duk_push_string(ctx, std::filesystem::absolute(path).c_str());
+    duk_push_string(ctx, canonical_path->c_str());
     duk_put_global_string(ctx, "__main");
 
     duk_push_object(ctx);

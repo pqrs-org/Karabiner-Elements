@@ -58,13 +58,12 @@ public:
 
       version_monitor_->async_manual_check();
 
-      std::error_code error_code;
-      std::filesystem::create_directories(constants::get_user_configuration_directory(),
-                                          error_code);
-      if (std::filesystem::is_directory(constants::get_user_configuration_directory(),
-                                        error_code)) {
-        chmod(constants::get_user_configuration_directory().c_str(),
-              0700);
+      if (filesystem_utility::create_directories(constants::get_user_configuration_directory()) &&
+          filesystem_utility::is_directory(constants::get_user_configuration_directory())) {
+        if (!filesystem_utility::permissions(constants::get_user_configuration_directory(),
+                                             filesystem_utility::permissions_0700)) {
+          return;
+        }
       }
 
       stop_core_service_client();

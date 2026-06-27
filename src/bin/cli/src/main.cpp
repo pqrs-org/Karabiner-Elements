@@ -10,6 +10,7 @@
 #include "dispatcher_utility.hpp"
 #include "duktape_utility.hpp"
 #include "environment_variable_utility.hpp"
+#include "filesystem_utility.hpp"
 #include "json_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
@@ -285,32 +286,39 @@ void set_variables(const std::string& variables) {
 }
 
 int copy_current_profile_to_system_default_profile() {
-  std::error_code error_code;
-  std::filesystem::create_directories(krbn::constants::get_system_configuration_directory(),
-                                      error_code);
-  if (std::filesystem::is_directory(krbn::constants::get_system_configuration_directory(),
-                                    error_code)) {
-    chmod(krbn::constants::get_system_configuration_directory().c_str(),
-          0755);
+  if (!krbn::filesystem_utility::create_directories(krbn::constants::get_system_configuration_directory())) {
+    return 1;
   }
-  pqrs::filesystem::copy(krbn::constants::get_user_core_configuration_file_path(),
-                         krbn::constants::get_system_core_configuration_file_path());
+
+  if (krbn::filesystem_utility::is_directory(krbn::constants::get_system_configuration_directory())) {
+    if (!krbn::filesystem_utility::permissions(krbn::constants::get_system_configuration_directory(),
+                                               krbn::filesystem_utility::permissions_0755)) {
+      return 1;
+    }
+  }
+
+  if (!krbn::filesystem_utility::copy(krbn::constants::get_user_core_configuration_file_path(),
+                                      krbn::constants::get_system_core_configuration_file_path(),
+                                      std::filesystem::copy_options::overwrite_existing)) {
+    return 1;
+  }
+
+  if (!krbn::filesystem_utility::permissions(krbn::constants::get_system_core_configuration_file_path(),
+                                             krbn::filesystem_utility::permissions_0644)) {
+    return 1;
+  }
+
   return 0;
 }
 
 int remove_system_default_profile() {
-  std::error_code exists_error_code;
-  if (!std::filesystem::exists(krbn::constants::get_system_core_configuration_file_path(), exists_error_code)) {
+  if (!krbn::filesystem_utility::exists(krbn::constants::get_system_core_configuration_file_path())) {
     krbn::logger::get_logger()->error("{0} is not found.",
                                       krbn::constants::get_system_core_configuration_file_path().string());
     return 1;
   }
 
-  std::error_code error_code;
-  std::filesystem::remove(krbn::constants::get_system_core_configuration_file_path(), error_code);
-
-  if (error_code) {
-    krbn::logger::get_logger()->error("Failed to unlink {0}.", error_code.message());
+  if (!krbn::filesystem_utility::remove(krbn::constants::get_system_core_configuration_file_path())) {
     return 1;
   }
 
@@ -624,10 +632,15 @@ int main(int argc, char** argv) {
               try {
                 auto json = krbn::json_utility::parse_ordered_jsonc(input);
 
-                auto status = std::filesystem::status(file_path);
+                auto status = krbn::filesystem_utility::status(file_path);
+                if (!status) {
+                  exit_code = 1;
+                  std::cerr << fmt::format("status error in {0}", file_path.string()) << std::endl;
+                  continue;
+                }
                 krbn::json_writer::save_to_file(json,
                                                 file_path,
-                                                static_cast<mode_t>(status.permissions()));
+                                                status->permissions());
               } catch (std::exception& e) {
                 exit_code = 1;
                 std::cerr << fmt::format("parse error in {0}: {1}", file_path.string(), e.what()) << std::endl;

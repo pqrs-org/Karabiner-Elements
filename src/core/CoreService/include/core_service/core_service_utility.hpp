@@ -52,8 +52,7 @@ inline std::optional<core_service_permission_check_result> make_bundle_permissio
 
   auto result_json_file_path =
       constants::get_user_tmp_directory() / "core-service-permission-check-result.json";
-  std::error_code ec;
-  std::filesystem::remove(result_json_file_path, ec);
+  filesystem_utility::remove(result_json_file_path);
 
   pqrs::osx::workspace::open_application_by_bundle_path(
       karabiner_core_service_bundle_path,
@@ -69,8 +68,7 @@ inline std::optional<core_service_permission_check_result> make_bundle_permissio
   for (int i = 0; i < 50; ++i) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    std::error_code exists_error_code;
-    if (!std::filesystem::exists(result_json_file_path, exists_error_code)) {
+    if (!filesystem_utility::exists(result_json_file_path)) {
       continue;
     }
 

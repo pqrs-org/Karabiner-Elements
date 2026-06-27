@@ -9,6 +9,7 @@
 #include "details/profile/device.hpp"
 #include "details/profile/simple_modifications.hpp"
 #include "details/profile/virtual_hid_keyboard.hpp"
+#include "filesystem_utility.hpp"
 #include "json_utility.hpp"
 #include "json_writer.hpp"
 #include "logger.hpp"
@@ -68,8 +69,7 @@ public:
     bool valid_file_owner = false;
 
     // Load karabiner.json only when the owner is root or current session user.
-    std::error_code exists_error_code;
-    if (std::filesystem::exists(file_path, exists_error_code)) {
+    if (filesystem_utility::exists(file_path)) {
       if (pqrs::filesystem::is_owned(file_path, 0)) {
         valid_file_owner = true;
       } else {
@@ -224,7 +224,7 @@ public:
     auto file_path = constants::get_user_core_configuration_file_path();
     json_writer::save_to_file(to_json(),
                               file_path,
-                              0600);
+                              user_core_configuration_file_mode);
 
     loaded_ = true;
     source_ = source::user_file;
@@ -234,8 +234,7 @@ private:
   void make_backup_file() {
     auto file_path = constants::get_user_core_configuration_file_path();
 
-    std::error_code exists_error_code;
-    if (!std::filesystem::exists(file_path, exists_error_code)) {
+    if (!filesystem_utility::exists(file_path)) {
       return;
     }
 
@@ -244,22 +243,28 @@ private:
       return;
     }
 
-    std::error_code create_directories_error_code;
-    std::filesystem::create_directories(backups_directory,
-                                        create_directories_error_code);
-    if (std::filesystem::is_directory(backups_directory,
-                                      create_directories_error_code)) {
-      chmod(backups_directory.c_str(),
-            0700);
+    if (filesystem_utility::create_directories(backups_directory) &&
+        filesystem_utility::is_directory(backups_directory)) {
+      if (!filesystem_utility::permissions(backups_directory,
+                                           filesystem_utility::permissions_0700)) {
+        return;
+      }
     }
 
     auto backup_file_path = backups_directory /
                             fmt::format("karabiner_{0}.json", make_current_local_yyyymmdd_string());
-    if (std::filesystem::exists(backup_file_path, exists_error_code)) {
+    if (filesystem_utility::exists(backup_file_path)) {
       return;
     }
 
-    pqrs::filesystem::copy(file_path, backup_file_path);
+    if (filesystem_utility::copy(file_path,
+                                 backup_file_path,
+                                 std::filesystem::copy_options::overwrite_existing)) {
+      if (!filesystem_utility::permissions(backup_file_path,
+                                           user_core_configuration_file_mode)) {
+        return;
+      }
+    }
   }
 
   void remove_old_backup_files() {
@@ -275,8 +280,7 @@ private:
     const int keep_count = 20;
     if (paths.size() > keep_count) {
       for (int i = 0; i < paths.size() - keep_count; ++i) {
-        std::error_code error_code;
-        std::filesystem::remove(paths[i], error_code);
+        filesystem_utility::remove(paths[i]);
       }
     }
   }
@@ -292,6 +296,8 @@ private:
                        tm.tm_mon + 1,
                        tm.tm_mday);
   }
+
+  static constexpr auto user_core_configuration_file_mode = filesystem_utility::permissions_0600;
 
   nlohmann::json json_;
   error_handling error_handling_;

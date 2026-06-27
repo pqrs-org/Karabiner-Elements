@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filesystem_utility.hpp"
 #include "json_utility.hpp"
 #include "json_writer.hpp"
 #include "logger.hpp"
@@ -52,7 +53,7 @@ public:
   void save_to_file(const std::filesystem::path& file_path) {
     json_writer::save_to_file(to_json(),
                               file_path,
-                              0644);
+                              filesystem_utility::permissions_0644);
   }
 
 private:

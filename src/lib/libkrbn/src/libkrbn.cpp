@@ -5,6 +5,7 @@
 #include "core_configuration/core_configuration.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
+#include "filesystem_utility.hpp"
 #include "libkrbn/impl/libkrbn_components_manager.hpp"
 #include "libkrbn/impl/libkrbn_cpp.hpp"
 #include "run_loop_thread_utility.hpp"
@@ -149,8 +150,7 @@ bool libkrbn_virtual_hid_pointing_exists() {
 }
 
 bool libkrbn_system_core_configuration_file_path_exists() {
-  std::error_code error_code;
-  return std::filesystem::exists(krbn::constants::get_system_core_configuration_file_path(), error_code);
+  return krbn::filesystem_utility::exists(krbn::constants::get_system_core_configuration_file_path());
 }
 
 bool libkrbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists() {

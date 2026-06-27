@@ -77,9 +77,14 @@ public:
 
       auto chown_uid = current_console_user_id_.value_or(uid_t(0));
       logger::get_logger()->info("receiver: chown socket: {0}", chown_uid);
-      chown(socket_file_path.c_str(), chown_uid, 0);
+      if (!filesystem_utility::chown(socket_file_path, chown_uid, 0)) {
+        return;
+      }
 
-      chmod(socket_file_path.c_str(), 0600);
+      if (!filesystem_utility::permissions(socket_file_path,
+                                           filesystem_utility::permissions_0600)) {
+        return;
+      }
     });
 
     server_->bind_failed.connect([this](auto&& error_code) {
@@ -583,8 +588,7 @@ private:
     }
 
     auto file_path = constants::get_system_core_configuration_file_path();
-    std::error_code exists_error_code;
-    if (std::filesystem::exists(file_path, exists_error_code)) {
+    if (filesystem_utility::exists(file_path)) {
       stop_device_grabber();
       start_device_grabber(file_path);
     }

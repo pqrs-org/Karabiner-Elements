@@ -4,6 +4,7 @@
 
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
+#include "filesystem_utility.hpp"
 #include "logger.hpp"
 #include <filesystem>
 #include <nod/nod.hpp>
@@ -38,9 +39,7 @@ public:
                                          system_core_configuration_file_path](auto&& changed_file_path,
                                                                               auto&& changed_file_body) {
       auto file_path = changed_file_path;
-      std::error_code exists_error_code;
-
-      if (std::filesystem::exists(user_core_configuration_file_path, exists_error_code)) {
+      if (filesystem_utility::exists(user_core_configuration_file_path)) {
         // Note:
         // user_core_configuration_file_path == system_core_configuration_file_path
         // if console_user_server is not running.
@@ -55,13 +54,13 @@ public:
         if (changed_file_path == user_core_configuration_file_path) {
           // user_core_configuration_file_path is removed.
 
-          if (std::filesystem::exists(system_core_configuration_file_path, exists_error_code)) {
+          if (filesystem_utility::exists(system_core_configuration_file_path)) {
             file_path = system_core_configuration_file_path;
           }
         }
       }
 
-      if (std::filesystem::exists(file_path, exists_error_code)) {
+      if (filesystem_utility::exists(file_path)) {
         logger::get_logger()->info("Load {0}...", file_path);
       }
 

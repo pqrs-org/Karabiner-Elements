@@ -1,13 +1,12 @@
 #pragma once
 
+#include "filesystem_utility.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include <filesystem>
 #include <fstream>
 #include <mutex>
 #include <system_error>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 namespace krbn {
@@ -16,7 +15,7 @@ public:
   template <typename T>
   static void save_to_file(const T& json,
                            const std::filesystem::path& file_path,
-                           mode_t file_mode) {
+                           std::filesystem::perms file_permissions) {
     std::lock_guard<std::mutex> lock(get_mutex());
 
     try {
@@ -24,9 +23,9 @@ public:
 
       auto parent_directory = file_path.parent_path();
       if (!parent_directory.empty()) {
-        std::error_code error_code;
-        std::filesystem::create_directories(parent_directory,
-                                            error_code);
+        if (!filesystem_utility::create_directories(parent_directory)) {
+          return;
+        }
       }
 
       auto tmp_file_path = file_path;
@@ -45,20 +44,14 @@ public:
           return;
         }
 
-        std::error_code error_code;
-        std::filesystem::rename(tmp_file_path,
-                                file_path,
-                                error_code);
-        if (error_code) {
-          logger::get_logger()->error("json_writer rename failed: {0}",
-                                      error_code.message());
+        if (!filesystem_utility::rename(tmp_file_path,
+                                        file_path)) {
           return;
         }
 
-        if (chmod(file_path.c_str(),
-                  file_mode) != 0) {
-          logger::get_logger()->error("json_writer chmod failed: {0}",
-                                      file_path.string());
+        if (!filesystem_utility::permissions(file_path,
+                                             file_permissions)) {
+          return;
         }
       } else {
         logger::get_logger()->error("json_writer failed to open: {0}",

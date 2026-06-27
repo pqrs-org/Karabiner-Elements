@@ -27,8 +27,14 @@ int main() {
       krbn::duktape_utility::eval_file_with_fs_access("data/module_not_found.js");
       expect(false);
     } catch (krbn::duktape_eval_error& ex) {
+      auto data_directory = krbn::filesystem_utility::canonical("data");
+      if (!data_directory) {
+        expect(false);
+        return;
+      }
+
       auto expected_message = fmt::format("javascript error: TypeError: cannot find module: {0}/not_found.js",
-                                          std::filesystem::absolute("data").string());
+                                          data_directory->string());
       expect(std::string_view(expected_message) == ex.what());
     }
 

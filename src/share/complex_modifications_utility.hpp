@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
+#include "filesystem_utility.hpp"
 #include "json_utility.hpp"
 #include "json_writer.hpp"
 #include "manipulator/condition_factory.hpp"
@@ -153,7 +154,7 @@ void save_prettierrc() {
     // place the default .prettierrc.json in the parent directory.
     json_writer::save_to_file(json,
                               directory / ".prettierrc.json",
-                              0600);
+                              filesystem_utility::permissions_0600);
   }
 }
 } // namespace krbn::complex_modifications_utility
