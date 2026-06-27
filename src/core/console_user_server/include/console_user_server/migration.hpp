@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <pqrs/filesystem.hpp>
 #include <pqrs/osx/process_info.hpp>
+#include <sys/stat.h>
 
 namespace krbn::console_user_server {
 class migration final {
@@ -21,7 +22,14 @@ public:
       if (std::filesystem::exists(old_file_path, exists_error_code) &&
           !std::filesystem::exists(new_file_path, exists_error_code)) {
         auto new_directory = pqrs::filesystem::dirname(new_file_path);
-        pqrs::filesystem::create_directory_with_intermediate_directories(new_directory, 0700);
+        std::error_code create_directories_error_code;
+        std::filesystem::create_directories(new_directory,
+                                            create_directories_error_code);
+        if (std::filesystem::is_directory(new_directory,
+                                          create_directories_error_code)) {
+          chmod(new_directory.c_str(),
+                0700);
+        }
         if (std::filesystem::exists(new_directory, exists_error_code)) {
           rename(old_file_path.c_str(), new_file_path.c_str());
         }

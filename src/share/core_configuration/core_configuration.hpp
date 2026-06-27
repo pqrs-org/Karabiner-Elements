@@ -21,6 +21,7 @@
 #include <pqrs/osx/process_info.hpp>
 #include <pqrs/osx/session.hpp>
 #include <string>
+#include <sys/stat.h>
 #include <unordered_map>
 
 // Example: tests/src/core_configuration/json/example.json
@@ -241,7 +242,14 @@ private:
       return;
     }
 
-    pqrs::filesystem::create_directory_with_intermediate_directories(backups_directory, 0700);
+    std::error_code create_directories_error_code;
+    std::filesystem::create_directories(backups_directory,
+                                        create_directories_error_code);
+    if (std::filesystem::is_directory(backups_directory,
+                                      create_directories_error_code)) {
+      chmod(backups_directory.c_str(),
+            0700);
+    }
 
     auto backup_file_path = backups_directory /
                             fmt::format("karabiner_{0}.json", make_current_local_yyyymmdd_string());

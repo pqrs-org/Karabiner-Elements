@@ -4,11 +4,13 @@
 
 #include "dispatcher_utility.hpp"
 #include "logger.hpp"
+#include <filesystem>
 #include <fstream>
 #include <pqrs/filesystem.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 namespace krbn {
 class async_file_writer final {
@@ -22,8 +24,15 @@ public:
                       mode_t file_mode) {
     dispatcher_utility::enqueue_to_file_writer_dispatcher([file_path, body, parent_directory_mode, file_mode] {
       try {
-        pqrs::filesystem::create_directory_with_intermediate_directories(pqrs::filesystem::dirname(file_path),
-                                                                         parent_directory_mode);
+        auto parent_directory = pqrs::filesystem::dirname(file_path);
+        std::error_code error_code;
+        std::filesystem::create_directories(parent_directory,
+                                            error_code);
+        if (std::filesystem::is_directory(parent_directory,
+                                          error_code)) {
+          chmod(parent_directory.c_str(),
+                parent_directory_mode);
+        }
 
         std::string tmp_file_path = file_path + ".tmp";
 
@@ -36,7 +45,8 @@ public:
           unlink(file_path.c_str());
           rename(tmp_file_path.c_str(), file_path.c_str());
 
-          chmod(file_path.c_str(), file_mode);
+          chmod(file_path.c_str(),
+                file_mode);
         } else {
           logger::get_logger()->error("async_file_writer failed to open: {0}", file_path);
         }

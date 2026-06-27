@@ -22,6 +22,7 @@
 #include <pqrs/gsl.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <sys/stat.h>
 
 namespace {
 void apply_core_configuration_function(std::function<void(pqrs::not_null_shared_ptr_t<krbn::core_configuration::core_configuration>)> function) {
@@ -284,7 +285,14 @@ void set_variables(const std::string& variables) {
 }
 
 int copy_current_profile_to_system_default_profile() {
-  pqrs::filesystem::create_directory_with_intermediate_directories(krbn::constants::get_system_configuration_directory(), 0755);
+  std::error_code error_code;
+  std::filesystem::create_directories(krbn::constants::get_system_configuration_directory(),
+                                      error_code);
+  if (std::filesystem::is_directory(krbn::constants::get_system_configuration_directory(),
+                                    error_code)) {
+    chmod(krbn::constants::get_system_configuration_directory().c_str(),
+          0755);
+  }
   pqrs::filesystem::copy(krbn::constants::get_user_core_configuration_file_path(),
                          krbn::constants::get_system_core_configuration_file_path());
   return 0;

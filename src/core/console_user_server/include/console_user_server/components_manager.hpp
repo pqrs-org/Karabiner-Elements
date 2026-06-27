@@ -14,12 +14,14 @@
 #include "services_utility.hpp"
 #include "settings_window_guidance_manager.hpp"
 #include "software_function_handler.hpp"
+#include <filesystem>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
 #include <pqrs/osx/json_file_monitor.hpp>
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences_monitor.hpp>
+#include <sys/stat.h>
 #include <thread>
 
 namespace krbn::console_user_server {
@@ -57,9 +59,14 @@ public:
 
       version_monitor_->async_manual_check();
 
-      pqrs::filesystem::create_directory_with_intermediate_directories(
-          constants::get_user_configuration_directory(),
-          0700);
+      std::error_code error_code;
+      std::filesystem::create_directories(constants::get_user_configuration_directory(),
+                                          error_code);
+      if (std::filesystem::is_directory(constants::get_user_configuration_directory(),
+                                        error_code)) {
+        chmod(constants::get_user_configuration_directory().c_str(),
+              0700);
+      }
 
       stop_core_service_client();
       start_core_service_client();
