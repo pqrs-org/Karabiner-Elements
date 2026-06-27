@@ -49,8 +49,10 @@ public:
     });
   }
 
-  void async_save_to_file(const std::filesystem::path& file_path) {
-    json_writer::async_save_to_file(to_json(), file_path, 0755, 0644);
+  void save_to_file(const std::filesystem::path& file_path) {
+    json_writer::save_to_file(to_json(),
+                              file_path,
+                              0644);
   }
 
 private:

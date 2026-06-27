@@ -222,7 +222,9 @@ public:
     remove_old_backup_files();
 
     auto file_path = constants::get_user_core_configuration_file_path();
-    json_writer::sync_save_to_file(to_json(), file_path, 0700, 0600);
+    json_writer::save_to_file(to_json(),
+                              file_path,
+                              0600);
 
     loaded_ = true;
     source_ = source::user_file;

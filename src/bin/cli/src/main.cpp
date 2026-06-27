@@ -625,12 +625,9 @@ int main(int argc, char** argv) {
                 auto json = krbn::json_utility::parse_ordered_jsonc(input);
 
                 auto status = std::filesystem::status(file_path);
-                auto directory_status = std::filesystem::status(file_path.parent_path());
-
-                krbn::json_writer::sync_save_to_file(json,
-                                                     file_path,
-                                                     static_cast<mode_t>(directory_status.permissions()),
-                                                     static_cast<mode_t>(status.permissions()));
+                krbn::json_writer::save_to_file(json,
+                                                file_path,
+                                                static_cast<mode_t>(status.permissions()));
               } catch (std::exception& e) {
                 exit_code = 1;
                 std::cerr << fmt::format("parse error in {0}: {1}", file_path.string(), e.what()) << std::endl;

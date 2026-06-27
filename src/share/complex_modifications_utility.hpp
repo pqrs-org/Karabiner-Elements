@@ -151,10 +151,9 @@ void save_prettierrc() {
     // Note: The actual json and js files are placed in ~/.local/share/karabiner/tmp/XXXX.json, but
     // to allow users to override with ~/.local/share/karabiner/tmp/.prettierrc.json,
     // place the default .prettierrc.json in the parent directory.
-    json_writer::sync_save_to_file(json,
-                                   directory / ".prettierrc.json",
-                                   0700,
-                                   0600);
+    json_writer::save_to_file(json,
+                              directory / ".prettierrc.json",
+                              0600);
   }
 }
 } // namespace krbn::complex_modifications_utility
