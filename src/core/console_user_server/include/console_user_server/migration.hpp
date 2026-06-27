@@ -32,7 +32,7 @@ public:
   }
 
 private:
-  static std::string get_user_core_configuration_file_path_v1() {
+  [[nodiscard]] static std::string get_user_core_configuration_file_path_v1() {
     std::string file_path;
 
     if (auto home = std::getenv("HOME")) {

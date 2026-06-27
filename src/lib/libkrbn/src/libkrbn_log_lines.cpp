@@ -3,7 +3,7 @@
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
 
 namespace {
-std::shared_ptr<std::deque<std::string>> get_current_log_lines() {
+[[nodiscard]] std::shared_ptr<std::deque<std::string>> get_current_log_lines() {
   if (auto manager = libkrbn_cpp::get_components_manager()) {
     return manager->get_current_log_lines();
   }

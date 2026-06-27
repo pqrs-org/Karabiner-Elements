@@ -38,10 +38,9 @@ public:
         core_configuration_(core_configuration),
         device_properties_(device_properties::make_device_properties(device_id,
                                                                      device)),
+        pressed_keys_manager_(std::make_shared<pressed_keys_manager>()),
         disabled_(false),
         temporarily_ignore_(false) {
-    pressed_keys_manager_ = std::make_shared<pressed_keys_manager>();
-
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
 
     hid_queue_value_monitor_ = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
@@ -189,7 +188,7 @@ public:
     return device_properties_;
   }
 
-  [[nodiscard]] std::shared_ptr<pressed_keys_manager> get_pressed_keys_manager() const {
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_pressed_keys_manager() const {
     return pressed_keys_manager_;
   }
 
@@ -335,7 +334,7 @@ private:
   device_id device_id_;
   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
   pqrs::not_null_shared_ptr_t<device_properties> device_properties_;
-  std::shared_ptr<pressed_keys_manager> pressed_keys_manager_;
+  pqrs::not_null_shared_ptr_t<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
   std::unique_ptr<game_pad_stick_converter> game_pad_stick_converter_;
