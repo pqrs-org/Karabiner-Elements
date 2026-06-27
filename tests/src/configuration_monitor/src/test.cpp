@@ -1,3 +1,4 @@
+#include "dispatcher_utility.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <boost/ut.hpp>
