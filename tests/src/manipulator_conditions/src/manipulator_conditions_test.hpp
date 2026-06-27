@@ -205,8 +205,8 @@ void run_manipulator_conditions_test() {
   "conditions.frontmost_application"_test = [] {
     actual_examples_helper helper("frontmost_application.json");
     expect(helper.get_error_messages() == std::vector<std::string>{
-                                             R"(unknown condition type `unknown` in `{"type":"unknown"}`)",
-                                         });
+                                              R"(unknown condition type `unknown` in `{"type":"unknown"}`)",
+                                          });
     krbn::manipulator::conditions::condition_context condition_context{
         .device_id = krbn::device_id(1),
         .state = krbn::event_queue::state::original,
@@ -276,8 +276,8 @@ void run_manipulator_conditions_test() {
   "conditions.input_source"_test = [] {
     actual_examples_helper helper("input_source.json");
     expect(helper.get_error_messages() == std::vector<std::string>{
-                                             R"(unknown condition type `unknown` in `{"type":"unknown"}`)",
-                                         });
+                                              R"(unknown condition type `unknown` in `{"type":"unknown"}`)",
+                                          });
     krbn::manipulator::conditions::condition_context condition_context{
         .device_id = krbn::device_id(1),
         .state = krbn::event_queue::state::original,
@@ -388,8 +388,8 @@ void run_manipulator_conditions_test() {
     {
       actual_examples_helper helper("keyboard_type_if.json");
       expect(helper.get_error_messages() == std::vector<std::string>{
-                                               R"(unknown condition type `unknown` in `{"type":"unknown"}`)",
-                                           });
+                                                R"(unknown condition type `unknown` in `{"type":"unknown"}`)",
+                                            });
 
       // iso
       core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("iso");
@@ -405,8 +405,8 @@ void run_manipulator_conditions_test() {
     {
       actual_examples_helper helper("keyboard_type_unless.json");
       expect(helper.get_error_messages() == std::vector<std::string>{
-                                               R"(unknown condition type `unknown` in `{"type":"unknown"}`)",
-                                           });
+                                                R"(unknown condition type `unknown` in `{"type":"unknown"}`)",
+                                            });
 
       // iso
       core_configuration->get_selected_profile().get_virtual_hid_keyboard()->set_keyboard_type_v2("iso");
