@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::file_monitor v2.1.0
+// pqrs::osx::file_monitor v2.2.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -19,6 +19,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <mutex>
@@ -28,9 +29,9 @@
 #include <pqrs/cf/array.hpp>
 #include <pqrs/cf/string.hpp>
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/filesystem.hpp>
 #include <pqrs/gsl.hpp>
 #include <string>
+#include <system_error>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
@@ -70,7 +71,7 @@ public:
     queue_ = dispatch_queue_create("org.pqrs.osx.file_monitor", DISPATCH_QUEUE_SERIAL);
 
     for (const auto& f : files) {
-      watched_directories_.insert(filesystem::dirname(f));
+      watched_directories_.insert(dirname(f));
     }
 
     dispatch_sync(queue_, ^{
@@ -149,6 +150,23 @@ public:
   }
 
 private:
+  [[nodiscard]] static std::string dirname(const std::string& path) {
+    auto parent = std::filesystem::path(path).parent_path().string();
+    if (parent.empty()) {
+      return ".";
+    }
+    return parent;
+  }
+
+  [[nodiscard]] static std::optional<std::string> canonical_path(const std::string& path) {
+    std::error_code error_code;
+    auto canonical_path = std::filesystem::canonical(path, error_code);
+    if (error_code) {
+      return std::nullopt;
+    }
+    return canonical_path.string();
+  }
+
   // This method is executed in the dispatcher thread.
   void register_stream() {
     // Skip if already started.
@@ -326,15 +344,15 @@ private:
         register_stream();
 
       } else {
-        // FSEvents passes realpathed file path to callback.
+        // FSEvents passes canonical file path to callback.
         // Thus, we should to convert it to file path in `files_`.
 
         std::optional<std::string> changed_file_path;
 
-        if (auto realpath = filesystem::realpath(e.file_path)) {
+        if (auto canonical_path = file_monitor::canonical_path(e.file_path)) {
           if (auto it = std::ranges::find_if(files_,
                                              [&](const auto& path) {
-                                               return *realpath == filesystem::realpath(path);
+                                               return *canonical_path == file_monitor::canonical_path(path);
                                              });
               it != std::end(files_)) {
             stream_file_paths_[e.file_path] = *it;
@@ -342,7 +360,7 @@ private:
           }
         } else {
           // file_path might be removed.
-          // (`realpath` fails if file does not exist.)
+          // (`canonical_path` fails if file does not exist.)
 
           if (auto it = stream_file_paths_.find(e.file_path);
               it != std::end(stream_file_paths_)) {
@@ -392,14 +410,14 @@ private:
                     return pair.second == file_path;
                   });
 
-    if (auto realpath = filesystem::realpath(file_path)) {
-      stream_file_paths_[*realpath] = file_path;
+    if (auto canonical_path = file_monitor::canonical_path(file_path)) {
+      stream_file_paths_[*canonical_path] = file_path;
     }
   }
 
   void update_watched_directory_availabilities() {
     for (const auto& directory_path : watched_directories_) {
-      auto current_available = static_cast<bool>(filesystem::realpath(directory_path));
+      auto current_available = static_cast<bool>(file_monitor::canonical_path(directory_path));
       auto it = directory_availabilities_.find(directory_path);
       auto previous_available = it != std::end(directory_availabilities_) && it->second == availability::available;
 
@@ -435,11 +453,11 @@ private:
 
   [[nodiscard]] std::string find_stream_directory(std::string directory_path) const {
     while (!directory_path.empty()) {
-      if (filesystem::realpath(directory_path)) {
+      if (file_monitor::canonical_path(directory_path)) {
         return directory_path;
       }
 
-      auto parent = filesystem::dirname(directory_path);
+      auto parent = dirname(directory_path);
       if (parent == directory_path) {
         break;
       }
@@ -451,7 +469,7 @@ private:
 
   void reevaluate_watched_files_in_directory(const std::string& directory_path) {
     for (const auto& file_path : files_) {
-      if (filesystem::dirname(file_path) != directory_path) {
+      if (dirname(file_path) != directory_path) {
         continue;
       }
 
