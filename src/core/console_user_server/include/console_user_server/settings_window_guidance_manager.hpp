@@ -89,7 +89,7 @@ public:
     state.set_current_setup(current_setup_);
     state.set_current_alert(current_alert_);
     state.set_guidance_context(guidance_context_);
-    state.set_core_service_daemon_state(core_service_deamon_state_);
+    state.set_core_service_daemon_state(core_service_daemon_state_);
 
     return state;
   }
@@ -160,7 +160,7 @@ private:
 
   // This method is executed in the dedicated dispatcher thread.
   void update_core_service_daemon_state_conditions(const core_service_daemon_state& state) {
-    core_service_deamon_state_ = state;
+    core_service_daemon_state_ = state;
 
     //
     // karabiner_json_parse_error_message_
@@ -210,7 +210,7 @@ private:
 
     auto iohid_listen_event_allowed = std::optional<bool>();
     auto accessibility_process_trusted = std::optional<bool>();
-    if (auto permission_check_result = core_service_deamon_state_.get_bundle_permission_check_result()) {
+    if (auto permission_check_result = core_service_daemon_state_.get_bundle_permission_check_result()) {
       iohid_listen_event_allowed = permission_check_result->get_iohid_listen_event_allowed();
       accessibility_process_trusted = permission_check_result->get_accessibility_process_trusted();
     }
@@ -227,7 +227,7 @@ private:
       return settings_window_guidance_setup::input_monitoring;
     }
 
-    if (core_service_deamon_state_.get_driver_activated() == std::optional<bool>(false)) {
+    if (core_service_daemon_state_.get_driver_activated() == std::optional<bool>(false)) {
       return settings_window_guidance_setup::driver_extension;
     }
 
@@ -249,8 +249,8 @@ private:
     // settings
     //
 
-    if (core_service_deamon_state_.get_virtual_hid_keyboard_ready().value_or(false) &&
-        core_service_deamon_state_.get_virtual_hid_keyboard_type_not_set().value_or(false)) {
+    if (core_service_daemon_state_.get_virtual_hid_keyboard_ready().value_or(false) &&
+        core_service_daemon_state_.get_virtual_hid_keyboard_type_not_set().value_or(false)) {
       return settings_window_guidance_alert::settings;
     }
 
@@ -276,7 +276,7 @@ private:
     // driver_version_mismatched
     //
 
-    if (core_service_deamon_state_.get_driver_version_mismatched() == std::optional<bool>(true)) {
+    if (core_service_daemon_state_.get_driver_version_mismatched() == std::optional<bool>(true)) {
       return settings_window_guidance_alert::driver_version_mismatched;
     }
 
@@ -311,7 +311,7 @@ private:
   settings_window_guidance_setup current_setup_ = settings_window_guidance_setup::none;
   settings_window_guidance_alert current_alert_ = settings_window_guidance_alert::none;
   settings_window_guidance_context guidance_context_;
-  core_service_daemon_state core_service_deamon_state_;
+  core_service_daemon_state core_service_daemon_state_;
 
   bool needs_to_launch_settings_ = false;
 

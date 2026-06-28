@@ -178,18 +178,18 @@ public:
   }
 
   [[nodiscard]] const core_service_daemon_state& get_core_service_daemon_state() const {
-    return core_service_deamon_state_;
+    return core_service_daemon_state_;
   }
 
   void set_core_service_daemon_state(const core_service_daemon_state& value) {
-    core_service_deamon_state_ = value;
+    core_service_daemon_state_ = value;
   }
 
 private:
   settings_window_guidance_setup current_setup_;
   settings_window_guidance_alert current_alert_;
   settings_window_guidance_context guidance_context_;
-  core_service_daemon_state core_service_deamon_state_;
+  core_service_daemon_state core_service_daemon_state_;
 };
 
 inline void to_json(nlohmann::json& json, const settings_window_guidance_state& value) {
