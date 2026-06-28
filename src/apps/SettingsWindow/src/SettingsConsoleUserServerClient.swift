@@ -14,6 +14,7 @@ private func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<
 private func consoleUserServerClientStatusChangedCallback() {
   Task { @MainActor in
     SettingsConsoleUserServerClient.shared.updateConsoleUserServerClientState()
+    SettingsConsoleUserServerClient.shared.updateLocalServicesGuidanceContext()
   }
 
   libkrbn_console_user_server_client_async_get_settings_window_guidance()
@@ -48,10 +49,12 @@ final class SettingsConsoleUserServerClient {
 
     currentAlertTimerTask = Task { @MainActor in
       updateConsoleUserServerClientState()
+      updateLocalServicesGuidanceContext()
       libkrbn_console_user_server_client_async_get_settings_window_guidance()
 
       for await _ in currentAlertTimer {
         updateConsoleUserServerClientState()
+        updateLocalServicesGuidanceContext()
         libkrbn_console_user_server_client_async_get_settings_window_guidance()
       }
     }
@@ -78,5 +81,14 @@ final class SettingsConsoleUserServerClient {
     ContentViewStates.shared.updateConsoleUserServerClientConnected(connected)
     ContentViewStates.shared.updateConsoleUserServerClientWaitingSeconds(
       consoleUserServerClientWaitingSeconds)
+  }
+
+  func updateLocalServicesGuidanceContext() {
+    // settings_window_guidance is provided by console_user_server. If Settings cannot connect to
+    // console_user_server, it cannot fetch that guidance. Keep the service-enabled states updated
+    // locally so ContentViewStates can open SetupServicesView as a fallback.
+    ContentViewStates.shared.updateLocalServicesGuidanceContext(
+      coreDaemonsEnabled: libkrbn_services_daemons_enabled(),
+      coreAgentsEnabled: libkrbn_services_agents_enabled())
   }
 }

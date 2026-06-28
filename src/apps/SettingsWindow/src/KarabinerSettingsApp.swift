@@ -62,14 +62,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       forEventClass: AEEventClass(kInternetEventClass),
       andEventID: AEEventID(kAEGetURL))
 
-    Publishers.CombineLatest(
+    Publishers.CombineLatest3(
       ContentViewStates.shared.$currentAlert,
-      ContentViewStates.shared.$currentSetup
+      ContentViewStates.shared.$currentSetup,
+      ContentViewStates.shared.$localSetup
     )
-    .sink { [weak self] currentAlert, currentSetup in
+    .sink { [weak self] currentAlert, _, _ in
       self?.updateUserAttentionRequest(
         currentAlert: currentAlert,
-        currentSetup: currentSetup)
+        currentSetup: ContentViewStates.shared.currentResolvedSetup)
     }
     .store(in: &cancellables)
   }
