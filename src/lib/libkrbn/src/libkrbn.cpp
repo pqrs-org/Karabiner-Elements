@@ -101,6 +101,10 @@ void libkrbn_services_unregister_all_agents() {
   krbn::services_utility::unregister_all_agents();
 }
 
+bool libkrbn_services_daemons_enabled() {
+  return krbn::services_utility::core_daemons_enabled() == true;
+}
+
 bool libkrbn_services_daemon_running(const char* service_name) {
   return krbn::services_utility::daemon_running(service_name);
 }
