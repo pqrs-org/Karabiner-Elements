@@ -6,6 +6,7 @@
 /usr/bin/killall Karabiner-Core-Service
 # karabiner_grabber is the former name of Karabiner-Core-Service.
 /usr/bin/killall karabiner_grabber
+/usr/bin/killall karabiner_session_monitor
 /usr/bin/killall karabiner_console_user_server
 /usr/bin/killall Karabiner-Elements
 

@@ -1,18 +1,17 @@
 #pragma once
 
-// `krbn::core_service::daemon::session_monitor_receiver` can be used safely in a multi-threaded environment.
+// `krbn::core_service::daemon::console_user_id_changed_receiver` can be used safely in a multi-threaded environment.
 
 #include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "types.hpp"
-#include <pqrs/osx/session.hpp>
 #include <pqrs/unix_domain_stream.hpp>
 #include <unordered_map>
 #include <vector>
 
 namespace krbn::core_service::daemon {
-class session_monitor_receiver final : public pqrs::dispatcher::extra::dispatcher_client {
+class console_user_id_changed_receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -20,59 +19,57 @@ public:
 
   // Methods
 
-  session_monitor_receiver(const session_monitor_receiver&) = delete;
+  console_user_id_changed_receiver(const console_user_id_changed_receiver&) = delete;
 
-  session_monitor_receiver() : dispatcher_client() {
-    prepare_session_monitor_receiver_socket_parent_directory();
-
-    auto options = pqrs::unix_domain_stream::server_options(
-        {
-            .max_message_size = constants::unix_domain_stream_max_message_size,
-        },
-        {
-            .bind_retry_interval = std::chrono::milliseconds(1000),
-            .socket_path_health_check_interval = std::chrono::milliseconds(3000),
-        });
+  console_user_id_changed_receiver() : dispatcher_client() {
+    prepare_console_user_id_changed_receiver_socket_parent_directory();
 
     server_ = std::make_unique<pqrs::unix_domain_stream::server>(
         weak_dispatcher_,
-        constants::get_session_monitor_receiver_socket_file_path(),
-        options,
+        constants::get_console_user_id_changed_receiver_socket_file_path(),
+        constants::get_unix_domain_stream_server_options(),
         [](const auto& peer_credentials) {
           auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
           if (!result) {
             // During an update, retrieving the Team ID may fail, causing an error once.
             // Since this can occur during normal use, treat it as debug rather than warn.
-            logger::get_logger()->debug("session_monitor_receiver: peer is not code-signed with same Team ID");
+            logger::get_logger()->debug("console_user_id_changed_receiver: peer is not code-signed with same Team ID");
           }
           return result;
         });
 
     server_->bound.connect([] {
-      logger::get_logger()->info("session_monitor_receiver: bound");
+      logger::get_logger()->info("console_user_id_changed_receiver: bound");
+
+      if (!filesystem_utility::permissions(constants::get_console_user_id_changed_receiver_socket_file_path(),
+                                           filesystem_utility::permissions_0666)) {
+        return;
+      }
     });
 
     server_->bind_failed.connect([this](auto&& error_code) {
-      logger::get_logger()->error("session_monitor_receiver: bind_failed");
+      logger::get_logger()->error("console_user_id_changed_receiver: bind_failed");
 
       // If the socket parent directory is deleted for any reason,
       // bind_failed will be triggered, so recreate the directory each time.
-      prepare_session_monitor_receiver_socket_parent_directory();
+      prepare_console_user_id_changed_receiver_socket_parent_directory();
     });
 
     server_->closed.connect([] {
-      logger::get_logger()->info("session_monitor_receiver: closed");
+      logger::get_logger()->info("console_user_id_changed_receiver: closed");
     });
 
-    server_->peer_connected.connect([](auto, auto&&) {
-      // Do nothing
+    server_->peer_connected.connect([this](auto peer_id, const auto& peer_credentials) {
+      peer_credentials_[peer_id] = peer_credentials;
     });
 
     server_->peer_closed.connect([this](auto peer_id) {
-      if (auto it = session_monitor_peer_states_.find(peer_id);
-          it != std::end(session_monitor_peer_states_)) {
+      peer_credentials_.erase(peer_id);
+
+      if (auto it = peer_states_.find(peer_id);
+          it != std::end(peer_states_)) {
         auto state = it->second;
-        session_monitor_peer_states_.erase(it);
+        peer_states_.erase(it);
 
         if (state.on_console &&
             current_console_user_id_ == state.uid &&
@@ -83,7 +80,7 @@ public:
     });
 
     server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
-      logger::get_logger()->debug("session_monitor_receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
+      logger::get_logger()->debug("console_user_id_changed_receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
     });
 
     server_->received.connect([](auto, auto&&) {
@@ -100,19 +97,24 @@ public:
         nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
         switch (json.at("operation_type").get<operation_type>()) {
           case operation_type::console_user_id_changed: {
-            auto uid = json.at("user_id").get<uid_t>();
+            auto uid = get_peer_uid(peer_id);
+            if (!uid) {
+              server_->async_close_peer(peer_id);
+              break;
+            }
+
             auto on_console = json.at("on_console").get<bool>();
 
-            session_monitor_peer_states_[peer_id] = session_monitor_peer_state{
-                .uid = uid,
+            peer_states_[peer_id] = peer_state{
+                .uid = *uid,
                 .on_console = on_console,
             };
 
             if (on_console) {
-              update_current_console_user_id(uid);
+              update_current_console_user_id(*uid);
             } else {
               if (current_console_user_id_ == uid) {
-                if (!has_on_console_peer(uid)) {
+                if (!has_on_console_peer(*uid)) {
                   update_current_console_user_id(std::nullopt);
                 }
               }
@@ -129,22 +131,23 @@ public:
         }
         return;
       } catch (std::exception& e) {
-        logger::get_logger()->error("session_monitor_receiver: received data is corrupted");
+        logger::get_logger()->error("console_user_id_changed_receiver: received data is corrupted");
       }
 
       server_->async_close_peer(peer_id);
     });
 
-    logger::get_logger()->info("session_monitor_receiver is initialized");
+    logger::get_logger()->info("console_user_id_changed_receiver is initialized");
   }
 
-  ~session_monitor_receiver() override {
+  ~console_user_id_changed_receiver() override {
     detach_from_dispatcher([this] {
-      session_monitor_peer_states_.clear();
+      peer_credentials_.clear();
+      peer_states_.clear();
       server_ = nullptr;
     });
 
-    logger::get_logger()->info("session_monitor_receiver is terminated");
+    logger::get_logger()->info("console_user_id_changed_receiver is terminated");
   }
 
   void async_start() {
@@ -152,17 +155,26 @@ public:
   }
 
 private:
-  struct session_monitor_peer_state final {
+  struct peer_state final {
     uid_t uid;
     bool on_console;
   };
 
-  void prepare_session_monitor_receiver_socket_parent_directory() const {
+  void prepare_console_user_id_changed_receiver_socket_parent_directory() const {
     filesystem_utility::prepare_system_directories(std::nullopt);
   }
 
+  [[nodiscard]] std::optional<uid_t> get_peer_uid(pqrs::unix_domain_stream::peer_id peer_id) const {
+    if (auto it = peer_credentials_.find(peer_id);
+        it != std::end(peer_credentials_)) {
+      return it->second.uid;
+    }
+
+    return std::nullopt;
+  }
+
   [[nodiscard]] bool has_on_console_peer(uid_t uid) const {
-    for (const auto& [_, state] : session_monitor_peer_states_) {
+    for (const auto& [_, state] : peer_states_) {
       if (state.uid == uid &&
           state.on_console) {
         return true;
@@ -186,6 +198,7 @@ private:
 
   std::unique_ptr<pqrs::unix_domain_stream::server> server_;
   std::optional<uid_t> current_console_user_id_;
-  std::unordered_map<pqrs::unix_domain_stream::peer_id, session_monitor_peer_state> session_monitor_peer_states_;
+  std::unordered_map<pqrs::unix_domain_stream::peer_id, pqrs::unix_domain_stream::peer_credentials> peer_credentials_;
+  std::unordered_map<pqrs::unix_domain_stream::peer_id, peer_state> peer_states_;
 };
 } // namespace krbn::core_service::daemon

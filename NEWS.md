@@ -16,6 +16,7 @@
         - consumer_key_code::ac_soft_key_left
         - consumer_key_code::ac_desktop_show_all_applications
     - Fix typo in ComplexModificationsView (Thanks to @kiangkuang)
+    - The `karabiner_session_monitor` process has been removed.
 
 ## Karabiner-Elements 16.0.0
 

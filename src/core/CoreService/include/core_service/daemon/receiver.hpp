@@ -47,21 +47,12 @@ public:
     // Setup server_
     //
 
-    auto options = pqrs::unix_domain_stream::server_options(
-        {
-            .max_message_size = constants::unix_domain_stream_max_message_size,
-        },
-        {
-            .bind_retry_interval = std::chrono::milliseconds(1000),
-            .socket_path_health_check_interval = std::chrono::milliseconds(3000),
-        });
-
     auto socket_file_path = karabiner_core_service_socket_file_path();
 
     server_ = std::make_unique<pqrs::unix_domain_stream::server>(
         weak_dispatcher_,
         socket_file_path,
-        options,
+        constants::get_unix_domain_stream_server_options(),
         [](const auto& peer_credentials) {
           auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
           if (!result) {

@@ -131,6 +131,7 @@ inline void bootout_old_agents() {
            "org.pqrs.karabiner.agent.karabiner_grabber",
            "org.pqrs.karabiner.karabiner_console_user_server",
            "org.pqrs.karabiner.karabiner_session_monitor",
+           "org.pqrs.service.agent.karabiner_session_monitor",
        }) {
     pqrs::osx::launchctl::bootout(domain_target,
                                   pqrs::osx::launchctl::service_name(service_name));

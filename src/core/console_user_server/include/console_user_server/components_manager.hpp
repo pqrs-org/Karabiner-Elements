@@ -4,9 +4,9 @@
 
 #include "application_launcher.hpp"
 #include "components_manager_killer.hpp"
+#include "console_user_id_changed_client.hpp"
 #include "constants.hpp"
 #include "core_service_client.hpp"
-#include "filesystem_utility.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
@@ -31,6 +31,7 @@ public:
   components_manager()
       : dispatcher_client(),
         version_monitor_(std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path())),
+        console_user_id_changed_client_(std::make_shared<console_user_id_changed_client>()),
         session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
         settings_window_guidance_manager_dispatcher_time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
         settings_window_guidance_manager_dispatcher_(std::make_shared<pqrs::dispatcher::dispatcher>(settings_window_guidance_manager_dispatcher_time_source_)),
@@ -48,6 +49,16 @@ public:
     });
 
     //
+    // console_user_id_changed_client_
+    //
+
+    console_user_id_changed_client_->connected.connect([this] {
+      if (on_console_) {
+        console_user_id_changed_client_->async_console_user_id_changed(*on_console_);
+      }
+    });
+
+    //
     // session_monitor_
     //
 
@@ -56,15 +67,9 @@ public:
 
       on_console_ = on_console;
 
-      version_monitor_->async_manual_check();
+      console_user_id_changed_client_->async_console_user_id_changed(on_console);
 
-      if (filesystem_utility::create_directories(constants::get_user_configuration_directory()) &&
-          filesystem_utility::is_directory(constants::get_user_configuration_directory())) {
-        if (!filesystem_utility::permissions(constants::get_user_configuration_directory(),
-                                             filesystem_utility::permissions_0700)) {
-          return;
-        }
-      }
+      version_monitor_->async_manual_check();
 
       stop_core_service_client();
       start_core_service_client();
@@ -81,6 +86,7 @@ public:
       settings_window_guidance_manager_dispatcher_ = nullptr;
       settings_window_guidance_manager_dispatcher_time_source_ = nullptr;
       session_monitor_ = nullptr;
+      console_user_id_changed_client_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
@@ -88,6 +94,7 @@ public:
   void async_start() {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
+      console_user_id_changed_client_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
       settings_window_guidance_manager_->async_start();
       receiver_ = std::make_unique<receiver>(settings_window_guidance_manager_,
@@ -172,6 +179,7 @@ private:
   std::unique_ptr<version_monitor> version_monitor_;
 
   std::optional<bool> on_console_;
+  std::shared_ptr<console_user_id_changed_client> console_user_id_changed_client_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
 
   // settings_window_guidance_manager internally calls services_utility::core_daemons_enabled() and similar functions.

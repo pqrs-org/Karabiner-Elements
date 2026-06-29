@@ -20,13 +20,6 @@ cd src/core/CoreService
 make install
 ```
 
-### Replace `karabiner_session_monitor`
-
-```shell
-cd src/core/session_monitor
-make install
-```
-
 ### Replace `karabiner_console_user_server`
 
 ```shell
@@ -45,18 +38,15 @@ make install
     - Runs with user privileges.
     - `Karabiner-Core-Service` is also granted the permissions required on the daemon side, such as Input Monitoring, when running as an agent.
       For that reason, responsibilities are split so that tasks such as launching external processes are handled by `karabiner_console_user_server` rather than by `Karabiner-Core-Service`.
-- `karabiner_session_monitor`
+- `karabiner_console_user_server`
     - It informs `Karabiner-Core-Service` of the user currently using the console.
       Karabiner-Core-Service will change the owner of the Unix domain socket that `Karabiner-Core-Service` provides for `karabiner_console_user_server`.
     - The methods for accurately detecting the console user, including when multiple people are logged in through Screen Sharing, are very limited.
       Even in macOS 14, there is no alternative to using the Core Graphics API `CGSessionCopyCurrentDictionary`.
       To use this API, it must be launched from a GUI session. Specifically, it needs to be started from LaunchAgents.
-      Therefore, the function to detect the console user cannot be integrated into `Karabiner-Core-Service` and is implemented as a separate process.
-    - It is run with root privileges because if the notification of the console user to `Karabiner-Core-Service` can be done by anyone, the console user could be spoofed.
-      This would allow a user who is not currently using the console to send requests to `Karabiner-Core-Service` via `karabiner_console_user_server`.
-- `karabiner_console_user_server`
+      Therefore, the function to detect the console user cannot be integrated into `Karabiner-Core-Service (daemon)` and is handled by `karabiner_console_user_server`.
     - `karabiner_console_user_server` connects to the Unix domain socket provided by `Karabiner-Core-Service` and requests the start of processing input events.
-      `Karabiner-Core-Service` will not modify the input events until it receives a connection from `karabiner_console_user_server` (unless the system default configuration is enabled).
+      `Karabiner-Core-Service` will not modify input events until it receives the user configuration path from `karabiner_console_user_server`, unless the system core configuration file exists.
     - The execution of `shell_command`, `software_function`, and `select_input_source` is carried out by karabiner_console_user_server.
     - It notifies `Karabiner-Core-Service` of the information needed to reference the filter function when modifying input events, such as the active application and the current input source.
     - Run with the console user privilege.
@@ -67,24 +57,23 @@ make install
 
 #### start up
 
-`Karabiner-Core-Service`
+`Karabiner-Core-Service (daemon)`
 
 1.  Run `Karabiner-Core-Service`.
-2.  `Karabiner-Core-Service` opens session_monitor_receiver Unix domain socket which only root can access.
+2.  `Karabiner-Core-Service` opens the Unix domain socket for console user change notifications.
 3.  `Karabiner-Core-Service` opens the Unix domain socket of server.
 4.  When a window server session state is changed, `Karabiner-Core-Service` changes the Unix domain socket owner to console user.
 
-`karabiner_session_monitor`
+`karabiner_console_user_server`
 
-1.  Run `karabiner_session_monitor`.
-2.  `karabiner_session_monitor` monitors a window server session state and notify it to `Karabiner-Core-Service`.
+1.  Run `karabiner_console_user_server`.
+2.  `karabiner_console_user_server` monitors a window server session state and notify it to `Karabiner-Core-Service`.
 3.  `Karabiner-Core-Service` changes the owner of Unix domain socket for `karabiner_console_user_server` when the console user is changed.
 
 #### device grabbing
 
-1.  Run `karabiner_console_user_server`.
-2.  Try to open console_user_server Unix domain socket.
-3.  Karabiner-Core-Service starts grabbing the input devices that should be modified.
+1.  `karabiner_console_user_server` tries to open console_user_server Unix domain socket.
+2.  Karabiner-Core-Service starts grabbing the input devices that should be modified.
 
 ### Other notes
 
@@ -268,7 +257,7 @@ There are several way to get the session information, however, the reliable way 
     - `SessionGetInfo` cannot get uid of session.
       Thus, `SessionGetInfo` cannot determine the console user.
 - `CGSessionCopyCurrentDictionary`
-    - `karabiner_session_monitor` uses it to avoid the above problems.
+    - `karabiner_console_user_server` uses it to avoid the above problems.
 
 ---
 

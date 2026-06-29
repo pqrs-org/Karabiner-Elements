@@ -218,6 +218,8 @@ public:
   void sync_save_to_file() {
     pqrs::osx::process_info::scoped_sudden_termination_blocker sudden_termination_blocker;
 
+    filesystem_utility::prepare_user_directories();
+
     make_backup_file();
     remove_old_backup_files();
 

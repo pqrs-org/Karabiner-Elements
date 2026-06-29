@@ -22,7 +22,6 @@ enum Subcommand: String {
 RunLoop.main.perform {
   let coreAgentServiceNames = [
     "org.pqrs.service.agent.karabiner_console_user_server",
-    "org.pqrs.service.agent.karabiner_session_monitor",
     "org.pqrs.service.agent.Karabiner-Core-Service",
   ]
 

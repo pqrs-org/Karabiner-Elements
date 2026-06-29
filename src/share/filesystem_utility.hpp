@@ -20,6 +20,13 @@ inline constexpr auto permissions_0644 =
     std::filesystem::perms::owner_write |
     std::filesystem::perms::group_read |
     std::filesystem::perms::others_read;
+inline constexpr auto permissions_0666 =
+    std::filesystem::perms::owner_read |
+    std::filesystem::perms::owner_write |
+    std::filesystem::perms::group_read |
+    std::filesystem::perms::group_write |
+    std::filesystem::perms::others_read |
+    std::filesystem::perms::others_write;
 inline constexpr auto permissions_0700 =
     std::filesystem::perms::owner_all;
 inline constexpr auto permissions_0755 =

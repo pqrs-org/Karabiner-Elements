@@ -47,7 +47,6 @@ basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
 cp src/bin/cli/build/Release/karabiner_cli "$basedir"
 cp src/core/console_user_server/build/Release/karabiner_console_user_server "$basedir"
-cp src/core/session_monitor/build/Release/karabiner_session_monitor "$basedir"
 
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"

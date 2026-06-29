@@ -48,18 +48,10 @@ public:
         return;
       }
 
-      auto options = pqrs::unix_domain_stream::client_options(
-          {
-              .max_message_size = constants::unix_domain_stream_max_message_size,
-          },
-          {
-              .reconnect_interval = std::chrono::milliseconds(1000),
-          });
-
       client_ = std::make_unique<pqrs::unix_domain_stream::client>(
           weak_dispatcher_,
           constants::get_console_user_server_socket_file_path(uid_),
-          options,
+          constants::get_unix_domain_stream_client_options(),
           [](const auto& peer_credentials) {
             auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
             if (!result) {

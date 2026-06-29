@@ -1,14 +1,15 @@
 #pragma once
 
-#include <cstdint>
-#include <optional>
+// `krbn::console_user_server::console_user_id_changed_client` can be used safely in a multi-threaded environment.
+
+#include "codesign_manager.hpp"
+#include "constants.hpp"
+#include "logger.hpp"
+#include "types.hpp"
 #include <pqrs/unix_domain_stream.hpp>
-#include <types/operation_type.hpp>
 
-// `krbn::session_monitor_receiver_client` can be used safely in a multi-threaded environment.
-
-namespace krbn {
-class session_monitor_receiver_client final : public pqrs::dispatcher::extra::dispatcher_client {
+namespace krbn::console_user_server {
+class console_user_id_changed_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -18,12 +19,13 @@ public:
 
   // Methods
 
-  session_monitor_receiver_client(const session_monitor_receiver_client&) = delete;
+  console_user_id_changed_client(const console_user_id_changed_client&) = delete;
 
-  session_monitor_receiver_client() : dispatcher_client() {
+  console_user_id_changed_client()
+      : dispatcher_client() {
   }
 
-  ~session_monitor_receiver_client() override {
+  ~console_user_id_changed_client() override {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -32,25 +34,26 @@ public:
   void async_start() {
     enqueue_to_dispatcher([this] {
       if (client_) {
-        logger::get_logger()->warn("session_monitor_receiver_client is already started.");
+        logger::get_logger()->warn("console_user_id_changed_client is already started.");
         return;
       }
 
-      auto options = pqrs::unix_domain_stream::client_options(
-          {
-              .max_message_size = constants::unix_domain_stream_max_message_size,
-          },
-          {
-              .reconnect_interval = std::chrono::milliseconds(1000),
-          });
-
       client_ = std::make_unique<pqrs::unix_domain_stream::client>(
           weak_dispatcher_,
-          constants::get_session_monitor_receiver_socket_file_path(),
-          options);
+          constants::get_console_user_id_changed_receiver_socket_file_path(),
+          constants::get_unix_domain_stream_client_options(),
+          [](const auto& peer_credentials) {
+            auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
+            if (!result) {
+              // During an update, retrieving the Team ID may fail, causing an error once.
+              // Since this can occur during normal use, treat it as debug rather than warn.
+              logger::get_logger()->debug("console_user_id_changed_client: peer is not code-signed with same Team ID");
+            }
+            return result;
+          });
 
       client_->connected.connect([this](auto&&) {
-        logger::get_logger()->info("session_monitor_receiver_client is connected.");
+        logger::get_logger()->info("console_user_id_changed_client is connected.");
 
         enqueue_to_dispatcher([this] {
           console_user_id_changed_request_in_flight_ = false;
@@ -62,7 +65,7 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
-        logger::get_logger()->debug("session_monitor_receiver_client connect_failed: {0}", error_code.message());
+        logger::get_logger()->debug("console_user_id_changed_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
           make_connection_not_ready();
@@ -72,7 +75,7 @@ public:
       });
 
       client_->closed.connect([this] {
-        logger::get_logger()->info("session_monitor_receiver_client is closed.");
+        logger::get_logger()->info("console_user_id_changed_client is closed.");
 
         enqueue_to_dispatcher([this] {
           make_connection_not_ready();
@@ -82,7 +85,7 @@ public:
       });
 
       client_->error_occurred.connect([this](auto&& error_code) {
-        logger::get_logger()->debug("session_monitor_receiver_client error: {0}", error_code.message());
+        logger::get_logger()->debug("console_user_id_changed_client error: {0}", error_code.message());
 
         enqueue_to_dispatcher([this] {
           make_connection_not_ready();
@@ -90,7 +93,7 @@ public:
       });
 
       client_->peer_verification_failed.connect([this](auto&&) {
-        logger::get_logger()->error("session_monitor_receiver_client peer_verification_failed");
+        logger::get_logger()->error("console_user_id_changed_client peer_verification_failed");
 
         enqueue_to_dispatcher([this] {
           make_connection_not_ready();
@@ -103,21 +106,13 @@ public:
 
       client_->async_start();
 
-      logger::get_logger()->info("session_monitor_receiver_client is started.");
+      logger::get_logger()->info("console_user_id_changed_client is started.");
     });
   }
 
-  void async_stop() {
-    enqueue_to_dispatcher([this] {
-      stop();
-    });
-  }
-
-  void async_console_user_id_changed(uid_t uid,
-                                     bool on_console) {
-    enqueue_to_dispatcher([this, uid, on_console] {
+  void async_console_user_id_changed(bool on_console) {
+    enqueue_to_dispatcher([this, on_console] {
       pending_console_user_id_changed_ = console_user_id_changed_state{
-          .uid = uid,
           .on_console = on_console,
       };
 
@@ -127,7 +122,6 @@ public:
 
 private:
   struct console_user_id_changed_state final {
-    uid_t uid;
     bool on_console;
 
     bool operator==(const console_user_id_changed_state&) const = default;
@@ -143,7 +137,7 @@ private:
     console_user_id_changed_request_in_flight_ = false;
     connection_ready_ = false;
 
-    logger::get_logger()->info("session_monitor_receiver_client is stopped.");
+    logger::get_logger()->info("console_user_id_changed_client is stopped.");
   }
 
   void make_connection_not_ready() {
@@ -162,7 +156,6 @@ private:
     auto state = *pending_console_user_id_changed_;
     nlohmann::json json{
         {"operation_type", operation_type::console_user_id_changed},
-        {"user_id", state.uid},
         {"on_console", state.on_console},
     };
 
@@ -174,7 +167,7 @@ private:
             console_user_id_changed_request_in_flight_ = false;
 
             if (error_code) {
-              logger::get_logger()->debug("session_monitor_receiver_client request failed: {0}", error_code.message());
+              logger::get_logger()->debug("console_user_id_changed_client request failed: {0}", error_code.message());
 
               make_connection_not_ready();
 
@@ -195,4 +188,4 @@ private:
   bool console_user_id_changed_request_in_flight_ = false;
   bool connection_ready_ = false;
 };
-} // namespace krbn
+} // namespace krbn::console_user_server

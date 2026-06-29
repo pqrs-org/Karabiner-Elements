@@ -5,15 +5,15 @@
 namespace krbn {
 enum class operation_type : uint8_t {
   none,
-  // session_monitor -> core_service (daemon)
-  console_user_id_changed,
-  // core_service (agent) -> core_service (deamon) -> console_user_server
+  // core_service (agent) -> core_service (daemon) -> console_user_server
   core_service_bundle_permission_check_result,
   frontmost_application_changed,
   focused_ui_element_changed,
   // core_service (daemon) -> core_service (agent)
   refresh_core_service_bundle_permission_check_result,
-  // console_user_server -> core_service (deamon)
+  // console_user_server -> core_service (daemon)
+  console_user_id_changed,
+  user_core_configuration_file_path,
   system_preferences_updated,
   input_source_changed,
   // core_service (daemon) -> console_user_server
@@ -30,8 +30,6 @@ enum class operation_type : uint8_t {
   send_user_command,
   select_input_source,
   software_function,
-  // console_user_server -> core_service (daemon)
-  user_core_configuration_file_path,
   // settings_window -> console_user_server
   get_settings_window_guidance,
   // console_user_server -> settings_window
@@ -67,23 +65,16 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     operation_type,
     {
         {operation_type::none, nullptr},
-        {operation_type::console_user_id_changed, "console_user_id_changed"},
         {operation_type::core_service_bundle_permission_check_result, "core_service_bundle_permission_check_result"},
-        {operation_type::refresh_core_service_bundle_permission_check_result, "refresh_core_service_bundle_permission_check_result"},
         {operation_type::frontmost_application_changed, "frontmost_application_changed"},
         {operation_type::focused_ui_element_changed, "focused_ui_element_changed"},
+        {operation_type::refresh_core_service_bundle_permission_check_result, "refresh_core_service_bundle_permission_check_result"},
+        {operation_type::console_user_id_changed, "console_user_id_changed"},
+        {operation_type::user_core_configuration_file_path, "user_core_configuration_file_path"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::input_source_changed, "input_source_changed"},
         {operation_type::get_user_core_configuration_file_path, "get_user_core_configuration_file_path"},
         {operation_type::core_service_daemon_state, "core_service_daemon_state"},
-        {operation_type::user_core_configuration_file_path, "user_core_configuration_file_path"},
-        {operation_type::shell_command_execution, "shell_command_execution"},
-        {operation_type::send_user_command, "send_user_command,"},
-        {operation_type::select_input_source, "select_input_source"},
-        {operation_type::software_function, "software_function"},
-        {operation_type::get_settings_window_guidance, "get_settings_window_guidance"},
-        {operation_type::settings_window_guidance, "settings_window_guidance"},
-        {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},
         {operation_type::check_for_updates, "check_for_updates"},
         {operation_type::register_menu_agent, "register_menu_agent"},
         {operation_type::unregister_menu_agent, "unregister_menu_agent"},
@@ -91,6 +82,13 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::unregister_multitouch_extension_agent, "unregister_multitouch_extension_agent"},
         {operation_type::register_notification_window_agent, "register_notification_window_agent"},
         {operation_type::unregister_notification_window_agent, "unregister_notification_window_agent"},
+        {operation_type::shell_command_execution, "shell_command_execution"},
+        {operation_type::send_user_command, "send_user_command"},
+        {operation_type::select_input_source, "select_input_source"},
+        {operation_type::software_function, "software_function"},
+        {operation_type::get_settings_window_guidance, "get_settings_window_guidance"},
+        {operation_type::settings_window_guidance, "settings_window_guidance"},
+        {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},
         {operation_type::frontmost_application_history, "frontmost_application_history"},
         {operation_type::temporarily_ignore_all_devices, "temporarily_ignore_all_devices"},
         {operation_type::get_manipulator_environment, "get_manipulator_environment"},

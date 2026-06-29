@@ -17,12 +17,6 @@ if [ ! -f '/Library/Application Support/org.pqrs/tmp/karabiner_machine_identifie
 fi
 
 #
-# Set suid
-#
-
-chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_session_monitor'
-
-#
 # Set icon
 #
 
