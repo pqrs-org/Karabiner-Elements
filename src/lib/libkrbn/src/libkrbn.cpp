@@ -29,7 +29,7 @@ std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> s
 std::shared_ptr<libkrbn_components_manager> libkrbn_components_manager_;
 
 void libkrbn_initialize() {
-  krbn::logger::get_logger()->info(__func__);
+  krbn::logger::get_logger()->debug(__func__);
 
   if (!scoped_dispatcher_manager_) {
     scoped_dispatcher_manager_ = krbn::dispatcher_utility::initialize_dispatchers();
@@ -46,7 +46,7 @@ void libkrbn_initialize() {
 }
 
 void libkrbn_terminate() {
-  krbn::logger::get_logger()->info(__func__);
+  krbn::logger::get_logger()->debug(__func__);
 
   libkrbn_components_manager_ = nullptr;
 

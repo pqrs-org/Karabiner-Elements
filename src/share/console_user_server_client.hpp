@@ -54,7 +54,7 @@ public:
           });
 
       client_->connected.connect([this](auto&&) {
-        logger::get_logger()->info("console_user_server_client is connected.");
+        logger::get_logger()->debug("console_user_server_client is connected.");
 
         enqueue_to_dispatcher([this] {
           connected();
@@ -70,7 +70,7 @@ public:
       });
 
       client_->closed.connect([this] {
-        logger::get_logger()->info("console_user_server_client is closed.");
+        logger::get_logger()->debug("console_user_server_client is closed.");
 
         enqueue_to_dispatcher([this] {
           closed();
@@ -107,7 +107,7 @@ public:
 
       client_->async_start();
 
-      logger::get_logger()->info("console_user_server_client is started.");
+      logger::get_logger()->debug("console_user_server_client is started.");
     });
   }
 
@@ -183,7 +183,7 @@ private:
 
     client_ = nullptr;
 
-    logger::get_logger()->info("console_user_server_client is stopped.");
+    logger::get_logger()->debug("console_user_server_client is stopped.");
   }
 
   uid_t uid_;

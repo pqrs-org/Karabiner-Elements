@@ -65,7 +65,7 @@ public:
         });
 
     server_->bound.connect([this, socket_file_path] {
-      logger::get_logger()->info("receiver: bound");
+      logger::get_logger()->debug("receiver: bound");
 
       auto chown_uid = current_console_user_id_.value_or(uid_t(0));
       logger::get_logger()->info("receiver: chown socket: {0}", chown_uid);
@@ -88,7 +88,7 @@ public:
     });
 
     server_->closed.connect([] {
-      logger::get_logger()->info("receiver: closed");
+      logger::get_logger()->debug("receiver: closed");
     });
 
     server_->peer_connected.connect([](auto, auto&&) {
@@ -122,7 +122,7 @@ public:
     start_grabbing_if_system_core_configuration_file_exists();
     enqueue_update_driver_activated();
 
-    logger::get_logger()->info("receiver is initialized");
+    logger::get_logger()->debug("receiver is initialized");
   }
 
   ~receiver() override {
@@ -134,7 +134,7 @@ public:
       server_ = nullptr;
     });
 
-    logger::get_logger()->info("receiver is terminated");
+    logger::get_logger()->debug("receiver is terminated");
   }
 
 private:
@@ -176,7 +176,7 @@ private:
     }
 
     if (multitouch_extension_peer_id_ == peer_id) {
-      logger::get_logger()->info("multitouch_extension is closed.");
+      logger::get_logger()->debug("multitouch_extension is closed.");
 
       multitouch_extension_peer_id_ = std::nullopt;
       clear_multitouch_extension_environment_variables();
@@ -246,7 +246,7 @@ private:
           if (device_grabber_) {
             device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
           }
-          logger::get_logger()->info("`system_preferences` is updated.");
+          logger::get_logger()->debug("`system_preferences` is updated.");
           async_respond_none(peer_id,
                              request_id);
           break;
@@ -360,7 +360,7 @@ private:
           break;
 
         case operation_type::connect_multitouch_extension:
-          logger::get_logger()->info("multitouch_extension is connected.");
+          logger::get_logger()->debug("multitouch_extension is connected.");
           multitouch_extension_peer_id_ = peer_id;
           async_respond_none(peer_id,
                              request_id);
@@ -590,7 +590,7 @@ private:
     device_grabber_->async_start(configuration_file_path,
                                  current_console_user_id_);
 
-    logger::get_logger()->info("device_grabber is started.");
+    logger::get_logger()->debug("device_grabber is started.");
   }
 
   void stop_device_grabber() {
@@ -601,7 +601,7 @@ private:
     device_grabber_ = nullptr;
     clear_device_grabber_state();
 
-    logger::get_logger()->info("device_grabber is stopped.");
+    logger::get_logger()->debug("device_grabber is stopped.");
   }
 
   [[nodiscard]] bool required_permissions_granted() const {

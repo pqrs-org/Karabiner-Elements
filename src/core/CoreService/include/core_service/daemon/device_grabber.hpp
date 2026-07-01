@@ -78,7 +78,7 @@ public:
     virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>();
 
     virtual_hid_device_service_client_->connected.connect([this, weak_core_service_daemon_state_manager] {
-      logger::get_logger()->info("virtual_hid_device_service_client_ connected");
+      logger::get_logger()->debug("virtual_hid_device_service_client_ connected");
 
       if (auto m = weak_core_service_daemon_state_manager.lock()) {
         m->set_virtual_hid_device_service_client_connected(true);
@@ -100,7 +100,7 @@ public:
     });
 
     virtual_hid_device_service_client_->closed.connect([weak_core_service_daemon_state_manager] {
-      logger::get_logger()->info("virtual_hid_device_service_client_ closed");
+      logger::get_logger()->debug("virtual_hid_device_service_client_ closed");
 
       if (auto m = weak_core_service_daemon_state_manager.lock()) {
         m->set_virtual_hid_device_service_client_connected(false);

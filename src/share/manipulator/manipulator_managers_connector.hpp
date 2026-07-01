@@ -73,16 +73,6 @@ public:
       return std::nullopt;
     }
 
-    void log_events_sizes() const {
-      if (auto input_event_queue = weak_input_event_queue_.lock()) {
-        if (auto output_event_queue = weak_output_event_queue_.lock()) {
-          logger::get_logger()->info("connection events sizes: {0} -> {1}",
-                                     input_event_queue->get_entries().size(),
-                                     output_event_queue->get_entries().size());
-        }
-      }
-    }
-
     std::weak_ptr<manipulator_manager> weak_manipulator_manager_;
     std::weak_ptr<event_queue::queue> weak_input_event_queue_;
     std::weak_ptr<event_queue::queue> weak_output_event_queue_;
@@ -164,14 +154,6 @@ public:
     }
 
     return result;
-  }
-
-  void log_events_sizes() const {
-    std::lock_guard<std::mutex> lock(connections_mutex_);
-
-    for (auto&& c : connections_) {
-      c.log_events_sizes();
-    }
   }
 
 private:

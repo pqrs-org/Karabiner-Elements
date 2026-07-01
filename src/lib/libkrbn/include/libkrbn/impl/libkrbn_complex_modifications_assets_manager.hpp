@@ -8,13 +8,13 @@ public:
   libkrbn_complex_modifications_assets_manager(const libkrbn_complex_modifications_assets_manager&) = delete;
 
   libkrbn_complex_modifications_assets_manager() {
-    krbn::logger::get_logger()->info(__func__);
+    krbn::logger::get_logger()->debug(__func__);
 
     manager_ = std::make_unique<krbn::complex_modifications_assets_manager>();
   }
 
   ~libkrbn_complex_modifications_assets_manager() {
-    krbn::logger::get_logger()->info(__func__);
+    krbn::logger::get_logger()->debug(__func__);
   }
 
   void reload() const {
