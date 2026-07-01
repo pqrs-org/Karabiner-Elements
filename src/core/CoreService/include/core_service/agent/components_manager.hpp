@@ -5,7 +5,7 @@
 #include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "core_service/core_service_utility.hpp"
-#include "core_service_client.hpp"
+#include "core_service_daemon_client.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
 #include "permission_checker.hpp"
@@ -60,8 +60,8 @@ public:
 
       permission_checker_->async_set_on_console(on_console);
 
-      stop_core_service_client();
-      start_core_service_client();
+      stop_core_service_daemon_client();
+      start_core_service_daemon_client();
     });
 
     //
@@ -71,7 +71,7 @@ public:
     pqrs::osx::accessibility::monitor::initialize_shared_monitor(pqrs::dispatcher::extra::get_shared_dispatcher());
     if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
       m->frontmost_application_changed.connect([this](auto&& application_ptr) {
-        if (core_service_client_) {
+        if (core_service_daemon_client_) {
           application a;
           a.set_bundle_identifier(application_ptr->get_bundle_identifier());
           a.set_bundle_path(application_ptr->get_bundle_path());
@@ -92,12 +92,12 @@ public:
               break;
           }
 
-          core_service_client_->async_frontmost_application_changed(a);
+          core_service_daemon_client_->async_frontmost_application_changed(a);
         }
       });
 
       m->focused_ui_element_changed.connect([this](auto&& focused_ui_element_ptr) {
-        if (core_service_client_) {
+        if (core_service_daemon_client_) {
           focused_ui_element e;
           e.set_role(focused_ui_element_ptr->get_role());
           e.set_subrole(focused_ui_element_ptr->get_subrole());
@@ -107,7 +107,7 @@ public:
           e.set_window_size_width(focused_ui_element_ptr->get_window_size_width());
           e.set_window_size_height(focused_ui_element_ptr->get_window_size_height());
 
-          core_service_client_->async_focused_ui_element_changed(e);
+          core_service_daemon_client_->async_focused_ui_element_changed(e);
         }
       });
     }
@@ -115,7 +115,7 @@ public:
 
   ~components_manager() override {
     detach_from_dispatcher([this] {
-      stop_core_service_client();
+      stop_core_service_daemon_client();
 
       pqrs::osx::accessibility::monitor::terminate_shared_monitor();
 
@@ -134,15 +134,15 @@ public:
 
 private:
   void send_core_service_bundle_permission_check_result(const core_service_permission_check_result& result) {
-    if (core_service_client_) {
-      core_service_client_->async_core_service_bundle_permission_check_result(
+    if (core_service_daemon_client_) {
+      core_service_daemon_client_->async_core_service_bundle_permission_check_result(
           result.get_iohid_listen_event_allowed(),
           result.get_accessibility_process_trusted());
     }
   }
 
-  void start_core_service_client() {
-    if (core_service_client_) {
+  void start_core_service_daemon_client() {
+    if (core_service_daemon_client_) {
       return;
     }
 
@@ -150,9 +150,9 @@ private:
       return;
     }
 
-    core_service_client_ = std::make_shared<core_service_client>();
+    core_service_daemon_client_ = std::make_shared<core_service_daemon_client>();
 
-    core_service_client_->connected.connect([this] {
+    core_service_daemon_client_->connected.connect([this] {
       version_monitor_->async_manual_check();
 
       permission_checker_->enqueue_check_permissions();
@@ -163,16 +163,16 @@ private:
       }
     });
 
-    core_service_client_->connect_failed.connect([this](auto&& error_code) {
+    core_service_daemon_client_->connect_failed.connect([this](auto&& error_code) {
       version_monitor_->async_manual_check();
     });
 
-    core_service_client_->closed.connect([this] {
+    core_service_daemon_client_->closed.connect([this] {
       version_monitor_->async_manual_check();
     });
 
-    core_service_client_->received.connect([this](auto&& operation_type,
-                                                  auto&& json) {
+    core_service_daemon_client_->received.connect([this](auto&& operation_type,
+                                                         auto&& json) {
       try {
         switch (operation_type) {
           case operation_type::refresh_core_service_bundle_permission_check_result:
@@ -187,11 +187,11 @@ private:
       }
     });
 
-    core_service_client_->async_start();
+    core_service_daemon_client_->async_start();
   }
 
-  void stop_core_service_client() {
-    core_service_client_ = nullptr;
+  void stop_core_service_daemon_client() {
+    core_service_daemon_client_ = nullptr;
   }
 
   std::unique_ptr<version_monitor> version_monitor_;
@@ -199,6 +199,6 @@ private:
   std::unique_ptr<permission_checker> permission_checker_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
 
-  std::shared_ptr<core_service_client> core_service_client_;
+  std::shared_ptr<core_service_daemon_client> core_service_daemon_client_;
 };
 } // namespace krbn::core_service::agent

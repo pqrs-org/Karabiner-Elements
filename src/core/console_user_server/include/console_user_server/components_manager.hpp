@@ -6,7 +6,7 @@
 #include "components_manager_killer.hpp"
 #include "console_user_id_changed_client.hpp"
 #include "constants.hpp"
-#include "core_service_client.hpp"
+#include "core_service_daemon_client.hpp"
 #include "logger.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
@@ -71,14 +71,14 @@ public:
 
       version_monitor_->async_manual_check();
 
-      stop_core_service_client();
-      start_core_service_client();
+      stop_core_service_daemon_client();
+      start_core_service_daemon_client();
     });
   }
 
   ~components_manager() override {
     detach_from_dispatcher([this] {
-      stop_core_service_client();
+      stop_core_service_daemon_client();
 
       receiver_ = nullptr;
       software_function_handler_ = nullptr;
@@ -103,8 +103,8 @@ public:
   }
 
 private:
-  void start_core_service_client() {
-    if (core_service_client_) {
+  void start_core_service_daemon_client() {
+    if (core_service_daemon_client_) {
       return;
     }
 
@@ -112,42 +112,42 @@ private:
       return;
     }
 
-    core_service_client_ = std::make_shared<core_service_client>();
+    core_service_daemon_client_ = std::make_shared<core_service_daemon_client>();
 
-    core_service_client_->connected.connect([this] {
+    core_service_daemon_client_->connected.connect([this] {
       version_monitor_->async_manual_check();
 
-      core_service_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
+      core_service_daemon_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
 
       stop_child_components();
       start_child_components();
     });
 
-    core_service_client_->connect_failed.connect([this](auto&& error_code) {
+    core_service_daemon_client_->connect_failed.connect([this](auto&& error_code) {
       version_monitor_->async_manual_check();
 
       stop_child_components();
     });
 
-    core_service_client_->closed.connect([this] {
+    core_service_daemon_client_->closed.connect([this] {
       version_monitor_->async_manual_check();
 
       stop_child_components();
     });
 
-    core_service_client_->received.connect([this](auto&& operation_type,
-                                                  auto&& json) {
+    core_service_daemon_client_->received.connect([this](auto&& operation_type,
+                                                         auto&& json) {
       if (receiver_) {
         receiver_->handle_core_service_daemon_message(operation_type,
                                                       json);
       }
     });
 
-    core_service_client_->async_start();
+    core_service_daemon_client_->async_start();
   }
 
-  void stop_core_service_client() {
-    core_service_client_ = nullptr;
+  void stop_core_service_daemon_client() {
+    core_service_daemon_client_ = nullptr;
     stop_child_components();
   }
 
@@ -157,8 +157,8 @@ private:
     system_preferences_monitor_ = std::make_unique<pqrs::osx::system_preferences_monitor>(weak_dispatcher_);
 
     system_preferences_monitor_->system_preferences_changed.connect([this](auto&& properties_ptr) {
-      if (core_service_client_) {
-        core_service_client_->async_system_preferences_updated(properties_ptr);
+      if (core_service_daemon_client_) {
+        core_service_daemon_client_->async_system_preferences_updated(properties_ptr);
       }
     });
 
@@ -170,9 +170,9 @@ private:
         pqrs::dispatcher::extra::get_shared_dispatcher());
 
     input_source_monitor_->input_source_changed.connect([this](auto&& input_source_ptr) {
-      if (input_source_ptr && core_service_client_) {
+      if (input_source_ptr && core_service_daemon_client_) {
         auto properties = std::make_shared<pqrs::osx::input_source::properties>(*input_source_ptr);
-        core_service_client_->async_input_source_changed(properties);
+        core_service_daemon_client_->async_input_source_changed(properties);
       }
     });
 
@@ -200,7 +200,7 @@ private:
   std::shared_ptr<settings_window_guidance_manager> settings_window_guidance_manager_;
 
   std::shared_ptr<software_function_handler> software_function_handler_;
-  std::shared_ptr<core_service_client> core_service_client_;
+  std::shared_ptr<core_service_daemon_client> core_service_daemon_client_;
 
   // Child components
 

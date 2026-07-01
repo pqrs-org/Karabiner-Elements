@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core_service_client.hpp"
+#include "core_service_daemon_client.hpp"
 #include "libkrbn/libkrbn.h"
 #include "libkrbn_callback_manager.hpp"
 
@@ -11,22 +11,22 @@ public:
   libkrbn_core_service_client()
       : dispatcher_client(),
         status_(libkrbn_core_service_client_status_none) {
-    core_service_client_ = std::make_unique<krbn::core_service_client>();
+    core_service_daemon_client_ = std::make_unique<krbn::core_service_daemon_client>();
 
-    core_service_client_->connected.connect([this] {
+    core_service_daemon_client_->connected.connect([this] {
       set_status(libkrbn_core_service_client_status_connected);
     });
 
-    core_service_client_->connect_failed.connect([this](auto&& error_code) {
+    core_service_daemon_client_->connect_failed.connect([this](auto&& error_code) {
       set_status(libkrbn_core_service_client_status_connect_failed);
     });
 
-    core_service_client_->closed.connect([this] {
+    core_service_daemon_client_->closed.connect([this] {
       set_status(libkrbn_core_service_client_status_closed);
     });
 
-    core_service_client_->received.connect([this](auto&& operation_type,
-                                                  auto&& json) {
+    core_service_daemon_client_->received.connect([this](auto&& operation_type,
+                                                         auto&& json) {
       try {
         switch (operation_type) {
           case krbn::operation_type::manipulator_environment: {
@@ -79,12 +79,12 @@ public:
 
   ~libkrbn_core_service_client() {
     detach_from_dispatcher([this] {
-      core_service_client_ = nullptr;
+      core_service_daemon_client_ = nullptr;
     });
   }
 
   void async_start() const {
-    core_service_client_->async_start();
+    core_service_daemon_client_->async_start();
   }
 
   [[nodiscard]] libkrbn_core_service_client_status get_status() const {
@@ -92,42 +92,42 @@ public:
   }
 
   void async_temporarily_ignore_all_devices(bool value) {
-    core_service_client_->async_temporarily_ignore_all_devices(value);
+    core_service_daemon_client_->async_temporarily_ignore_all_devices(value);
   }
 
   void async_get_manipulator_environment() {
-    core_service_client_->async_get_manipulator_environment();
+    core_service_daemon_client_->async_get_manipulator_environment();
   }
 
   void async_get_connected_devices() {
-    core_service_client_->async_get_connected_devices();
+    core_service_daemon_client_->async_get_connected_devices();
   }
 
   void async_get_notification_message() {
-    core_service_client_->async_get_notification_message();
+    core_service_daemon_client_->async_get_notification_message();
   }
 
   void async_get_system_variables() {
-    core_service_client_->async_get_system_variables();
+    core_service_daemon_client_->async_get_system_variables();
   }
 
   void async_connect_multitouch_extension() {
-    core_service_client_->async_connect_multitouch_extension();
+    core_service_daemon_client_->async_connect_multitouch_extension();
   }
 
   void async_set_app_icon(int number) const {
-    core_service_client_->async_set_app_icon(number);
+    core_service_daemon_client_->async_set_app_icon(number);
   }
 
   void async_set_variable(const std::string& name, int value) const {
     auto json = nlohmann::json::object({
         {name, value},
     });
-    core_service_client_->async_set_variables(json);
+    core_service_daemon_client_->async_set_variables(json);
   }
 
   void async_clear_user_variables() const {
-    core_service_client_->async_clear_user_variables();
+    core_service_daemon_client_->async_clear_user_variables();
   }
 
   void sync_set_variable(const std::string& name, int value) const {
@@ -136,7 +136,7 @@ public:
     auto json = nlohmann::json::object({
         {name, value},
     });
-    core_service_client_->async_set_variables(json, [wait] {
+    core_service_daemon_client_->async_set_variables(json, [wait] {
       wait->notify();
     });
 
@@ -213,7 +213,7 @@ private:
     }
   }
 
-  std::unique_ptr<krbn::core_service_client> core_service_client_;
+  std::unique_ptr<krbn::core_service_daemon_client> core_service_daemon_client_;
   libkrbn_core_service_client_status status_;
   libkrbn_callback_manager<libkrbn_core_service_client_status_changed_t> status_changed_callback_manager_;
   libkrbn_callback_manager<libkrbn_core_service_client_manipulator_environment_received_t> manipulator_environment_received_callback_manager_;

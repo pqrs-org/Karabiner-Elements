@@ -6,7 +6,7 @@
 #include "complex_modifications_assets_file.hpp"
 #include "console_user_server_client.hpp"
 #include "constants.hpp"
-#include "core_service_client.hpp"
+#include "core_service_daemon_client.hpp"
 #include "dispatcher_utility.hpp"
 #include "duktape_utility.hpp"
 #include "environment_variable_utility.hpp"
@@ -76,7 +76,7 @@ void list_connected_devices() {
   try {
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client;
+    krbn::core_service_daemon_client client;
 
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "list-connected-devices error:" << error_code << std::endl;
@@ -119,7 +119,7 @@ void list_system_variables() {
   try {
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client;
+    krbn::core_service_daemon_client client;
 
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "list-system-variables error:" << error_code << std::endl;
@@ -162,7 +162,7 @@ void list_multitouch_extension_variables() {
   try {
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client;
+    krbn::core_service_daemon_client client;
 
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "list-multitouch-extension-variables error:" << error_code << std::endl;
@@ -207,7 +207,7 @@ void watch_multitouch_extension_variables(int interval) {
     std::string json_string;
     std::atomic_bool connected = false;
 
-    krbn::core_service_client client;
+    krbn::core_service_daemon_client client;
 
     client.connect_failed.connect([](auto&& error_code) {
       std::cerr << "watch-multitouch-extension-variables error:" << error_code << std::endl;
@@ -265,7 +265,7 @@ void set_variables(const std::string& variables) {
 
     auto wait = pqrs::make_thread_wait();
 
-    krbn::core_service_client client;
+    krbn::core_service_daemon_client client;
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "set-variables error:" << error_code << std::endl;
       wait->notify();

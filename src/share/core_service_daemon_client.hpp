@@ -1,6 +1,6 @@
 #pragma once
 
-// `krbn::core_service_client` can be used safely in a multi-threaded environment.
+// `krbn::core_service_daemon_client` can be used safely in a multi-threaded environment.
 
 #include "codesign_manager.hpp"
 #include "constants.hpp"
@@ -18,7 +18,7 @@
 #include <vector>
 
 namespace krbn {
-class core_service_client final : public pqrs::dispatcher::extra::dispatcher_client {
+class core_service_daemon_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -29,13 +29,13 @@ public:
 
   // Methods
 
-  core_service_client(const core_service_client&) = delete;
+  core_service_daemon_client(const core_service_daemon_client&) = delete;
 
-  core_service_client()
+  core_service_daemon_client()
       : dispatcher_client() {
   }
 
-  ~core_service_client() override {
+  ~core_service_daemon_client() override {
     detach_from_dispatcher([this] {
       stop();
     });
@@ -44,7 +44,7 @@ public:
   void async_start() {
     enqueue_to_dispatcher([this] {
       if (client_) {
-        logger::get_logger()->warn("core_service_client is already started.");
+        logger::get_logger()->warn("core_service_daemon_client is already started.");
         return;
       }
 
@@ -57,13 +57,13 @@ public:
             if (!result) {
               // During an update, retrieving the Team ID may fail, causing an error once.
               // Since this can occur during normal use, treat it as debug rather than warn.
-              logger::get_logger()->debug("core_service_client: peer is not code-signed with same Team ID");
+              logger::get_logger()->debug("core_service_daemon_client: peer is not code-signed with same Team ID");
             }
             return result;
           });
 
       client_->connected.connect([this](auto&&) {
-        logger::get_logger()->info("core_service_client is connected.");
+        logger::get_logger()->debug("core_service_daemon_client is connected.");
 
         enqueue_to_dispatcher([this] {
           connected();
@@ -71,7 +71,7 @@ public:
       });
 
       client_->connect_failed.connect([this](auto&& error_code) {
-        logger::get_logger()->debug("core_service_client connect_failed: {0}", error_code.message());
+        logger::get_logger()->debug("core_service_daemon_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
           connect_failed(error_code);
@@ -79,7 +79,7 @@ public:
       });
 
       client_->closed.connect([this] {
-        logger::get_logger()->info("core_service_client is closed.");
+        logger::get_logger()->debug("core_service_daemon_client is closed.");
 
         enqueue_to_dispatcher([this] {
           closed();
@@ -87,11 +87,11 @@ public:
       });
 
       client_->error_occurred.connect([](auto&& error_code) {
-        logger::get_logger()->debug("core_service_client error: {0}", error_code.message());
+        logger::get_logger()->debug("core_service_daemon_client error: {0}", error_code.message());
       });
 
       client_->peer_verification_failed.connect([](auto&&) {
-        logger::get_logger()->error("core_service_client peer_verification_failed");
+        logger::get_logger()->error("core_service_daemon_client peer_verification_failed");
       });
 
       client_->received.connect([this](auto&& buffer) {
@@ -107,14 +107,14 @@ public:
             received(ot,
                      json);
           } catch (std::exception& e) {
-            logger::get_logger()->error("core_service_client received data is corrupted");
+            logger::get_logger()->error("core_service_daemon_client received data is corrupted");
           }
         });
       });
 
       client_->async_start();
 
-      logger::get_logger()->info("core_service_client is started.");
+      logger::get_logger()->debug("core_service_daemon_client is started.");
     });
   }
 
@@ -320,7 +320,7 @@ private:
         [this, processed](auto&& error_code, auto&& buffer) {
           enqueue_to_dispatcher([this, error_code, buffer, processed] {
             if (error_code) {
-              logger::get_logger()->debug("core_service_client request failed: {0}", error_code.message());
+              logger::get_logger()->debug("core_service_daemon_client request failed: {0}", error_code.message());
             }
 
             if (buffer &&
@@ -346,7 +346,7 @@ private:
       received(ot,
                json);
     } catch (std::exception& e) {
-      logger::get_logger()->error("core_service_client received data is corrupted");
+      logger::get_logger()->error("core_service_daemon_client received data is corrupted");
     }
   }
 
@@ -357,7 +357,7 @@ private:
 
     client_ = nullptr;
 
-    logger::get_logger()->info("core_service_client is stopped.");
+    logger::get_logger()->debug("core_service_daemon_client is stopped.");
   }
 
   std::unique_ptr<pqrs::unix_domain_stream::client> client_;
