@@ -43,17 +43,11 @@ public:
           constants::get_console_user_id_changed_receiver_socket_file_path(),
           constants::get_unix_domain_stream_client_options(),
           [](const auto& peer_credentials) {
-            auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
-            if (!result) {
-              // During an update, retrieving the Team ID may fail, causing an error once.
-              // Since this can occur during normal use, treat it as debug rather than warn.
-              logger::get_logger()->debug("console_user_id_changed_client: peer is not code-signed with same Team ID");
-            }
-            return result;
+            return get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
           });
 
       client_->connected.connect([this](auto&&) {
-        logger::get_logger()->info("console_user_id_changed_client is connected.");
+        logger::get_logger()->debug("console_user_id_changed_client is connected.");
 
         enqueue_to_dispatcher([this] {
           console_user_id_changed_request_in_flight_ = false;
@@ -75,7 +69,7 @@ public:
       });
 
       client_->closed.connect([this] {
-        logger::get_logger()->info("console_user_id_changed_client is closed.");
+        logger::get_logger()->debug("console_user_id_changed_client is closed.");
 
         enqueue_to_dispatcher([this] {
           make_connection_not_ready();
@@ -93,7 +87,9 @@ public:
       });
 
       client_->peer_verification_failed.connect([this](auto&&) {
-        logger::get_logger()->error("console_user_id_changed_client peer_verification_failed");
+        // During an update, retrieving the Team ID may fail, causing an error once.
+        // Since this can occur during normal use, treat it as debug rather than warn.
+        logger::get_logger()->debug("console_user_id_changed_client peer_verification_failed");
 
         enqueue_to_dispatcher([this] {
           make_connection_not_ready();
@@ -106,7 +102,7 @@ public:
 
       client_->async_start();
 
-      logger::get_logger()->info("console_user_id_changed_client is started.");
+      logger::get_logger()->debug("console_user_id_changed_client is started.");
     });
   }
 
@@ -137,7 +133,7 @@ private:
     console_user_id_changed_request_in_flight_ = false;
     connection_ready_ = false;
 
-    logger::get_logger()->info("console_user_id_changed_client is stopped.");
+    logger::get_logger()->debug("console_user_id_changed_client is stopped.");
   }
 
   void make_connection_not_ready() {

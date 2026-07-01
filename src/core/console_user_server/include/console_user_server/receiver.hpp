@@ -48,7 +48,7 @@ public:
         });
 
     server_->bound.connect([socket_file_path] {
-      logger::get_logger()->info("receiver: bound");
+      logger::get_logger()->debug("receiver: bound");
     });
 
     server_->bind_failed.connect([](auto&& error_code) {
@@ -57,7 +57,7 @@ public:
     });
 
     server_->closed.connect([] {
-      logger::get_logger()->info("receiver: closed");
+      logger::get_logger()->debug("receiver: closed");
     });
 
     server_->peer_connected.connect([](auto, auto&&) {
@@ -84,7 +84,7 @@ public:
 
     server_->async_start();
 
-    logger::get_logger()->info("receiver is initialized");
+    logger::get_logger()->debug("receiver is initialized");
   }
 
   ~receiver() override {
@@ -96,7 +96,7 @@ public:
       server_ = nullptr;
     });
 
-    logger::get_logger()->info("receiver is terminated");
+    logger::get_logger()->debug("receiver is terminated");
   }
 
   void handle_core_service_daemon_message(operation_type operation_type_value,

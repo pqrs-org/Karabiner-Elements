@@ -50,13 +50,7 @@ public:
           constants::get_console_user_server_socket_file_path(uid_),
           constants::get_unix_domain_stream_client_options(),
           [](const auto& peer_credentials) {
-            auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
-            if (!result) {
-              // During an update, retrieving the Team ID may fail, causing an error once.
-              // Since this can occur during normal use, treat it as debug rather than warn.
-              logger::get_logger()->debug("console_user_server_client: peer is not code-signed with same Team ID");
-            }
-            return result;
+            return get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
           });
 
       client_->connected.connect([this](auto&&) {
@@ -88,7 +82,9 @@ public:
       });
 
       client_->peer_verification_failed.connect([](auto&&) {
-        logger::get_logger()->error("console_user_server_client peer_verification_failed");
+        // During an update, retrieving the Team ID may fail, causing an error once.
+        // Since this can occur during normal use, treat it as debug rather than warn.
+        logger::get_logger()->debug("console_user_server_client peer_verification_failed");
       });
 
       client_->received.connect([this](auto&& buffer) {

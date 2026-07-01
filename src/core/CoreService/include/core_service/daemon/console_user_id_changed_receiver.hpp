@@ -39,7 +39,7 @@ public:
         });
 
     server_->bound.connect([] {
-      logger::get_logger()->info("console_user_id_changed_receiver: bound");
+      logger::get_logger()->debug("console_user_id_changed_receiver: bound");
 
       if (!filesystem_utility::permissions(constants::get_console_user_id_changed_receiver_socket_file_path(),
                                            filesystem_utility::permissions_0666)) {
@@ -56,7 +56,7 @@ public:
     });
 
     server_->closed.connect([] {
-      logger::get_logger()->info("console_user_id_changed_receiver: closed");
+      logger::get_logger()->debug("console_user_id_changed_receiver: closed");
     });
 
     server_->peer_connected.connect([this](auto peer_id, const auto& peer_credentials) {
@@ -137,7 +137,7 @@ public:
       server_->async_close_peer(peer_id);
     });
 
-    logger::get_logger()->info("console_user_id_changed_receiver is initialized");
+    logger::get_logger()->debug("console_user_id_changed_receiver is initialized");
   }
 
   ~console_user_id_changed_receiver() override {
@@ -147,7 +147,7 @@ public:
       server_ = nullptr;
     });
 
-    logger::get_logger()->info("console_user_id_changed_receiver is terminated");
+    logger::get_logger()->debug("console_user_id_changed_receiver is terminated");
   }
 
   void async_start() {
