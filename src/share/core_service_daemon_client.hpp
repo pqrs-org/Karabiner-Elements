@@ -108,6 +108,23 @@ public:
         });
       });
 
+      client_->request_received.connect([this](auto request_id, auto&& buffer) {
+        // Reply before handling the message, since some handlers run synchronous helper commands
+        // such as service registration, which may exceed the request timeout and close the peer.
+        // This response means the request has been accepted, not fully processed.
+        if (client_) {
+          client_->async_respond(
+              request_id,
+              nlohmann::json::to_msgpack(nlohmann::json{
+                  {"operation_type", operation_type::none},
+              }));
+        }
+
+        if (!buffer->empty()) {
+          handle_response(buffer);
+        }
+      });
+
       client_->async_start();
 
       logger::get_logger()->debug("core_service_daemon_client is started.");

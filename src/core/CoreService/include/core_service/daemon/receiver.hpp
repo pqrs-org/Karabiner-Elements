@@ -138,11 +138,17 @@ public:
   }
 
 private:
-  void async_send(pqrs::unix_domain_stream::peer_id peer_id,
-                  nlohmann::json json) {
+  void async_request(pqrs::unix_domain_stream::peer_id peer_id,
+                     nlohmann::json json) {
     if (server_) {
-      server_->async_send(peer_id,
-                          nlohmann::json::to_msgpack(json));
+      server_->async_request(
+          peer_id,
+          nlohmann::json::to_msgpack(json),
+          [](auto&& error_code, auto&&) {
+            if (error_code) {
+              logger::get_logger()->debug("receiver: request failed: {0}", error_code.message());
+            }
+          });
     }
   }
 
@@ -700,7 +706,7 @@ private:
       return;
     }
 
-    async_send(
+    async_request(
         *core_service_agent_peer_id_,
         nlohmann::json{
             {"operation_type", operation_type::refresh_core_service_bundle_permission_check_result},
