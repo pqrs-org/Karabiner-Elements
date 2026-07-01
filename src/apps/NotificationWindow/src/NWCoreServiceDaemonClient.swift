@@ -5,8 +5,8 @@ private func notificationMessageReceivedCallback(_ message: UnsafePointer<CChar>
   let s = String(cString: message)
 
   Task { @MainActor in
-    if NotificationWindowCoreServiceClient.shared.message != s {
-      NotificationWindowCoreServiceClient.shared.message = s
+    if NWCoreServiceDaemonClient.shared.message != s {
+      NWCoreServiceDaemonClient.shared.message = s
 
       NotificationWindowManager.shared.updateWindowsVisibility()
     }
@@ -14,8 +14,8 @@ private func notificationMessageReceivedCallback(_ message: UnsafePointer<CChar>
 }
 
 @MainActor
-final class NotificationWindowCoreServiceClient: ObservableObject {
-  static let shared = NotificationWindowCoreServiceClient()
+final class NWCoreServiceDaemonClient: ObservableObject {
+  static let shared = NWCoreServiceDaemonClient()
 
   private let timer: AsyncTimerSequence<ContinuousClock>
   private var timerTask: Task<Void, Never>?

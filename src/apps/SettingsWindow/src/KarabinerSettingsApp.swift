@@ -27,7 +27,7 @@ struct KarabinerSettingsApp: App {
     // Setup CoreServiceClient
     //
 
-    SettingsCoreServiceClient.shared.start()
+    SettingsCoreServiceDaemonClient.shared.start()
     SettingsConsoleUserServerClient.shared.start()
 
     //
@@ -36,7 +36,7 @@ struct KarabinerSettingsApp: App {
 
     KarabinerAppHelper.shared.observeVersionUpdated()
     LibKrbn.Settings.shared.watch()
-    SettingsCoreServiceClient.shared.startSystemVariablesMonitoring()
+    SettingsCoreServiceDaemonClient.shared.startSystemVariablesMonitoring()
     SystemPreferences.shared.start()
   }
 

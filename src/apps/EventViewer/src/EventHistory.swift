@@ -106,7 +106,7 @@ private func callback(
 
   Task { @MainActor in
     let entry = EventHistoryEntry()
-    entry.product = EVCoreServiceClient.shared.productName(deviceId: deviceId)
+    entry.product = EVCoreServiceDaemonClient.shared.productName(deviceId: deviceId)
 
     //
     // entry.code

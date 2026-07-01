@@ -131,8 +131,8 @@ private func callback() {
 }
 
 @MainActor
-final class MECoreServiceClient {
-  static let shared = MECoreServiceClient()
+final class MECoreServiceDaemonClient {
+  static let shared = MECoreServiceDaemonClient()
 
   private var cancellables: Set<AnyCancellable> = []
 

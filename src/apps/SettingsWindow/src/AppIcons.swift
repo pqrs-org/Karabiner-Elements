@@ -34,7 +34,7 @@ public class AppIcons: ObservableObject {
   @Published var selectedAppIconNumber: Int32 = 0 {
     didSet {
       if didSetEnabled {
-        SettingsCoreServiceClient.shared.setAppIcon(selectedAppIconNumber)
+        SettingsCoreServiceDaemonClient.shared.setAppIcon(selectedAppIconNumber)
       }
     }
   }

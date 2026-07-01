@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct VariablesView: View {
-  @ObservedObject var evCoreServiceClient = EVCoreServiceClient.shared
+  @ObservedObject var evCoreServiceDaemonClient = EVCoreServiceDaemonClient.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
@@ -12,7 +12,7 @@ struct VariablesView: View {
               let pboard = NSPasteboard.general
               pboard.clearContents()
               pboard.writeObjects([
-                evCoreServiceClient.manipulatorEnvironmentStream.text as NSString
+                evCoreServiceDaemonClient.manipulatorEnvironmentStream.text as NSString
               ])
             },
             label: {
@@ -32,7 +32,7 @@ struct VariablesView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
 
       RealtimeText(
-        stream: evCoreServiceClient.manipulatorEnvironmentStream,
+        stream: evCoreServiceDaemonClient.manipulatorEnvironmentStream,
         font: NSFont.monospacedSystemFont(
           ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
           weight: .regular)
@@ -42,10 +42,10 @@ struct VariablesView: View {
       .border(Color(NSColor.separatorColor), width: 2)
     }
     .onAppear {
-      evCoreServiceClient.startManipulatorEnvironment()
+      evCoreServiceDaemonClient.startManipulatorEnvironment()
     }
     .onDisappear {
-      evCoreServiceClient.stopManipulatorEnvironment()
+      evCoreServiceDaemonClient.stopManipulatorEnvironment()
     }
   }
 }

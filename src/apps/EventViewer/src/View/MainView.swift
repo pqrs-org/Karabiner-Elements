@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MainView: View {
   @ObservedObject var eventHistory = EventHistory.shared
-  @ObservedObject var evCoreServiceClient = EVCoreServiceClient.shared
+  @ObservedObject var evCoreServiceDaemonClient = EVCoreServiceDaemonClient.shared
   @State private var textInput: String = "This text input field is used to inspect key events."
   @State private var monitoring = true
 
@@ -46,10 +46,10 @@ struct MainView: View {
           VStack(alignment: .trailing) {
             Toggle(
               "Temporarily turns off all Karabiner-Elements modifications",
-              isOn: $evCoreServiceClient.temporarilyIgnoreAllDevices
+              isOn: $evCoreServiceDaemonClient.temporarilyIgnoreAllDevices
             )
             .switchToggleStyle()
-            .if(evCoreServiceClient.temporarilyIgnoreAllDevices) {
+            .if(evCoreServiceDaemonClient.temporarilyIgnoreAllDevices) {
               $0.foregroundColor(.red)
             }
 
@@ -160,10 +160,10 @@ struct MainView: View {
     .task {
       eventHistory.start()
       eventHistory.pause(false)
-      evCoreServiceClient.startConnectedDevices()
+      evCoreServiceDaemonClient.startConnectedDevices()
       defer {
         eventHistory.stop()
-        evCoreServiceClient.stopConnectedDevices()
+        evCoreServiceDaemonClient.stopConnectedDevices()
       }
 
       do {

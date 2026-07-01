@@ -137,7 +137,7 @@ public class NotificationWindowManager: NSObject {
   }
 
   func updateWindowsVisibility() {
-    let hide = NotificationWindowCoreServiceClient.shared.message.isEmpty
+    let hide = NWCoreServiceDaemonClient.shared.message.isEmpty
     let screens = NSScreen.screens
 
     for (i, screenWindow) in screenWindows.enumerated() {

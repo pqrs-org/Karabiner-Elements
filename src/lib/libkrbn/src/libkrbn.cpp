@@ -765,7 +765,7 @@ void libkrbn_core_service_daemon_client_async_set_app_icon(int number) {
 }
 
 void libkrbn_core_service_daemon_client_async_set_variable(const char* name,
-                                                    int value) {
+                                                           int value) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       if (name) {

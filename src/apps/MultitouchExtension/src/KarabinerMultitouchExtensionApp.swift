@@ -57,7 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Enable core_service_daemon_client
     //
 
-    MECoreServiceClient.shared.start()
+    MECoreServiceDaemonClient.shared.start()
     MultitouchDeviceManager.shared.observeIONotification()
 
     observeUserInteractiveActivitySettings()

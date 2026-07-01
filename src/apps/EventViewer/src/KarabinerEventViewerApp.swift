@@ -18,7 +18,7 @@ struct KarabinerEventViewerApp: App {
       InputMonitoringAlertData.shared.showing = true
     }
 
-    EVCoreServiceClient.shared.start()
+    EVCoreServiceDaemonClient.shared.start()
     EVConsoleUserServerClient.shared.start()
     LibKrbn.FrontmostApplicationHistory.shared.watch()
 

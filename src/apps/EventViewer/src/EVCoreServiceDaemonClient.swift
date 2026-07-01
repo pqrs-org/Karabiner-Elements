@@ -4,7 +4,7 @@ import Foundation
 
 private func statusChangedCallback() {
   Task { @MainActor in
-    EVCoreServiceClient.shared.temporarilyIgnoreAllDevices = false
+    EVCoreServiceDaemonClient.shared.temporarilyIgnoreAllDevices = false
   }
 }
 
@@ -12,7 +12,7 @@ private func manipulatorEnvironmentReceivedCallback(_ jsonString: UnsafePointer<
   let text = String(cString: jsonString)
 
   Task { @MainActor in
-    EVCoreServiceClient.shared.manipulatorEnvironmentStream.setText(text)
+    EVCoreServiceDaemonClient.shared.manipulatorEnvironmentStream.setText(text)
   }
 }
 
@@ -20,14 +20,14 @@ private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>
   let text = String(cString: jsonString)
 
   Task { @MainActor in
-    EVCoreServiceClient.shared.connectedDevicesStream.setText(text)
-    EVCoreServiceClient.shared.updateConnectedDevices(text)
+    EVCoreServiceDaemonClient.shared.connectedDevicesStream.setText(text)
+    EVCoreServiceDaemonClient.shared.updateConnectedDevices(text)
   }
 }
 
 @MainActor
-final class EVCoreServiceClient: ObservableObject {
-  static let shared = EVCoreServiceClient()
+final class EVCoreServiceDaemonClient: ObservableObject {
+  static let shared = EVCoreServiceDaemonClient()
 
   private let manipulatorEnvironmentTimer: AsyncTimerSequence<ContinuousClock>
   private var manipulatorEnvironmentTimerTask: Task<Void, Never>?
@@ -146,7 +146,8 @@ final class EVCoreServiceClient: ObservableObject {
 
   @Published var temporarilyIgnoreAllDevices: Bool = false {
     didSet {
-      libkrbn_core_service_daemon_client_async_temporarily_ignore_all_devices(temporarilyIgnoreAllDevices)
+      libkrbn_core_service_daemon_client_async_temporarily_ignore_all_devices(
+        temporarilyIgnoreAllDevices)
     }
   }
 }

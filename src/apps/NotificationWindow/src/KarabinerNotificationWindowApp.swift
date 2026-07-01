@@ -8,7 +8,7 @@ struct KarabinerNotificationWindowApp: App {
     libkrbn_initialize()
     libkrbn_load_custom_environment_variables()
 
-    NotificationWindowCoreServiceClient.shared.start()
+    NWCoreServiceDaemonClient.shared.start()
   }
 
   var body: some Scene {

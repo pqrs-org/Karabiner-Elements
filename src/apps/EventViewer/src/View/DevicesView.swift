@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DevicesView: View {
-  @ObservedObject var evCoreServiceClient = EVCoreServiceClient.shared
+  @ObservedObject var evCoreServiceDaemonClient = EVCoreServiceDaemonClient.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
@@ -10,7 +10,7 @@ struct DevicesView: View {
           action: {
             let pboard = NSPasteboard.general
             pboard.clearContents()
-            pboard.writeObjects([evCoreServiceClient.connectedDevicesStream.text as NSString])
+            pboard.writeObjects([evCoreServiceDaemonClient.connectedDevicesStream.text as NSString])
           },
           label: {
             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
@@ -20,7 +20,7 @@ struct DevicesView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
 
       RealtimeText(
-        stream: evCoreServiceClient.connectedDevicesStream,
+        stream: evCoreServiceDaemonClient.connectedDevicesStream,
         font: NSFont.monospacedSystemFont(
           ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
           weight: .regular)
@@ -30,10 +30,10 @@ struct DevicesView: View {
       .border(Color(NSColor.separatorColor), width: 2)
     }
     .onAppear {
-      evCoreServiceClient.startConnectedDevices()
+      evCoreServiceDaemonClient.startConnectedDevices()
     }
     .onDisappear {
-      evCoreServiceClient.stopConnectedDevices()
+      evCoreServiceDaemonClient.stopConnectedDevices()
     }
   }
 }
