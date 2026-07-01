@@ -8,11 +8,13 @@
 
 #include "impl/credentials.hpp"
 #include "impl/peer.hpp"
+#include "impl/request_manager.hpp"
 #include "options.hpp"
 #include "peer_credentials.hpp"
 #include "types.hpp"
 #include <atomic>
 #include <filesystem>
+#include <functional>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <unordered_map>
@@ -48,6 +50,8 @@ public:
         verify_peer_(verify_peer),
         bind_retry_task_(*this),
         socket_path_health_check_timer_(*this),
+        request_manager_(io_ctx_,
+                         *this),
         work_guard_(asio::make_work_guard(io_ctx_)) {
     io_ctx_thread_ = std::thread([this] {
       io_ctx_.run();
@@ -106,7 +110,40 @@ public:
         [this, id, request_id_value, data] {
           if (auto it = peers_.find(id);
               it != peers_.end()) {
-            it->second->async_send_response(request_id_value, data);
+            it->second->async_send_response(request_id_value,
+                                            data);
+          }
+        });
+  }
+
+  void async_request(peer_id id,
+                     const std::vector<uint8_t>& data,
+                     async_request_callback callback) {
+    async_request(id,
+                  data,
+                  options_.read_timeout,
+                  callback);
+  }
+
+  void async_request(peer_id id,
+                     const std::vector<uint8_t>& data,
+                     std::chrono::milliseconds timeout,
+                     async_request_callback callback) {
+    asio::post(
+        io_ctx_,
+        [this, id, data, timeout, callback] {
+          if (auto it = peers_.find(id);
+              it != peers_.end()) {
+            send_request(id,
+                         it->second,
+                         data,
+                         timeout,
+                         callback);
+          } else {
+            enqueue_to_dispatcher([callback] {
+              callback(asio::error::not_connected,
+                       nullptr);
+            });
           }
         });
   }
@@ -148,24 +185,28 @@ private:
           }
 
           std::error_code remove_error_code;
-          std::filesystem::remove(socket_file_path_, remove_error_code);
+          std::filesystem::remove(socket_file_path_,
+                                  remove_error_code);
 
           acceptor_ = std::make_unique<asio::local::stream_protocol::acceptor>(io_ctx_);
 
           asio::error_code error_code;
-          acceptor_->open(asio::local::stream_protocol::endpoint(socket_file_path_).protocol(), error_code);
+          acceptor_->open(asio::local::stream_protocol::endpoint(socket_file_path_).protocol(),
+                          error_code);
           if (error_code) {
             handle_bind_failed(error_code);
             return;
           }
 
-          acceptor_->bind(asio::local::stream_protocol::endpoint(socket_file_path_), error_code);
+          acceptor_->bind(asio::local::stream_protocol::endpoint(socket_file_path_),
+                          error_code);
           if (error_code) {
             handle_bind_failed(error_code);
             return;
           }
 
-          acceptor_->listen(asio::socket_base::max_listen_connections, error_code);
+          acceptor_->listen(asio::socket_base::max_listen_connections,
+                            error_code);
           if (error_code) {
             handle_bind_failed(error_code);
             return;
@@ -234,13 +275,15 @@ private:
     not_null_shared_ptr_t<impl::peer> p(std::make_shared<impl::peer>(weak_dispatcher_,
                                                                      std::move(socket),
                                                                      options_));
-    peers_.emplace(id, p);
+    peers_.emplace(id,
+                   p);
 
     p->ready.connect([this, id, credentials] {
       enqueue_to_dispatcher([this, id, credentials] {
         if (verify_peer_(credentials)) {
           exposed_peer_ids_.insert(id);
-          peer_connected(id, credentials);
+          peer_connected(id,
+                         credentials);
         } else {
           asio::post(
               io_ctx_,
@@ -254,7 +297,8 @@ private:
     p->received.connect([this, id](auto&& buffer) {
       enqueue_to_dispatcher([this, id, buffer] {
         if (exposed_peer_ids_.contains(id)) {
-          received(id, buffer);
+          received(id,
+                   buffer);
         }
       });
     });
@@ -262,15 +306,42 @@ private:
     p->request_received.connect([this, id](auto request_id, auto&& buffer) {
       enqueue_to_dispatcher([this, id, request_id, buffer] {
         if (exposed_peer_ids_.contains(id)) {
-          request_received(id, request_id, buffer);
+          request_received(id,
+                           request_id,
+                           buffer);
         }
       });
     });
 
+    p->response_received.connect([this, id, weak_p = make_weak(p)](auto request_id, auto&& buffer) {
+      if (auto p = weak_p.lock()) {
+        asio::post(
+            io_ctx_,
+            [this, id, p, request_id, buffer] {
+              if (auto it = peers_.find(id);
+                  it != peers_.end() &&
+                  it->second.get() == p) {
+                request_manager_.complete(id,
+                                          request_id,
+                                          asio::error_code(),
+                                          buffer);
+              }
+            });
+      }
+    });
+
     p->error_occurred.connect([this, id](auto&& error_code) {
+      asio::post(
+          io_ctx_,
+          [this, id, error_code] {
+            request_manager_.complete_peer(id,
+                                           error_code);
+          });
+
       enqueue_to_dispatcher([this, id, error_code] {
         if (exposed_peer_ids_.contains(id)) {
-          peer_error_occurred(id, error_code);
+          peer_error_occurred(id,
+                              error_code);
         }
       });
     });
@@ -279,6 +350,8 @@ private:
       asio::post(
           io_ctx_,
           [this, id] {
+            request_manager_.complete_peer(id,
+                                           asio::error::connection_reset);
             peers_.erase(id);
           });
 
@@ -304,7 +377,8 @@ private:
     }
 
     std::error_code remove_error_code;
-    std::filesystem::remove(socket_file_path_, remove_error_code);
+    std::filesystem::remove(socket_file_path_,
+                            remove_error_code);
   }
 
   // This method is executed in the dispatcher thread.
@@ -439,6 +513,8 @@ private:
   void close_peer(peer_id id) {
     if (auto it = peers_.find(id);
         it != peers_.end()) {
+      request_manager_.complete_peer(id,
+                                     asio::error::operation_aborted);
       it->second->async_close();
       peers_.erase(it);
     }
@@ -454,11 +530,27 @@ private:
 
   // This method is executed in `io_ctx_thread_`.
   void close_all_peers() {
+    request_manager_.complete_all(asio::error::operation_aborted);
+
     for (auto& [_, p] : peers_) {
       p->async_close();
     }
 
     peers_.clear();
+  }
+
+  // This method is executed in `io_ctx_thread_`.
+  void send_request(peer_id peer_id_value,
+                    not_null_shared_ptr_t<impl::peer> peer,
+                    const std::vector<uint8_t>& data,
+                    std::chrono::milliseconds timeout,
+                    async_request_callback callback) {
+    auto id = request_manager_.add(peer_id_value,
+                                   timeout,
+                                   callback);
+
+    peer->async_send_request(id,
+                             data);
   }
 
   std::filesystem::path socket_file_path_;
@@ -469,6 +561,7 @@ private:
   std::atomic_bool stopped_ = true;
 
   asio::io_context io_ctx_;
+  impl::request_manager request_manager_;
   asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
   std::thread io_ctx_thread_;
   std::unique_ptr<asio::local::stream_protocol::acceptor> acceptor_;

@@ -5,10 +5,16 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include <cstdint>
+#include <functional>
+#include <memory>
+#include <system_error>
+#include <vector>
 
 namespace pqrs::unix_domain_stream {
 
 using peer_id = uint64_t;
 using request_id = uint64_t;
+using async_request_callback = std::function<void(const std::error_code&,
+                                                  std::shared_ptr<std::vector<uint8_t>>)>;
 
 } // namespace pqrs::unix_domain_stream
