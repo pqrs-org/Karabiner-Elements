@@ -5,7 +5,7 @@
 #include "app_icon.hpp"
 #include "application_launcher.hpp"
 #include "components_manager_killer.hpp"
-#include "console_user_server_client.hpp"
+#include "console_user_server_peer.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "device_grabber.hpp"
@@ -14,6 +14,7 @@
 #include "types/core_service_daemon_state.hpp"
 #include <array>
 #include <filesystem>
+#include <memory>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service/utility.hpp>
 #include <pqrs/osx/session.hpp>
@@ -49,7 +50,7 @@ public:
 
     auto socket_file_path = karabiner_core_service_socket_file_path();
 
-    server_ = std::make_unique<pqrs::unix_domain_stream::server>(
+    server_ = std::make_shared<pqrs::unix_domain_stream::server>(
         weak_dispatcher_,
         socket_file_path,
         constants::get_unix_domain_stream_server_options(),
@@ -115,54 +116,6 @@ public:
     server_->async_start();
 
     //
-    // Setup console_user_server_client_
-    //
-
-    if (current_console_user_id_) {
-      console_user_server_client_ = std::make_unique<console_user_server_client>(*current_console_user_id_);
-
-      console_user_server_client_->connected.connect([this] {
-        console_user_server_client_->async_get_user_core_configuration_file_path();
-
-        if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-          send_core_service_daemon_state(m->copy_state());
-        }
-
-        request_core_service_bundle_permission_check_result_refresh();
-      });
-
-      // If the console_user_server isn't running (i.e., operating under system_core_configuration),
-      // connect_failed will keep being called, so we won't perform any operations on the device_grabber.
-      console_user_server_client_->connect_failed.connect([](auto&& error_code) {
-        // Do nothing
-      });
-
-      console_user_server_client_->closed.connect([this] {
-        stop_device_grabber();
-        start_grabbing_if_system_core_configuration_file_exists();
-      });
-
-      console_user_server_client_->received.connect([this](auto&& ot,
-                                                           auto&& json) {
-        try {
-          switch (ot) {
-            case operation_type::user_core_configuration_file_path:
-              stop_device_grabber();
-              start_device_grabber(json["user_core_configuration_file_path"].template get<std::string>());
-              break;
-
-            default:
-              break;
-          }
-        } catch (std::exception& e) {
-          logger::get_logger()->error("received data is corrupted");
-        }
-      });
-
-      console_user_server_client_->async_start();
-    }
-
-    //
     // Start device_grabber
     //
 
@@ -175,9 +128,10 @@ public:
   ~receiver() override {
     detach_from_dispatcher([this] {
       core_service_daemon_state_manager_connection_.disconnect();
-      server_ = nullptr;
-      console_user_server_client_ = nullptr;
+      console_user_server_peer_id_ = std::nullopt;
+      console_user_server_peer_ = nullptr;
       stop_device_grabber();
+      server_ = nullptr;
     });
 
     logger::get_logger()->info("receiver is terminated");
@@ -230,6 +184,14 @@ private:
 
     if (core_service_agent_peer_id_ == peer_id) {
       core_service_agent_peer_id_ = std::nullopt;
+    }
+
+    if (console_user_server_peer_id_ == peer_id) {
+      console_user_server_peer_id_ = std::nullopt;
+      console_user_server_peer_ = nullptr;
+
+      stop_device_grabber();
+      start_grabbing_if_system_core_configuration_file_exists();
     }
   }
 
@@ -289,6 +251,26 @@ private:
                              request_id);
           break;
 
+        case operation_type::start_device_grabber: {
+          console_user_server_peer_id_ = peer_id;
+          console_user_server_peer_ = std::make_shared<console_user_server_peer>(weak_dispatcher_,
+                                                                                 server_,
+                                                                                 peer_id);
+
+          stop_device_grabber();
+          start_device_grabber(json.at("user_core_configuration_file_path").get<std::string>());
+
+          if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+            send_core_service_daemon_state(m->copy_state());
+          }
+
+          request_core_service_bundle_permission_check_result_refresh();
+
+          async_respond_none(peer_id,
+                             request_id);
+          break;
+        }
+
         case operation_type::frontmost_application_changed: {
           auto app = json.at("frontmost_application").get<application>();
 
@@ -296,8 +278,8 @@ private:
           // Synchronize frontmost_application_changed to console_user_server
           //
 
-          if (console_user_server_client_) {
-            console_user_server_client_->async_frontmost_application_changed(app);
+          if (console_user_server_peer_) {
+            console_user_server_peer_->async_frontmost_application_changed(app);
           }
 
           //
@@ -322,8 +304,8 @@ private:
           // Synchronize focused_ui_element_changed to console_user_server
           //
 
-          if (console_user_server_client_) {
-            console_user_server_client_->async_focused_ui_element_changed(element);
+          if (console_user_server_peer_) {
+            console_user_server_peer_->async_focused_ui_element_changed(element);
           }
 
           //
@@ -597,7 +579,7 @@ private:
 
     clear_device_grabber_state();
 
-    device_grabber_ = std::make_unique<device_grabber>(console_user_server_client_,
+    device_grabber_ = std::make_unique<device_grabber>(console_user_server_peer_,
                                                        weak_core_service_daemon_state_manager_);
 
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
@@ -708,8 +690,8 @@ private:
   }
 
   void send_core_service_daemon_state(const core_service_daemon_state& core_service_daemon_state) {
-    if (console_user_server_client_) {
-      console_user_server_client_->async_core_service_daemon_state(core_service_daemon_state);
+    if (console_user_server_peer_) {
+      console_user_server_peer_->async_core_service_daemon_state(core_service_daemon_state);
     }
   }
 
@@ -761,10 +743,11 @@ private:
   std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;
   nod::scoped_connection core_service_daemon_state_manager_connection_;
 
-  std::unique_ptr<pqrs::unix_domain_stream::server> server_;
-  std::shared_ptr<console_user_server_client> console_user_server_client_;
+  std::shared_ptr<pqrs::unix_domain_stream::server> server_;
   std::unique_ptr<device_grabber> device_grabber_;
   std::optional<pqrs::unix_domain_stream::peer_id> core_service_agent_peer_id_;
+  std::optional<pqrs::unix_domain_stream::peer_id> console_user_server_peer_id_;
+  std::shared_ptr<console_user_server_peer> console_user_server_peer_;
   std::optional<pqrs::unix_domain_stream::peer_id> multitouch_extension_peer_id_;
   std::unordered_set<pqrs::unix_domain_stream::peer_id> temporarily_ignore_all_devices_peer_ids_;
 

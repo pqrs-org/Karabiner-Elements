@@ -6,6 +6,7 @@
 #include "constants.hpp"
 #include "logger.hpp"
 #include "types.hpp"
+#include <filesystem>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_types.hpp>
@@ -181,6 +182,17 @@ public:
 
         async_send_message(std::move(json));
       }
+    });
+  }
+
+  void async_start_device_grabber(const std::filesystem::path& user_core_configuration_file_path) const {
+    enqueue_to_dispatcher([this, user_core_configuration_file_path] {
+      nlohmann::json json{
+          {"operation_type", operation_type::start_device_grabber},
+          {"user_core_configuration_file_path", user_core_configuration_file_path},
+      };
+
+      async_send_message(std::move(json));
     });
   }
 

@@ -2,7 +2,7 @@
 
 #include "../../types.hpp"
 #include "../base.hpp"
-#include "console_user_server_client.hpp"
+#include "console_user_server_peer.hpp"
 #include "key_event_dispatcher.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "krbn_notification_center.hpp"
@@ -16,11 +16,11 @@
 namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  post_event_to_virtual_devices(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
+  post_event_to_virtual_devices(std::weak_ptr<console_user_server_peer> weak_console_user_server_peer,
                                 std::weak_ptr<notification_message_manager> weak_notification_message_manager)
       : base(),
         dispatcher_client(),
-        weak_console_user_server_client_(weak_console_user_server_client),
+        weak_console_user_server_peer_(weak_console_user_server_peer),
         weak_notification_message_manager_(weak_notification_message_manager),
         virtual_hid_keyboard_pressed_keys_manager_(std::make_shared<pressed_keys_manager>()),
         keyboard_suppression_(std::make_shared<keyboard_suppression>()),
@@ -409,7 +409,7 @@ public:
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_service_client] {
           queue_.async_post_events(weak_virtual_hid_device_service_client,
-                                   weak_console_user_server_client_);
+                                   weak_console_user_server_peer_);
         });
   }
 
@@ -448,7 +448,7 @@ public:
           key_event_dispatcher_.clear();
 
           queue_.async_post_events(weak_virtual_hid_device_service_client,
-                                   weak_console_user_server_client_);
+                                   weak_console_user_server_peer_);
         });
   }
 
@@ -500,7 +500,7 @@ private:
     }
   }
 
-  std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
+  std::weak_ptr<console_user_server_peer> weak_console_user_server_peer_;
   std::weak_ptr<notification_message_manager> weak_notification_message_manager_;
 
   // Manages the list of keys that are currently pressed.

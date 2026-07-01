@@ -44,7 +44,6 @@ public:
       pseudo_time_source_->set_now(pqrs::dispatcher::time_point(std::chrono::milliseconds(0)));
 
       auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
-      auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(geteuid());
       auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
       auto connector = std::make_shared<manipulator::manipulator_managers_connector>();
       auto manipulator_managers = std::make_shared<std::vector<pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager>>>();
@@ -139,7 +138,7 @@ public:
       if (pqrs::json::find<std::string>(test, "expected_post_event_to_virtual_devices_queue")) {
         post_event_to_virtual_devices_manipulator =
             std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
-                console_user_server_client,
+                std::weak_ptr<krbn::console_user_server_peer>(),
                 notification_message_manager);
 
         manipulator_managers->push_back(std::make_shared<manipulator::manipulator_manager>());

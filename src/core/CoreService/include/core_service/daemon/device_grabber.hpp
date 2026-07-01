@@ -1,6 +1,7 @@
 #pragma once
 
 #include "components_manager_killer.hpp"
+#include "console_user_server_peer.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "device_grabber_details/entry.hpp"
@@ -48,10 +49,10 @@ class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   device_grabber(const device_grabber&) = delete;
 
-  device_grabber(std::weak_ptr<console_user_server_client> weak_console_user_server_client,
+  device_grabber(std::weak_ptr<console_user_server_peer> weak_console_user_server_peer,
                  std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager)
       : dispatcher_client(),
-        weak_console_user_server_client_(weak_console_user_server_client),
+        weak_console_user_server_peer_(weak_console_user_server_peer),
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
         temporarily_ignore_all_devices_(false),
@@ -176,7 +177,7 @@ public:
 
     post_event_to_virtual_devices_manipulator_ =
         std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
-            weak_console_user_server_client,
+            weak_console_user_server_peer_,
             notification_message_manager_);
     post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
@@ -514,12 +515,13 @@ public:
 
           logger_unique_filter_.reset();
 
-          if (auto c = weak_console_user_server_client_.lock()) {
+          if (auto console_user_server_peer = weak_console_user_server_peer_.lock()) {
             //
             // Check for updates
             //
 
-            c->async_check_for_updates(core_configuration_->get_global_configuration().get_check_for_updates());
+            console_user_server_peer->async_check_for_updates(
+                core_configuration_->get_global_configuration().get_check_for_updates());
 
             //
             // Manage agents
@@ -527,21 +529,21 @@ public:
 
             if (core_configuration_->get_global_configuration().get_show_in_menu_bar() ||
                 core_configuration_->get_global_configuration().get_show_profile_name_in_menu_bar()) {
-              c->async_register_menu_agent();
+              console_user_server_peer->async_register_menu_agent();
             } else {
-              c->async_unregister_menu_agent();
+              console_user_server_peer->async_unregister_menu_agent();
             }
 
             if (core_configuration_->get_machine_specific().get_entry().get_enable_multitouch_extension()) {
-              c->async_register_multitouch_extension_agent();
+              console_user_server_peer->async_register_multitouch_extension_agent();
             } else {
-              c->async_unregister_multitouch_extension_agent();
+              console_user_server_peer->async_unregister_multitouch_extension_agent();
             }
 
             if (core_configuration_->get_global_configuration().get_enable_notification_window()) {
-              c->async_register_notification_window_agent();
+              console_user_server_peer->async_register_notification_window_agent();
             } else {
-              c->async_unregister_notification_window_agent();
+              console_user_server_peer->async_unregister_notification_window_agent();
             }
           }
 
@@ -1205,7 +1207,7 @@ private:
     return false;
   }
 
-  std::weak_ptr<console_user_server_client> weak_console_user_server_client_;
+  std::weak_ptr<console_user_server_peer> weak_console_user_server_peer_;
   std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;
 
   std::shared_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> virtual_hid_device_service_client_;

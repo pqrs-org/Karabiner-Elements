@@ -8,9 +8,6 @@
 #include "types.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/osx/iokit_types.hpp>
-#include <pqrs/osx/system_preferences.hpp>
-#include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 #include <pqrs/unix_domain_stream.hpp>
 #include <unistd.h>
 #include <utility>
@@ -124,178 +121,11 @@ public:
     });
   }
 
-  void async_get_user_core_configuration_file_path() const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::get_user_core_configuration_file_path},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  void async_check_for_updates(bool enabled) const {
-    enqueue_to_dispatcher([this, enabled] {
-      nlohmann::json json{
-          {"operation_type", operation_type::check_for_updates},
-          {"enabled", enabled},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  void async_register_menu_agent() const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::register_menu_agent},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  void async_unregister_menu_agent() const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::unregister_menu_agent},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  void async_register_multitouch_extension_agent() const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::register_multitouch_extension_agent},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  void async_unregister_multitouch_extension_agent() const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::unregister_multitouch_extension_agent},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  void async_register_notification_window_agent() const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::register_notification_window_agent},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  void async_unregister_notification_window_agent() const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::unregister_notification_window_agent},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  // core_service (daemon) -> console_user_server
-  void async_frontmost_application_changed(const application& application) const {
-    enqueue_to_dispatcher([this, application] {
-      nlohmann::json json{
-          {"operation_type", operation_type::frontmost_application_changed},
-          {"frontmost_application", application},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  // core_service (daemon) -> console_user_server
-  void async_focused_ui_element_changed(const focused_ui_element& focused_ui_element) const {
-    enqueue_to_dispatcher([this, focused_ui_element] {
-      nlohmann::json json{
-          {"operation_type", operation_type::focused_ui_element_changed},
-          {"focused_ui_element", focused_ui_element},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  // core_service -> console_user_server
-  void async_shell_command_execution(const std::string& shell_command) const {
-    enqueue_to_dispatcher([this, shell_command] {
-      nlohmann::json json{
-          {"operation_type", operation_type::shell_command_execution},
-          {"shell_command", shell_command},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  // core_service -> console_user_server
-  void async_send_user_command(const nlohmann::json& user_command) const {
-    enqueue_to_dispatcher([this, user_command] {
-      nlohmann::json json{
-          {"operation_type", operation_type::send_user_command},
-          {"user_command", user_command},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  // core_service -> console_user_server
-  void async_select_input_source(std::shared_ptr<std::vector<pqrs::osx::input_source_selector::specifier>> input_source_specifiers) {
-    enqueue_to_dispatcher([this, input_source_specifiers] {
-      if (input_source_specifiers) {
-        nlohmann::json json{
-            {"operation_type", operation_type::select_input_source},
-            {"input_source_specifiers", *input_source_specifiers},
-        };
-
-        async_send_message(std::move(json));
-      }
-    });
-  }
-
-  // core_service -> console_user_server
-  void async_software_function(const software_function& software_function) const {
-    enqueue_to_dispatcher([this, software_function] {
-      nlohmann::json json{
-          {"operation_type", operation_type::software_function},
-          {"software_function", software_function},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
   // settings_window -> console_user_server
   void async_get_settings_window_guidance() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
           {"operation_type", operation_type::get_settings_window_guidance},
-      };
-
-      async_send_message(std::move(json));
-    });
-  }
-
-  // core_service (daemon) -> console_user_server
-  void async_core_service_daemon_state(const nlohmann::json& core_service_daemon_state) const {
-    enqueue_to_dispatcher([this, core_service_daemon_state] {
-      nlohmann::json json{
-          {"operation_type", operation_type::core_service_daemon_state},
-          {"core_service_daemon_state", core_service_daemon_state},
       };
 
       async_send_message(std::move(json));

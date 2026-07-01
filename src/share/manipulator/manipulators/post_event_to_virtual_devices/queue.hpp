@@ -2,12 +2,14 @@
 
 #include "../../../keyboard_suppression.hpp"
 #include "../../../pressed_keys_manager.hpp"
+#include "console_user_server_peer.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_utility.hpp"
 #include <chrono>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
+#include <pqrs/osx/input_source_selector.hpp>
 #include <variant>
 
 namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
@@ -538,9 +540,9 @@ public:
   }
 
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client,
-                         std::weak_ptr<console_user_server_client> weak_console_user_server_client) {
+                         std::weak_ptr<console_user_server_peer> weak_console_user_server_peer) {
     enqueue_to_dispatcher(
-        [this, weak_virtual_hid_device_service_client, weak_console_user_server_client] {
+        [this, weak_virtual_hid_device_service_client, weak_console_user_server_peer] {
           auto now = pqrs::osx::chrono::mach_absolute_time_point();
 
           while (!events_.empty()) {
@@ -555,9 +557,9 @@ public:
               }
 
               enqueue_to_dispatcher(
-                  [this, weak_virtual_hid_device_service_client, weak_console_user_server_client] {
+                  [this, weak_virtual_hid_device_service_client, weak_console_user_server_peer] {
                     async_post_events(weak_virtual_hid_device_service_client,
-                                      weak_console_user_server_client);
+                                      weak_console_user_server_peer);
                   },
                   when_now() + pqrs::osx::chrono::make_milliseconds(duration));
 
@@ -601,18 +603,18 @@ public:
               }
             }
             if (auto shell_command = e.get_shell_command()) {
-              if (auto client = weak_console_user_server_client.lock()) {
-                client->async_shell_command_execution(*shell_command);
+              if (auto console_user_server_peer = weak_console_user_server_peer.lock()) {
+                console_user_server_peer->async_shell_command_execution(*shell_command);
               }
             }
             if (auto user_command = e.get_user_command()) {
-              if (auto client = weak_console_user_server_client.lock()) {
-                client->async_send_user_command(*user_command);
+              if (auto console_user_server_peer = weak_console_user_server_peer.lock()) {
+                console_user_server_peer->async_send_user_command(*user_command);
               }
             }
             if (auto input_source_specifiers = e.get_input_source_specifiers()) {
-              if (auto client = weak_console_user_server_client.lock()) {
-                auto specifiers = std::make_shared<std::vector<pqrs::osx::input_source_selector::specifier>>();
+              if (auto console_user_server_peer = weak_console_user_server_peer.lock()) {
+                std::vector<pqrs::osx::input_source_selector::specifier> specifiers;
                 for (const auto& s : *input_source_specifiers) {
                   pqrs::osx::input_source_selector::specifier specifier;
 
@@ -628,14 +630,14 @@ public:
                     specifier.set_input_mode_id(*v);
                   }
 
-                  specifiers->push_back(specifier);
+                  specifiers.push_back(specifier);
                 }
-                client->async_select_input_source(specifiers);
+                console_user_server_peer->async_select_input_source(specifiers);
               }
             }
             if (auto software_function = e.get_software_function()) {
-              if (auto client = weak_console_user_server_client.lock()) {
-                client->async_software_function(*software_function);
+              if (auto console_user_server_peer = weak_console_user_server_peer.lock()) {
+                console_user_server_peer->async_software_function(*software_function);
               }
             }
 

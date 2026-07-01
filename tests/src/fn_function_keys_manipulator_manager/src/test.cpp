@@ -30,10 +30,9 @@ int main() {
 
     auto manager = std::make_shared<krbn::core_service::daemon::device_grabber_details::fn_function_keys_manipulator_manager>();
 
-    auto console_user_server_client = std::make_shared<krbn::console_user_server_client>(geteuid());
     auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
     auto post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
-        console_user_server_client,
+        std::weak_ptr<krbn::console_user_server_peer>(),
         notification_message_manager);
     auto post_event_to_virtual_devices_manipulator_manager = std::make_shared<krbn::manipulator::manipulator_manager>();
     post_event_to_virtual_devices_manipulator_manager->push_back_manipulator(post_event_to_virtual_devices_manipulator);

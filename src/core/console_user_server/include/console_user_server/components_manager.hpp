@@ -117,6 +117,8 @@ private:
     core_service_client_->connected.connect([this] {
       version_monitor_->async_manual_check();
 
+      core_service_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
+
       stop_child_components();
       start_child_components();
     });
@@ -131,6 +133,14 @@ private:
       version_monitor_->async_manual_check();
 
       stop_child_components();
+    });
+
+    core_service_client_->received.connect([this](auto&& operation_type,
+                                                  auto&& json) {
+      if (receiver_) {
+        receiver_->handle_core_service_daemon_message(operation_type,
+                                                      json);
+      }
     });
 
     core_service_client_->async_start();

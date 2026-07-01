@@ -99,6 +99,94 @@ public:
     logger::get_logger()->info("receiver is terminated");
   }
 
+  void handle_core_service_daemon_message(operation_type operation_type_value,
+                                          const nlohmann::json& json) {
+    try {
+      switch (operation_type_value) {
+        case operation_type::core_service_daemon_state:
+          if (auto m = weak_settings_window_guidance_manager_.lock()) {
+            m->async_update_core_service_daemon_state(
+                json.at("core_service_daemon_state").get<core_service_daemon_state>());
+          }
+          break;
+
+        case operation_type::check_for_updates:
+          set_check_for_updates_enabled(json.at("enabled").get<bool>());
+          break;
+
+        case operation_type::register_menu_agent:
+          services_utility::register_menu_agent();
+          break;
+
+        case operation_type::unregister_menu_agent:
+          services_utility::unregister_menu_agent();
+          break;
+
+        case operation_type::register_multitouch_extension_agent:
+          services_utility::register_multitouch_extension_agent();
+          break;
+
+        case operation_type::unregister_multitouch_extension_agent:
+          services_utility::unregister_multitouch_extension_agent();
+          break;
+
+        case operation_type::register_notification_window_agent:
+          services_utility::register_notification_window_agent();
+          break;
+
+        case operation_type::unregister_notification_window_agent:
+          services_utility::unregister_notification_window_agent();
+          break;
+
+        case operation_type::frontmost_application_changed:
+          if (auto h = weak_software_function_handler_.lock()) {
+            auto app = json.at("frontmost_application").get<application>();
+            h->add_frontmost_application_history(app);
+          }
+          break;
+
+        case operation_type::focused_ui_element_changed:
+          if (auto h = weak_software_function_handler_.lock()) {
+            auto element = json.at("focused_ui_element").get<focused_ui_element>();
+            h->set_focused_ui_element(element);
+          }
+          break;
+
+        case operation_type::select_input_source:
+          if (input_source_selector_) {
+            using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
+            input_source_selector_->async_select(json.at("input_source_specifiers").get<specifiers_t>());
+          }
+          break;
+
+        case operation_type::shell_command_execution:
+          if (shell_command_handler_) {
+            auto shell_command = json.at("shell_command").get<std::string>();
+            shell_command_handler_->run(shell_command);
+          }
+          break;
+
+        case operation_type::send_user_command:
+          if (send_user_command_handler_) {
+            auto user_command = json.at("user_command").get<nlohmann::json>();
+            send_user_command_handler_->run(user_command);
+          }
+          break;
+
+        case operation_type::software_function:
+          if (auto h = weak_software_function_handler_.lock()) {
+            h->execute_software_function(json.at("software_function").get<software_function>());
+          }
+          break;
+
+        default:
+          break;
+      }
+    } catch (std::exception& e) {
+      logger::get_logger()->error("receiver: core_service message is corrupted");
+    }
+  }
+
 private:
   std::filesystem::path console_user_server_socket_file_path() const {
     return constants::get_console_user_server_socket_file_path(geteuid());
@@ -134,15 +222,6 @@ private:
     try {
       nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
       switch (json.at("operation_type").get<operation_type>()) {
-        case operation_type::get_user_core_configuration_file_path:
-          async_respond(peer_id,
-                        request_id,
-                        nlohmann::json{
-                            {"operation_type", operation_type::user_core_configuration_file_path},
-                            {"user_core_configuration_file_path", constants::get_user_core_configuration_file_path()},
-                        });
-          break;
-
         case operation_type::get_settings_window_guidance:
           if (auto m = weak_settings_window_guidance_manager_.lock()) {
             async_respond(peer_id,
@@ -170,110 +249,6 @@ private:
             async_respond_none(peer_id,
                                request_id);
           }
-          break;
-
-        case operation_type::core_service_daemon_state:
-          if (auto m = weak_settings_window_guidance_manager_.lock()) {
-            m->async_update_core_service_daemon_state(
-                json.at("core_service_daemon_state").get<core_service_daemon_state>());
-          }
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::check_for_updates:
-          set_check_for_updates_enabled(json.at("enabled").get<bool>());
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::register_menu_agent:
-          services_utility::register_menu_agent();
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::unregister_menu_agent:
-          services_utility::unregister_menu_agent();
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::register_multitouch_extension_agent:
-          services_utility::register_multitouch_extension_agent();
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::unregister_multitouch_extension_agent:
-          services_utility::unregister_multitouch_extension_agent();
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::register_notification_window_agent:
-          services_utility::register_notification_window_agent();
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::unregister_notification_window_agent:
-          services_utility::unregister_notification_window_agent();
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::frontmost_application_changed:
-          if (auto h = weak_software_function_handler_.lock()) {
-            auto app = json.at("frontmost_application").get<application>();
-            h->add_frontmost_application_history(app);
-          }
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::focused_ui_element_changed:
-          if (auto h = weak_software_function_handler_.lock()) {
-            auto element = json.at("focused_ui_element").get<focused_ui_element>();
-            h->set_focused_ui_element(element);
-          }
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::select_input_source:
-          if (input_source_selector_) {
-            using specifiers_t = std::vector<pqrs::osx::input_source_selector::specifier>;
-            input_source_selector_->async_select(json.at("input_source_specifiers").get<specifiers_t>());
-          }
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::shell_command_execution:
-          if (shell_command_handler_) {
-            auto shell_command = json.at("shell_command").get<std::string>();
-            shell_command_handler_->run(shell_command);
-          }
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::send_user_command:
-          if (send_user_command_handler_) {
-            auto user_command = json.at("user_command").get<nlohmann::json>();
-            send_user_command_handler_->run(user_command);
-          }
-          async_respond_none(peer_id,
-                             request_id);
-          break;
-
-        case operation_type::software_function:
-          if (auto h = weak_software_function_handler_.lock()) {
-            h->execute_software_function(json.at("software_function").get<software_function>());
-          }
-          async_respond_none(peer_id,
-                             request_id);
           break;
 
         default:
