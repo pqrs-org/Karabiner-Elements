@@ -547,7 +547,12 @@ private:
                     async_request_callback callback) {
     auto id = request_manager_.add(peer_id_value,
                                    timeout,
-                                   callback);
+                                   callback,
+                                   [this, peer_id_value] {
+                                     if (options_.invalidate_connection_on_request_error) {
+                                       close_peer(peer_id_value);
+                                     }
+                                   });
 
     peer->async_send_request(id,
                              data);

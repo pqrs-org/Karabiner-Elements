@@ -44,6 +44,11 @@ struct common_options {
 
     // Maximum time allowed for one async write operation.
     std::chrono::milliseconds write_timeout = std::chrono::milliseconds(5000);
+
+    // Whether request failures such as timeout should invalidate the current
+    // connection. This is useful for request/response protocols where a failed
+    // request means the stream state is no longer trustworthy.
+    bool invalidate_connection_on_request_error = true;
   };
 
   common_options() : common_options(initialization_parameters{}) {
@@ -55,7 +60,8 @@ struct common_options {
         heartbeat_interval(parameters.heartbeat_interval),
         heartbeat_timeout(parameters.heartbeat_timeout),
         read_timeout(parameters.read_timeout),
-        write_timeout(parameters.write_timeout) {
+        write_timeout(parameters.write_timeout),
+        invalidate_connection_on_request_error(parameters.invalidate_connection_on_request_error) {
   }
 
   size_t max_message_size;
@@ -64,17 +70,13 @@ struct common_options {
   std::chrono::milliseconds heartbeat_timeout;
   std::chrono::milliseconds read_timeout;
   std::chrono::milliseconds write_timeout;
+  bool invalidate_connection_on_request_error;
 };
 
 struct client_options final : public common_options {
   struct initialization_parameters final {
     // Interval used to retry client connect after a failure.
     std::chrono::milliseconds reconnect_interval = std::chrono::milliseconds(1000);
-
-    // Whether request failures such as timeout should invalidate the current
-    // connection. This is useful for request/response protocols where a failed
-    // request means the stream state is no longer trustworthy.
-    bool invalidate_connection_on_request_error = true;
   };
 
   client_options();
@@ -83,7 +85,6 @@ struct client_options final : public common_options {
                  const initialization_parameters& parameters);
 
   std::chrono::milliseconds reconnect_interval;
-  bool invalidate_connection_on_request_error;
 };
 
 struct server_options final : public common_options {
@@ -123,8 +124,7 @@ inline client_options::client_options(const common_options::initialization_param
 inline client_options::client_options(const common_options::initialization_parameters& common_parameters,
                                       const initialization_parameters& parameters)
     : common_options(common_parameters),
-      reconnect_interval(parameters.reconnect_interval),
-      invalidate_connection_on_request_error(parameters.invalidate_connection_on_request_error) {
+      reconnect_interval(parameters.reconnect_interval) {
 }
 
 inline server_options::server_options()
