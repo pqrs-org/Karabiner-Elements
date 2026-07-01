@@ -100,6 +100,10 @@ public:
         // Do nothing
       });
 
+      client_->request_received.connect([](auto, auto&&) {
+        // Do nothing
+      });
+
       client_->async_start();
 
       logger::get_logger()->debug("console_user_id_changed_client is started.");
