@@ -155,13 +155,13 @@ private:
 
             if (buffer &&
                 !buffer->empty()) {
-              handle_response(buffer);
+              handle_message(buffer);
             }
           });
         });
   }
 
-  void handle_response(pqrs::not_null_shared_ptr_t<std::vector<uint8_t>> buffer) const {
+  void handle_message(pqrs::not_null_shared_ptr_t<std::vector<uint8_t>> buffer) const {
     try {
       auto json = nlohmann::json::from_msgpack(*buffer);
       auto ot = json.at("operation_type").template get<operation_type>();
