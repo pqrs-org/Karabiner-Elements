@@ -104,7 +104,7 @@ private func staticSetCoreServiceVariable(_ count: FingerCount) {
       previousValue: previousFingerCount.totalPalmCount
     ),
   ] where gv.previousValue.value != gv.value {
-    libkrbn_core_service_client_async_set_variable(gv.name, Int32(gv.value))
+    libkrbn_core_service_daemon_client_async_set_variable(gv.name, Int32(gv.value))
 
     gv.previousValue.value = gv.value
   }
@@ -116,11 +116,11 @@ private func callback() {
     try await Task.sleep(nanoseconds: NSEC_PER_SEC)
 
     Task { @MainActor in
-      let status = libkrbn_core_service_client_get_status()
+      let status = libkrbn_core_service_daemon_client_get_status()
 
-      if status == libkrbn_core_service_client_status_connected {
+      if status == libkrbn_core_service_daemon_client_status_connected {
         MultitouchDeviceManager.shared.setCallback(true)
-        libkrbn_core_service_client_async_connect_multitouch_extension()
+        libkrbn_core_service_daemon_client_async_connect_multitouch_extension()
       } else {
         MultitouchDeviceManager.shared.setCallback(false)
       }
@@ -149,10 +149,10 @@ final class MECoreServiceClient {
   // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    libkrbn_enable_core_service_client()
+    libkrbn_enable_core_service_daemon_client()
 
-    libkrbn_register_core_service_client_status_changed_callback(callback)
+    libkrbn_register_core_service_daemon_client_status_changed_callback(callback)
 
-    libkrbn_core_service_client_async_start()
+    libkrbn_core_service_daemon_client_async_start()
   }
 }

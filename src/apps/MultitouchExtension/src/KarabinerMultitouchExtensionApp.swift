@@ -54,7 +54,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
   public func applicationDidFinishLaunching(_: Notification) {
     //
-    // Enable core_service_client
+    // Enable core_service_daemon_client
     //
 
     MECoreServiceClient.shared.start()

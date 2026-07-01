@@ -183,7 +183,7 @@ public:
           break;
       }
     } catch (std::exception& e) {
-      logger::get_logger()->error("receiver: core_service message is corrupted");
+      logger::get_logger()->error("receiver: core_service daemon message is corrupted");
     }
   }
 

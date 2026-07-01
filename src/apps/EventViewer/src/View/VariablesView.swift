@@ -21,7 +21,7 @@ struct VariablesView: View {
 
           Button(
             action: {
-              libkrbn_core_service_client_async_clear_user_variables()
+              libkrbn_core_service_daemon_client_async_clear_user_variables()
             },
             label: {
               Label("Clear user variables", systemImage: "clear")

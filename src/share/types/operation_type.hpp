@@ -39,7 +39,7 @@ enum class operation_type : uint8_t {
   frontmost_application_history,
   // event_viewer -> core_service (daemon)
   temporarily_ignore_all_devices,
-  get_manipulator_environment, // The core_service responds only if the client is code-signed with the same Team ID.
+  get_manipulator_environment, // The core_service daemon responds only if the client is code-signed with the same Team ID.
   // core_service (daemon) -> event_viewer
   manipulator_environment,
   // multitouch_extension -> core_service (daemon)

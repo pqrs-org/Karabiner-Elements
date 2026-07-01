@@ -34,18 +34,18 @@ final class NotificationWindowCoreServiceClient: ObservableObject {
   // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    libkrbn_enable_core_service_client()
+    libkrbn_enable_core_service_daemon_client()
 
-    libkrbn_register_core_service_client_notification_message_received_callback(
+    libkrbn_register_core_service_daemon_client_notification_message_received_callback(
       notificationMessageReceivedCallback)
 
-    libkrbn_core_service_client_async_start()
+    libkrbn_core_service_daemon_client_async_start()
 
     timerTask = Task { @MainActor in
-      libkrbn_core_service_client_async_get_notification_message()
+      libkrbn_core_service_daemon_client_async_get_notification_message()
 
       for await _ in timer {
-        libkrbn_core_service_client_async_get_notification_message()
+        libkrbn_core_service_daemon_client_async_get_notification_message()
       }
     }
   }

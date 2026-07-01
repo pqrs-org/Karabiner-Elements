@@ -3,7 +3,7 @@
 #include "libkrbn/impl/libkrbn_complex_modifications_assets_manager.hpp"
 #include "libkrbn/impl/libkrbn_configuration_monitor.hpp"
 #include "libkrbn/impl/libkrbn_console_user_server_client.hpp"
-#include "libkrbn/impl/libkrbn_core_service_client.hpp"
+#include "libkrbn/impl/libkrbn_core_service_daemon_client.hpp"
 #include "libkrbn/impl/libkrbn_dispatcher_client.hpp"
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
 #include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
@@ -151,21 +151,21 @@ public:
   }
 
   //
-  // core_service_client_
+  // core_service_daemon_client_
   //
 
-  void enable_core_service_client() {
-    if (!core_service_client_) {
-      core_service_client_ = std::make_shared<libkrbn_core_service_client>();
+  void enable_core_service_daemon_client() {
+    if (!core_service_daemon_client_) {
+      core_service_daemon_client_ = std::make_shared<libkrbn_core_service_daemon_client>();
     }
   }
 
-  void disable_core_service_client() {
-    core_service_client_ = nullptr;
+  void disable_core_service_daemon_client() {
+    core_service_daemon_client_ = nullptr;
   }
 
-  [[nodiscard]] std::shared_ptr<libkrbn_core_service_client> get_libkrbn_core_service_client() const {
-    return core_service_client_;
+  [[nodiscard]] std::shared_ptr<libkrbn_core_service_daemon_client> get_libkrbn_core_service_daemon_client() const {
+    return core_service_daemon_client_;
   }
 
   //
@@ -194,6 +194,6 @@ private:
   std::shared_ptr<libkrbn_file_monitors> file_monitors_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
   std::shared_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
-  std::shared_ptr<libkrbn_core_service_client> core_service_client_;
+  std::shared_ptr<libkrbn_core_service_daemon_client> core_service_daemon_client_;
   std::shared_ptr<libkrbn_console_user_server_client> console_user_server_client_;
 };

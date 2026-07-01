@@ -57,27 +57,27 @@ final class EVCoreServiceClient: ObservableObject {
   // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   public func start() {
-    libkrbn_enable_core_service_client()
+    libkrbn_enable_core_service_daemon_client()
 
-    libkrbn_register_core_service_client_status_changed_callback(statusChangedCallback)
+    libkrbn_register_core_service_daemon_client_status_changed_callback(statusChangedCallback)
 
-    libkrbn_register_core_service_client_manipulator_environment_received_callback(
+    libkrbn_register_core_service_daemon_client_manipulator_environment_received_callback(
       manipulatorEnvironmentReceivedCallback)
 
-    libkrbn_register_core_service_client_connected_devices_received_callback(
+    libkrbn_register_core_service_daemon_client_connected_devices_received_callback(
       connectedDevicesReceivedCallback)
 
-    libkrbn_core_service_client_async_start()
+    libkrbn_core_service_daemon_client_async_start()
   }
 
   public func startManipulatorEnvironment() {
     manipulatorEnvironmentStartCount += 1
     if manipulatorEnvironmentStartCount == 1 {
       manipulatorEnvironmentTimerTask = Task { @MainActor in
-        libkrbn_core_service_client_async_get_manipulator_environment()
+        libkrbn_core_service_daemon_client_async_get_manipulator_environment()
 
         for await _ in manipulatorEnvironmentTimer {
-          libkrbn_core_service_client_async_get_manipulator_environment()
+          libkrbn_core_service_daemon_client_async_get_manipulator_environment()
         }
       }
     }
@@ -96,10 +96,10 @@ final class EVCoreServiceClient: ObservableObject {
     connectedDevicesStartCount += 1
     if connectedDevicesStartCount == 1 {
       connectedDevicesTimerTask = Task { @MainActor in
-        libkrbn_core_service_client_async_get_connected_devices()
+        libkrbn_core_service_daemon_client_async_get_connected_devices()
 
         for await _ in connectedDevicesTimer {
-          libkrbn_core_service_client_async_get_connected_devices()
+          libkrbn_core_service_daemon_client_async_get_connected_devices()
         }
       }
     }
@@ -146,7 +146,7 @@ final class EVCoreServiceClient: ObservableObject {
 
   @Published var temporarilyIgnoreAllDevices: Bool = false {
     didSet {
-      libkrbn_core_service_client_async_temporarily_ignore_all_devices(temporarilyIgnoreAllDevices)
+      libkrbn_core_service_daemon_client_async_temporarily_ignore_all_devices(temporarilyIgnoreAllDevices)
     }
   }
 }

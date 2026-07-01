@@ -66,14 +66,14 @@ extension LibKrbn {
         return
       }
 
-      libkrbn_register_core_service_client_connected_devices_received_callback(
+      libkrbn_register_core_service_daemon_client_connected_devices_received_callback(
         connectedDevicesReceivedCallback)
 
       timerTask = Task { @MainActor in
-        libkrbn_core_service_client_async_get_connected_devices()
+        libkrbn_core_service_daemon_client_async_get_connected_devices()
 
         for await _ in timer {
-          libkrbn_core_service_client_async_get_connected_devices()
+          libkrbn_core_service_daemon_client_async_get_connected_devices()
         }
       }
     }

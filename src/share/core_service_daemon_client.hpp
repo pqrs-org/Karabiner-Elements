@@ -279,7 +279,7 @@ public:
    *
    * @param variables nlohmann::json::object which type is {[key: string]: number|boolean|string}.
    * @param processed A callback which is called when the request is processed.
-   *                  (When data is sent to core_service or error occurred)
+   *                  (When data is sent to core_service_daemon or error occurred)
    */
   void async_set_variables(const nlohmann::json& variables,
                            std::function<void()> processed = nullptr) const {

@@ -90,20 +90,20 @@ final class SettingsCoreServiceClient: ObservableObject {
   }
 
   public func start() {
-    libkrbn_enable_core_service_client()
+    libkrbn_enable_core_service_daemon_client()
 
-    libkrbn_register_core_service_client_system_variables_received_callback(
+    libkrbn_register_core_service_daemon_client_system_variables_received_callback(
       systemVariablesReceivedCallback)
 
-    libkrbn_core_service_client_async_start()
+    libkrbn_core_service_daemon_client_async_start()
   }
 
   public func startSystemVariablesMonitoring() {
     systemVariablesTimerTask = Task { @MainActor in
-      libkrbn_core_service_client_async_get_system_variables()
+      libkrbn_core_service_daemon_client_async_get_system_variables()
 
       for await _ in systemVariablesTimer {
-        libkrbn_core_service_client_async_get_system_variables()
+        libkrbn_core_service_daemon_client_async_get_system_variables()
       }
     }
   }
@@ -113,6 +113,6 @@ final class SettingsCoreServiceClient: ObservableObject {
   }
 
   public func setAppIcon(_ number: Int32) {
-    libkrbn_core_service_client_async_set_app_icon(number)
+    libkrbn_core_service_daemon_client_async_set_app_icon(number)
   }
 }

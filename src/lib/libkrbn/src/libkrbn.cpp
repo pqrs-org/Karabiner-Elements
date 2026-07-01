@@ -598,176 +598,176 @@ bool libkrbn_hid_value_monitor_observed() {
 // core_service_client
 //
 
-void libkrbn_enable_core_service_client() {
+void libkrbn_enable_core_service_daemon_client() {
   if (auto manager = libkrbn_components_manager_) {
-    manager->enable_core_service_client();
+    manager->enable_core_service_daemon_client();
   }
 }
 
-void libkrbn_disable_core_service_client() {
+void libkrbn_disable_core_service_daemon_client() {
   if (auto manager = libkrbn_components_manager_) {
-    manager->disable_core_service_client();
+    manager->disable_core_service_daemon_client();
   }
 }
 
-void libkrbn_core_service_client_async_start() {
+void libkrbn_core_service_daemon_client_async_start() {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_start();
     }
   }
 }
 
-void libkrbn_register_core_service_client_status_changed_callback(libkrbn_core_service_client_status_changed_t callback) {
+void libkrbn_register_core_service_daemon_client_status_changed_callback(libkrbn_core_service_daemon_client_status_changed_t callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->register_libkrbn_core_service_client_status_changed_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->register_libkrbn_core_service_daemon_client_status_changed_callback(callback);
     }
   }
 }
 
-void libkrbn_unregister_core_service_client_status_changed_callback(libkrbn_core_service_client_status_changed_t callback) {
+void libkrbn_unregister_core_service_daemon_client_status_changed_callback(libkrbn_core_service_daemon_client_status_changed_t callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->unregister_libkrbn_core_service_client_status_changed_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->unregister_libkrbn_core_service_daemon_client_status_changed_callback(callback);
     }
   }
 }
 
-libkrbn_core_service_client_status libkrbn_core_service_client_get_status() {
+libkrbn_core_service_daemon_client_status libkrbn_core_service_daemon_client_get_status() {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       return c->get_status();
     }
   }
 
-  return libkrbn_core_service_client_status_none;
+  return libkrbn_core_service_daemon_client_status_none;
 }
 
-void libkrbn_core_service_client_async_temporarily_ignore_all_devices(bool value) {
+void libkrbn_core_service_daemon_client_async_temporarily_ignore_all_devices(bool value) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_temporarily_ignore_all_devices(value);
     }
   }
 }
 
-void libkrbn_core_service_client_async_get_manipulator_environment() {
+void libkrbn_core_service_daemon_client_async_get_manipulator_environment() {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_get_manipulator_environment();
     }
   }
 }
 
-void libkrbn_register_core_service_client_manipulator_environment_received_callback(libkrbn_core_service_client_manipulator_environment_received_t callback) {
+void libkrbn_register_core_service_daemon_client_manipulator_environment_received_callback(libkrbn_core_service_daemon_client_manipulator_environment_received_t callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->register_libkrbn_core_service_client_manipulator_environment_received_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->register_libkrbn_core_service_daemon_client_manipulator_environment_received_callback(callback);
     }
   }
 }
 
-void libkrbn_unregister_core_service_client_manipulator_environment_received_callback(libkrbn_core_service_client_manipulator_environment_received_t callback) {
+void libkrbn_unregister_core_service_daemon_client_manipulator_environment_received_callback(libkrbn_core_service_daemon_client_manipulator_environment_received_t callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->unregister_libkrbn_core_service_client_manipulator_environment_received_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->unregister_libkrbn_core_service_daemon_client_manipulator_environment_received_callback(callback);
     }
   }
 }
 
-void libkrbn_core_service_client_async_get_connected_devices() {
+void libkrbn_core_service_daemon_client_async_get_connected_devices() {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_get_connected_devices();
     }
   }
 }
 
-void libkrbn_register_core_service_client_connected_devices_received_callback(libkrbn_core_service_client_connected_devices_received_t _Nonnull callback) {
+void libkrbn_register_core_service_daemon_client_connected_devices_received_callback(libkrbn_core_service_daemon_client_connected_devices_received_t _Nonnull callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->register_libkrbn_core_service_client_connected_devices_received_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->register_libkrbn_core_service_daemon_client_connected_devices_received_callback(callback);
     }
   }
 }
 
-void libkrbn_unregister_core_service_client_connected_devices_received_callback(libkrbn_core_service_client_connected_devices_received_t _Nonnull callback) {
+void libkrbn_unregister_core_service_daemon_client_connected_devices_received_callback(libkrbn_core_service_daemon_client_connected_devices_received_t _Nonnull callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->unregister_libkrbn_core_service_client_connected_devices_received_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->unregister_libkrbn_core_service_daemon_client_connected_devices_received_callback(callback);
     }
   }
 }
 
-void libkrbn_core_service_client_async_get_notification_message() {
+void libkrbn_core_service_daemon_client_async_get_notification_message() {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_get_notification_message();
     }
   }
 }
 
-void libkrbn_register_core_service_client_notification_message_received_callback(libkrbn_core_service_client_notification_message_received_t _Nonnull callback) {
+void libkrbn_register_core_service_daemon_client_notification_message_received_callback(libkrbn_core_service_daemon_client_notification_message_received_t _Nonnull callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->register_libkrbn_core_service_client_notification_message_received_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->register_libkrbn_core_service_daemon_client_notification_message_received_callback(callback);
     }
   }
 }
 
-void libkrbn_unregister_core_service_client_notification_message_received_callback(libkrbn_core_service_client_notification_message_received_t _Nonnull callback) {
+void libkrbn_unregister_core_service_daemon_client_notification_message_received_callback(libkrbn_core_service_daemon_client_notification_message_received_t _Nonnull callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->unregister_libkrbn_core_service_client_notification_message_received_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->unregister_libkrbn_core_service_daemon_client_notification_message_received_callback(callback);
     }
   }
 }
 
-void libkrbn_core_service_client_async_get_system_variables() {
+void libkrbn_core_service_daemon_client_async_get_system_variables() {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_get_system_variables();
     }
   }
 }
 
-void libkrbn_register_core_service_client_system_variables_received_callback(libkrbn_core_service_client_system_variables_received_t _Nonnull callback) {
+void libkrbn_register_core_service_daemon_client_system_variables_received_callback(libkrbn_core_service_daemon_client_system_variables_received_t _Nonnull callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->register_libkrbn_core_service_client_system_variables_received_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->register_libkrbn_core_service_daemon_client_system_variables_received_callback(callback);
     }
   }
 }
 
-void libkrbn_unregister_core_service_client_system_variables_received_callback(libkrbn_core_service_client_system_variables_received_t _Nonnull callback) {
+void libkrbn_unregister_core_service_daemon_client_system_variables_received_callback(libkrbn_core_service_daemon_client_system_variables_received_t _Nonnull callback) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
-      c->unregister_libkrbn_core_service_client_system_variables_received_callback(callback);
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
+      c->unregister_libkrbn_core_service_daemon_client_system_variables_received_callback(callback);
     }
   }
 }
 
-void libkrbn_core_service_client_async_connect_multitouch_extension() {
+void libkrbn_core_service_daemon_client_async_connect_multitouch_extension() {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_connect_multitouch_extension();
     }
   }
 }
 
-void libkrbn_core_service_client_async_set_app_icon(int number) {
+void libkrbn_core_service_daemon_client_async_set_app_icon(int number) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_set_app_icon(number);
     }
   }
 }
 
-void libkrbn_core_service_client_async_set_variable(const char* name,
+void libkrbn_core_service_daemon_client_async_set_variable(const char* name,
                                                     int value) {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       if (name) {
         c->async_set_variable(name, value);
       }
@@ -775,9 +775,9 @@ void libkrbn_core_service_client_async_set_variable(const char* name,
   }
 }
 
-void libkrbn_core_service_client_async_clear_user_variables() {
+void libkrbn_core_service_daemon_client_async_clear_user_variables() {
   if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_client()) {
+    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
       c->async_clear_user_variables();
     }
   }

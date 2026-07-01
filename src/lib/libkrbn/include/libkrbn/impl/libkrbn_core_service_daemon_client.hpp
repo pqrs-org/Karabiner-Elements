@@ -4,25 +4,25 @@
 #include "libkrbn/libkrbn.h"
 #include "libkrbn_callback_manager.hpp"
 
-class libkrbn_core_service_client final : public pqrs::dispatcher::extra::dispatcher_client {
+class libkrbn_core_service_daemon_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  libkrbn_core_service_client(const libkrbn_core_service_client&) = delete;
+  libkrbn_core_service_daemon_client(const libkrbn_core_service_daemon_client&) = delete;
 
-  libkrbn_core_service_client()
+  libkrbn_core_service_daemon_client()
       : dispatcher_client(),
-        status_(libkrbn_core_service_client_status_none) {
+        status_(libkrbn_core_service_daemon_client_status_none) {
     core_service_daemon_client_ = std::make_unique<krbn::core_service_daemon_client>();
 
     core_service_daemon_client_->connected.connect([this] {
-      set_status(libkrbn_core_service_client_status_connected);
+      set_status(libkrbn_core_service_daemon_client_status_connected);
     });
 
     core_service_daemon_client_->connect_failed.connect([this](auto&& error_code) {
-      set_status(libkrbn_core_service_client_status_connect_failed);
+      set_status(libkrbn_core_service_daemon_client_status_connect_failed);
     });
 
     core_service_daemon_client_->closed.connect([this] {
-      set_status(libkrbn_core_service_client_status_closed);
+      set_status(libkrbn_core_service_daemon_client_status_closed);
     });
 
     core_service_daemon_client_->received.connect([this](auto&& operation_type,
@@ -72,12 +72,12 @@ public:
             break;
         }
       } catch (std::exception& e) {
-        krbn::logger::get_logger()->error("libkrbn_core_service_client received data is corrupted");
+        krbn::logger::get_logger()->error("libkrbn_core_service_daemon_client received data is corrupted");
       }
     });
   }
 
-  ~libkrbn_core_service_client() {
+  ~libkrbn_core_service_daemon_client() {
     detach_from_dispatcher([this] {
       core_service_daemon_client_ = nullptr;
     });
@@ -87,7 +87,7 @@ public:
     core_service_daemon_client_->async_start();
   }
 
-  [[nodiscard]] libkrbn_core_service_client_status get_status() const {
+  [[nodiscard]] libkrbn_core_service_daemon_client_status get_status() const {
     return status_;
   }
 
@@ -143,61 +143,61 @@ public:
     wait->wait_notice();
   }
 
-  void register_libkrbn_core_service_client_status_changed_callback(libkrbn_core_service_client_status_changed_t callback) {
+  void register_libkrbn_core_service_daemon_client_status_changed_callback(libkrbn_core_service_daemon_client_status_changed_t callback) {
     enqueue_to_dispatcher([this, callback] {
       status_changed_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_core_service_client_status_changed_callback(libkrbn_core_service_client_status_changed_t callback) {
+  void unregister_libkrbn_core_service_daemon_client_status_changed_callback(libkrbn_core_service_daemon_client_status_changed_t callback) {
     enqueue_to_dispatcher([this, callback] {
       status_changed_callback_manager_.unregister_callback(callback);
     });
   }
 
-  void register_libkrbn_core_service_client_manipulator_environment_received_callback(libkrbn_core_service_client_manipulator_environment_received_t callback) {
+  void register_libkrbn_core_service_daemon_client_manipulator_environment_received_callback(libkrbn_core_service_daemon_client_manipulator_environment_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       manipulator_environment_received_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_core_service_client_manipulator_environment_received_callback(libkrbn_core_service_client_manipulator_environment_received_t callback) {
+  void unregister_libkrbn_core_service_daemon_client_manipulator_environment_received_callback(libkrbn_core_service_daemon_client_manipulator_environment_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       manipulator_environment_received_callback_manager_.unregister_callback(callback);
     });
   }
 
-  void register_libkrbn_core_service_client_connected_devices_received_callback(libkrbn_core_service_client_connected_devices_received_t callback) {
+  void register_libkrbn_core_service_daemon_client_connected_devices_received_callback(libkrbn_core_service_daemon_client_connected_devices_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       connected_devices_received_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_core_service_client_connected_devices_received_callback(libkrbn_core_service_client_connected_devices_received_t callback) {
+  void unregister_libkrbn_core_service_daemon_client_connected_devices_received_callback(libkrbn_core_service_daemon_client_connected_devices_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       connected_devices_received_callback_manager_.unregister_callback(callback);
     });
   }
 
-  void register_libkrbn_core_service_client_notification_message_received_callback(libkrbn_core_service_client_notification_message_received_t callback) {
+  void register_libkrbn_core_service_daemon_client_notification_message_received_callback(libkrbn_core_service_daemon_client_notification_message_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       notification_message_received_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_core_service_client_notification_message_received_callback(libkrbn_core_service_client_notification_message_received_t callback) {
+  void unregister_libkrbn_core_service_daemon_client_notification_message_received_callback(libkrbn_core_service_daemon_client_notification_message_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       notification_message_received_callback_manager_.unregister_callback(callback);
     });
   }
 
-  void register_libkrbn_core_service_client_system_variables_received_callback(libkrbn_core_service_client_system_variables_received_t callback) {
+  void register_libkrbn_core_service_daemon_client_system_variables_received_callback(libkrbn_core_service_daemon_client_system_variables_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       system_variables_received_callback_manager_.register_callback(callback);
     });
   }
 
-  void unregister_libkrbn_core_service_client_system_variables_received_callback(libkrbn_core_service_client_system_variables_received_t callback) {
+  void unregister_libkrbn_core_service_daemon_client_system_variables_received_callback(libkrbn_core_service_daemon_client_system_variables_received_t callback) {
     enqueue_to_dispatcher([this, callback] {
       system_variables_received_callback_manager_.unregister_callback(callback);
     });
@@ -205,7 +205,7 @@ public:
 
 private:
   // This method should be called in the shared dispatcher thread.
-  void set_status(libkrbn_core_service_client_status status) {
+  void set_status(libkrbn_core_service_daemon_client_status status) {
     status_ = status;
 
     for (const auto& c : status_changed_callback_manager_.get_callbacks()) {
@@ -214,10 +214,10 @@ private:
   }
 
   std::unique_ptr<krbn::core_service_daemon_client> core_service_daemon_client_;
-  libkrbn_core_service_client_status status_;
-  libkrbn_callback_manager<libkrbn_core_service_client_status_changed_t> status_changed_callback_manager_;
-  libkrbn_callback_manager<libkrbn_core_service_client_manipulator_environment_received_t> manipulator_environment_received_callback_manager_;
-  libkrbn_callback_manager<libkrbn_core_service_client_connected_devices_received_t> connected_devices_received_callback_manager_;
-  libkrbn_callback_manager<libkrbn_core_service_client_notification_message_received_t> notification_message_received_callback_manager_;
-  libkrbn_callback_manager<libkrbn_core_service_client_system_variables_received_t> system_variables_received_callback_manager_;
+  libkrbn_core_service_daemon_client_status status_;
+  libkrbn_callback_manager<libkrbn_core_service_daemon_client_status_changed_t> status_changed_callback_manager_;
+  libkrbn_callback_manager<libkrbn_core_service_daemon_client_manipulator_environment_received_t> manipulator_environment_received_callback_manager_;
+  libkrbn_callback_manager<libkrbn_core_service_daemon_client_connected_devices_received_t> connected_devices_received_callback_manager_;
+  libkrbn_callback_manager<libkrbn_core_service_daemon_client_notification_message_received_t> notification_message_received_callback_manager_;
+  libkrbn_callback_manager<libkrbn_core_service_daemon_client_system_variables_received_t> system_variables_received_callback_manager_;
 };
