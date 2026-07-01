@@ -50,7 +50,7 @@ public:
 
       client_ = std::make_unique<pqrs::unix_domain_stream::client>(
           weak_dispatcher_,
-          constants::get_karabiner_core_service_socket_file_path(),
+          constants::get_karabiner_core_service_daemon_socket_file_path(),
           constants::get_unix_domain_stream_client_options(),
           [](const auto& peer_credentials) {
             return get_shared_codesign_manager()->same_team_id(peer_credentials.pid);

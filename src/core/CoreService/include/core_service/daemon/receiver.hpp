@@ -34,7 +34,7 @@ public:
       : dispatcher_client(),
         current_console_user_id_(current_console_user_id),
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
-    prepare_karabiner_core_service_socket_directory();
+    prepare_karabiner_core_service_daemon_socket_directory();
 
     if (auto m = weak_core_service_daemon_state_manager_.lock()) {
       core_service_daemon_state_manager_connection_ = m->core_service_daemon_state_changed.connect([this](const auto& core_service_daemon_state) {
@@ -48,7 +48,7 @@ public:
     // Setup server_
     //
 
-    auto socket_file_path = karabiner_core_service_socket_file_path();
+    auto socket_file_path = karabiner_core_service_daemon_socket_file_path();
 
     server_ = std::make_shared<pqrs::unix_domain_stream::server>(
         weak_dispatcher_,
@@ -84,7 +84,7 @@ public:
 
       // If the socket directory is deleted for any reason,
       // bind_failed will be triggered, so recreate the directory each time.
-      prepare_karabiner_core_service_socket_directory();
+      prepare_karabiner_core_service_daemon_socket_directory();
     });
 
     server_->closed.connect([] {
@@ -546,11 +546,11 @@ private:
         when_now() + std::chrono::seconds(1));
   }
 
-  std::filesystem::path karabiner_core_service_socket_file_path() const {
-    return constants::get_karabiner_core_service_socket_file_path();
+  std::filesystem::path karabiner_core_service_daemon_socket_file_path() const {
+    return constants::get_karabiner_core_service_daemon_socket_file_path();
   }
 
-  void prepare_karabiner_core_service_socket_directory() const {
+  void prepare_karabiner_core_service_daemon_socket_directory() const {
     filesystem_utility::prepare_system_directories(current_console_user_id_);
   }
 
