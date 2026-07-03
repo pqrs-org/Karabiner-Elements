@@ -52,7 +52,7 @@ public:
     session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
     session_monitor_->on_console_changed.connect([this](auto&& on_console) {
-      logger::get_logger()->info("on_console_changed: on_console:{}", on_console);
+      logger::get_logger()->debug("on_console_changed: on_console:{}", on_console);
 
       on_console_ = on_console;
 

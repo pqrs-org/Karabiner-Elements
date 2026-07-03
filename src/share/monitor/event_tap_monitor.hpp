@@ -56,7 +56,7 @@ public:
         event_tap_ = nullptr;
       }
 
-      logger::get_logger()->info("event_tap_monitor terminated");
+      logger::get_logger()->debug("event_tap_monitor terminated");
     });
 
     cf_run_loop_thread_->terminate();
@@ -69,7 +69,7 @@ public:
         std::lock_guard<std::mutex> lock(event_tap_mutex_);
 
         if (event_tap_) {
-          logger::get_logger()->info("event_tap_monitor start is skipped (already started)");
+          logger::get_logger()->debug("event_tap_monitor start is skipped (already started)");
           return;
         }
       }
@@ -98,7 +98,7 @@ public:
                 CGEventMaskBit(static_cast<CGEventType>(NX_SYSDEFINED));
       }
 
-      logger::get_logger()->info("event_tap_monitor start (enable_cgeventtap_fallback={0})",
+      logger::get_logger()->debug("event_tap_monitor start (enable_cgeventtap_fallback={0})",
                                  cgeventtap_fallback_enabled_);
 
       auto event_tap = pqrs::cf::adopt_cf_ptr(CGEventTapCreate(kCGHIDEventTap,
@@ -124,7 +124,7 @@ public:
 
             cf_run_loop_thread_->wake();
 
-            logger::get_logger()->info("event_tap_monitor initialized");
+            logger::get_logger()->debug("event_tap_monitor initialized");
           } else {
             logger::get_logger()->error("event_tap_monitor failed to create run_loop_source");
 
@@ -327,7 +327,7 @@ private:
     switch (type) {
       case kCGEventTapDisabledByTimeout:
       case kCGEventTapDisabledByUserInput:
-        logger::get_logger()->info("Re-enable event_tap_");
+        logger::get_logger()->debug("Re-enable event_tap_");
         enable_event_tap(true, "callback");
         break;
 

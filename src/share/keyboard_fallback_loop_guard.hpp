@@ -27,7 +27,7 @@ public:
         return true;
       }
 
-      logger::get_logger()->info("event_tap_monitor keyboard fallback resumed");
+      logger::get_logger()->debug("event_tap_monitor keyboard fallback resumed");
       suspended_until_ = std::nullopt;
       timestamps_.clear();
     }

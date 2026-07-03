@@ -27,7 +27,7 @@ public:
           if (*serial_number == "pqrs.org:Karabiner-DriverKit-VirtualHIDKeyboard") {
             set_property_timer_.start(
                 [this, registry_entry_id, serial_number] {
-                  logger::get_logger()->info("hid_event_system_monitor set_caps_lock_delay_override for {0}", *serial_number);
+                  logger::get_logger()->debug("hid_event_system_monitor set_caps_lock_delay_override for {0}", *serial_number);
 
                   client_.reload_service_clients();
                   client_.set_caps_lock_delay_override(registry_entry_id, 0);

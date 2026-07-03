@@ -26,7 +26,7 @@ public:
         if (e.get_usage_page() == pqrs::hid::usage_page::leds &&
             e.get_usage() == pqrs::hid::usage::led::caps_lock &&
             e.get_type() == pqrs::osx::iokit_hid_element_type::output) {
-          logger::get_logger()->info(
+          logger::get_logger()->debug(
               "caps lock is found on {0}",
               iokit_utility::make_device_name(*device_));
 
@@ -68,7 +68,7 @@ public:
             },
             std::chrono::milliseconds(3000));
 
-        logger::get_logger()->info(
+        logger::get_logger()->debug(
             "caps_lock_led_state_manager is started: {0}",
             iokit_utility::make_device_name(*device_));
       }
@@ -82,7 +82,7 @@ public:
 
         timer_.stop();
 
-        logger::get_logger()->info(
+        logger::get_logger()->debug(
             "caps_lock_led_state_manager is stopped: {0}",
             iokit_utility::make_device_name(*device_));
       }

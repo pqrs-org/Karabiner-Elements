@@ -76,7 +76,7 @@ int daemon() {
                                                 reinterpret_cast<task_policy_t>(&qosinfo),
                                                 TASK_QOS_POLICY_COUNT);
     if (kr) {
-      logger::get_logger()->info("task_policy_set is called.");
+      logger::get_logger()->debug("task_policy_set is called.");
     } else {
       logger::get_logger()->warn("task_policy_set error: {0}", kr);
     }

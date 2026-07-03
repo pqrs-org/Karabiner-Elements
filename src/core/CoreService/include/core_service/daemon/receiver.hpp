@@ -67,7 +67,7 @@ public:
       logger::get_logger()->debug("receiver: bound");
 
       auto chown_uid = current_console_user_id_.value_or(uid_t(0));
-      logger::get_logger()->info("receiver: chown socket: {0}", chown_uid);
+      logger::get_logger()->debug("receiver: chown socket: {0}", chown_uid);
       if (!filesystem_utility::chown(socket_file_path, chown_uid, 0)) {
         return;
       }
