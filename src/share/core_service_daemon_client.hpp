@@ -145,7 +145,7 @@ public:
             {"system_preferences_properties", *properties},
         };
 
-        async_send_message(std::move(json));
+        async_request(std::move(json));
       }
     });
   }
@@ -159,7 +159,7 @@ public:
           {"accessibility_process_trusted", accessibility_process_trusted},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -170,7 +170,7 @@ public:
           {"frontmost_application", application},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -181,7 +181,7 @@ public:
           {"focused_ui_element", focused_ui_element},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -193,7 +193,7 @@ public:
             {"input_source_properties", *properties},
         };
 
-        async_send_message(std::move(json));
+        async_request(std::move(json));
       }
     });
   }
@@ -205,7 +205,7 @@ public:
           {"user_core_configuration_file_path", user_core_configuration_file_path},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -216,7 +216,7 @@ public:
           {"value", value},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -226,7 +226,7 @@ public:
           {"operation_type", operation_type::get_manipulator_environment},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -236,7 +236,7 @@ public:
           {"operation_type", operation_type::get_connected_devices},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -246,7 +246,7 @@ public:
           {"operation_type", operation_type::get_notification_message},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -256,7 +256,7 @@ public:
           {"operation_type", operation_type::get_system_variables},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -266,7 +266,7 @@ public:
           {"operation_type", operation_type::get_multitouch_extension_variables},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -276,7 +276,7 @@ public:
           {"operation_type", operation_type::connect_multitouch_extension},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -287,7 +287,7 @@ public:
           {"number", number},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -306,8 +306,8 @@ public:
           {"variables", variables},
       };
 
-      async_send_message(std::move(json),
-                         processed);
+      async_request(std::move(json),
+                    processed);
     });
   }
 
@@ -317,13 +317,13 @@ public:
           {"operation_type", operation_type::clear_user_variables},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
 private:
-  void async_send_message(nlohmann::json&& json,
-                          std::function<void()> processed = nullptr) const {
+  void async_request(nlohmann::json&& json,
+                     std::function<void()> processed = nullptr) const {
     if (!client_) {
       return;
     }

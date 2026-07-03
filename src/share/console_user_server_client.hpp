@@ -128,7 +128,7 @@ public:
           {"operation_type", operation_type::get_settings_window_guidance},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
@@ -139,12 +139,12 @@ public:
           {"operation_type", operation_type::get_frontmost_application_history},
       };
 
-      async_send_message(std::move(json));
+      async_request(std::move(json));
     });
   }
 
 private:
-  void async_send_message(nlohmann::json&& json) const {
+  void async_request(nlohmann::json&& json) const {
     if (!client_) {
       return;
     }

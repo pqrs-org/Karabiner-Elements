@@ -54,7 +54,7 @@ public:
           connection_ready_ = true;
 
           connected();
-          async_send_pending_console_user_id_changed();
+          async_deliver_pending_console_user_id_changed();
         });
       });
 
@@ -116,7 +116,7 @@ public:
           .on_console = on_console,
       };
 
-      async_send_pending_console_user_id_changed();
+      async_deliver_pending_console_user_id_changed();
     });
   }
 
@@ -145,7 +145,7 @@ private:
     console_user_id_changed_request_in_flight_ = false;
   }
 
-  void async_send_pending_console_user_id_changed() {
+  void async_deliver_pending_console_user_id_changed() {
     if (!client_ ||
         !connection_ready_ ||
         !pending_console_user_id_changed_ ||
@@ -177,7 +177,7 @@ private:
             if (pending_console_user_id_changed_ == state) {
               pending_console_user_id_changed_ = std::nullopt;
             } else {
-              async_send_pending_console_user_id_changed();
+              async_deliver_pending_console_user_id_changed();
             }
           });
         });
