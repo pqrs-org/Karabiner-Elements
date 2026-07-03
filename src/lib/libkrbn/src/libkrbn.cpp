@@ -145,18 +145,6 @@ void libkrbn_launch_uninstaller() {
   krbn::application_launcher::launch_uninstaller();
 }
 
-bool libkrbn_driver_running() {
-  return pqrs::karabiner::driverkit::virtual_hid_device_service::utility::driver_running();
-}
-
-bool libkrbn_virtual_hid_keyboard_exists() {
-  return pqrs::karabiner::driverkit::virtual_hid_device_service::utility::virtual_hid_keyboard_exists();
-}
-
-bool libkrbn_virtual_hid_pointing_exists() {
-  return pqrs::karabiner::driverkit::virtual_hid_device_service::utility::virtual_hid_pointing_exists();
-}
-
 bool libkrbn_system_core_configuration_file_path_exists() {
   return krbn::filesystem_utility::exists(krbn::constants::get_system_core_configuration_file_path());
 }

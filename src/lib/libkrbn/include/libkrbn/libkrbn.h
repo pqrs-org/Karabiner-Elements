@@ -54,9 +54,6 @@ void libkrbn_killall_settings(void);
 void libkrbn_killall_system_settings(void);
 void libkrbn_launch_uninstaller(void);
 
-bool libkrbn_driver_running(void);
-bool libkrbn_virtual_hid_keyboard_exists(void);
-bool libkrbn_virtual_hid_pointing_exists(void);
 bool libkrbn_system_core_configuration_file_path_exists(void);
 
 bool libkrbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists(void);
