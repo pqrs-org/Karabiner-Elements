@@ -232,7 +232,43 @@ int main() {
 
     c.wait_until(std::chrono::milliseconds(0));
 
+    expect(c.manager.get_guidance_state().get_current_setup() == krbn::settings_window_guidance_setup::none);
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+
+    c.wait_until(std::chrono::milliseconds(3000));
+
     expect(c.manager.get_guidance_state().get_current_setup() == krbn::settings_window_guidance_setup::driver_extension);
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+  };
+
+  "settings_window_guidance_manager driver_extension setup ignores short deactivation"_test = [] {
+    auto c = manager_test_context(manager_test_context::initialization_parameters{
+        .enabled = true,
+        .running = true,
+    });
+    c.manager.async_start();
+    c.wait_until(std::chrono::milliseconds(0));
+
+    c.manager.async_update_core_service_daemon_state(make_core_service_daemon_state(core_service_daemon_state_initialization_parameters{
+        .iohid_listen_event_allowed = true,
+        .accessibility_process_trusted = true,
+        .driver_activated = false,
+    }));
+
+    c.wait_until(std::chrono::milliseconds(1000));
+
+    expect(c.manager.get_guidance_state().get_current_setup() == krbn::settings_window_guidance_setup::none);
+    expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
+
+    c.manager.async_update_core_service_daemon_state(make_core_service_daemon_state(core_service_daemon_state_initialization_parameters{
+        .iohid_listen_event_allowed = true,
+        .accessibility_process_trusted = true,
+        .driver_activated = true,
+    }));
+
+    c.wait_until(std::chrono::milliseconds(5000));
+
+    expect(c.manager.get_guidance_state().get_current_setup() == krbn::settings_window_guidance_setup::none);
     expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::none);
   };
 

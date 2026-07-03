@@ -189,6 +189,19 @@ private:
     virtual_hid_device_service_client_connected_ = state.get_virtual_hid_device_service_client_connected();
 
     //
+    // driver_activated_
+    //
+
+    if (state.get_driver_activated() != std::optional<bool>(false)) {
+      driver_not_activated_started_at_ = std::nullopt;
+    } else {
+      if (driver_activated_ != state.get_driver_activated()) {
+        driver_not_activated_started_at_ = when_now();
+      }
+    }
+    driver_activated_ = state.get_driver_activated();
+
+    //
     // driver_connected_
     //
 
@@ -227,7 +240,8 @@ private:
       return settings_window_guidance_setup::input_monitoring;
     }
 
-    if (core_service_daemon_state_.get_driver_activated() == std::optional<bool>(false)) {
+    if (driver_not_activated_started_at_ &&
+        when_now() - *driver_not_activated_started_at_ >= std::chrono::seconds(3)) {
       return settings_window_guidance_setup::driver_extension;
     }
 
@@ -325,6 +339,10 @@ private:
   // For settings_window_guidance_alert::virtual_hid_device_service_client_not_connected
   std::optional<bool> virtual_hid_device_service_client_connected_;
   std::optional<pqrs::dispatcher::time_point> virtual_hid_device_service_client_not_connected_started_at_;
+
+  // For settings_window_guidance_setup::driver_extension
+  std::optional<bool> driver_activated_;
+  std::optional<pqrs::dispatcher::time_point> driver_not_activated_started_at_;
 
   // For settings_window_guidance_alert::driver_not_connected
   std::optional<bool> driver_connected_;
