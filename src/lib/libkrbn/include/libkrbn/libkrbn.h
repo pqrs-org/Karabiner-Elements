@@ -70,18 +70,10 @@ void libkrbn_get_momentary_switch_event_json_string(char* _Nonnull buffer,
                                                     size_t length,
                                                     int32_t usage_page,
                                                     int32_t usage);
-void libkrbn_get_momentary_switch_event_usage_name(char* _Nonnull buffer,
-                                                   size_t length,
-                                                   int32_t usage_page,
-                                                   int32_t usage);
 void libkrbn_get_modifier_flag_name(char* _Nonnull buffer,
                                     size_t length,
                                     int32_t usage_page,
                                     int32_t usage);
-void libkrbn_get_simple_modification_json_string(char* _Nonnull buffer,
-                                                 size_t length,
-                                                 int32_t usage_page,
-                                                 int32_t usage);
 
 //
 // libkrbn_core_configuration

@@ -212,25 +212,6 @@ void libkrbn_get_momentary_switch_event_json_string(char* buffer,
   strlcpy(buffer, json.dump().c_str(), length);
 }
 
-void libkrbn_get_momentary_switch_event_usage_name(char* buffer,
-                                                   size_t length,
-                                                   int32_t usage_page,
-                                                   int32_t usage) {
-  strlcpy(buffer, "", length);
-
-  auto json = nlohmann::json(krbn::momentary_switch_event(pqrs::hid::usage_page::value_t(usage_page),
-                                                          pqrs::hid::usage::value_t(usage)));
-  if (json.is_null()) {
-    json = nlohmann::json::object({
-        {"usage", usage},
-    });
-  }
-
-  for (const auto& [key, value] : json.items()) {
-    strlcpy(buffer, value.dump().c_str(), length);
-  }
-}
-
 void libkrbn_get_modifier_flag_name(char* buffer,
                                     size_t length,
                                     int32_t usage_page,
@@ -246,37 +227,6 @@ void libkrbn_get_modifier_flag_name(char* buffer,
   }
 
   strlcpy(buffer, "", length);
-}
-
-void libkrbn_get_simple_modification_json_string(char* buffer,
-                                                 size_t length,
-                                                 int32_t usage_page,
-                                                 int32_t usage) {
-  //
-  // Skip pqrs::hid::usage::button::button_1 to avoid disabling left click
-  //
-
-  if (pqrs::hid::usage_page::value_t(usage_page) == pqrs::hid::usage_page::button &&
-      pqrs::hid::usage::value_t(usage) == pqrs::hid::usage::button::button_1) {
-    strlcpy(buffer, "", length);
-    return;
-  }
-
-  //
-  // Create json
-  //
-
-  auto json = nlohmann::json(krbn::momentary_switch_event(pqrs::hid::usage_page::value_t(usage_page),
-                                                          pqrs::hid::usage::value_t(usage)));
-  if (json.is_null()) {
-    strlcpy(buffer, "", length);
-
-  } else {
-    json = nlohmann::json::object({
-        {"from", json},
-    });
-    strlcpy(buffer, json.dump().c_str(), length);
-  }
 }
 
 //
