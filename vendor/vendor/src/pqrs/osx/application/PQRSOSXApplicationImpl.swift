@@ -59,15 +59,37 @@ func PQRSOSXApplicationStop() {
   }
 }
 
-@_cdecl("pqrs_osx_application_enable_stop_on_terminate")
-func PQRSOSXApplicationEnableStopOnTerminate() {
-  NSApplication.shared.delegate = applicationDelegate
+@_cdecl("pqrs_osx_application_set_should_terminate_callback")
+func PQRSOSXApplicationSetShouldTerminateCallback(
+  _ callback: pqrs_osx_application_should_terminate_callback_t?
+) {
+  if let callback {
+    applicationDelegate.shouldTerminateCallback = callback
+    NSApplication.shared.delegate = applicationDelegate
+  } else {
+    if NSApplication.shared.delegate === applicationDelegate {
+      NSApplication.shared.delegate = nil
+    }
+    applicationDelegate.shouldTerminateCallback = nil
+  }
 }
 
 private final class ApplicationDelegate: NSObject, NSApplicationDelegate {
+  var shouldTerminateCallback: pqrs_osx_application_should_terminate_callback_t?
+
   func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-    PQRSOSXApplicationStop()
-    return .terminateCancel
+    guard let shouldTerminateCallback else {
+      return .terminateNow
+    }
+
+    switch shouldTerminateCallback() {
+    case pqrs_osx_application_terminate_reply_now:
+      return .terminateNow
+    case pqrs_osx_application_terminate_reply_cancel:
+      return .terminateCancel
+    default:
+      return .terminateNow
+    }
   }
 }
 
