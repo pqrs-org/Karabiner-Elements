@@ -33,7 +33,6 @@ int agent(std::vector<std::string> args) {
   // _LSOpenURLsWithCompletionHandler() failed for the application Karabiner-Core-Service.app with error -1712.
   //
 
-  pqrs::osx::application::enable_stop_on_terminate();
   pqrs::osx::application::finish_launching();
 
   //
@@ -117,6 +116,18 @@ int agent(std::vector<std::string> args) {
 
   components_manager_killer::initialize_shared_components_manager_killer();
 
+  // This is needed because this agent uses pqrs::osx::application::run.
+  // AppKit termination requests should go through components_manager_killer so
+  // components_manager is destroyed before the AppKit run loop stops.
+  pqrs::osx::application::set_should_terminate_callback([] {
+    if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
+      killer->async_kill();
+      return pqrs::osx::application::terminate_reply::cancel;
+    }
+
+    return pqrs::osx::application::terminate_reply::now;
+  });
+
   // We have to use a raw pointer to control the destruction timing from `kill_called`.
   core_service::agent::components_manager* components_manager = nullptr;
 
@@ -141,6 +152,8 @@ int agent(std::vector<std::string> args) {
   components_manager = new core_service::agent::components_manager();
   components_manager->async_start();
 
+  // Use the AppKit application run loop because the agent uses
+  // pqrs::osx::accessibility::monitor and other AppKit/main-thread APIs.
   pqrs::osx::application::run();
 
   //
