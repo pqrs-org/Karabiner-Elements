@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+- ⚡️ Improvements
+    - Fixed an issue where the core service agent could rarely abort during termination.
+
 ## Karabiner-Elements 16.1.0
 
 - [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v16.1.0/Karabiner-Elements-16.1.0.dmg)
