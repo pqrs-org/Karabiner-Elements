@@ -1,7 +1,10 @@
 # Changelog
 
-## Beta
+## Karabiner-Elements 16.1.0
 
+- [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v16.1.0/Karabiner-Elements-16.1.0.dmg)
+- 📅 Release date
+    - Jul 5, 2026
 - ✨ New Features
     - Added filtering functionality to the log viewer.
 - 🐛 Bug Fixes
