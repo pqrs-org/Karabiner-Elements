@@ -22,6 +22,20 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v6
+        with:
+          sparse-checkout: .github/scripts
+
+      - name: Close unanswered issues after 30 days
+        uses: actions/github-script@v9
+        env:
+          MAX_OPERATIONS: ${{ github.event.inputs.operations-per-run || 30 }}
+        with:
+          retries: 3
+          script: |
+            const closeUnansweredIssues = require('./.github/scripts/close-unanswered-issues.js');
+            await closeUnansweredIssues({ github, context });
+
       - name: Run stale
         uses: actions/stale@v10
         with:
