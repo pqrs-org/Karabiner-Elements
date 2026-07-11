@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Before opening a new issue
+    url: https://karabiner-elements.pqrs.org/docs/
+    about: >-
+      For simple questions, try asking your AI assistant first.
+      It can also write most Complex Modifications unless they are especially complicated.
+      Please search the official documentation as well.
