@@ -1,0 +1,19 @@
+name: New issue
+description: Report a problem or request a feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening a new issue:
+
+        - For simple questions, try asking your AI assistant first.
+        - AI assistants can also write most Complex Modifications unless they are especially complicated.
+        - Please search the [official documentation](https://karabiner-elements.pqrs.org/docs/).
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Please describe the problem or feature request.
+    validations:
+      required: true
