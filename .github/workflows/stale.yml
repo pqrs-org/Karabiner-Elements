@@ -26,7 +26,7 @@ jobs:
         uses: actions/stale@v10
         with:
           operations-per-run: ${{ github.event.inputs.operations-per-run || 30 }}
-          days-before-stale: 180
+          days-before-stale: 60
           days-before-close: 7
           days-before-pr-stale: -1
           days-before-pr-close: -1
