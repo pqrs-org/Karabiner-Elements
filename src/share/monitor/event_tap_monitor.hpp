@@ -99,7 +99,7 @@ public:
       }
 
       logger::get_logger()->debug("event_tap_monitor start (enable_cgeventtap_fallback={0})",
-                                 cgeventtap_fallback_enabled_);
+                                  cgeventtap_fallback_enabled_);
 
       auto event_tap = pqrs::cf::adopt_cf_ptr(CGEventTapCreate(kCGHIDEventTap,
                                                                kCGTailAppendEventTap,

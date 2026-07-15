@@ -1124,14 +1124,14 @@ private:
   void set_cgeventtap_fallback_enabled(bool value) {
     if (cgeventtap_fallback_enabled_ == value) {
       logger::get_logger()->debug("enable_cgeventtap_fallback unchanged: effective={0}",
-                                 cgeventtap_fallback_enabled_);
+                                  cgeventtap_fallback_enabled_);
       return;
     }
 
     cgeventtap_fallback_enabled_ = value;
 
     logger::get_logger()->debug("enable_cgeventtap_fallback changed: effective={0}",
-                               cgeventtap_fallback_enabled_);
+                                cgeventtap_fallback_enabled_);
 
     if (post_event_to_virtual_devices_manipulator_) {
       post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
@@ -1144,7 +1144,7 @@ private:
 
   void setup_event_tap_monitor(bool cgeventtap_fallback_enabled) {
     logger::get_logger()->debug("setup_event_tap_monitor (enable_cgeventtap_fallback={0})",
-                               cgeventtap_fallback_enabled);
+                                cgeventtap_fallback_enabled);
 
     event_tap_monitor_ = std::make_unique<event_tap_monitor>(
         cgeventtap_fallback_enabled,
