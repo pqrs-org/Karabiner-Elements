@@ -8,6 +8,7 @@
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
 #include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
+#include "libkrbn/impl/libkrbn_process_codesign_monitor.hpp"
 #include "libkrbn/impl/libkrbn_version_monitor.hpp"
 #include <pqrs/gsl.hpp>
 
@@ -44,6 +45,24 @@ public:
       return m->get_version();
     }
     return "";
+  }
+
+  //
+  // process_codesign_monitor_
+  //
+
+  void enable_process_codesign_monitor() {
+    if (!process_codesign_monitor_) {
+      process_codesign_monitor_ = std::make_shared<libkrbn_process_codesign_monitor>();
+    }
+  }
+
+  void disable_process_codesign_monitor() {
+    process_codesign_monitor_ = nullptr;
+  }
+
+  [[nodiscard]] std::shared_ptr<libkrbn_process_codesign_monitor> get_libkrbn_process_codesign_monitor() const {
+    return process_codesign_monitor_;
   }
 
   //
@@ -189,6 +208,7 @@ public:
 private:
   pqrs::not_null_shared_ptr_t<libkrbn_dispatcher_client> dispatcher_client_;
   std::shared_ptr<libkrbn_version_monitor> version_monitor_;
+  std::shared_ptr<libkrbn_process_codesign_monitor> process_codesign_monitor_;
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::shared_ptr<libkrbn_file_monitors> file_monitors_;

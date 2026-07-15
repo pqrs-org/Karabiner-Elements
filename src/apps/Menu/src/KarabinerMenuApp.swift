@@ -12,6 +12,7 @@ struct KarabinerMenuApp: App {
   init() {
     libkrbn_initialize()
     libkrbn_load_custom_environment_variables()
+    KarabinerAppHelper.shared.observeProcessCodesignInvalidated(action: .terminate)
 
     settings.watch()
   }

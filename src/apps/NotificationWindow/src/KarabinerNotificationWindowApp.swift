@@ -7,6 +7,7 @@ struct KarabinerNotificationWindowApp: App {
   init() {
     libkrbn_initialize()
     libkrbn_load_custom_environment_variables()
+    KarabinerAppHelper.shared.observeProcessCodesignInvalidated(action: .terminate)
 
     NWCoreServiceDaemonClient.shared.start()
   }

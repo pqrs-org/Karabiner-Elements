@@ -278,6 +278,38 @@ bool libkrbn_get_version(char* buffer,
 }
 
 //
+// process_codesign_monitor
+//
+
+void libkrbn_enable_process_codesign_monitor() {
+  if (auto manager = libkrbn_components_manager_) {
+    manager->enable_process_codesign_monitor();
+  }
+}
+
+void libkrbn_disable_process_codesign_monitor() {
+  if (auto manager = libkrbn_components_manager_) {
+    manager->disable_process_codesign_monitor();
+  }
+}
+
+void libkrbn_register_process_codesign_invalidated_callback(libkrbn_process_codesign_invalidated_t callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_process_codesign_monitor()) {
+      m->register_libkrbn_process_codesign_invalidated_callback(callback);
+    }
+  }
+}
+
+void libkrbn_unregister_process_codesign_invalidated_callback(libkrbn_process_codesign_invalidated_t callback) {
+  if (auto manager = libkrbn_components_manager_) {
+    if (auto m = manager->get_libkrbn_process_codesign_monitor()) {
+      m->unregister_libkrbn_process_codesign_invalidated_callback(callback);
+    }
+  }
+}
+
+//
 // configuration_monitor
 //
 
