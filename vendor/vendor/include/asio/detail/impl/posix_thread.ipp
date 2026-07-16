@@ -2,7 +2,7 @@
 // detail/impl/posix_thread.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -26,6 +26,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 posix_thread::~posix_thread()
@@ -57,7 +58,7 @@ std::size_t posix_thread::hardware_concurrency()
 posix_thread::func_base* posix_thread::start_thread(func_base* arg)
 {
   int error = ::pthread_create(&arg->thread_, 0,
-        asio_detail_posix_thread_function, arg);
+        ASIO_VERSIONED_NAME(detail_posix_thread_function), arg);
   if (error != 0)
   {
     arg->destroy();
@@ -68,13 +69,14 @@ posix_thread::func_base* posix_thread::start_thread(func_base* arg)
   return arg;
 }
 
-void* asio_detail_posix_thread_function(void* arg)
+void* ASIO_VERSIONED_NAME(detail_posix_thread_function)(void* arg)
 {
   static_cast<posix_thread::func_base*>(arg)->run();
   return 0;
 }
 
 } // namespace detail
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

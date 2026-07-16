@@ -2,7 +2,7 @@
 // ip/multicast.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,6 +22,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace ip {
 namespace multicast {
 
@@ -84,6 +85,10 @@ typedef asio::ip::detail::socket_option::multicast_request<
 /// Socket option for local interface to use for outgoing multicast packets.
 /**
  * Implements the IPPROTO_IP/IP_MULTICAST_IF socket option.
+ *
+ * For IPv4, the outbound interface may be specified using an IPv4 address.
+ * For IPv6, an interface index must be used, since an IPv6 address does not
+ * uniquely identify a network interface.
  *
  * @par Examples
  * Setting the option:
@@ -184,6 +189,7 @@ typedef asio::ip::detail::socket_option::multicast_enable_loopback<
 
 } // namespace multicast
 } // namespace ip
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

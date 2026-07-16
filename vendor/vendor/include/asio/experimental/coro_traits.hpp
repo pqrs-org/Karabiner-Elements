@@ -22,6 +22,7 @@
 #include "asio/any_io_executor.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace experimental {
 namespace detail {
 
@@ -223,6 +224,7 @@ struct coro_traits<void() noexcept, void, Executor>
 #endif // defined(GENERATING_DOCUMENTATION)
 
 } // namespace experimental
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #endif // ASIO_EXPERIMENTAL_DETAIL_CORO_TRAITS_HPP

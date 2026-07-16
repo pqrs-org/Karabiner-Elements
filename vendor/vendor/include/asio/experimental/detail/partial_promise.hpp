@@ -24,6 +24,7 @@
 #endif // defined(ASIO_HAS_STD_COROUTINE)
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace experimental {
 namespace detail {
 
@@ -112,6 +113,7 @@ struct partial_promise : partial_promise_base<Allocator>
 
 } // namespace detail
 } // namespace experimental
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #if defined(ASIO_HAS_STD_COROUTINE)
@@ -149,6 +151,7 @@ struct coroutine_traits<
 #endif // defined(ASIO_HAS_STD_COROUTINE)
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace experimental {
 namespace detail {
 
@@ -190,6 +193,7 @@ partial_coro dispatch_coroutine(Context& ctx,
 
 } // namespace detail
 } // namespace experimental
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #endif // ASIO_EXPERIMENTAL_DETAIL_PARTIAL_PROMISE_HPP

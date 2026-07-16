@@ -3,7 +3,7 @@
 // ~~~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2005 Voipster / Indrek dot Juhani at voipster dot com
-// Copyright (c) 2005-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2005-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -27,6 +27,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace ssl {
 
 struct context::bio_cleanup
@@ -270,7 +271,8 @@ context::context(context::method m)
 
     // TLS v1.3.
 #if ((OPENSSL_VERSION_NUMBER >= 0x10101000L) \
-      && !defined(LIBRESSL_VERSION_NUMBER)) \
+      && (!defined(LIBRESSL_VERSION_NUMBER) || \
+        LIBRESSL_VERSION_NUMBER >= 0x3020000fL)) \
     || defined(ASIO_USE_WOLFSSL)
   case context::tlsv13:
     handle_ = ::SSL_CTX_new(::TLS_method());
@@ -1315,6 +1317,7 @@ asio::error_code context::translate_error(long error)
 }
 
 } // namespace ssl
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

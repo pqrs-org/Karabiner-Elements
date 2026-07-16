@@ -2,7 +2,7 @@
 // detail/string_view.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,6 +28,7 @@
 #endif // defined(ASIO_HAS_STD_EXPERIMENTAL_STRING_VIEW)
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 
 #if defined(ASIO_HAS_STD_STRING_VIEW)
 using std::basic_string_view;
@@ -37,6 +38,7 @@ using std::experimental::basic_string_view;
 using std::experimental::string_view;
 #endif // defined(ASIO_HAS_STD_EXPERIMENTAL_STRING_VIEW)
 
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 # define ASIO_STRING_VIEW_PARAM asio::string_view

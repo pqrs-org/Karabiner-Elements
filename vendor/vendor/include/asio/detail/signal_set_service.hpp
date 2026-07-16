@@ -2,7 +2,7 @@
 // detail/signal_set_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -37,17 +37,20 @@
 # include "asio/detail/scheduler.hpp"
 #endif // defined(ASIO_HAS_IOCP)
 
-#if !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
+#if !defined(ASIO_WINDOWS) \
+  && !defined(ASIO_CYGWIN_W32_SOCKETS)
 # if defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 #  include "asio/detail/io_uring_service.hpp"
 # else // defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 #  include "asio/detail/reactor.hpp"
 # endif // defined(ASIO_HAS_IO_URING_AS_DEFAULT)
-#endif // !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
+#endif // !defined(ASIO_WINDOWS)
+       //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 #if defined(NSIG) && (NSIG > 0)
@@ -58,7 +61,8 @@ enum { max_signal_number = 128 };
 
 extern ASIO_DECL struct signal_state* get_signal_state();
 
-extern "C" ASIO_DECL void asio_signal_handler(int signal_number);
+extern "C" ASIO_DECL void ASIO_VERSIONED_NAME(signal_handler)(
+    int signal_number);
 
 class signal_set_service :
   public execution_context_service_base<signal_set_service>
@@ -251,7 +255,7 @@ private:
 
 #if !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \
-  && !defined(__CYGWIN__)
+  && !defined(ASIO_CYGWIN_W32_SOCKETS)
   // The type used for processing pipe readiness notifications.
   class pipe_read_op;
 
@@ -270,7 +274,7 @@ private:
 # endif // defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 #endif // !defined(ASIO_WINDOWS)
        //   && !defined(ASIO_WINDOWS_RUNTIME)
-       //   && !defined(__CYGWIN__)
+       //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
 
   // A mapping from signal number to the registered signal sets.
   registration* registrations_[max_signal_number];
@@ -281,6 +285,7 @@ private:
 };
 
 } // namespace detail
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

@@ -2,7 +2,7 @@
 // system_executor.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,6 +22,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 
 class system_context;
 
@@ -46,8 +47,8 @@ public:
 
 #if !defined(GENERATING_DOCUMENTATION)
 private:
-  friend struct asio_require_fn::impl;
-  friend struct asio_prefer_fn::impl;
+  friend struct ASIO_VERSIONED_NAME(require_fn)::impl;
+  friend struct ASIO_VERSIONED_NAME(prefer_fn)::impl;
 #endif // !defined(GENERATING_DOCUMENTATION)
 
   /// Obtain an executor with the @c blocking.possibly property.
@@ -177,7 +178,7 @@ private:
 
 #if !defined(GENERATING_DOCUMENTATION)
 private:
-  friend struct asio_query_fn::impl;
+  friend struct ASIO_VERSIONED_NAME(query_fn)::impl;
   friend struct asio::execution::detail::blocking_t<0>;
   friend struct asio::execution::detail::mapping_t<0>;
   friend struct asio::execution::detail::inline_exception_handling_t<0>;
@@ -705,6 +706,7 @@ struct query_member<
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

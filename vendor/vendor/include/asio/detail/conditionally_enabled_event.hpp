@@ -2,7 +2,7 @@
 // detail/conditionally_enabled_event.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,6 +18,7 @@
 #include "asio/detail/config.hpp"
 #include "asio/detail/conditionally_enabled_mutex.hpp"
 #include "asio/detail/event.hpp"
+#include "asio/detail/mutex.hpp"
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/null_event.hpp"
 #include "asio/detail/scoped_lock.hpp"
@@ -25,6 +26,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 // Mutex adapter used to conditionally enable or disable locking.
@@ -43,56 +45,56 @@ public:
   }
 
   // Signal the event. (Retained for backward compatibility.)
-  void signal(conditionally_enabled_mutex::scoped_lock& lock)
+  void signal(conditionally_enabled_mutex<mutex>::scoped_lock& lock)
   {
-    if (lock.mutex_.enabled_)
+    if (lock.mutex_.enabled())
       event_.signal(lock);
   }
 
   // Signal all waiters.
-  void signal_all(conditionally_enabled_mutex::scoped_lock& lock)
+  void signal_all(conditionally_enabled_mutex<mutex>::scoped_lock& lock)
   {
-    if (lock.mutex_.enabled_)
+    if (lock.mutex_.enabled())
       event_.signal_all(lock);
   }
 
   // Unlock the mutex and signal one waiter.
   void unlock_and_signal_one(
-      conditionally_enabled_mutex::scoped_lock& lock)
+      conditionally_enabled_mutex<mutex>::scoped_lock& lock)
   {
-    if (lock.mutex_.enabled_)
+    if (lock.mutex_.enabled())
       event_.unlock_and_signal_one(lock);
   }
 
   // Unlock the mutex and signal one waiter who may destroy us.
   void unlock_and_signal_one_for_destruction(
-      conditionally_enabled_mutex::scoped_lock& lock)
+      conditionally_enabled_mutex<mutex>::scoped_lock& lock)
   {
-    if (lock.mutex_.enabled_)
+    if (lock.mutex_.enabled())
       event_.unlock_and_signal_one(lock);
   }
 
   // If there's a waiter, unlock the mutex and signal it.
   bool maybe_unlock_and_signal_one(
-      conditionally_enabled_mutex::scoped_lock& lock)
+      conditionally_enabled_mutex<mutex>::scoped_lock& lock)
   {
-    if (lock.mutex_.enabled_)
+    if (lock.mutex_.enabled())
       return event_.maybe_unlock_and_signal_one(lock);
     else
       return false;
   }
 
   // Reset the event.
-  void clear(conditionally_enabled_mutex::scoped_lock& lock)
+  void clear(conditionally_enabled_mutex<mutex>::scoped_lock& lock)
   {
-    if (lock.mutex_.enabled_)
+    if (lock.mutex_.enabled())
       event_.clear(lock);
   }
 
   // Wait for the event to become signalled.
-  void wait(conditionally_enabled_mutex::scoped_lock& lock)
+  void wait(conditionally_enabled_mutex<mutex>::scoped_lock& lock)
   {
-    if (lock.mutex_.enabled_)
+    if (lock.mutex_.enabled())
       event_.wait(lock);
     else
       null_event().wait(lock);
@@ -100,9 +102,9 @@ public:
 
   // Timed wait for the event to become signalled.
   bool wait_for_usec(
-      conditionally_enabled_mutex::scoped_lock& lock, long usec)
+      conditionally_enabled_mutex<mutex>::scoped_lock& lock, long usec)
   {
-    if (lock.mutex_.enabled_)
+    if (lock.mutex_.enabled())
       return event_.wait_for_usec(lock, usec);
     else
       return null_event().wait_for_usec(lock, usec);
@@ -113,6 +115,7 @@ private:
 };
 
 } // namespace detail
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

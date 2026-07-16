@@ -23,6 +23,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace experimental {
 
 template <typename Allocator = std::allocator<void>>
@@ -102,6 +103,7 @@ private:
 ASIO_INLINE_VARIABLE constexpr use_promise_t<> use_promise;
 
 } // namespace experimental
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

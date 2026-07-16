@@ -2,7 +2,7 @@
 // require.hpp
 // ~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -27,6 +27,7 @@
 #if defined(GENERATING_DOCUMENTATION)
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 
 /// A customisation point that applies a concept-preserving property to an
 /// object.
@@ -101,11 +102,12 @@ struct require_result
   typedef automatically_determined type;
 };
 
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #else // defined(GENERATING_DOCUMENTATION)
 
-namespace asio_require_fn {
+namespace ASIO_VERSIONED_NAME(require_fn) {
 
 using asio::conditional_t;
 using asio::decay_t;
@@ -370,23 +372,24 @@ struct static_instance
 template <typename T>
 const T static_instance<T>::instance = {};
 
-} // namespace asio_require_fn
+} // namespace ASIO_VERSIONED_NAME(require_fn)
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace {
 
-static constexpr const asio_require_fn::impl&
-  require = asio_require_fn::static_instance<>::instance;
+static constexpr const ASIO_VERSIONED_NAME(require_fn)::impl&
+  require = ASIO_VERSIONED_NAME(require_fn)::static_instance<>::instance;
 
 } // namespace
 
-typedef asio_require_fn::impl require_t;
+typedef ASIO_VERSIONED_NAME(require_fn)::impl require_t;
 
 template <typename T, typename... Properties>
 struct can_require :
   integral_constant<bool,
-    asio_require_fn::call_traits<
+    ASIO_VERSIONED_NAME(require_fn)::call_traits<
       require_t, T, void(Properties...)>::overload
-        != asio_require_fn::ill_formed>
+        != ASIO_VERSIONED_NAME(require_fn)::ill_formed>
 {
 };
 
@@ -401,7 +404,7 @@ constexpr bool can_require_v
 template <typename T, typename... Properties>
 struct is_nothrow_require :
   integral_constant<bool,
-    asio_require_fn::call_traits<
+    ASIO_VERSIONED_NAME(require_fn)::call_traits<
       require_t, T, void(Properties...)>::is_noexcept>
 {
 };
@@ -417,13 +420,14 @@ constexpr bool is_nothrow_require_v
 template <typename T, typename... Properties>
 struct require_result
 {
-  typedef typename asio_require_fn::call_traits<
+  typedef typename ASIO_VERSIONED_NAME(require_fn)::call_traits<
       require_t, T, void(Properties...)>::result_type type;
 };
 
 template <typename T, typename... Properties>
 using require_result_t = typename require_result<T, Properties...>::type;
 
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #endif // defined(GENERATING_DOCUMENTATION)

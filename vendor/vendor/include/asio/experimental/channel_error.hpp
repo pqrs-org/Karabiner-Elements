@@ -2,7 +2,7 @@
 // experimental/channel_error.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -21,6 +21,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace experimental {
 namespace error {
 
@@ -47,6 +48,7 @@ namespace channel_errc {
   using error::channel_cancelled;
 } // namespace channel_errc
 } // namespace experimental
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 namespace std {
@@ -60,6 +62,7 @@ template<> struct is_error_code_enum<
 } // namespace std
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace experimental {
 namespace error {
 
@@ -71,6 +74,7 @@ inline asio::error_code make_error_code(channel_errors e)
 
 } // namespace error
 } // namespace experimental
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

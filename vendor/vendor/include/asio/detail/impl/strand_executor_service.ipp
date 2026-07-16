@@ -2,7 +2,7 @@
 // detail/impl/strand_executor_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -21,12 +21,15 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 strand_executor_service::strand_executor_service(execution_context& ctx)
   : execution_context_service_base<strand_executor_service>(ctx),
     mutex_(),
+#if !defined(ASIO_HAS_STD_ATOMIC_WAIT)
     salt_(0),
+#endif // !defined(ASIO_HAS_STD_ATOMIC_WAIT)
     impl_list_(0)
 {
 }
@@ -40,11 +43,11 @@ void strand_executor_service::shutdown()
   strand_impl* impl = impl_list_;
   while (impl)
   {
-    impl->mutex_->lock();
+    impl->lock_mutex();
     impl->shutdown_ = true;
     ops.push(impl->waiting_queue_);
     ops.push(impl->ready_queue_);
-    impl->mutex_->unlock();
+    impl->unlock_mutex();
     impl = impl->next_;
   }
 }
@@ -59,6 +62,7 @@ strand_executor_service::create_implementation()
 
   asio::detail::mutex::scoped_lock lock(mutex_);
 
+#if !defined(ASIO_HAS_STD_ATOMIC_WAIT)
   // Select a mutex from the pool of shared mutexes.
   std::size_t salt = salt_++;
   std::size_t mutex_index = reinterpret_cast<std::size_t>(new_impl.get());
@@ -68,6 +72,7 @@ strand_executor_service::create_implementation()
   if (!mutexes_[mutex_index])
     mutexes_[mutex_index] = allocate_shared<mutex>(alloc);
   new_impl->mutex_ = mutexes_[mutex_index].get();
+#endif // !defined(ASIO_HAS_STD_ATOMIC_WAIT)
 
   // Insert implementation into linked list of all implementations.
   new_impl->next_ = impl_list_;
@@ -96,10 +101,10 @@ strand_executor_service::strand_impl::~strand_impl()
 bool strand_executor_service::enqueue(const implementation_type& impl,
     scheduler_operation* op)
 {
-  impl->mutex_->lock();
+  impl->lock_mutex();
   if (impl->shutdown_)
   {
-    impl->mutex_->unlock();
+    impl->unlock_mutex();
     op->destroy();
     return false;
   }
@@ -107,7 +112,7 @@ bool strand_executor_service::enqueue(const implementation_type& impl,
   {
     // Some other function already holds the strand lock. Enqueue for later.
     impl->waiting_queue_.push(op);
-    impl->mutex_->unlock();
+    impl->unlock_mutex();
     return false;
   }
   else
@@ -115,7 +120,7 @@ bool strand_executor_service::enqueue(const implementation_type& impl,
     // The function is acquiring the strand lock and so is responsible for
     // scheduling the strand.
     impl->locked_ = true;
-    impl->mutex_->unlock();
+    impl->unlock_mutex();
     impl->ready_queue_.push(op);
     return true;
   }
@@ -129,10 +134,10 @@ bool strand_executor_service::running_in_this_thread(
 
 bool strand_executor_service::push_waiting_to_ready(implementation_type& impl)
 {
-  impl->mutex_->lock();
+  impl->lock_mutex();
   impl->ready_queue_.push(impl->waiting_queue_);
   bool more_handlers = impl->locked_ = !impl->ready_queue_.empty();
-  impl->mutex_->unlock();
+  impl->unlock_mutex();
   return more_handlers;
 }
 
@@ -152,6 +157,7 @@ void strand_executor_service::run_ready_handlers(implementation_type& impl)
 }
 
 } // namespace detail
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

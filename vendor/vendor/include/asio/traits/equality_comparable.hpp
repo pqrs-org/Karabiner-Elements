@@ -2,7 +2,7 @@
 // traits/equality_comparable.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,6 +23,7 @@
 #endif // defined(ASIO_HAS_WORKING_EXPRESSION_SFINAE)
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace traits {
 
 template <typename T, typename = void>
@@ -95,6 +96,7 @@ struct equality_comparable : equality_comparable_default<T>
 };
 
 } // namespace traits
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #endif // ASIO_TRAITS_EQUALITY_COMPARABLE_HPP

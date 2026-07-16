@@ -2,7 +2,7 @@
 // detail/strand_executor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,6 +22,7 @@
 #include "asio/detail/mutex.hpp"
 #include "asio/detail/op_queue.hpp"
 #include "asio/detail/scheduler_operation.hpp"
+#include "asio/detail/slim_mutex.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/execution.hpp"
 #include "asio/execution_context.hpp"
@@ -29,6 +30,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 // Default service implementation for a strand.
@@ -46,7 +48,31 @@ public:
     friend class strand_executor_service;
 
     // Mutex to protect access to internal data.
+#if defined(ASIO_HAS_STD_ATOMIC_WAIT)
+    slim_mutex mutex_;
+
+    void lock_mutex()
+    {
+      mutex_.lock();
+    }
+
+    void unlock_mutex()
+    {
+      mutex_.unlock();
+    }
+#else // defined(ASIO_HAS_STD_ATOMIC_WAIT)
     mutex* mutex_;
+
+    void lock_mutex()
+    {
+      mutex_->lock();
+    }
+
+    void unlock_mutex()
+    {
+      mutex_->unlock();
+    }
+#endif // defined(ASIO_HAS_STD_ATOMIC_WAIT)
 
     // Indicates whether the strand is currently "locked" by a handler. This
     // means that there is a handler upcall in progress, or that the strand
@@ -145,6 +171,7 @@ private:
   // Mutex to protect access to the service-wide state.
   mutex mutex_;
 
+#if !defined(ASIO_HAS_STD_ATOMIC_WAIT)
   // Number of mutexes shared between all strand objects.
   enum { num_mutexes = 193 };
 
@@ -154,12 +181,14 @@ private:
   // Extra value used when hashing to prevent recycled memory locations from
   // getting the same mutex.
   std::size_t salt_;
+#endif // !defined(ASIO_HAS_STD_ATOMIC_WAIT)
 
   // The head of a linked list of all implementations.
   strand_impl* impl_list_;
 };
 
 } // namespace detail
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

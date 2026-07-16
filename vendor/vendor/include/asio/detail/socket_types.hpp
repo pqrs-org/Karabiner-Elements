@@ -2,7 +2,7 @@
 // detail/socket_types.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,7 +19,7 @@
 
 #if defined(ASIO_WINDOWS_RUNTIME)
 // Empty.
-#elif defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#elif defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 # if defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
 #  error WinSock.h has already been included
 # endif // defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
@@ -95,6 +95,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 #if defined(ASIO_WINDOWS_RUNTIME)
@@ -182,7 +183,7 @@ typedef int signed_size_type;
 # define ASIO_OS_DEF_SA_RESTART 0x1
 # define ASIO_OS_DEF_SA_NOCLDSTOP 0x2
 # define ASIO_OS_DEF_SA_NOCLDWAIT 0x4
-#elif defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#elif defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 typedef SOCKET socket_type;
 const SOCKET invalid_socket = INVALID_SOCKET;
 const int socket_error_retval = SOCKET_ERROR;
@@ -206,10 +207,15 @@ typedef sockaddr_storage sockaddr_storage_type;
 typedef addrinfo addrinfo_type;
 # endif
 typedef ::linger linger_type;
-typedef unsigned long ioctl_arg_type;
+#if defined(ASIO_CYGWIN_W32_SOCKETS)
+typedef unsigned __int32 u_long_type;
+typedef unsigned __int16 u_short_type;
+#else // defined(ASIO_CYGWIN_W32_SOCKETS)
 typedef u_long u_long_type;
 typedef u_short u_short_type;
+#endif // defined(ASIO_CYGWIN_W32_SOCKETS)
 typedef int signed_size_type;
+typedef u_long_type ioctl_arg_type;
 struct sockaddr_un_type { u_short sun_family; char sun_path[108]; };
 # define ASIO_OS_DEF(c) ASIO_OS_DEF_##c
 # define ASIO_OS_DEF_AF_UNSPEC AF_UNSPEC
@@ -424,6 +430,7 @@ const int enable_connection_aborted_option = 1;
 const int always_fail_option = 2;
 
 } // namespace detail
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

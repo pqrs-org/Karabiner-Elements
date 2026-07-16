@@ -2,7 +2,7 @@
 // error.hpp
 // ~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,13 +19,17 @@
 #include "asio/error_code.hpp"
 #include "asio/system_error.hpp"
 #if defined(ASIO_WINDOWS) \
-  || defined(__CYGWIN__) \
+  || defined(ASIO_CYGWIN_W32_SOCKETS) \
   || defined(ASIO_WINDOWS_RUNTIME)
 # include <winerror.h>
 #else
 # include <cerrno>
 # include <netdb.h>
 #endif
+
+#if defined(ASIO_CYGWIN_W32_SOCKETS)
+# include "asio/detail/socket_types.hpp"
+#endif // defined(ASIO_CYGWIN_W32_SOCKETS)
 
 #if defined(GENERATING_DOCUMENTATION)
 /// INTERNAL ONLY.
@@ -44,7 +48,7 @@
 # define ASIO_NETDB_ERROR(e) __HRESULT_FROM_WIN32(WSA ## e)
 # define ASIO_GETADDRINFO_ERROR(e) __HRESULT_FROM_WIN32(WSA ## e)
 # define ASIO_WIN_OR_POSIX(e_win, e_posix) e_win
-#elif defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#elif defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 # define ASIO_NATIVE_ERROR(e) e
 # define ASIO_SOCKET_ERROR(e) WSA ## e
 # define ASIO_NETDB_ERROR(e) WSA ## e
@@ -61,6 +65,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace error {
 
 enum basic_errors
@@ -263,7 +268,8 @@ inline const asio::error_category& get_system_category()
   return asio::system_category();
 }
 
-#if !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
+#if !defined(ASIO_WINDOWS) \
+  && !defined(ASIO_CYGWIN_W32_SOCKETS)
 
 extern ASIO_DECL
 const asio::error_category& get_netdb_category();
@@ -271,7 +277,8 @@ const asio::error_category& get_netdb_category();
 extern ASIO_DECL
 const asio::error_category& get_addrinfo_category();
 
-#else // !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
+#else // !defined(ASIO_WINDOWS)
+      //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
 
 inline const asio::error_category& get_netdb_category()
 {
@@ -283,7 +290,8 @@ inline const asio::error_category& get_addrinfo_category()
   return get_system_category();
 }
 
-#endif // !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
+#endif // !defined(ASIO_WINDOWS)
+       //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
 
 extern ASIO_DECL
 const asio::error_category& get_misc_category();
@@ -302,6 +310,7 @@ static const asio::error_category&
   = asio::error::get_misc_category();
 
 } // namespace error
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 namespace std {
@@ -329,6 +338,7 @@ template<> struct is_error_code_enum<asio::error::misc_errors>
 } // namespace std
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace error {
 
 inline asio::error_code make_error_code(basic_errors e)
@@ -379,6 +389,7 @@ namespace resolver_errc {
   const error::netdb_errors try_again = error::host_not_found_try_again;
   using error::service_not_found;
 } // namespace resolver_errc
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

@@ -2,7 +2,7 @@
 // detail/config.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,6 +10,8 @@
 
 #ifndef ASIO_DETAIL_CONFIG_HPP
 #define ASIO_DETAIL_CONFIG_HPP
+
+#include "asio/version.hpp"
 
 // boostify: non-boost code starts here
 #if !defined(ASIO_STANDALONE)
@@ -66,26 +68,27 @@
 # endif // !defined(ASIO_SEPARATE_COMPILATION)
 #endif // !defined(ASIO_HEADER_ONLY)
 
-#if defined(ASIO_HEADER_ONLY)
-# define ASIO_DECL inline
-#else // defined(ASIO_HEADER_ONLY)
-# if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__CODEGEARC__)
+#if !defined(ASIO_DECL)
+# if defined(ASIO_HEADER_ONLY)
+#  define ASIO_DECL inline
+# else // defined(ASIO_HEADER_ONLY)
+#  if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__CODEGEARC__)
 // We need to import/export our code only if the user has specifically asked
 // for it by defining ASIO_DYN_LINK.
-#  if defined(ASIO_DYN_LINK)
+#   if defined(ASIO_DYN_LINK)
 // Export if this is our own source, otherwise import.
-#   if defined(ASIO_SOURCE)
-#    define ASIO_DECL __declspec(dllexport)
-#   else // defined(ASIO_SOURCE)
-#    define ASIO_DECL __declspec(dllimport)
-#   endif // defined(ASIO_SOURCE)
-#  endif // defined(ASIO_DYN_LINK)
-# endif // defined(_MSC_VER) || defined(__BORLANDC__) || defined(__CODEGEARC__)
-#endif // defined(ASIO_HEADER_ONLY)
-
+#    if defined(ASIO_SOURCE)
+#     define ASIO_DECL __declspec(dllexport)
+#    else // defined(ASIO_SOURCE)
+#     define ASIO_DECL __declspec(dllimport)
+#    endif // defined(ASIO_SOURCE)
+#   endif // defined(ASIO_DYN_LINK)
+#  endif // defined(_MSC_VER) || defined(__BORLANDC__) || defined(__CODEGEARC__)
+# endif // defined(ASIO_HEADER_ONLY)
 // If ASIO_DECL isn't defined yet define it now.
-#if !defined(ASIO_DECL)
-# define ASIO_DECL
+# if !defined(ASIO_DECL)
+#  define ASIO_DECL
+# endif // !defined(ASIO_DECL)
 #endif // !defined(ASIO_DECL)
 
 // Helper macro for documentation.
@@ -402,6 +405,10 @@
 #      if defined(__FreeBSD__) || defined(__Fuchsia__) || defined(__wasi__) \
          || defined(__NetBSD__) || defined(__OpenBSD__)
 #       define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#      elif defined(__ANDROID__)
+#       if (__ANDROID_API__ >= 28)
+#         define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#       endif // (__ANDROID_API__ >= 28)
 #      elif defined(__linux__)
 #       if defined(_LIBCPP_HAS_MUSL_LIBC)
 #        define ASIO_HAS_STD_ALIGNED_ALLOC 1
@@ -410,26 +417,26 @@
 #         define ASIO_HAS_STD_ALIGNED_ALLOC 1
 #        endif // (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 17)
 #       endif // !defined(_LIBCPP_HAS_MUSL_LIBC)
-#      elif defined(__ANDROID__) && (__ANDROID_API__ >= 28)
-#       define ASIO_HAS_STD_ALIGNED_ALLOC 1
 #      elif defined(__APPLE__)
-#       if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-#        if (__MAC_OS_X_VERSION_MIN_REQUIRED >= 101500)
-#         define ASIO_HAS_STD_ALIGNED_ALLOC 1
-#        endif // (__MAC_OS_X_VERSION_MIN_REQUIRED >= 101500)
-#       elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-#        if (__IPHONE_OS_VERSION_MIN_REQUIRED >= 130000)
-#         define ASIO_HAS_STD_ALIGNED_ALLOC 1
-#        endif // (__IPHONE_OS_VERSION_MIN_REQUIRED >= 130000)
-#       elif defined(__TV_OS_VERSION_MIN_REQUIRED)
-#        if (__TV_OS_VERSION_MIN_REQUIRED >= 130000)
-#         define ASIO_HAS_STD_ALIGNED_ALLOC 1
-#        endif // (__TV_OS_VERSION_MIN_REQUIRED >= 130000)
-#       elif defined(__WATCH_OS_VERSION_MIN_REQUIRED)
-#        if (__WATCH_OS_VERSION_MIN_REQUIRED >= 60000)
-#         define ASIO_HAS_STD_ALIGNED_ALLOC 1
-#        endif // (__WATCH_OS_VERSION_MIN_REQUIRED >= 60000)
-#       endif // defined(__WATCH_OS_X_VERSION_MIN_REQUIRED)
+#       if (_LIBCPP_VERSION > 10000)
+#        if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
+#         if (__MAC_OS_X_VERSION_MIN_REQUIRED >= 101500)
+#          define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#         endif // (__MAC_OS_X_VERSION_MIN_REQUIRED >= 101500)
+#        elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+#         if (__IPHONE_OS_VERSION_MIN_REQUIRED >= 130000)
+#          define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#         endif // (__IPHONE_OS_VERSION_MIN_REQUIRED >= 130000)
+#        elif defined(__TV_OS_VERSION_MIN_REQUIRED)
+#         if (__TV_OS_VERSION_MIN_REQUIRED >= 130000)
+#          define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#         endif // (__TV_OS_VERSION_MIN_REQUIRED >= 130000)
+#        elif defined(__WATCH_OS_VERSION_MIN_REQUIRED)
+#         if (__WATCH_OS_VERSION_MIN_REQUIRED >= 60000)
+#          define ASIO_HAS_STD_ALIGNED_ALLOC 1
+#         endif // (__WATCH_OS_VERSION_MIN_REQUIRED >= 60000)
+#        endif // defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
+#       endif // (_LIBCPP_VERSION > 10000)
 #      endif // defined(__APPLE__)
 #     endif // (_LIBCPP_STD_VER > 14)
 #    elif defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
@@ -716,6 +723,11 @@
          // && !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 # endif // defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0603)
 #endif // !defined(ASIO_WINDOWS_APP)
+#if defined(ASIO_WINDOWS_APP)
+# define ASIO_VERSION_TAG_a a
+#else // defined(ASIO_WINDOWS_APP)
+# define ASIO_VERSION_TAG_a
+#endif // defined(ASIO_WINDOWS_APP)
 
 // Legacy WinRT target. Windows App is preferred.
 #if !defined(ASIO_WINDOWS_RUNTIME)
@@ -743,9 +755,28 @@
 #  endif // defined(ASIO_HAS_BOOST_CONFIG) && defined(BOOST_WINDOWS)
 # endif // !defined(ASIO_WINDOWS_RUNTIME)
 #endif // !defined(ASIO_WINDOWS)
+#if defined(ASIO_WINDOWS)
+# define ASIO_VERSION_TAG_b b
+#else // defined(ASIO_WINDOWS)
+# define ASIO_VERSION_TAG_b
+#endif // defined(ASIO_WINDOWS)
+
+// Cygwin target using Win32 sockets.
+#if !defined(ASIO_CYGWIN_W32_SOCKETS)
+# if defined(__CYGWIN__)
+#  if defined(__USE_W32_SOCKETS)
+#   define ASIO_CYGWIN_W32_SOCKETS 1
+#  endif // defined(__USE_W32_SOCKETS)
+# endif // defined(__CYGWIN__)
+#endif // !defined(ASIO_CYGWIN_W32_SOCKETS)
+#if defined(ASIO_CYGWIN_W32_SOCKETS)
+# define ASIO_VERSION_TAG_c c
+#else // defined(ASIO_CYGWIN_W32_SOCKETS)
+# define ASIO_VERSION_TAG_c
+#endif // defined(ASIO_CYGWIN_W32_SOCKETS)
 
 // Windows: target OS version.
-#if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#if defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 # if !defined(_WIN32_WINNT) && !defined(_WIN32_WINDOWS)
 #  if defined(_MSC_VER) || (defined(__BORLANDC__) && !defined(__clang__))
 #   pragma message( \
@@ -778,34 +809,34 @@
 #   endif // !defined(_WINSOCK2API_)
 #  endif // defined(__WIN32__) && !defined(WIN32)
 # endif // defined(__BORLANDC__)
-# if defined(__CYGWIN__)
+# if defined(ASIO_CYGWIN_W32_SOCKETS)
 #  if !defined(__USE_W32_SOCKETS)
 #   error You must add -D__USE_W32_SOCKETS to your compiler options.
 #  endif // !defined(__USE_W32_SOCKETS)
-# endif // defined(__CYGWIN__)
-#endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+# endif // defined(ASIO_CYGWIN_W32_SOCKETS)
+#endif // defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 
 // Windows: minimise header inclusion.
-#if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#if defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 # if !defined(ASIO_NO_WIN32_LEAN_AND_MEAN)
 #  if !defined(WIN32_LEAN_AND_MEAN)
 #   define WIN32_LEAN_AND_MEAN
 #  endif // !defined(WIN32_LEAN_AND_MEAN)
 # endif // !defined(ASIO_NO_WIN32_LEAN_AND_MEAN)
-#endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#endif // defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 
 // Windows: suppress definition of "min" and "max" macros.
-#if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#if defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 # if !defined(ASIO_NO_NOMINMAX)
 #  if !defined(NOMINMAX)
 #   define NOMINMAX 1
 #  endif // !defined(NOMINMAX)
 # endif // !defined(ASIO_NO_NOMINMAX)
-#endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#endif // defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 
 // Windows: IO Completion Ports.
 #if !defined(ASIO_HAS_IOCP)
-# if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+# if defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 #  if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0400)
 #   if !defined(UNDER_CE) && !defined(ASIO_WINDOWS_APP)
 #    if !defined(ASIO_DISABLE_IOCP)
@@ -813,8 +844,32 @@
 #    endif // !defined(ASIO_DISABLE_IOCP)
 #   endif // !defined(UNDER_CE) && !defined(ASIO_WINDOWS_APP)
 #  endif // defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0400)
-# endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+# endif // defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 #endif // !defined(ASIO_HAS_IOCP)
+#if defined(ASIO_HAS_IOCP)
+# define ASIO_VERSION_TAG_d d
+#else // defined(ASIO_HAS_IOCP)
+# define ASIO_VERSION_TAG_d
+#endif // defined(ASIO_HAS_IOCP)
+
+// Windows: Slim Reader/Writer Locks.
+// Requires Windows 7 or later for TryAcquireSRWLockExclusive support.
+#if !defined(ASIO_HAS_WINDOWS_SRWLOCK)
+# if !defined(ASIO_DISABLE_WINDOWS_SRWLOCK)
+#  if defined(ASIO_WINDOWS)
+#   if !defined(UNDER_CE)
+#    if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601)
+#     define ASIO_HAS_WINDOWS_SRWLOCK 1
+#    endif // defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0601)
+#   endif // !defined(UNDER_CE)
+#  endif // defined(ASIO_WINDOWS)
+# endif // !defined(ASIO_DISABLE_WINDOWS_SRWLOCK)
+#endif // !defined(ASIO_HAS_WINDOWS_SRWLOCK)
+#if defined(ASIO_HAS_WINDOWS_SRWLOCK)
+# define ASIO_VERSION_TAG_e e
+#else // defined(ASIO_HAS_WINDOWS_SRWLOCK)
+# define ASIO_VERSION_TAG_e
+#endif // defined(ASIO_HAS_WINDOWS_SRWLOCK)
 
 // On POSIX (and POSIX-like) platforms we need to include unistd.h in order to
 // get access to the various platform feature macros, e.g. to be able to test
@@ -871,6 +926,26 @@
 #  endif // LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)
 # endif // defined(ASIO_HAS_IO_URING)
 #endif // defined(__linux__)
+#if defined(ASIO_HAS_EPOLL)
+# define ASIO_VERSION_TAG_f f
+#else // defined(ASIO_HAS_EPOLL)
+# define ASIO_VERSION_TAG_f
+#endif // defined(ASIO_HAS_EPOLL)
+#if defined(ASIO_HAS_EVENTFD)
+# define ASIO_VERSION_TAG_g g
+#else // defined(ASIO_HAS_EVENTFD)
+# define ASIO_VERSION_TAG_g
+#endif // defined(ASIO_HAS_EVENTFD)
+#if defined(ASIO_HAS_TIMERFD)
+# define ASIO_VERSION_TAG_h h
+#else // defined(ASIO_HAS_TIMERFD)
+# define ASIO_VERSION_TAG_h
+#endif // defined(ASIO_HAS_TIMERFD)
+#if defined(ASIO_HAS_IO_URING)
+# define ASIO_VERSION_TAG_i i
+#else // defined(ASIO_HAS_IO_URING)
+# define ASIO_VERSION_TAG_i
+#endif // defined(ASIO_HAS_IO_URING)
 
 // Linux: io_uring is used instead of epoll.
 #if !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
@@ -878,6 +953,11 @@
 #  define ASIO_HAS_IO_URING_AS_DEFAULT 1
 # endif // !defined(ASIO_HAS_EPOLL) && defined(ASIO_HAS_IO_URING)
 #endif // !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
+#if defined(ASIO_HAS_IO_URING_AS_DEFAULT)
+# define ASIO_VERSION_TAG_j j
+#else // defined(ASIO_HAS_IO_URING_AS_DEFAULT)
+# define ASIO_VERSION_TAG_j
+#endif // defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
 // Mac OS X, FreeBSD, NetBSD, OpenBSD: kqueue.
 #if (defined(__MACH__) && defined(__APPLE__)) \
@@ -893,6 +973,11 @@
        //   || defined(__FreeBSD__)
        //   || defined(__NetBSD__)
        //   || defined(__OpenBSD__)
+#if defined(ASIO_HAS_KQUEUE)
+# define ASIO_VERSION_TAG_k k
+#else // defined(ASIO_HAS_KQUEUE)
+# define ASIO_VERSION_TAG_k
+#endif // defined(ASIO_HAS_KQUEUE)
 
 // Solaris: /dev/poll.
 #if defined(__sun)
@@ -908,7 +993,7 @@
 # if defined(ASIO_HAS_IOCP) \
   || !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \
-  && !defined(__CYGWIN__)
+  && !defined(ASIO_CYGWIN_W32_SOCKETS)
 #  if !defined(__SYMBIAN32__)
 #   if !defined(ASIO_DISABLE_SERIAL_PORT)
 #    define ASIO_HAS_SERIAL_PORT 1
@@ -917,7 +1002,7 @@
 # endif // defined(ASIO_HAS_IOCP)
         //   || !defined(ASIO_WINDOWS)
         //   && !defined(ASIO_WINDOWS_RUNTIME)
-        //   && !defined(__CYGWIN__)
+        //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
 #endif // !defined(ASIO_HAS_SERIAL_PORT)
 
 // Windows: stream handles.
@@ -941,11 +1026,12 @@
 // Windows: object handles.
 #if !defined(ASIO_HAS_WINDOWS_OBJECT_HANDLE)
 # if !defined(ASIO_DISABLE_WINDOWS_OBJECT_HANDLE)
-#  if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#  if defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 #   if !defined(UNDER_CE) && !defined(ASIO_WINDOWS_APP)
 #    define ASIO_HAS_WINDOWS_OBJECT_HANDLE 1
 #   endif // !defined(UNDER_CE) && !defined(ASIO_WINDOWS_APP)
-#  endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#  endif // defined(ASIO_WINDOWS)
+         //   || defined(ASIO_CYGWIN_W32_SOCKETS)
 # endif // !defined(ASIO_DISABLE_WINDOWS_OBJECT_HANDLE)
 #endif // !defined(ASIO_HAS_WINDOWS_OBJECT_HANDLE)
 
@@ -963,11 +1049,11 @@
 # if !defined(ASIO_DISABLE_POSIX_STREAM_DESCRIPTOR)
 #  if !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \
-  && !defined(__CYGWIN__)
+  && !defined(ASIO_CYGWIN_W32_SOCKETS)
 #   define ASIO_HAS_POSIX_STREAM_DESCRIPTOR 1
 #  endif // !defined(ASIO_WINDOWS)
          //   && !defined(ASIO_WINDOWS_RUNTIME)
-         //   && !defined(__CYGWIN__)
+         //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
 # endif // !defined(ASIO_DISABLE_POSIX_STREAM_DESCRIPTOR)
 #endif // !defined(ASIO_HAS_POSIX_STREAM_DESCRIPTOR)
 
@@ -996,7 +1082,7 @@
 # if defined(ASIO_HAS_IOCP) \
   || !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \
-  && !defined(__CYGWIN__)
+  && !defined(ASIO_CYGWIN_W32_SOCKETS)
 #  if !defined(__SYMBIAN32__)
 #   if !defined(ASIO_DISABLE_PIPE)
 #    define ASIO_HAS_PIPE 1
@@ -1005,7 +1091,7 @@
 # endif // defined(ASIO_HAS_IOCP)
         //   || !defined(ASIO_WINDOWS)
         //   && !defined(ASIO_WINDOWS_RUNTIME)
-        //   && !defined(__CYGWIN__)
+        //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
 #endif // !defined(ASIO_HAS_PIPE)
 
 // Can use sigaction() instead of signal().
@@ -1013,11 +1099,11 @@
 # if !defined(ASIO_DISABLE_SIGACTION)
 #  if !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \
-  && !defined(__CYGWIN__)
+  && !defined(ASIO_CYGWIN_W32_SOCKETS)
 #   define ASIO_HAS_SIGACTION 1
 #  endif // !defined(ASIO_WINDOWS)
          //   && !defined(ASIO_WINDOWS_RUNTIME)
-         //   && !defined(__CYGWIN__)
+         //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
 # endif // !defined(ASIO_DISABLE_SIGACTION)
 #endif // !defined(ASIO_HAS_SIGACTION)
 
@@ -1033,7 +1119,7 @@
 // Can use getaddrinfo() and getnameinfo().
 #if !defined(ASIO_HAS_GETADDRINFO)
 # if !defined(ASIO_DISABLE_GETADDRINFO)
-#  if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#  if defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 #   if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501)
 #    define ASIO_HAS_GETADDRINFO 1
 #   elif defined(UNDER_CE)
@@ -1066,6 +1152,11 @@
 #  define ASIO_NO_EXCEPTIONS 1
 # endif // !defined(BOOST_NO_EXCEPTIONS)
 #endif // !defined(ASIO_NO_EXCEPTIONS)
+#if defined(ASIO_NO_EXCEPTIONS)
+# define ASIO_VERSION_TAG_l l
+#else // defined(ASIO_NO_EXCEPTIONS)
+# define ASIO_VERSION_TAG_l
+#endif // defined(ASIO_NO_EXCEPTIONS)
 
 // Whether the typeid operator is supported.
 #if !defined(ASIO_NO_TYPEID)
@@ -1097,6 +1188,11 @@
 #  endif // defined(ASIO_HAS_BOOST_CONFIG) && defined(BOOST_HAS_THREADS)
 # endif // !defined(ASIO_DISABLE_THREADS)
 #endif // !defined(ASIO_HAS_THREADS)
+#if defined(ASIO_HAS_THREADS)
+# define ASIO_VERSION_TAG_m m
+#else // defined(ASIO_HAS_THREADS)
+# define ASIO_VERSION_TAG_m
+#endif // defined(ASIO_HAS_THREADS)
 
 // POSIX threads.
 #if !defined(ASIO_HAS_PTHREADS)
@@ -1110,6 +1206,11 @@
 #  endif // defined(ASIO_HAS_BOOST_CONFIG) && defined(BOOST_HAS_PTHREADS)
 # endif // defined(ASIO_HAS_THREADS)
 #endif // !defined(ASIO_HAS_PTHREADS)
+#if defined(ASIO_HAS_PTHREADS)
+# define ASIO_VERSION_TAG_n n
+#else // defined(ASIO_HAS_PTHREADS)
+# define ASIO_VERSION_TAG_n
+#endif // defined(ASIO_HAS_PTHREADS)
 
 // Helper to prevent macro expansion.
 #define ASIO_PREVENT_MACRO_SUBSTITUTION
@@ -1417,7 +1518,7 @@
 
 // Kernel support for MSG_NOSIGNAL.
 #if !defined(ASIO_HAS_MSG_NOSIGNAL)
-# if defined(__linux__)
+# if defined(__linux__) || defined(__NetBSD__)
 #  define ASIO_HAS_MSG_NOSIGNAL 1
 # elif defined(_POSIX_VERSION)
 #  if (_POSIX_VERSION >= 200809L)
@@ -1456,5 +1557,105 @@
 #  endif // defined(__APPLE__)
 # endif // !defined(ASIO_DISABLE_SNPRINTF)
 #endif // !defined(ASIO_HAS_SNPRINTF)
+
+// Standard library support for std::atomic<T>::wait and notify functions.
+// By default, this is only enabled on platforms where the standard library is
+// known to implement them using efficient wait primitives (e.g. Linux futex,
+// Windows WaitOnAddress, Apple ulock).
+#if !defined(ASIO_HAS_STD_ATOMIC_WAIT)
+# if !defined(ASIO_DISABLE_STD_ATOMIC_WAIT)
+#  if defined(ASIO_HAS_STD_ATOMIC)
+#   if defined(ASIO_MSVC)
+#    if (_MSVC_LANG >= 202002) && (__cpp_lib_atomic_wait >= 201907L)
+#     if defined(ASIO_WINDOWS)
+#      if !defined(UNDER_CE)
+#       if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0602)
+#        define ASIO_HAS_STD_ATOMIC_WAIT 1
+#       endif // defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0602)
+#      endif // !defined(UNDER_CE)
+#     endif // defined(ASIO_WINDOWS)
+#    endif // (_MSVC_LANG >= 202002) && (__cpp_lib_atomic_wait >= 201907L)
+#   elif (__cplusplus >= 202002L) && (__cpp_lib_atomic_wait >= 201907L)
+#    if defined(__linux__)
+#     define ASIO_HAS_STD_ATOMIC_WAIT 1
+#    elif defined(__APPLE__)
+#     if defined(__MAC_OS_X_VERSION_MIN_REQUIRED) \
+        && (__MAC_OS_X_VERSION_MIN_REQUIRED >= 140400)
+#      define ASIO_HAS_STD_ATOMIC_WAIT 1
+#     elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED) \
+        && (__IPHONE_OS_VERSION_MIN_REQUIRED >= 170400)
+#      define ASIO_HAS_STD_ATOMIC_WAIT 1
+#     endif // defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+            //   && (__IPHONE_OS_VERSION_MIN_REQUIRED >= 170400)
+#    endif // defined(__APPLE__)
+#   endif // (__cplusplus >= 202002L) && (__cpp_lib_atomic_wait >= 201907L)
+#  endif // defined(ASIO_HAS_STD_ATOMIC)
+# endif // !defined(ASIO_DISABLE_STD_ATOMIC_WAIT)
+#endif // !defined(ASIO_HAS_STD_ATOMIC_WAIT)
+#if defined(ASIO_HAS_STD_ATOMIC_WAIT)
+# define ASIO_VERSION_TAG_o o
+#else // defined(ASIO_HAS_STD_ATOMIC_WAIT)
+# define ASIO_VERSION_TAG_o
+#endif // defined(ASIO_HAS_STD_ATOMIC_WAIT)
+
+// Token-pasting helper (two levels needed to allow macro arguments to expand).
+#define ASIO_DETAIL_CAT_(a, b) a ## b
+#define ASIO_DETAIL_CAT(a, b) ASIO_DETAIL_CAT_(a, b)
+
+// Version tags for user-enabled features with no auto-detection in this file.
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# define ASIO_VERSION_TAG_p p
+#else // defined(ASIO_ENABLE_HANDLER_TRACKING)
+# define ASIO_VERSION_TAG_p
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+
+// Automatic version namespace v<ASIO_VERSION>_<tags>.
+#if defined(ASIO_ENABLE_VERSION_NAMESPACE)
+# if !defined(ASIO_VERSION_NAMESPACE)
+#  define ASIO_VERSION_NAMESPACE \
+  ASIO_DETAIL_CAT(v, \
+  ASIO_DETAIL_CAT(ASIO_VERSION, \
+  ASIO_DETAIL_CAT(_, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_a, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_b, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_c, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_d, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_e, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_f, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_g, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_h, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_i, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_j, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_k, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_l, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_m, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_n, \
+  ASIO_DETAIL_CAT(ASIO_VERSION_TAG_o, \
+  ASIO_VERSION_TAG_p))))))))))))))))))
+# endif // !defined(ASIO_VERSION_NAMESPACE)
+#endif // defined(ASIO_ENABLE_VERSION_NAMESPACE)
+
+// Optional inline namespace used for library versioning.
+#if defined(ASIO_VERSION_NAMESPACE)
+# define ASIO_INLINE_NAMESPACE_BEGIN \
+  inline namespace ASIO_VERSION_NAMESPACE {
+# define ASIO_INLINE_NAMESPACE_END }
+#endif // defined(ASIO_VERSION_NAMESPACE)
+#if !defined(ASIO_INLINE_NAMESPACE_BEGIN)
+# define ASIO_INLINE_NAMESPACE_BEGIN
+#endif // !defined(ASIO_INLINE_NAMESPACE_BEGIN)
+#if !defined(ASIO_INLINE_NAMESPACE_END)
+# define ASIO_INLINE_NAMESPACE_END
+#endif // !defined(ASIO_INLINE_NAMESPACE_END)
+
+// Helper macro used to tag global symbols (extern "C" functions and some helper
+// namespaces) with the version namespace name.
+#if defined(ASIO_VERSION_NAMESPACE)
+# define ASIO_VERSIONED_NAME(name) \
+    ASIO_DETAIL_CAT(ASIO_DETAIL_CAT(asio_, \
+      ASIO_VERSION_NAMESPACE), _ ## name)
+#else // defined(ASIO_VERSION_NAMESPACE)
+# define ASIO_VERSIONED_NAME(name) asio_ ## name
+#endif // defined(ASIO_VERSION_NAMESPACE)
 
 #endif // ASIO_DETAIL_CONFIG_HPP

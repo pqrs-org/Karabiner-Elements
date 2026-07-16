@@ -2,7 +2,7 @@
 // detail/impl/posix_serial_port_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -19,7 +19,9 @@
 #include "asio/detail/config.hpp"
 
 #if defined(ASIO_HAS_SERIAL_PORT)
-#if !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
+
+#if !defined(ASIO_WINDOWS) \
+  && !defined(ASIO_CYGWIN_W32_SOCKETS)
 
 #include <cstring>
 #include "asio/detail/posix_serial_port_service.hpp"
@@ -27,6 +29,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 posix_serial_port_service::posix_serial_port_service(
@@ -158,11 +161,14 @@ asio::error_code posix_serial_port_service::do_get_option(
 }
 
 } // namespace detail
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
 
-#endif // !defined(ASIO_WINDOWS) && !defined(__CYGWIN__)
+#endif // !defined(ASIO_WINDOWS)
+       //   && !defined(ASIO_CYGWIN_W32_SOCKETS)
+
 #endif // defined(ASIO_HAS_SERIAL_PORT)
 
 #endif // ASIO_DETAIL_IMPL_POSIX_SERIAL_PORT_SERVICE_IPP

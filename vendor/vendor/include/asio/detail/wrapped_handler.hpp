@@ -2,7 +2,7 @@
 // detail/wrapped_handler.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,6 +22,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 struct is_continuation_delegated
@@ -29,7 +30,8 @@ struct is_continuation_delegated
   template <typename Dispatcher, typename Handler>
   bool operator()(Dispatcher&, Handler& handler) const
   {
-    return asio_handler_cont_helpers::is_continuation(handler);
+    return ASIO_VERSIONED_NAME(handler_cont_helpers)::is_continuation(
+        handler);
   }
 };
 
@@ -212,6 +214,7 @@ inline bool asio_handler_is_continuation(
 }
 
 } // namespace detail
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

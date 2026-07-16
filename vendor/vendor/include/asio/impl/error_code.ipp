@@ -2,7 +2,7 @@
 // impl/error_code.ipp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2025 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,7 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-#if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#if defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 # include <winerror.h>
 #elif defined(ASIO_WINDOWS_RUNTIME)
 # include <windows.h>
@@ -32,6 +32,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 namespace error {
 namespace detail {
 
@@ -82,7 +83,7 @@ public:
       else
         return "asio.system error";
     }
-#elif defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#elif defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
     char* msg = 0;
     DWORD length = ::FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
         | FORMAT_MESSAGE_FROM_SYSTEM
@@ -97,7 +98,8 @@ public:
       return msg;
     else
       return "asio.system error";
-#else // defined(ASIO_WINDOWS_DESKTOP) || defined(__CYGWIN__)
+#else // defined(ASIO_WINDOWS_DESKTOP)
+      //   || defined(ASIO_CYGWIN_W32_SOCKETS)
 #if !defined(__sun)
     if (value == ECANCELED)
       return "Operation aborted.";
@@ -110,7 +112,8 @@ public:
     using namespace std;
     return strerror_result(strerror_r(value, buf, sizeof(buf)), buf);
 #endif
-#endif // defined(ASIO_WINDOWS_DESKTOP) || defined(__CYGWIN__)
+#endif // defined(ASIO_WINDOWS_DESKTOP)
+       //   || defined(ASIO_CYGWIN_W32_SOCKETS)
   }
 
   std::error_condition default_error_condition(int ev) const noexcept
@@ -132,6 +135,7 @@ const error_category& system_category()
   return instance;
 }
 
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

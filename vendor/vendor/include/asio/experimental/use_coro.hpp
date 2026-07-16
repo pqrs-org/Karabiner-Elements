@@ -24,6 +24,7 @@
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
+ASIO_INLINE_NAMESPACE_BEGIN
 
 class any_io_executor;
 
@@ -179,6 +180,7 @@ ASIO_INLINE_VARIABLE constexpr use_coro_t<> use_coro(0, 0, 0);
 #endif
 
 } // namespace experimental
+ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
