@@ -5,42 +5,13 @@ private func versionUpdatedCallbackRelaunch() {
   Relauncher.relaunch()
 }
 
-private func processCodesignInvalidatedCallbackRelaunch() {
-  Relauncher.relaunch()
-}
-
-private func processCodesignInvalidatedCallbackTerminate() {
-  Task { @MainActor in
-    NSApplication.shared.terminate(nil)
-  }
-}
-
 @MainActor
 final class KarabinerAppHelper {
   public static let shared = KarabinerAppHelper()
 
-  enum ProcessCodesignInvalidatedAction {
-    case relaunch
-    case terminate
-  }
-
   func observeVersionUpdated() {
     libkrbn_enable_version_monitor()
     libkrbn_register_version_updated_callback(versionUpdatedCallbackRelaunch)
-  }
-
-  func observeProcessCodesignInvalidated(action: ProcessCodesignInvalidatedAction) {
-    libkrbn_enable_process_codesign_monitor()
-
-    switch action {
-    case .relaunch:
-      libkrbn_register_process_codesign_invalidated_callback(
-        processCodesignInvalidatedCallbackRelaunch)
-
-    case .terminate:
-      libkrbn_register_process_codesign_invalidated_callback(
-        processCodesignInvalidatedCallbackTerminate)
-    }
   }
 
   func endAllAttachedSheets(_ window: NSWindow) {

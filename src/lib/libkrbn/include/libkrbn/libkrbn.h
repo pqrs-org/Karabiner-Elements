@@ -450,17 +450,6 @@ bool libkrbn_get_version(char* _Nonnull buffer,
                          size_t length);
 
 //
-// libkrbn_process_codesign_monitor
-//
-
-void libkrbn_enable_process_codesign_monitor(void);
-void libkrbn_disable_process_codesign_monitor(void);
-
-typedef void (*libkrbn_process_codesign_invalidated_t)(void);
-void libkrbn_register_process_codesign_invalidated_callback(libkrbn_process_codesign_invalidated_t _Nonnull callback);
-void libkrbn_unregister_process_codesign_invalidated_callback(libkrbn_process_codesign_invalidated_t _Nonnull callback);
-
-//
 // libkrbn_file_monitors
 //
 

@@ -9,7 +9,6 @@
 #include "filesystem_utility.hpp"
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
-#include "monitor/process_codesign_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include <pqrs/dispatcher.hpp>
@@ -30,18 +29,6 @@ public:
     version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
     version_monitor_->changed.connect([](auto&& version) {
-      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-        killer->async_kill();
-      }
-    });
-
-    //
-    // process_codesign_monitor_
-    //
-
-    process_codesign_monitor_ = std::make_unique<krbn::process_codesign_monitor>();
-
-    process_codesign_monitor_->invalidated.connect([] {
       if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
         killer->async_kill();
       }
@@ -74,7 +61,6 @@ public:
     detach_from_dispatcher([this] {
       receiver_ = nullptr;
       console_user_id_changed_receiver_ = nullptr;
-      process_codesign_monitor_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
@@ -82,7 +68,6 @@ public:
   void async_start() {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
-      process_codesign_monitor_->async_start();
 
       start_receiver(std::nullopt);
       enqueue_ensure_base_directories();
@@ -136,7 +121,6 @@ private:
   std::optional<uid_t> current_console_user_id_;
 
   std::unique_ptr<version_monitor> version_monitor_;
-  std::unique_ptr<process_codesign_monitor> process_codesign_monitor_;
   std::unique_ptr<console_user_id_changed_receiver> console_user_id_changed_receiver_;
   std::unique_ptr<hid_event_system_monitor> hid_event_system_monitor_;
   std::unique_ptr<receiver> receiver_;

@@ -8,7 +8,6 @@
 #include "constants.hpp"
 #include "core_service_daemon_client.hpp"
 #include "logger.hpp"
-#include "monitor/process_codesign_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "receiver.hpp"
 #include "services_utility.hpp"
@@ -32,7 +31,6 @@ public:
   components_manager()
       : dispatcher_client(),
         version_monitor_(std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path())),
-        process_codesign_monitor_(std::make_unique<krbn::process_codesign_monitor>()),
         console_user_id_changed_client_(std::make_shared<console_user_id_changed_client>()),
         session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
         settings_window_guidance_manager_dispatcher_time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
@@ -45,16 +43,6 @@ public:
     //
 
     version_monitor_->changed.connect([](auto&& version) {
-      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-        killer->async_kill();
-      }
-    });
-
-    //
-    // process_codesign_monitor_
-    //
-
-    process_codesign_monitor_->invalidated.connect([] {
       if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
         killer->async_kill();
       }
@@ -99,7 +87,6 @@ public:
       settings_window_guidance_manager_dispatcher_time_source_ = nullptr;
       session_monitor_ = nullptr;
       console_user_id_changed_client_ = nullptr;
-      process_codesign_monitor_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
@@ -107,7 +94,6 @@ public:
   void async_start() {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
-      process_codesign_monitor_->async_start();
       console_user_id_changed_client_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
       settings_window_guidance_manager_->async_start();
@@ -201,7 +187,6 @@ private:
   // Core components
 
   std::unique_ptr<version_monitor> version_monitor_;
-  std::unique_ptr<process_codesign_monitor> process_codesign_monitor_;
 
   std::optional<bool> on_console_;
   std::shared_ptr<console_user_id_changed_client> console_user_id_changed_client_;

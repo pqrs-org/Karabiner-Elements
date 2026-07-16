@@ -7,7 +7,6 @@
 #include "core_service/core_service_utility.hpp"
 #include "core_service_daemon_client.hpp"
 #include "logger.hpp"
-#include "monitor/process_codesign_monitor.hpp"
 #include "monitor/version_monitor.hpp"
 #include "permission_checker.hpp"
 #include "services_utility.hpp"
@@ -31,18 +30,6 @@ public:
     version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
 
     version_monitor_->changed.connect([](auto&& version) {
-      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-        killer->async_kill();
-      }
-    });
-
-    //
-    // process_codesign_monitor_
-    //
-
-    process_codesign_monitor_ = std::make_unique<krbn::process_codesign_monitor>();
-
-    process_codesign_monitor_->invalidated.connect([] {
       if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
         killer->async_kill();
       }
@@ -134,7 +121,6 @@ public:
 
       session_monitor_ = nullptr;
       permission_checker_ = nullptr;
-      process_codesign_monitor_ = nullptr;
       version_monitor_ = nullptr;
     });
   }
@@ -142,7 +128,6 @@ public:
   void async_start() {
     enqueue_to_dispatcher([this] {
       version_monitor_->async_start();
-      process_codesign_monitor_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
@@ -210,7 +195,6 @@ private:
   }
 
   std::unique_ptr<version_monitor> version_monitor_;
-  std::unique_ptr<process_codesign_monitor> process_codesign_monitor_;
   std::optional<bool> on_console_;
   std::unique_ptr<permission_checker> permission_checker_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
