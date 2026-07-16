@@ -8,7 +8,6 @@
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
 #include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
-#include "libkrbn/impl/libkrbn_version_monitor.hpp"
 #include <pqrs/gsl.hpp>
 
 class libkrbn_components_manager {
@@ -19,31 +18,6 @@ public:
 
   void enqueue_callback(void (*callback)()) {
     dispatcher_client_->enqueue(callback);
-  }
-
-  //
-  // version_monitor_
-  //
-
-  void enable_version_monitor() {
-    if (!version_monitor_) {
-      version_monitor_ = std::make_shared<libkrbn_version_monitor>();
-    }
-  }
-
-  void disable_version_monitor() {
-    version_monitor_ = nullptr;
-  }
-
-  [[nodiscard]] std::shared_ptr<libkrbn_version_monitor> get_libkrbn_version_monitor() const {
-    return version_monitor_;
-  }
-
-  [[nodiscard]] std::string get_current_version() const {
-    if (auto m = version_monitor_) {
-      return m->get_version();
-    }
-    return "";
   }
 
   //
@@ -188,7 +162,6 @@ public:
 
 private:
   pqrs::not_null_shared_ptr_t<libkrbn_dispatcher_client> dispatcher_client_;
-  std::shared_ptr<libkrbn_version_monitor> version_monitor_;
   std::shared_ptr<libkrbn_configuration_monitor> configuration_monitor_;
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::shared_ptr<libkrbn_file_monitors> file_monitors_;

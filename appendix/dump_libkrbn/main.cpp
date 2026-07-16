@@ -5,15 +5,6 @@
 #include <thread>
 
 namespace {
-void version_updated_callback() noexcept {
-  std::cout << __func__ << std::endl;
-
-  char buffer[1024];
-  if (libkrbn_get_version(buffer, sizeof(buffer))) {
-    std::cout << "version: " << buffer << std::endl;
-  }
-}
-
 auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
@@ -26,9 +17,6 @@ int main() {
   signal(SIGINT, [](int) noexcept {
     global_wait->notify();
   });
-
-  libkrbn_enable_version_monitor();
-  libkrbn_register_version_updated_callback(version_updated_callback);
 
   libkrbn_enable_file_monitors();
 

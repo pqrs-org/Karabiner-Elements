@@ -34,7 +34,6 @@ struct KarabinerSettingsApp: App {
     // Start components
     //
 
-    KarabinerAppHelper.shared.observeVersionUpdated()
     LibKrbn.Settings.shared.watch()
     SettingsCoreServiceDaemonClient.shared.startSystemVariablesMonitoring()
     SystemPreferences.shared.start()

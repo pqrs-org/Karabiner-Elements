@@ -2,6 +2,7 @@
 
 #include "app_icon.hpp"
 #include "codesign_manager.hpp"
+#include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "core_service/core_service_utility.hpp"
 #include "core_service/daemon/components_manager.hpp"

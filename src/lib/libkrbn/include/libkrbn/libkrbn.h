@@ -436,20 +436,6 @@ void libkrbn_register_core_configuration_updated_callback(libkrbn_core_configura
 void libkrbn_unregister_core_configuration_updated_callback(libkrbn_core_configuration_updated_t _Nonnull callback);
 
 //
-// libkrbn_version_monitor
-//
-
-void libkrbn_enable_version_monitor(void);
-void libkrbn_disable_version_monitor(void);
-
-typedef void (*libkrbn_version_updated_t)(void);
-void libkrbn_register_version_updated_callback(libkrbn_version_updated_t _Nonnull callback);
-void libkrbn_unregister_version_updated_callback(libkrbn_version_updated_t _Nonnull callback);
-
-bool libkrbn_get_version(char* _Nonnull buffer,
-                         size_t length);
-
-//
 // libkrbn_file_monitors
 //
 

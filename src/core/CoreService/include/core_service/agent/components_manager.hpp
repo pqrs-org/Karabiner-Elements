@@ -2,12 +2,9 @@
 
 // `krbn::core_service::agent::components_manager` can be used safely in a multi-threaded environment.
 
-#include "components_manager_killer.hpp"
-#include "constants.hpp"
 #include "core_service/core_service_utility.hpp"
 #include "core_service_daemon_client.hpp"
 #include "logger.hpp"
-#include "monitor/version_monitor.hpp"
 #include "permission_checker.hpp"
 #include "services_utility.hpp"
 #include <optional>
@@ -23,18 +20,6 @@ public:
 
   components_manager()
       : dispatcher_client() {
-    //
-    // version_monitor_
-    //
-
-    version_monitor_ = std::make_unique<krbn::version_monitor>(krbn::constants::get_version_file_path());
-
-    version_monitor_->changed.connect([](auto&& version) {
-      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-        killer->async_kill();
-      }
-    });
-
     //
     // permission_checker_
     //
@@ -55,8 +40,6 @@ public:
       logger::get_logger()->debug("on_console_changed: on_console:{}", on_console);
 
       on_console_ = on_console;
-
-      version_monitor_->async_manual_check();
 
       permission_checker_->async_set_on_console(on_console);
 
@@ -121,13 +104,11 @@ public:
 
       session_monitor_ = nullptr;
       permission_checker_ = nullptr;
-      version_monitor_ = nullptr;
     });
   }
 
   void async_start() {
     enqueue_to_dispatcher([this] {
-      version_monitor_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
     });
   }
@@ -153,8 +134,6 @@ private:
     core_service_daemon_client_ = std::make_shared<core_service_daemon_client>();
 
     core_service_daemon_client_->connected.connect([this] {
-      version_monitor_->async_manual_check();
-
       permission_checker_->enqueue_check_permissions();
 
       // Core Service may restart while the agent keeps running, so resend the current accessibility state after reconnecting.
@@ -163,12 +142,12 @@ private:
       }
     });
 
-    core_service_daemon_client_->connect_failed.connect([this](auto&& error_code) {
-      version_monitor_->async_manual_check();
+    core_service_daemon_client_->connect_failed.connect([](auto&&) {
+      // Do nothing
     });
 
-    core_service_daemon_client_->closed.connect([this] {
-      version_monitor_->async_manual_check();
+    core_service_daemon_client_->closed.connect([] {
+      // Do nothing
     });
 
     core_service_daemon_client_->received.connect([this](auto&& operation_type,
@@ -194,7 +173,6 @@ private:
     core_service_daemon_client_ = nullptr;
   }
 
-  std::unique_ptr<version_monitor> version_monitor_;
   std::optional<bool> on_console_;
   std::unique_ptr<permission_checker> permission_checker_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;

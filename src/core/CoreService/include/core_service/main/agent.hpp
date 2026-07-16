@@ -1,5 +1,6 @@
 #pragma once
 
+#include "components_manager_killer.hpp"
 #include "core_service/agent/components_manager.hpp"
 #include "core_service/core_service_utility.hpp"
 #include "environment_variable_utility.hpp"

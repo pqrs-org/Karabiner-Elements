@@ -40,11 +40,6 @@ public:
         });
   }
 
-  [[nodiscard]] static const std::filesystem::path& get_version_file_path() {
-    static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/Karabiner-Elements/version");
-    return path;
-  }
-
   [[nodiscard]] static const std::filesystem::path& get_tmp_directory() {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/tmp");
     return path;

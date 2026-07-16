@@ -1,18 +1,9 @@
 import AppKit
 import Foundation
 
-private func versionUpdatedCallbackRelaunch() {
-  Relauncher.relaunch()
-}
-
 @MainActor
 final class KarabinerAppHelper {
   public static let shared = KarabinerAppHelper()
-
-  func observeVersionUpdated() {
-    libkrbn_enable_version_monitor()
-    libkrbn_register_version_updated_callback(versionUpdatedCallbackRelaunch)
-  }
 
   func endAllAttachedSheets(_ window: NSWindow) {
     while let sheet = window.attachedSheet {

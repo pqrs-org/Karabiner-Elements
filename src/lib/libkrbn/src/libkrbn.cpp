@@ -230,54 +230,6 @@ void libkrbn_get_modifier_flag_name(char* buffer,
 }
 
 //
-// version_monitor
-//
-
-void libkrbn_enable_version_monitor() {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->enable_version_monitor();
-  }
-}
-
-void libkrbn_disable_version_monitor() {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->disable_version_monitor();
-  }
-}
-
-void libkrbn_register_version_updated_callback(libkrbn_version_updated_t callback) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_version_monitor()) {
-      m->register_libkrbn_version_updated_callback(callback);
-    }
-  }
-}
-
-void libkrbn_unregister_version_updated_callback(libkrbn_version_updated_t callback) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_version_monitor()) {
-      m->unregister_libkrbn_version_updated_callback(callback);
-    }
-  }
-}
-
-bool libkrbn_get_version(char* buffer,
-                         size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_version_monitor()) {
-      strlcpy(buffer, m->get_version().c_str(), length);
-      return true;
-    }
-  }
-
-  return false;
-}
-
-//
 // configuration_monitor
 //
 

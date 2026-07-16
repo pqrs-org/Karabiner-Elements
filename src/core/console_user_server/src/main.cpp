@@ -1,3 +1,4 @@
+#include "components_manager_killer.hpp"
 #include "console_user_server/components_manager.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
