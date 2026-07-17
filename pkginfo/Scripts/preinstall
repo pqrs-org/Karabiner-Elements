@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
-PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH
 
 uninstall_script='/Library/Application Support/org.pqrs/Karabiner-Elements/uninstall_core.sh'
 if [ -f "$uninstall_script" ]; then

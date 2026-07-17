@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
@@ -23,30 +23,26 @@ fi
 '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'
 
 #
-# Relaunch karabiner processes
-#
-
-killall Karabiner-Core-Service
-# karabiner_grabber is the former name of Karabiner-Core-Service.
-killall karabiner_grabber
-killall karabiner_session_monitor
-killall karabiner_console_user_server
-killall Karabiner-Menu
-killall Karabiner-MultitouchExtension
-killall Karabiner-NotificationWindow
-
-#
-# Update version file
-#
-
-cp \
-    '/Library/Application Support/org.pqrs/Karabiner-Elements/package-version' \
-    '/Library/Application Support/org.pqrs/Karabiner-Elements/version'
-
-#
 # Create a backup to allow recovery if the user manually deletes Karabiner-Elements without using the uninstaller
 #
 
 tar -C /Applications -cf '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app.tar.gz' Karabiner-Elements.app
+
+#
+# Relaunch launchd-managed processes after all files have been updated
+#
+
+killall Karabiner-Core-Service
+killall karabiner_console_user_server
+# Karabiner-Elements is the setting window.
+killall Karabiner-Elements
+killall Karabiner-EventViewer
+killall Karabiner-Menu
+killall Karabiner-MultitouchExtension
+killall Karabiner-NotificationWindow
+
+# Terminate deprecated processes as well, since they may have been running before the update.
+killall karabiner_grabber
+killall karabiner_session_monitor
 
 exit 0

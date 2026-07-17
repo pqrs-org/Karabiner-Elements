@@ -23,7 +23,6 @@ mkdir -p pkgroot
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements"
 mkdir -p "$basedir"
-cp version "$basedir/package-version"
 cp src/scripts/uninstall.sh "$basedir"
 cp src/scripts/uninstall_core.sh "$basedir"
 cp src/scripts/repair.sh "$basedir"

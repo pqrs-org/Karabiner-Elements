@@ -41,7 +41,7 @@ int daemon() {
   // Run repair.sh
   //
 
-  system("/bin/sh '/Library/Application Support/org.pqrs/Karabiner-Elements/repair.sh'");
+  system("/bin/bash '/Library/Application Support/org.pqrs/Karabiner-Elements/repair.sh'");
 
   //
   // Check Karabiner-Elements.app exists

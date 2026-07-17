@@ -1,13 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
-/bin/bash '/Library/Application Support/org.pqrs/Karabiner-Elements/uninstall_core.sh'
-/bin/bash '/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/scripts/uninstall/remove_files.sh'
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH
 
-/usr/bin/killall Karabiner-Core-Service
-# karabiner_grabber is the former name of Karabiner-Core-Service.
-/usr/bin/killall karabiner_grabber
-/usr/bin/killall karabiner_session_monitor
-/usr/bin/killall karabiner_console_user_server
-/usr/bin/killall Karabiner-Elements
+bash '/Library/Application Support/org.pqrs/Karabiner-Elements/uninstall_core.sh'
+bash '/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/scripts/uninstall/remove_files.sh'
+
+killall Karabiner-Core-Service
+killall karabiner_console_user_server
+killall Karabiner-Elements
+killall Karabiner-EventViewer
+killall Karabiner-Menu
+killall Karabiner-MultitouchExtension
+killall Karabiner-NotificationWindow
 
 exit 0
