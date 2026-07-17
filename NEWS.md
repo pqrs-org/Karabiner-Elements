@@ -4,6 +4,7 @@
 
 - ⚡️ Improvements
     - Fixed an issue where the core service agent could rarely abort during termination.
+    - Karabiner-EventViewer and the Settings window are now closed after an upgrade.
 
 ## Karabiner-Elements 16.1.0
 
