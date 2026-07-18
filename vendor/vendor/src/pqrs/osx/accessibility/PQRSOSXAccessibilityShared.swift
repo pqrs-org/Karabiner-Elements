@@ -5,17 +5,19 @@
 import AppKit
 import ApplicationServices
 
+public enum PQRSOSXAccessibility {
+  public typealias MonitorCallback =
+    @Sendable @convention(c) (
+      Int32,
+      UnsafePointer<pqrs_osx_accessibility_snapshot>?
+    ) -> Void
+}
+
 enum DetectionSource: Int32, Sendable, Equatable {
   case none = 0
   case workspace = 1
   case axObserver = 2
 }
-
-public typealias PQRSOSXAccessibilityMonitorCallback =
-  @Sendable @convention(c) (
-    Int32,
-    UnsafePointer<pqrs_osx_accessibility_snapshot>?
-  ) -> Void
 
 struct WindowPosition: Sendable, Equatable {
   let x: Double
@@ -158,85 +160,100 @@ struct Snapshot: Sendable, Equatable {
   let focusedUIElement: FocusedUIElement?
 }
 
-@MainActor
-func copyFrontmostProcessIdentifier() -> pid_t? {
-  let systemWideElement = AXUIElementCreateSystemWide()
-  let (_, applicationElement) = copyAXUIElementAttributeValue(
-    systemWideElement,
-    kAXFocusedApplicationAttribute as CFString
-  )
-  let (_, systemWideFocusedUIElement) = copyAXUIElementAttributeValue(
-    systemWideElement,
-    kAXFocusedUIElementAttribute as CFString
-  )
+extension PQRSOSXAccessibility {
+  struct FrontmostProcessIdentifiers: Sendable, Equatable {
+    let axPid: pid_t?
+    let workspacePid: pid_t?
+  }
 
-  return
-    applicationElement
-    .flatMap(copyPid(_:))
-    ?? systemWideFocusedUIElement
-    .flatMap(copyPid(_:))
-    ?? NSWorkspace.shared.frontmostApplication?.processIdentifier
+  struct FrontmostProcessIdentifierResolution: Sendable, Equatable {
+    let processIdentifier: pid_t?
+    let detectionSource: DetectionSource
+    let sourceProcessIdentifiers: FrontmostProcessIdentifiers
+  }
+
+  static func makeFrontmostProcessIdentifiers(
+    applicationElement: AXUIElement?,
+    systemWideFocusedUIElement: AXUIElement?,
+    workspaceFrontmostApplication: NSRunningApplication?
+  ) -> FrontmostProcessIdentifiers {
+    FrontmostProcessIdentifiers(
+      axPid:
+        applicationElement
+        .flatMap(copyPid(_:))
+        ?? systemWideFocusedUIElement
+        .flatMap(copyPid(_:)),
+      workspacePid: workspaceFrontmostApplication?.processIdentifier
+    )
+  }
+
+  @MainActor
+  static func copyFrontmostProcessIdentifiers() -> FrontmostProcessIdentifiers {
+    let systemWideElement = AXUIElementCreateSystemWide()
+    let (_, applicationElement) = copyAXUIElementAttributeValue(
+      systemWideElement,
+      kAXFocusedApplicationAttribute as CFString
+    )
+    let (_, systemWideFocusedUIElement) = copyAXUIElementAttributeValue(
+      systemWideElement,
+      kAXFocusedUIElementAttribute as CFString
+    )
+
+    return makeFrontmostProcessIdentifiers(
+      applicationElement: applicationElement,
+      systemWideFocusedUIElement: systemWideFocusedUIElement,
+      workspaceFrontmostApplication: NSWorkspace.shared.frontmostApplication
+    )
+  }
 }
 
 @MainActor
 func resolveFrontmostApplication(
   cachedApplication: FrontmostApplication?,
   workspaceFrontmostApplication: NSRunningApplication?,
-  applicationElement: AXUIElement?,
-  systemWideFocusedUIElement: AXUIElement?,
+  resolution: PQRSOSXAccessibility.FrontmostProcessIdentifierResolution,
   handleProcessIdentifier: (pid_t?, DetectionSource) -> Void
 ) -> FrontmostApplication? {
-  let axProcessIdentifier =
-    applicationElement
-    .flatMap(copyPid(_:))
-    ?? systemWideFocusedUIElement
-    .flatMap(copyPid(_:))
-
-  let workspaceProcessIdentifier = workspaceFrontmostApplication?.processIdentifier
-  let processIdentifier: pid_t? =
-    if let axProcessIdentifier, axProcessIdentifier != 0 {
-      axProcessIdentifier
-    } else if let workspaceProcessIdentifier, workspaceProcessIdentifier != 0 {
-      workspaceProcessIdentifier
-    } else {
-      nil
-    }
-
-  let detectionSource: DetectionSource
-  if let axProcessIdentifier, axProcessIdentifier != 0 {
-    if workspaceProcessIdentifier == nil
-      || workspaceProcessIdentifier == 0
-      || workspaceProcessIdentifier != axProcessIdentifier
-    {
-      handleProcessIdentifier(workspaceProcessIdentifier, .workspace)
-      handleProcessIdentifier(axProcessIdentifier, .axObserver)
-      detectionSource = .axObserver
-    } else {
-      handleProcessIdentifier(axProcessIdentifier, .workspace)
-      detectionSource = .workspace
-    }
-  } else if let workspaceProcessIdentifier, workspaceProcessIdentifier != 0 {
-    handleProcessIdentifier(workspaceProcessIdentifier, .workspace)
-    detectionSource = .workspace
-  } else {
-    detectionSource = .none
+  switch resolution.detectionSource {
+  case .workspace:
+    handleProcessIdentifier(
+      resolution.sourceProcessIdentifiers.workspacePid,
+      .workspace
+    )
+  case .axObserver:
+    // An AX-detected result means AX and Workspace disagree and the AX PID was
+    // selected; it does not mean that Workspace has no PID. Register both sides
+    // with their actual sources so the observation controller can keep the
+    // Workspace-known process classified normally while attaching an AXObserver
+    // to the AX-only process. This also lets later convergence or termination
+    // remove the extra AXObserver through the normal synchronization path.
+    handleProcessIdentifier(
+      resolution.sourceProcessIdentifiers.workspacePid,
+      .workspace
+    )
+    handleProcessIdentifier(
+      resolution.sourceProcessIdentifiers.axPid,
+      .axObserver
+    )
+  case .none:
+    break
   }
 
-  return if let processIdentifier {
+  return if let processIdentifier = resolution.processIdentifier {
     if cachedApplication?.processIdentifier == processIdentifier,
-      cachedApplication?.detectionSource == detectionSource
+      cachedApplication?.detectionSource == resolution.detectionSource
     {
       cachedApplication
     } else {
       FrontmostApplication(
         processIdentifier: processIdentifier,
-        detectionSource: detectionSource
+        detectionSource: resolution.detectionSource
       )
     }
   } else {
     FrontmostApplication(
       workspaceFrontmostApplication,
-      detectionSource: detectionSource
+      detectionSource: resolution.detectionSource
     )
   }
 }
@@ -402,6 +419,9 @@ func copyFrontmostWindowGeometry(_ processIdentifier: pid_t) -> WindowGeometry? 
 @MainActor
 func copySnapshot(
   cachedApplication: FrontmostApplication?,
+  resolveProcessIdentifiers: (
+    PQRSOSXAccessibility.FrontmostProcessIdentifiers
+  ) -> PQRSOSXAccessibility.FrontmostProcessIdentifierResolution,
   handleProcessIdentifier: (pid_t?, DetectionSource) -> Void
 ) -> Snapshot {
   let systemWideElement = AXUIElementCreateSystemWide()
@@ -415,11 +435,16 @@ func copySnapshot(
     kAXFocusedUIElementAttribute as CFString
   )
 
+  let processIdentifiers = PQRSOSXAccessibility.makeFrontmostProcessIdentifiers(
+    applicationElement: applicationElement,
+    systemWideFocusedUIElement: systemWideFocusedUIElement,
+    workspaceFrontmostApplication: workspaceFrontmostApplication
+  )
+
   let resolvedApplication = resolveFrontmostApplication(
     cachedApplication: cachedApplication,
     workspaceFrontmostApplication: workspaceFrontmostApplication,
-    applicationElement: applicationElement,
-    systemWideFocusedUIElement: systemWideFocusedUIElement,
+    resolution: resolveProcessIdentifiers(processIdentifiers),
     handleProcessIdentifier: handleProcessIdentifier
   )
 

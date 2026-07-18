@@ -21,23 +21,23 @@ private func syncMainActorCall(_ operation: @MainActor () -> Void) {
 
 @_cdecl("pqrs_osx_accessibility_monitor_set_callback")
 func PQRSOSXAccessibilityMonitorSetCallback(
-  _ callback: @escaping PQRSOSXAccessibilityMonitorCallback
+  _ callback: @escaping PQRSOSXAccessibility.MonitorCallback
 ) {
   syncMainActorCall {
-    PQRSOSXAccessibilityMonitor.shared.setCallback(callback)
+    PQRSOSXAccessibility.Monitor.shared.setCallback(callback)
   }
 }
 
 @_cdecl("pqrs_osx_accessibility_monitor_unset_callback")
 func PQRSOSXAccessibilityMonitorUnsetCallback() {
   syncMainActorCall {
-    PQRSOSXAccessibilityMonitor.shared.unsetCallback()
+    PQRSOSXAccessibility.Monitor.shared.unsetCallback()
   }
 }
 
 @_cdecl("pqrs_osx_accessibility_monitor_trigger")
 func PQRSOSXAccessibilityMonitorTrigger() {
   syncMainActorCall {
-    PQRSOSXAccessibilityMonitor.shared.trigger()
+    PQRSOSXAccessibility.Monitor.shared.trigger()
   }
 }

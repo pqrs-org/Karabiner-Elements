@@ -20,230 +20,232 @@ private let accessibilityObserverCallback: AXObserverCallback = { _, _, _, refco
 
   let callbackGeneration = Int(bitPattern: refcon)
   Task { @MainActor in
-    PQRSOSXAccessibilityMonitor.shared.requestRefresh(
+    PQRSOSXAccessibility.Monitor.shared.requestRefresh(
       force: false,
       callbackGeneration: callbackGeneration
     )
   }
 }
 
-@MainActor
-final class PQRSOSXAccessibilityObservationController {
-  private var activationObserver: NSObjectProtocol?
-  private var terminationObserver: NSObjectProtocol?
-  // PIDs that have been observed through NSWorkspace activation notifications.
-  private var workspaceKnownPIDs: Set<pid_t> = []
-  // PIDs discovered outside NSWorkspace that still need AXObserver-based tracking.
-  private var observerManagedPIDs: Set<pid_t> = []
-  private var observersByPID: [pid_t: AXObserver] = [:]
-  // The current frontmost PID used to keep frontmost-app observation attached.
-  private var frontmostProcessIdentifier: pid_t?
-  private var callbackGeneration = 0
+extension PQRSOSXAccessibility {
+  @MainActor
+  final class ObservationController {
+    private var activationObserver: NSObjectProtocol?
+    private var terminationObserver: NSObjectProtocol?
+    // PIDs that have been observed through NSWorkspace activation notifications.
+    private var workspaceKnownPIDs: Set<pid_t> = []
+    // PIDs discovered outside NSWorkspace that still need AXObserver-based tracking.
+    private var observerManagedPIDs: Set<pid_t> = []
+    private var observersByPID: [pid_t: AXObserver] = [:]
+    // The current frontmost PID used to keep frontmost-app observation attached.
+    private var frontmostProcessIdentifier: pid_t?
+    private var callbackGeneration = 0
 
-  func start(callbackGeneration: Int) {
-    guard activationObserver == nil, terminationObserver == nil else {
-      return
-    }
-
-    self.callbackGeneration = callbackGeneration
-
-    activationObserver = NSWorkspace.shared.notificationCenter.addObserver(
-      forName: NSWorkspace.didActivateApplicationNotification,
-      object: nil,
-      queue: nil
-    ) { [weak self] _ in
-      guard let self else {
+    func start(callbackGeneration: Int) {
+      guard activationObserver == nil, terminationObserver == nil else {
         return
       }
 
-      Task { @MainActor in
-        guard self.isCurrentCallbackGeneration(callbackGeneration) else {
+      self.callbackGeneration = callbackGeneration
+
+      activationObserver = NSWorkspace.shared.notificationCenter.addObserver(
+        forName: NSWorkspace.didActivateApplicationNotification,
+        object: nil,
+        queue: nil
+      ) { [weak self] _ in
+        guard let self else {
           return
         }
 
-        self.requestRefresh(callbackGeneration: callbackGeneration)
+        Task { @MainActor in
+          guard self.isCurrentCallbackGeneration(callbackGeneration) else {
+            return
+          }
+
+          self.requestRefresh(callbackGeneration: callbackGeneration)
+        }
       }
+
+      terminationObserver = NSWorkspace.shared.notificationCenter.addObserver(
+        forName: NSWorkspace.didTerminateApplicationNotification,
+        object: nil,
+        queue: nil
+      ) { [weak self] notification in
+        guard let self else {
+          return
+        }
+
+        Task { @MainActor in
+          guard self.isCurrentCallbackGeneration(callbackGeneration) else {
+            return
+          }
+
+          let processIdentifier =
+            (notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication)?
+            .processIdentifier
+
+          self.pruneProcessIdentifier(processIdentifier)
+          self.requestRefresh(callbackGeneration: callbackGeneration)
+        }
+      }
+
+      requestRefresh(callbackGeneration: callbackGeneration)
     }
 
-    terminationObserver = NSWorkspace.shared.notificationCenter.addObserver(
-      forName: NSWorkspace.didTerminateApplicationNotification,
-      object: nil,
-      queue: nil
-    ) { [weak self] notification in
-      guard let self else {
+    func stop() {
+      if let activationObserver {
+        NSWorkspace.shared.notificationCenter.removeObserver(activationObserver)
+        self.activationObserver = nil
+      }
+
+      if let terminationObserver {
+        NSWorkspace.shared.notificationCenter.removeObserver(terminationObserver)
+        self.terminationObserver = nil
+      }
+
+      for processIdentifier in Array(observersByPID.keys) {
+        detachObserver(processIdentifier: processIdentifier)
+      }
+
+      workspaceKnownPIDs.removeAll()
+      observerManagedPIDs.removeAll()
+      observersByPID.removeAll()
+      frontmostProcessIdentifier = nil
+      callbackGeneration = 0
+    }
+
+    func registerProcessIdentifier(_ processIdentifier: pid_t?, detectionSource: DetectionSource) {
+      guard let processIdentifier, processIdentifier != 0 else {
         return
       }
 
-      Task { @MainActor in
-        guard self.isCurrentCallbackGeneration(callbackGeneration) else {
+      switch detectionSource {
+      case .workspace:
+        workspaceKnownPIDs.insert(processIdentifier)
+        observerManagedPIDs.remove(processIdentifier)
+
+      case .axObserver:
+        guard !workspaceKnownPIDs.contains(processIdentifier) else {
           return
         }
 
-        let processIdentifier =
-          (notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication)?
-          .processIdentifier
+        observerManagedPIDs.insert(processIdentifier)
 
-        self.pruneProcessIdentifier(processIdentifier)
-        self.requestRefresh(callbackGeneration: callbackGeneration)
+      case .none:
+        break
       }
     }
 
-    requestRefresh(callbackGeneration: callbackGeneration)
-  }
+    func pruneProcessIdentifier(_ processIdentifier: pid_t?) {
+      guard let processIdentifier, processIdentifier != 0 else {
+        return
+      }
 
-  func stop() {
-    if let activationObserver {
-      NSWorkspace.shared.notificationCenter.removeObserver(activationObserver)
-      self.activationObserver = nil
-    }
-
-    if let terminationObserver {
-      NSWorkspace.shared.notificationCenter.removeObserver(terminationObserver)
-      self.terminationObserver = nil
-    }
-
-    for processIdentifier in Array(observersByPID.keys) {
-      detachObserver(processIdentifier: processIdentifier)
-    }
-
-    workspaceKnownPIDs.removeAll()
-    observerManagedPIDs.removeAll()
-    observersByPID.removeAll()
-    frontmostProcessIdentifier = nil
-    callbackGeneration = 0
-  }
-
-  func registerProcessIdentifier(_ processIdentifier: pid_t?, detectionSource: DetectionSource) {
-    guard let processIdentifier, processIdentifier != 0 else {
-      return
-    }
-
-    switch detectionSource {
-    case .workspace:
-      workspaceKnownPIDs.insert(processIdentifier)
+      workspaceKnownPIDs.remove(processIdentifier)
       observerManagedPIDs.remove(processIdentifier)
 
-    case .axObserver:
-      guard !workspaceKnownPIDs.contains(processIdentifier) else {
-        return
+      if frontmostProcessIdentifier == processIdentifier {
+        frontmostProcessIdentifier = nil
       }
 
-      observerManagedPIDs.insert(processIdentifier)
-
-    case .none:
-      break
-    }
-  }
-
-  func pruneProcessIdentifier(_ processIdentifier: pid_t?) {
-    guard let processIdentifier, processIdentifier != 0 else {
-      return
-    }
-
-    workspaceKnownPIDs.remove(processIdentifier)
-    observerManagedPIDs.remove(processIdentifier)
-
-    if frontmostProcessIdentifier == processIdentifier {
-      frontmostProcessIdentifier = nil
-    }
-
-    detachObserver(processIdentifier: processIdentifier)
-  }
-
-  func pruneStaleProcessIdentifiers() {
-    let knownProcessIdentifiers =
-      workspaceKnownPIDs
-      .union(observerManagedPIDs)
-      .union(observersByPID.keys)
-
-    for processIdentifier in knownProcessIdentifiers
-    where NSRunningApplication(processIdentifier: processIdentifier) == nil {
-      pruneProcessIdentifier(processIdentifier)
-    }
-  }
-
-  private func requestRefresh(callbackGeneration: Int) {
-    Task { @MainActor in
-      PQRSOSXAccessibilityMonitor.shared.requestRefresh(
-        force: false,
-        callbackGeneration: callbackGeneration
-      )
-    }
-  }
-
-  private func isCurrentCallbackGeneration(_ callbackGeneration: Int) -> Bool {
-    self.callbackGeneration == callbackGeneration
-  }
-
-  func syncObservers(frontmostProcessIdentifier: pid_t?) {
-    self.frontmostProcessIdentifier = frontmostProcessIdentifier
-
-    var targetPIDs = observerManagedPIDs.subtracting(workspaceKnownPIDs)
-
-    if let frontmostProcessIdentifier, frontmostProcessIdentifier != 0 {
-      targetPIDs.insert(frontmostProcessIdentifier)
-    }
-
-    let stalePIDs = Set(observersByPID.keys).subtracting(targetPIDs)
-    for processIdentifier in stalePIDs {
       detachObserver(processIdentifier: processIdentifier)
     }
 
-    for processIdentifier in targetPIDs {
-      attachObserver(processIdentifier: processIdentifier)
-    }
-  }
+    func pruneStaleProcessIdentifiers() {
+      let knownProcessIdentifiers =
+        workspaceKnownPIDs
+        .union(observerManagedPIDs)
+        .union(observersByPID.keys)
 
-  private func attachObserver(processIdentifier: pid_t) {
-    guard processIdentifier != 0 else {
-      return
-    }
-
-    guard observersByPID[processIdentifier] == nil else {
-      return
-    }
-
-    var observer: AXObserver?
-    let error = AXObserverCreate(processIdentifier, accessibilityObserverCallback, &observer)
-    guard error == .success, let observer else {
-      return
-    }
-
-    let applicationElement = AXUIElementCreateApplication(processIdentifier)
-    var registered = false
-
-    for notification in observedAccessibilityNotifications {
-      let error = AXObserverAddNotification(
-        observer,
-        applicationElement,
-        notification,
-        UnsafeMutableRawPointer(bitPattern: callbackGeneration)
-      )
-      if error == .success {
-        registered = true
+      for processIdentifier in knownProcessIdentifiers
+      where NSRunningApplication(processIdentifier: processIdentifier) == nil {
+        pruneProcessIdentifier(processIdentifier)
       }
     }
 
-    guard registered else {
-      return
+    private func requestRefresh(callbackGeneration: Int) {
+      Task { @MainActor in
+        PQRSOSXAccessibility.Monitor.shared.requestRefresh(
+          force: false,
+          callbackGeneration: callbackGeneration
+        )
+      }
     }
 
-    CFRunLoopAddSource(
-      CFRunLoopGetMain(),
-      AXObserverGetRunLoopSource(observer),
-      .commonModes
-    )
+    private func isCurrentCallbackGeneration(_ callbackGeneration: Int) -> Bool {
+      self.callbackGeneration == callbackGeneration
+    }
 
-    observersByPID[processIdentifier] = observer
-  }
+    func syncObservers(frontmostProcessIdentifier: pid_t?) {
+      self.frontmostProcessIdentifier = frontmostProcessIdentifier
 
-  private func detachObserver(processIdentifier: pid_t) {
-    if let axObserver = observersByPID.removeValue(forKey: processIdentifier) {
-      CFRunLoopRemoveSource(
+      var targetPIDs = observerManagedPIDs.subtracting(workspaceKnownPIDs)
+
+      if let frontmostProcessIdentifier, frontmostProcessIdentifier != 0 {
+        targetPIDs.insert(frontmostProcessIdentifier)
+      }
+
+      let stalePIDs = Set(observersByPID.keys).subtracting(targetPIDs)
+      for processIdentifier in stalePIDs {
+        detachObserver(processIdentifier: processIdentifier)
+      }
+
+      for processIdentifier in targetPIDs {
+        attachObserver(processIdentifier: processIdentifier)
+      }
+    }
+
+    private func attachObserver(processIdentifier: pid_t) {
+      guard processIdentifier != 0 else {
+        return
+      }
+
+      guard observersByPID[processIdentifier] == nil else {
+        return
+      }
+
+      var observer: AXObserver?
+      let error = AXObserverCreate(processIdentifier, accessibilityObserverCallback, &observer)
+      guard error == .success, let observer else {
+        return
+      }
+
+      let applicationElement = AXUIElementCreateApplication(processIdentifier)
+      var registered = false
+
+      for notification in observedAccessibilityNotifications {
+        let error = AXObserverAddNotification(
+          observer,
+          applicationElement,
+          notification,
+          UnsafeMutableRawPointer(bitPattern: callbackGeneration)
+        )
+        if error == .success {
+          registered = true
+        }
+      }
+
+      guard registered else {
+        return
+      }
+
+      CFRunLoopAddSource(
         CFRunLoopGetMain(),
-        AXObserverGetRunLoopSource(axObserver),
+        AXObserverGetRunLoopSource(observer),
         .commonModes
       )
+
+      observersByPID[processIdentifier] = observer
+    }
+
+    private func detachObserver(processIdentifier: pid_t) {
+      if let axObserver = observersByPID.removeValue(forKey: processIdentifier) {
+        CFRunLoopRemoveSource(
+          CFRunLoopGetMain(),
+          AXObserverGetRunLoopSource(axObserver),
+          .commonModes
+        )
+      }
     }
   }
 }
