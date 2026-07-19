@@ -37,13 +37,6 @@ public:
   }
 
   void add_frontmost_application_history(const application& application) {
-    // Skip non-applications like "/System/Library/Frameworks/LocalAuthentication.framework/Support/coreautha.bundle".
-    if (auto v = application.get_bundle_path()) {
-      if (!pqrs::cf::bundle::application(*v)) {
-        return;
-      }
-    }
-
     //
     // Remove any identical entries that already exist.
     //
@@ -147,6 +140,14 @@ private:
       std::optional<application> target_application;
 
       for (const auto& h : frontmost_application_history_) {
+        // Keep non-applications in the history for EventViewer, but do not include them
+        // in frontmost_application_history_index candidates.
+        // For example: "/System/Library/Frameworks/LocalAuthentication.framework/Support/coreautha.bundle".
+        if (auto bundle_path = h.get_bundle_path();
+            bundle_path && !pqrs::cf::bundle::application(*bundle_path)) {
+          continue;
+        }
+
         // We should exclude applications such as Spotlight detected via ax_observer
         // because opening them directly can result in unpredictable behavior,
         // for example, the tooltip window stays on screen indefinitely.
