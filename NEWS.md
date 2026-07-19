@@ -5,6 +5,7 @@
 - ⚡️ Improvements
     - Fixed an issue where the core service agent could rarely abort during termination.
     - Karabiner-EventViewer and the Settings window are now closed after an upgrade.
+    - Added support for unbundled GUI apps in `frontmost_application_if` and `frontmost_application_unless`.
 
 ## Karabiner-Elements 16.1.0
 
