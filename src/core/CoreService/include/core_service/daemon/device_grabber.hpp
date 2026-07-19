@@ -453,6 +453,10 @@ public:
 
   ~device_grabber() override {
     detach_from_dispatcher([this] {
+      // Invalidate callbacks from an event_tap_monitor that is still stopping.
+      event_tap_monitor_lifetime_ = nullptr;
+      pending_event_tap_monitor_configuration_ = std::nullopt;
+
       stop();
 
       power_management_monitor_ = nullptr;
@@ -752,7 +756,7 @@ private:
       logger::get_logger()->info("Connected devices are ungrabbed");
     });
 
-    event_tap_monitor_ = nullptr;
+    async_stop_event_tap_monitor();
 
     virtual_hid_device_service_client_->async_stop();
 
@@ -1146,6 +1150,44 @@ private:
     logger::get_logger()->debug("setup_event_tap_monitor (enable_cgeventtap_fallback={0})",
                                 cgeventtap_fallback_enabled);
 
+    // Keep only the latest requested configuration while the previous monitor
+    // is stopping. This prevents old and new EventTaps from being active at the
+    // same time when configuration changes arrive in quick succession.
+    pending_event_tap_monitor_configuration_ = cgeventtap_fallback_enabled;
+
+    if (event_tap_monitor_stopping_) {
+      return;
+    }
+
+    if (event_tap_monitor_) {
+      event_tap_monitor_stopping_ = true;
+
+      std::weak_ptr<bool> weak_lifetime(event_tap_monitor_lifetime_);
+      async_stop_event_tap_monitor([this, weak_lifetime] {
+        // Both invalidation and this completion run on the shared dispatcher,
+        // so a valid token guarantees that device_grabber is still alive here.
+        if (!weak_lifetime.lock()) {
+          return;
+        }
+
+        event_tap_monitor_stopping_ = false;
+        create_pending_event_tap_monitor();
+      });
+
+      return;
+    }
+
+    create_pending_event_tap_monitor();
+  }
+
+  void create_pending_event_tap_monitor() {
+    if (!pending_event_tap_monitor_configuration_) {
+      return;
+    }
+
+    auto cgeventtap_fallback_enabled = *pending_event_tap_monitor_configuration_;
+    pending_event_tap_monitor_configuration_ = std::nullopt;
+
     event_tap_monitor_ = std::make_unique<event_tap_monitor>(
         cgeventtap_fallback_enabled,
         post_event_to_virtual_devices_manipulator_->get_virtual_hid_keyboard_pressed_keys_manager(),
@@ -1171,6 +1213,27 @@ private:
     });
 
     event_tap_monitor_->async_start();
+  }
+
+  void async_stop_event_tap_monitor(std::function<void()> completion = nullptr) {
+    if (!event_tap_monitor_) {
+      if (completion) {
+        completion();
+      }
+      return;
+    }
+
+    // Remove the monitor from device_grabber immediately so shutdown or a new
+    // setup can continue without waiting for its run-loop thread. Keep it alive
+    // through the completion until EventTap cleanup has finished on that thread.
+    std::shared_ptr<event_tap_monitor> event_tap_monitor(std::move(event_tap_monitor_));
+    event_tap_monitor->async_stop([event_tap_monitor, completion] {
+      // Keep event_tap_monitor alive until its run loop has stopped, then
+      // continue a pending replacement if the owner is still alive.
+      if (completion) {
+        completion();
+      }
+    });
   }
 
   // Some input paths (for example around secure event input transitions or CGEventTap fallback re-entry)
@@ -1226,6 +1289,9 @@ private:
   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
 
   std::unique_ptr<event_tap_monitor> event_tap_monitor_;
+  std::shared_ptr<bool> event_tap_monitor_lifetime_ = std::make_shared<bool>();
+  std::optional<bool> pending_event_tap_monitor_configuration_;
+  bool event_tap_monitor_stopping_ = false;
   std::optional<bool> last_caps_lock_state_;
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<device_id, pqrs::not_null_shared_ptr_t<device_grabber_details::entry>> entries_;

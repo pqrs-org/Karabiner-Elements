@@ -1,6 +1,8 @@
 #pragma once
 
 // `krbn::event_tap_monitor` can be used safely in a multi-threaded environment.
+// The owner must call async_stop and wait for its completion before releasing
+// the last reference.
 
 #include "event_tap_utility.hpp"
 #include "keyboard_fallback_loop_guard.hpp"
@@ -8,7 +10,9 @@
 #include "logger.hpp"
 #include "pressed_keys_manager.hpp"
 #include <chrono>
+#include <cstdlib>
 #include <deque>
+#include <functional>
 #include <mutex>
 #include <nod/nod.hpp>
 #include <pqrs/cf/cf_ptr.hpp>
@@ -40,7 +44,35 @@ public:
   }
 
   ~event_tap_monitor() {
-    detach_from_dispatcher([this] {
+    // async_stop has already stopped the run loop before the owner releases
+    // the last reference, so terminate only has to join the stopped thread.
+    detach_from_dispatcher();
+
+    cf_run_loop_thread_->terminate();
+
+    // Releasing the EventTap resources without completing async_stop can race
+    // with a callback on the run-loop thread. Treat this lifetime contract
+    // violation as unrecoverable in every build configuration.
+    if (!event_tap_cleanup_completed_) {
+      std::abort();
+    }
+    cf_run_loop_thread_ = nullptr;
+
+    logger::get_logger()->debug("event_tap_monitor terminated");
+  }
+
+  void async_stop(std::function<void()> completion) {
+    // The owner of event_tap_monitor may be destroyed while the run loop is
+    // finishing a callback. Disconnect the signals first so that callbacks
+    // already queued on the dispatcher cannot call the owner afterward.
+    pointing_device_event_arrived.disconnect_all_slots();
+    keyboard_event_arrived.disconnect_all_slots();
+
+    // EventTap callbacks and this cleanup run serially on the same run loop.
+    // If a callback is in progress, this block runs after it returns. Performing
+    // the cleanup here prevents the EventTap and its source from being destroyed
+    // concurrently with a callback.
+    cf_run_loop_thread_->enqueue(^{
       std::lock_guard<std::mutex> lock(event_tap_mutex_);
 
       if (event_tap_) {
@@ -56,11 +88,15 @@ public:
         event_tap_ = nullptr;
       }
 
-      logger::get_logger()->debug("event_tap_monitor terminated");
-    });
+      event_tap_cleanup_completed_ = true;
+      CFRunLoopStop(cf_run_loop_thread_->get_run_loop());
+      logger::get_logger()->debug("event_tap_monitor run loop stop requested");
 
-    cf_run_loop_thread_->terminate();
-    cf_run_loop_thread_ = nullptr;
+      // Deliver completion on the shared dispatcher. The completion retains
+      // this instance until the run loop has stopped, and releasing it there
+      // keeps a potentially slow callback from blocking the dispatcher.
+      enqueue_to_dispatcher(completion);
+    });
   }
 
   void async_start() {
@@ -432,6 +468,7 @@ private:
   mutable std::mutex event_tap_mutex_;
   pqrs::cf::cf_ptr<CFMachPortRef> event_tap_;
   pqrs::cf::cf_ptr<CFRunLoopSourceRef> run_loop_source_;
+  bool event_tap_cleanup_completed_ = false;
   bool fn_pressed_{false};
   keyboard_fallback_loop_guard keyboard_fallback_loop_guard_;
   static constexpr auto fn_modified_key_down_event_ttl_ = std::chrono::seconds(30);
