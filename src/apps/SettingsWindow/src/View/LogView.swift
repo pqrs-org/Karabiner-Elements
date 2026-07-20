@@ -233,37 +233,3 @@ private struct FilteredLogMessageEntry: Identifiable {
       backgroundColor: Color(NSColor.textColor))
   }
 }
-
-private struct SearchField: NSViewRepresentable {
-  @Binding var text: String
-
-  func makeCoordinator() -> Coordinator {
-    Coordinator(text: $text)
-  }
-
-  func makeNSView(context: Context) -> NSSearchField {
-    let searchField = NSSearchField()
-    searchField.placeholderString = "Filter"
-    searchField.delegate = context.coordinator
-    return searchField
-  }
-
-  func updateNSView(_ searchField: NSSearchField, context _: Context) {
-    if searchField.stringValue != text {
-      searchField.stringValue = text
-    }
-  }
-
-  final class Coordinator: NSObject, NSSearchFieldDelegate {
-    @Binding private var text: String
-
-    init(text: Binding<String>) {
-      _text = text
-    }
-
-    func controlTextDidChange(_ notification: Notification) {
-      guard let searchField = notification.object as? NSSearchField else { return }
-      text = searchField.stringValue
-    }
-  }
-}
