@@ -13,6 +13,20 @@ struct ComplexModificationsView: View {
   @State private var showingEditSheet = false
   @State private var hoverRuleIndex: Int?
   @State private var editingRule: LibKrbn.ComplexModificationsRule?
+  @State private var filterKeyword = ""
+
+  private var normalizedFilterKeyword: String {
+    filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
+  private func matchesFilter(_ rule: LibKrbn.ComplexModificationsRule) -> Bool {
+    let keyword = normalizedFilterKeyword
+    if keyword.isEmpty {
+      return true
+    }
+
+    return rule.searchText?.localizedCaseInsensitiveContains(keyword) == true
+  }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
@@ -76,121 +90,131 @@ struct ComplexModificationsView: View {
 
       Divider()
 
-      if settings.complexModificationsRules.count > 1 {
-        HStack {
-          Text("You can reorder list by dragging")
-          Image(systemName: "arrow.up.arrow.down.square.fill")
-            .resizable(resizingMode: .stretch)
-            .frame(width: 16.0, height: 16.0)
-          Text("icon")
+      HStack {
+        if normalizedFilterKeyword.isEmpty && settings.complexModificationsRules.count > 1 {
+          HStack {
+            Text("You can reorder list by dragging")
+            Image(systemName: "arrow.up.arrow.down.square.fill")
+              .resizable(resizingMode: .stretch)
+              .frame(width: 16.0, height: 16.0)
+            Text("icon")
+          }
         }
-        .padding()
+
+        Spacer()
+
+        SearchField(text: $filterKeyword, placeholderString: "Filter by description or JSON")
+          .frame(width: 300)
       }
+      .padding(.horizontal)
+      .padding(.top)
 
       List {
         ForEach($settings.complexModificationsRules) { $complexModificationRule in
-          // Store the ruleIndex here to prevent referencing a deleted complexModificationRule in onHover when a rule is removed.
-          let ruleIndex = complexModificationRule.index
+          if matchesFilter(complexModificationRule) {
+            // Store the ruleIndex here to prevent referencing a deleted complexModificationRule in onHover when a rule is removed.
+            let ruleIndex = complexModificationRule.index
 
-          HStack(alignment: .center, spacing: 0) {
-            if settings.complexModificationsRules.count > 1 {
-              Image(systemName: "arrow.up.arrow.down.square.fill")
-                .resizable(resizingMode: .stretch)
-                .frame(width: 16.0, height: 16.0)
-                .padding(.trailing, 6.0)
-                .onHover { hovering in
-                  if hovering {
-                    moveDisabled = false
-                  } else if NSEvent.pressedMouseButtons == 0 {
-                    moveDisabled = true
-                  }
-                }
-                .contextMenu {
-                  Section(header: Text("Position")) {
-                    Button {
-                      settings.moveComplexModificationsRule(complexModificationRule.index, 0)
-                    } label: {
-                      Label("Move item to top", systemImage: "arrow.up.to.line")
-                    }
-
-                    Button {
-                      settings.moveComplexModificationsRule(
-                        complexModificationRule.index, settings.complexModificationsRules.count)
-                    } label: {
-                      Label("Move item to bottom", systemImage: "arrow.down.to.line")
+            HStack(alignment: .center, spacing: 0) {
+              if normalizedFilterKeyword.isEmpty && settings.complexModificationsRules.count > 1 {
+                Image(systemName: "arrow.up.arrow.down.square.fill")
+                  .resizable(resizingMode: .stretch)
+                  .frame(width: 16.0, height: 16.0)
+                  .padding(.trailing, 6.0)
+                  .onHover { hovering in
+                    if hovering {
+                      moveDisabled = false
+                    } else if NSEvent.pressedMouseButtons == 0 {
+                      moveDisabled = true
                     }
                   }
-                }
-            }
+                  .contextMenu {
+                    Section(header: Text("Position")) {
+                      Button {
+                        settings.moveComplexModificationsRule(complexModificationRule.index, 0)
+                      } label: {
+                        Label("Move item to top", systemImage: "arrow.up.to.line")
+                      }
 
-            HStack {
-              Text(complexModificationRule.description)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .if(!complexModificationRule.enabled) {
-                  $0.foregroundColor(.gray)
-                }
-
-              if !complexModificationRule.enabled {
-                Text("disabled")
-                  .foregroundColor(.gray)
+                      Button {
+                        settings.moveComplexModificationsRule(
+                          complexModificationRule.index, settings.complexModificationsRules.count)
+                      } label: {
+                        Label("Move item to bottom", systemImage: "arrow.down.to.line")
+                      }
+                    }
+                  }
               }
-            }
-            .if(hoverRuleIndex == ruleIndex) {
-              $0.overlay(
-                RoundedRectangle(cornerRadius: 2)
-                  .inset(by: -4)
-                  .stroke(
-                    Color.accentColor,
-                    lineWidth: 2
-                  )
-              )
-            }
 
-            HStack(alignment: .center, spacing: 10) {
-              Toggle(isOn: $complexModificationRule.enabled) {
-                Text("")
-              }
-              .switchToggleStyle()
-              .padding(.trailing, 10.0)
-              .frame(width: 60)
+              HStack {
+                Text(complexModificationRule.description)
+                  .frame(maxWidth: .infinity, alignment: .leading)
+                  .if(!complexModificationRule.enabled) {
+                    $0.foregroundColor(.gray)
+                  }
 
-              Button(
-                action: {
-                  editingRule = complexModificationRule
-                  showingEditSheet = true
-                },
-                label: {
-                  Label("Edit", systemImage: "pencil.circle.fill")
-                })
-
-              Button(
-                role: .destructive,
-                action: {
-                  settings.removeComplexModificationsRule(complexModificationRule)
-                },
-                label: {
-                  Image(systemName: "trash")
-                    .buttonLabelStyle()
-                }
-              )
-              .deleteButtonStyle()
-              .frame(width: 60)
-            }
-            .onHover { hovering in
-              if hovering {
-                hoverRuleIndex = ruleIndex
-              } else {
-                if hoverRuleIndex == ruleIndex {
-                  hoverRuleIndex = nil
+                if !complexModificationRule.enabled {
+                  Text("disabled")
+                    .foregroundColor(.gray)
                 }
               }
+              .if(hoverRuleIndex == ruleIndex) {
+                $0.overlay(
+                  RoundedRectangle(cornerRadius: 2)
+                    .inset(by: -4)
+                    .stroke(
+                      Color.accentColor,
+                      lineWidth: 2
+                    )
+                )
+              }
+
+              HStack(alignment: .center, spacing: 10) {
+                Toggle(isOn: $complexModificationRule.enabled) {
+                  Text("")
+                }
+                .switchToggleStyle()
+                .padding(.trailing, 10.0)
+                .frame(width: 60)
+
+                Button(
+                  action: {
+                    editingRule = complexModificationRule
+                    showingEditSheet = true
+                  },
+                  label: {
+                    Label("Edit", systemImage: "pencil.circle.fill")
+                  })
+
+                Button(
+                  role: .destructive,
+                  action: {
+                    settings.removeComplexModificationsRule(complexModificationRule)
+                  },
+                  label: {
+                    Image(systemName: "trash")
+                      .buttonLabelStyle()
+                  }
+                )
+                .deleteButtonStyle()
+                .frame(width: 60)
+              }
+              .onHover { hovering in
+                if hovering {
+                  hoverRuleIndex = ruleIndex
+                } else {
+                  if hoverRuleIndex == ruleIndex {
+                    hoverRuleIndex = nil
+                  }
+                }
+              }
             }
+            .listOverlayDivider()
+            .moveDisabled(moveDisabled || !normalizedFilterKeyword.isEmpty)
           }
-          .listOverlayDivider()
-          .moveDisabled(moveDisabled)
         }
         .onMove { indices, destination in
-          if let first = indices.first {
+          if normalizedFilterKeyword.isEmpty, let first = indices.first {
             settings.moveComplexModificationsRule(first, destination)
           }
         }

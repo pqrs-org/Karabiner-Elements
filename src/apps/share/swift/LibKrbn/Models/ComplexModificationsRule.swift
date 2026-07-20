@@ -12,6 +12,7 @@ extension LibKrbn {
     var index: Int
     var description: String
     var codeString: String?
+    var searchText: String?
     var codeType: libkrbn_complex_modifications_rule_code_type
 
     init(
@@ -19,12 +20,14 @@ extension LibKrbn {
       description: String,
       enabled: Bool,
       codeString: String?,
+      searchText: String? = nil,
       codeType: libkrbn_complex_modifications_rule_code_type
     ) {
       self.index = index
       self.description = description
       self.enabled = enabled
       self.codeString = codeString
+      self.searchText = searchText
       self.codeType = codeType
     }
 

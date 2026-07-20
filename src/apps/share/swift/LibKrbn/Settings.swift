@@ -360,6 +360,13 @@ extension LibKrbn {
           codeString = String(utf8String: buffer)
         }
 
+        var searchText: String?
+        if libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_search_text(
+          i, &buffer, buffer.count)
+        {
+          searchText = String(utf8String: buffer)
+        }
+
         var ruleDescription = ""
         if libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_description(
           i, &buffer, buffer.count)
@@ -373,6 +380,7 @@ extension LibKrbn {
           enabled:
             libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(i),
           codeString: codeString,
+          searchText: searchText,
           codeType: codeType
         )
         newComplexModificationsRules.append(complexModificationsRule)
