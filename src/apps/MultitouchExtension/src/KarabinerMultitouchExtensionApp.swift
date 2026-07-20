@@ -7,34 +7,31 @@ import SwiftUI
 struct KarabinerMultitouchExtensionApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-  private let version =
-    Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
-
   init() {
     libkrbn_initialize()
     libkrbn_load_custom_environment_variables()
   }
 
   var body: some Scene {
-    MenuBarExtra(
-      "Karabiner-MultitouchExtension", systemImage: "rectangle.and.hand.point.up.left.filled",
-    ) {
-      Text("Karabiner-MultitouchExtension \(version)")
-
-      Divider()
-
-      SettingsLink {
-        Label("Settings...", systemImage: "gear")
-          .labelStyle(.titleAndIcon)
-      } preAction: {
-        NSApp.activate(ignoringOtherApps: true)
-      } postAction: {
-      }
-    }
-
     Settings {
       SettingsView()
     }
+  }
+}
+
+private let openSettingsNotification = Notification.Name("openMultitouchExtensionSettings")
+
+private struct SettingsOpeningBridgeView: View {
+  @Environment(\.openSettingsLegacy) private var openSettingsLegacy
+
+  var body: some View {
+    Color.clear
+      .onReceive(NotificationCenter.default.publisher(for: openSettingsNotification)) { _ in
+        Task { @MainActor in
+          NSApp.activate(ignoringOtherApps: true)
+          try? openSettingsLegacy()
+        }
+      }
   }
 }
 
@@ -49,10 +46,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   private var wakeTask: Task<Void, Never>?
   private var displaySleepTask: Task<Void, Never>?
   private var displayWakeTask: Task<Void, Never>?
+  private var settingsOpeningBridgeWindow: NSWindow?
   private var userSettingsCancellable: AnyCancellable?
   private var isDisplaySleeping = false
 
   public func applicationDidFinishLaunching(_: Notification) {
+    setupSettingsOpeningBridgeWindow()
+
     //
     // Enable core_service_daemon_client
     //
@@ -64,6 +64,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     observeSystemSleep()
     observeDisplaySleep()
+  }
+
+  public func applicationShouldHandleReopen(
+    _: NSApplication,
+    hasVisibleWindows _: Bool
+  ) -> Bool {
+    NotificationCenter.default.post(
+      name: openSettingsNotification,
+      object: nil)
+    return true
   }
 
   public func applicationWillTerminate(_: Notification) {
@@ -107,6 +117,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       ProcessInfo.processInfo.endActivity(a)
       activity = nil
     }
+  }
+
+  private func setupSettingsOpeningBridgeWindow() {
+    let window = NSWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 1, height: 1),
+      styleMask: [.borderless],
+      backing: .buffered,
+      defer: false)
+    window.contentView = NSHostingView(
+      rootView: SettingsOpeningBridgeView()
+        .openSettingsAccess())
+    settingsOpeningBridgeWindow = window
   }
 
   private func observeUserInteractiveActivitySettings() {
