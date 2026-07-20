@@ -22,4 +22,4 @@ install:
 	sudo rsync -a --delete \
 		build/Release/Karabiner-Menu.app \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements'
-	sudo killall Karabiner-Menu
+	-sudo killall Karabiner-Menu

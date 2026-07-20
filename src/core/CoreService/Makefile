@@ -16,4 +16,4 @@ install: codesign
 	sudo rsync -a --delete \
 		build/Release/Karabiner-Core-Service.app \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements'
-	sudo killall Karabiner-Core-Service
+	-sudo killall Karabiner-Core-Service

@@ -22,7 +22,7 @@ install:
 	sudo rsync -a --delete \
 		build/Release/Karabiner-MultitouchExtension.app \
 		'/Library/Application Support/org.pqrs/Karabiner-Elements'
-	sudo killall Karabiner-MultitouchExtension
+	-sudo killall Karabiner-MultitouchExtension
 
 log:
 	/usr/bin/log stream --predicate 'subsystem == "org.pqrs.Karabiner-MultitouchExtension"' --info --debug
