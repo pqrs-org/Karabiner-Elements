@@ -186,6 +186,9 @@ bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_
                                                                                             char* _Nonnull buffer,
                                                                                             size_t length,
                                                                                             libkrbn_complex_modifications_rule_code_type* _Nonnull code_type);
+bool libkrbn_core_configuration_get_selected_profile_complex_modifications_rule_search_text(size_t index,
+                                                                                            char* _Nonnull buffer,
+                                                                                            size_t length);
 void libkrbn_core_configuration_replace_selected_profile_complex_modifications_rule(size_t index,
                                                                                     const char* _Nonnull code_string,
                                                                                     libkrbn_complex_modifications_rule_code_type code_type,
