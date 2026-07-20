@@ -142,6 +142,12 @@ public:
         }
       }
     }
+
+    append_search_text(description_, search_text_);
+    for (const auto& manipulator : manipulators_) {
+      append_search_text(manipulator->to_json().dump(),
+                         search_text_);
+    }
   }
 
   complex_modifications_rule(const std::string& code_string,
@@ -190,7 +196,21 @@ public:
     return code_string_;
   }
 
+  [[nodiscard]] const std::string& get_search_text() const {
+    return search_text_;
+  }
+
 private:
+  static void append_search_text(const std::string& value,
+                                 std::string& search_text) {
+    if (!value.empty()) {
+      if (!search_text.empty()) {
+        search_text += '\n';
+      }
+      search_text += value;
+    }
+  }
+
   nlohmann::json resolve_code(const nlohmann::json& json,
                               error_handling error_handling) {
     if (json.is_object() && json.contains("eval_js")) {
@@ -223,6 +243,10 @@ private:
   std::string description_;
   code_type code_type_;
   std::string code_string_;
+  // Contains the rule description and the JSON representation of each
+  // resolved manipulator. Top-level metadata is intentionally omitted to avoid
+  // broad matches on common names such as `enabled`.
+  std::string search_text_;
   configuration_json_helper::helper_values helper_values_;
 };
 } // namespace krbn::core_configuration::details

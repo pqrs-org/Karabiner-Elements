@@ -108,6 +108,40 @@ void run_complex_modifications_rule_test() {
       expect(expected_json == rule.to_json());
     }
 
+    // search_text
+    {
+      auto manipulator = R"(
+
+{
+  "type": "basic",
+  "to": [
+    {
+      "software_function": {
+        "open_application": {
+          "bundle_identifier": "com.example.Target"
+        }
+      }
+    }
+  ]
+}
+
+)"_json;
+      auto json = nlohmann::json::object({
+          {"description", "Search description"},
+          {"enabled", false},
+          {"available_since", "top-level metadata"},
+          {"manipulators", nlohmann::json::array({manipulator})},
+      });
+
+      auto parameters = std::make_shared<parameters_t>();
+      rule_t rule(json,
+                  parameters,
+                  krbn::core_configuration::error_handling::strict);
+
+      auto expected = "Search description\n"s + manipulator.dump();
+      expect(expected == rule.get_search_text());
+    }
+
     //
     // eval_js
     //
@@ -200,6 +234,49 @@ main();
         expect(js == rule.get_code_string());
         expect(json == rule.to_json());
       }
+    }
+
+    // search_text uses the evaluated manipulators, not the JavaScript source.
+    {
+      auto js = R"(
+
+function main() {
+  const source_only_marker = "not included in the result";
+
+  return {
+    description: "JavaScript search description",
+    manipulators: [
+      {
+        type: "basic",
+        from: { key_code: "f1" },
+        to: [{ key_code: "display_brightness_decrement" }],
+      },
+    ],
+  };
+}
+
+main();
+
+)"s;
+      auto manipulator = R"(
+
+{
+  "type": "basic",
+  "from": { "key_code": "f1" },
+  "to": [{ "key_code": "display_brightness_decrement" }]
+}
+
+)"_json;
+
+      auto parameters = std::make_shared<parameters_t>();
+      rule_t rule(js,
+                  rule_t::code_type::javascript,
+                  parameters,
+                  krbn::core_configuration::error_handling::strict);
+
+      auto expected = "JavaScript search description\n"s + manipulator.dump();
+      expect(expected == rule.get_search_text());
+      expect(rule.get_search_text().find("source_only_marker") == std::string::npos);
     }
 
     // error
