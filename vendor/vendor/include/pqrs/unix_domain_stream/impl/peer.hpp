@@ -415,15 +415,19 @@ private:
 
   // This method is executed in `io_ctx_thread_`.
   void close() {
-    if (!socket_.is_open()) {
-      return;
-    }
+    const auto socket_was_open = socket_.is_open();
 
+    // Cancel the timers even if the socket has already been closed.
+    // Otherwise, the io_context can remain alive until a timer such as the
+    // heartbeat deadline expires, causing client/server destruction to block
+    // while joining the io_context thread.
     close_socket();
 
-    enqueue_to_dispatcher([this] {
-      closed();
-    });
+    if (socket_was_open) {
+      enqueue_to_dispatcher([this] {
+        closed();
+      });
+    }
   }
 
   // This method is executed in `io_ctx_thread_`.

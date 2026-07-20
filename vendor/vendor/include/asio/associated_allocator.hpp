@@ -110,6 +110,8 @@ struct associated_allocator_impl<T, A,
  * @li Provide a noexcept static member function named @c get, callable as @c
  * get(t,a) and with return type @c type or a (possibly const) reference to @c
  * type.
+ *
+ * @sa @ref overview_allocation "Custom memory allocation"
  */
 template <typename T, typename Allocator = std::allocator<void>>
 struct associated_allocator

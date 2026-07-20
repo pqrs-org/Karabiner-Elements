@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 
+#include <limits>
 #include "asio/detail/base_from_cancellation_state.hpp"
 #include "asio/detail/handler_tracking.hpp"
 #include "asio/ssl/detail/engine.hpp"
@@ -29,6 +30,14 @@ namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 namespace ssl {
 namespace detail {
+
+struct transfer_unlimited
+{
+  std::size_t operator()(const asio::error_code& ec, std::size_t) const
+  {
+    return ec ? 0 : (std::numeric_limits<std::size_t>::max)();
+  }
+};
 
 template <typename Stream, typename Operation>
 std::size_t io(Stream& next_layer, stream_core& core,
@@ -44,8 +53,8 @@ std::size_t io(Stream& next_layer, stream_core& core,
     // the underlying transport.
     if (core.input_.size() == 0)
     {
-      core.input_ = asio::buffer(core.input_buffer_,
-          next_layer.read_some(core.input_buffer_, io_ec));
+      core.input_ = asio::buffer(core.input_buffer(),
+          next_layer.read_some(core.input_buffer(), io_ec));
       if (!ec)
         ec = io_ec;
     }
@@ -61,7 +70,8 @@ std::size_t io(Stream& next_layer, stream_core& core,
     // Get output data from the engine and write it to the underlying
     // transport.
     asio::write(next_layer,
-        core.engine_.get_output(core.output_buffer_), io_ec);
+        core.engine_.get_output(core.output_buffer()),
+        transfer_unlimited(), io_ec);
     if (!ec)
       ec = io_ec;
 
@@ -73,7 +83,8 @@ std::size_t io(Stream& next_layer, stream_core& core,
     // Get output data from the engine and write it to the underlying
     // transport.
     asio::write(next_layer,
-        core.engine_.get_output(core.output_buffer_), io_ec);
+        core.engine_.get_output(core.output_buffer()),
+        transfer_unlimited(), io_ec);
     if (!ec)
       ec = io_ec;
 
@@ -177,7 +188,7 @@ public:
 
             // Start reading some data from the underlying transport.
             next_layer_.async_read_some(
-                asio::buffer(core_.input_buffer_),
+                asio::buffer(core_.input_buffer()),
                 static_cast<io_op&&>(*this));
           }
           else
@@ -210,8 +221,8 @@ public:
 
             // Start writing all the data to the underlying transport.
             asio::async_write(next_layer_,
-                core_.engine_.get_output(core_.output_buffer_),
-                static_cast<io_op&&>(*this));
+                core_.engine_.get_output(core_.output_buffer()),
+                transfer_unlimited(), static_cast<io_op&&>(*this));
           }
           else
           {
@@ -239,7 +250,7 @@ public:
                   __FILE__, __LINE__, Operation::tracking_name()));
 
             next_layer_.async_read_some(
-                asio::buffer(core_.input_buffer_, 0),
+                asio::buffer(core_.input_buffer(), 0),
                 static_cast<io_op&&>(*this));
 
             // Yield control until asynchronous operation completes. Control
@@ -253,7 +264,7 @@ public:
           }
         }
 
-        default:
+        /* fall-through */ default:
         if (bytes_transferred == ~std::size_t(0))
           bytes_transferred = 0; // Timer cancellation, no data transferred.
         else if (!ec_)
@@ -265,7 +276,7 @@ public:
 
           // Add received data to the engine's input.
           core_.input_ = asio::buffer(
-              core_.input_buffer_, bytes_transferred);
+              core_.input_buffer(), bytes_transferred);
           core_.input_ = core_.engine_.put_input(core_.input_);
 
           // Release any waiting read operations.
@@ -303,7 +314,7 @@ public:
 
           // Fall through to call handler.
 
-        default:
+        /* fall-through */ default:
 
           // Pass the result to the handler.
           op_.call_handler(handler_,

@@ -87,6 +87,8 @@ struct is_match_condition
  * into a dynamic buffer sequence, or into a streambuf, until it contains a
  * delimiter, matches a regular expression, or a function object indicates a
  * match.
+ *
+ * @sa @ref overview_line_based "Line-based operations"
  */
 /*@{*/
 
@@ -1550,6 +1552,8 @@ std::size_t read_until(SyncReadStream& s, DynamicBuffer_v2 buffers,
  * that reads data into a dynamic buffer sequence, or into a streambuf, until
  * it contains a delimiter, matches a regular expression, or a function object
  * indicates a match.
+ *
+ * @sa @ref overview_line_based "Line-based operations"
  */
 /*@{*/
 

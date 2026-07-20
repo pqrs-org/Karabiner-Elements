@@ -135,6 +135,8 @@ class basic_waitable_timer;
  *
  * @li If a wait handler is cancelled, the asio::error_code passed to
  * it contains the value asio::error::operation_aborted.
+ *
+ * @sa @ref overview_timers "Timers"
  */
 template <typename Clock, typename WaitTraits, typename Executor>
 class basic_waitable_timer

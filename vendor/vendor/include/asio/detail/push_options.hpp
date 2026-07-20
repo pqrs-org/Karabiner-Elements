@@ -63,6 +63,7 @@
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 # pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+# pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 # if (__clang_major__ >= 6)
 #  pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 # endif // (__clang_major__ >= 6)

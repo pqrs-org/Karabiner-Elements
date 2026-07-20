@@ -72,6 +72,9 @@ class basic_socket_iostream;
 #endif // !defined(ASIO_BASIC_SOCKET_IOSTREAM_FWD_DECL)
 
 /// Iostream interface for a socket.
+/**
+ * @sa @ref overview_iostreams "Socket iostreams"
+ */
 #if defined(GENERATING_DOCUMENTATION)
 template <typename Protocol,
     typename Clock = chrono::steady_clock,

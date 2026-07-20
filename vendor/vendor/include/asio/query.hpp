@@ -257,12 +257,17 @@ const T static_instance<T>::instance = {};
 } // namespace ASIO_VERSIONED_NAME(query_fn)
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
+
+#if defined(ASIO_HAS_INLINE_VARIABLES)
+inline constexpr ASIO_VERSIONED_NAME(query_fn)::impl query{};
+#else // defined(ASIO_HAS_INLINE_VARIABLES)
 namespace {
 
 static constexpr const ASIO_VERSIONED_NAME(query_fn)::impl&
   query = ASIO_VERSIONED_NAME(query_fn)::static_instance<>::instance;
 
 } // namespace
+#endif // defined(ASIO_HAS_INLINE_VARIABLES)
 
 typedef ASIO_VERSIONED_NAME(query_fn)::impl query_t;
 

@@ -38,11 +38,20 @@ class bad_executor
 {
 public:
   /// Constructor.
-  ASIO_DECL bad_executor() noexcept;
+  bad_executor() noexcept
+  {
+  }
+
+  /// Destructor.
+  virtual ~bad_executor() noexcept
+  {
+  }
 
   /// Obtain message associated with exception.
-  ASIO_DECL virtual const char* what() const
-    noexcept;
+  virtual const char* what() const noexcept
+  {
+    return "bad executor";
+  }
 };
 
 /// Polymorphic wrapper for executors.
@@ -356,9 +365,6 @@ ASIO_USES_ALLOCATOR(asio::executor)
 #include "asio/detail/pop_options.hpp"
 
 #include "asio/impl/executor.hpp"
-#if defined(ASIO_HEADER_ONLY)
-# include "asio/impl/executor.ipp"
-#endif // defined(ASIO_HEADER_ONLY)
 
 #endif // !defined(ASIO_NO_TS_EXECUTORS)
 

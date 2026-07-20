@@ -189,6 +189,9 @@ private:
   // Whether to optimise for single-threaded use cases.
   const bool one_thread_;
 
+  // Whether to treat all posted handlers as continuations.
+  const bool assume_continuation_;
+
   // Mutex to protect access to internal data.
   mutable mutex mutex_;
 

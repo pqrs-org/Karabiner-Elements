@@ -150,6 +150,10 @@ struct immediate_executor_binder_argument_type<R(&)(A1, A2)>
 
 /// A call wrapper type to bind a immediate executor of type @c Executor
 /// to an object of type @c T.
+/**
+ * @sa @ref overview_associators "Associators",
+ * @ref overview_token_adapters "Completion token adapters"
+ */
 template <typename T, typename Executor>
 class immediate_executor_binder
 #if !defined(GENERATING_DOCUMENTATION)

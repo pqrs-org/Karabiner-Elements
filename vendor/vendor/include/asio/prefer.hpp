@@ -520,12 +520,17 @@ const T static_instance<T>::instance = {};
 } // namespace ASIO_VERSIONED_NAME(prefer_fn)
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
+
+#if defined(ASIO_HAS_INLINE_VARIABLES)
+inline constexpr ASIO_VERSIONED_NAME(prefer_fn)::impl prefer{};
+#else // defined(ASIO_HAS_INLINE_VARIABLES)
 namespace {
 
 static constexpr const ASIO_VERSIONED_NAME(prefer_fn)::impl&
   prefer = ASIO_VERSIONED_NAME(prefer_fn)::static_instance<>::instance;
 
 } // namespace
+#endif // defined(ASIO_HAS_INLINE_VARIABLES)
 
 typedef ASIO_VERSIONED_NAME(prefer_fn)::impl prefer_t;
 

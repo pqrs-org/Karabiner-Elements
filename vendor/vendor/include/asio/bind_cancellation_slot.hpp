@@ -150,6 +150,10 @@ struct cancellation_slot_binder_argument_type<R(&)(A1, A2)>
 
 /// A call wrapper type to bind a cancellation slot of type @c CancellationSlot
 /// to an object of type @c T.
+/**
+ * @sa @ref overview_associators "Associators",
+ * @ref overview_token_adapters "Completion token adapters"
+ */
 template <typename T, typename CancellationSlot>
 class cancellation_slot_binder
 #if !defined(GENERATING_DOCUMENTATION)

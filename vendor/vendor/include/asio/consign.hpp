@@ -30,6 +30,8 @@ ASIO_INLINE_NAMESPACE_BEGIN
  * This completion token adapter is typically used to keep at least one copy of
  * an object, such as a smart pointer, alive until the completion handler is
  * called.
+ *
+ * @sa @ref overview_token_adapters "Completion token adapters"
  */
 template <typename CompletionToken, typename... Values>
 class consign_t

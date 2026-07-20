@@ -28,6 +28,9 @@ namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 
 /// Provides serialised function invocation for any executor type.
+/**
+ * @sa @ref overview_strands "Strands"
+ */
 template <typename Executor>
 class strand
 {

@@ -29,10 +29,20 @@ class bad_executor
 {
 public:
   /// Constructor.
-  ASIO_DECL bad_executor() noexcept;
+  bad_executor() noexcept
+  {
+  }
+
+  /// Destructor.
+  virtual ~bad_executor() noexcept
+  {
+  }
 
   /// Obtain message associated with exception.
-  ASIO_DECL virtual const char* what() const noexcept;
+  virtual const char* what() const noexcept
+  {
+    return "bad executor";
+  }
 };
 
 } // namespace execution
@@ -40,9 +50,5 @@ ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
-
-#if defined(ASIO_HEADER_ONLY)
-# include "asio/execution/impl/bad_executor.ipp"
-#endif // defined(ASIO_HEADER_ONLY)
 
 #endif // ASIO_EXECUTION_BAD_EXECUTOR_HPP

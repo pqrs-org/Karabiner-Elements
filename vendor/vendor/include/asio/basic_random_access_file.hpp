@@ -56,6 +56,8 @@ class basic_random_access_file;
  * also thread safe. This means that it is permitted to perform concurrent
  * calls to these synchronous operations on a single file object. Other
  * synchronous operations, such as @c open or @c close, are not thread safe.
+ *
+ * @sa @ref overview_files "Files"
  */
 template <typename Executor>
 class basic_random_access_file

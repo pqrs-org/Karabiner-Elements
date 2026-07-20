@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 #include <deque>
+#include <exception>
 #include "asio/detail/type_traits.hpp"
 #include "asio/error.hpp"
 #include "asio/experimental/channel_error.hpp"

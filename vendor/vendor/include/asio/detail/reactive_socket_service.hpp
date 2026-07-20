@@ -308,7 +308,8 @@ public:
           &impl, impl.socket_, "async_send_to"));
 
     start_op(impl, reactor::write_op, p.p,
-        is_continuation, true, false, true, &io_ex, 0);
+        is_continuation, true, false,
+        ASIO_OS_DEF(MSG_DONTWAIT) == 0, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -433,7 +434,8 @@ public:
     start_op(impl,
         (flags & socket_base::message_out_of_band)
           ? reactor::except_op : reactor::read_op,
-        p.p, is_continuation, true, false, true, &io_ex, 0);
+        p.p, is_continuation, true, false,
+        ASIO_OS_DEF(MSG_DONTWAIT) == 0, &io_ex, 0);
     p.v = p.p = 0;
   }
 

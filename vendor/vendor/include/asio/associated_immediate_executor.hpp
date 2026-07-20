@@ -177,6 +177,8 @@ struct associated_immediate_executor_impl<T, E,
  * @li Provide a noexcept static member function named @c get, callable as @c
  * get(t,e) and with return type @c type or a (possibly const) reference to @c
  * type.
+ *
+ * @sa @ref overview_immediate_completion "Customising immediate completion"
  */
 template <typename T, typename Executor>
 struct associated_immediate_executor

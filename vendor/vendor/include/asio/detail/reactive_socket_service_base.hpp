@@ -316,7 +316,8 @@ public:
     start_op(impl, reactor::write_op, p.p, is_continuation, true,
         ((impl.state_ & socket_ops::stream_oriented)
           && buffer_sequence_adapter<asio::const_buffer,
-            ConstBufferSequence>::all_empty(buffers)), true, &io_ex, 0);
+            ConstBufferSequence>::all_empty(buffers)),
+        ASIO_OS_DEF(MSG_DONTWAIT) == 0, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -426,7 +427,8 @@ public:
         (flags & socket_base::message_out_of_band) == 0,
         ((impl.state_ & socket_ops::stream_oriented)
           && buffer_sequence_adapter<asio::mutable_buffer,
-            MutableBufferSequence>::all_empty(buffers)), true, &io_ex, 0);
+            MutableBufferSequence>::all_empty(buffers)),
+        ASIO_OS_DEF(MSG_DONTWAIT) == 0, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -535,7 +537,7 @@ public:
           ? reactor::except_op : reactor::read_op,
         p.p, is_continuation,
         (in_flags & socket_base::message_out_of_band) == 0,
-        false, true, &io_ex, 0);
+        false, ASIO_OS_DEF(MSG_DONTWAIT) == 0, &io_ex, 0);
     p.v = p.p = 0;
   }
 

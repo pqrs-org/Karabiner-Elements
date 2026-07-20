@@ -29,6 +29,8 @@ ASIO_INLINE_NAMESPACE_BEGIN
 /**
  * The redirect_error_t class is used to indicate that any error_code produced
  * by an asynchronous operation is captured to a specified variable.
+ *
+ * @sa @ref overview_token_adapters "Completion token adapters"
  */
 template <typename CompletionToken>
 class redirect_error_t

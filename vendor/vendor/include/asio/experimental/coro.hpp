@@ -46,6 +46,8 @@ struct coro_with_arg;
  * Template parameter @c Yield specifies type or signature used by co_yield,
  * @c Return specifies the type used for co_return, and @c Executor specifies
  * the underlying executor type.
+ *
+ * @sa @ref overview_coro "Resumable C++20 coroutines"
  */
 template <typename Yield = void, typename Return = void,
     typename Executor = any_io_executor,

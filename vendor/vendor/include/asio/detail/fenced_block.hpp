@@ -18,7 +18,8 @@
 #include "asio/detail/config.hpp"
 
 #if !defined(ASIO_HAS_THREADS) \
-  || defined(ASIO_DISABLE_FENCED_BLOCK)
+  || defined(ASIO_DISABLE_FENCED_BLOCK) \
+  || defined(ASIO_HAS_THREAD_SANITIZER)
 # include "asio/detail/null_fenced_block.hpp"
 #else
 # include "asio/detail/std_fenced_block.hpp"
@@ -29,7 +30,8 @@ ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 #if !defined(ASIO_HAS_THREADS) \
-  || defined(ASIO_DISABLE_FENCED_BLOCK)
+  || defined(ASIO_DISABLE_FENCED_BLOCK) \
+  || defined(ASIO_HAS_THREAD_SANITIZER)
 typedef null_fenced_block fenced_block;
 #else
 typedef std_fenced_block fenced_block;

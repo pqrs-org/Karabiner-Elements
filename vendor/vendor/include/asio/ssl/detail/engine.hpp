@@ -57,10 +57,12 @@ public:
   };
 
   // Construct a new engine for the specified context.
-  ASIO_DECL explicit engine(SSL_CTX* context);
+  ASIO_DECL engine(SSL_CTX* context,
+      std::size_t output_buffer_size, std::size_t input_buffer_size);
 
   // Construct a new engine for an existing native SSL implementation.
-  ASIO_DECL explicit engine(SSL* ssl_impl);
+  ASIO_DECL engine(SSL* ssl_impl,
+      std::size_t output_buffer_size, std::size_t input_buffer_size);
 
   // Move construct from another engine.
   ASIO_DECL engine(engine&& other) noexcept;
@@ -120,6 +122,10 @@ private:
   // Disallow copying and assignment.
   engine(const engine&);
   engine& operator=(const engine&);
+
+  // Helper to complete construction of the engine.
+  ASIO_DECL void init(std::size_t output_buffer_size,
+      std::size_t input_buffer_size);
 
   // Callback used when the SSL implementation wants to verify a certificate.
   ASIO_DECL static int verify_callback_function(

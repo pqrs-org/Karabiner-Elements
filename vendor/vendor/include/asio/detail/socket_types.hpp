@@ -99,8 +99,8 @@ ASIO_INLINE_NAMESPACE_BEGIN
 namespace detail {
 
 #if defined(ASIO_WINDOWS_RUNTIME)
-const int max_addr_v4_str_len = 256;
-const int max_addr_v6_str_len = 256;
+ASIO_INLINE_VARIABLE const int max_addr_v4_str_len = 256;
+ASIO_INLINE_VARIABLE const int max_addr_v6_str_len = 256;
 typedef unsigned __int32 u_long_type;
 typedef unsigned __int16 u_short_type;
 struct in4_addr_type { u_long_type s_addr; };
@@ -144,6 +144,7 @@ typedef int signed_size_type;
 # define ASIO_OS_DEF_MSG_PEEK 0x2
 # define ASIO_OS_DEF_MSG_DONTROUTE 0x4
 # define ASIO_OS_DEF_MSG_EOR 0 // Not supported.
+# define ASIO_OS_DEF_MSG_DONTWAIT 0 // Not supported.
 # define ASIO_OS_DEF_SHUT_RD 0x0
 # define ASIO_OS_DEF_SHUT_WR 0x1
 # define ASIO_OS_DEF_SHUT_RDWR 0x2
@@ -185,10 +186,10 @@ typedef int signed_size_type;
 # define ASIO_OS_DEF_SA_NOCLDWAIT 0x4
 #elif defined(ASIO_WINDOWS) || defined(ASIO_CYGWIN_W32_SOCKETS)
 typedef SOCKET socket_type;
-const SOCKET invalid_socket = INVALID_SOCKET;
-const int socket_error_retval = SOCKET_ERROR;
-const int max_addr_v4_str_len = 256;
-const int max_addr_v6_str_len = 256;
+ASIO_INLINE_VARIABLE const SOCKET invalid_socket = INVALID_SOCKET;
+ASIO_INLINE_VARIABLE const int socket_error_retval = SOCKET_ERROR;
+ASIO_INLINE_VARIABLE const int max_addr_v4_str_len = 256;
+ASIO_INLINE_VARIABLE const int max_addr_v6_str_len = 256;
 typedef sockaddr socket_addr_type;
 typedef in_addr in4_addr_type;
 typedef ip_mreq in4_mreq_type;
@@ -238,6 +239,7 @@ struct sockaddr_un_type { u_short sun_family; char sun_path[108]; };
 # define ASIO_OS_DEF_MSG_PEEK MSG_PEEK
 # define ASIO_OS_DEF_MSG_DONTROUTE MSG_DONTROUTE
 # define ASIO_OS_DEF_MSG_EOR 0 // Not supported on Windows.
+# define ASIO_OS_DEF_MSG_DONTWAIT 0 // Not supported on Windows.
 # define ASIO_OS_DEF_SHUT_RD SD_RECEIVE
 # define ASIO_OS_DEF_SHUT_WR SD_SEND
 # define ASIO_OS_DEF_SHUT_RDWR SD_BOTH
@@ -291,22 +293,23 @@ struct sockaddr_un_type { u_short sun_family; char sun_path[108]; };
 #  define ASIO_OS_DEF_AI_ADDRCONFIG 0
 # endif
 # if defined (_WIN32_WINNT)
-const int max_iov_len = 64;
+ASIO_INLINE_VARIABLE const int max_iov_len = 64;
 # else
-const int max_iov_len = 16;
+ASIO_INLINE_VARIABLE const int max_iov_len = 16;
 # endif
 # define ASIO_OS_DEF_SA_RESTART 0x1
 # define ASIO_OS_DEF_SA_NOCLDSTOP 0x2
 # define ASIO_OS_DEF_SA_NOCLDWAIT 0x4
 #else
 typedef int socket_type;
-const int invalid_socket = -1;
-const int socket_error_retval = -1;
-const int max_addr_v4_str_len = INET_ADDRSTRLEN;
+ASIO_INLINE_VARIABLE const int invalid_socket = -1;
+ASIO_INLINE_VARIABLE const int socket_error_retval = -1;
+ASIO_INLINE_VARIABLE const int max_addr_v4_str_len = INET_ADDRSTRLEN;
 #if defined(INET6_ADDRSTRLEN)
-const int max_addr_v6_str_len = INET6_ADDRSTRLEN + 1 + IF_NAMESIZE;
+ASIO_INLINE_VARIABLE const int max_addr_v6_str_len =
+  INET6_ADDRSTRLEN + 1 + IF_NAMESIZE;
 #else // defined(INET6_ADDRSTRLEN)
-const int max_addr_v6_str_len = 256;
+ASIO_INLINE_VARIABLE const int max_addr_v6_str_len = 256;
 #endif // defined(INET6_ADDRSTRLEN)
 typedef sockaddr socket_addr_type;
 typedef in_addr in4_addr_type;
@@ -357,6 +360,15 @@ typedef int signed_size_type;
 # define ASIO_OS_DEF_MSG_PEEK MSG_PEEK
 # define ASIO_OS_DEF_MSG_DONTROUTE MSG_DONTROUTE
 # define ASIO_OS_DEF_MSG_EOR MSG_EOR
+# if defined(__linux__) \
+  || defined(__FreeBSD__) \
+  || defined(__NetBSD__) \
+  || defined(__OpenBSD__) \
+  || defined(__DragonFly__)
+#  define ASIO_OS_DEF_MSG_DONTWAIT MSG_DONTWAIT
+# else
+#  define ASIO_OS_DEF_MSG_DONTWAIT 0 // Not reliably supported.
+# endif
 # define ASIO_OS_DEF_SHUT_RD SHUT_RD
 # define ASIO_OS_DEF_SHUT_WR SHUT_WR
 # define ASIO_OS_DEF_SHUT_RDWR SHUT_RDWR
@@ -412,10 +424,10 @@ typedef int signed_size_type;
 #  define ASIO_OS_DEF_AI_ADDRCONFIG 0
 # endif
 # if defined(IOV_MAX)
-const int max_iov_len = IOV_MAX;
+ASIO_INLINE_VARIABLE const int max_iov_len = IOV_MAX;
 # else
 // POSIX platforms are not required to define IOV_MAX.
-const int max_iov_len = 16;
+ASIO_INLINE_VARIABLE const int max_iov_len = 16;
 # endif
 # define ASIO_OS_DEF_SA_RESTART SA_RESTART
 # define ASIO_OS_DEF_SA_NOCLDSTOP SA_NOCLDSTOP
@@ -425,9 +437,9 @@ const int max_iov_len = 16;
 #  define ASIO_OS_DEF_SA_NOCLDWAIT 0
 # endif // defined(SA_NOCLDWAIT)
 #endif
-const int custom_socket_option_level = 0xA5100000;
-const int enable_connection_aborted_option = 1;
-const int always_fail_option = 2;
+ASIO_INLINE_VARIABLE const int custom_socket_option_level = 0xA5100000;
+ASIO_INLINE_VARIABLE const int enable_connection_aborted_option = 1;
+ASIO_INLINE_VARIABLE const int always_fail_option = 2;
 
 } // namespace detail
 ASIO_INLINE_NAMESPACE_END

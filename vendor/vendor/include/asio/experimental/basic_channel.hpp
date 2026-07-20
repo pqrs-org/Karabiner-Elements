@@ -93,6 +93,8 @@ namespace detail {
  * thread or in the same strand. Consider using @ref basic_concurrent_channel,
  * and its alias template @c experimental::concurrent_channel, to pass messages
  * between code running in different threads.
+ *
+ * @sa @ref overview_channels "Channels"
  */
 template <typename Executor, typename Traits, typename... Signatures>
 class basic_channel

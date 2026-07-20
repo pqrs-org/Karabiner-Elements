@@ -285,6 +285,11 @@ const T static_instance<T>::instance = {};
 } // namespace ASIO_VERSIONED_NAME(require_concept_fn)
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
+
+#if defined(ASIO_HAS_INLINE_VARIABLES)
+inline constexpr ASIO_VERSIONED_NAME(require_concept_fn)::impl
+  require_concept{};
+#else // defined(ASIO_HAS_INLINE_VARIABLES)
 namespace {
 
 static constexpr const ASIO_VERSIONED_NAME(require_concept_fn)::impl&
@@ -292,6 +297,7 @@ static constexpr const ASIO_VERSIONED_NAME(require_concept_fn)::impl&
     require_concept_fn)::static_instance<>::instance;
 
 } // namespace
+#endif // defined(ASIO_HAS_INLINE_VARIABLES)
 
 typedef ASIO_VERSIONED_NAME(require_concept_fn)::impl require_concept_t;
 

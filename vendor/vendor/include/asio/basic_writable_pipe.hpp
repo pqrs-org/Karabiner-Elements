@@ -44,6 +44,15 @@
 namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 
+#if !defined(ASIO_BASIC_WRITABLE_PIPE_FWD_DECL)
+#define ASIO_BASIC_WRITABLE_PIPE_FWD_DECL
+
+// Forward declaration with defaulted arguments.
+template <typename Executor = any_io_executor>
+class basic_writable_pipe;
+
+#endif // !defined(ASIO_BASIC_WRITABLE_PIPE_FWD_DECL)
+
 /// Provides pipe functionality.
 /**
  * The basic_writable_pipe class provides a wrapper over pipe
@@ -52,8 +61,10 @@ ASIO_INLINE_NAMESPACE_BEGIN
  * @par Thread Safety
  * @e Distinct @e objects: Safe.@n
  * @e Shared @e objects: Unsafe.
+ *
+ * @sa @ref overview_pipes "Pipes"
  */
-template <typename Executor = any_io_executor>
+template <typename Executor>
 class basic_writable_pipe
 {
 private:

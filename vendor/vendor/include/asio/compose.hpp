@@ -104,6 +104,8 @@ ASIO_INLINE_NAMESPACE_BEGIN
  *         async_echo_implementation::starting},
  *       token, socket);
  * } @endcode
+ *
+ * @sa @ref overview_compose "Compositions as asynchronous operations"
  */
 template <typename CompletionToken, typename Signature,
     typename Implementation, typename... IoObjectsOrExecutors>

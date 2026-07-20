@@ -52,7 +52,7 @@ void io_uring_service::schedule_timer(
     typename timer_queue<TimeTraits, Allocator>::per_timer_data& timer,
     wait_op* op)
 {
-  mutex::scoped_lock lock(mutex_);
+  mutex::scoped_lock lock(timer_mutex());
 
   if (shutdown_)
   {
@@ -65,7 +65,7 @@ void io_uring_service::schedule_timer(
   if (earliest)
   {
     update_timeout();
-    post_submit_sqes_op(lock);
+    post_submit_sqes_op(lock, 0);
   }
 }
 
@@ -75,7 +75,7 @@ std::size_t io_uring_service::cancel_timer(
     typename timer_queue<TimeTraits, Allocator>::per_timer_data& timer,
     std::size_t max_cancelled)
 {
-  mutex::scoped_lock lock(mutex_);
+  mutex::scoped_lock lock(timer_mutex());
   op_queue<operation> ops;
   std::size_t n = queue.cancel_timer(timer, ops, max_cancelled);
   lock.unlock();
@@ -89,7 +89,7 @@ void io_uring_service::cancel_timer_by_key(
     typename timer_queue<TimeTraits, Allocator>::per_timer_data* timer,
     void* cancellation_key)
 {
-  mutex::scoped_lock lock(mutex_);
+  mutex::scoped_lock lock(timer_mutex());
   op_queue<operation> ops;
   queue.cancel_timer_by_key(timer, ops, cancellation_key);
   lock.unlock();
@@ -101,7 +101,7 @@ void io_uring_service::move_timer(timer_queue<TimeTraits, Allocator>& queue,
     typename timer_queue<TimeTraits, Allocator>::per_timer_data& target,
     typename timer_queue<TimeTraits, Allocator>::per_timer_data& source)
 {
-  mutex::scoped_lock lock(mutex_);
+  mutex::scoped_lock lock(timer_mutex());
   op_queue<operation> ops;
   queue.cancel_timer(target, ops);
   queue.move_timer(target, source);

@@ -32,6 +32,8 @@ namespace experimental {
  * If there is already one argument, that argument is passed as-is. If
  * there is more than argument, the arguments are first moved into a
  * @c std::tuple and that tuple is then passed to the completion handler.
+ *
+ * @sa @ref overview_token_adapters "Completion token adapters"
  */
 template <typename CompletionToken>
 class as_single_t

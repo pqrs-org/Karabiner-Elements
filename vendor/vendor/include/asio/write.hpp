@@ -45,6 +45,8 @@ template <typename> class initiate_async_write_dynbuf_v2;
  *
  * @brief The @c write function is a composed operation that writes a certain
  * amount of data to a stream before returning.
+ *
+ * @sa @ref overview_streams "Streams, short reads and short writes"
  */
 /*@{*/
 
@@ -741,6 +743,8 @@ std::size_t write(SyncWriteStream& s, DynamicBuffer_v2 buffers,
  *
  * @brief The @c async_write function is a composed asynchronous operation that
  * writes a certain amount of data to a stream before completion.
+ *
+ * @sa @ref overview_streams "Streams, short reads and short writes"
  */
 /*@{*/
 

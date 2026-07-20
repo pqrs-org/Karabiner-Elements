@@ -234,7 +234,7 @@ public:
   void commit(std::size_t n)
   {
     n = std::min<std::size_t>(n, epptr() - pptr());
-    pbump(static_cast<int>(n));
+    setp(pptr() + n, epptr());
     setg(eback(), gptr(), pptr());
   }
 
@@ -251,7 +251,7 @@ public:
       setg(&buffer_[0], gptr(), pptr());
     if (gptr() + n > pptr())
       n = pptr() - gptr();
-    gbump(static_cast<int>(n));
+    setg(eback(), gptr() + n, egptr());
   }
 
 protected:

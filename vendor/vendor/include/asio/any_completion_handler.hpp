@@ -609,6 +609,8 @@ public:
  *
  * @li Enabling interoperability between asynchronous operations and virtual
  *     functions.
+ *
+ * @sa @ref overview_type_erasure "Type erasure"
  */
 template <typename... Signatures>
 class any_completion_handler

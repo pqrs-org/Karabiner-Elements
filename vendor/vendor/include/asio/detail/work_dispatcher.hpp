@@ -40,8 +40,13 @@ struct empty_work_function
   }
 };
 
-template <typename Function>
+template <typename Function, typename = void>
 struct work_result
+{
+};
+
+template <typename Function>
+struct work_result<Function, void_t<result_of_t<decay_t<Function>()>>>
 {
   typedef decay_t<result_of_t<decay_t<Function>()>> type;
 };

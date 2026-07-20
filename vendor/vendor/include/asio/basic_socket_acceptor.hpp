@@ -792,9 +792,9 @@ public:
    *
    * @throws asio::system_error Thrown on failure.
    *
-   * @sa SettableSocketOption @n
-   * asio::socket_base::reuse_address
-   * asio::socket_base::enable_connection_aborted
+   * @sa
+   * @li asio::socket_base::reuse_address
+   * @li asio::socket_base::enable_connection_aborted
    *
    * @par Example
    * Setting the SOL_SOCKET/SO_REUSEADDR option:
@@ -821,9 +821,9 @@ public:
    *
    * @param ec Set to indicate what error occurred, if any.
    *
-   * @sa SettableSocketOption @n
-   * asio::socket_base::reuse_address
-   * asio::socket_base::enable_connection_aborted
+   * @sa
+   * @li asio::socket_base::reuse_address
+   * @li asio::socket_base::enable_connection_aborted
    *
    * @par Example
    * Setting the SOL_SOCKET/SO_REUSEADDR option:
@@ -856,8 +856,8 @@ public:
    *
    * @throws asio::system_error Thrown on failure.
    *
-   * @sa GettableSocketOption @n
-   * asio::socket_base::reuse_address
+   * @sa
+   * @li asio::socket_base::reuse_address
    *
    * @par Example
    * Getting the value of the SOL_SOCKET/SO_REUSEADDR option:
@@ -886,8 +886,8 @@ public:
    *
    * @param ec Set to indicate what error occurred, if any.
    *
-   * @sa GettableSocketOption @n
-   * asio::socket_base::reuse_address
+   * @sa
+   * @li asio::socket_base::reuse_address
    *
    * @par Example
    * Getting the value of the SOL_SOCKET/SO_REUSEADDR option:
@@ -919,18 +919,6 @@ public:
    * @param command The IO control command to be performed on the acceptor.
    *
    * @throws asio::system_error Thrown on failure.
-   *
-   * @sa IoControlCommand @n
-   * asio::socket_base::non_blocking_io
-   *
-   * @par Example
-   * Getting the number of bytes ready to read:
-   * @code
-   * asio::ip::tcp::acceptor acceptor(my_context);
-   * ...
-   * asio::ip::tcp::acceptor::non_blocking_io command(true);
-   * socket.io_control(command);
-   * @endcode
    */
   template <typename IoControlCommand>
   void io_control(IoControlCommand& command)
@@ -947,23 +935,6 @@ public:
    * @param command The IO control command to be performed on the acceptor.
    *
    * @param ec Set to indicate what error occurred, if any.
-   *
-   * @sa IoControlCommand @n
-   * asio::socket_base::non_blocking_io
-   *
-   * @par Example
-   * Getting the number of bytes ready to read:
-   * @code
-   * asio::ip::tcp::acceptor acceptor(my_context);
-   * ...
-   * asio::ip::tcp::acceptor::non_blocking_io command(true);
-   * asio::error_code ec;
-   * socket.io_control(command, ec);
-   * if (ec)
-   * {
-   *   // An error occurred.
-   * }
-   * @endcode
    */
   template <typename IoControlCommand>
   ASIO_SYNC_OP_VOID io_control(IoControlCommand& command,

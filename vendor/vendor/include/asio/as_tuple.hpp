@@ -30,6 +30,8 @@ ASIO_INLINE_NAMESPACE_BEGIN
  * completion handler should be combined and passed as a single tuple argument.
  * The arguments are first moved into a @c std::tuple and that tuple is then
  * passed to the completion handler.
+ *
+ * @sa @ref overview_token_adapters "Completion token adapters"
  */
 template <typename CompletionToken>
 class as_tuple_t

@@ -337,6 +337,8 @@ typedef basic_yield_context<any_io_executor> yield_context;
  *
  * @brief Start a new stackful coroutine.
  *
+ * @sa @ref overview_spawn "Stackful coroutines"
+ *
  * The spawn() function is a high-level wrapper over the Boost.Coroutine
  * library. This function enables programs to implement asynchronous logic in a
  * synchronous manner, as illustrated by the following example:

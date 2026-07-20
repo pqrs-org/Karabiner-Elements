@@ -47,6 +47,8 @@ namespace generic {
  *
  * @par Concepts:
  * Protocol.
+ *
+ * @sa @ref overview_other_protocols "Support for other protocols"
  */
 class stream_protocol
 {

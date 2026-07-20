@@ -48,6 +48,9 @@ template <typename, typename> class awaitable_frame;
 } // namespace detail
 
 /// The return type of a coroutine or asynchronous operation.
+/**
+ * @sa @ref overview_cpp20_coroutines "C++20 coroutines support"
+ */
 template <typename T, typename Executor = any_io_executor>
 class ASIO_NODISCARD awaitable
 {

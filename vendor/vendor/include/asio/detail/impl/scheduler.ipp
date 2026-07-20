@@ -113,6 +113,8 @@ scheduler::scheduler(asio::execution_context& ctx,
     bool own_thread, get_task_func_type get_task)
   : asio::detail::execution_context_service_base<scheduler>(ctx),
     one_thread_(config(ctx).get("scheduler", "concurrency_hint", 0) == 1),
+    assume_continuation_(config(ctx).get("scheduler",
+          "assume_continuation", one_thread_)),
     mutex_(config(ctx).get("scheduler", "locking", true),
         config(ctx).get("scheduler", "locking_spin_count", 0)),
     task_(0),
@@ -138,6 +140,7 @@ scheduler::scheduler(asio::execution_context& ctx,
 scheduler::scheduler(scheduler::internal, asio::execution_context& ctx)
   : asio::detail::execution_context_service_base<scheduler>(ctx),
     one_thread_(false),
+    assume_continuation_(false),
     mutex_(true, 0),
     task_(0),
     get_task_(&scheduler::get_default_task),
@@ -354,7 +357,7 @@ void scheduler::post_immediate_completion(
     scheduler::operation* op, bool is_continuation)
 {
 #if defined(ASIO_HAS_THREADS)
-  if (one_thread_ || is_continuation)
+  if (assume_continuation_ || is_continuation)
   {
     if (thread_info_base* this_thread = thread_call_stack::contains(this))
     {
@@ -377,7 +380,7 @@ void scheduler::post_immediate_completions(std::size_t n,
     op_queue<scheduler::operation>& ops, bool is_continuation)
 {
 #if defined(ASIO_HAS_THREADS)
-  if (one_thread_ || is_continuation)
+  if (assume_continuation_ || is_continuation)
   {
     if (thread_info_base* this_thread = thread_call_stack::contains(this))
     {
@@ -400,7 +403,7 @@ void scheduler::post_immediate_completions(std::size_t n,
 void scheduler::post_deferred_completion(scheduler::operation* op)
 {
 #if defined(ASIO_HAS_THREADS)
-  if (one_thread_)
+  if (assume_continuation_)
   {
     if (thread_info_base* this_thread = thread_call_stack::contains(this))
     {
@@ -421,7 +424,7 @@ void scheduler::post_deferred_completions(
   if (!ops.empty())
   {
 #if defined(ASIO_HAS_THREADS)
-    if (one_thread_)
+    if (assume_continuation_)
     {
       if (thread_info_base* this_thread = thread_call_stack::contains(this))
       {
@@ -624,7 +627,8 @@ std::size_t scheduler::do_poll_one(mutex::scoped_lock& lock,
     o = op_queue_.front();
     if (o == &task_operation_)
     {
-      wakeup_event_.maybe_unlock_and_signal_one(lock);
+      if (!one_thread_)
+        wakeup_event_.maybe_unlock_and_signal_one(lock);
       return 0;
     }
   }

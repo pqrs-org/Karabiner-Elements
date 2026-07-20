@@ -713,7 +713,7 @@ public:
     derived_type& promise = *static_cast<derived_type*>(this);
     promise.state().return_value_ = std::move(value);
     promise.state().work_.reset();
-    promise.state().on_suspend_->arg_ = this;
+    promise.state().on_suspend_->arg_ = &promise;
     promise.state().on_suspend_->fn_ =
       [](void* p)
       {
@@ -843,7 +843,11 @@ public:
   {
     if (owner_)
       *owner_ = this;
+#if !defined(ASIO_NO_EXCEPTIONS)
     throw;
+#else // !defined(ASIO_NO_EXCEPTIONS)
+    std::terminate();
+#endif // !defined(ASIO_NO_EXCEPTIONS)
   }
 
   template <ASIO_ASYNC_OPERATION Op>
@@ -990,7 +994,13 @@ private:
 
   union block
   {
+#if defined(ASIO_MSVC) && !defined(__clang__)
+    // Force 16-byte alignment as std::max_align_t is only 8-byte aligned on
+    // MSVC, but the compiler may emit aligned SSE stores into the storage.
+    alignas(16) std::max_align_t max_align;
+#else // defined(ASIO_MSVC) && !defined(__clang__)
     std::max_align_t max_align;
+#endif // defined(ASIO_MSVC) && !defined(__clang__)
     alignas(allocator_type) char pad[alignof(allocator_type)];
   };
 

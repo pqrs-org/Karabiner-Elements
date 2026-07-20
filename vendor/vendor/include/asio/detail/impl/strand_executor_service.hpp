@@ -118,7 +118,7 @@ public:
     on_invoker_exit on_exit = { this };
     (void)on_exit;
 
-    run_ready_handlers(impl_);
+    impl_->service_->run_ready_handlers(impl_);
   }
 
 private:
@@ -181,7 +181,7 @@ public:
     on_invoker_exit on_exit = { this };
     (void)on_exit;
 
-    run_ready_handlers(impl_);
+    impl_->service_->run_ready_handlers(impl_);
   }
 
 private:

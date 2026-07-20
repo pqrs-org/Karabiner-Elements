@@ -53,6 +53,8 @@ class basic_stream_file;
  *
  * @par Concepts:
  * AsyncReadStream, AsyncWriteStream, Stream, SyncReadStream, SyncWriteStream.
+ *
+ * @sa @ref overview_files "Files"
  */
 template <typename Executor>
 class basic_stream_file

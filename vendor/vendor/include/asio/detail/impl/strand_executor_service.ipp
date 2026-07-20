@@ -27,9 +27,11 @@ namespace detail {
 strand_executor_service::strand_executor_service(execution_context& ctx)
   : execution_context_service_base<strand_executor_service>(ctx),
     mutex_(),
-#if !defined(ASIO_HAS_STD_ATOMIC_WAIT)
+#if !defined(ASIO_HAS_STD_ATOMIC_WAIT) \
+  && !defined(ASIO_HAS_FUTEX)
     salt_(0),
 #endif // !defined(ASIO_HAS_STD_ATOMIC_WAIT)
+       //   && !defined(ASIO_HAS_FUTEX)
     impl_list_(0)
 {
 }
@@ -62,7 +64,8 @@ strand_executor_service::create_implementation()
 
   asio::detail::mutex::scoped_lock lock(mutex_);
 
-#if !defined(ASIO_HAS_STD_ATOMIC_WAIT)
+#if !defined(ASIO_HAS_STD_ATOMIC_WAIT) \
+  && !defined(ASIO_HAS_FUTEX)
   // Select a mutex from the pool of shared mutexes.
   std::size_t salt = salt_++;
   std::size_t mutex_index = reinterpret_cast<std::size_t>(new_impl.get());
@@ -73,6 +76,7 @@ strand_executor_service::create_implementation()
     mutexes_[mutex_index] = allocate_shared<mutex>(alloc);
   new_impl->mutex_ = mutexes_[mutex_index].get();
 #endif // !defined(ASIO_HAS_STD_ATOMIC_WAIT)
+       //   && !defined(ASIO_HAS_FUTEX)
 
   // Insert implementation into linked list of all implementations.
   new_impl->next_ = impl_list_;
@@ -148,11 +152,10 @@ void strand_executor_service::run_ready_handlers(implementation_type& impl)
 
   // Run all ready handlers. No lock is required since the ready queue is
   // accessed only within the strand.
-  asio::error_code ec;
   while (scheduler_operation* o = impl->ready_queue_.front())
   {
     impl->ready_queue_.pop();
-    o->complete(impl.get(), ec, 0);
+    o->complete(impl.get(), success_ec_, 0);
   }
 }
 

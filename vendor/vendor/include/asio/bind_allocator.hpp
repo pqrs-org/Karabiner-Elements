@@ -149,6 +149,10 @@ struct allocator_binder_argument_type<R(&)(A1, A2)>
 
 /// A call wrapper type to bind an allocator of type @c Allocator
 /// to an object of type @c T.
+/**
+ * @sa @ref overview_associators "Associators",
+ * @ref overview_token_adapters "Completion token adapters"
+ */
 template <typename T, typename Allocator>
 class allocator_binder
 #if !defined(GENERATING_DOCUMENTATION)

@@ -27,6 +27,9 @@ ASIO_INLINE_NAMESPACE_BEGIN
 /// Completion token type used to specify that the completion handler
 /// arguments should be passed additional values after the results of the
 /// operation.
+/**
+ * @sa @ref overview_token_adapters "Completion token adapters"
+ */
 template <typename CompletionToken, typename... Values>
 class append_t
 {

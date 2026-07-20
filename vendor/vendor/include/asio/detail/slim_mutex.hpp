@@ -19,6 +19,8 @@
 
 #if !defined(ASIO_HAS_THREADS)
 # include "asio/detail/null_mutex.hpp"
+#elif defined(ASIO_HAS_FUTEX)
+# include "asio/detail/futex_slim_mutex.hpp"
 #elif defined(ASIO_HAS_STD_ATOMIC_WAIT)
 # include "asio/detail/atomic_slim_mutex.hpp"
 #else
@@ -31,6 +33,8 @@ namespace detail {
 
 #if !defined(ASIO_HAS_THREADS)
 typedef null_mutex slim_mutex;
+#elif defined(ASIO_HAS_FUTEX)
+typedef futex_slim_mutex slim_mutex;
 #elif defined(ASIO_HAS_STD_ATOMIC_WAIT)
 typedef atomic_slim_mutex slim_mutex;
 #else

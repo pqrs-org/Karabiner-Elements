@@ -101,7 +101,7 @@ inline auto async_immediate(const Executor& ex,
  * which can delegate to this operation in order to implement the correct
  * semantics for immediate completion.
  *
- * @param ex The execution context used to obtain the asynchronous operation's
+ * @param ctx The execution context used to obtain the asynchronous operation's
  * I/O executor.
  *
  * @param token The completion token.

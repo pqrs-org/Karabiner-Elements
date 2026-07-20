@@ -188,6 +188,10 @@ protected:
 
 /// A call wrapper type to bind an executor of type @c Executor to an object of
 /// type @c T.
+/**
+ * @sa @ref overview_associators "Associators",
+ * @ref overview_token_adapters "Completion token adapters"
+ */
 template <typename T, typename Executor>
 class executor_binder
 #if !defined(GENERATING_DOCUMENTATION)

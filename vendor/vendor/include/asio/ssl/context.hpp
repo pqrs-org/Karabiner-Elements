@@ -33,6 +33,15 @@ namespace asio {
 ASIO_INLINE_NAMESPACE_BEGIN
 namespace ssl {
 
+/// A holder for SSL/TLS configuration and certificate information.
+/**
+ * The context class is used to configure the settings shared by a set of
+ * SSL/TLS streams, including the protocol version, certificates, private keys
+ * and peer verification options. A single context may be shared by multiple
+ * @ref stream objects.
+ *
+ * @sa @ref overview_ssl "SSL"
+ */
 class context
   : public context_base,
     private noncopyable

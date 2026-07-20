@@ -54,6 +54,8 @@ class packaged_handler;
  * future that will receive the result of the operation. If the operation
  * completes with an error_code indicating failure, it is converted into a
  * system_error and passed back to the caller via the future.
+ *
+ * @sa @ref overview_futures "Futures"
  */
 template <typename Allocator = std::allocator<void>>
 class use_future_t

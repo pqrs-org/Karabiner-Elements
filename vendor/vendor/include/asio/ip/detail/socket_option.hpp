@@ -43,6 +43,9 @@ public:
 #elif defined(_AIX) || defined(__hpux) || defined(__QNXNTO__)
   typedef unsigned char ipv4_value_type;
   typedef unsigned int ipv6_value_type;
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
+  typedef unsigned char ipv4_value_type;
+  typedef int ipv6_value_type;
 #else
   typedef int ipv4_value_type;
   typedef int ipv6_value_type;

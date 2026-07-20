@@ -606,6 +606,8 @@ struct is_deferred<deferred_conditional<OnTrue, OnFalse>> : true_type
  *
  * The initiating function (async_read_some in the above example) returns a
  * function object that will lazily initiate the operation.
+ *
+ * @sa @ref overview_deferred "Deferred operations"
  */
 class deferred_t
 {

@@ -990,22 +990,22 @@ public:
    *
    * @throws asio::system_error Thrown on failure.
    *
-   * @sa SettableSocketOption @n
-   * asio::socket_base::broadcast @n
-   * asio::socket_base::do_not_route @n
-   * asio::socket_base::keep_alive @n
-   * asio::socket_base::linger @n
-   * asio::socket_base::receive_buffer_size @n
-   * asio::socket_base::receive_low_watermark @n
-   * asio::socket_base::reuse_address @n
-   * asio::socket_base::send_buffer_size @n
-   * asio::socket_base::send_low_watermark @n
-   * asio::ip::multicast::join_group @n
-   * asio::ip::multicast::leave_group @n
-   * asio::ip::multicast::enable_loopback @n
-   * asio::ip::multicast::outbound_interface @n
-   * asio::ip::multicast::hops @n
-   * asio::ip::tcp::no_delay
+   * @sa
+   * @li asio::socket_base::broadcast
+   * @li asio::socket_base::do_not_route
+   * @li asio::socket_base::keep_alive
+   * @li asio::socket_base::linger
+   * @li asio::socket_base::receive_buffer_size
+   * @li asio::socket_base::receive_low_watermark
+   * @li asio::socket_base::reuse_address
+   * @li asio::socket_base::send_buffer_size
+   * @li asio::socket_base::send_low_watermark
+   * @li asio::ip::multicast::join_group
+   * @li asio::ip::multicast::leave_group
+   * @li asio::ip::multicast::enable_loopback
+   * @li asio::ip::multicast::outbound_interface
+   * @li asio::ip::multicast::hops
+   * @li asio::ip::tcp::no_delay
    *
    * @par Example
    * Setting the IPPROTO_TCP/TCP_NODELAY option:
@@ -1032,22 +1032,22 @@ public:
    *
    * @param ec Set to indicate what error occurred, if any.
    *
-   * @sa SettableSocketOption @n
-   * asio::socket_base::broadcast @n
-   * asio::socket_base::do_not_route @n
-   * asio::socket_base::keep_alive @n
-   * asio::socket_base::linger @n
-   * asio::socket_base::receive_buffer_size @n
-   * asio::socket_base::receive_low_watermark @n
-   * asio::socket_base::reuse_address @n
-   * asio::socket_base::send_buffer_size @n
-   * asio::socket_base::send_low_watermark @n
-   * asio::ip::multicast::join_group @n
-   * asio::ip::multicast::leave_group @n
-   * asio::ip::multicast::enable_loopback @n
-   * asio::ip::multicast::outbound_interface @n
-   * asio::ip::multicast::hops @n
-   * asio::ip::tcp::no_delay
+   * @sa
+   * @li asio::socket_base::broadcast
+   * @li asio::socket_base::do_not_route
+   * @li asio::socket_base::keep_alive
+   * @li asio::socket_base::linger
+   * @li asio::socket_base::receive_buffer_size
+   * @li asio::socket_base::receive_low_watermark
+   * @li asio::socket_base::reuse_address
+   * @li asio::socket_base::send_buffer_size
+   * @li asio::socket_base::send_low_watermark
+   * @li asio::ip::multicast::join_group
+   * @li asio::ip::multicast::leave_group
+   * @li asio::ip::multicast::enable_loopback
+   * @li asio::ip::multicast::outbound_interface
+   * @li asio::ip::multicast::hops
+   * @li asio::ip::tcp::no_delay
    *
    * @par Example
    * Setting the IPPROTO_TCP/TCP_NODELAY option:
@@ -1079,22 +1079,22 @@ public:
    *
    * @throws asio::system_error Thrown on failure.
    *
-   * @sa GettableSocketOption @n
-   * asio::socket_base::broadcast @n
-   * asio::socket_base::do_not_route @n
-   * asio::socket_base::keep_alive @n
-   * asio::socket_base::linger @n
-   * asio::socket_base::receive_buffer_size @n
-   * asio::socket_base::receive_low_watermark @n
-   * asio::socket_base::reuse_address @n
-   * asio::socket_base::send_buffer_size @n
-   * asio::socket_base::send_low_watermark @n
-   * asio::ip::multicast::join_group @n
-   * asio::ip::multicast::leave_group @n
-   * asio::ip::multicast::enable_loopback @n
-   * asio::ip::multicast::outbound_interface @n
-   * asio::ip::multicast::hops @n
-   * asio::ip::tcp::no_delay
+   * @sa
+   * @li asio::socket_base::broadcast
+   * @li asio::socket_base::do_not_route
+   * @li asio::socket_base::keep_alive
+   * @li asio::socket_base::linger
+   * @li asio::socket_base::receive_buffer_size
+   * @li asio::socket_base::receive_low_watermark
+   * @li asio::socket_base::reuse_address
+   * @li asio::socket_base::send_buffer_size
+   * @li asio::socket_base::send_low_watermark
+   * @li asio::ip::multicast::join_group
+   * @li asio::ip::multicast::leave_group
+   * @li asio::ip::multicast::enable_loopback
+   * @li asio::ip::multicast::outbound_interface
+   * @li asio::ip::multicast::hops
+   * @li asio::ip::tcp::no_delay
    *
    * @par Example
    * Getting the value of the SOL_SOCKET/SO_KEEPALIVE option:
@@ -1122,22 +1122,22 @@ public:
    *
    * @param ec Set to indicate what error occurred, if any.
    *
-   * @sa GettableSocketOption @n
-   * asio::socket_base::broadcast @n
-   * asio::socket_base::do_not_route @n
-   * asio::socket_base::keep_alive @n
-   * asio::socket_base::linger @n
-   * asio::socket_base::receive_buffer_size @n
-   * asio::socket_base::receive_low_watermark @n
-   * asio::socket_base::reuse_address @n
-   * asio::socket_base::send_buffer_size @n
-   * asio::socket_base::send_low_watermark @n
-   * asio::ip::multicast::join_group @n
-   * asio::ip::multicast::leave_group @n
-   * asio::ip::multicast::enable_loopback @n
-   * asio::ip::multicast::outbound_interface @n
-   * asio::ip::multicast::hops @n
-   * asio::ip::tcp::no_delay
+   * @sa
+   * @li asio::socket_base::broadcast
+   * @li asio::socket_base::do_not_route
+   * @li asio::socket_base::keep_alive
+   * @li asio::socket_base::linger
+   * @li asio::socket_base::receive_buffer_size
+   * @li asio::socket_base::receive_low_watermark
+   * @li asio::socket_base::reuse_address
+   * @li asio::socket_base::send_buffer_size
+   * @li asio::socket_base::send_low_watermark
+   * @li asio::ip::multicast::join_group
+   * @li asio::ip::multicast::leave_group
+   * @li asio::ip::multicast::enable_loopback
+   * @li asio::ip::multicast::outbound_interface
+   * @li asio::ip::multicast::hops
+   * @li asio::ip::tcp::no_delay
    *
    * @par Example
    * Getting the value of the SOL_SOCKET/SO_KEEPALIVE option:
@@ -1170,9 +1170,8 @@ public:
    *
    * @throws asio::system_error Thrown on failure.
    *
-   * @sa IoControlCommand @n
-   * asio::socket_base::bytes_readable @n
-   * asio::socket_base::non_blocking_io
+   * @sa
+   * @li asio::socket_base::bytes_readable
    *
    * @par Example
    * Getting the number of bytes ready to read:
@@ -1200,9 +1199,8 @@ public:
    *
    * @param ec Set to indicate what error occurred, if any.
    *
-   * @sa IoControlCommand @n
-   * asio::socket_base::bytes_readable @n
-   * asio::socket_base::non_blocking_io
+   * @sa
+   * @li asio::socket_base::bytes_readable
    *
    * @par Example
    * Getting the number of bytes ready to read:

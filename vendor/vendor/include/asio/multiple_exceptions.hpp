@@ -28,15 +28,27 @@ class multiple_exceptions
 {
 public:
   /// Constructor.
-  ASIO_DECL multiple_exceptions(
-      std::exception_ptr first) noexcept;
+  multiple_exceptions(std::exception_ptr first) noexcept
+    : first_(static_cast<std::exception_ptr&&>(first))
+  {
+  }
+
+  /// Destructor.
+  virtual ~multiple_exceptions() noexcept
+  {
+  }
 
   /// Obtain message associated with exception.
-  ASIO_DECL virtual const char* what() const
-    noexcept;
+  virtual const char* what() const noexcept
+  {
+    return "multiple exceptions";
+  }
 
   /// Obtain a pointer to the first exception.
-  ASIO_DECL std::exception_ptr first_exception() const;
+  std::exception_ptr first_exception() const
+  {
+    return first_;
+  }
 
 private:
   std::exception_ptr first_;
@@ -46,9 +58,5 @@ ASIO_INLINE_NAMESPACE_END
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
-
-#if defined(ASIO_HEADER_ONLY)
-# include "asio/impl/multiple_exceptions.ipp"
-#endif // defined(ASIO_HEADER_ONLY)
 
 #endif // ASIO_MULTIPLE_EXCEPTIONS_HPP

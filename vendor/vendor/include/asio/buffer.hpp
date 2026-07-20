@@ -112,6 +112,8 @@ class const_buffer;
  *
  * The @c data() member function permits violations of type safety, so uses of
  * it in application code should be carefully considered.
+ *
+ * @sa @ref overview_buffers "Buffers"
  */
 class mutable_buffer
 {
@@ -225,6 +227,8 @@ private:
  *
  * The @c data() member function permits violations of type safety, so uses of
  * it in application code should be carefully considered.
+ *
+ * @sa @ref overview_buffers "Buffers"
  */
 class const_buffer
 {
@@ -773,13 +777,13 @@ private:
  *
  * For the asio::buffer overloads that accept an argument of type
  * std::vector, the buffer objects returned are invalidated by any vector
- * operation that also invalidates all references, pointers and iterators
- * referring to the elements in the sequence (C++ Std, 23.2.4)
+ * operation that invalidates any of the references, pointers or iterators
+ * referring to the elements in the vector (C++ Std, [sequence.reqmts]).
  *
  * For the asio::buffer overloads that accept an argument of type
  * std::basic_string, the buffer objects returned are invalidated according to
  * the rules defined for invalidation of references, pointers and iterators
- * referring to elements of the sequence (C++ Std, 21.3).
+ * referring to elements of the string (C++ Std, [string.require]).
  *
  * @par Buffer Arithmetic
  *
@@ -1199,8 +1203,9 @@ ASIO_NODISCARD inline const_buffer buffer(
  *     data.size() ? &data[0] : 0,
  *     data.size() * sizeof(PodType)); @endcode
  *
- * @note The buffer is invalidated by any vector operation that would also
- * invalidate iterators.
+ * @note The buffer is invalidated by any vector operation that invalidates
+ * any of the references, pointers or iterators referring to the elements in
+ * the vector.
  */
 template <typename PodType, typename Allocator>
 ASIO_NODISCARD inline mutable_buffer buffer(
@@ -1223,8 +1228,9 @@ ASIO_NODISCARD inline mutable_buffer buffer(
  *     data.size() ? &data[0] : 0,
  *     min(data.size() * sizeof(PodType), max_size_in_bytes)); @endcode
  *
- * @note The buffer is invalidated by any vector operation that would also
- * invalidate iterators.
+ * @note The buffer is invalidated by any vector operation that invalidates
+ * any of the references, pointers or iterators referring to the elements in
+ * the vector.
  */
 template <typename PodType, typename Allocator>
 ASIO_NODISCARD inline mutable_buffer buffer(
@@ -1249,8 +1255,9 @@ ASIO_NODISCARD inline mutable_buffer buffer(
  *     data.size() ? &data[0] : 0,
  *     data.size() * sizeof(PodType)); @endcode
  *
- * @note The buffer is invalidated by any vector operation that would also
- * invalidate iterators.
+ * @note The buffer is invalidated by any vector operation that invalidates
+ * any of the references, pointers or iterators referring to the elements in
+ * the vector.
  */
 template <typename PodType, typename Allocator>
 ASIO_NODISCARD inline const_buffer buffer(
@@ -1273,8 +1280,9 @@ ASIO_NODISCARD inline const_buffer buffer(
  *     data.size() ? &data[0] : 0,
  *     min(data.size() * sizeof(PodType), max_size_in_bytes)); @endcode
  *
- * @note The buffer is invalidated by any vector operation that would also
- * invalidate iterators.
+ * @note The buffer is invalidated by any vector operation that invalidates
+ * any of the references, pointers or iterators referring to the elements in
+ * the vector.
  */
 template <typename PodType, typename Allocator>
 ASIO_NODISCARD inline const_buffer buffer(
