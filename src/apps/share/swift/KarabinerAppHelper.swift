@@ -12,6 +12,17 @@ final class KarabinerAppHelper {
     }
   }
 
+  func openMultitouchExtensionSettings() {
+    guard
+      let applicationURL = NSWorkspace.shared.urlForApplication(
+        withBundleIdentifier: "org.pqrs.Karabiner-MultitouchExtension")
+    else { return }
+
+    NSWorkspace.shared.openApplication(
+      at: applicationURL,
+      configuration: NSWorkspace.OpenConfiguration())
+  }
+
   enum QuitFrom {
     case menu
     case settings

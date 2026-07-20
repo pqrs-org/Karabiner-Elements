@@ -125,6 +125,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       styleMask: [.borderless],
       backing: .buffered,
       defer: false)
+    window.ignoresMouseEvents = true
+    window.canHide = false
     window.contentView = NSHostingView(
       rootView: SettingsOpeningBridgeView()
         .openSettingsAccess())

@@ -20,6 +20,26 @@ struct MiscView: View {
               systemImage: InfoBorder.icon
             )
             .modifier(InfoBorder())
+
+            if settings.enableMultitouchExtension {
+              Button(
+                action: {
+                  KarabinerAppHelper.shared.openMultitouchExtensionSettings()
+                },
+                label: {
+                  Label(
+                    "Open Multitouch Extension settings...",
+                    systemImage: "rectangle.and.hand.point.up.left.filled")
+                }
+              )
+              .disabled(!settings.enableMultitouchExtension)
+
+              Label(
+                "You can also open the Multitouch Extension settings from the menu.",
+                systemImage: InfoBorder.icon
+              )
+              .modifier(InfoBorder())
+            }
           }
           .padding()
           .frame(maxWidth: .infinity, alignment: .leading)

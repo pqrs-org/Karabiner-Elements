@@ -1,16 +1,4 @@
-import AppKit
 import SwiftUI
-
-private func openMultitouchExtensionSettings() {
-  guard
-    let applicationURL = NSWorkspace.shared.urlForApplication(
-      withBundleIdentifier: "org.pqrs.Karabiner-MultitouchExtension")
-  else { return }
-
-  NSWorkspace.shared.openApplication(
-    at: applicationURL,
-    configuration: NSWorkspace.OpenConfiguration())
-}
 
 @main
 struct KarabinerMenuApp: App {
@@ -70,7 +58,7 @@ struct KarabinerMenuApp: App {
         if settings.enableMultitouchExtension {
           Button(
             action: {
-              openMultitouchExtensionSettings()
+              KarabinerAppHelper.shared.openMultitouchExtensionSettings()
             },
             label: {
               Label(
