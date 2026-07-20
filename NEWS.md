@@ -2,8 +2,11 @@
 
 ## Beta
 
+- ✨ New Features
+    - Added filtering functionality to the Complex Modifications list.
 - ⚡️ Improvements
     - Fixed an issue where the core service agent could rarely abort during termination.
+    - Fixed an issue where modifications could stop working for several seconds after waking from sleep on macOS.
     - Karabiner-EventViewer and the Settings window are now closed after an upgrade.
     - Added support for unbundled GUI apps in `frontmost_application_if` and `frontmost_application_unless`.
 
