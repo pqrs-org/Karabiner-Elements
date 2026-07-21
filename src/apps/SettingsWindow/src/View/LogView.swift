@@ -6,8 +6,12 @@ struct LogView: View {
   @State private var filterContextLineCount = 5
   private let bottomAnchorID = "bottomAnchor"
 
+  private var trimmedFilterKeyword: String {
+    filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
   private var filteredEntries: [FilteredLogMessageEntry] {
-    let keyword = filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
+    let keyword = trimmedFilterKeyword
     if keyword.isEmpty {
       return logMessages.entries.map {
         FilteredLogMessageEntry(logMessageEntry: $0, isMatched: false)
@@ -71,17 +75,7 @@ struct LogView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
-      HStack {
-        SearchField(text: $filterKeyword)
-          .frame(maxWidth: .infinity)
-
-        Stepper(
-          "Show \(filterContextLineCount) surrounding lines",
-          value: $filterContextLineCount,
-          in: 0...50
-        )
-        .disabled(filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
+      HStack(alignment: .top) {
         Button(
           action: {
             var text = ""
@@ -96,6 +90,21 @@ struct LogView: View {
           label: {
             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
           })
+
+        Spacer()
+
+        VStack(alignment: .trailing) {
+          SearchField(text: $filterKeyword)
+            .frame(width: 300)
+
+          if !trimmedFilterKeyword.isEmpty {
+            Stepper(
+              "Show \(filterContextLineCount) surrounding lines",
+              value: $filterContextLineCount,
+              in: 0...50
+            )
+          }
+        }
       }
       .padding()
 
@@ -126,7 +135,7 @@ struct LogView: View {
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .onAppear {
-          if filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+          if trimmedFilterKeyword.isEmpty {
             Task { @MainActor in
               proxy.scrollTo(bottomAnchorID, anchor: .bottom)
             }
@@ -134,7 +143,7 @@ struct LogView: View {
         }
         .onChange(of: logMessages.entries) { _ in
           // Keep the filtered view at the current position while new non-matching lines arrive.
-          if filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+          if trimmedFilterKeyword.isEmpty {
             Task { @MainActor in
               proxy.scrollTo(bottomAnchorID, anchor: .bottom)
             }
