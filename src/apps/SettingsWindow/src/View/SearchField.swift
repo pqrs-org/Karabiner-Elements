@@ -69,10 +69,12 @@ struct SearchField: NSViewRepresentable {
           guard eventWindow === searchField.window else { return false }
 
           let commandF = modifiers == .command && characters == "f"
+          let isEditingText =
+            (eventWindow?.firstResponder as? NSTextView)?.isEditable == true
           let slash =
             modifiers.isEmpty
             && characters == "/"
-            && !(eventWindow?.firstResponder is NSTextView)
+            && !isEditingText
 
           if commandF || slash {
             eventWindow?.makeFirstResponder(searchField)
