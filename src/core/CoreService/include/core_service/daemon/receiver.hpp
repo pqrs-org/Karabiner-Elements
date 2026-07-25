@@ -4,12 +4,12 @@
 
 #include "app_icon.hpp"
 #include "application_launcher.hpp"
-#include "components_manager_killer.hpp"
 #include "console_user_server_peer.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "device_grabber.hpp"
 #include "filesystem_utility.hpp"
+#include "process_lifecycle_manager.hpp"
 #include "types.hpp"
 #include "types/core_service_daemon_state.hpp"
 #include <array>
@@ -235,9 +235,7 @@ private:
             if (restart_required) {
               logger::get_logger()->info("The required permissions are granted. Restarting core daemons.");
 
-              if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-                killer->async_kill();
-              }
+              process_lifecycle_manager::async_request_termination();
             }
           }
           async_respond_none(peer_id,

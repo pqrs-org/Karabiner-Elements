@@ -9,9 +9,7 @@
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
 #include "receiver.hpp"
-#include "run_loop_thread_utility.hpp"
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/osx/iokit_power_management.hpp>
 #include <pqrs/osx/session.hpp>
 
 namespace krbn::core_service::daemon {
@@ -27,72 +25,11 @@ public:
     //
 
     hid_event_system_monitor_ = std::make_unique<hid_event_system_monitor>();
-
-    //
-    // power_management_monitor_
-    //
-
-    power_management_monitor_ = std::make_unique<pqrs::osx::iokit_power_management::monitor>(weak_dispatcher_,
-                                                                                             run_loop_thread_utility::get_power_management_run_loop_thread());
-
-    power_management_monitor_->system_will_sleep.connect([this](auto&& kernel_port,
-                                                                auto&& notification_id,
-                                                                auto&& wait) {
-      logger::get_logger()->info("system_will_sleep");
-
-      stop_receivers();
-
-      // Give the asynchronous receiver teardown enough time to ungrab devices
-      // before allowing the system to sleep. A seized device may otherwise wake
-      // the system immediately when it generates an input event.
-      enqueue_to_dispatcher(
-          [kernel_port, notification_id, wait] {
-            logger::get_logger()->info("call IOAllowPowerChange");
-
-            IOAllowPowerChange(kernel_port, notification_id);
-
-            wait->notify();
-          },
-          when_now() + std::chrono::seconds(3));
-    });
-
-    power_management_monitor_->system_will_power_on.connect([this] {
-      logger::get_logger()->info("system_will_power_on");
-
-      start_receivers();
-    });
-
-    power_management_monitor_->system_has_powered_on.connect([this] {
-      logger::get_logger()->info("system_has_powered_on");
-
-      start_receivers();
-    });
-
-    power_management_monitor_->can_system_sleep.connect([](auto&& kernel_port,
-                                                           auto&& notification_id,
-                                                           auto&& wait) {
-      logger::get_logger()->info("can_system_sleep");
-
-      IOAllowPowerChange(kernel_port, notification_id);
-
-      wait->notify();
-    });
-
-    power_management_monitor_->system_will_not_sleep.connect([this] {
-      logger::get_logger()->info("system_will_not_sleep");
-
-      start_receivers();
-    });
-
-    power_management_monitor_->error_occurred.connect([](auto&& message) {
-      logger::get_logger()->error("power_management_monitor_ error: {0}", message);
-    });
   }
 
   ~components_manager() override {
     detach_from_dispatcher([this] {
       stop_receivers();
-      power_management_monitor_ = nullptr;
     });
   }
 
@@ -100,8 +37,6 @@ public:
     enqueue_to_dispatcher([this] {
       start_receivers();
       enqueue_ensure_base_directories();
-
-      power_management_monitor_->async_start();
     });
   }
 
@@ -178,7 +113,6 @@ private:
 
   std::unique_ptr<console_user_id_changed_receiver> console_user_id_changed_receiver_;
   std::unique_ptr<hid_event_system_monitor> hid_event_system_monitor_;
-  std::unique_ptr<pqrs::osx::iokit_power_management::monitor> power_management_monitor_;
   std::unique_ptr<receiver> receiver_;
 };
 } // namespace krbn::core_service::daemon

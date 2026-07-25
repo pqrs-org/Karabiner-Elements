@@ -1,9 +1,9 @@
 #pragma once
 
-#include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "logger.hpp"
+#include "process_lifecycle_manager.hpp"
 #include "types/core_service_permission_check_result.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <fstream>
@@ -84,9 +84,7 @@ private:
 
       last_bundle_permission_check_result_ = *result;
 
-      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-        killer->async_kill();
-      }
+      process_lifecycle_manager::async_request_termination();
       return;
     }
 
@@ -105,9 +103,7 @@ private:
     if (restart_required_after_permissions_granted_) {
       logger::get_logger()->info("The required permissions are granted. Restarting core daemons and terminating the agent.");
 
-      if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-        killer->async_kill();
-      }
+      process_lifecycle_manager::async_request_termination();
     }
   }
 

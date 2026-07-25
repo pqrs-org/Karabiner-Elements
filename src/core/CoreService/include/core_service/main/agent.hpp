@@ -1,12 +1,12 @@
 #pragma once
 
-#include "components_manager_killer.hpp"
 #include "core_service/agent/components_manager.hpp"
 #include "core_service/core_service_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
+#include "process_lifecycle_manager.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <fstream>
 #include <iostream>
@@ -112,56 +112,41 @@ int agent(std::vector<std::string> args) {
   std::ifstream input(constants::get_user_core_configuration_file_path());
 
   //
-  // Run components_manager
+  // Run process_lifecycle_manager
   //
 
-  components_manager_killer::initialize_shared_components_manager_killer();
+  process_lifecycle_manager::initialize_shared_instance(
+      process_lifecycle_manager::configuration{
+          .components_manager_maker =
+              [] {
+                return std::make_unique<core_service::agent::components_manager>();
+              },
+          .termination_completion_handler =
+              [] {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                  pqrs::osx::application::stop();
+                });
+              },
+      });
 
   // This is needed because this agent uses pqrs::osx::application::run.
-  // AppKit termination requests should go through components_manager_killer so
-  // components_manager is destroyed before the AppKit run loop stops.
+  // AppKit termination requests should go through process_lifecycle_manager so
+  // components and the power management monitor are destroyed before the AppKit run loop stops.
   pqrs::osx::application::set_should_terminate_callback([] {
-    if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-      killer->async_kill();
+    if (process_lifecycle_manager::async_request_termination()) {
       return pqrs::osx::application::terminate_reply::cancel;
     }
 
     return pqrs::osx::application::terminate_reply::now;
   });
 
-  // We have to use a raw pointer to control the destruction timing from `kill_called`.
-  core_service::agent::components_manager* components_manager = nullptr;
-
-  if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-    killer->kill_called.connect([&components_manager] {
-      // Destroy `components_manager` before stopping the main run loop so that
-      // cleanup code that uses `gcd::dispatch_sync_on_main_queue` can still run
-      // while the main thread is servicing the run loop.
-      // `kill_called` is invoked on the shared dispatcher thread, so we destroy
-      // `components_manager` there before calling `CFRunLoopStop`.
-      if (components_manager) {
-        delete components_manager;
-        components_manager = nullptr;
-      }
-
-      dispatch_async(dispatch_get_main_queue(), ^{
-        pqrs::osx::application::stop();
-      });
-    });
-  }
-
-  components_manager = new core_service::agent::components_manager();
-  components_manager->async_start();
+  process_lifecycle_manager::async_start();
 
   // Use the AppKit application run loop because the agent uses
   // pqrs::osx::accessibility::monitor and other AppKit/main-thread APIs.
   pqrs::osx::application::run();
 
-  //
-  // Cleanup
-  //
-
-  components_manager_killer::terminate_shared_components_manager_killer();
+  process_lifecycle_manager::terminate_shared_instance();
 
   return 0;
 }

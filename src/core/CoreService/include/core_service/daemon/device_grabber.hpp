@@ -1,6 +1,5 @@
 #pragma once
 
-#include "components_manager_killer.hpp"
 #include "console_user_server_peer.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
@@ -22,6 +21,7 @@
 #include "monitor/configuration_monitor.hpp"
 #include "monitor/event_tap_monitor.hpp"
 #include "notification_message_manager.hpp"
+#include "process_lifecycle_manager.hpp"
 #include "types.hpp"
 #include <array>
 #include <dlfcn.h>
@@ -297,9 +297,7 @@ public:
         entry->get_hid_queue_value_monitor()->error_occurred.connect([](auto&& message, auto&& kr) {
           if (kr.not_permitted()) {
             logger::get_logger()->warn("hid_queue_value_monitor not_permitted error");
-            if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-              killer->async_kill();
-            }
+            process_lifecycle_manager::async_request_termination();
           }
         });
 

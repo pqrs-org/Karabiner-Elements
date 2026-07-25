@@ -2,7 +2,6 @@
 
 #include "app_icon.hpp"
 #include "codesign_manager.hpp"
-#include "components_manager_killer.hpp"
 #include "constants.hpp"
 #include "core_service/core_service_utility.hpp"
 #include "core_service/daemon/components_manager.hpp"
@@ -10,6 +9,7 @@
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
 #include "logger.hpp"
+#include "process_lifecycle_manager.hpp"
 #include "services_utility.hpp"
 #include <iostream>
 #include <mach/mach.h>
@@ -90,42 +90,35 @@ int daemon() {
   filesystem_utility::prepare_system_directories(std::nullopt);
 
   //
-  // Run components_manager
+  // Run process_lifecycle_manager
   //
 
-  components_manager_killer::initialize_shared_components_manager_killer();
-
-  // We have to use a raw pointer to control the destruction timing from `kill_called`.
-  daemon::components_manager* components_manager = nullptr;
-
-  if (auto killer = components_manager_killer::get_shared_components_manager_killer()) {
-    killer->kill_called.connect([&components_manager] {
-      // Destroy `components_manager` before stopping the main run loop so that
-      // cleanup code that uses `gcd::dispatch_sync_on_main_queue` can still run
-      // while the main thread is servicing the run loop.
-      // `kill_called` is invoked on the shared dispatcher thread, so we destroy
-      // `components_manager` there before calling `CFRunLoopStop`.
-      if (components_manager) {
-        delete components_manager;
-        components_manager = nullptr;
-      }
-
-      dispatch_async(dispatch_get_main_queue(), ^{
-        CFRunLoopStop(CFRunLoopGetCurrent());
+  auto weak_core_service_daemon_state_manager = std::weak_ptr<daemon::core_service_daemon_state_manager>(core_service_daemon_state_manager);
+  process_lifecycle_manager::initialize_shared_instance(
+      process_lifecycle_manager::configuration{
+          .components_manager_maker =
+              [weak_core_service_daemon_state_manager] {
+                return std::make_unique<daemon::components_manager>(weak_core_service_daemon_state_manager);
+              },
+          .termination_completion_handler =
+              [] {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                  CFRunLoopStop(CFRunLoopGetCurrent());
+                });
+              },
+          // Give device_grabber time to release seized devices asynchronously
+          // before acknowledging the system sleep notification.
+          .system_will_sleep_delay = std::chrono::seconds(3),
       });
-    });
-  }
-
-  components_manager = new daemon::components_manager(core_service_daemon_state_manager);
-  components_manager->async_start();
+  process_lifecycle_manager::async_start();
 
   CFRunLoopRun();
+
+  process_lifecycle_manager::terminate_shared_instance();
 
   //
   // Cleanup
   //
-
-  components_manager_killer::terminate_shared_components_manager_killer();
 
   core_service_daemon_state_manager = nullptr;
 
