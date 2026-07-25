@@ -6,6 +6,7 @@
 #include "constants.hpp"
 #include "filesystem_utility.hpp"
 #include "types.hpp"
+#include <atomic>
 #include <pqrs/unix_domain_stream.hpp>
 #include <unordered_map>
 #include <vector>
@@ -120,7 +121,13 @@ public:
               }
             }
 
+            // This response means that the request has been accepted.
+            // The applied state is sent separately by core_service_daemon_server_bound.
             server_->async_respond(peer_id, request_id, {});
+
+            // Send the current bound state to the requester even if the console user ID
+            // did not change and the receiver was not recreated.
+            send_core_service_daemon_server_bound_if_available(peer_id);
 
             break;
           }
@@ -152,6 +159,22 @@ public:
 
   void async_start() {
     server_->async_start();
+  }
+
+  void async_core_service_daemon_server_bound(std::optional<uid_t> uid) {
+    auto generation = ++core_service_daemon_server_state_generation_;
+
+    enqueue_to_dispatcher([this, uid, generation] {
+      if (generation != core_service_daemon_server_state_generation_ ||
+          uid != current_console_user_id_) {
+        return;
+      }
+
+      core_service_daemon_server_is_bound_ = true;
+      core_service_daemon_server_bound_uid_ = uid;
+
+      broadcast_core_service_daemon_server_bound();
+    });
   }
 
 private:
@@ -187,6 +210,8 @@ private:
   void update_current_console_user_id(std::optional<uid_t> value) {
     if (current_console_user_id_ != value) {
       current_console_user_id_ = value;
+      ++core_service_daemon_server_state_generation_;
+      core_service_daemon_server_is_bound_ = false;
 
       filesystem_utility::prepare_system_directories(value);
 
@@ -196,8 +221,40 @@ private:
     }
   }
 
+  void send_core_service_daemon_server_bound_if_available(pqrs::unix_domain_stream::peer_id peer_id) const {
+    if (!server_ ||
+        !core_service_daemon_server_is_bound_) {
+      return;
+    }
+
+    nlohmann::json uid = nullptr;
+    if (core_service_daemon_server_bound_uid_) {
+      uid = *core_service_daemon_server_bound_uid_;
+    }
+
+    nlohmann::json json{
+        {"operation_type", operation_type::core_service_daemon_server_bound},
+        {"uid", uid},
+    };
+
+    server_->async_send(peer_id,
+                        nlohmann::json::to_msgpack(json));
+  }
+
+  void broadcast_core_service_daemon_server_bound() const {
+    for (const auto& [peer_id, _] : peer_credentials_) {
+      send_core_service_daemon_server_bound_if_available(peer_id);
+    }
+  }
+
   std::unique_ptr<pqrs::unix_domain_stream::server> server_;
   std::optional<uid_t> current_console_user_id_;
+  std::atomic<std::size_t> core_service_daemon_server_state_generation_ = 0;
+
+  // A null bound UID is a valid state when there is no console user, so it cannot
+  // also represent that the server has not been bound yet. Track bound separately.
+  bool core_service_daemon_server_is_bound_ = false;
+  std::optional<uid_t> core_service_daemon_server_bound_uid_;
   std::unordered_map<pqrs::unix_domain_stream::peer_id, pqrs::unix_domain_stream::peer_credentials> peer_credentials_;
   std::unordered_map<pqrs::unix_domain_stream::peer_id, peer_state> peer_states_;
 };

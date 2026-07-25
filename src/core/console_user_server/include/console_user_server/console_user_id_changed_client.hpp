@@ -16,6 +16,7 @@ public:
   nod::signal<void()> connected;
   nod::signal<void(const asio::error_code&)> connect_failed;
   nod::signal<void()> closed;
+  nod::signal<void(std::optional<uid_t>)> core_service_daemon_server_bound;
 
   // Methods
 
@@ -51,6 +52,7 @@ public:
 
         enqueue_to_dispatcher([this] {
           console_user_id_changed_request_in_flight_ = false;
+          console_user_id_changed_accepted_ = false;
           connection_ready_ = true;
 
           connected();
@@ -96,8 +98,35 @@ public:
         });
       });
 
-      client_->received.connect([](auto&&) {
-        // Do nothing
+      client_->received.connect([this](auto&& buffer) {
+        enqueue_to_dispatcher([this, buffer] {
+          if (buffer->empty()) {
+            return;
+          }
+
+          try {
+            auto json = nlohmann::json::from_msgpack(*buffer);
+            switch (json.at("operation_type").template get<operation_type>()) {
+              case operation_type::core_service_daemon_server_bound: {
+                std::optional<uid_t> uid;
+                if (!json.at("uid").is_null()) {
+                  uid = json.at("uid").template get<uid_t>();
+                }
+
+                pending_core_service_daemon_server_bound_ = core_service_daemon_server_bound_state{
+                    .uid = uid,
+                };
+                notify_core_service_daemon_server_bound_if_ready();
+                break;
+              }
+
+              default:
+                break;
+            }
+          } catch (std::exception& e) {
+            logger::get_logger()->error("console_user_id_changed_client received data is corrupted");
+          }
+        });
       });
 
       client_->request_received.connect([](auto, auto&&) {
@@ -115,6 +144,8 @@ public:
       pending_console_user_id_changed_ = console_user_id_changed_state{
           .on_console = on_console,
       };
+      pending_core_service_daemon_server_bound_ = std::nullopt;
+      console_user_id_changed_accepted_ = false;
 
       async_deliver_pending_console_user_id_changed();
     });
@@ -127,6 +158,10 @@ private:
     bool operator==(const console_user_id_changed_state&) const = default;
   };
 
+  struct core_service_daemon_server_bound_state final {
+    std::optional<uid_t> uid;
+  };
+
   void stop() {
     if (!client_) {
       return;
@@ -134,7 +169,9 @@ private:
 
     client_ = nullptr;
     pending_console_user_id_changed_ = std::nullopt;
+    pending_core_service_daemon_server_bound_ = std::nullopt;
     console_user_id_changed_request_in_flight_ = false;
+    console_user_id_changed_accepted_ = false;
     connection_ready_ = false;
 
     logger::get_logger()->debug("console_user_id_changed_client is stopped.");
@@ -142,7 +179,25 @@ private:
 
   void make_connection_not_ready() {
     connection_ready_ = false;
+    pending_core_service_daemon_server_bound_ = std::nullopt;
     console_user_id_changed_request_in_flight_ = false;
+    console_user_id_changed_accepted_ = false;
+  }
+
+  void notify_core_service_daemon_server_bound_if_ready() {
+    // A bound notification may be broadcast because another client updated its state.
+    // Do not expose it until this client's latest console_user_id_changed request has
+    // been acknowledged and its peer state is registered in the daemon.
+    if (!console_user_id_changed_accepted_ ||
+        pending_console_user_id_changed_ ||
+        console_user_id_changed_request_in_flight_ ||
+        !pending_core_service_daemon_server_bound_) {
+      return;
+    }
+
+    auto uid = pending_core_service_daemon_server_bound_->uid;
+    pending_core_service_daemon_server_bound_ = std::nullopt;
+    core_service_daemon_server_bound(uid);
   }
 
   void async_deliver_pending_console_user_id_changed() {
@@ -176,7 +231,11 @@ private:
 
             if (pending_console_user_id_changed_ == state) {
               pending_console_user_id_changed_ = std::nullopt;
+              console_user_id_changed_accepted_ = true;
+              notify_core_service_daemon_server_bound_if_ready();
             } else {
+              // A newer state was queued while this request was in flight.
+              // Send the latest state after the daemon acknowledges the stale state.
               async_deliver_pending_console_user_id_changed();
             }
           });
@@ -185,7 +244,9 @@ private:
 
   std::unique_ptr<pqrs::unix_domain_stream::client> client_;
   std::optional<console_user_id_changed_state> pending_console_user_id_changed_;
+  std::optional<core_service_daemon_server_bound_state> pending_core_service_daemon_server_bound_;
   bool console_user_id_changed_request_in_flight_ = false;
+  bool console_user_id_changed_accepted_ = false;
   bool connection_ready_ = false;
 };
 } // namespace krbn::console_user_server

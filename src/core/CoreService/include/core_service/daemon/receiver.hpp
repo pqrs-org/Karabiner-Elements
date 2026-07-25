@@ -26,6 +26,12 @@
 namespace krbn::core_service::daemon {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
+  // Signals (invoked from the shared dispatcher thread)
+
+  nod::signal<void()> server_bound;
+
+  // Methods
+
   receiver(const receiver&) = delete;
 
   receiver(std::optional<uid_t> current_console_user_id,
@@ -76,6 +82,8 @@ public:
                                            filesystem_utility::permissions_0600)) {
         return;
       }
+
+      server_bound();
     });
 
     server_->bind_failed.connect([this](auto&& error_code) {

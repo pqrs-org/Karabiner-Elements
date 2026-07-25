@@ -17,6 +17,7 @@ enum class operation_type : uint8_t {
   system_preferences_updated,
   input_source_changed,
   // core_service (daemon) -> console_user_server
+  core_service_daemon_server_bound,
   core_service_daemon_state,
   check_for_updates,
   register_menu_agent,
@@ -72,6 +73,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::start_device_grabber, "start_device_grabber"},
         {operation_type::system_preferences_updated, "system_preferences_updated"},
         {operation_type::input_source_changed, "input_source_changed"},
+        {operation_type::core_service_daemon_server_bound, "core_service_daemon_server_bound"},
         {operation_type::core_service_daemon_state, "core_service_daemon_state"},
         {operation_type::check_for_updates, "check_for_updates"},
         {operation_type::register_menu_agent, "register_menu_agent"},

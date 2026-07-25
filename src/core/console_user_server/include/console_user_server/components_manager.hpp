@@ -20,6 +20,7 @@
 #include <pqrs/osx/system_preferences_monitor.hpp>
 #include <sys/stat.h>
 #include <thread>
+#include <unistd.h>
 
 namespace krbn::console_user_server {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -53,6 +54,13 @@ public:
       // Do nothing
     });
 
+    console_user_id_changed_client_->core_service_daemon_server_bound.connect([this](auto&& uid) {
+      if (on_console_ == std::optional<bool>(true) &&
+          uid == std::optional<uid_t>(getuid())) {
+        start_core_service_daemon_client();
+      }
+    });
+
     //
     // session_monitor_
     //
@@ -62,10 +70,13 @@ public:
 
       on_console_ = on_console;
 
+      stop_core_service_daemon_client();
+
       console_user_id_changed_client_->async_console_user_id_changed(on_console);
 
-      stop_core_service_daemon_client();
-      start_core_service_daemon_client();
+      // Delay start_core_service_daemon_client until core_service_daemon_server_bound is received.
+      // The core service daemon recreates its receiver socket for the new console user,
+      // so connecting before the socket ownership and permissions are updated may fail.
     });
   }
 

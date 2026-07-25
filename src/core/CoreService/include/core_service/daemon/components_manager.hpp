@@ -78,6 +78,12 @@ private:
     receiver_ = nullptr;
     receiver_ = std::make_unique<receiver>(uid,
                                            weak_core_service_daemon_state_manager_);
+
+    receiver_->server_bound.connect([this, uid] {
+      if (console_user_id_changed_receiver_) {
+        console_user_id_changed_receiver_->async_core_service_daemon_server_bound(uid);
+      }
+    });
   }
 
   void enqueue_ensure_base_directories() {
