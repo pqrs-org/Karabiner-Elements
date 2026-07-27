@@ -1,4 +1,7 @@
+#include "console_user_server/runtime.h"
 #include "console_user_server/components_manager.hpp"
+#include "console_user_server/ui_bridge.h"
+#include "console_user_server/ui_bridge.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
@@ -8,16 +11,27 @@
 #include "process_lifecycle_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "services_utility.hpp"
-#include <pqrs/dispatcher.hpp>
+#include "update_utility.hpp"
 #include <pqrs/filesystem.hpp>
 
-int main(int argc, const char* argv[]) {
+namespace {
+std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager;
+std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager;
+bool started = false;
+} // namespace
+
+void console_user_server_start(console_user_server_termination_callback callback) {
+  if (started) {
+    return;
+  }
+  started = true;
+
   //
   // Initialize
   //
 
-  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
-  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
+  scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
 
   signal(SIGUSR1, SIG_IGN);
@@ -90,23 +104,66 @@ int main(int argc, const char* argv[]) {
                 return std::make_unique<krbn::console_user_server::components_manager>();
               },
           .termination_completion_handler =
-              [] {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                  CFRunLoopStop(CFRunLoopGetCurrent());
-                });
+              [callback] {
+                if (callback) {
+                  callback();
+                }
               },
       });
   krbn::process_lifecycle_manager::async_start();
+}
 
-  CFRunLoopRun();
-
-  krbn::process_lifecycle_manager::terminate_shared_instance();
+void console_user_server_terminate(void) {
+  if (!started) {
+    return;
+  }
 
   //
   // Cleanup
   //
 
+  krbn::process_lifecycle_manager::terminate_shared_instance();
+  scoped_run_loop_thread_manager = nullptr;
+  scoped_dispatcher_manager = nullptr;
   krbn::logger::get_logger()->info("karabiner_console_user_server is terminated.");
+  started = false;
+}
 
-  return 0;
+void console_user_server_register_menu_state_callback(console_user_server_string_callback callback) {
+  krbn::console_user_server::ui_bridge::register_menu_state_callback(callback);
+}
+
+void console_user_server_register_notification_message_callback(console_user_server_string_callback callback) {
+  krbn::console_user_server::ui_bridge::register_notification_message_callback(callback);
+}
+
+void console_user_server_select_profile(size_t index) {
+  krbn::console_user_server::ui_bridge::select_profile(index);
+}
+
+void console_user_server_launch_settings(void) {
+  krbn::application_launcher::launch_settings();
+}
+
+void console_user_server_launch_event_viewer(void) {
+  krbn::application_launcher::launch_event_viewer();
+}
+
+void console_user_server_check_for_updates(bool include_beta_versions) {
+  if (include_beta_versions) {
+    krbn::update_utility::check_for_updates_with_beta_version();
+  } else {
+    krbn::update_utility::check_for_updates_stable_only();
+  }
+}
+
+void console_user_server_restart(void) {
+  krbn::services_utility::restart_console_user_server_agent();
+}
+
+void console_user_server_quit(void) {
+  krbn::application_launcher::killall_settings();
+  krbn::services_utility::unregister_multitouch_extension_agent();
+  // This unregisters console_user_server itself, so it must be last.
+  krbn::services_utility::unregister_core_agents();
 }
