@@ -33,16 +33,17 @@ tar -C /Applications -cf '/Library/Application Support/org.pqrs/Karabiner-Elemen
 #
 
 killall Karabiner-Core-Service
-killall karabiner_console_user_server
+killall Karabiner-Console-User-Server
 # Karabiner-Elements is the setting window.
 killall Karabiner-Elements
 killall Karabiner-EventViewer
-killall Karabiner-Menu
 killall Karabiner-MultitouchExtension
-killall Karabiner-NotificationWindow
 
 # Terminate deprecated processes as well, since they may have been running before the update.
+killall karabiner_console_user_server
 killall karabiner_grabber
 killall karabiner_session_monitor
+killall Karabiner-Menu
+killall Karabiner-NotificationWindow
 
 exit 0

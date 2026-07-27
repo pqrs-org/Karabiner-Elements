@@ -7,8 +7,7 @@ for file in [
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app",
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents v2.app",
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons v2.app",
-  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Menu.app",
-  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app",
+  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Console-User-Server.app",
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app",
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app/Contents/Frameworks/Sparkle.framework/Updater.app",
 ] {
