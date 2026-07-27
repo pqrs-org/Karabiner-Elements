@@ -471,23 +471,10 @@ public:
             // Manage agents
             //
 
-            if (core_configuration_->get_global_configuration().get_show_in_menu_bar() ||
-                core_configuration_->get_global_configuration().get_show_profile_name_in_menu_bar()) {
-              console_user_server_peer->async_register_menu_agent();
-            } else {
-              console_user_server_peer->async_unregister_menu_agent();
-            }
-
             if (core_configuration_->get_machine_specific().get_entry().get_enable_multitouch_extension()) {
               console_user_server_peer->async_register_multitouch_extension_agent();
             } else {
               console_user_server_peer->async_unregister_multitouch_extension_agent();
-            }
-
-            if (core_configuration_->get_global_configuration().get_enable_notification_window()) {
-              console_user_server_peer->async_register_notification_window_agent();
-            } else {
-              console_user_server_peer->async_unregister_notification_window_agent();
             }
           }
 
