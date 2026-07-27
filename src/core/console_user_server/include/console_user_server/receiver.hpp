@@ -114,28 +114,12 @@ public:
           set_check_for_updates_enabled(json.at("enabled").get<bool>());
           break;
 
-        case operation_type::register_menu_agent:
-          services_utility::register_menu_agent();
-          break;
-
-        case operation_type::unregister_menu_agent:
-          services_utility::unregister_menu_agent();
-          break;
-
         case operation_type::register_multitouch_extension_agent:
           services_utility::register_multitouch_extension_agent();
           break;
 
         case operation_type::unregister_multitouch_extension_agent:
           services_utility::unregister_multitouch_extension_agent();
-          break;
-
-        case operation_type::register_notification_window_agent:
-          services_utility::register_notification_window_agent();
-          break;
-
-        case operation_type::unregister_notification_window_agent:
-          services_utility::unregister_notification_window_agent();
           break;
 
         case operation_type::frontmost_application_changed:
