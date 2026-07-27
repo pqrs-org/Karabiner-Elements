@@ -65,27 +65,13 @@ inline void unregister_core_agents() {
 
 inline void restart_console_user_server_agent() {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
-  auto service_name = pqrs::osx::launchctl::service_name("org.pqrs.service.agent.karabiner_console_user_server");
+  auto service_name = pqrs::osx::launchctl::service_name("org.pqrs.service.agent.Karabiner-Console-User-Server");
 
   auto flags = pqrs::osx::launchctl::kickstart_flags::kill |
                pqrs::osx::launchctl::kickstart_flags::background;
   pqrs::osx::launchctl::kickstart(domain_target,
                                   service_name,
                                   flags);
-}
-
-//
-// menu_agent
-//
-
-inline void register_menu_agent() {
-  run_command(agents_path,
-              "register-menu-agent");
-}
-
-inline void unregister_menu_agent() {
-  run_command(agents_path,
-              "unregister-menu-agent");
 }
 
 //
@@ -103,20 +89,6 @@ inline void unregister_multitouch_extension_agent() {
 }
 
 //
-// notification_window_agent
-//
-
-inline void register_notification_window_agent() {
-  run_command(agents_path,
-              "register-notification-window-agent");
-}
-
-inline void unregister_notification_window_agent() {
-  run_command(agents_path,
-              "unregister-notification-window-agent");
-}
-
-//
 // Old agents
 //
 
@@ -127,11 +99,14 @@ inline void bootout_old_agents() {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
 
   for (const auto& service_name : {
-           "org.pqrs.karabiner.NotificationWindow",
            "org.pqrs.karabiner.agent.karabiner_grabber",
            "org.pqrs.karabiner.karabiner_console_user_server",
            "org.pqrs.karabiner.karabiner_session_monitor",
+           "org.pqrs.karabiner.NotificationWindow",
+           "org.pqrs.service.agent.karabiner_console_user_server",
            "org.pqrs.service.agent.karabiner_session_monitor",
+           "org.pqrs.service.agent.Karabiner-Menu",
+           "org.pqrs.service.agent.Karabiner-NotificationWindow",
        }) {
     pqrs::osx::launchctl::bootout(domain_target,
                                   pqrs::osx::launchctl::service_name(service_name));
@@ -143,14 +118,10 @@ inline void bootout_old_agents() {
 //
 
 inline void unregister_all_agents() {
-  unregister_core_agents();
   unregister_multitouch_extension_agent();
-  unregister_notification_window_agent();
 
-  // `unregister_all_agents` might be called within Karabiner-Menu.app.
-  // In that case, `unregister_menu_agent` will terminate itself,
-  // so it needs to be called after unregistering other services.
-  unregister_menu_agent();
+  // This terminates Karabiner-Console-User-Server, so it must be last.
+  unregister_core_agents();
 }
 
 inline std::optional<bool> core_daemons_enabled() {

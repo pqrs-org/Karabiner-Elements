@@ -46,18 +46,6 @@ public:
     });
   }
 
-  void async_register_menu_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::register_menu_agent},
-    });
-  }
-
-  void async_unregister_menu_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::unregister_menu_agent},
-    });
-  }
-
   void async_register_multitouch_extension_agent() {
     async_request(nlohmann::json{
         {"operation_type", operation_type::register_multitouch_extension_agent},
@@ -67,18 +55,6 @@ public:
   void async_unregister_multitouch_extension_agent() {
     async_request(nlohmann::json{
         {"operation_type", operation_type::unregister_multitouch_extension_agent},
-    });
-  }
-
-  void async_register_notification_window_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::register_notification_window_agent},
-    });
-  }
-
-  void async_unregister_notification_window_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::unregister_notification_window_agent},
     });
   }
 
