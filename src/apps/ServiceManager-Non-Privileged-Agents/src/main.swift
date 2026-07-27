@@ -19,7 +19,7 @@ RunLoop.main.perform {
     // unregisterCoreAgents may be invoked by Karabiner-Console-User-Server.
     // Unregistering its own service can terminate the caller before the operation completes,
     // so unregister Karabiner-Console-User-Server last.
-    "org.pqrs.service.agent.karabiner_console_user_server",
+    "org.pqrs.service.agent.Karabiner-Console-User-Server",
   ]
 
   let coreAgents = coreAgentServiceNames.map {

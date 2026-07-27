@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.service.agent.karabiner_console_user_server</string>
+    <string>org.pqrs.service.agent.Karabiner-Console-User-Server</string>
     <key>KeepAlive</key>
     <true/>
     <key>ProgramArguments</key>
