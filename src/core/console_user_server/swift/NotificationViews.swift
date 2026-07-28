@@ -27,29 +27,3 @@ struct NotificationMainView: View {
     }
   }
 }
-
-struct NotificationCloseButtonView: View {
-  let mainWindow: NSWindow
-  let buttonWindow: NSWindow
-
-  var body: some View {
-    Button(
-      action: {
-        mainWindow.orderOut(self)
-        buttonWindow.orderOut(self)
-      },
-      label: {
-        Image(systemName: "xmark.circle")
-          .resizable()
-          .frame(width: 24.0, height: 24.0)
-          .foregroundColor(.gray)
-      }
-    )
-    .buttonStyle(.plain)
-    // Do not set opacity to Button because the mouse click will be ignored.
-    .background(
-      Circle()
-        .fill(Color(NSColor.windowBackgroundColor))
-    )
-  }
-}
