@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct NotificationMainView: View {
+struct NotificationView: View {
   @ObservedObject private var state = ConsoleUserServerUIState.shared
   @State private var opacity = 1.0
 
