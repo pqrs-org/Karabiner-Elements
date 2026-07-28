@@ -85,6 +85,14 @@ public:
           run_loop_source_ = nullptr;
         }
 
+        // CoreGraphics keeps its own references to the CFMachPort returned by
+        // CGEventTapCreate, so releasing our reference never deallocates it.
+        // Without an explicit CFMachPortInvalidate, the window server keeps the
+        // (disabled) event tap registration until the process exits. These
+        // leaked registrations accumulate — one per event_tap_monitor teardown —
+        // and degrade system-wide input responsiveness once they number in the
+        // hundreds (see CGGetEventTapList).
+        CFMachPortInvalidate(event_tap_.get());
         event_tap_ = nullptr;
       }
 
@@ -164,6 +172,9 @@ public:
           } else {
             logger::get_logger()->error("event_tap_monitor failed to create run_loop_source");
 
+            // See async_stop: invalidation is required to release the window
+            // server registration; releasing the reference alone leaks it.
+            CFMachPortInvalidate(event_tap_.get());
             event_tap_ = nullptr;
           }
         } else {
