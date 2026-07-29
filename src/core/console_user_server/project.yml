@@ -35,9 +35,10 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
+      - path: ../../apps/share/swift/Views/MouseInsideModifier.swift
+      - path: ../../apps/share/swift/Views/View+Extensions.swift
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
-      - path: ../../apps/Menu/Resources/Assets.xcassets
       - path: ../../apps/share/Resources/app.icns
       - path: Resources
         excludes:
