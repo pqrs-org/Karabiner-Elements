@@ -453,23 +453,6 @@ private:
           }
           break;
 
-        case operation_type::get_notification_message:
-          if (device_grabber_) {
-            device_grabber_->async_invoke_with_notification_message(
-                [this, peer_id, request_id](auto&& message) {
-                  async_respond(peer_id,
-                                request_id,
-                                nlohmann::json{
-                                    {"operation_type", operation_type::notification_message},
-                                    {"notification_message", message},
-                                });
-                });
-          } else {
-            async_respond_none(peer_id,
-                               request_id);
-          }
-          break;
-
         case operation_type::get_system_variables:
           if (device_grabber_) {
             device_grabber_->async_invoke_with_manipulator_environment(

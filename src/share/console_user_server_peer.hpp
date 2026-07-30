@@ -39,6 +39,13 @@ public:
     });
   }
 
+  void async_notification_message(const std::string& notification_message) {
+    async_request(nlohmann::json{
+        {"operation_type", operation_type::notification_message},
+        {"notification_message", notification_message},
+    });
+  }
+
   void async_check_for_updates(bool enabled) {
     async_request(nlohmann::json{
         {"operation_type", operation_type::check_for_updates},

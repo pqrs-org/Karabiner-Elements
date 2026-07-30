@@ -103,10 +103,6 @@ public:
     core_service_daemon_client_->async_get_connected_devices();
   }
 
-  void async_get_notification_message() {
-    core_service_daemon_client_->async_get_notification_message();
-  }
-
   void async_get_system_variables() {
     core_service_daemon_client_->async_get_system_variables();
   }

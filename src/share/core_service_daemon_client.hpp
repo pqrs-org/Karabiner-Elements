@@ -240,16 +240,6 @@ public:
     });
   }
 
-  void async_get_notification_message() const {
-    enqueue_to_dispatcher([this] {
-      nlohmann::json json{
-          {"operation_type", operation_type::get_notification_message},
-      };
-
-      async_request(std::move(json));
-    });
-  }
-
   void async_get_system_variables() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{

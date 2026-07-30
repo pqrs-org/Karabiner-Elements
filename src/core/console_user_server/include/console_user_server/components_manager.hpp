@@ -124,7 +124,6 @@ public:
       session_monitor_->async_start(std::chrono::milliseconds(1000));
       configuration_monitor_->async_start();
       settings_window_guidance_manager_->async_start();
-      schedule_notification_message_update();
       receiver_ = std::make_unique<receiver>(settings_window_guidance_manager_,
                                              software_function_handler_);
     });
@@ -171,17 +170,6 @@ private:
             .dump());
   }
 
-  void schedule_notification_message_update() {
-    enqueue_to_dispatcher(
-        [this] {
-          if (core_service_daemon_client_) {
-            core_service_daemon_client_->async_get_notification_message();
-          }
-          schedule_notification_message_update();
-        },
-        when_now() + std::chrono::milliseconds(500));
-  }
-
   void start_core_service_daemon_client() {
     if (core_service_daemon_client_) {
       return;
@@ -195,7 +183,6 @@ private:
 
     core_service_daemon_client_->connected.connect([this] {
       core_service_daemon_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
-      core_service_daemon_client_->async_get_notification_message();
 
       stop_child_components();
       start_child_components();

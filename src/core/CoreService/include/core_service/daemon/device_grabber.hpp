@@ -57,6 +57,17 @@ public:
         logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>();
 
+    notification_message_manager_->notification_message_changed.connect(
+        [weak_console_user_server_peer](const auto& notification_message) {
+          if (auto peer = weak_console_user_server_peer.lock()) {
+            peer->async_notification_message(notification_message);
+          }
+        });
+
+    if (auto peer = weak_console_user_server_peer.lock()) {
+      peer->async_notification_message(notification_message_manager_->get_full_message());
+    }
+
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
@@ -657,14 +668,6 @@ public:
     });
   }
 
-  void async_invoke_with_notification_message(std::function<void(const std::string&)> function) const {
-    enqueue_to_dispatcher([this, function] {
-      if (notification_message_manager_) {
-        function(notification_message_manager_->get_full_message());
-      }
-    });
-  }
-
 private:
   void stop() {
     configuration_monitor_ = nullptr;
@@ -1184,6 +1187,9 @@ private:
 
   virtual_hid_devices_state virtual_hid_devices_state_;
 
+  // Connections to signals owned by objects that may outlive device_grabber.
+  // Keep them here to ensure that callbacks referencing this are disconnected
+  // before device_grabber is destroyed.
   std::vector<nod::scoped_connection> external_signal_connections_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;
