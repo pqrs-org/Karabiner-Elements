@@ -7,6 +7,7 @@
 #include "karabiner_version.h"
 #include "logger.hpp"
 #include "process_lifecycle_manager.hpp"
+#include "services_utility.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <fstream>
 #include <iostream>
@@ -103,6 +104,13 @@ int agent(std::vector<std::string> args) {
   //
 
   get_shared_codesign_manager()->log();
+
+  //
+  // If the Karabiner-Console-User-Server LaunchAgent plist is renamed in an update,
+  // the agent will not start automatically until it is registered again.
+  //
+
+  services_utility::register_core_agents();
 
   //
   // The agent opens karabiner.json to trigger the disk-access permission prompt,
