@@ -477,16 +477,6 @@ public:
 
             console_user_server_peer->async_check_for_updates(
                 core_configuration_->get_global_configuration().get_check_for_updates());
-
-            //
-            // Manage agents
-            //
-
-            if (core_configuration_->get_machine_specific().get_entry().get_enable_multitouch_extension()) {
-              console_user_server_peer->async_register_multitouch_extension_agent();
-            } else {
-              console_user_server_peer->async_unregister_multitouch_extension_agent();
-            }
           }
 
           //

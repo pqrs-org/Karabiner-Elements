@@ -53,18 +53,6 @@ public:
     });
   }
 
-  void async_register_multitouch_extension_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::register_multitouch_extension_agent},
-    });
-  }
-
-  void async_unregister_multitouch_extension_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::unregister_multitouch_extension_agent},
-    });
-  }
-
   void async_frontmost_application_changed(const application& application) {
     async_request(nlohmann::json{
         {"operation_type", operation_type::frontmost_application_changed},

@@ -45,6 +45,13 @@ public:
     configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
       if (auto core_configuration = weak_core_configuration.lock()) {
         core_configuration_ = core_configuration;
+
+        if (core_configuration->get_machine_specific().get_entry().get_enable_multitouch_extension()) {
+          services_utility::register_multitouch_extension_agent();
+        } else {
+          services_utility::unregister_multitouch_extension_agent();
+        }
+
         publish_ui_state(*core_configuration);
       }
     });
