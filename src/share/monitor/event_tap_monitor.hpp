@@ -85,7 +85,7 @@ public:
           run_loop_source_ = nullptr;
         }
 
-        event_tap_ = nullptr;
+        invalidate_event_tap();
       }
 
       event_tap_cleanup_completed_ = true;
@@ -164,7 +164,7 @@ public:
           } else {
             logger::get_logger()->error("event_tap_monitor failed to create run_loop_source");
 
-            event_tap_ = nullptr;
+            invalidate_event_tap();
           }
         } else {
           logger::get_logger()->error("event_tap_monitor failed to create event tap (enable_cgeventtap_fallback={0})",
@@ -357,6 +357,27 @@ private:
     if (CGEventTapIsEnabled(event_tap_.get()) != enable) {
       logger::get_logger()->error("CGEventTapEnable failed ({0}, enable={1})", context, enable);
     }
+  }
+
+  // Releases event_tap_ and unregisters the EventTap.
+  // The caller must hold event_tap_mutex_.
+  //
+  // Note:
+  // Releasing our reference to the CFMachPort is not enough to unregister the EventTap.
+  // CGEventTapCreate returns a port that CoreGraphics keeps a reference to, and
+  // CFMachPortCreateRunLoopSource caches its run loop source inside the port while the
+  // source retains the port. The port's retain count therefore never reaches zero and the
+  // EventTap stays registered with the window server as a disabled entry. Since the window
+  // server walks the whole tap list for every input event, such leftover entries accumulate
+  // and add latency to all scrolling and typing system wide. CFMachPortInvalidate drops the
+  // remaining references and unregisters the EventTap.
+  void invalidate_event_tap() {
+    if (!event_tap_) {
+      return;
+    }
+
+    CFMachPortInvalidate(event_tap_.get());
+    event_tap_ = nullptr;
   }
 
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
