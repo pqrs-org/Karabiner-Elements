@@ -10,7 +10,7 @@ clean:
 	rm -fr build
 
 codesign: all
-	bash ../../../scripts/codesign.sh build/Release/Karabiner-Console-User-Server.app
+	bash ../../../scripts/codesign.sh build/Release
 
 install: codesign
 	sudo rsync -a --delete \
