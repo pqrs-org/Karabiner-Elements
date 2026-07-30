@@ -17,10 +17,11 @@
 namespace {
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager;
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager;
+std::shared_ptr<krbn::console_user_server::ui_bridge> ui_bridge_instance;
 bool started = false;
 } // namespace
 
-void console_user_server_start(console_user_server_termination_callback callback) {
+void console_user_server_start(console_user_server_terminated_callback callback) {
   if (started) {
     return;
   }
@@ -33,6 +34,7 @@ void console_user_server_start(console_user_server_termination_callback callback
   scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
+  ui_bridge_instance = std::make_shared<krbn::console_user_server::ui_bridge>();
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
@@ -100,8 +102,8 @@ void console_user_server_start(console_user_server_termination_callback callback
   krbn::process_lifecycle_manager::initialize_shared_instance(
       krbn::process_lifecycle_manager::configuration{
           .components_manager_maker =
-              [] {
-                return std::make_unique<krbn::console_user_server::components_manager>();
+              [ui_bridge = ui_bridge_instance] {
+                return std::make_unique<krbn::console_user_server::components_manager>(ui_bridge);
               },
           .termination_completion_handler =
               [callback] {
@@ -123,22 +125,29 @@ void console_user_server_terminate(void) {
   //
 
   krbn::process_lifecycle_manager::terminate_shared_instance();
+  ui_bridge_instance = nullptr;
   scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;
   krbn::logger::get_logger()->info("karabiner_console_user_server is terminated.");
   started = false;
 }
 
-void console_user_server_register_menu_state_callback(console_user_server_string_callback callback) {
-  krbn::console_user_server::ui_bridge::register_menu_state_callback(callback);
+void console_user_server_register_ui_state_callback(console_user_server_string_callback callback) {
+  if (ui_bridge_instance) {
+    ui_bridge_instance->register_ui_state_callback(callback);
+  }
 }
 
 void console_user_server_register_notification_message_callback(console_user_server_string_callback callback) {
-  krbn::console_user_server::ui_bridge::register_notification_message_callback(callback);
+  if (ui_bridge_instance) {
+    ui_bridge_instance->register_notification_message_callback(callback);
+  }
 }
 
 void console_user_server_select_profile(size_t index) {
-  krbn::console_user_server::ui_bridge::select_profile(index);
+  if (ui_bridge_instance) {
+    ui_bridge_instance->select_profile(index);
+  }
 }
 
 void console_user_server_launch_settings(void) {
