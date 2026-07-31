@@ -17,7 +17,7 @@ struct ConsoleUserServerNotConnectedAlertView: View {
 
         ProgressView()
 
-        if contentViewStates.consoleUserServerClientWaitingSeconds >= 5 {
+        if contentViewStates.consoleUserServerClientDisconnectedForAWhile {
           GroupBox {
             VStack(alignment: .center, spacing: 20.0) {
               Text(

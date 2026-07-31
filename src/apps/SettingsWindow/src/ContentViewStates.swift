@@ -26,7 +26,7 @@ final class ContentViewStates: ObservableObject {
       resetDismissedAlertIfNeeded()
     }
   }
-  @Published private(set) var consoleUserServerClientWaitingSeconds = 0
+  @Published private(set) var consoleUserServerClientDisconnectedForAWhile = false
   private var lastAutoPresentedSetup: SettingsWindowGuidanceSetup = .none
   private var autoOpenedSetup = false
 
@@ -110,11 +110,15 @@ final class ContentViewStates: ObservableObject {
   }
 
   func updateConsoleUserServerClientConnected(_ connected: Bool) {
-    consoleUserServerClientConnected = connected
+    if consoleUserServerClientConnected != connected {
+      consoleUserServerClientConnected = connected
+    }
   }
 
-  func updateConsoleUserServerClientWaitingSeconds(_ seconds: Int) {
-    consoleUserServerClientWaitingSeconds = seconds
+  func updateConsoleUserServerClientDisconnectedForAWhile(_ disconnectedForAWhile: Bool) {
+    if consoleUserServerClientDisconnectedForAWhile != disconnectedForAWhile {
+      consoleUserServerClientDisconnectedForAWhile = disconnectedForAWhile
+    }
   }
 
   func updateLocalServicesGuidanceContext(

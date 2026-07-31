@@ -73,14 +73,14 @@ final class SettingsConsoleUserServerClient {
       }
     }
 
-    let consoleUserServerClientWaitingSeconds =
+    let disconnectedForAWhile =
       consoleUserServerClientDisconnectedAt.map {
-        max(0, Int($0.duration(to: continuousClock.now).components.seconds))
-      } ?? 0
+        $0.duration(to: continuousClock.now) >= .seconds(5)
+      } ?? false
 
     ContentViewStates.shared.updateConsoleUserServerClientConnected(connected)
-    ContentViewStates.shared.updateConsoleUserServerClientWaitingSeconds(
-      consoleUserServerClientWaitingSeconds)
+    ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(
+      disconnectedForAWhile)
   }
 
   func updateLocalServicesGuidanceContext() {
