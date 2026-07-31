@@ -6,7 +6,7 @@ private func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<
 
   if let state = try? JSONDecoder().decode(SettingsWindowGuidanceState.self, from: data) {
     Task { @MainActor in
-      ContentViewStates.shared.updateGuidanceState(state)
+      SettingsConsoleUserServerClient.shared.settingsWindowGuidanceReceived(state)
     }
   }
 }
@@ -27,6 +27,7 @@ final class SettingsConsoleUserServerClient {
   private let continuousClock: ContinuousClock
   private let currentAlertTimer: AsyncTimerSequence<ContinuousClock>
   private var currentAlertTimerTask: Task<Void, Never>?
+  private var consoleUserServerClientReady = false
   private var consoleUserServerClientDisconnectedAt: ContinuousClock.Instant?
 
   init() {
@@ -61,16 +62,14 @@ final class SettingsConsoleUserServerClient {
   }
 
   func updateConsoleUserServerClientState() {
-    let connected =
-      libkrbn_console_user_server_client_get_status()
-      == libkrbn_console_user_server_client_status_connected
+    if libkrbn_console_user_server_client_get_status()
+      != libkrbn_console_user_server_client_status_connected
+    {
+      consoleUserServerClientReady = false
+    }
 
-    if connected {
-      consoleUserServerClientDisconnectedAt = nil
-    } else {
-      if consoleUserServerClientDisconnectedAt == nil {
-        consoleUserServerClientDisconnectedAt = continuousClock.now
-      }
+    if !consoleUserServerClientReady && consoleUserServerClientDisconnectedAt == nil {
+      consoleUserServerClientDisconnectedAt = continuousClock.now
     }
 
     let disconnectedForAWhile =
@@ -78,9 +77,22 @@ final class SettingsConsoleUserServerClient {
         $0.duration(to: continuousClock.now) >= .seconds(5)
       } ?? false
 
-    ContentViewStates.shared.updateConsoleUserServerClientConnected(connected)
+    ContentViewStates.shared.updateConsoleUserServerClientReady(consoleUserServerClientReady)
     ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(
       disconnectedForAWhile)
+  }
+
+  func settingsWindowGuidanceReceived(_ state: SettingsWindowGuidanceState) {
+    // The transport's connected status does not guarantee that peer verification has completed.
+    // If the code signatures do not match, the transport repeatedly connects and disconnects
+    // as peer verification fails. Receiving a guidance response proves that the connection has
+    // passed verification and is ready for communication.
+    consoleUserServerClientReady = true
+    consoleUserServerClientDisconnectedAt = nil
+
+    ContentViewStates.shared.updateConsoleUserServerClientReady(true)
+    ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(false)
+    ContentViewStates.shared.updateGuidanceState(state)
   }
 
   func updateLocalServicesGuidanceContext() {

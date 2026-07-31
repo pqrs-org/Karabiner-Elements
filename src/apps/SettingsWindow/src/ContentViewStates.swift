@@ -21,7 +21,7 @@ final class ContentViewStates: ObservableObject {
   @Published private var dismissedAlert: SettingsWindowGuidanceAlert = .none
   @Published var guidanceContext = SettingsWindowGuidanceContext()
   @Published var coreServiceDaemonState = SettingsWindowCoreServiceState()
-  @Published private var consoleUserServerClientConnected = false {
+  @Published private var consoleUserServerClientReady = false {
     didSet {
       resetDismissedAlertIfNeeded()
     }
@@ -37,10 +37,10 @@ final class ContentViewStates: ObservableObject {
   private var localServicesSetupPresented = false
 
   private var currentResolvedAlert: SettingsWindowGuidanceAlert {
-    // When Settings cannot connect to Karabiner-Console-User-Server, it cannot fetch
-    // SettingsWindowGuidanceState from Karabiner-Console-User-Server, so this error handling
-    // has to run independently from SettingsWindowGuidanceState.
-    if !consoleUserServerClientConnected {
+    // Until Settings receives SettingsWindowGuidanceState from
+    // Karabiner-Console-User-Server, it cannot use the server-provided guidance to determine
+    // which alert to show. Handle that state locally.
+    if !consoleUserServerClientReady {
       // There are multiple reasons why Settings might not be able to connect to
       // Karabiner-Console-User-Server.
       //
@@ -109,9 +109,9 @@ final class ContentViewStates: ObservableObject {
     }
   }
 
-  func updateConsoleUserServerClientConnected(_ connected: Bool) {
-    if consoleUserServerClientConnected != connected {
-      consoleUserServerClientConnected = connected
+  func updateConsoleUserServerClientReady(_ ready: Bool) {
+    if consoleUserServerClientReady != ready {
+      consoleUserServerClientReady = ready
     }
   }
 
@@ -128,7 +128,7 @@ final class ContentViewStates: ObservableObject {
     localCoreDaemonsEnabled = coreDaemonsEnabled
     localCoreAgentsEnabled = coreAgentsEnabled
 
-    if !consoleUserServerClientConnected && localServicesRequireAttention {
+    if !consoleUserServerClientReady && localServicesRequireAttention {
       if localSetup != .services {
         localSetup = .services
       }
