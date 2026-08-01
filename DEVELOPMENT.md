@@ -16,7 +16,7 @@ After that, in order to replace individual binaries, you can quickly build and i
 ### Replace `Karabiner-Core-Service`
 
 ```shell
-cd src/core/CoreService
+cd src/apps/CoreService
 make install
 ```
 
