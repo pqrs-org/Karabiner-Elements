@@ -18,6 +18,7 @@
 #include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/cg_event_tap.hpp>
 #include <pqrs/osx/chrono.hpp>
 #include <unordered_map>
 
@@ -75,26 +76,7 @@ public:
     cf_run_loop_thread_->enqueue(^{
       std::lock_guard<std::mutex> lock(event_tap_mutex_);
 
-      if (event_tap_) {
-        CGEventTapEnable(event_tap_.get(), false);
-
-        if (run_loop_source_) {
-          CFRunLoopRemoveSource(cf_run_loop_thread_->get_run_loop(),
-                                run_loop_source_.get(),
-                                kCFRunLoopCommonModes);
-          run_loop_source_ = nullptr;
-        }
-
-        // CoreGraphics keeps its own references to the CFMachPort returned by
-        // CGEventTapCreate, so releasing our reference never deallocates it.
-        // Without an explicit CFMachPortInvalidate, the window server keeps the
-        // (disabled) event tap registration until the process exits. These
-        // leaked registrations accumulate — one per event_tap_monitor teardown —
-        // and degrade system-wide input responsiveness once they number in the
-        // hundreds (see CGGetEventTapList).
-        CFMachPortInvalidate(event_tap_.get());
-        event_tap_ = nullptr;
-      }
+      event_tap_ = nullptr;
 
       event_tap_cleanup_completed_ = true;
       CFRunLoopStop(cf_run_loop_thread_->get_run_loop());
@@ -145,26 +127,24 @@ public:
       logger::get_logger()->debug("event_tap_monitor start (enable_cgeventtap_fallback={0})",
                                   cgeventtap_fallback_enabled_);
 
-      auto event_tap = pqrs::cf::adopt_cf_ptr(CGEventTapCreate(kCGHIDEventTap,
-                                                               kCGTailAppendEventTap,
-                                                               cgeventtap_fallback_enabled_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
-                                                               mask,
-                                                               event_tap_monitor::static_callback,
-                                                               this));
+      auto event_tap = std::make_unique<pqrs::osx::cg_event_tap>(
+          pqrs::cf::adopt_cf_ptr(CGEventTapCreate(kCGHIDEventTap,
+                                                  kCGTailAppendEventTap,
+                                                  cgeventtap_fallback_enabled_ ? kCGEventTapOptionDefault : kCGEventTapOptionListenOnly,
+                                                  mask,
+                                                  event_tap_monitor::static_callback,
+                                                  this)));
       {
         std::lock_guard<std::mutex> lock(event_tap_mutex_);
 
         event_tap_ = std::move(event_tap);
 
-        if (event_tap_) {
-          run_loop_source_ = pqrs::cf::adopt_cf_ptr(CFMachPortCreateRunLoopSource(kCFAllocatorDefault,
-                                                                                  event_tap_.get(),
-                                                                                  0));
-          if (run_loop_source_) {
-            CFRunLoopAddSource(cf_run_loop_thread_->get_run_loop(),
-                               run_loop_source_.get(),
-                               kCFRunLoopCommonModes);
-            CGEventTapEnable(event_tap_.get(), true);
+        if (event_tap_ &&
+            event_tap_->valid()) {
+          if (event_tap_->attach_to_run_loop(cf_run_loop_thread_->get_run_loop())) {
+            if (!event_tap_->enable()) {
+              logger::get_logger()->error("event_tap_monitor failed to enable event tap");
+            }
 
             cf_run_loop_thread_->wake();
 
@@ -172,14 +152,12 @@ public:
           } else {
             logger::get_logger()->error("event_tap_monitor failed to create run_loop_source");
 
-            // See async_stop: invalidation is required to release the window
-            // server registration; releasing the reference alone leaks it.
-            CFMachPortInvalidate(event_tap_.get());
             event_tap_ = nullptr;
           }
         } else {
           logger::get_logger()->error("event_tap_monitor failed to create event tap (enable_cgeventtap_fallback={0})",
                                       cgeventtap_fallback_enabled_);
+          event_tap_ = nullptr;
         }
       }
     });
@@ -356,27 +334,21 @@ private:
     CGEventSetFlags(event, synchronized_flags);
   }
 
-  void enable_event_tap(bool enable, std::string_view context) const {
-    std::lock_guard<std::mutex> lock(event_tap_mutex_);
-
-    if (!event_tap_) {
-      return;
-    }
-
-    CGEventTapEnable(event_tap_.get(), enable);
-
-    if (CGEventTapIsEnabled(event_tap_.get()) != enable) {
-      logger::get_logger()->error("CGEventTapEnable failed ({0}, enable={1})", context, enable);
-    }
-  }
-
   CGEventRef _Nullable callback(CGEventTapProxy _Nullable proxy, CGEventType type, CGEventRef _Nullable event) {
     switch (type) {
       case kCGEventTapDisabledByTimeout:
-      case kCGEventTapDisabledByUserInput:
+      case kCGEventTapDisabledByUserInput: {
+        std::lock_guard<std::mutex> lock(event_tap_mutex_);
+
         logger::get_logger()->debug("Re-enable event_tap_");
-        enable_event_tap(true, "callback");
+
+        if (event_tap_ &&
+            !event_tap_->enable()) {
+          logger::get_logger()->error("CGEventTapEnable failed");
+        }
+
         break;
+      }
 
       case kCGEventLeftMouseDown:
       case kCGEventLeftMouseUp:
@@ -477,8 +449,7 @@ private:
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
   // event_tap_mutex_ needs synchronization because it is accessed from both the run loop thread and the dispatcher thread.
   mutable std::mutex event_tap_mutex_;
-  pqrs::cf::cf_ptr<CFMachPortRef> event_tap_;
-  pqrs::cf::cf_ptr<CFRunLoopSourceRef> run_loop_source_;
+  std::unique_ptr<pqrs::osx::cg_event_tap> event_tap_;
   bool event_tap_cleanup_completed_ = false;
   bool fn_pressed_{false};
   keyboard_fallback_loop_guard keyboard_fallback_loop_guard_;
