@@ -57,6 +57,17 @@ public:
         logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>();
 
+    notification_message_manager_->notification_message_changed.connect(
+        [weak_console_user_server_peer](const auto& notification_message) {
+          if (auto peer = weak_console_user_server_peer.lock()) {
+            peer->async_notification_message(notification_message);
+          }
+        });
+
+    if (auto peer = weak_console_user_server_peer.lock()) {
+      peer->async_notification_message(notification_message_manager_->get_full_message());
+    }
+
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
@@ -466,29 +477,6 @@ public:
 
             console_user_server_peer->async_check_for_updates(
                 core_configuration_->get_global_configuration().get_check_for_updates());
-
-            //
-            // Manage agents
-            //
-
-            if (core_configuration_->get_global_configuration().get_show_in_menu_bar() ||
-                core_configuration_->get_global_configuration().get_show_profile_name_in_menu_bar()) {
-              console_user_server_peer->async_register_menu_agent();
-            } else {
-              console_user_server_peer->async_unregister_menu_agent();
-            }
-
-            if (core_configuration_->get_machine_specific().get_entry().get_enable_multitouch_extension()) {
-              console_user_server_peer->async_register_multitouch_extension_agent();
-            } else {
-              console_user_server_peer->async_unregister_multitouch_extension_agent();
-            }
-
-            if (core_configuration_->get_global_configuration().get_enable_notification_window()) {
-              console_user_server_peer->async_register_notification_window_agent();
-            } else {
-              console_user_server_peer->async_unregister_notification_window_agent();
-            }
           }
 
           //
@@ -667,14 +655,6 @@ public:
       }
 
       function(nlohmann::json(connected_devices));
-    });
-  }
-
-  void async_invoke_with_notification_message(std::function<void(const std::string&)> function) const {
-    enqueue_to_dispatcher([this, function] {
-      if (notification_message_manager_) {
-        function(notification_message_manager_->get_full_message());
-      }
     });
   }
 
@@ -1197,6 +1177,9 @@ private:
 
   virtual_hid_devices_state virtual_hid_devices_state_;
 
+  // Connections to signals owned by objects that may outlive device_grabber.
+  // Keep them here to ensure that callbacks referencing this are disconnected
+  // before device_grabber is destroyed.
   std::vector<nod::scoped_connection> external_signal_connections_;
 
   std::unique_ptr<configuration_monitor> configuration_monitor_;

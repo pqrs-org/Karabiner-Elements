@@ -9,7 +9,7 @@ struct ConsoleUserServerNotConnectedAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
         Label(
-          "Waiting to connect to the agent process (karabiner_console_user_server)",
+          "Waiting to connect to the agent process (Karabiner-Console-User-Server)",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))
@@ -17,7 +17,7 @@ struct ConsoleUserServerNotConnectedAlertView: View {
 
         ProgressView()
 
-        if contentViewStates.consoleUserServerClientWaitingSeconds >= 5 {
+        if contentViewStates.consoleUserServerClientDisconnectedForAWhile {
           GroupBox {
             VStack(alignment: .center, spacing: 20.0) {
               Text(

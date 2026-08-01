@@ -16,40 +16,40 @@ final class ContentViewStates: ObservableObject {
   @Published public private(set) var currentSetup: SettingsWindowGuidanceSetup = .none
 
   // This value is maintained by Settings locally, outside of
-  // SettingsWindowGuidanceState from console_user_server.
+  // SettingsWindowGuidanceState from Karabiner-Console-User-Server.
   @Published public private(set) var localSetup: SettingsWindowGuidanceSetup = .none
   @Published private var dismissedAlert: SettingsWindowGuidanceAlert = .none
   @Published var guidanceContext = SettingsWindowGuidanceContext()
   @Published var coreServiceDaemonState = SettingsWindowCoreServiceState()
-  @Published private var consoleUserServerClientConnected = false {
+  @Published private var consoleUserServerClientReady = false {
     didSet {
       resetDismissedAlertIfNeeded()
     }
   }
-  @Published private(set) var consoleUserServerClientWaitingSeconds = 0
+  @Published private(set) var consoleUserServerClientDisconnectedForAWhile = false
   private var lastAutoPresentedSetup: SettingsWindowGuidanceSetup = .none
   private var autoOpenedSetup = false
 
   // These values are maintained by Settings locally, outside of
-  // SettingsWindowGuidanceState from console_user_server.
+  // SettingsWindowGuidanceState from Karabiner-Console-User-Server.
   private var localCoreDaemonsEnabled = true
   private var localCoreAgentsEnabled = true
   private var localServicesSetupPresented = false
 
   private var currentResolvedAlert: SettingsWindowGuidanceAlert {
-    // When Settings cannot connect to console_user_server, it cannot fetch
-    // SettingsWindowGuidanceState from console_user_server, so this error handling
-    // has to run independently from SettingsWindowGuidanceState.
-    if !consoleUserServerClientConnected {
+    // Until Settings receives SettingsWindowGuidanceState from
+    // Karabiner-Console-User-Server, it cannot use the server-provided guidance to determine
+    // which alert to show. Handle that state locally.
+    if !consoleUserServerClientReady {
       // There are multiple reasons why Settings might not be able to connect to
-      // console_user_server.
+      // Karabiner-Console-User-Server.
       //
       // 1. org.pqrs.service.daemon.Karabiner-Core-Service is not enabled, so
-      //    /Library/Application Support/org.pqrs/tmp has not been created yet and
-      //    console_user_server cannot bind its socket.
-      // 2. org.pqrs.service.agent.karabiner_console_user_server is disabled and does
+      //    /Library/Application Support/org.pqrs/tmp/user/XXX has not been created yet and
+      //    Karabiner-Console-User-Server cannot bind its socket.
+      // 2. org.pqrs.service.agent.Karabiner-Console-User-Server is disabled and does
       //    not start.
-      // 3. console_user_server is still starting up and has not bound its socket yet.
+      // 3. Karabiner-Console-User-Server is still starting up and has not bound its socket yet.
       //
       // Cases 1 and 2 are incomplete setup states. Case 1 always happens just after
       // installation. Treat them as setup states rather than errors, and open
@@ -109,12 +109,16 @@ final class ContentViewStates: ObservableObject {
     }
   }
 
-  func updateConsoleUserServerClientConnected(_ connected: Bool) {
-    consoleUserServerClientConnected = connected
+  func updateConsoleUserServerClientReady(_ ready: Bool) {
+    if consoleUserServerClientReady != ready {
+      consoleUserServerClientReady = ready
+    }
   }
 
-  func updateConsoleUserServerClientWaitingSeconds(_ seconds: Int) {
-    consoleUserServerClientWaitingSeconds = seconds
+  func updateConsoleUserServerClientDisconnectedForAWhile(_ disconnectedForAWhile: Bool) {
+    if consoleUserServerClientDisconnectedForAWhile != disconnectedForAWhile {
+      consoleUserServerClientDisconnectedForAWhile = disconnectedForAWhile
+    }
   }
 
   func updateLocalServicesGuidanceContext(
@@ -124,7 +128,7 @@ final class ContentViewStates: ObservableObject {
     localCoreDaemonsEnabled = coreDaemonsEnabled
     localCoreAgentsEnabled = coreAgentsEnabled
 
-    if !consoleUserServerClientConnected && localServicesRequireAttention {
+    if !consoleUserServerClientReady && localServicesRequireAttention {
       if localSetup != .services {
         localSetup = .services
       }

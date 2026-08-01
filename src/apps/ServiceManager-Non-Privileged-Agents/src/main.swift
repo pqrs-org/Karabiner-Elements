@@ -6,14 +6,8 @@ enum Subcommand: String {
   case unregisterCoreAgents = "unregister-core-agents"
   case coreAgentsEnabled = "core-agents-enabled"
 
-  case registerMenuAgent = "register-menu-agent"
-  case unregisterMenuAgent = "unregister-menu-agent"
-
   case registerMultitouchExtensionAgent = "register-multitouch-extension-agent"
   case unregisterMultitouchExtensionAgent = "unregister-multitouch-extension-agent"
-
-  case registerNotificationWindowAgent = "register-notification-window-agent"
-  case unregisterNotificationWindowAgent = "unregister-notification-window-agent"
 
   case status
   case running
@@ -21,30 +15,25 @@ enum Subcommand: String {
 
 RunLoop.main.perform {
   let coreAgentServiceNames = [
-    "org.pqrs.service.agent.karabiner_console_user_server",
     "org.pqrs.service.agent.Karabiner-Core-Service",
+    // unregisterCoreAgents may be invoked by Karabiner-Console-User-Server.
+    // Unregistering its own service can terminate the caller before the operation completes,
+    // so unregister Karabiner-Console-User-Server last.
+    "org.pqrs.service.agent.Karabiner-Console-User-Server",
   ]
 
   let coreAgents = coreAgentServiceNames.map {
     SMAppService.agent(plistName: "\($0).plist")
   }
 
-  let menuAgentService = SMAppService.agent(
-    plistName: "org.pqrs.service.agent.Karabiner-Menu.plist")
-
   let multitouchExtensionAgentService = SMAppService.agent(
     plistName: "org.pqrs.service.agent.Karabiner-MultitouchExtension.plist")
-
-  let notificationWindowAgentService = SMAppService.agent(
-    plistName: "org.pqrs.service.agent.Karabiner-NotificationWindow.plist")
 
   var allServices: [SMAppService] = []
   for s in coreAgents {
     allServices.append(s)
   }
-  allServices.append(menuAgentService)
   allServices.append(multitouchExtensionAgentService)
-  allServices.append(notificationWindowAgentService)
 
   if CommandLine.arguments.count > 1 {
     let subcommand = CommandLine.arguments[1]
@@ -67,28 +56,12 @@ RunLoop.main.perform {
         exit(1)
       }
 
-    case .registerMenuAgent:
-      ServiceManagementHelper.register(services: [menuAgentService])
-      exit(0)
-
-    case .unregisterMenuAgent:
-      ServiceManagementHelper.unregister(services: [menuAgentService])
-      exit(0)
-
     case .registerMultitouchExtensionAgent:
       ServiceManagementHelper.register(services: [multitouchExtensionAgentService])
       exit(0)
 
     case .unregisterMultitouchExtensionAgent:
       ServiceManagementHelper.unregister(services: [multitouchExtensionAgentService])
-      exit(0)
-
-    case .registerNotificationWindowAgent:
-      ServiceManagementHelper.register(services: [notificationWindowAgentService])
-      exit(0)
-
-    case .unregisterNotificationWindowAgent:
-      ServiceManagementHelper.unregister(services: [notificationWindowAgentService])
       exit(0)
 
     case .status:
@@ -126,14 +99,8 @@ RunLoop.main.perform {
   print("    \(Subcommand.unregisterCoreAgents.rawValue)")
   print("    \(Subcommand.coreAgentsEnabled.rawValue)")
 
-  print("    \(Subcommand.registerMenuAgent.rawValue)")
-  print("    \(Subcommand.unregisterMenuAgent.rawValue)")
-
   print("    \(Subcommand.registerMultitouchExtensionAgent.rawValue)")
   print("    \(Subcommand.unregisterMultitouchExtensionAgent.rawValue)")
-
-  print("    \(Subcommand.registerNotificationWindowAgent.rawValue)")
-  print("    \(Subcommand.unregisterNotificationWindowAgent.rawValue)")
 
   print("    \(Subcommand.status.rawValue)")
   print("    \(Subcommand.running.rawValue)")

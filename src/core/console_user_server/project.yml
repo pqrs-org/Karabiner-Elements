@@ -1,8 +1,9 @@
-name: karabiner_console_user_server
+name: Karabiner-Console-User-Server
 
 targets:
-  karabiner_console_user_server:
+  Karabiner-Console-User-Server:
     settings:
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Console-User-Server
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
@@ -20,7 +21,8 @@ targets:
         - ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../../vendor/vendor/include
       DEAD_CODE_STRIPPING: 'YES'
-    type: tool
+      SWIFT_VERSION: '6.0'
+    type: application
     platform: macOS
     deploymentTarget: 13.0
     sources:
@@ -29,7 +31,18 @@ targets:
           - -Wall
           - -Werror
           - '-std=c++23'
+      - path: swift
+        compilerFlags:
+          - -Wall
+          - -Werror
+      - path: ../../apps/share/swift/Views/MouseInsideModifier.swift
+      - path: ../../apps/share/swift/Views/View+Extensions.swift
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
+      - path: ../../apps/share/Resources/app.icns
+      - path: Resources
+        excludes:
+          - .gitignore
+          - '*.plist.in'
     dependencies:
-      - framework: Carbon.framework
+      - sdk: Carbon.framework

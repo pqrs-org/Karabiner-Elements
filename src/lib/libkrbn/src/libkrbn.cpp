@@ -590,14 +590,6 @@ void libkrbn_unregister_core_service_daemon_client_connected_devices_received_ca
   }
 }
 
-void libkrbn_core_service_daemon_client_async_get_notification_message() {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto c = manager->get_libkrbn_core_service_daemon_client()) {
-      c->async_get_notification_message();
-    }
-  }
-}
-
 void libkrbn_register_core_service_daemon_client_notification_message_received_callback(libkrbn_core_service_daemon_client_notification_message_received_t _Nonnull callback) {
   if (auto manager = libkrbn_components_manager_) {
     if (auto c = manager->get_libkrbn_core_service_daemon_client()) {

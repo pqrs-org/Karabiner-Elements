@@ -10,8 +10,10 @@ clean:
 	rm -fr build
 
 codesign: all
-	bash ../../../scripts/codesign.sh build/Release/karabiner_console_user_server
+	bash ../../../scripts/codesign.sh build/Release
 
 install: codesign
-	sudo install -m 755 build/Release/karabiner_console_user_server '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_console_user_server'
-	-sudo killall karabiner_console_user_server
+	sudo rsync -a --delete \
+		build/Release/Karabiner-Console-User-Server.app/ \
+		'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Console-User-Server.app'
+	-sudo killall Karabiner-Console-User-Server

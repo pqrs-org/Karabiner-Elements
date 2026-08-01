@@ -4,6 +4,7 @@
 #include "modifier_flag_manager.hpp"
 #include "types/device_id.hpp"
 #include <map>
+#include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <sstream>
 
@@ -12,6 +13,8 @@
 namespace krbn {
 class notification_message_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
+  nod::signal<void(const std::string&)> notification_message_changed;
+
   notification_message_manager()
       : dispatcher_client() {
   }
@@ -100,7 +103,11 @@ private:
       }
     }
 
-    full_message_ = ss.str();
+    auto full_message = ss.str();
+    if (full_message_ != full_message) {
+      full_message_ = std::move(full_message);
+      notification_message_changed(full_message_);
+    }
   }
 
   std::map<std::string, std::string> messages_;

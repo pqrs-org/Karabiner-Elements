@@ -5,7 +5,6 @@
 #include "codesign_manager.hpp"
 #include "constants.hpp"
 #include "send_user_command_handler.hpp"
-#include "services_utility.hpp"
 #include "settings_window_guidance_manager.hpp"
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
@@ -112,30 +111,6 @@ public:
 
         case operation_type::check_for_updates:
           set_check_for_updates_enabled(json.at("enabled").get<bool>());
-          break;
-
-        case operation_type::register_menu_agent:
-          services_utility::register_menu_agent();
-          break;
-
-        case operation_type::unregister_menu_agent:
-          services_utility::unregister_menu_agent();
-          break;
-
-        case operation_type::register_multitouch_extension_agent:
-          services_utility::register_multitouch_extension_agent();
-          break;
-
-        case operation_type::unregister_multitouch_extension_agent:
-          services_utility::unregister_multitouch_extension_agent();
-          break;
-
-        case operation_type::register_notification_window_agent:
-          services_utility::register_notification_window_agent();
-          break;
-
-        case operation_type::unregister_notification_window_agent:
-          services_utility::unregister_notification_window_agent();
           break;
 
         case operation_type::frontmost_application_changed:

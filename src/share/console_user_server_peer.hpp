@@ -39,46 +39,17 @@ public:
     });
   }
 
+  void async_notification_message(const std::string& notification_message) {
+    async_request(nlohmann::json{
+        {"operation_type", operation_type::notification_message},
+        {"notification_message", notification_message},
+    });
+  }
+
   void async_check_for_updates(bool enabled) {
     async_request(nlohmann::json{
         {"operation_type", operation_type::check_for_updates},
         {"enabled", enabled},
-    });
-  }
-
-  void async_register_menu_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::register_menu_agent},
-    });
-  }
-
-  void async_unregister_menu_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::unregister_menu_agent},
-    });
-  }
-
-  void async_register_multitouch_extension_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::register_multitouch_extension_agent},
-    });
-  }
-
-  void async_unregister_multitouch_extension_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::unregister_multitouch_extension_agent},
-    });
-  }
-
-  void async_register_notification_window_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::register_notification_window_agent},
-    });
-  }
-
-  void async_unregister_notification_window_agent() {
-    async_request(nlohmann::json{
-        {"operation_type", operation_type::unregister_notification_window_agent},
     });
   }
 

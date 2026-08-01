@@ -3,12 +3,12 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.service.agent.karabiner_console_user_server</string>
+    <string>org.pqrs.service.agent.Karabiner-Console-User-Server</string>
     <key>KeepAlive</key>
     <true/>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_console_user_server</string>
+      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Console-User-Server.app/Contents/MacOS/Karabiner-Console-User-Server</string>
     </array>
   </dict>
 </plist>

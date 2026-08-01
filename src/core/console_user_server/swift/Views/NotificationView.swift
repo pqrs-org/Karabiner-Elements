@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct MainView: View {
-  @ObservedObject var nwCoreServiceDaemonClient = NWCoreServiceDaemonClient.shared
-  @State var opacity = 1.0
+struct NotificationView: View {
+  @ObservedObject private var state = ConsoleUserServerUIState.shared
+  @State private var opacity = 1.0
 
   var body: some View {
     HStack(alignment: .top) {
@@ -10,7 +10,7 @@ struct MainView: View {
         .resizable()
         .frame(width: 48.0, height: 48.0)
         .padding(.leading, 2.0)
-      Text(nwCoreServiceDaemonClient.message)
+      Text(state.notificationMessage)
         .font(.body)
         .multilineTextAlignment(.leading)
         .fixedSize(horizontal: false, vertical: true)
