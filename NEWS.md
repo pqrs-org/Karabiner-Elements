@@ -7,6 +7,8 @@
       Open the Multitouch Extension settings from the Karabiner-Elements menu.
 - ✨ New Features
     - Added filtering functionality to the Complex Modifications list.
+- 🐛 Bug Fixes
+    - Fixed CGEventTap leaks (Thanks to @MrMage and @VitalyShein)
 - ⚡️ Improvements
     - Fixed an issue where the core service agent could rarely abort during termination.
     - Fixed an issue where modifications could stop working for several seconds after waking from sleep on macOS.
