@@ -33,7 +33,7 @@ cp -R "src/apps/ServiceManager-Non-Privileged-Agents/build/Release/Karabiner-Ele
 cp -R "src/apps/ServiceManager-Privileged-Daemons/build/Release/Karabiner-Elements Privileged Daemons v2.app" "$basedir"
 cp -R "src/apps/Updater/build/Release/Karabiner-Updater.app" "$basedir"
 cp -R "src/apps/CoreService/build/Release/Karabiner-Core-Service.app" "$basedir"
-cp -R "src/core/console_user_server/build/Release/Karabiner-Console-User-Server.app" "$basedir"
+cp -R "src/apps/ConsoleUserServer/build/Release/Karabiner-Console-User-Server.app" "$basedir"
 
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
 mkdir -p "$basedir"

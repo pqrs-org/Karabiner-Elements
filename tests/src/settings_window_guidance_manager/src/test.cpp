@@ -1,4 +1,4 @@
-#include "../../../../src/core/console_user_server/include/console_user_server/settings_window_guidance_manager.hpp"
+#include "../../../../src/apps/ConsoleUserServer/include/console_user_server/settings_window_guidance_manager.hpp"
 #include <boost/ut.hpp>
 #include <pqrs/gsl.hpp>
 #include <pqrs/thread_wait.hpp>

@@ -1,4 +1,4 @@
-#include "../../../../src/core/console_user_server/include/console_user_server/console_user_id_changed_client_state.hpp"
+#include "../../../../src/apps/ConsoleUserServer/include/console_user_server/console_user_id_changed_client_state.hpp"
 #include <boost/ut.hpp>
 
 int main() {

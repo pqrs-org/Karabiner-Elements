@@ -23,7 +23,7 @@ make install
 ### Replace `karabiner_console_user_server`
 
 ```shell
-cd src/core/console_user_server
+cd src/apps/ConsoleUserServer
 make install
 ```
 

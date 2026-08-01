@@ -109,8 +109,8 @@ For operations like `send_user_command`:
 Relevant files:
 
 - `src/share/console_user_server_client.hpp`
-- `src/core/console_user_server/include/console_user_server/receiver.hpp`
-- `src/core/console_user_server/include/console_user_server/send_user_command_handler.hpp`
+- `src/apps/ConsoleUserServer/include/console_user_server/receiver.hpp`
+- `src/apps/ConsoleUserServer/include/console_user_server/send_user_command_handler.hpp`
 
 For `send_user_command`, handler serializes payload JSON and sends it to configured UNIX datagram endpoint.
 
@@ -189,7 +189,7 @@ For newcomers, this order gives the fastest mental model:
    - `src/share/manipulator/manipulators/post_event_to_virtual_devices/queue.hpp`
 3. user-context client/server boundary
    - `src/share/console_user_server_client.hpp`
-   - `src/core/console_user_server/include/console_user_server/receiver.hpp`
+   - `src/apps/ConsoleUserServer/include/console_user_server/receiver.hpp`
 4. operation-specific handlers
    - e.g. `send_user_command_handler.hpp`, shell command handler, software function handler
 

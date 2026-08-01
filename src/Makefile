@@ -7,7 +7,7 @@ all:
 	$(MAKE) -C apps/SettingsWindow
 	$(MAKE) -C apps/Updater
 	$(MAKE) -C bin/cli
-	$(MAKE) -C core/console_user_server
+	$(MAKE) -C apps/ConsoleUserServer
 	$(MAKE) -C apps/CoreService
 	$(MAKE) -C lib/libkrbn
 
@@ -20,6 +20,6 @@ clean:
 	$(MAKE) -C apps/SettingsWindow clean
 	$(MAKE) -C apps/Updater clean
 	$(MAKE) -C bin/cli clean
-	$(MAKE) -C core/console_user_server clean
+	$(MAKE) -C apps/ConsoleUserServer clean
 	$(MAKE) -C apps/CoreService clean
 	$(MAKE) -C lib/libkrbn clean
