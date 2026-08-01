@@ -13,12 +13,11 @@ targets:
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
       HEADER_SEARCH_PATHS:
-        - ../../src/lib/libkrbn/include
-      OTHER_LDFLAGS:
-        - ../../src/lib/libkrbn/build/Release/libkrbn.a
+        - ../../src/share
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../vendor/vendor/include
       DEAD_CODE_STRIPPING: 'YES'
       SWIFT_VERSION: '6.0'
@@ -30,12 +29,15 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
-      - path: ../../src/apps/share/swift
+          - '-std=c++23'
+      - path: ../../src/apps/share/swift/Views/OverlayAlertView.swift
         compilerFlags:
           - -Wall
           - -Werror
-      - path: ../../vendor/vendor/src/pqrs/osx/process_info
-      - path: ../../vendor/vendor/src/pqrs/osx/workspace
+      - path: ../../src/apps/share/swift/Views/SheetCloseButton.swift
+        compilerFlags:
+          - -Wall
+          - -Werror
       - path: Resources
         excludes:
           - .gitignore
@@ -44,4 +46,4 @@ targets:
       - path: ../../src/apps/share/Resources/app.icns
     dependencies:
       - package: AsyncAlgorithms
-      - sdk: libc++.tbd
+      - sdk: IOKit.framework
