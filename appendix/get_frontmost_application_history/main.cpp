@@ -1,36 +1,14 @@
-#include "../../src/lib/libkrbn/include/libkrbn/libkrbn.h"
+#include "console_user_server_client.hpp"
+#include "dispatcher_utility.hpp"
+#include "environment_variable_utility.hpp"
+#include "json_utility.hpp"
+#include "run_loop_thread_utility.hpp"
 #include <iostream>
 #include <pqrs/thread_wait.hpp>
 #include <thread>
 #include <unistd.h>
 
 namespace {
-void status_changed_callback() noexcept {
-  switch (libkrbn_console_user_server_client_get_status()) {
-    case libkrbn_console_user_server_client_status_connected:
-      std::cerr << "console_user_server_client connected" << std::endl;
-
-      libkrbn_console_user_server_client_async_get_frontmost_application_history();
-
-      break;
-
-    case libkrbn_console_user_server_client_status_connect_failed:
-      std::cerr << "console_user_server_client connect_failed" << std::endl;
-      break;
-
-    case libkrbn_console_user_server_client_status_closed:
-      std::cerr << "console_user_server_client closed" << std::endl;
-      break;
-
-    case libkrbn_console_user_server_client_status_none:
-      break;
-  }
-}
-
-void frontmost_application_history_received_callback(const char* json_string) noexcept {
-  std::cout << json_string << std::endl;
-}
-
 auto global_wait = pqrs::make_thread_wait();
 } // namespace
 
@@ -42,25 +20,45 @@ int main() {
             << "the process must be code-signed with the same Team ID as karabiner_console_user_server." << std::endl
             << std::endl;
 
-  libkrbn_initialize();
-  libkrbn_load_custom_environment_variables();
+  auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
+      pqrs::cf::run_loop_thread::failure_policy::exit);
+
+  auto environment_variables = krbn::environment_variable_utility::load_custom_environment_variables();
+  krbn::environment_variable_utility::log(environment_variables);
 
   signal(SIGINT, [](int) noexcept {
     global_wait->notify();
   });
 
-  libkrbn_enable_console_user_server_client(geteuid());
+  auto client = std::make_unique<krbn::console_user_server_client>(geteuid());
 
-  libkrbn_register_console_user_server_client_status_changed_callback(status_changed_callback);
-  libkrbn_register_console_user_server_client_frontmost_application_history_received_callback(frontmost_application_history_received_callback);
+  client->connected.connect([&client] {
+    std::cerr << "console_user_server_client connected" << std::endl;
+    client->async_get_frontmost_application_history();
+  });
 
-  libkrbn_console_user_server_client_async_start();
+  client->connect_failed.connect([](auto&&) {
+    std::cerr << "console_user_server_client connect_failed" << std::endl;
+  });
+
+  client->closed.connect([] {
+    std::cerr << "console_user_server_client closed" << std::endl;
+  });
+
+  client->received.connect([](auto&& operation_type, auto&& json) {
+    if (operation_type == krbn::operation_type::frontmost_application_history) {
+      std::cout << krbn::json_utility::dump(json.at("frontmost_application_history")) << std::endl;
+    }
+  });
+
+  client->async_start();
 
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
   global_wait->wait_notice();
 
-  libkrbn_terminate();
+  client = nullptr;
 
   std::cout << "finished" << std::endl;
 
