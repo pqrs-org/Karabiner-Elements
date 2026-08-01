@@ -7,12 +7,11 @@ targets:
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
       HEADER_SEARCH_PATHS:
-        - ../../src/lib/libkrbn/include
-      OTHER_LDFLAGS:
-        - ../../src/lib/libkrbn/build/Release/libkrbn.a
+        - ../../src/share
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../vendor/vendor/include
       DEAD_CODE_STRIPPING: 'YES'
     type: tool
