@@ -1,20 +1,14 @@
 import SwiftUI
 
 private func hidValueArrivedCallback(
-  _ deviceId: UInt64,
-  _ isKeyboard: Bool,
-  _ isPointingDevice: Bool,
-  _ isGamePad: Bool,
   _ usagePage: Int32,
   _ usage: Int32,
   _ logicalMax: Int64,
   _ logicalMin: Int64,
   _ integerValue: Int64
 ) {
-  if isGamePad {
-    Task { @MainActor in
-      EventObserver.shared.update(usagePage, usage, logicalMax, logicalMin, integerValue)
-    }
+  Task { @MainActor in
+    EventObserver.shared.update(usagePage, usage, logicalMax, logicalMin, integerValue)
   }
 }
 
