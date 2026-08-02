@@ -1,6 +1,6 @@
 import AppKit
 
-let appIconNumber = String(format: "%03d", app_icon_switcher_get_app_icon_number())
+let appIconNumber = String(format: "%03d", krbn_get_app_icon_number())
 
 for file in [
   "/Applications/Karabiner-Elements.app",
