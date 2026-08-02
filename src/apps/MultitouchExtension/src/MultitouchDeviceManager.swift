@@ -48,11 +48,11 @@ class MultitouchDeviceManager {
     category: String(describing: MultitouchDeviceManager.self))
 
   private var notificationsTask: Task<Void, Never>?
+  private var relaunchTask: Task<Void, Never>?
 
   private let notificationPort = IONotificationPortCreate(kIOMainPortDefault)
 
   private var devices: [MTDevice] = []
-  private var wakeObserver: NSObjectProtocol?
 
   init() {
     notificationsTask = Task {
@@ -63,28 +63,46 @@ class MultitouchDeviceManager {
           ) {
             Task { @MainActor in
               self.logger.info("didWakeNotification")
-
-              do {
-                // Sleep until devices are settled.
-                try await Task.sleep(nanoseconds: NSEC_PER_SEC)
-
-                if UserSettings.shared.relaunchAfterWakeUpFromSleep {
-                  try await Task.sleep(
-                    nanoseconds: UInt64(UserSettings.shared.relaunchWait) * NSEC_PER_SEC)
-
-                  // MultitouchExtension will be relaunched by launchd.
-                  NSApplication.shared.terminate(self)
-                }
-
-                MultitouchDeviceManager.shared.setCallback(true)
-              } catch {
-                self.logger.error("\(error.localizedDescription, privacy: .public)")
-              }
+              self.scheduleRelaunchAfterWake()
             }
           }
         }
       }
     }
+  }
+
+  private func scheduleRelaunchAfterWake() {
+    relaunchTask?.cancel()
+    relaunchTask = nil
+
+    guard UserSettings.shared.relaunchAfterWakeUpFromSleep else { return }
+
+    relaunchTask = Task { @MainActor in
+      do {
+        // Wait until the system and devices are settled before relaunching.
+        try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+        try await Task.sleep(
+          nanoseconds: UInt64(UserSettings.shared.relaunchWait) * NSEC_PER_SEC)
+
+        guard UserSettings.shared.relaunchAfterWakeUpFromSleep else { return }
+
+        // MultitouchExtension will be relaunched by launchd.
+        NSApplication.shared.terminate(self)
+      } catch is CancellationError {
+        return
+      } catch {
+        logger.error("\(error.localizedDescription, privacy: .public)")
+      }
+    }
+  }
+
+  func systemWillSleep() {
+    // process_lifecycle_manager stops the C++ components before sleep, but the multitouch
+    // callback is managed by Swift and must be stopped separately.
+    relaunchTask?.cancel()
+    relaunchTask = nil
+
+    setCallback(false)
   }
 
   func setCallback(_ register: Bool) {

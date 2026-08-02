@@ -104,29 +104,9 @@ private func staticSetCoreServiceVariable(_ count: FingerCount) {
       previousValue: previousFingerCount.totalPalmCount
     ),
   ] where gv.previousValue.value != gv.value {
-    libkrbn_core_service_daemon_client_async_set_variable(gv.name, Int32(gv.value))
+    krbn_core_service_async_set_variable(gv.name, Int32(gv.value))
 
     gv.previousValue.value = gv.value
-  }
-}
-
-private func callback() {
-  Task {
-    // sleep until devices are settled.
-    try await Task.sleep(nanoseconds: NSEC_PER_SEC)
-
-    Task { @MainActor in
-      let status = libkrbn_core_service_daemon_client_get_status()
-
-      if status == libkrbn_core_service_daemon_client_status_connected {
-        MultitouchDeviceManager.shared.setCallback(true)
-        libkrbn_core_service_daemon_client_async_connect_multitouch_extension()
-      } else {
-        MultitouchDeviceManager.shared.setCallback(false)
-      }
-
-      staticSetCoreServiceVariable(FingerCount())
-    }
   }
 }
 
@@ -135,6 +115,7 @@ final class MECoreServiceDaemonClient {
   static let shared = MECoreServiceDaemonClient()
 
   private var cancellables: Set<AnyCancellable> = []
+  private var connectionChangedTask: Task<Void, Never>?
 
   init() {
     FingerManager.shared.$fingerCount
@@ -145,14 +126,32 @@ final class MECoreServiceDaemonClient {
       .store(in: &cancellables)
   }
 
-  // We register the callback in the `start` method rather than in `init`.
-  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+  func connectionChanged(_ connected: Bool) {
+    connectionChangedTask?.cancel()
 
-  public func start() {
-    libkrbn_enable_core_service_daemon_client()
+    connectionChangedTask = Task {
+      if connected {
+        do {
+          // Sleep until devices are settled.
+          try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+        } catch {
+          return
+        }
+      }
 
-    libkrbn_register_core_service_daemon_client_status_changed_callback(callback)
+      guard !Task.isCancelled else { return }
 
-    libkrbn_core_service_daemon_client_async_start()
+      if connected {
+        previousFingerCount = PreviousFingerCount()
+      }
+
+      if connected {
+        MultitouchDeviceManager.shared.setCallback(true)
+      } else {
+        MultitouchDeviceManager.shared.setCallback(false)
+      }
+
+      staticSetCoreServiceVariable(FingerCount())
+    }
   }
 }

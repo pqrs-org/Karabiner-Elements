@@ -3,13 +3,19 @@ import OSLog
 import SettingsAccess
 import SwiftUI
 
+func coreServiceConnectionChangedCallback(_ connected: Bool) {
+  Task { @MainActor in
+    MECoreServiceDaemonClient.shared.connectionChanged(connected)
+  }
+}
+
 @main
 struct KarabinerMultitouchExtensionApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
   init() {
-    libkrbn_initialize()
-    libkrbn_load_custom_environment_variables()
+    _ = MECoreServiceDaemonClient.shared
+    krbn_initialize(coreServiceConnectionChangedCallback)
   }
 
   var body: some Scene {
@@ -57,7 +63,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Enable core_service_daemon_client
     //
 
-    MECoreServiceDaemonClient.shared.start()
     MultitouchDeviceManager.shared.observeIONotification()
 
     observeUserInteractiveActivitySettings()
@@ -85,7 +90,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     MultitouchDeviceManager.shared.setCallback(false)
 
-    libkrbn_terminate()
+    krbn_terminate()
   }
 
   private func startActivity() {
@@ -158,6 +163,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       for await _ in notifications {
         logger.info("NSWorkspace.willSleepNotification")
 
+        MultitouchDeviceManager.shared.systemWillSleep()
         self.stopActivity()
       }
     }

@@ -97,7 +97,7 @@ class FingerManager: ObservableObject {
       // state values:
       //   4: touched
       //   1-3,5-7: near
-      s.touchedPhysically = (finger.state == 4)
+      s.setTouchedPhysically(finger.state == 4, now: now)
 
       // Note:
       // Once the point in targetArea, keep `ignored == false`.
@@ -123,7 +123,7 @@ class FingerManager: ObservableObject {
         && s.frame != frame
         && s.touchedPhysically
       {
-        s.touchedPhysically = false
+        s.setTouchedPhysically(false, now: now)
       }
       // print("\(e.touchedPhysically) \(e.point)")
     }
