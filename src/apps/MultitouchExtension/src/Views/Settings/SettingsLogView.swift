@@ -73,7 +73,7 @@ struct SettingsLogView: View {
 }
 
 private enum VariableUpdateLogTableLayout {
-  static let timeWidth: CGFloat = 86
+  static let timeWidth: CGFloat = 82
   static let totalWidth: CGFloat = 38
   static let directionWidth: CGFloat = 33
   static let headerRowHeight: CGFloat = 24
@@ -120,7 +120,7 @@ private struct VariableUpdateLogTableHeader: View {
   }
 
   private func directionHeaders() -> some View {
-    ForEach(["up", "down", "left", "right"], id: \.self) { label in
+    ForEach(["upper", "lower", "left", "right"], id: \.self) { label in
       textTableCell(label, width: VariableUpdateLogTableLayout.directionWidth)
     }
   }
@@ -146,20 +146,64 @@ private struct VariableUpdateLogTableRow: View {
         height: VariableUpdateLogTableLayout.dataRowHeight,
         backgroundColor: backgroundColor)
 
-      numberTableCell(count.totalCount, backgroundColor: backgroundColor)
-      numberTableCell(count.upperHalfAreaCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.lowerHalfAreaCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.leftHalfAreaCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.rightHalfAreaCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.upperQuarterAreaCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.lowerQuarterAreaCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.leftQuarterAreaCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.rightQuarterAreaCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.totalPalmCount, backgroundColor: backgroundColor)
-      numberTableCell(count.upperHalfAreaPalmCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.lowerHalfAreaPalmCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.leftHalfAreaPalmCount, direction: true, backgroundColor: backgroundColor)
-      numberTableCell(count.rightHalfAreaPalmCount, direction: true, backgroundColor: backgroundColor)
+      numberTableCell(
+        count.totalCount,
+        backgroundColor: backgroundColor)
+
+      numberTableCell(
+        count.upperHalfAreaCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.lowerHalfAreaCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.leftHalfAreaCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.rightHalfAreaCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+
+      numberTableCell(
+        count.upperQuarterAreaCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.lowerQuarterAreaCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.leftQuarterAreaCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.rightQuarterAreaCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+
+      numberTableCell(
+        count.totalPalmCount,
+        backgroundColor: backgroundColor)
+
+      numberTableCell(
+        count.upperHalfAreaPalmCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.lowerHalfAreaPalmCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.leftHalfAreaPalmCount,
+        direction: true,
+        backgroundColor: backgroundColor)
+      numberTableCell(
+        count.rightHalfAreaPalmCount,
+        direction: true,
+        backgroundColor: backgroundColor)
     }
   }
 
