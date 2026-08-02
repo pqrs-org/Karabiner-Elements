@@ -89,10 +89,27 @@ void krbn_terminate(void) {
   scoped_dispatcher_manager = nullptr;
 }
 
-void krbn_core_service_async_set_variable(const char* name, int32_t value) {
+bool krbn_core_service_async_set_variables(krbn_multitouch_extension_variables variables) {
   if (auto client = std::atomic_load(&core_service_daemon_client)) {
     client->async_set_variables(nlohmann::json::object({
-        {name, value},
+        {"multitouch_extension_finger_count_upper_quarter_area", variables.finger_count_upper_quarter_area},
+        {"multitouch_extension_finger_count_lower_quarter_area", variables.finger_count_lower_quarter_area},
+        {"multitouch_extension_finger_count_left_quarter_area", variables.finger_count_left_quarter_area},
+        {"multitouch_extension_finger_count_right_quarter_area", variables.finger_count_right_quarter_area},
+        {"multitouch_extension_finger_count_upper_half_area", variables.finger_count_upper_half_area},
+        {"multitouch_extension_finger_count_lower_half_area", variables.finger_count_lower_half_area},
+        {"multitouch_extension_finger_count_left_half_area", variables.finger_count_left_half_area},
+        {"multitouch_extension_finger_count_right_half_area", variables.finger_count_right_half_area},
+        {"multitouch_extension_finger_count_total", variables.finger_count_total},
+        {"multitouch_extension_palm_count_upper_half_area", variables.palm_count_upper_half_area},
+        {"multitouch_extension_palm_count_lower_half_area", variables.palm_count_lower_half_area},
+        {"multitouch_extension_palm_count_left_half_area", variables.palm_count_left_half_area},
+        {"multitouch_extension_palm_count_right_half_area", variables.palm_count_right_half_area},
+        {"multitouch_extension_palm_count_total", variables.palm_count_total},
     }));
+
+    return true;
   }
+
+  return false;
 }
