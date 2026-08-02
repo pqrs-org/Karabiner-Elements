@@ -2,6 +2,7 @@
 
 #include <pqrs/osx/launchctl.hpp>
 #include <pqrs/process.hpp>
+#include <spdlog/fmt/fmt.h>
 
 namespace krbn::services_utility {
 

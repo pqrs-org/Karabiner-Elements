@@ -77,7 +77,7 @@ RunLoop.main.perform {
         }
 
         n.withCString {
-          if !libkrbn_services_agent_running($0) {
+          if !krbn_agent_running($0) {
             print("\(n) is not running")
             exitCode = 1
           }

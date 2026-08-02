@@ -11,9 +11,7 @@ targets:
       # Sign to Run Locally
       CODE_SIGN_IDENTITY[sdk=macosx*]: '-'
       HEADER_SEARCH_PATHS:
-        - ../../lib/libkrbn/include
-      OTHER_LDFLAGS:
-        - ../../lib/libkrbn/build/Release/libkrbn.a
+        - ../../share
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
@@ -25,13 +23,14 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: src
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - '-std=c++23'
       - path: Resources
         excludes:
           - Info.plist.in
       - path: ../share/Resources/app.icns
       - path: ../share/swift/ServiceManagementHelper.swift
-      - path: ../../../vendor/vendor/src/pqrs/osx/process_info
-      - path: ../../../vendor/vendor/src/pqrs/osx/workspace
     dependencies:
-      - sdk: libc++.tbd
       - sdk: ServiceManagement.framework
