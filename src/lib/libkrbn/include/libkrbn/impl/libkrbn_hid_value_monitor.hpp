@@ -3,6 +3,7 @@
 #include "event_queue.hpp"
 #include "libkrbn/libkrbn.h"
 #include "libkrbn_callback_manager.hpp"
+#include "undeclared_buttons_monitor.hpp"
 #include <atomic>
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
@@ -73,6 +74,31 @@ public:
                          values_ptr);
         });
 
+        // Devices which under-declare their buttons need those buttons recovered from
+        // the raw input report, otherwise they are invisible here too and EventViewer
+        // shows nothing when they are pressed.
+        if (auto monitor = krbn::undeclared_buttons_monitor::make(
+                pqrs::dispatcher::extra::get_shared_dispatcher(),
+                pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+                *device_ptr,
+                *device_properties)) {
+          undeclared_buttons_monitors_.insert_or_assign(device_id, monitor);
+
+          monitor->values_arrived.connect([this, device_id, device_properties](auto&& values) {
+            handle_hid_values(device_id,
+                              device_properties,
+                              *values);
+          });
+
+          hid_queue_value_monitor->started.connect([monitor] {
+            monitor->async_start();
+          });
+
+          hid_queue_value_monitor->stopped.connect([monitor] {
+            monitor->async_stop();
+          });
+        }
+
         hid_queue_value_monitor->async_start(kIOHIDOptionsTypeNone,
                                              std::chrono::milliseconds(3000));
       }
@@ -81,7 +107,9 @@ public:
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       auto device_id = krbn::make_device_id(registry_entry_id);
 
+      // Closing the device has to come before releasing the report buffer.
       hid_queue_value_monitors_.erase(device_id);
+      undeclared_buttons_monitors_.erase(device_id);
 
       krbn::hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
     });
@@ -96,7 +124,10 @@ public:
   ~libkrbn_hid_value_monitor() {
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
+      // Close the devices before releasing the buffers IOKit copies their input reports
+      // into. See the note in device_grabber_details::entry's destructor.
       hid_queue_value_monitors_.clear();
+      undeclared_buttons_monitors_.clear();
     });
   }
 
@@ -120,9 +151,20 @@ private:
   void values_arrived(krbn::device_id device_id,
                       pqrs::not_null_shared_ptr_t<krbn::device_properties> device_properties,
                       pqrs::not_null_shared_ptr_t<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
+    std::vector<pqrs::osx::iokit_hid_value> hid_values;
     for (const auto& value : *values) {
-      auto v = pqrs::osx::iokit_hid_value(*value);
+      hid_values.emplace_back(*value);
+    }
 
+    handle_hid_values(device_id,
+                      device_properties,
+                      hid_values);
+  }
+
+  void handle_hid_values(krbn::device_id device_id,
+                         pqrs::not_null_shared_ptr_t<krbn::device_properties> device_properties,
+                         const std::vector<pqrs::osx::iokit_hid_value>& values) {
+    for (const auto& v : values) {
       if (auto usage_page = v.get_usage_page()) {
         if (auto usage = v.get_usage()) {
           if (auto logical_max = v.get_logical_max()) {
@@ -147,6 +189,7 @@ private:
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<krbn::device_id, pqrs::not_null_shared_ptr_t<pqrs::osx::iokit_hid_queue_value_monitor>> hid_queue_value_monitors_;
+  std::unordered_map<krbn::device_id, pqrs::not_null_shared_ptr_t<krbn::undeclared_buttons_monitor>> undeclared_buttons_monitors_;
   std::atomic<bool> observed_;
   libkrbn_callback_manager<libkrbn_hid_value_arrived_t> callback_manager_;
 };

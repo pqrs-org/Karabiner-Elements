@@ -11,6 +11,7 @@
 #include "pressed_keys_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
+#include "undeclared_buttons_monitor.hpp"
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
 namespace krbn::core_service::daemon::device_grabber_details {
@@ -49,6 +50,12 @@ public:
     hid_queue_value_monitor_->started.connect([this] {
       control_caps_lock_led_state_manager();
 
+      // Input reports are delivered only while the device is open, which the hid queue
+      // value monitor has just done.
+      if (undeclared_buttons_monitor_) {
+        undeclared_buttons_monitor_->async_start();
+      }
+
       if (seized()) {
         if (device_properties_->get_device_identifiers().get_is_game_pad()) {
           game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
@@ -65,6 +72,10 @@ public:
     });
     hid_queue_value_monitor_->stopped.connect([this] {
       control_caps_lock_led_state_manager();
+
+      if (undeclared_buttons_monitor_) {
+        undeclared_buttons_monitor_->async_stop();
+      }
 
       game_pad_stick_converter_ = nullptr;
     });
@@ -156,6 +167,35 @@ public:
       }
     });
 
+    //
+    // Buttons which the device reports but does not declare
+    //
+
+    undeclared_buttons_monitor_ = undeclared_buttons_monitor::make(
+        pqrs::dispatcher::extra::get_shared_dispatcher(),
+        pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+        device,
+        *device_properties_);
+
+    if (undeclared_buttons_monitor_) {
+      undeclared_buttons_monitor_->values_arrived.connect([this](auto&& values) {
+        // These values need none of the filtering the hid queue values above go through:
+        // they are always on pqrs::hid::usage_page::button, which "ignore_vendor_events"
+        // never matches, and no device we recover buttons for is the game pad that
+        // "filter_useless_events_from_specific_devices" targets. The pointing motion
+        // multipliers likewise do not apply to buttons.
+        auto event_queue_entries = event_queue::utility::make_entries(device_properties_,
+                                                                      *values,
+                                                                      {});
+
+        event_queue_entries = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue_entries,
+                                                                                                               device_id_,
+                                                                                                               pressed_keys_manager_);
+        hid_queue_values_arrived(*this,
+                                 event_queue_entries);
+      });
+    }
+
     device_name_ = iokit_utility::make_device_name_for_log(device_id,
                                                            device);
     device_short_name_ = iokit_utility::make_device_name(device);
@@ -163,7 +203,16 @@ public:
 
   ~entry() {
     detach_from_dispatcher([this] {
+      // The order matters: hid_queue_value_monitor_ owns the device being open, and
+      // undeclared_buttons_monitor_ owns the buffer IOKit copies input reports into. The
+      // device has to be closed before that buffer goes away, or reports arriving in
+      // between are written into freed memory.
+      //
+      // The start and stop paths are safe already, because iokit_hid_queue_value_monitor
+      // emits started() only after IOHIDDeviceOpen and stopped() only after
+      // IOHIDDeviceClose.
       hid_queue_value_monitor_ = nullptr;
+      undeclared_buttons_monitor_ = nullptr;
       game_pad_stick_converter_ = nullptr;
       caps_lock_led_state_manager_ = nullptr;
     });
@@ -337,6 +386,7 @@ private:
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
+  std::shared_ptr<undeclared_buttons_monitor> undeclared_buttons_monitor_;
   std::unique_ptr<game_pad_stick_converter> game_pad_stick_converter_;
   hid_queue_values_converter hid_queue_values_converter_;
   std::string device_name_;
