@@ -34,6 +34,10 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
+      - path: ../../src/apps/share/swift/Views/OpenSystemSettingsButton.swift
+        compilerFlags:
+          - -Wall
+          - -Werror
       - path: ../../src/apps/share/swift/Views/SheetCloseButton.swift
         compilerFlags:
           - -Wall

@@ -137,10 +137,6 @@ void libkrbn_killall_settings() {
   krbn::application_launcher::killall_settings();
 }
 
-void libkrbn_killall_system_settings() {
-  krbn::application_launcher::killall_system_settings();
-}
-
 void libkrbn_launch_uninstaller() {
   krbn::application_launcher::launch_uninstaller();
 }

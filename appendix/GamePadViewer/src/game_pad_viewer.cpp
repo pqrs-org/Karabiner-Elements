@@ -1,5 +1,4 @@
 #include "game_pad_viewer.hpp"
-#include "application_launcher.hpp"
 #include "device_properties.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
@@ -177,10 +176,6 @@ void game_pad_viewer_terminate(void) {
   krbn::process_lifecycle_manager::terminate_shared_instance();
   scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;
-}
-
-void game_pad_viewer_killall_system_settings(void) {
-  krbn::application_launcher::killall_system_settings();
 }
 
 bool game_pad_viewer_hid_value_monitor_observed(void) {

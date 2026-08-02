@@ -20,7 +20,6 @@ typedef void (*game_pad_viewer_hid_value_arrived_callback)(uint64_t device_id,
 
 void game_pad_viewer_initialize(game_pad_viewer_hid_value_arrived_callback callback);
 void game_pad_viewer_terminate(void);
-void game_pad_viewer_killall_system_settings(void);
 
 bool game_pad_viewer_hid_value_monitor_observed(void);
 

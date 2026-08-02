@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct OpenSystemSettingsButton<LabelView: View>: View {
@@ -14,18 +15,44 @@ struct OpenSystemSettingsButton<LabelView: View>: View {
         isProcessing = true
 
         Task {
-          libkrbn_killall_system_settings()
+          let applications = NSRunningApplication.runningApplications(
+            withBundleIdentifier: "com.apple.systempreferences"
+          )
+
+          for application in applications {
+            application.terminate()
+          }
+
+          for _ in 0..<5 {
+            if applications.allSatisfy(\.isTerminated) {
+              break
+            }
+
+            try? await Task.sleep(for: .milliseconds(500))
+          }
+
+          // Since Launch Services may still hold onto entries right after the process ends, we wait briefly.
+          try? await Task.sleep(for: .milliseconds(500))
 
           if let u = URL(string: url) {
             NSWorkspace.shared.open(u)
           }
 
-          await MainActor.run {
-            isProcessing = false
-          }
+          isProcessing = false
         }
       },
-      label: label
+      label: {
+        ZStack {
+          label()
+            .opacity(isProcessing ? 0 : 1)
+
+          if isProcessing {
+            ProgressView()
+              .controlSize(.small)
+              .accessibilityLabel("Opening System Settings")
+          }
+        }
+      }
     )
     .disabled(isProcessing)
   }
