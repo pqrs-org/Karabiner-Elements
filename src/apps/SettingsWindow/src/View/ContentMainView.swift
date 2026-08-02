@@ -56,7 +56,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .uninstall: return "trash"
     case .expert: return "flame"
     case .action: return "xmark.rectangle"
-    case .log: return "doc.plaintext"
+    case .log: return "list.bullet.rectangle"
     case .systemExtensions: return "puzzlepiece.extension"
     case .setup: return "checklist"
     }
