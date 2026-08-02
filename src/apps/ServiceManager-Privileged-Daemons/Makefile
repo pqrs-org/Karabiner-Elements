@@ -1,7 +1,6 @@
 all:
 	/bin/bash ../../../scripts/check-env.sh
 	/usr/bin/python3 ../../../scripts/update_version.py
-	make -C ../../lib/libkrbn
 	xcodegen generate
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 # Copy LaunchDaemons

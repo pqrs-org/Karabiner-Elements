@@ -54,7 +54,7 @@ RunLoop.main.perform {
       var exitCode: Int32 = 0
       for n in coreDaemonServiceNames {
         n.withCString {
-          if !libkrbn_services_daemon_running($0) {
+          if !krbn_daemon_running($0) {
             print("\(n) is not running")
             exitCode = 1
           }
