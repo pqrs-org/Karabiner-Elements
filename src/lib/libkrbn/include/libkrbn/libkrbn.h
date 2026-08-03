@@ -61,19 +61,6 @@ int librkbn_get_app_icon_number(void);
 
 void libkrbn_save_prettierrc(void);
 
-// types
-
-bool libkrbn_is_momentary_switch_event_target(int32_t usage_page, int32_t usage);
-bool libkrbn_is_modifier_flag(int32_t usage_page, int32_t usage);
-void libkrbn_get_momentary_switch_event_json_string(char* _Nonnull buffer,
-                                                    size_t length,
-                                                    int32_t usage_page,
-                                                    int32_t usage);
-void libkrbn_get_modifier_flag_name(char* _Nonnull buffer,
-                                    size_t length,
-                                    int32_t usage_page,
-                                    int32_t usage);
-
 //
 // libkrbn_core_configuration
 //
@@ -469,27 +456,6 @@ bool libkrbn_log_lines_is_debug_line(const char* _Nonnull line);
 bool libkrbn_log_lines_is_warn_line(const char* _Nonnull line);
 bool libkrbn_log_lines_is_error_line(const char* _Nonnull line);
 uint64_t libkrbn_log_lines_get_date_number(const char* _Nonnull line);
-
-//
-// libkrbn_hid_value_monitor
-//
-
-void libkrbn_enable_hid_value_monitor(void);
-void libkrbn_disable_hid_value_monitor(void);
-
-typedef void (*libkrbn_hid_value_arrived_t)(uint64_t device_id,
-                                            bool is_keyboard,
-                                            bool is_pointing_device,
-                                            bool is_game_pad,
-                                            int32_t usage_page,
-                                            int32_t usage,
-                                            int64_t logical_max,
-                                            int64_t logical_min,
-                                            int64_t integet_value);
-void libkrbn_register_hid_value_arrived_callback(libkrbn_hid_value_arrived_t _Nonnull callback);
-void libkrbn_unregister_hid_value_arrived_callback(libkrbn_hid_value_arrived_t _Nonnull callback);
-
-bool libkrbn_hid_value_monitor_observed(void);
 
 //
 // libkrbn_core_service_daemon_client

@@ -2,13 +2,13 @@ import AsyncAlgorithms
 import Combine
 import Foundation
 
-private func statusChangedCallback() {
+func coreServiceConnectionChangedCallback(_: Bool) {
   Task { @MainActor in
     EVCoreServiceDaemonClient.shared.temporarilyIgnoreAllDevices = false
   }
 }
 
-private func manipulatorEnvironmentReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+func manipulatorEnvironmentReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   let text = String(cString: jsonString)
 
   Task { @MainActor in
@@ -16,11 +16,10 @@ private func manipulatorEnvironmentReceivedCallback(_ jsonString: UnsafePointer<
   }
 }
 
-private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   let text = String(cString: jsonString)
 
   Task { @MainActor in
-    EVCoreServiceDaemonClient.shared.connectedDevicesStream.setText(text)
     EVCoreServiceDaemonClient.shared.updateConnectedDevices(text)
   }
 }
@@ -37,6 +36,7 @@ final class EVCoreServiceDaemonClient: ObservableObject {
   private let connectedDevicesTimer: AsyncTimerSequence<ContinuousClock>
   private var connectedDevicesTimerTask: Task<Void, Never>?
   private var connectedDevicesStartCount = 0
+  private var connectedDevicesJsonString = ""
   let connectedDevicesStream = RealtimeTextStream()
   @Published private(set) var productsByDeviceId: [UInt64: String] = [:]
 
@@ -52,32 +52,14 @@ final class EVCoreServiceDaemonClient: ObservableObject {
     )
   }
 
-  // We register the callback in the `start` method rather than in `init`.
-  // If libkrbn_register_*_callback is called within init,
-  // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
-
-  public func start() {
-    libkrbn_enable_core_service_daemon_client()
-
-    libkrbn_register_core_service_daemon_client_status_changed_callback(statusChangedCallback)
-
-    libkrbn_register_core_service_daemon_client_manipulator_environment_received_callback(
-      manipulatorEnvironmentReceivedCallback)
-
-    libkrbn_register_core_service_daemon_client_connected_devices_received_callback(
-      connectedDevicesReceivedCallback)
-
-    libkrbn_core_service_daemon_client_async_start()
-  }
-
   public func startManipulatorEnvironment() {
     manipulatorEnvironmentStartCount += 1
     if manipulatorEnvironmentStartCount == 1 {
       manipulatorEnvironmentTimerTask = Task { @MainActor in
-        libkrbn_core_service_daemon_client_async_get_manipulator_environment()
+        krbn_core_service_async_get_manipulator_environment()
 
         for await _ in manipulatorEnvironmentTimer {
-          libkrbn_core_service_daemon_client_async_get_manipulator_environment()
+          krbn_core_service_async_get_manipulator_environment()
         }
       }
     }
@@ -96,10 +78,10 @@ final class EVCoreServiceDaemonClient: ObservableObject {
     connectedDevicesStartCount += 1
     if connectedDevicesStartCount == 1 {
       connectedDevicesTimerTask = Task { @MainActor in
-        libkrbn_core_service_daemon_client_async_get_connected_devices()
+        krbn_core_service_async_get_connected_devices()
 
         for await _ in connectedDevicesTimer {
-          libkrbn_core_service_daemon_client_async_get_connected_devices()
+          krbn_core_service_async_get_connected_devices()
         }
       }
     }
@@ -119,6 +101,12 @@ final class EVCoreServiceDaemonClient: ObservableObject {
   }
 
   public func updateConnectedDevices(_ text: String) {
+    if connectedDevicesJsonString == text {
+      return
+    }
+    connectedDevicesJsonString = text
+    connectedDevicesStream.setText(text)
+
     guard let data = text.data(using: .utf8),
       let array = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
     else {
@@ -146,7 +134,7 @@ final class EVCoreServiceDaemonClient: ObservableObject {
 
   @Published var temporarilyIgnoreAllDevices: Bool = false {
     didSet {
-      libkrbn_core_service_daemon_client_async_temporarily_ignore_all_devices(
+      krbn_core_service_async_temporarily_ignore_all_devices(
         temporarilyIgnoreAllDevices)
     }
   }

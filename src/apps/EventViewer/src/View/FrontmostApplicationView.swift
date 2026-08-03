@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FrontmostApplicationView: View {
-  @ObservedObject var frontmostApplicationHistory = LibKrbn.FrontmostApplicationHistory.shared
+  @ObservedObject var frontmostApplicationHistory = FrontmostApplicationHistory.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {

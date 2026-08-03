@@ -6,7 +6,6 @@
 #include "libkrbn/impl/libkrbn_core_service_daemon_client.hpp"
 #include "libkrbn/impl/libkrbn_dispatcher_client.hpp"
 #include "libkrbn/impl/libkrbn_file_monitors.hpp"
-#include "libkrbn/impl/libkrbn_hid_value_monitor.hpp"
 #include "libkrbn/impl/libkrbn_log_monitor.hpp"
 #include <pqrs/gsl.hpp>
 
@@ -107,24 +106,6 @@ public:
   }
 
   //
-  // hid_value_monitor_
-  //
-
-  void enable_hid_value_monitor() {
-    if (!hid_value_monitor_) {
-      hid_value_monitor_ = std::make_unique<libkrbn_hid_value_monitor>();
-    }
-  }
-
-  void disable_hid_value_monitor() {
-    hid_value_monitor_ = nullptr;
-  }
-
-  [[nodiscard]] std::shared_ptr<libkrbn_hid_value_monitor> get_libkrbn_hid_value_monitor() const {
-    return hid_value_monitor_;
-  }
-
-  //
   // core_service_daemon_client_
   //
 
@@ -166,7 +147,6 @@ private:
   std::shared_ptr<libkrbn_complex_modifications_assets_manager> complex_modifications_assets_manager_;
   std::shared_ptr<libkrbn_file_monitors> file_monitors_;
   std::shared_ptr<libkrbn_log_monitor> log_monitor_;
-  std::shared_ptr<libkrbn_hid_value_monitor> hid_value_monitor_;
   std::shared_ptr<libkrbn_core_service_daemon_client> core_service_daemon_client_;
   std::shared_ptr<libkrbn_console_user_server_client> console_user_server_client_;
 };

@@ -1,15 +1,18 @@
 import SwiftUI
 
-private func callback(
+func hidValueMonitorStoppedCallback() {
+  Task { @MainActor in
+    EventHistory.shared.resetModifierFlags()
+  }
+}
+
+func hidValueArrivedCallback(
   _ deviceId: UInt64,
-  _ isKeyboard: Bool,
-  _ isPointingDevice: Bool,
-  _ isGamePad: Bool,
   _ usagePage: Int32,
   _ usage: Int32,
-  _ logicalMax: Int64,
-  _ logicalMin: Int64,
-  _ integerValue: Int64
+  _ integerValue: Int64,
+  _ momentarySwitchEventJsonStringPointer: UnsafePointer<CChar>?,
+  _ modifierFlagNamePointer: UnsafePointer<CChar>?
 ) {
   //
   // Skip specific events
@@ -100,6 +103,13 @@ private func callback(
     return
   }
 
+  let momentarySwitchEventJsonString = momentarySwitchEventJsonStringPointer.map {
+    String(cString: $0)
+  }
+  let modifierFlagName = modifierFlagNamePointer.map {
+    String(cString: $0)
+  }
+
   //
   // Add entry
   //
@@ -128,7 +138,7 @@ private func callback(
     // Handle unknown events
     //
 
-    if !libkrbn_is_momentary_switch_event_target(usagePage, usage) {
+    guard let momentarySwitchEventJsonString else {
       EventHistory.shared.appendUnknownEvent(entry)
       return
     }
@@ -137,20 +147,13 @@ private func callback(
     // entry.name
     //
 
-    var buffer = [Int8](repeating: 0, count: 256)
-    libkrbn_get_momentary_switch_event_json_string(&buffer, buffer.count, usagePage, usage)
-    let jsonString = String(utf8String: buffer) ?? ""
-
-    entry.name = jsonString
+    entry.name = momentarySwitchEventJsonString
 
     //
     // modifierFlags
     //
 
-    if libkrbn_is_modifier_flag(usagePage, usage) {
-      libkrbn_get_modifier_flag_name(&buffer, buffer.count, usagePage, usage)
-      let modifierFlagName = String(utf8String: buffer) ?? ""
-
+    if let modifierFlagName {
       if EventHistory.shared.modifierFlags[deviceId] == nil {
         EventHistory.shared.modifierFlags[deviceId] = Set()
       }
@@ -228,16 +231,9 @@ public class EventHistory: ObservableObject {
   @Published var entries: [EventHistoryEntry] = []
   @Published var unknownEventEntries: [EventHistoryEntry] = []
 
-  // We register the callback in the `start` method rather than in `init`.
-  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
-
   public func start() {
     startCount += 1
     if startCount == 1 {
-      libkrbn_enable_hid_value_monitor()
-
-      libkrbn_register_hid_value_arrived_callback(callback)
-
       startPointingButtonModifierFlagsMonitors()
 
       paused = false
@@ -247,8 +243,6 @@ public class EventHistory: ObservableObject {
   public func stop() {
     startCount -= 1
     if startCount == 0 {
-      libkrbn_disable_hid_value_monitor()
-
       stopPointingButtonModifierFlagsMonitors()
     }
   }
@@ -257,8 +251,9 @@ public class EventHistory: ObservableObject {
     paused = value
   }
 
-  public func observed() -> Bool {
-    libkrbn_hid_value_monitor_observed()
+  public func resetModifierFlags() {
+    modifierFlags.removeAll()
+    lastPointingButtonModifierFlags = ""
   }
 
   public func append(_ entry: EventHistoryEntry) {

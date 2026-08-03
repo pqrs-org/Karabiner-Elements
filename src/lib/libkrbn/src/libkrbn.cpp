@@ -177,54 +177,6 @@ void libkrbn_save_prettierrc() {
   krbn::complex_modifications_utility::save_prettierrc();
 }
 
-bool libkrbn_is_momentary_switch_event_target(int32_t usage_page,
-                                              int32_t usage) {
-  return krbn::momentary_switch_event::target(
-      pqrs::hid::usage_page::value_t(usage_page),
-      pqrs::hid::usage::value_t(usage));
-}
-
-bool libkrbn_is_modifier_flag(int32_t usage_page,
-                              int32_t usage) {
-  return krbn::momentary_switch_event(
-             pqrs::hid::usage_page::value_t(usage_page),
-             pqrs::hid::usage::value_t(usage))
-      .modifier_flag();
-}
-
-void libkrbn_get_momentary_switch_event_json_string(char* buffer,
-                                                    size_t length,
-                                                    int32_t usage_page,
-                                                    int32_t usage) {
-  auto json = nlohmann::json(krbn::momentary_switch_event(pqrs::hid::usage_page::value_t(usage_page),
-                                                          pqrs::hid::usage::value_t(usage)));
-  if (json.is_null()) {
-    json = nlohmann::json::object({
-        {"usage_page", usage_page},
-        {"usage", usage},
-    });
-  }
-
-  strlcpy(buffer, json.dump().c_str(), length);
-}
-
-void libkrbn_get_modifier_flag_name(char* buffer,
-                                    size_t length,
-                                    int32_t usage_page,
-                                    int32_t usage) {
-  if (auto modifier_flag = krbn::momentary_switch_event(
-                               pqrs::hid::usage_page::value_t(usage_page),
-                               pqrs::hid::usage::value_t(usage))
-                               .make_modifier_flag()) {
-    if (auto name = get_modifier_flag_name(*modifier_flag)) {
-      strlcpy(buffer, name->data(), length);
-      return;
-    }
-  }
-
-  strlcpy(buffer, "", length);
-}
-
 //
 // configuration_monitor
 //
@@ -437,47 +389,6 @@ void libkrbn_unregister_log_messages_updated_callback(libkrbn_log_messages_updat
       m->unregister_libkrbn_log_messages_updated_callback(callback);
     }
   }
-}
-
-//
-// hid_value_monitor
-//
-
-void libkrbn_enable_hid_value_monitor() {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->enable_hid_value_monitor();
-  }
-}
-
-void libkrbn_disable_hid_value_monitor() {
-  if (auto manager = libkrbn_components_manager_) {
-    manager->disable_hid_value_monitor();
-  }
-}
-
-void libkrbn_register_hid_value_arrived_callback(libkrbn_hid_value_arrived_t callback) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_hid_value_monitor()) {
-      m->register_libkrbn_hid_value_arrived_callback(callback);
-    }
-  }
-}
-
-void libkrbn_unregister_hid_value_arrived_callback(libkrbn_hid_value_arrived_t callback) {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_hid_value_monitor()) {
-      m->unregister_libkrbn_hid_value_arrived_callback(callback);
-    }
-  }
-}
-
-bool libkrbn_hid_value_monitor_observed() {
-  if (auto manager = libkrbn_components_manager_) {
-    if (auto m = manager->get_libkrbn_hid_value_monitor()) {
-      return m->get_observed();
-    }
-  }
-  return false;
 }
 
 //

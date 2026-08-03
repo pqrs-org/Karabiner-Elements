@@ -8,8 +8,17 @@ struct KarabinerEventViewerApp: App {
   @StateObject private var userSettings: UserSettings
 
   init() {
-    libkrbn_initialize()
-    libkrbn_load_custom_environment_variables()
+    _ = EVCoreServiceDaemonClient.shared
+    _ = FrontmostApplicationHistory.shared
+    _ = EventHistory.shared
+
+    krbn_initialize(
+      coreServiceConnectionChangedCallback,
+      manipulatorEnvironmentReceivedCallback,
+      connectedDevicesReceivedCallback,
+      frontmostApplicationHistoryReceivedCallback,
+      hidValueMonitorStoppedCallback,
+      hidValueArrivedCallback)
 
     let userSettings = UserSettings()
     _userSettings = StateObject(wrappedValue: userSettings)
@@ -18,9 +27,7 @@ struct KarabinerEventViewerApp: App {
       InputMonitoringAlertData.shared.showing = true
     }
 
-    EVCoreServiceDaemonClient.shared.start()
-    EVConsoleUserServerClient.shared.start()
-    LibKrbn.FrontmostApplicationHistory.shared.watch()
+    FrontmostApplicationHistory.shared.watch()
 
     NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event -> NSEvent? in
       if event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command {
@@ -49,7 +56,7 @@ struct KarabinerEventViewerApp: App {
 
 class AppDelegate: NSObject, NSApplicationDelegate {
   public func applicationWillTerminate(_: Notification) {
-    libkrbn_terminate()
+    krbn_terminate()
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {

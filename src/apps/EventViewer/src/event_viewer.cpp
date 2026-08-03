@@ -1,0 +1,348 @@
+#include "event_viewer.hpp"
+#include "console_user_server_client.hpp"
+#include "core_service_daemon_client.hpp"
+#include "dispatcher_utility.hpp"
+#include "environment_variable_utility.hpp"
+#include "hat_switch_convert.hpp"
+#include "process_lifecycle_manager.hpp"
+#include "run_loop_thread_utility.hpp"
+#include "types.hpp"
+#include <atomic>
+#include <memory>
+#include <optional>
+#include <pqrs/gsl.hpp>
+#include <pqrs/osx/iokit_hid_manager.hpp>
+#include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
+#include <string>
+#include <unordered_map>
+
+namespace {
+std::atomic<krbn_core_service_connection_changed_callback> core_service_connection_changed_callback;
+std::atomic<krbn_json_received_callback> manipulator_environment_received_callback;
+std::atomic<krbn_json_received_callback> connected_devices_received_callback;
+std::atomic<krbn_json_received_callback> frontmost_application_history_received_callback;
+std::atomic<krbn_hid_value_monitor_stopped_callback> hid_value_monitor_stopped_callback;
+std::atomic<krbn_hid_value_arrived_callback> hid_value_arrived_callback;
+
+std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client;
+std::shared_ptr<krbn::console_user_server_client> console_user_server_client;
+
+class hid_value_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
+public:
+  hid_value_monitor(const hid_value_monitor&) = delete;
+
+  hid_value_monitor()
+      : dispatcher_client() {
+    std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::keyboard),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::mouse),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::pointer),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::joystick),
+
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::generic_desktop,
+            pqrs::hid::usage::generic_desktop::game_pad),
+
+        // Headset
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::consumer,
+            pqrs::hid::usage::consumer::consumer_control),
+
+        // Special devices (e.g., VEC USB Footpedal INFINITY USB-3)
+        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+            pqrs::hid::usage_page::consumer,
+            pqrs::hid::usage::consumer::programmable_buttons),
+    };
+
+    hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(
+        pqrs::dispatcher::extra::get_shared_dispatcher(),
+        pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+        matching_dictionaries);
+
+    hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
+      if (!device_ptr) {
+        return;
+      }
+
+      auto device_id = krbn::make_device_id(registry_entry_id);
+      auto monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(
+          pqrs::dispatcher::extra::get_shared_dispatcher(),
+          pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+          *device_ptr);
+      hid_queue_value_monitors_.insert_or_assign(device_id, monitor);
+
+      monitor->values_arrived.connect([this, device_id](auto&& values) {
+        values_arrived(device_id,
+                       values);
+      });
+
+      monitor->async_start(kIOHIDOptionsTypeNone,
+                           std::chrono::milliseconds(3000));
+    });
+
+    hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
+      auto device_id = krbn::make_device_id(registry_entry_id);
+      hid_queue_value_monitors_.erase(device_id);
+      krbn::hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
+    });
+
+    hid_manager_->error_occurred.connect([](auto&& message, auto&& kern_return) {
+      krbn::logger::get_logger()->error("{0}: {1}", message, kern_return.to_string());
+    });
+
+    hid_manager_->async_start();
+  }
+
+  ~hid_value_monitor() override {
+    detach_from_dispatcher([this] {
+      hid_manager_ = nullptr;
+      hid_queue_value_monitors_.clear();
+
+      if (auto callback = hid_value_monitor_stopped_callback.load()) {
+        callback();
+      }
+    });
+  }
+
+private:
+  void values_arrived(krbn::device_id device_id,
+                      pqrs::not_null_shared_ptr_t<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) const {
+    auto callback = hid_value_arrived_callback.load();
+    if (!callback) {
+      return;
+    }
+
+    for (const auto& value : *values) {
+      auto v = pqrs::osx::iokit_hid_value(*value);
+      auto usage_page = v.get_usage_page();
+      auto usage = v.get_usage();
+      auto logical_max = v.get_logical_max();
+      auto logical_min = v.get_logical_min();
+
+      if (usage_page && usage && logical_max && logical_min) {
+        std::optional<std::string> momentary_switch_event_json_string;
+        std::optional<std::string> modifier_flag_name;
+
+        if (krbn::momentary_switch_event::target(*usage_page, *usage)) {
+          auto event = krbn::momentary_switch_event(*usage_page, *usage);
+          auto json = nlohmann::json(event);
+          if (json.is_null()) {
+            json = nlohmann::json::object({
+                {"usage_page", type_safe::get(*usage_page)},
+                {"usage", type_safe::get(*usage)},
+            });
+          }
+          momentary_switch_event_json_string = json.dump();
+
+          if (auto modifier_flag = event.make_modifier_flag()) {
+            if (auto name = krbn::get_modifier_flag_name(*modifier_flag)) {
+              modifier_flag_name = std::string(*name);
+            }
+          }
+        }
+
+        callback(type_safe::get(device_id),
+                 type_safe::get(*usage_page),
+                 type_safe::get(*usage),
+                 v.get_integer_value(),
+                 momentary_switch_event_json_string
+                     ? momentary_switch_event_json_string->c_str()
+                     : nullptr,
+                 modifier_flag_name
+                     ? modifier_flag_name->c_str()
+                     : nullptr);
+      }
+    }
+  }
+
+  std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
+  std::unordered_map<krbn::device_id,
+                     pqrs::not_null_shared_ptr_t<pqrs::osx::iokit_hid_queue_value_monitor>>
+      hid_queue_value_monitors_;
+};
+
+class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+public:
+  components_manager(const components_manager&) = delete;
+
+  components_manager()
+      : dispatcher_client() {
+    //
+    // core_service_daemon_client_
+    //
+
+    core_service_daemon_client_ = std::make_shared<krbn::core_service_daemon_client>();
+    std::atomic_store(&core_service_daemon_client, core_service_daemon_client_);
+
+    core_service_daemon_client_->connected.connect([] {
+      if (auto callback = core_service_connection_changed_callback.load()) {
+        callback(true);
+      }
+    });
+    core_service_daemon_client_->connect_failed.connect([](auto&&) {
+      if (auto callback = core_service_connection_changed_callback.load()) {
+        callback(false);
+      }
+    });
+    core_service_daemon_client_->closed.connect([] {
+      if (auto callback = core_service_connection_changed_callback.load()) {
+        callback(false);
+      }
+    });
+    core_service_daemon_client_->received.connect([](auto&& operation_type, auto&& json) {
+      try {
+        switch (operation_type) {
+          case krbn::operation_type::manipulator_environment:
+            if (auto callback = manipulator_environment_received_callback.load()) {
+              auto value = krbn::json_utility::dump(json.at("manipulator_environment"));
+              callback(value.c_str());
+            }
+            break;
+
+          case krbn::operation_type::connected_devices:
+            if (auto callback = connected_devices_received_callback.load()) {
+              auto value = krbn::json_utility::dump(json.at("connected_devices"));
+              callback(value.c_str());
+            }
+            break;
+
+          default:
+            break;
+        }
+      } catch (const std::exception&) {
+        krbn::logger::get_logger()->error("core_service_daemon_client received data is corrupted");
+      }
+    });
+
+    //
+    // console_user_server_client_
+    //
+
+    console_user_server_client_ = std::make_shared<krbn::console_user_server_client>(geteuid());
+    std::atomic_store(&console_user_server_client, console_user_server_client_);
+
+    console_user_server_client_->received.connect([](auto&& operation_type, auto&& json) {
+      if (operation_type != krbn::operation_type::frontmost_application_history) {
+        return;
+      }
+
+      try {
+        if (auto callback = frontmost_application_history_received_callback.load()) {
+          auto value = krbn::json_utility::dump(json.at("frontmost_application_history"));
+          callback(value.c_str());
+        }
+      } catch (const std::exception&) {
+        krbn::logger::get_logger()->error("console_user_server_client received data is corrupted");
+      }
+    });
+  }
+
+  ~components_manager() override {
+    detach_from_dispatcher([this] {
+      std::atomic_store(&core_service_daemon_client,
+                        std::shared_ptr<krbn::core_service_daemon_client>());
+      std::atomic_store(&console_user_server_client,
+                        std::shared_ptr<krbn::console_user_server_client>());
+      core_service_daemon_client_ = nullptr;
+      console_user_server_client_ = nullptr;
+      hid_value_monitor_ = nullptr;
+
+      if (auto callback = core_service_connection_changed_callback.load()) {
+        callback(false);
+      }
+    });
+  }
+
+  void async_start() {
+    core_service_daemon_client_->async_start();
+    console_user_server_client_->async_start();
+    hid_value_monitor_ = std::make_unique<hid_value_monitor>();
+  }
+
+private:
+  std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client_;
+  std::shared_ptr<krbn::console_user_server_client> console_user_server_client_;
+  std::unique_ptr<hid_value_monitor> hid_value_monitor_;
+};
+
+std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager;
+std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager;
+} // namespace
+
+void krbn_initialize(krbn_core_service_connection_changed_callback core_connection_callback,
+                     krbn_json_received_callback manipulator_callback,
+                     krbn_json_received_callback connected_devices_callback,
+                     krbn_json_received_callback frontmost_application_callback,
+                     krbn_hid_value_monitor_stopped_callback hid_monitor_stopped_callback,
+                     krbn_hid_value_arrived_callback hid_callback) {
+  scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
+  scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
+      pqrs::cf::run_loop_thread::failure_policy::exit);
+
+  auto environment_variables = krbn::environment_variable_utility::load_custom_environment_variables();
+  krbn::environment_variable_utility::log(environment_variables);
+
+  core_service_connection_changed_callback = core_connection_callback;
+  manipulator_environment_received_callback = manipulator_callback;
+  connected_devices_received_callback = connected_devices_callback;
+  frontmost_application_history_received_callback = frontmost_application_callback;
+  hid_value_monitor_stopped_callback = hid_monitor_stopped_callback;
+  hid_value_arrived_callback = hid_callback;
+
+  krbn::process_lifecycle_manager::initialize_shared_instance(
+      krbn::process_lifecycle_manager::configuration{
+          .components_manager_maker =
+              [] {
+                return std::make_unique<components_manager>();
+              },
+          .termination_completion_handler = [] {},
+      });
+  krbn::process_lifecycle_manager::async_start();
+}
+
+void krbn_terminate() {
+  krbn::process_lifecycle_manager::terminate_shared_instance();
+  scoped_run_loop_thread_manager = nullptr;
+  scoped_dispatcher_manager = nullptr;
+}
+
+void krbn_core_service_async_get_manipulator_environment() {
+  if (auto client = std::atomic_load(&core_service_daemon_client)) {
+    client->async_get_manipulator_environment();
+  }
+}
+
+void krbn_core_service_async_get_connected_devices() {
+  if (auto client = std::atomic_load(&core_service_daemon_client)) {
+    client->async_get_connected_devices();
+  }
+}
+
+void krbn_core_service_async_temporarily_ignore_all_devices(bool value) {
+  if (auto client = std::atomic_load(&core_service_daemon_client)) {
+    client->async_temporarily_ignore_all_devices(value);
+  }
+}
+
+void krbn_core_service_async_clear_user_variables() {
+  if (auto client = std::atomic_load(&core_service_daemon_client)) {
+    client->async_clear_user_variables();
+  }
+}
+
+void krbn_console_user_server_async_get_frontmost_application_history() {
+  if (auto client = std::atomic_load(&console_user_server_client)) {
+    client->async_get_frontmost_application_history();
+  }
+}
