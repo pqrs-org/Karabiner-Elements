@@ -55,8 +55,8 @@ inline std::string dump(const T& json) {
 }
 
 // The string is saved as an array of strings if it is multi-line; otherwise, it is saved as a single string.
-std::string unmarshal_string(const std::string& key,
-                             const nlohmann::json& value) {
+inline std::string unmarshal_string(const std::string& key,
+                                    const nlohmann::json& value) {
   if (value.is_string()) {
     return value.get<std::string>();
 
@@ -87,7 +87,7 @@ error:
 }
 
 // The string is saved as an array of strings if it is multi-line; otherwise, it is saved as a single string.
-nlohmann::json marshal_string(const std::string value) {
+inline nlohmann::json marshal_string(const std::string value) {
   if (value.find('\n') == value.npos) {
     return value;
   }
@@ -101,8 +101,8 @@ nlohmann::json marshal_string(const std::string value) {
   return lines;
 }
 
-pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> unmarshal_expression_string(const std::string& key,
-                                                                                            const nlohmann::json& value) {
+inline pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> unmarshal_expression_string(const std::string& key,
+                                                                                                   const nlohmann::json& value) {
   auto s = unmarshal_string(key, value);
   auto e = exprtk_utility::compile(s);
   if (std::isnan(e->value())) {
