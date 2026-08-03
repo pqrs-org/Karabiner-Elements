@@ -1,0 +1,47 @@
+import Foundation
+
+@MainActor
+class ComplexModificationsRule: Identifiable, Equatable, ObservableObject {
+  enum CodeType {
+    case json
+    case javascript
+  }
+
+  nonisolated let id = UUID()
+  var index: Int
+  var description: String
+  var codeString: String?
+  var searchText: String?
+  var codeType: krbn_complex_modifications_rule_code_type
+
+  init(
+    index: Int,
+    description: String,
+    enabled: Bool,
+    codeString: String?,
+    searchText: String? = nil,
+    codeType: krbn_complex_modifications_rule_code_type
+  ) {
+    self.index = index
+    self.description = description
+    self.enabled = enabled
+    self.codeString = codeString
+    self.searchText = searchText
+    self.codeType = codeType
+  }
+
+  nonisolated public static func == (lhs: ComplexModificationsRule, rhs: ComplexModificationsRule)
+    -> Bool
+  {
+    lhs.id == rhs.id
+  }
+
+  @Published var enabled: Bool {
+    didSet {
+      krbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(
+        index, enabled)
+
+      Settings.shared.save()
+    }
+  }
+}
