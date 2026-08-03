@@ -52,7 +52,7 @@ clang-format:
 	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
 
 swift-format:
-	find src/apps src/core -name '*.swift' -print0 | xargs -0 swift-format -i
+	find src/apps -name '*.swift' -print0 | xargs -0 swift-format -i
 
 swiftlint:
 	swiftlint
