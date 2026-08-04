@@ -23,11 +23,6 @@ struct UIView: View {
               Text("Show additional menu items (Default: off)")
             }
             .switchToggleStyle()
-
-            Toggle(isOn: $settings.askForConfirmationBeforeQuitting) {
-              Text("Ask for confirmation when quitting (Default: on)")
-            }
-            .switchToggleStyle()
           }
           .padding()
           .frame(maxWidth: .infinity, alignment: .leading)
