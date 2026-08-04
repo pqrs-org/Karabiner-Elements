@@ -1,16 +1,16 @@
 #pragma once
 
 #include "constants.hpp"
-#include "libkrbn/libkrbn.h"
-#include "libkrbn_callback_manager.hpp"
 #include "logger.hpp"
+#include "settings.hpp"
+#include "settings_callback_manager.hpp"
 #include <pqrs/spdlog.hpp>
 
-class libkrbn_log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
+class settings_log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  libkrbn_log_monitor(const libkrbn_log_monitor&) = delete;
+  settings_log_monitor(const settings_log_monitor&) = delete;
 
-  libkrbn_log_monitor()
+  settings_log_monitor()
       : dispatcher_client() {
     std::vector<std::string> targets = {
         "/var/log/karabiner/core_service.log",
@@ -37,7 +37,7 @@ public:
     monitor_->async_start(std::chrono::milliseconds(1000));
   }
 
-  ~libkrbn_log_monitor() {
+  ~settings_log_monitor() override {
     detach_from_dispatcher([this] {
       monitor_ = nullptr;
     });
@@ -47,20 +47,14 @@ public:
     return lines_;
   }
 
-  void register_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated_t callback) {
+  void register_krbn_log_messages_updated_callback(krbn_log_messages_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);
-    });
-  }
-
-  void unregister_libkrbn_log_messages_updated_callback(libkrbn_log_messages_updated_t callback) {
-    enqueue_to_dispatcher([this, callback] {
-      callback_manager_.unregister_callback(callback);
     });
   }
 
 private:
   std::unique_ptr<pqrs::spdlog::monitor> monitor_;
   std::shared_ptr<std::deque<std::string>> lines_;
-  libkrbn_callback_manager<libkrbn_log_messages_updated_t> callback_manager_;
+  settings_callback_manager<krbn_log_messages_updated_t> callback_manager_;
 };
