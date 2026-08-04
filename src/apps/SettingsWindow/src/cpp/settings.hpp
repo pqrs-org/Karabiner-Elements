@@ -31,6 +31,9 @@ void krbn_enqueue_callback(krbn_callback_t _Nonnull callback);
 // The JSON data is valid only while the callback is being invoked.
 typedef void (*krbn_json_output_callback)(const char* _Nonnull json,
                                           size_t length);
+typedef void (*krbn_json_output_callback_with_context)(const char* _Nonnull json,
+                                                       size_t length,
+                                                       void* _Nonnull context);
 
 void krbn_get_user_configuration_directory(char* _Nonnull buffer,
                                            size_t length);
@@ -99,13 +102,10 @@ void krbn_core_configuration_set_machine_specific_external_editor_path(const cha
 
 // profiles
 
-size_t krbn_core_configuration_get_profiles_size(void);
-bool krbn_core_configuration_get_profile_name(size_t index,
-                                              char* _Nonnull buffer,
-                                              size_t length);
+void krbn_core_configuration_get_profiles_json(krbn_json_output_callback_with_context _Nonnull output,
+                                               void* _Nonnull context);
 void krbn_core_configuration_set_profile_name(size_t index,
                                               const char* _Nonnull value);
-bool krbn_core_configuration_get_profile_selected(size_t index);
 void krbn_core_configuration_select_profile(size_t index);
 bool krbn_core_configuration_get_selected_profile_name(char* _Nonnull buffer,
                                                        size_t length);
@@ -121,15 +121,10 @@ void krbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_
 
 // profile::simple_modifications
 
-size_t krbn_core_configuration_get_selected_profile_simple_modifications_size(const krbn_device_identifiers* _Nullable device_identifiers);
-bool krbn_core_configuration_get_selected_profile_simple_modification_from_json_string(size_t index,
-                                                                                       const krbn_device_identifiers* _Nullable device_identifiers,
-                                                                                       char* _Nonnull buffer,
-                                                                                       size_t length);
-bool krbn_core_configuration_get_selected_profile_simple_modification_to_json_string(size_t index,
-                                                                                     const krbn_device_identifiers* _Nullable device_identifiers,
-                                                                                     char* _Nonnull buffer,
-                                                                                     size_t length);
+void krbn_core_configuration_get_selected_profile_simple_modifications_json(const krbn_device_identifiers* _Nullable device_identifiers,
+                                                                            krbn_json_output_callback_with_context _Nonnull output,
+                                                                            void* _Nonnull context);
+bool krbn_core_configuration_selected_profile_simple_modifications_empty(const krbn_device_identifiers* _Nullable device_identifiers);
 void krbn_core_configuration_replace_selected_profile_simple_modification(size_t index,
                                                                           const char* _Nonnull from_json_string,
                                                                           const char* _Nonnull to_json_string,
@@ -140,39 +135,23 @@ void krbn_core_configuration_erase_selected_profile_simple_modification(size_t i
 
 // profile::fn_function_keys
 
-size_t krbn_core_configuration_get_selected_profile_fn_function_keys_size(const krbn_device_identifiers* _Nullable device_identifiers);
-bool krbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(size_t index,
-                                                                                   const krbn_device_identifiers* _Nullable device_identifiers,
-                                                                                   char* _Nonnull buffer,
-                                                                                   size_t length);
-bool krbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(size_t index,
-                                                                                 const krbn_device_identifiers* _Nullable device_identifiers,
-                                                                                 char* _Nonnull buffer,
-                                                                                 size_t length);
+void krbn_core_configuration_get_selected_profile_fn_function_keys_json(const krbn_device_identifiers* _Nullable device_identifiers,
+                                                                        krbn_json_output_callback_with_context _Nonnull output,
+                                                                        void* _Nonnull context);
 void krbn_core_configuration_replace_selected_profile_fn_function_key(const char* _Nonnull from_json_string,
                                                                       const char* _Nonnull to_json_string,
                                                                       const krbn_device_identifiers* _Nullable device_identifiers);
 
 // profile:complex_modifications
 
-size_t krbn_core_configuration_get_selected_profile_complex_modifications_rules_size(void);
-bool krbn_core_configuration_get_selected_profile_complex_modifications_rule_description(size_t index,
-                                                                                         char* _Nonnull buffer,
-                                                                                         size_t length);
-bool krbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(size_t index);
+void krbn_core_configuration_get_selected_profile_complex_modifications_rules_json(krbn_json_output_callback_with_context _Nonnull output,
+                                                                                   void* _Nonnull context);
 void krbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(size_t index, bool value);
 
 typedef enum {
   krbn_complex_modifications_rule_code_type_json,
   krbn_complex_modifications_rule_code_type_javascript,
 } krbn_complex_modifications_rule_code_type;
-bool krbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(size_t index,
-                                                                                         char* _Nonnull buffer,
-                                                                                         size_t length,
-                                                                                         krbn_complex_modifications_rule_code_type* _Nonnull code_type);
-bool krbn_core_configuration_get_selected_profile_complex_modifications_rule_search_text(size_t index,
-                                                                                         char* _Nonnull buffer,
-                                                                                         size_t length);
 void krbn_core_configuration_replace_selected_profile_complex_modifications_rule(size_t index,
                                                                                  const char* _Nonnull code_string,
                                                                                  krbn_complex_modifications_rule_code_type code_type,
@@ -421,17 +400,10 @@ void krbn_unregister_file_updated_callback(const char* _Nonnull file_path,
 void krbn_enable_log_monitor(void);
 void krbn_disable_log_monitor(void);
 
-typedef void (*krbn_log_messages_updated_t)(void);
+// The JSON data is valid only while the callback is being invoked.
+typedef void (*krbn_log_messages_updated_t)(const char* _Nonnull json,
+                                            size_t length);
 void krbn_register_log_messages_updated_callback(krbn_log_messages_updated_t _Nonnull callback);
-
-size_t krbn_log_lines_get_size(void);
-bool krbn_log_lines_get_line(size_t index,
-                             char* _Nonnull buffer,
-                             size_t length);
-bool krbn_log_lines_is_debug_line(const char* _Nonnull line);
-bool krbn_log_lines_is_warn_line(const char* _Nonnull line);
-bool krbn_log_lines_is_error_line(const char* _Nonnull line);
-uint64_t krbn_log_lines_get_date_number(const char* _Nonnull line);
 
 //
 // settings_core_service_daemon_client

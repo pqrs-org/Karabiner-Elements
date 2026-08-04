@@ -86,13 +86,6 @@ public:
     return log_monitor_;
   }
 
-  [[nodiscard]] std::shared_ptr<std::deque<std::string>> get_current_log_lines() const {
-    if (auto m = log_monitor_) {
-      return m->get_lines();
-    }
-    return nullptr;
-  }
-
   //
   // core_service_daemon_client_
   //

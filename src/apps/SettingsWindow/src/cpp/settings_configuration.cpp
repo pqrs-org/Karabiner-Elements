@@ -1,6 +1,7 @@
 #include "complex_modifications_utility.hpp"
 #include "connected_devices.hpp"
 #include "duktape_utility.hpp"
+#include "json_utility.hpp"
 #include "settings_components_manager.hpp"
 #include "settings_configuration_monitor.hpp"
 #include "settings_cpp.hpp"
@@ -39,6 +40,13 @@ auto empty_device = gsl::make_not_null(std::make_shared<krbn::core_configuration
     auto d = c->get_selected_profile().get_device(di);
     return d->get_fn_function_keys();
   }
+}
+
+void output_json(const nlohmann::json& json,
+                 krbn_json_output_callback_with_context output,
+                 void* context) {
+  auto string = krbn::json_utility::dump(json);
+  output(string.data(), string.size(), context);
 }
 } // namespace
 
@@ -184,26 +192,20 @@ void krbn_core_configuration_set_machine_specific_external_editor_path(const cha
   }
 }
 
-size_t krbn_core_configuration_get_profiles_size() {
+void krbn_core_configuration_get_profiles_json(krbn_json_output_callback_with_context output,
+                                               void* context) {
   auto c = get_current_core_configuration();
-  return c->get_profiles().size();
-}
-
-bool krbn_core_configuration_get_profile_name(size_t index,
-                                              char* buffer,
-                                              size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  auto c = get_current_core_configuration();
+  auto json = nlohmann::json::array();
   const auto& profiles = c->get_profiles();
-  if (index < profiles.size()) {
-    strlcpy(buffer, profiles[index]->get_name().c_str(), length);
-    return true;
+  for (size_t index = 0; index < profiles.size(); ++index) {
+    json.push_back({
+        {"index", index},
+        {"name", profiles[index]->get_name()},
+        {"selected", profiles[index]->get_selected()},
+    });
   }
 
-  return false;
+  output_json(json, output, context);
 }
 
 void krbn_core_configuration_set_profile_name(size_t index, const char* value) {
@@ -211,15 +213,6 @@ void krbn_core_configuration_set_profile_name(size_t index, const char* value) {
     auto c = get_current_core_configuration();
     c->set_profile_name(index, value);
   }
-}
-
-bool krbn_core_configuration_get_profile_selected(size_t index) {
-  auto c = get_current_core_configuration();
-  const auto& profiles = c->get_profiles();
-  if (index < profiles.size()) {
-    return profiles[index]->get_selected();
-  }
-  return false;
 }
 
 void krbn_core_configuration_select_profile(size_t index) {
@@ -273,45 +266,25 @@ void krbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_
       std::chrono::milliseconds(value));
 }
 
-size_t krbn_core_configuration_get_selected_profile_simple_modifications_size(const krbn_device_identifiers* device_identifiers) {
+void krbn_core_configuration_get_selected_profile_simple_modifications_json(const krbn_device_identifiers* device_identifiers,
+                                                                            krbn_json_output_callback_with_context output,
+                                                                            void* context) {
   auto m = find_simple_modifications(device_identifiers);
-  return m->get_pairs().size();
+  auto json = nlohmann::json::array();
+  const auto& pairs = m->get_pairs();
+  for (size_t index = 0; index < pairs.size(); ++index) {
+    json.push_back({
+        {"index", index},
+        {"from_json_string", pairs[index].first},
+        {"to_json_string", pairs[index].second},
+    });
+  }
+
+  output_json(json, output, context);
 }
 
-bool krbn_core_configuration_get_selected_profile_simple_modification_from_json_string(size_t index,
-                                                                                       const krbn_device_identifiers* device_identifiers,
-                                                                                       char* buffer,
-                                                                                       size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  auto m = find_simple_modifications(device_identifiers);
-  const auto& pairs = m->get_pairs();
-  if (index < pairs.size()) {
-    strlcpy(buffer, pairs[index].first.c_str(), length);
-    return true;
-  }
-
-  return false;
-}
-
-bool krbn_core_configuration_get_selected_profile_simple_modification_to_json_string(size_t index,
-                                                                                     const krbn_device_identifiers* device_identifiers,
-                                                                                     char* buffer,
-                                                                                     size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  auto m = find_simple_modifications(device_identifiers);
-  const auto& pairs = m->get_pairs();
-  if (index < pairs.size()) {
-    strlcpy(buffer, pairs[index].second.c_str(), length);
-    return true;
-  }
-
-  return false;
+bool krbn_core_configuration_selected_profile_simple_modifications_empty(const krbn_device_identifiers* device_identifiers) {
+  return find_simple_modifications(device_identifiers)->get_pairs().empty();
 }
 
 void krbn_core_configuration_replace_selected_profile_simple_modification(size_t index,
@@ -336,45 +309,21 @@ void krbn_core_configuration_erase_selected_profile_simple_modification(size_t i
   m->erase_pair(index);
 }
 
-size_t krbn_core_configuration_get_selected_profile_fn_function_keys_size(const krbn_device_identifiers* device_identifiers) {
+void krbn_core_configuration_get_selected_profile_fn_function_keys_json(const krbn_device_identifiers* device_identifiers,
+                                                                        krbn_json_output_callback_with_context output,
+                                                                        void* context) {
   auto k = find_fn_function_keys(device_identifiers);
-  return k->get_pairs().size();
-}
-
-bool krbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(size_t index,
-                                                                                   const krbn_device_identifiers* device_identifiers,
-                                                                                   char* buffer,
-                                                                                   size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  auto k = find_fn_function_keys(device_identifiers);
+  auto json = nlohmann::json::array();
   const auto& pairs = k->get_pairs();
-  if (index < pairs.size()) {
-    strlcpy(buffer, pairs[index].first.c_str(), length);
-    return true;
+  for (size_t index = 0; index < pairs.size(); ++index) {
+    json.push_back({
+        {"index", index},
+        {"from_json_string", pairs[index].first},
+        {"to_json_string", pairs[index].second},
+    });
   }
 
-  return false;
-}
-
-bool krbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(size_t index,
-                                                                                 const krbn_device_identifiers* device_identifiers,
-                                                                                 char* buffer,
-                                                                                 size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  auto k = find_fn_function_keys(device_identifiers);
-  const auto& pairs = k->get_pairs();
-  if (index < pairs.size()) {
-    strlcpy(buffer, pairs[index].second.c_str(), length);
-    return true;
-  }
-
-  return false;
+  output_json(json, output, context);
 }
 
 void krbn_core_configuration_replace_selected_profile_fn_function_key(const char* from_json_string,
@@ -387,9 +336,24 @@ void krbn_core_configuration_replace_selected_profile_fn_function_key(const char
   }
 }
 
-size_t krbn_core_configuration_get_selected_profile_complex_modifications_rules_size() {
+void krbn_core_configuration_get_selected_profile_complex_modifications_rules_json(krbn_json_output_callback_with_context output,
+                                                                                   void* context) {
   auto c = get_current_core_configuration();
-  return c->get_selected_profile().get_complex_modifications()->get_rules().size();
+  auto json = nlohmann::json::array();
+  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
+  for (size_t index = 0; index < rules.size(); ++index) {
+    const auto& rule = rules[index];
+    json.push_back({
+        {"index", index},
+        {"description", rule->get_description()},
+        {"enabled", rule->get_enabled()},
+        {"code_string", rule->get_code_string()},
+        {"search_text", rule->get_search_text()},
+        {"code_type", rule->get_code_type() == krbn::core_configuration::details::complex_modifications_rule::code_type::javascript ? "javascript" : "json"},
+    });
+  }
+
+  output_json(json, output, context);
 }
 
 void krbn_core_configuration_erase_selected_profile_complex_modifications_rule(size_t index) {
@@ -402,94 +366,12 @@ void krbn_core_configuration_move_selected_profile_complex_modifications_rule(si
   c->get_selected_profile().get_complex_modifications()->move_rule(source_index, destination_index);
 }
 
-bool krbn_core_configuration_get_selected_profile_complex_modifications_rule_description(size_t index,
-                                                                                         char* buffer,
-                                                                                         size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  auto c = get_current_core_configuration();
-  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
-  if (index < rules.size()) {
-    strlcpy(buffer, rules[index]->get_description().c_str(), length);
-    return true;
-  }
-
-  return false;
-}
-
-bool krbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(size_t index) {
-  auto c = get_current_core_configuration();
-  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
-  if (index < rules.size()) {
-    return rules[index]->get_enabled();
-  }
-
-  return false;
-}
-
 void krbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(size_t index, bool value) {
   auto c = get_current_core_configuration();
   const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
   if (index < rules.size()) {
     rules[index]->set_enabled(value);
   }
-}
-
-bool krbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(size_t index,
-                                                                                         char* _Nonnull buffer,
-                                                                                         size_t length,
-                                                                                         krbn_complex_modifications_rule_code_type* _Nonnull code_type) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-  if (code_type) {
-    *code_type = krbn_complex_modifications_rule_code_type_json;
-  }
-
-  auto c = get_current_core_configuration();
-  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
-  if (index < rules.size()) {
-    if (code_type) {
-      switch (rules[index]->get_code_type()) {
-        case krbn::core_configuration::details::complex_modifications_rule::code_type::json:
-          *code_type = krbn_complex_modifications_rule_code_type_json;
-          break;
-        case krbn::core_configuration::details::complex_modifications_rule::code_type::javascript:
-          *code_type = krbn_complex_modifications_rule_code_type_javascript;
-          break;
-      }
-    }
-
-    auto code_string = rules[index]->get_code_string();
-    if (code_string.length() < length) {
-      strlcpy(buffer, code_string.c_str(), length);
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool krbn_core_configuration_get_selected_profile_complex_modifications_rule_search_text(size_t index,
-                                                                                         char* buffer,
-                                                                                         size_t length) {
-  if (buffer && length > 0) {
-    buffer[0] = '\0';
-  }
-
-  auto c = get_current_core_configuration();
-  const auto& rules = c->get_selected_profile().get_complex_modifications()->get_rules();
-  if (index < rules.size()) {
-    const auto& search_text = rules[index]->get_search_text();
-    if (search_text.length() < length) {
-      strlcpy(buffer, search_text.c_str(), length);
-      return true;
-    }
-  }
-
-  return false;
 }
 
 namespace {

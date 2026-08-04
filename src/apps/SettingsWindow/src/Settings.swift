@@ -14,6 +14,49 @@ private func callback() {
   }
 }
 
+private func settingsJSONOutputCallback(
+  _ json: UnsafePointer<CChar>,
+  _ length: Int,
+  _ context: UnsafeMutableRawPointer
+) {
+  context.assumingMemoryBound(to: Data.self).pointee = Data(bytes: json, count: length)
+}
+
+private func dataFromJSONOutput(_ body: (UnsafeMutableRawPointer) -> Void) -> Data {
+  var data = Data()
+  withUnsafeMutablePointer(to: &data) { context in
+    body(UnsafeMutableRawPointer(context))
+  }
+  return data
+}
+
+private struct SimpleModificationPayload: Decodable {
+  let index: Int
+  let fromJsonString: String
+  let toJsonString: String
+}
+
+private struct ComplexModificationsRulePayload: Decodable {
+  let index: Int
+  let description: String
+  let enabled: Bool
+  let codeString: String
+  let searchText: String
+  let codeType: String
+}
+
+private struct ProfilePayload: Decodable {
+  let index: Int
+  let name: String
+  let selected: Bool
+}
+
+private let settingsJSONDecoder: JSONDecoder = {
+  let decoder = JSONDecoder()
+  decoder.keyDecodingStrategy = .convertFromSnakeCase
+  return decoder
+}()
+
 @MainActor
 final class Settings: ObservableObject {
   static let shared = Settings()
@@ -161,40 +204,27 @@ final class Settings: ObservableObject {
   @Published var simpleModifications: [SimpleModification] = []
 
   public func makeSimpleModifications(_ connectedDevice: ConnectedDevice?) -> [SimpleModification] {
-    var result: [SimpleModification] = []
-
-    connectedDevice.withDeviceIdentifiersCPointer {
-      let size = krbn_core_configuration_get_selected_profile_simple_modifications_size($0)
-
-      for i in 0..<size {
-        var buffer = [Int8](repeating: 0, count: 32 * 1024)
-        var fromJsonString = ""
-        var toJsonString = ""
-
-        if krbn_core_configuration_get_selected_profile_simple_modification_from_json_string(
-          i, $0, &buffer, buffer.count)
-        {
-          fromJsonString = String(utf8String: buffer) ?? ""
-        }
-
-        if krbn_core_configuration_get_selected_profile_simple_modification_to_json_string(
-          i, $0, &buffer, buffer.count)
-        {
-          toJsonString = String(utf8String: buffer) ?? ""
-        }
-
-        let simpleModification = SimpleModification(
-          index: i,
-          fromJsonString: fromJsonString,
-          toJsonString: toJsonString,
-          toCategories: SimpleModificationDefinitions.shared.toCategories
-        )
-
-        result.append(simpleModification)
+    let data = connectedDevice.withDeviceIdentifiersCPointer { deviceIdentifiers in
+      dataFromJSONOutput { context in
+        krbn_core_configuration_get_selected_profile_simple_modifications_json(
+          deviceIdentifiers,
+          settingsJSONOutputCallback,
+          context)
       }
     }
 
-    return result
+    do {
+      return try settingsJSONDecoder.decode([SimpleModificationPayload].self, from: data).map {
+        SimpleModification(
+          index: $0.index,
+          fromJsonString: $0.fromJsonString,
+          toJsonString: $0.toJsonString,
+          toCategories: SimpleModificationDefinitions.shared.toCategories)
+      }
+    } catch {
+      print("Failed to decode simple modifications JSON: \(error)")
+      return []
+    }
   }
 
   public func simpleModifications(connectedDevice: ConnectedDevice?) -> [SimpleModification] {
@@ -245,8 +275,7 @@ final class Settings: ObservableObject {
 
   public func appendSimpleModificationIfEmpty(device: ConnectedDevice?) {
     device.withDeviceIdentifiersCPointer {
-      let size = krbn_core_configuration_get_selected_profile_simple_modifications_size($0)
-      if size == 0 {
+      if krbn_core_configuration_selected_profile_simple_modifications_empty($0) {
         appendSimpleModification(device: device)
       }
     }
@@ -272,42 +301,29 @@ final class Settings: ObservableObject {
   @Published var fnFunctionKeys: [SimpleModification] = []
 
   public func makeFnFunctionKeys(_ connectedDevice: ConnectedDevice?) -> [SimpleModification] {
-    var result: [SimpleModification] = []
-
-    connectedDevice.withDeviceIdentifiersCPointer {
-      let size = krbn_core_configuration_get_selected_profile_fn_function_keys_size($0)
-
-      for i in 0..<size {
-        var buffer = [Int8](repeating: 0, count: 32 * 1024)
-        var fromJsonString = ""
-        var toJsonString = ""
-
-        if krbn_core_configuration_get_selected_profile_fn_function_key_from_json_string(
-          i, $0, &buffer, buffer.count)
-        {
-          fromJsonString = String(utf8String: buffer) ?? ""
-        }
-
-        if krbn_core_configuration_get_selected_profile_fn_function_key_to_json_string(
-          i, $0, &buffer, buffer.count)
-        {
-          toJsonString = String(utf8String: buffer) ?? ""
-        }
-
-        let simpleModification = SimpleModification(
-          index: i,
-          fromJsonString: fromJsonString,
-          toJsonString: toJsonString,
-          toCategories: connectedDevice == nil
-            ? SimpleModificationDefinitions.shared.toCategories
-            : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase
-        )
-
-        result.append(simpleModification)
+    let data = connectedDevice.withDeviceIdentifiersCPointer { deviceIdentifiers in
+      dataFromJSONOutput { context in
+        krbn_core_configuration_get_selected_profile_fn_function_keys_json(
+          deviceIdentifiers,
+          settingsJSONOutputCallback,
+          context)
       }
     }
 
-    return result
+    do {
+      return try settingsJSONDecoder.decode([SimpleModificationPayload].self, from: data).map {
+        SimpleModification(
+          index: $0.index,
+          fromJsonString: $0.fromJsonString,
+          toJsonString: $0.toJsonString,
+          toCategories: connectedDevice == nil
+            ? SimpleModificationDefinitions.shared.toCategories
+            : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase)
+      }
+    } catch {
+      print("Failed to decode fn function keys JSON: \(error)")
+      return []
+    }
   }
 
   private func reflectFnFunctionKeyChanges(_ connectedDevice: ConnectedDevice?) {
@@ -343,46 +359,29 @@ final class Settings: ObservableObject {
   @Published var complexModificationsRules: [ComplexModificationsRule] = []
 
   private func updateComplexModificationsRules() {
-    var newComplexModificationsRules: [ComplexModificationsRule] = []
-
-    let size = krbn_core_configuration_get_selected_profile_complex_modifications_rules_size()
-    for i in 0..<size {
-      var codeString: String?
-      var codeType = krbn_complex_modifications_rule_code_type_json
-      var buffer = [Int8](repeating: 0, count: 1024 * 1024)  // 1MB
-      if krbn_core_configuration_get_selected_profile_complex_modifications_rule_code_string(
-        i, &buffer, buffer.count, &codeType)
-      {
-        codeString = String(utf8String: buffer)
-      }
-
-      var searchText: String?
-      if krbn_core_configuration_get_selected_profile_complex_modifications_rule_search_text(
-        i, &buffer, buffer.count)
-      {
-        searchText = String(utf8String: buffer)
-      }
-
-      var ruleDescription = ""
-      if krbn_core_configuration_get_selected_profile_complex_modifications_rule_description(
-        i, &buffer, buffer.count)
-      {
-        ruleDescription = String(utf8String: buffer) ?? ""
-      }
-
-      let complexModificationsRule = ComplexModificationsRule(
-        index: i,
-        description: ruleDescription,
-        enabled:
-          krbn_core_configuration_get_selected_profile_complex_modifications_rule_enabled(i),
-        codeString: codeString,
-        searchText: searchText,
-        codeType: codeType
-      )
-      newComplexModificationsRules.append(complexModificationsRule)
+    let data = dataFromJSONOutput { context in
+      krbn_core_configuration_get_selected_profile_complex_modifications_rules_json(
+        settingsJSONOutputCallback,
+        context)
     }
 
-    complexModificationsRules = newComplexModificationsRules
+    do {
+      complexModificationsRules =
+        try settingsJSONDecoder.decode([ComplexModificationsRulePayload].self, from: data).map {
+          ComplexModificationsRule(
+            index: $0.index,
+            description: $0.description,
+            enabled: $0.enabled,
+            codeString: $0.codeString,
+            searchText: $0.searchText,
+            codeType: $0.codeType == "javascript"
+              ? krbn_complex_modifications_rule_code_type_javascript
+              : krbn_complex_modifications_rule_code_type_json)
+        }
+    } catch {
+      print("Failed to decode complex modifications rules JSON: \(error)")
+      complexModificationsRules = []
+    }
   }
 
   private func reflectComplexModificationsRuleChanges() {
@@ -654,21 +653,18 @@ final class Settings: ObservableObject {
   @Published var profiles: [Profile] = []
 
   private func updateProfiles() {
-    var newProfiles: [Profile] = []
-
-    let size = krbn_core_configuration_get_profiles_size()
-    for i in 0..<size {
-      var buffer = [Int8](repeating: 0, count: 32 * 1024)
-      var name = ""
-      if krbn_core_configuration_get_profile_name(i, &buffer, buffer.count) {
-        name = String(utf8String: buffer) ?? ""
-      }
-
-      let profile = Profile(i, name, krbn_core_configuration_get_profile_selected(i))
-      newProfiles.append(profile)
+    let data = dataFromJSONOutput { context in
+      krbn_core_configuration_get_profiles_json(settingsJSONOutputCallback, context)
     }
 
-    profiles = newProfiles
+    do {
+      profiles = try settingsJSONDecoder.decode([ProfilePayload].self, from: data).map {
+        Profile($0.index, $0.name, $0.selected)
+      }
+    } catch {
+      print("Failed to decode profiles JSON: \(error)")
+      profiles = []
+    }
   }
 
   private func reflectProfileChanges() {
