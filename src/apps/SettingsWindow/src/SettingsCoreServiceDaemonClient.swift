@@ -79,7 +79,7 @@ final class SettingsCoreServiceDaemonClient: ObservableObject {
   private var systemVariablesTimerTask: Task<Void, Never>?
 
   // We register the callback in the `start` method rather than in `init`.
-  // If libkrbn_register_*_callback is called within init,
+  // If krbn_register_*_callback is called within init,
   // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   init() {
@@ -90,20 +90,20 @@ final class SettingsCoreServiceDaemonClient: ObservableObject {
   }
 
   public func start() {
-    libkrbn_enable_core_service_daemon_client()
+    krbn_enable_core_service_daemon_client()
 
-    libkrbn_register_core_service_daemon_client_system_variables_received_callback(
+    krbn_register_core_service_daemon_client_system_variables_received_callback(
       systemVariablesReceivedCallback)
 
-    libkrbn_core_service_daemon_client_async_start()
+    krbn_core_service_daemon_client_async_start()
   }
 
   public func startSystemVariablesMonitoring() {
     systemVariablesTimerTask = Task { @MainActor in
-      libkrbn_core_service_daemon_client_async_get_system_variables()
+      krbn_core_service_daemon_client_async_get_system_variables()
 
       for await _ in systemVariablesTimer {
-        libkrbn_core_service_daemon_client_async_get_system_variables()
+        krbn_core_service_daemon_client_async_get_system_variables()
       }
     }
   }
@@ -113,6 +113,6 @@ final class SettingsCoreServiceDaemonClient: ObservableObject {
   }
 
   public func setAppIcon(_ number: Int32) {
-    libkrbn_core_service_daemon_client_async_set_app_icon(number)
+    krbn_core_service_daemon_client_async_set_app_icon(number)
   }
 }

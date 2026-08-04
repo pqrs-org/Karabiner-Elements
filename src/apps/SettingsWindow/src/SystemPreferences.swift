@@ -13,7 +13,7 @@ final class SystemPreferences: ObservableObject {
   private var timerTask: Task<Void, Never>?
 
   // We register the callback in the `start` method rather than in `init`.
-  // If libkrbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
+  // If krbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
 
   init() {
     timer = AsyncTimerSequence(
@@ -46,6 +46,6 @@ final class SystemPreferences: ObservableObject {
 
   private func checkModifierMappings() {
     virtualHIDKeyboardModifierMappingsExists =
-      libkrbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists()
+      krbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists()
   }
 }

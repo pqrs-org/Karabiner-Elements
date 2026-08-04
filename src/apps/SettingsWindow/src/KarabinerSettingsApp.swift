@@ -6,22 +6,22 @@ struct KarabinerSettingsApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
   init() {
-    libkrbn_initialize()
-    libkrbn_load_custom_environment_variables()
+    krbn_initialize()
+    krbn_load_custom_environment_variables()
 
     //
     // Unregister old agents
     //
 
-    libkrbn_services_bootout_old_agents()
+    krbn_services_bootout_old_agents()
 
     //
     // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.
     // So we should enable them once before checking the status.
     //
 
-    libkrbn_services_register_core_daemons()
-    libkrbn_services_register_core_agents()
+    krbn_services_register_core_daemons()
+    krbn_services_register_core_agents()
 
     //
     // Setup CoreServiceClient
@@ -34,7 +34,7 @@ struct KarabinerSettingsApp: App {
     // Start components
     //
 
-    LibKrbn.Settings.shared.watch()
+    Settings.shared.watch()
     SettingsCoreServiceDaemonClient.shared.startSystemVariablesMonitoring()
     SystemPreferences.shared.start()
   }
@@ -80,7 +80,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       userAttentionRequestIdentifier = nil
     }
 
-    libkrbn_terminate()
+    krbn_terminate()
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {

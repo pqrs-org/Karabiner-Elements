@@ -17,7 +17,7 @@ private func consoleUserServerClientStatusChangedCallback() {
     SettingsConsoleUserServerClient.shared.updateLocalServicesGuidanceContext()
   }
 
-  libkrbn_console_user_server_client_async_get_settings_window_guidance()
+  krbn_console_user_server_client_async_get_settings_window_guidance()
 }
 
 @MainActor
@@ -39,31 +39,31 @@ final class SettingsConsoleUserServerClient {
   }
 
   public func start() {
-    libkrbn_enable_console_user_server_client(geteuid())
+    krbn_enable_console_user_server_client(geteuid())
 
-    libkrbn_register_console_user_server_client_status_changed_callback(
+    krbn_register_console_user_server_client_status_changed_callback(
       consoleUserServerClientStatusChangedCallback)
-    libkrbn_register_console_user_server_client_settings_window_guidance_received_callback(
+    krbn_register_console_user_server_client_settings_window_guidance_received_callback(
       settingsWindowGuidanceReceivedCallback)
 
-    libkrbn_console_user_server_client_async_start()
+    krbn_console_user_server_client_async_start()
 
     currentAlertTimerTask = Task { @MainActor in
       updateConsoleUserServerClientState()
       updateLocalServicesGuidanceContext()
-      libkrbn_console_user_server_client_async_get_settings_window_guidance()
+      krbn_console_user_server_client_async_get_settings_window_guidance()
 
       for await _ in currentAlertTimer {
         updateConsoleUserServerClientState()
         updateLocalServicesGuidanceContext()
-        libkrbn_console_user_server_client_async_get_settings_window_guidance()
+        krbn_console_user_server_client_async_get_settings_window_guidance()
       }
     }
   }
 
   func updateConsoleUserServerClientState() {
-    if libkrbn_console_user_server_client_get_status()
-      != libkrbn_console_user_server_client_status_connected
+    if krbn_console_user_server_client_get_status()
+      != krbn_console_user_server_client_status_connected
     {
       consoleUserServerClientReady = false
     }
@@ -100,7 +100,7 @@ final class SettingsConsoleUserServerClient {
     // console_user_server, it cannot fetch that guidance. Keep the service-enabled states updated
     // locally so ContentViewStates can open SetupServicesView as a fallback.
     ContentViewStates.shared.updateLocalServicesGuidanceContext(
-      coreDaemonsEnabled: libkrbn_services_daemons_enabled(),
-      coreAgentsEnabled: libkrbn_services_agents_enabled())
+      coreDaemonsEnabled: krbn_services_daemons_enabled(),
+      coreAgentsEnabled: krbn_services_agents_enabled())
   }
 }

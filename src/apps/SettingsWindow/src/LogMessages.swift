@@ -11,23 +11,23 @@ enum LogLevel {
 private func callback() {
   Task { @MainActor in
     var logMessageEntries: [LogMessageEntry] = []
-    let size = libkrbn_log_lines_get_size()
+    let size = krbn_log_lines_get_size()
     for i in 0..<size {
       var buffer = [Int8](repeating: 0, count: 32 * 1024)
       var line = ""
-      if libkrbn_log_lines_get_line(i, &buffer, buffer.count) {
+      if krbn_log_lines_get_line(i, &buffer, buffer.count) {
         line = String(utf8String: buffer) ?? ""
       }
 
       if line != "" {
         var logLevel = LogLevel.info
-        if libkrbn_log_lines_is_debug_line(line) {
+        if krbn_log_lines_is_debug_line(line) {
           logLevel = LogLevel.debug
         }
-        if libkrbn_log_lines_is_warn_line(line) {
+        if krbn_log_lines_is_warn_line(line) {
           logLevel = LogLevel.warn
         }
-        if libkrbn_log_lines_is_error_line(line) {
+        if krbn_log_lines_is_error_line(line) {
           logLevel = LogLevel.error
         }
 
@@ -35,7 +35,7 @@ private func callback() {
           LogMessageEntry(
             text: line,
             logLevel: logLevel,
-            dateNumber: libkrbn_log_lines_get_date_number(line)))
+            dateNumber: krbn_log_lines_get_date_number(line)))
       }
     }
 
@@ -99,9 +99,9 @@ public class LogMessages: ObservableObject {
   public func watch() {
     entries = []
 
-    libkrbn_enable_log_monitor()
-    libkrbn_register_log_messages_updated_callback(callback)
-    libkrbn_enqueue_callback(callback)
+    krbn_enable_log_monitor()
+    krbn_register_log_messages_updated_callback(callback)
+    krbn_enqueue_callback(callback)
 
     //
     // Create timer
@@ -117,7 +117,7 @@ public class LogMessages: ObservableObject {
   }
 
   public func unwatch() {
-    libkrbn_disable_log_monitor()
+    krbn_disable_log_monitor()
 
     timerTask?.cancel()
   }

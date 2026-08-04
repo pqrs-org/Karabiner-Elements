@@ -40,7 +40,7 @@ final class ExternalEditorController: ObservableObject {
   func chooseEditor() {
     Task { @MainActor in
       if let url = await chooseEditorURLAsync() {
-        LibKrbn.Settings.shared.externalEditorPath = url.path
+        Settings.shared.externalEditorPath = url.path
       }
     }
   }
@@ -76,7 +76,7 @@ final class ExternalEditorController: ObservableObject {
       let reloadHandler = onReload
 
       // Prepare .prettierrc.json for external editors.
-      libkrbn_save_prettierrc()
+      krbn_save_prettierrc()
 
       let writeResult: Result<Void, Error> = await Task.detached(priority: .utility) {
         do {
@@ -110,7 +110,7 @@ final class ExternalEditorController: ObservableObject {
     if let monitoredFileURL,
       let cString = monitoredFileURL.path.cString(using: .utf8)
     {
-      libkrbn_unregister_file_updated_callback(cString, externalEditorFileUpdatedCallback)
+      krbn_unregister_file_updated_callback(cString, externalEditorFileUpdatedCallback)
     }
     monitoredFileURL = nil
     onReloadHandler = nil
@@ -175,7 +175,7 @@ final class ExternalEditorController: ObservableObject {
 
   private func userTmpDirectoryURL(onError: (String) -> Void) -> URL? {
     var buffer = [Int8](repeating: 0, count: 4 * 1024)
-    libkrbn_get_user_tmp_directory(&buffer, buffer.count)
+    krbn_get_user_tmp_directory(&buffer, buffer.count)
     let path = String(utf8String: buffer) ?? ""
     guard !path.isEmpty else {
       onError("Failed to get user tmp directory.")
@@ -199,7 +199,7 @@ final class ExternalEditorController: ObservableObject {
   }
 
   private func externalEditorURL() -> URL? {
-    let externalEditorPath = LibKrbn.Settings.shared.externalEditorPath
+    let externalEditorPath = Settings.shared.externalEditorPath
     if externalEditorPath.isEmpty {
       return nil
     }
@@ -223,10 +223,10 @@ final class ExternalEditorController: ObservableObject {
       onReloadHandler = onReload
       monitoredFileURL = url
 
-      libkrbn_enable_file_monitors()
+      krbn_enable_file_monitors()
 
       if let cString = url.path.cString(using: .utf8) {
-        libkrbn_register_file_updated_callback(cString, externalEditorFileUpdatedCallback)
+        krbn_register_file_updated_callback(cString, externalEditorFileUpdatedCallback)
       } else {
         onError("Failed to watch file changes.")
       }

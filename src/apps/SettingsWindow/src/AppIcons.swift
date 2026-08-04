@@ -44,7 +44,7 @@ public class AppIcons: ObservableObject {
     icons.append(AppIcon(1))
     icons.append(AppIcon(2))
 
-    selectedAppIconNumber = librkbn_get_app_icon_number()
+    selectedAppIconNumber = krbn_get_app_icon_number()
 
     didSetEnabled = true
   }

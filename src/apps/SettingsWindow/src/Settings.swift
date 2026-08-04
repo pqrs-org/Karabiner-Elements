@@ -141,8 +141,6 @@ final class Settings: ObservableObject {
       )
       externalEditorPath = String(utf8String: buffer) ?? ""
     }
-    askForConfirmationBeforeQuitting =
-      krbn_core_configuration_get_global_configuration_ask_for_confirmation_before_quitting()
     unsafeUI = krbn_core_configuration_get_global_configuration_unsafe_ui()
     filterUselessEventsFromSpecificDevices =
       krbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices()
@@ -830,17 +828,6 @@ final class Settings: ObservableObject {
       if didSetEnabled {
         krbn_core_configuration_set_machine_specific_external_editor_path(
           externalEditorPath
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var askForConfirmationBeforeQuitting: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_ask_for_confirmation_before_quitting(
-          askForConfirmationBeforeQuitting
         )
         save()
       }
