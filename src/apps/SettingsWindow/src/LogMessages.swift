@@ -8,38 +8,43 @@ enum LogLevel {
   case error
 }
 
-private func callback() {
+private struct LogMessagePayload: Decodable {
+  let text: String
+  let logLevel: String
+  let dateNumber: UInt64
+}
+
+private func callback(
+  _ json: UnsafePointer<CChar>,
+  _ length: Int
+) {
+  let data = Data(bytes: json, count: length)
+
   Task { @MainActor in
-    var logMessageEntries: [LogMessageEntry] = []
-    let size = krbn_log_lines_get_size()
-    for i in 0..<size {
-      var buffer = [Int8](repeating: 0, count: 32 * 1024)
-      var line = ""
-      if krbn_log_lines_get_line(i, &buffer, buffer.count) {
-        line = String(utf8String: buffer) ?? ""
-      }
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-      if line != "" {
-        var logLevel = LogLevel.info
-        if krbn_log_lines_is_debug_line(line) {
-          logLevel = LogLevel.debug
-        }
-        if krbn_log_lines_is_warn_line(line) {
-          logLevel = LogLevel.warn
-        }
-        if krbn_log_lines_is_error_line(line) {
-          logLevel = LogLevel.error
-        }
+    do {
+      let payloads = try decoder.decode([LogMessagePayload].self, from: data)
+      let entries = payloads.map {
+        let logLevel: LogLevel =
+          switch $0.logLevel {
+          case "debug": .debug
+          case "warn": .warn
+          case "error": .error
+          default: .info
+          }
 
-        logMessageEntries.append(
-          LogMessageEntry(
-            text: line,
-            logLevel: logLevel,
-            dateNumber: krbn_log_lines_get_date_number(line)))
+        return LogMessageEntry(
+          text: $0.text,
+          logLevel: logLevel,
+          dateNumber: $0.dateNumber)
       }
+      LogMessages.shared.setEntries(entries)
+    } catch {
+      print("Failed to decode log lines JSON: \(error)")
+      LogMessages.shared.setEntries([])
     }
-
-    LogMessages.shared.setEntries(logMessageEntries)
   }
 }
 
@@ -101,7 +106,6 @@ public class LogMessages: ObservableObject {
 
     krbn_enable_log_monitor()
     krbn_register_log_messages_updated_callback(callback)
-    krbn_enqueue_callback(callback)
 
     //
     // Create timer
