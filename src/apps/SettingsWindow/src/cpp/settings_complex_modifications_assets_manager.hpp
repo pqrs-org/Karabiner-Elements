@@ -1,73 +1,66 @@
 #pragma once
 
 #include "complex_modifications_assets_manager.hpp"
-#include "libkrbn_configuration_monitor.hpp"
+#include "settings_configuration_monitor.hpp"
+#include <chrono>
+#include <nlohmann/json.hpp>
+#include <utility>
 
-class libkrbn_complex_modifications_assets_manager final {
+class settings_complex_modifications_assets_manager final {
 public:
-  libkrbn_complex_modifications_assets_manager(const libkrbn_complex_modifications_assets_manager&) = delete;
+  settings_complex_modifications_assets_manager(const settings_complex_modifications_assets_manager&) = delete;
 
-  libkrbn_complex_modifications_assets_manager() {
+  settings_complex_modifications_assets_manager() {
     krbn::logger::get_logger()->debug(__func__);
 
     manager_ = std::make_unique<krbn::complex_modifications_assets_manager>();
   }
 
-  ~libkrbn_complex_modifications_assets_manager() {
+  ~settings_complex_modifications_assets_manager() {
     krbn::logger::get_logger()->debug(__func__);
   }
 
-  void reload() const {
+  nlohmann::json reload_and_get_files_json() const {
     manager_->reload(krbn::constants::get_user_complex_modifications_assets_directory(),
                      krbn::core_configuration::error_handling::loose);
-  }
 
-  [[nodiscard]] size_t get_files_size() const {
-    return manager_->get_files().size();
-  }
+    auto json = nlohmann::json::array();
 
-  [[nodiscard]] const char* get_file_title(size_t index) const {
-    if (auto f = find_file(index)) {
-      return f->get_title().c_str();
-    }
-    return nullptr;
-  }
+    const auto& files = manager_->get_files();
+    for (size_t file_index = 0; file_index < files.size(); ++file_index) {
+      const auto& file = files[file_index];
 
-  [[nodiscard]] time_t get_file_last_write_time(size_t index) const {
-    if (auto f = find_file(index)) {
-      if (auto t = f->last_write_time()) {
-        return std::chrono::duration_cast<std::chrono::seconds>(t->time_since_epoch()).count();
+      auto rules_json = nlohmann::json::array();
+      const auto& rules = file->get_rules();
+      for (size_t rule_index = 0; rule_index < rules.size(); ++rule_index) {
+        rules_json.push_back({
+            {"file_index", file_index},
+            {"rule_index", rule_index},
+            {"description", rules[rule_index]->get_description()},
+        });
       }
-    }
-    return 0;
-  }
 
-  [[nodiscard]] bool user_file(size_t index) const {
-    if (auto f = find_file(index)) {
-      return f->user_file();
+      std::chrono::seconds imported_at(0);
+      if (auto t = file->last_write_time()) {
+        imported_at = std::chrono::duration_cast<std::chrono::seconds>(t->time_since_epoch());
+      }
+
+      json.push_back({
+          {"index", file_index},
+          {"title", file->get_title()},
+          {"user_file", file->user_file()},
+          {"imported_at", imported_at.count()},
+          {"asset_rules", std::move(rules_json)},
+      });
     }
-    return false;
+
+    return json;
   }
 
   void erase_file(size_t index) const {
     if (auto f = find_file(index)) {
       f->unlink_file();
     }
-  }
-
-  [[nodiscard]] size_t get_rules_size(size_t file_index) const {
-    if (auto f = find_file(file_index)) {
-      return f->get_rules().size();
-    }
-    return 0;
-  }
-
-  [[nodiscard]] const char* get_rule_description(size_t file_index,
-                                                 size_t index) const {
-    if (auto r = find_rule(file_index, index)) {
-      return r->get_description().c_str();
-    }
-    return nullptr;
   }
 
   void add_rule_to_core_configuration_selected_profile(size_t file_index,
