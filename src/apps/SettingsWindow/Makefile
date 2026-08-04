@@ -2,7 +2,6 @@ all:
 	/bin/bash ../../../scripts/check-env.sh
 	/usr/bin/python3 ../../../scripts/update_version.py
 	$(MAKE) -C ../../../vendor build
-	$(MAKE) -C ../../lib/libkrbn
 	xcodegen generate
 	xcodebuild -configuration Release -alltargets SYMROOT="$(CURDIR)/build"
 

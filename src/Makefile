@@ -9,7 +9,6 @@ all:
 	$(MAKE) -C bin/cli
 	$(MAKE) -C apps/ConsoleUserServer
 	$(MAKE) -C apps/CoreService
-	$(MAKE) -C lib/libkrbn
 
 clean:
 	$(MAKE) -C apps/AppIconSwitcher clean
@@ -22,4 +21,3 @@ clean:
 	$(MAKE) -C bin/cli clean
 	$(MAKE) -C apps/ConsoleUserServer clean
 	$(MAKE) -C apps/CoreService clean
-	$(MAKE) -C lib/libkrbn clean

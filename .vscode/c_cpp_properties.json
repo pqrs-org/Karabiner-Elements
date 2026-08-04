@@ -5,7 +5,6 @@
             "defines": [],
             "includePath": [
                 "${workspaceFolder}/src/apps/CoreService/include",
-                "${workspaceFolder}/src/lib/libkrbn/include",
                 "${workspaceFolder}/src/share",
                 "${workspaceFolder}/vendor/duktape-2.7.0/extras/console",
                 "${workspaceFolder}/vendor/duktape-2.7.0/extras/module-node",
