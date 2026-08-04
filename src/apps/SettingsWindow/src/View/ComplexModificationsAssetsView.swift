@@ -61,7 +61,7 @@ struct ComplexModificationsAssetsView: View {
 
                       Button(
                         action: {
-                          LibKrbn.Settings.shared.addComplexModificationRule(assetRule)
+                          Settings.shared.addComplexModificationRule(assetRule)
                           contentViewStates.complexModificationsViewSheetPresented = false
                         },
                         label: {
@@ -94,7 +94,7 @@ struct ComplexModificationsAssetsView: View {
 
                     Button(
                       action: {
-                        LibKrbn.Settings.shared.addComplexModificationRules(assetFile)
+                        Settings.shared.addComplexModificationRules(assetFile)
                         contentViewStates.complexModificationsViewSheetPresented = false
                       },
                       label: {

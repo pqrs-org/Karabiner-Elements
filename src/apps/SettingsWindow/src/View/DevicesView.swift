@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct DevicesView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
+  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var connectedDevices = ConnectedDevices.shared
   @State private var showEraseNotConnectedDeviceSettingsButton = false
 
   static let detailedSettingWidth = 400.0
@@ -98,7 +98,7 @@ struct DevicesView: View {
   }
 
   struct DeviceName: View {
-    let connectedDevice: LibKrbn.ConnectedDevice
+    let connectedDevice: ConnectedDevice
 
     var body: some View {
       HStack(alignment: .center, spacing: 0) {
@@ -154,9 +154,9 @@ struct DevicesView: View {
   }
 
   struct ModifyEventsSetting: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
 
-    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var settings = Settings.shared
 
     var body: some View {
       HStack(alignment: .top) {
@@ -199,9 +199,9 @@ struct DevicesView: View {
   }
 
   struct KeyboardSettings: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
 
-    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var settings = Settings.shared
 
     var body: some View {
       VStack {
@@ -244,7 +244,7 @@ struct DevicesView: View {
   }
 
   struct MouseSettings: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
     @State var showing = false
 
     var body: some View {
@@ -273,7 +273,7 @@ struct DevicesView: View {
   }
 
   struct GamePadSettings: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
     @State var showing = false
 
     var body: some View {
@@ -300,7 +300,7 @@ struct DevicesView: View {
   }
 
   struct ExtraSettings: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
 
     var body: some View {
       VStack {

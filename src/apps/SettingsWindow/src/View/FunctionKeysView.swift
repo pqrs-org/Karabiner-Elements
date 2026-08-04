@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FunctionKeysView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @ObservedObject private var settingsCoreServiceDaemonClient = SettingsCoreServiceDaemonClient
     .shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
@@ -47,19 +47,19 @@ struct FunctionKeysView: View {
   }
 
   struct FnFunctionKeysView: View {
-    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var settings = Settings.shared
     @ObservedObject private var settingsCoreServiceDaemonClient = SettingsCoreServiceDaemonClient
       .shared
 
-    private let selectedDevice: LibKrbn.ConnectedDevice?
-    private let fnFunctionKeys: [LibKrbn.SimpleModification]
+    private let selectedDevice: ConnectedDevice?
+    private let fnFunctionKeys: [SimpleModification]
 
-    init(selectedDevice: LibKrbn.ConnectedDevice?) {
+    init(selectedDevice: ConnectedDevice?) {
       self.selectedDevice = selectedDevice
       self.fnFunctionKeys =
         selectedDevice == nil
-        ? LibKrbn.Settings.shared.fnFunctionKeys
-        : LibKrbn.Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
+        ? Settings.shared.fnFunctionKeys
+        : Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
     }
 
     var body: some View {
@@ -80,11 +80,11 @@ struct FunctionKeysView: View {
 
               SimpleModificationPickerView(
                 categories: selectedDevice == nil
-                  ? LibKrbn.SimpleModificationDefinitions.shared.toCategories
-                  : LibKrbn.SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
+                  ? SimpleModificationDefinitions.shared.toCategories
+                  : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
                 label: fnFunctionKey.toEntry.label,
                 action: { json in
-                  LibKrbn.Settings.shared.updateFnFunctionKey(
+                  Settings.shared.updateFnFunctionKey(
                     fromJsonString: fnFunctionKey.fromEntry.json,
                     toJsonString: json,
                     device: selectedDevice)

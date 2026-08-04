@@ -65,7 +65,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 
 struct ContentMainView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @ObservedObject private var settingsCoreServiceDaemonClient = SettingsCoreServiceDaemonClient
     .shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared

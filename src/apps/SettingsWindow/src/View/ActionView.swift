@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ActionView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
 
   var body: some View {
     ScrollView {
@@ -10,7 +10,7 @@ struct ActionView: View {
           VStack(alignment: .leading, spacing: 16) {
             Button(
               action: {
-                libkrbn_services_restart_console_user_server_agent()
+                krbn_services_restart_console_user_server_agent()
                 Relauncher.relaunch()
               },
               label: {

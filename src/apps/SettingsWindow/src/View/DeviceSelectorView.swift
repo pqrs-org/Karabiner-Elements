@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct DeviceSelectorView: View {
-  @Binding var selectedDevice: LibKrbn.ConnectedDevice?
-  @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @Binding var selectedDevice: ConnectedDevice?
+  @ObservedObject private var connectedDevices = ConnectedDevices.shared
+  @ObservedObject private var settings = Settings.shared
 
-  @State var selected = LibKrbn.ConnectedDevice.zero
+  @State var selected = ConnectedDevice.zero
 
   var body: some View {
     // Build a combined array with `ConnectedDevice.zero` for "For all devices"
@@ -13,7 +13,7 @@ struct DeviceSelectorView: View {
       (settings.findConnectedDeviceSetting($0)?.modifyEvents ?? false)
         && !$0.isVirtualDevice
     }
-    let targets = [LibKrbn.ConnectedDevice.zero] + filtered
+    let targets = [ConnectedDevice.zero] + filtered
 
     List(targets, selection: $selected) { device in
       Label(
@@ -46,7 +46,7 @@ struct DeviceSelectorView: View {
       if let selectedDevice = selectedDevice {
         selected = selectedDevice
       } else {
-        selected = LibKrbn.ConnectedDevice.zero
+        selected = ConnectedDevice.zero
       }
     }
     .onChange(of: selected) { newValue in
@@ -58,7 +58,7 @@ struct DeviceSelectorView: View {
     }
   }
 
-  private func deviceLabelTitle(_ device: LibKrbn.ConnectedDevice) -> String {
+  private func deviceLabelTitle(_ device: ConnectedDevice) -> String {
     if device.index < 0 {
       return "For all devices"
     } else {

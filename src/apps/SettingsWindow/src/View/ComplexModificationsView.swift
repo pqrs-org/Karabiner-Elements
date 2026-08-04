@@ -8,18 +8,18 @@ enum ComplexModificationsSheetView: String {
 
 struct ComplexModificationsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @State private var moveDisabled: Bool = true
   @State private var showingEditSheet = false
   @State private var hoverRuleIndex: Int?
-  @State private var editingRule: LibKrbn.ComplexModificationsRule?
+  @State private var editingRule: ComplexModificationsRule?
   @State private var filterKeyword = ""
 
   private var normalizedFilterKeyword: String {
     filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
-  private func matchesFilter(_ rule: LibKrbn.ComplexModificationsRule) -> Bool {
+  private func matchesFilter(_ rule: ComplexModificationsRule) -> Bool {
     let keyword = normalizedFilterKeyword
     if keyword.isEmpty {
       return true
@@ -44,15 +44,15 @@ struct ComplexModificationsView: View {
         Button(
           action: {
             var buffer = [Int8](repeating: 0, count: 32 * 1024)
-            libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(
+            krbn_core_configuration_get_new_complex_modifications_rule_json_string(
               &buffer, buffer.count)
 
-            editingRule = LibKrbn.ComplexModificationsRule(
+            editingRule = ComplexModificationsRule(
               index: -1,
               description: "Edit the following setting and press the Save button.",
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
-              codeType: libkrbn_complex_modifications_rule_code_type_json,
+              codeType: krbn_complex_modifications_rule_code_type_json,
             )
             showingEditSheet = true
           },
@@ -67,15 +67,15 @@ struct ComplexModificationsView: View {
         Button(
           action: {
             var buffer = [Int8](repeating: 0, count: 32 * 1024)
-            libkrbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(
+            krbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(
               &buffer, buffer.count)
 
-            editingRule = LibKrbn.ComplexModificationsRule(
+            editingRule = ComplexModificationsRule(
               index: -1,
               description: "Edit the following script and press the Save button.",
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
-              codeType: libkrbn_complex_modifications_rule_code_type_javascript,
+              codeType: krbn_complex_modifications_rule_code_type_javascript,
             )
             showingEditSheet = true
           },

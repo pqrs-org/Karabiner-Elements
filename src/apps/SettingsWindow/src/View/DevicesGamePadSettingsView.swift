@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DevicesGamePadSettingsView: View {
-  @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+  @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
   @Binding var showing: Bool
 
   var body: some View {
@@ -46,29 +46,29 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct XYStickTabView: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
 
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
           deadzone: $connectedDeviceSetting.gamePadXYStickDeadzone,
           deadzoneDefaultValue:
-            libkrbn_core_configuration_game_pad_xy_stick_deadzone_default_value(),
+            krbn_core_configuration_game_pad_xy_stick_deadzone_default_value(),
 
           deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
             .gamePadXYStickDeltaMagnitudeDetectionThreshold,
           deltaMagnitudeDetectionThresholdDefaultValue:
-            libkrbn_core_configuration_game_pad_xy_stick_delta_magnitude_detection_threshold_default_value(),
+            krbn_core_configuration_game_pad_xy_stick_delta_magnitude_detection_threshold_default_value(),
 
           continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
             .gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold,
           continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
-            libkrbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value(),
+            krbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value(),
 
           continuedMovementIntervalMilliseconds: $connectedDeviceSetting
             .gamePadXYStickContinuedMovementIntervalMilliseconds,
           continuedMovementIntervalMillisecondsDefaultValue: Int(
-            libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
+            krbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
           )
         )
 
@@ -97,29 +97,29 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct WheelsStickTabView: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
 
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
           deadzone: $connectedDeviceSetting.gamePadWheelsStickDeadzone,
           deadzoneDefaultValue:
-            libkrbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(),
+            krbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(),
 
           deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
             .gamePadWheelsStickDeltaMagnitudeDetectionThreshold,
           deltaMagnitudeDetectionThresholdDefaultValue:
-            libkrbn_core_configuration_game_pad_wheels_stick_delta_magnitude_detection_threshold_default_value(),
+            krbn_core_configuration_game_pad_wheels_stick_delta_magnitude_detection_threshold_default_value(),
 
           continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
             .gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold,
           continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
-            libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value(),
+            krbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value(),
 
           continuedMovementIntervalMilliseconds: $connectedDeviceSetting
             .gamePadWheelsStickContinuedMovementIntervalMilliseconds,
           continuedMovementIntervalMillisecondsDefaultValue: Int(
-            libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
+            krbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
           )
         )
 
@@ -148,7 +148,7 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct OthersTabView: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
 
     var body: some View {
       VStack(alignment: .leading, spacing: 40.0) {

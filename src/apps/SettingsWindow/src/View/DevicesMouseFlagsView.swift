@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DevicesMouseFlagsView: View {
-  @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+  @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
 
   var body: some View {
     GroupBox(label: Text("Mouse Flags")) {

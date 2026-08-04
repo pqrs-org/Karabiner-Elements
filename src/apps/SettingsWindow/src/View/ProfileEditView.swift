@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct ProfileEditView: View {
-  @Binding var profile: LibKrbn.Profile?
+  @Binding var profile: Profile?
   @Binding var showing: Bool
   @State private var name = ""
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MiscView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
 
   var body: some View {
     ScrollView {
@@ -50,7 +50,7 @@ struct MiscView: View {
             Button(
               action: {
                 var buffer = [Int8](repeating: 0, count: 32 * 1024)
-                libkrbn_get_user_configuration_directory(&buffer, buffer.count)
+                krbn_get_user_configuration_directory(&buffer, buffer.count)
                 guard let path = String(utf8String: buffer) else { return }
 
                 let url = URL(fileURLWithPath: path, isDirectory: true)

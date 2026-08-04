@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct KeyboardTypeSelectorView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
 
   var body: some View {
     Picker(

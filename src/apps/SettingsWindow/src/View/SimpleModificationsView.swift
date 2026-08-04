@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SimpleModificationsView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
@@ -22,14 +22,14 @@ struct SimpleModificationsView: View {
   }
 
   struct SimpleModificationView: View {
-    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var settings = Settings.shared
 
-    private let selectedDevice: LibKrbn.ConnectedDevice?
-    private let simpleModifications: [LibKrbn.SimpleModification]
+    private let selectedDevice: ConnectedDevice?
+    private let simpleModifications: [SimpleModification]
 
-    init(selectedDevice: LibKrbn.ConnectedDevice?) {
+    init(selectedDevice: ConnectedDevice?) {
       self.selectedDevice = selectedDevice
-      self.simpleModifications = LibKrbn.Settings.shared.simpleModifications(
+      self.simpleModifications = Settings.shared.simpleModifications(
         connectedDevice: selectedDevice)
     }
 
@@ -40,10 +40,10 @@ struct SimpleModificationsView: View {
           ForEach(simpleModifications) { simpleModification in
             HStack {
               SimpleModificationPickerView(
-                categories: LibKrbn.SimpleModificationDefinitions.shared.fromCategories,
+                categories: SimpleModificationDefinitions.shared.fromCategories,
                 label: simpleModification.fromEntry.label,
                 action: { json in
-                  LibKrbn.Settings.shared.updateSimpleModification(
+                  Settings.shared.updateSimpleModification(
                     index: simpleModification.index,
                     fromJsonString: json,
                     toJsonString: simpleModification.toEntry.json,
@@ -56,10 +56,10 @@ struct SimpleModificationsView: View {
                 .padding(.horizontal, 6.0)
 
               SimpleModificationPickerView(
-                categories: LibKrbn.SimpleModificationDefinitions.shared.toCategories,
+                categories: SimpleModificationDefinitions.shared.toCategories,
                 label: simpleModification.toEntry.label,
                 action: { json in
-                  LibKrbn.Settings.shared.updateSimpleModification(
+                  Settings.shared.updateSimpleModification(
                     index: simpleModification.index,
                     fromJsonString: simpleModification.fromEntry.json,
                     toJsonString: json,
@@ -72,7 +72,7 @@ struct SimpleModificationsView: View {
               Button(
                 role: .destructive,
                 action: {
-                  LibKrbn.Settings.shared.removeSimpleModification(
+                  Settings.shared.removeSimpleModification(
                     index: simpleModification.index,
                     device: selectedDevice)
                 },
@@ -90,7 +90,7 @@ struct SimpleModificationsView: View {
 
           Button(
             action: {
-              LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
+              Settings.shared.appendSimpleModification(device: selectedDevice)
             },
             label: {
               // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.

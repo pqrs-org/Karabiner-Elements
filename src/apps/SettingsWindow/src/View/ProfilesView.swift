@@ -2,11 +2,11 @@ import AppKit
 import SwiftUI
 
 struct ProfilesView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @State private var moveDisabled: Bool = true
   @State private var showingSheet = false
-  @State private var hoverProfile: LibKrbn.Profile?
-  @State private var editingProfile: LibKrbn.Profile?
+  @State private var hoverProfile: Profile?
+  @State private var editingProfile: Profile?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {

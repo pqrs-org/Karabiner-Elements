@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct UIView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @ObservedObject private var appIcons = AppIcons.shared
 
   var body: some View {

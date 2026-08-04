@@ -4,16 +4,16 @@ import CodeEditor
 import SwiftUI
 
 struct ComplexModificationsEditView: View {
-  @Binding var rule: LibKrbn.ComplexModificationsRule?
+  @Binding var rule: ComplexModificationsRule?
   @Binding var showing: Bool
   @State private var description = ""
   @State private var disabled = true
   @State private var codeString = ""
-  @State private var codeType = libkrbn_complex_modifications_rule_code_type_json
+  @State private var codeType = krbn_complex_modifications_rule_code_type_json
   @State private var errorMessage: String?
   @StateObject private var externalEditorController = ExternalEditorController.shared
   @State private var didOpenExternalEditor = false
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @Environment(\.colorScheme) var colorScheme
 
   @State private var evalResultString = ""
@@ -49,7 +49,7 @@ struct ComplexModificationsEditView: View {
                     externalEditorController.openEditor(
                       with: codeString,
                       fileExtension:
-                        codeType == libkrbn_complex_modifications_rule_code_type_javascript
+                        codeType == krbn_complex_modifications_rule_code_type_javascript
                         ? "js"
                         : "json",
                       onError: { errorMessage = $0 },
@@ -135,7 +135,7 @@ struct ComplexModificationsEditView: View {
 
             CodeEditor(
               source: $codeString,
-              language: codeType == libkrbn_complex_modifications_rule_code_type_javascript
+              language: codeType == krbn_complex_modifications_rule_code_type_javascript
                 ? .javascript
                 : .json,
               theme: CodeEditor.ThemeName(
@@ -143,7 +143,7 @@ struct ComplexModificationsEditView: View {
             )
             .border(Color(NSColor.separatorColor), width: 2)
 
-            if codeType == libkrbn_complex_modifications_rule_code_type_javascript {
+            if codeType == krbn_complex_modifications_rule_code_type_javascript {
               if let evalErrorMessage = evalErrorMessage {
                 Label(
                   title: {
@@ -212,7 +212,7 @@ struct ComplexModificationsEditView: View {
         codeString = ""
       }
 
-      codeType = rule?.codeType ?? libkrbn_complex_modifications_rule_code_type_json
+      codeType = rule?.codeType ?? krbn_complex_modifications_rule_code_type_json
 
       externalEditorController.reset()
 
@@ -227,7 +227,7 @@ struct ComplexModificationsEditView: View {
               break
             }
 
-            if disabled || codeType != libkrbn_complex_modifications_rule_code_type_javascript {
+            if disabled || codeType != krbn_complex_modifications_rule_code_type_javascript {
               await MainActor.run {
                 evalResultString = ""
                 evalLogMessages = ""
@@ -317,7 +317,7 @@ struct ComplexModificationsEditView: View {
     var errorBuffer = [Int8](repeating: 0, count: 4 * 1024)
 
     let ok = code.withCString { codeCString in
-      libkrbn_eval_js_to_json_string(
+      krbn_eval_js_to_json_string(
         codeCString,
         &jsonBuffer,
         jsonBuffer.count,
