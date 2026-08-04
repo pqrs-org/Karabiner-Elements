@@ -1,13 +1,13 @@
 #pragma once
 
-#include "libkrbn/libkrbn.h"
+#include "settings.hpp"
 
 template <typename T>
-class libkrbn_callback_manager final {
+class settings_callback_manager final {
 public:
-  libkrbn_callback_manager(const libkrbn_callback_manager&) = delete;
+  settings_callback_manager(const settings_callback_manager&) = delete;
 
-  libkrbn_callback_manager() {
+  settings_callback_manager() {
   }
 
   [[nodiscard]] const std::vector<T>& get_callbacks() const {
