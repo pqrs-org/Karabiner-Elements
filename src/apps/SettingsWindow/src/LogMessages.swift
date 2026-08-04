@@ -50,7 +50,7 @@ private func callback(
 
 @MainActor
 public class LogMessageEntry: Identifiable, Equatable {
-  nonisolated public let id = UUID()
+  nonisolated public let id: String
   public var text = ""
   let logLevel: LogLevel
   public var dateNumber: UInt64
@@ -58,6 +58,7 @@ public class LogMessageEntry: Identifiable, Equatable {
   public var backgroundColor = Color.clear
 
   init(text: String, logLevel: LogLevel, dateNumber: UInt64) {
+    id = "\(dateNumber):\(logLevel):\(text)"
     self.text = text
     self.logLevel = logLevel
     self.dateNumber = dateNumber

@@ -1,10 +1,10 @@
+import AppKit
 import SwiftUI
 
 struct LogView: View {
   @ObservedObject private var logMessages = LogMessages.shared
   @State private var filterKeyword = ""
   @State private var filterContextLineCount = 5
-  private let bottomAnchorID = "bottomAnchor"
 
   private var trimmedFilterKeyword: String {
     filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -14,7 +14,7 @@ struct LogView: View {
     let keyword = trimmedFilterKeyword
     if keyword.isEmpty {
       return logMessages.entries.map {
-        FilteredLogMessageEntry(logMessageEntry: $0, isMatched: false)
+        FilteredLogMessageEntry(logMessageEntry: $0)
       }
     }
 
@@ -56,7 +56,7 @@ struct LogView: View {
       filteredEntries.append(
         FilteredLogMessageEntry(
           logMessageEntry: logMessages.entries[index],
-          isMatched: matchedIndexes.contains(index)))
+          matchedKeyword: matchedIndexes.contains(index) ? keyword : nil))
 
       previousIndex = index
     }
@@ -108,52 +108,11 @@ struct LogView: View {
       }
       .padding()
 
-      ScrollViewReader { proxy in
-        ScrollView {
-          VStack(alignment: .leading, spacing: 0) {
-            ForEach(filteredEntries) { e in
-              if e.showsMatchIndicator {
-                HStack(spacing: 0) {
-                  Rectangle()
-                    .fill(Color.infoBackground)
-                    .frame(width: 10)
-
-                  LogMessageText(e: e)
-                }
-                .id(e.id)
-              } else {
-                LogMessageText(e: e)
-                  .id(e.id)
-              }
-            }
-
-            Color.clear
-              .frame(height: 1)
-              .id(bottomAnchorID)
-          }
-          .padding()
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        }
-        .onAppear {
-          if trimmedFilterKeyword.isEmpty {
-            Task { @MainActor in
-              proxy.scrollTo(bottomAnchorID, anchor: .bottom)
-            }
-          }
-        }
-        .onChange(of: logMessages.entries) { _ in
-          // Keep the filtered view at the current position while new non-matching lines arrive.
-          if trimmedFilterKeyword.isEmpty {
-            Task { @MainActor in
-              proxy.scrollTo(bottomAnchorID, anchor: .bottom)
-            }
-          }
-        }
-      }
-      // Setting a background color on the inner VStack triggers a bug in macOS 15 and earlier,
-      // where only the top-left corner renders until the logs finish loading,
-      // so the background needs to be applied directly to the ScrollView.
-      .background(Color(NSColor.textBackgroundColor))
+      LogTextView(
+        entries: filteredEntries,
+        followsTail: trimmedFilterKeyword.isEmpty,
+        filterKey: "\(trimmedFilterKeyword)\n\(filterContextLineCount)"
+      )
       .border(Color(NSColor.separatorColor), width: 2)
 
       HStack {
@@ -178,58 +137,288 @@ struct LogView: View {
   }
 }
 
-private struct LogMessageText: View {
-  let e: FilteredLogMessageEntry
+private struct LogTextView: NSViewRepresentable {
+  let entries: [FilteredLogMessageEntry]
+  let followsTail: Bool
+  let filterKey: String
 
-  var body: some View {
-    Text(e.text)
-      .font(.callout)
-      .monospaced()
-      .foregroundColor(e.foregroundColor)
-      .background(e.backgroundColor)
-      .textSelection(.enabled)
+  func makeCoordinator() -> Coordinator {
+    Coordinator()
+  }
+
+  func makeNSView(context: Context) -> NSScrollView {
+    let scrollView = NSScrollView()
+    scrollView.hasVerticalScroller = true
+    scrollView.autohidesScrollers = true
+    scrollView.borderType = .noBorder
+    scrollView.drawsBackground = true
+    scrollView.backgroundColor = .textBackgroundColor
+
+    let textView = NSTextView(frame: .zero)
+    textView.isEditable = false
+    textView.isSelectable = true
+    textView.isRichText = true
+    textView.allowsUndo = false
+    textView.drawsBackground = true
+    textView.backgroundColor = .textBackgroundColor
+    textView.textContainerInset = NSSize(width: 14, height: 8)
+    textView.minSize = .zero
+    textView.maxSize = NSSize(
+      width: CGFloat.greatestFiniteMagnitude,
+      height: CGFloat.greatestFiniteMagnitude)
+    textView.isVerticallyResizable = true
+    textView.isHorizontallyResizable = false
+    textView.autoresizingMask = [.width]
+    textView.textContainer?.containerSize = NSSize(
+      width: scrollView.contentSize.width,
+      height: CGFloat.greatestFiniteMagnitude)
+    textView.textContainer?.widthTracksTextView = true
+    scrollView.documentView = textView
+    context.coordinator.textView = textView
+    context.coordinator.scrollView = scrollView
+
+    return scrollView
+  }
+
+  func updateNSView(_ scrollView: NSScrollView, context: Context) {
+    context.coordinator.update(
+      renderedLog: renderLog(),
+      followsTail: followsTail,
+      filterKey: filterKey)
+  }
+
+  private func renderLog() -> RenderedLog {
+    let string = NSMutableAttributedString()
+    var entryLocations: [String: Int] = [:]
+    let font = NSFont.monospacedSystemFont(
+      ofSize: NSFont.systemFontSize,
+      weight: .regular)
+
+    for (index, entry) in entries.enumerated() {
+      if index > 0 {
+        string.append(NSAttributedString(string: "\n"))
+      }
+
+      let entryLocation = string.length
+      entryLocations[entry.id] = entryLocation
+      string.append(
+        NSAttributedString(
+          string: entry.text,
+          attributes: [
+            .font: font,
+            .foregroundColor: NSColor(entry.foregroundColor),
+            .backgroundColor: NSColor(entry.backgroundColor),
+          ]))
+
+      for matchedRange in entry.matchedRanges {
+        string.addAttributes(
+          [
+            .foregroundColor: NSColor(Color.infoForeground),
+            .backgroundColor: NSColor(Color.infoBackground),
+          ],
+          range: NSRange(
+            location: entryLocation + matchedRange.location,
+            length: matchedRange.length))
+      }
+    }
+
+    return RenderedLog(
+      attributedString: NSAttributedString(attributedString: string),
+      entryLocations: entryLocations)
+  }
+
+  struct RenderedLog {
+    let attributedString: NSAttributedString
+    let entryLocations: [String: Int]
+  }
+
+  @MainActor
+  final class Coordinator {
+    weak var textView: NSTextView?
+    weak var scrollView: NSScrollView?
+
+    private var lastRenderedLog: RenderedLog?
+    private var lastFilterKey: String?
+    private var followsTail = false
+    private var updateGeneration = 0
+
+    func update(renderedLog: RenderedLog, followsTail: Bool, filterKey: String) {
+      self.followsTail = followsTail
+      let filterChanged = lastFilterKey.map { $0 != filterKey } ?? false
+      lastFilterKey = filterKey
+
+      if let lastRenderedLog,
+        !filterChanged,
+        lastRenderedLog.attributedString.isEqual(to: renderedLog.attributedString)
+      {
+        return
+      }
+
+      let scrollTarget: ScrollTarget? =
+        filterChanged ? (followsTail ? .bottom : .top) : nil
+
+      apply(renderedLog, scrollTarget: scrollTarget)
+    }
+
+    private func apply(_ renderedLog: RenderedLog, scrollTarget: ScrollTarget?) {
+      guard let textView,
+        let scrollView
+      else {
+        return
+      }
+
+      let visibleOrigin = scrollView.contentView.bounds.origin
+      let wasAtBottom =
+        lastRenderedLog == nil
+        || scrollView.documentVisibleRect.maxY >= textView.bounds.maxY - 1
+      let selectedRanges = adjustedSelectedRanges(
+        textView.selectedRanges,
+        from: lastRenderedLog,
+        to: renderedLog)
+      let hasSelection = selectedRanges.contains { $0.rangeValue.length > 0 }
+
+      textView.textStorage?.setAttributedString(renderedLog.attributedString)
+      textView.selectedRanges = selectedRanges
+
+      lastRenderedLog = renderedLog
+      updateGeneration += 1
+
+      if scrollTarget == .top {
+        scheduleLayoutAndScroll(.top, generation: updateGeneration)
+      } else if scrollTarget == .bottom || (followsTail && wasAtBottom && !hasSelection) {
+        scheduleLayoutAndScroll(.bottom, generation: updateGeneration)
+      } else {
+        scheduleLayoutAndScroll(.position(visibleOrigin), generation: updateGeneration)
+      }
+    }
+
+    private func scheduleLayoutAndScroll(
+      _ action: ScrollAction,
+      generation: Int
+    ) {
+      DispatchQueue.main.async { [weak self] in
+        guard let self,
+          generation == updateGeneration,
+          let textView,
+          let scrollView
+        else {
+          return
+        }
+
+        scrollView.layoutSubtreeIfNeeded()
+
+        if let textContainer = textView.textContainer,
+          let layoutManager = textView.layoutManager
+        {
+          textView.setFrameSize(
+            NSSize(
+              width: scrollView.contentSize.width,
+              height: textView.frame.height))
+          layoutManager.ensureLayout(for: textContainer)
+
+          let textHeight = ceil(
+            layoutManager.usedRect(for: textContainer).height
+              + textView.textContainerInset.height * 2)
+          textView.setFrameSize(
+            NSSize(
+              width: scrollView.contentSize.width,
+              height: max(scrollView.contentSize.height, textHeight)))
+        }
+
+        switch action {
+        case .top:
+          scrollView.contentView.scroll(to: .zero)
+        case .bottom:
+          textView.scrollToEndOfDocument(nil)
+        case .position(let origin):
+          scrollView.contentView.scroll(to: origin)
+        }
+
+        scrollView.reflectScrolledClipView(scrollView.contentView)
+        textView.layoutManager?.invalidateDisplay(
+          forCharacterRange: NSRange(location: 0, length: textView.string.utf16.count))
+        textView.setNeedsDisplay(textView.visibleRect)
+        scrollView.contentView.needsDisplay = true
+        scrollView.needsDisplay = true
+        textView.displayIfNeeded()
+        scrollView.displayIfNeeded()
+      }
+    }
+
+    private func adjustedSelectedRanges(
+      _ selectedRanges: [NSValue],
+      from oldRenderedLog: RenderedLog?,
+      to newRenderedLog: RenderedLog
+    ) -> [NSValue] {
+      // Log updates may remove old entries from the beginning of the text. Find an entry that
+      // exists in both snapshots and use the change in its location to move the selection by the
+      // same amount. Finally, clamp both ends because part or all of the selection may have been
+      // removed with the old entries.
+      let locationDelta =
+        oldRenderedLog.flatMap { oldRenderedLog in
+          oldRenderedLog.entryLocations.lazy.compactMap { id, oldLocation in
+            newRenderedLog.entryLocations[id].map { $0 - oldLocation }
+          }.first
+        } ?? 0
+      let newLength = newRenderedLog.attributedString.length
+
+      return selectedRanges.map { value in
+        let range = value.rangeValue
+        let location = min(max(0, range.location + locationDelta), newLength)
+        let end = min(max(0, range.location + range.length + locationDelta), newLength)
+
+        return NSValue(
+          range: NSRange(
+            location: location,
+            length: max(0, end - location)))
+      }
+    }
+
+    private enum ScrollTarget {
+      case top
+      case bottom
+    }
+
+    private enum ScrollAction {
+      case top
+      case bottom
+      case position(NSPoint)
+    }
   }
 }
 
 private struct FilteredLogMessageEntry: Identifiable {
   let id: String
   let text: String
-  let showsMatchIndicator: Bool
+  let matchedRanges: [NSRange]
   let foregroundColor: Color
   let backgroundColor: Color
 
   init(
     id: String,
     text: String,
-    showsMatchIndicator: Bool,
+    matchedRanges: [NSRange],
     foregroundColor: Color,
     backgroundColor: Color
   ) {
     self.id = id
     self.text = text
-    self.showsMatchIndicator = showsMatchIndicator
+    self.matchedRanges = matchedRanges
     self.foregroundColor = foregroundColor
     self.backgroundColor = backgroundColor
   }
 
   @MainActor
-  init(logMessageEntry: LogMessageEntry, isMatched: Bool) {
-    id = logMessageEntry.id.uuidString
-    text = logMessageEntry.text
-    // Show an indicator for warn and error logs when they match the filter,
-    // instead of changing their colors.
-    showsMatchIndicator =
-      isMatched
-      && (logMessageEntry.logLevel == .warn || logMessageEntry.logLevel == .error)
-
-    if isMatched, !showsMatchIndicator {
-      // Use info colors for entries that match the filter.
-      foregroundColor = Color.infoForeground
-      backgroundColor = Color.infoBackground
-    } else {
-      foregroundColor = logMessageEntry.foregroundColor
-      backgroundColor = logMessageEntry.backgroundColor
-    }
+  init(logMessageEntry: LogMessageEntry, matchedKeyword: String? = nil) {
+    let messageText = logMessageEntry.text
+    id = logMessageEntry.id
+    text = messageText
+    matchedRanges =
+      matchedKeyword.map {
+        messageText.localizedCaseInsensitiveRanges(of: $0)
+      } ?? []
+    foregroundColor = logMessageEntry.foregroundColor
+    backgroundColor = logMessageEntry.backgroundColor
   }
 
   static func omittedLinesMarker(from startIndex: Int, to endIndex: Int) -> FilteredLogMessageEntry
@@ -237,8 +426,27 @@ private struct FilteredLogMessageEntry: Identifiable {
     FilteredLogMessageEntry(
       id: "omittedLines:\(startIndex)-\(endIndex)",
       text: String(repeating: "~", count: 80),
-      showsMatchIndicator: false,
+      matchedRanges: [],
       foregroundColor: Color(NSColor.textBackgroundColor),
       backgroundColor: Color(NSColor.textColor))
+  }
+}
+
+extension String {
+  fileprivate func localizedCaseInsensitiveRanges(of keyword: String) -> [NSRange] {
+    var result: [NSRange] = []
+    var searchRange = startIndex..<endIndex
+
+    while let range = range(
+      of: keyword,
+      options: [.caseInsensitive],
+      range: searchRange,
+      locale: .current)
+    {
+      result.append(NSRange(range, in: self))
+      searchRange = range.upperBound..<endIndex
+    }
+
+    return result
   }
 }
