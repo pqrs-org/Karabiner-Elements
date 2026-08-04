@@ -1,14 +1,14 @@
 #pragma once
 
-#include "libkrbn/libkrbn.h"
-#include "libkrbn_callback_manager.hpp"
 #include "monitor/configuration_monitor.hpp"
+#include "settings.hpp"
+#include "settings_callback_manager.hpp"
 
-class libkrbn_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
+class settings_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
-  libkrbn_configuration_monitor(const libkrbn_configuration_monitor&) = delete;
+  settings_configuration_monitor(const settings_configuration_monitor&) = delete;
 
-  libkrbn_configuration_monitor()
+  settings_configuration_monitor()
       : dispatcher_client() {
     monitor_ = std::make_unique<krbn::configuration_monitor>(
         krbn::constants::get_user_core_configuration_file_path(),
@@ -32,7 +32,7 @@ public:
     wait->wait_notice();
   }
 
-  ~libkrbn_configuration_monitor() {
+  ~settings_configuration_monitor() override {
     detach_from_dispatcher([this] {
       monitor_ = nullptr;
     });
@@ -42,20 +42,14 @@ public:
     return weak_core_configuration_;
   }
 
-  void register_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated_t callback) {
+  void register_krbn_core_configuration_updated_callback(krbn_core_configuration_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
       callback_manager_.register_callback(callback);
-    });
-  }
-
-  void unregister_libkrbn_core_configuration_updated_callback(libkrbn_core_configuration_updated_t callback) {
-    enqueue_to_dispatcher([this, callback] {
-      callback_manager_.unregister_callback(callback);
     });
   }
 
 private:
   std::unique_ptr<krbn::configuration_monitor> monitor_;
   std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
-  libkrbn_callback_manager<libkrbn_core_configuration_updated_t> callback_manager_;
+  settings_callback_manager<krbn_core_configuration_updated_t> callback_manager_;
 };
