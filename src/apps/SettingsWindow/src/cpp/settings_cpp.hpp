@@ -1,19 +1,19 @@
 #pragma once
 
-#include "libkrbn/libkrbn.h"
 #include "monitor/configuration_monitor.hpp"
+#include "settings.hpp"
 #include <pqrs/thread_wait.hpp>
 
-class libkrbn_components_manager;
-extern std::shared_ptr<libkrbn_components_manager> libkrbn_components_manager_;
+class settings_components_manager;
+extern std::shared_ptr<settings_components_manager> settings_components_manager_;
 
-class libkrbn_cpp final {
+class settings_cpp final {
 public:
-  [[nodiscard]] static std::shared_ptr<libkrbn_components_manager> get_components_manager() {
-    return libkrbn_components_manager_;
+  [[nodiscard]] static std::shared_ptr<settings_components_manager> get_components_manager() {
+    return settings_components_manager_;
   }
 
-  [[nodiscard]] static krbn::device_identifiers make_device_identifiers(const libkrbn_device_identifiers* device_identifiers) {
+  [[nodiscard]] static krbn::device_identifiers make_device_identifiers(const krbn_device_identifiers* device_identifiers) {
     if (device_identifiers) {
       return krbn::device_identifiers(pqrs::hid::vendor_id::value_t(device_identifiers->vendor_id),
                                       pqrs::hid::product_id::value_t(device_identifiers->product_id),
