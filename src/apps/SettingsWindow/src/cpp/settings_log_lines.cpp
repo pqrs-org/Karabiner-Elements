@@ -1,10 +1,10 @@
-#include "libkrbn/impl/libkrbn_components_manager.hpp"
-#include "libkrbn/impl/libkrbn_cpp.hpp"
-#include "libkrbn/impl/libkrbn_log_monitor.hpp"
+#include "settings_components_manager.hpp"
+#include "settings_cpp.hpp"
+#include "settings_log_monitor.hpp"
 
 namespace {
 [[nodiscard]] std::shared_ptr<std::deque<std::string>> get_current_log_lines() {
-  if (auto manager = libkrbn_cpp::get_components_manager()) {
+  if (auto manager = settings_cpp::get_components_manager()) {
     return manager->get_current_log_lines();
   }
 
@@ -12,7 +12,7 @@ namespace {
 }
 } // namespace
 
-size_t libkrbn_log_lines_get_size() {
+size_t krbn_log_lines_get_size() {
   if (auto lines = get_current_log_lines()) {
     return lines->size();
   }
@@ -20,9 +20,9 @@ size_t libkrbn_log_lines_get_size() {
   return 0;
 }
 
-bool libkrbn_log_lines_get_line(size_t index,
-                                char* buffer,
-                                size_t length) {
+bool krbn_log_lines_get_line(size_t index,
+                             char* buffer,
+                             size_t length) {
   if (buffer && length > 0) {
     buffer[0] = '\0';
   }
@@ -37,19 +37,19 @@ bool libkrbn_log_lines_get_line(size_t index,
   return false;
 }
 
-bool libkrbn_log_lines_is_debug_line(const char* line) {
+bool krbn_log_lines_is_debug_line(const char* line) {
   return pqrs::spdlog::find_level(line) == spdlog::level::debug;
 }
 
-bool libkrbn_log_lines_is_warn_line(const char* line) {
+bool krbn_log_lines_is_warn_line(const char* line) {
   return pqrs::spdlog::find_level(line) == spdlog::level::warn;
 }
 
-bool libkrbn_log_lines_is_error_line(const char* line) {
+bool krbn_log_lines_is_error_line(const char* line) {
   return pqrs::spdlog::find_level(line) == spdlog::level::err;
 }
 
-uint64_t libkrbn_log_lines_get_date_number(const char* line) {
+uint64_t krbn_log_lines_get_date_number(const char* line) {
   if (auto n = pqrs::spdlog::find_date_number(line)) {
     return *n;
   }
