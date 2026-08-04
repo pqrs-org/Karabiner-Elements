@@ -1,6 +1,6 @@
 import Darwin
 
-extension libkrbn_device_identifiers {
+extension krbn_device_identifiers {
   public init(
     vendorId: UInt64,
     productId: UInt64,
@@ -11,7 +11,7 @@ extension libkrbn_device_identifiers {
     isConsumer: Bool,
     isVirtualDevice: Bool
   ) {
-    self = libkrbn_device_identifiers()
+    self = krbn_device_identifiers()
 
     self.vendor_id = vendorId
     self.product_id = productId
