@@ -7,7 +7,6 @@ struct UIStatePayload: Decodable {
     var showProfileName = false
     var showAdditionalMenuItems = false
     var enableMultitouchExtension = false
-    var askForConfirmationBeforeQuitting = false
   }
 
   struct NotificationWindowSettings: Decodable {

@@ -109,7 +109,6 @@ void run_core_configuration_test() {
     expect(configuration.get_global_configuration().get_show_in_menu_bar() == false);
     expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
     expect(configuration.get_global_configuration().get_show_additional_menu_items() == false);
-    expect(configuration.get_global_configuration().get_ask_for_confirmation_before_quitting() == false);
     expect(configuration.get_global_configuration().get_unsafe_ui() == true);
     expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == false);
     expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == false);
@@ -151,7 +150,6 @@ void run_core_configuration_test() {
       expect(configuration.get_global_configuration().get_show_in_menu_bar() == true);
       expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
       expect(configuration.get_global_configuration().get_show_additional_menu_items() == false);
-      expect(configuration.get_global_configuration().get_ask_for_confirmation_before_quitting() == true);
       expect(configuration.get_global_configuration().get_unsafe_ui() == false);
       expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == true);
       expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
@@ -217,7 +215,6 @@ void run_core_configuration_test() {
       global_configuration.set_show_in_menu_bar(false);
       global_configuration.set_show_profile_name_in_menu_bar(true);
       global_configuration.set_show_additional_menu_items(true);
-      global_configuration.set_ask_for_confirmation_before_quitting(false);
       global_configuration.set_unsafe_ui(true);
       global_configuration.set_filter_useless_events_from_specific_devices(false);
       global_configuration.set_reorder_same_timestamp_input_events_to_prioritize_modifiers(false);
@@ -228,7 +225,6 @@ void run_core_configuration_test() {
           {"show_in_menu_bar", false},
           {"show_profile_name_in_menu_bar", true},
           {"show_additional_menu_items", true},
-          {"ask_for_confirmation_before_quitting", false},
           {"unsafe_ui", true},
           {"filter_useless_events_from_specific_devices", false},
           {"reorder_same_timestamp_input_events_to_prioritize_modifiers", false},

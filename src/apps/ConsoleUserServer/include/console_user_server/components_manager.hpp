@@ -160,7 +160,6 @@ private:
                         {"showProfileName", global_configuration.get_show_profile_name_in_menu_bar()},
                         {"showAdditionalMenuItems", global_configuration.get_show_additional_menu_items()},
                         {"enableMultitouchExtension", core_configuration.get_machine_specific().get_entry().get_enable_multitouch_extension()},
-                        {"askForConfirmationBeforeQuitting", global_configuration.get_ask_for_confirmation_before_quitting()},
                     },
                 },
                 {

@@ -31,10 +31,6 @@ public:
                                          enable_notification_window_,
                                          true);
 
-    helper_values_.push_back_value<bool>("ask_for_confirmation_before_quitting",
-                                         ask_for_confirmation_before_quitting_,
-                                         true);
-
     helper_values_.push_back_value<bool>("unsafe_ui",
                                          unsafe_ui_,
                                          false);
@@ -58,6 +54,7 @@ public:
       json_["check_for_updates"] = json_["check_for_updates_on_startup"];
     }
     json_.erase("check_for_updates_on_startup");
+    json_.erase("ask_for_confirmation_before_quitting");
 
     helper_values_.update_value(json_, error_handling);
   }
@@ -105,13 +102,6 @@ public:
     enable_notification_window_ = value;
   }
 
-  [[nodiscard]] const bool& get_ask_for_confirmation_before_quitting() const {
-    return ask_for_confirmation_before_quitting_;
-  }
-  void set_ask_for_confirmation_before_quitting(bool value) {
-    ask_for_confirmation_before_quitting_ = value;
-  }
-
   [[nodiscard]] const bool& get_unsafe_ui() const {
     return unsafe_ui_;
   }
@@ -147,7 +137,6 @@ private:
   bool show_profile_name_in_menu_bar_;
   bool show_additional_menu_items_;
   bool enable_notification_window_;
-  bool ask_for_confirmation_before_quitting_;
   bool unsafe_ui_;
   bool filter_useless_events_from_specific_devices_;
   bool reorder_same_timestamp_input_events_to_prioritize_modifiers_;
