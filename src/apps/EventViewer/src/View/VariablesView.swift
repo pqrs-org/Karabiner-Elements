@@ -12,7 +12,7 @@ struct VariablesView: View {
               let pboard = NSPasteboard.general
               pboard.clearContents()
               pboard.writeObjects([
-                evCoreServiceDaemonClient.manipulatorEnvironmentStream.text as NSString
+                evCoreServiceDaemonClient.manipulatorEnvironmentText as NSString
               ])
             },
             label: {
@@ -31,8 +31,8 @@ struct VariablesView: View {
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
 
-      RealtimeText(
-        stream: evCoreServiceDaemonClient.manipulatorEnvironmentStream,
+      LiveSelectableTextView(
+        text: evCoreServiceDaemonClient.manipulatorEnvironmentText,
         font: NSFont.monospacedSystemFont(
           ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
           weight: .regular)

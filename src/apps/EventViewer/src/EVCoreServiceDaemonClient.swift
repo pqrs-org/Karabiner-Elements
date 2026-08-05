@@ -12,7 +12,7 @@ func manipulatorEnvironmentReceivedCallback(_ jsonString: UnsafePointer<CChar>) 
   let text = String(cString: jsonString)
 
   Task { @MainActor in
-    EVCoreServiceDaemonClient.shared.manipulatorEnvironmentStream.setText(text)
+    EVCoreServiceDaemonClient.shared.updateManipulatorEnvironment(text)
   }
 }
 
@@ -31,13 +31,12 @@ final class EVCoreServiceDaemonClient: ObservableObject {
   private let manipulatorEnvironmentTimer: AsyncTimerSequence<ContinuousClock>
   private var manipulatorEnvironmentTimerTask: Task<Void, Never>?
   private var manipulatorEnvironmentStartCount = 0
-  let manipulatorEnvironmentStream = RealtimeTextStream()
+  @Published private(set) var manipulatorEnvironmentText = ""
 
   private let connectedDevicesTimer: AsyncTimerSequence<ContinuousClock>
   private var connectedDevicesTimerTask: Task<Void, Never>?
   private var connectedDevicesStartCount = 0
-  private var connectedDevicesJsonString = ""
-  let connectedDevicesStream = RealtimeTextStream()
+  @Published private(set) var connectedDevicesText = ""
   @Published private(set) var productsByDeviceId: [UInt64: String] = [:]
 
   init() {
@@ -100,12 +99,15 @@ final class EVCoreServiceDaemonClient: ObservableObject {
     productsByDeviceId[deviceId] ?? "an unnamed device"
   }
 
+  public func updateManipulatorEnvironment(_ text: String) {
+    manipulatorEnvironmentText = text
+  }
+
   public func updateConnectedDevices(_ text: String) {
-    if connectedDevicesJsonString == text {
+    if connectedDevicesText == text {
       return
     }
-    connectedDevicesJsonString = text
-    connectedDevicesStream.setText(text)
+    connectedDevicesText = text
 
     guard let data = text.data(using: .utf8),
       let array = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]

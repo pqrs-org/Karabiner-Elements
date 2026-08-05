@@ -10,7 +10,7 @@ struct DevicesView: View {
           action: {
             let pboard = NSPasteboard.general
             pboard.clearContents()
-            pboard.writeObjects([evCoreServiceDaemonClient.connectedDevicesStream.text as NSString])
+            pboard.writeObjects([evCoreServiceDaemonClient.connectedDevicesText as NSString])
           },
           label: {
             Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
@@ -19,8 +19,8 @@ struct DevicesView: View {
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
 
-      RealtimeText(
-        stream: evCoreServiceDaemonClient.connectedDevicesStream,
+      LiveSelectableTextView(
+        text: evCoreServiceDaemonClient.connectedDevicesText,
         font: NSFont.monospacedSystemFont(
           ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
           weight: .regular)
