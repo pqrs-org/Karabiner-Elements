@@ -382,18 +382,6 @@ typedef void (*krbn_core_configuration_updated_t)(void);
 void krbn_register_core_configuration_updated_callback(krbn_core_configuration_updated_t _Nonnull callback);
 
 //
-// settings_file_monitors
-//
-
-void krbn_enable_file_monitors(void);
-
-typedef void (*krbn_file_updated_t)(void);
-void krbn_register_file_updated_callback(const char* _Nonnull file_path,
-                                         krbn_file_updated_t _Nonnull callback);
-void krbn_unregister_file_updated_callback(const char* _Nonnull file_path,
-                                           krbn_file_updated_t _Nonnull callback);
-
-//
 // settings_log_monitor
 //
 

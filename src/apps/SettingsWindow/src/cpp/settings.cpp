@@ -7,6 +7,7 @@
 #include "environment_variable_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "json_utility.hpp"
+#include "process_lifecycle_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "services_utility.hpp"
 #include "settings_components_manager.hpp"
@@ -25,6 +26,33 @@
 namespace {
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager_;
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager_;
+
+class settings_process_lifecycle_components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+public:
+  settings_process_lifecycle_components_manager(const settings_process_lifecycle_components_manager&) = delete;
+
+  explicit settings_process_lifecycle_components_manager(std::weak_ptr<settings_components_manager> weak_components_manager)
+      : dispatcher_client(),
+        weak_components_manager_(weak_components_manager) {
+  }
+
+  ~settings_process_lifecycle_components_manager() override {
+    detach_from_dispatcher([this] {
+      if (auto manager = weak_components_manager_.lock()) {
+        manager->stop();
+      }
+    });
+  }
+
+  void async_start() {
+    if (auto manager = weak_components_manager_.lock()) {
+      manager->start();
+    }
+  }
+
+private:
+  std::weak_ptr<settings_components_manager> weak_components_manager_;
+};
 } // namespace
 
 std::shared_ptr<settings_components_manager> settings_components_manager_;
@@ -44,10 +72,22 @@ void krbn_initialize() {
   if (!settings_components_manager_) {
     settings_components_manager_ = std::make_shared<settings_components_manager>();
   }
+
+  krbn::process_lifecycle_manager::initialize_shared_instance(
+      krbn::process_lifecycle_manager::configuration{
+          .components_manager_maker =
+              [] {
+                return std::make_unique<settings_process_lifecycle_components_manager>(settings_components_manager_);
+              },
+          .termination_completion_handler = [] {},
+      });
+  krbn::process_lifecycle_manager::async_start();
 }
 
 void krbn_terminate() {
   krbn::logger::get_logger()->debug(__func__);
+
+  krbn::process_lifecycle_manager::terminate_shared_instance();
 
   settings_components_manager_ = nullptr;
 
@@ -220,34 +260,6 @@ void krbn_complex_modifications_assets_manager_erase_file(size_t index) {
   if (auto manager = settings_components_manager_) {
     if (auto m = manager->get_complex_modifications_assets_manager()) {
       return m->erase_file(index);
-    }
-  }
-}
-
-//
-// file_monitor
-//
-
-void krbn_enable_file_monitors() {
-  if (auto manager = settings_components_manager_) {
-    manager->enable_file_monitors();
-  }
-}
-
-void krbn_register_file_updated_callback(const char* file_path,
-                                         krbn_file_updated_t callback) {
-  if (auto manager = settings_components_manager_) {
-    if (auto m = manager->get_settings_file_monitors()) {
-      m->register_krbn_file_updated_callback(file_path, callback);
-    }
-  }
-}
-
-void krbn_unregister_file_updated_callback(const char* file_path,
-                                           krbn_file_updated_t callback) {
-  if (auto manager = settings_components_manager_) {
-    if (auto m = manager->get_settings_file_monitors()) {
-      m->unregister_krbn_file_updated_callback(file_path, callback);
     }
   }
 }

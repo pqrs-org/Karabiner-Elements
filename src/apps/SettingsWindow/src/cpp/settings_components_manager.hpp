@@ -5,7 +5,6 @@
 #include "settings_console_user_server_client.hpp"
 #include "settings_core_service_daemon_client.hpp"
 #include "settings_dispatcher_client.hpp"
-#include "settings_file_monitors.hpp"
 #include "settings_log_monitor.hpp"
 #include <pqrs/gsl.hpp>
 
@@ -13,6 +12,38 @@ class settings_components_manager {
 public:
   settings_components_manager()
       : dispatcher_client_(std::make_shared<settings_dispatcher_client>()) {
+  }
+
+  void start() {
+    if (configuration_monitor_) {
+      configuration_monitor_->start();
+    }
+    if (log_monitor_) {
+      log_monitor_->start();
+    }
+    if (core_service_daemon_client_) {
+      core_service_daemon_client_->start();
+      core_service_daemon_client_->async_start();
+    }
+    if (console_user_server_client_) {
+      console_user_server_client_->start();
+      console_user_server_client_->async_start();
+    }
+  }
+
+  void stop() {
+    if (configuration_monitor_) {
+      configuration_monitor_->stop();
+    }
+    if (log_monitor_) {
+      log_monitor_->stop();
+    }
+    if (core_service_daemon_client_) {
+      core_service_daemon_client_->stop();
+    }
+    if (console_user_server_client_) {
+      console_user_server_client_->stop();
+    }
   }
 
   void enqueue_callback(void (*callback)()) {
@@ -52,20 +83,6 @@ public:
 
   [[nodiscard]] std::shared_ptr<settings_complex_modifications_assets_manager> get_complex_modifications_assets_manager() const {
     return complex_modifications_assets_manager_;
-  }
-
-  //
-  // file_monitors_
-  //
-
-  void enable_file_monitors() {
-    if (!file_monitors_) {
-      file_monitors_ = std::make_shared<settings_file_monitors>();
-    }
-  }
-
-  [[nodiscard]] std::shared_ptr<settings_file_monitors> get_settings_file_monitors() const {
-    return file_monitors_;
   }
 
   //
@@ -118,7 +135,6 @@ private:
   pqrs::not_null_shared_ptr_t<settings_dispatcher_client> dispatcher_client_;
   std::shared_ptr<settings_configuration_monitor> configuration_monitor_;
   std::shared_ptr<settings_complex_modifications_assets_manager> complex_modifications_assets_manager_;
-  std::shared_ptr<settings_file_monitors> file_monitors_;
   std::shared_ptr<settings_log_monitor> log_monitor_;
   std::shared_ptr<settings_core_service_daemon_client> core_service_daemon_client_;
   std::shared_ptr<settings_console_user_server_client> console_user_server_client_;

@@ -13,6 +13,20 @@ public:
 
   settings_log_monitor()
       : dispatcher_client() {
+    start();
+  }
+
+  ~settings_log_monitor() override {
+    detach_from_dispatcher([this] {
+      stop();
+    });
+  }
+
+  void start() {
+    if (monitor_) {
+      return;
+    }
+
     std::vector<std::string> targets = {
         "/var/log/karabiner/core_service.log",
         "/var/log/karabiner/virtual_hid_device_service.log",
@@ -39,10 +53,8 @@ public:
     monitor_->async_start(std::chrono::milliseconds(1000));
   }
 
-  ~settings_log_monitor() override {
-    detach_from_dispatcher([this] {
-      monitor_ = nullptr;
-    });
+  void stop() {
+    monitor_ = nullptr;
   }
 
   void register_krbn_log_messages_updated_callback(krbn_log_messages_updated_t callback) {

@@ -2,12 +2,6 @@ import AppKit
 import Foundation
 import UniformTypeIdentifiers
 
-private func externalEditorFileUpdatedCallback() {
-  Task { @MainActor in
-    ExternalEditorController.shared.handleFileUpdated()
-  }
-}
-
 @MainActor
 final class ExternalEditorController: ObservableObject {
   static let shared = ExternalEditorController()
@@ -16,6 +10,7 @@ final class ExternalEditorController: ObservableObject {
 
   private var fileURL: URL?
   private var monitoredFileURL: URL?
+  private var fileMonitorTask: Task<Void, Never>?
   private var lastSyncedText: String?
   private var onReloadHandler: ReloadHandler?
 
@@ -90,7 +85,7 @@ final class ExternalEditorController: ObservableObject {
       switch writeResult {
       case .success:
         self?.lastSyncedText = text
-        self?.startMonitoring(url: url, onError: errorHandler, onReload: reloadHandler)
+        self?.startMonitoring(url: url, onReload: reloadHandler)
         if let editorURL = self?.externalEditorURL() {
           NSWorkspace.shared.open(
             [url],
@@ -107,11 +102,8 @@ final class ExternalEditorController: ObservableObject {
   }
 
   func stopMonitoring() {
-    if let monitoredFileURL,
-      let cString = monitoredFileURL.path.cString(using: .utf8)
-    {
-      krbn_unregister_file_updated_callback(cString, externalEditorFileUpdatedCallback)
-    }
+    fileMonitorTask?.cancel()
+    fileMonitorTask = nil
     monitoredFileURL = nil
     onReloadHandler = nil
   }
@@ -208,10 +200,12 @@ final class ExternalEditorController: ObservableObject {
 
   private func startMonitoring(
     url: URL,
-    onError: @escaping (String) -> Void,
     onReload: @escaping (String) -> Void
   ) {
-    if fileURL == url, monitoredFileURL != nil {
+    if fileURL == url,
+      monitoredFileURL != nil,
+      fileMonitorTask != nil
+    {
       onReloadHandler = onReload
       return
     }
@@ -223,46 +217,35 @@ final class ExternalEditorController: ObservableObject {
       onReloadHandler = onReload
       monitoredFileURL = url
 
-      krbn_enable_file_monitors()
+      // Polling is sufficient for this single small temporary file and continues to work when an
+      // editor saves by atomically replacing the file. It also needs no monitor restoration after
+      // the system wakes from sleep.
+      fileMonitorTask = Task { @MainActor [weak self] in
+        while !Task.isCancelled {
+          do {
+            try await Task.sleep(for: .milliseconds(500))
+          } catch {
+            return
+          }
 
-      if let cString = url.path.cString(using: .utf8) {
-        krbn_register_file_updated_callback(cString, externalEditorFileUpdatedCallback)
-      } else {
-        onError("Failed to watch file changes.")
+          guard let self, monitoredFileURL == url else { return }
+          await pollFile(url: url)
+        }
       }
     }
   }
 
-  func handleFileUpdated() {
-    guard let url = fileURL else {
+  private func pollFile(url: URL) async {
+    guard let text = await Self.readFileWithRetry(url: url),
+      monitoredFileURL == url,
+      let handler = onReloadHandler
+    else {
       return
     }
 
-    // Capture the current handler and monitored state on the main actor to avoid
-    // capturing non-Sendable values in a @Sendable closure.
-    let currentHandler: ReloadHandler? = onReloadHandler
-    let isMonitoring = (monitoredFileURL != nil)
-
-    // If there's no handler or we're not monitoring anymore, nothing to do.
-    guard currentHandler != nil, isMonitoring else {
-      return
-    }
-
-    Task { [url] in
-      guard let text = await Self.readFileWithRetry(url: url) else {
-        return
-      }
-
-      await MainActor.run { [weak self] in
-        guard let self else { return }
-        let handler = self.onReloadHandler
-        guard self.monitoredFileURL != nil, let handler else { return }
-
-        if text != lastSyncedText {
-          lastSyncedText = text
-          handler(text)
-        }
-      }
+    if text != lastSyncedText {
+      lastSyncedText = text
+      handler(text)
     }
   }
 
@@ -270,6 +253,8 @@ final class ExternalEditorController: ObservableObject {
     // Some editors save via atomic rename; allow brief retry if the file is temporarily unavailable.
     let attempts = 3
     for i in 0..<attempts {
+      guard !Task.isCancelled else { return nil }
+
       if let text = try? String(contentsOf: url, encoding: .utf8) {
         return text
       }
