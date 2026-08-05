@@ -45,7 +45,11 @@ struct KarabinerSettingsApp: App {
       id: "main",
       content: {
         ContentView()
-      })
+      }
+    )
+    .commands {
+      FindCommands()
+    }
   }
 }
 
