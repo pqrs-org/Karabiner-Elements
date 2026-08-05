@@ -16,11 +16,6 @@ struct SettingsView: View {
             Text("Show EventViewer in all spaces (Default: off)")
           }
           .switchToggleStyle()
-
-          Toggle(isOn: $userSettings.quitUsingKeyboardShortcut) {
-            Text("Enable Command+Q and Command+W shortcut (Default: off)")
-          }
-          .switchToggleStyle()
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)

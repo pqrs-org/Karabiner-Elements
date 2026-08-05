@@ -28,18 +28,6 @@ struct KarabinerEventViewerApp: App {
     }
 
     FrontmostApplicationHistory.shared.watch()
-
-    NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event -> NSEvent? in
-      if event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command {
-        if event.charactersIgnoringModifiers == "q" || event.charactersIgnoringModifiers == "w" {
-          if userSettings.quitUsingKeyboardShortcut {
-            NSApplication.shared.terminate(nil)
-          }
-          return nil
-        }
-      }
-      return event
-    }
   }
 
   var body: some Scene {
@@ -51,6 +39,9 @@ struct KarabinerEventViewerApp: App {
           .environmentObject(userSettings)
       }
     )
+    .commands {
+      FindCommands()
+    }
   }
 }
 
