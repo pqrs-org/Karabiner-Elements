@@ -87,7 +87,7 @@ private struct AppKitTextView: NSViewRepresentable {
     scrollView.backgroundColor = .textBackgroundColor
     scrollView.findBarPosition = .aboveContent
 
-    let textView = NSTextView(frame: .zero)
+    let textView = AppKitLiveSelectableTextView(frame: .zero)
     textView.isEditable = false
     textView.isSelectable = true
     textView.isRichText = true
@@ -222,7 +222,12 @@ private struct AppKitTextView: NSViewRepresentable {
         case .bottom:
           textView.scrollToEndOfDocument(nil)
         case .position(let origin):
-          scrollView.contentView.scroll(to: origin)
+          let clipView = scrollView.contentView
+
+          // The saved origin may be outside the new document bounds if an update makes the text
+          // shorter. Restoring it as-is can leave the visible area blank until the user scrolls.
+          let proposedBounds = NSRect(origin: origin, size: clipView.bounds.size)
+          clipView.scroll(to: clipView.constrainBoundsRect(proposedBounds).origin)
         }
 
         scrollView.reflectScrolledClipView(scrollView.contentView)
@@ -266,5 +271,47 @@ private struct AppKitTextView: NSViewRepresentable {
       case bottom
       case position(NSPoint)
     }
+  }
+}
+
+private final class AppKitLiveSelectableTextView: NSTextView {
+  override func keyDown(with event: NSEvent) {
+    let modifiers = event.modifierFlags
+      .intersection(.deviceIndependentFlagsMask)
+      .subtracting([.capsLock, .function, .numericPad])
+
+    // A non-editable NSTextView still handles arrow keys as caret movement, which can fight with
+    // the scroll-position restoration performed during content updates and result in jerky
+    // scrolling. Treat unmodified vertical arrow keys as scrolling instead. Modified arrow keys
+    // are passed through so that selection operations such as Shift+Arrow continue to work.
+    if modifiers.isEmpty,
+      let scrollView = enclosingScrollView,
+      let specialKey = event.specialKey
+    {
+      switch specialKey {
+      case .downArrow:
+        scrollVertically(by: scrollView.verticalLineScroll)
+        return
+
+      case .upArrow:
+        scrollVertically(by: -scrollView.verticalLineScroll)
+        return
+
+      default:
+        break
+      }
+    }
+
+    super.keyDown(with: event)
+  }
+
+  private func scrollVertically(by offset: CGFloat) {
+    guard let scrollView = enclosingScrollView else { return }
+
+    let clipView = scrollView.contentView
+    var proposedBounds = clipView.bounds
+    proposedBounds.origin.y += offset
+    clipView.scroll(to: clipView.constrainBoundsRect(proposedBounds).origin)
+    scrollView.reflectScrolledClipView(clipView)
   }
 }
