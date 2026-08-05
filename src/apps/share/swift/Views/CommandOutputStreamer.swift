@@ -2,8 +2,10 @@ import Foundation
 import SwiftUI
 
 @MainActor
-final class RealtimeCommandStreamer: ObservableObject {
-  let stream = RealtimeTextStream()
+final class CommandOutputStreamer: ObservableObject {
+  @Published private(set) var isTextReady = false
+  @Published private(set) var text = ""
+
   private var task: Task<Void, Never>?
 
   func start(
@@ -38,7 +40,7 @@ final class RealtimeCommandStreamer: ObservableObject {
         Task {
           await MainActor.run {
             if let text = String(bytes: data, encoding: .utf8) {
-              self.stream.appendText(text)
+              self.appendText(text)
             }
           }
         }
@@ -49,11 +51,11 @@ final class RealtimeCommandStreamer: ObservableObject {
 
       handle.readabilityHandler = nil
 
-      // Read remaining data to end and finalize
+      // Read remaining data to end and finalize.
       if let tail = try? handle.readToEnd() {
         await MainActor.run {
           if let text = String(bytes: tail, encoding: .utf8) {
-            self.stream.appendText(text)
+            self.appendText(text)
           }
         }
       }
@@ -62,5 +64,15 @@ final class RealtimeCommandStreamer: ObservableObject {
         self.task = nil
       }
     }
+  }
+
+  func clear() {
+    text = ""
+    isTextReady = false
+  }
+
+  private func appendText(_ text: String) {
+    self.text += text
+    isTextReady = true
   }
 }
