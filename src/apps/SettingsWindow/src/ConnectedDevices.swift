@@ -56,16 +56,12 @@ final class ConnectedDevices: ObservableObject {
     )
   }
 
-  // We register the callback in the `watch` method rather than in `init`.
-  // If krbn_register_*_callback is called within init,
-  // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
-
   public func watch() {
     if timerTask != nil {
       return
     }
 
-    krbn_register_core_service_daemon_client_connected_devices_received_callback(
+    krbn_set_core_service_daemon_client_connected_devices_received_callback(
       connectedDevicesReceivedCallback)
 
     timerTask = Task { @MainActor in

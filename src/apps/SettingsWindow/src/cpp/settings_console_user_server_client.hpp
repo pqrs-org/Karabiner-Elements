@@ -2,7 +2,6 @@
 
 #include "console_user_server_client.hpp"
 #include "settings.hpp"
-#include "settings_callback_manager.hpp"
 #include <atomic>
 #include <memory>
 
@@ -50,7 +49,7 @@ public:
 
       try {
         auto json_dump = krbn::json_utility::dump(json.at("settings_window_guidance"));
-        for (const auto& callback : settings_window_guidance_received_callback_manager_.get_callbacks()) {
+        if (auto callback = settings_window_guidance_received_callback_.load()) {
           callback(json_dump.c_str());
         }
       } catch (const std::exception&) {
@@ -83,16 +82,12 @@ public:
     }
   }
 
-  void register_status_changed_callback(krbn_console_user_server_client_status_changed_t callback) {
-    enqueue_to_dispatcher([this, callback] {
-      status_changed_callback_manager_.register_callback(callback);
-    });
+  void set_status_changed_callback(krbn_console_user_server_client_status_changed_t callback) {
+    status_changed_callback_.store(callback);
   }
 
-  void register_settings_window_guidance_received_callback(krbn_console_user_server_client_settings_window_guidance_received_t callback) {
-    enqueue_to_dispatcher([this, callback] {
-      settings_window_guidance_received_callback_manager_.register_callback(callback);
-    });
+  void set_settings_window_guidance_received_callback(krbn_console_user_server_client_settings_window_guidance_received_t callback) {
+    settings_window_guidance_received_callback_.store(callback);
   }
 
 private:
@@ -100,7 +95,7 @@ private:
   void set_status(krbn_console_user_server_client_status status) {
     status_.store(status);
 
-    for (const auto& callback : status_changed_callback_manager_.get_callbacks()) {
+    if (auto callback = status_changed_callback_.load()) {
       callback();
     }
   }
@@ -108,6 +103,6 @@ private:
   uid_t uid_;
   std::shared_ptr<krbn::console_user_server_client> console_user_server_client_;
   std::atomic<krbn_console_user_server_client_status> status_;
-  settings_callback_manager<krbn_console_user_server_client_status_changed_t> status_changed_callback_manager_;
-  settings_callback_manager<krbn_console_user_server_client_settings_window_guidance_received_t> settings_window_guidance_received_callback_manager_;
+  std::atomic<krbn_console_user_server_client_status_changed_t> status_changed_callback_{nullptr};
+  std::atomic<krbn_console_user_server_client_settings_window_guidance_received_t> settings_window_guidance_received_callback_{nullptr};
 };

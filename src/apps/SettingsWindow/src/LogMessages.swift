@@ -106,7 +106,7 @@ public class LogMessages: ObservableObject {
     entries = []
 
     krbn_enable_log_monitor()
-    krbn_register_log_messages_updated_callback(callback)
+    krbn_set_log_messages_updated_callback(callback)
 
     //
     // Create timer

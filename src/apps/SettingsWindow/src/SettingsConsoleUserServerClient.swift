@@ -41,9 +41,9 @@ final class SettingsConsoleUserServerClient {
   public func start() {
     krbn_enable_console_user_server_client(geteuid())
 
-    krbn_register_console_user_server_client_status_changed_callback(
+    krbn_set_console_user_server_client_status_changed_callback(
       consoleUserServerClientStatusChangedCallback)
-    krbn_register_console_user_server_client_settings_window_guidance_received_callback(
+    krbn_set_console_user_server_client_settings_window_guidance_received_callback(
       settingsWindowGuidanceReceivedCallback)
 
     krbn_console_user_server_client_async_start()

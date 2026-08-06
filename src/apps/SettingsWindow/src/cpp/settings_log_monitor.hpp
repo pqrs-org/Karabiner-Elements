@@ -4,7 +4,7 @@
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "settings.hpp"
-#include "settings_callback_manager.hpp"
+#include <atomic>
 #include <pqrs/spdlog.hpp>
 
 class settings_log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -45,8 +45,8 @@ public:
       lines_ = lines;
 
       auto json_string = make_lines_json_string();
-      for (const auto& c : callback_manager_.get_callbacks()) {
-        c(json_string.data(), json_string.size());
+      if (auto callback = callback_.load()) {
+        callback(json_string.data(), json_string.size());
       }
     });
 
@@ -57,9 +57,9 @@ public:
     monitor_ = nullptr;
   }
 
-  void register_krbn_log_messages_updated_callback(krbn_log_messages_updated_t callback) {
+  void set_log_messages_updated_callback(krbn_log_messages_updated_t callback) {
     enqueue_to_dispatcher([this, callback] {
-      callback_manager_.register_callback(callback);
+      callback_.store(callback);
 
       auto json_string = make_lines_json_string();
       callback(json_string.data(), json_string.size());
@@ -106,5 +106,5 @@ private:
 
   std::unique_ptr<pqrs::spdlog::monitor> monitor_;
   std::shared_ptr<std::deque<std::string>> lines_;
-  settings_callback_manager<krbn_log_messages_updated_t> callback_manager_;
+  std::atomic<krbn_log_messages_updated_t> callback_{nullptr};
 };

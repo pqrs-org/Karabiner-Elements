@@ -2,7 +2,6 @@
 
 #include "core_service_daemon_client.hpp"
 #include "settings.hpp"
-#include "settings_callback_manager.hpp"
 #include <atomic>
 #include <memory>
 
@@ -35,7 +34,7 @@ public:
           case krbn::operation_type::connected_devices: {
             auto json_dump = krbn::json_utility::dump(json.at("connected_devices"));
 
-            for (const auto& callback : connected_devices_received_callback_manager_.get_callbacks()) {
+            if (auto callback = connected_devices_received_callback_.load()) {
               callback(json_dump.c_str());
             }
             break;
@@ -44,7 +43,7 @@ public:
           case krbn::operation_type::system_variables: {
             auto json_dump = krbn::json_utility::dump(json.at("system_variables"));
 
-            for (const auto& callback : system_variables_received_callback_manager_.get_callbacks()) {
+            if (auto callback = system_variables_received_callback_.load()) {
               callback(json_dump.c_str());
             }
             break;
@@ -90,20 +89,16 @@ public:
     }
   }
 
-  void register_connected_devices_received_callback(krbn_core_service_daemon_client_connected_devices_received_t callback) {
-    enqueue_to_dispatcher([this, callback] {
-      connected_devices_received_callback_manager_.register_callback(callback);
-    });
+  void set_connected_devices_received_callback(krbn_core_service_daemon_client_connected_devices_received_t callback) {
+    connected_devices_received_callback_.store(callback);
   }
 
-  void register_system_variables_received_callback(krbn_core_service_daemon_client_system_variables_received_t callback) {
-    enqueue_to_dispatcher([this, callback] {
-      system_variables_received_callback_manager_.register_callback(callback);
-    });
+  void set_system_variables_received_callback(krbn_core_service_daemon_client_system_variables_received_t callback) {
+    system_variables_received_callback_.store(callback);
   }
 
 private:
   std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client_;
-  settings_callback_manager<krbn_core_service_daemon_client_connected_devices_received_t> connected_devices_received_callback_manager_;
-  settings_callback_manager<krbn_core_service_daemon_client_system_variables_received_t> system_variables_received_callback_manager_;
+  std::atomic<krbn_core_service_daemon_client_connected_devices_received_t> connected_devices_received_callback_{nullptr};
+  std::atomic<krbn_core_service_daemon_client_system_variables_received_t> system_variables_received_callback_{nullptr};
 };

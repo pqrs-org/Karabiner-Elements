@@ -78,10 +78,6 @@ final class SettingsCoreServiceDaemonClient: ObservableObject {
   private let systemVariablesTimer: AsyncTimerSequence<ContinuousClock>
   private var systemVariablesTimerTask: Task<Void, Never>?
 
-  // We register the callback in the `start` method rather than in `init`.
-  // If krbn_register_*_callback is called within init,
-  // there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
-
   init() {
     systemVariablesTimer = AsyncTimerSequence(
       interval: .milliseconds(1000),
@@ -92,7 +88,7 @@ final class SettingsCoreServiceDaemonClient: ObservableObject {
   public func start() {
     krbn_enable_core_service_daemon_client()
 
-    krbn_register_core_service_daemon_client_system_variables_received_callback(
+    krbn_set_core_service_daemon_client_system_variables_received_callback(
       systemVariablesReceivedCallback)
 
     krbn_core_service_daemon_client_async_start()

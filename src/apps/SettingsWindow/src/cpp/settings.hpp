@@ -379,7 +379,7 @@ void krbn_complex_modifications_assets_manager_erase_file(size_t index);
 void krbn_enable_configuration_monitor(void);
 
 typedef void (*krbn_core_configuration_updated_t)(void);
-void krbn_register_core_configuration_updated_callback(krbn_core_configuration_updated_t _Nonnull callback);
+void krbn_set_core_configuration_updated_callback(krbn_core_configuration_updated_t _Nonnull callback);
 
 //
 // settings_log_monitor
@@ -391,7 +391,7 @@ void krbn_disable_log_monitor(void);
 // The JSON data is valid only while the callback is being invoked.
 typedef void (*krbn_log_messages_updated_t)(const char* _Nonnull json,
                                             size_t length);
-void krbn_register_log_messages_updated_callback(krbn_log_messages_updated_t _Nonnull callback);
+void krbn_set_log_messages_updated_callback(krbn_log_messages_updated_t _Nonnull callback);
 
 //
 // settings_core_service_daemon_client
@@ -403,11 +403,11 @@ void krbn_core_service_daemon_client_async_start(void);
 
 void krbn_core_service_daemon_client_async_get_connected_devices(void);
 typedef void (*krbn_core_service_daemon_client_connected_devices_received_t)(const char* _Nonnull json_string);
-void krbn_register_core_service_daemon_client_connected_devices_received_callback(krbn_core_service_daemon_client_connected_devices_received_t _Nonnull callback);
+void krbn_set_core_service_daemon_client_connected_devices_received_callback(krbn_core_service_daemon_client_connected_devices_received_t _Nonnull callback);
 
 void krbn_core_service_daemon_client_async_get_system_variables(void);
 typedef void (*krbn_core_service_daemon_client_system_variables_received_t)(const char* _Nonnull json_string);
-void krbn_register_core_service_daemon_client_system_variables_received_callback(krbn_core_service_daemon_client_system_variables_received_t _Nonnull callback);
+void krbn_set_core_service_daemon_client_system_variables_received_callback(krbn_core_service_daemon_client_system_variables_received_t _Nonnull callback);
 
 void krbn_core_service_daemon_client_async_set_app_icon(int number);
 
@@ -427,13 +427,13 @@ void krbn_enable_console_user_server_client(uid_t uid);
 void krbn_console_user_server_client_async_start(void);
 
 typedef void (*krbn_console_user_server_client_status_changed_t)(void);
-void krbn_register_console_user_server_client_status_changed_callback(krbn_console_user_server_client_status_changed_t _Nonnull callback);
+void krbn_set_console_user_server_client_status_changed_callback(krbn_console_user_server_client_status_changed_t _Nonnull callback);
 
 krbn_console_user_server_client_status krbn_console_user_server_client_get_status(void);
 
 void krbn_console_user_server_client_async_get_settings_window_guidance(void);
 typedef void (*krbn_console_user_server_client_settings_window_guidance_received_t)(const char* _Nonnull json_string);
-void krbn_register_console_user_server_client_settings_window_guidance_received_callback(krbn_console_user_server_client_settings_window_guidance_received_t _Nonnull callback);
+void krbn_set_console_user_server_client_settings_window_guidance_received_callback(krbn_console_user_server_client_settings_window_guidance_received_t _Nonnull callback);
 
 #ifdef __cplusplus
 }

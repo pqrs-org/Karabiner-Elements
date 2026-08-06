@@ -212,10 +212,10 @@ void krbn_enable_configuration_monitor() {
   }
 }
 
-void krbn_register_core_configuration_updated_callback(krbn_core_configuration_updated_t callback) {
+void krbn_set_core_configuration_updated_callback(krbn_core_configuration_updated_t callback) {
   if (auto manager = settings_components_manager_) {
     if (auto m = manager->get_settings_configuration_monitor()) {
-      m->register_krbn_core_configuration_updated_callback(callback);
+      m->set_core_configuration_updated_callback(callback);
     }
   }
 }
@@ -280,10 +280,10 @@ void krbn_disable_log_monitor() {
   }
 }
 
-void krbn_register_log_messages_updated_callback(krbn_log_messages_updated_t callback) {
+void krbn_set_log_messages_updated_callback(krbn_log_messages_updated_t callback) {
   if (auto manager = settings_components_manager_) {
     if (auto m = manager->get_settings_log_monitor()) {
-      m->register_krbn_log_messages_updated_callback(callback);
+      m->set_log_messages_updated_callback(callback);
     }
   }
 }
@@ -314,10 +314,10 @@ void krbn_core_service_daemon_client_async_get_connected_devices() {
   }
 }
 
-void krbn_register_core_service_daemon_client_connected_devices_received_callback(krbn_core_service_daemon_client_connected_devices_received_t _Nonnull callback) {
+void krbn_set_core_service_daemon_client_connected_devices_received_callback(krbn_core_service_daemon_client_connected_devices_received_t _Nonnull callback) {
   if (auto manager = settings_components_manager_) {
     if (auto c = manager->get_settings_core_service_daemon_client()) {
-      c->register_connected_devices_received_callback(callback);
+      c->set_connected_devices_received_callback(callback);
     }
   }
 }
@@ -330,10 +330,10 @@ void krbn_core_service_daemon_client_async_get_system_variables() {
   }
 }
 
-void krbn_register_core_service_daemon_client_system_variables_received_callback(krbn_core_service_daemon_client_system_variables_received_t _Nonnull callback) {
+void krbn_set_core_service_daemon_client_system_variables_received_callback(krbn_core_service_daemon_client_system_variables_received_t _Nonnull callback) {
   if (auto manager = settings_components_manager_) {
     if (auto c = manager->get_settings_core_service_daemon_client()) {
-      c->register_system_variables_received_callback(callback);
+      c->set_system_variables_received_callback(callback);
     }
   }
 }
@@ -364,10 +364,10 @@ void krbn_console_user_server_client_async_start() {
   }
 }
 
-void krbn_register_console_user_server_client_status_changed_callback(krbn_console_user_server_client_status_changed_t callback) {
+void krbn_set_console_user_server_client_status_changed_callback(krbn_console_user_server_client_status_changed_t callback) {
   if (auto manager = settings_components_manager_) {
     if (auto c = manager->get_settings_console_user_server_client()) {
-      c->register_status_changed_callback(callback);
+      c->set_status_changed_callback(callback);
     }
   }
 }
@@ -390,10 +390,10 @@ void krbn_console_user_server_client_async_get_settings_window_guidance() {
   }
 }
 
-void krbn_register_console_user_server_client_settings_window_guidance_received_callback(krbn_console_user_server_client_settings_window_guidance_received_t callback) {
+void krbn_set_console_user_server_client_settings_window_guidance_received_callback(krbn_console_user_server_client_settings_window_guidance_received_t callback) {
   if (auto manager = settings_components_manager_) {
     if (auto c = manager->get_settings_console_user_server_client()) {
-      c->register_settings_window_guidance_received_callback(callback);
+      c->set_settings_window_guidance_received_callback(callback);
     }
   }
 }

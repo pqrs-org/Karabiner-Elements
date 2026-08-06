@@ -2,7 +2,7 @@
 
 #include "monitor/configuration_monitor.hpp"
 #include "settings.hpp"
-#include "settings_callback_manager.hpp"
+#include <atomic>
 #include <pqrs/thread_wait.hpp>
 
 class settings_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -32,10 +32,8 @@ public:
     return weak_core_configuration_;
   }
 
-  void register_krbn_core_configuration_updated_callback(krbn_core_configuration_updated_t callback) {
-    enqueue_to_dispatcher([this, callback] {
-      callback_manager_.register_callback(callback);
-    });
+  void set_core_configuration_updated_callback(krbn_core_configuration_updated_t callback) {
+    callback_.store(callback);
   }
 
 private:
@@ -57,8 +55,8 @@ private:
     monitor_->core_configuration_updated.connect([this, wait](auto&& weak_core_configuration) {
       weak_core_configuration_ = weak_core_configuration;
 
-      for (const auto& c : callback_manager_.get_callbacks()) {
-        c();
+      if (auto callback = callback_.load()) {
+        callback();
       }
 
       if (wait) {
@@ -75,5 +73,5 @@ private:
 
   std::unique_ptr<krbn::configuration_monitor> monitor_;
   std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
-  settings_callback_manager<krbn_core_configuration_updated_t> callback_manager_;
+  std::atomic<krbn_core_configuration_updated_t> callback_{nullptr};
 };

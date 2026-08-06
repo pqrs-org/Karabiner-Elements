@@ -12,9 +12,6 @@ final class SystemPreferences: ObservableObject {
   private let timer: AsyncTimerSequence<ContinuousClock>
   private var timerTask: Task<Void, Never>?
 
-  // We register the callback in the `start` method rather than in `init`.
-  // If krbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
-
   init() {
     timer = AsyncTimerSequence(
       interval: .seconds(3),

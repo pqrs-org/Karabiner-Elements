@@ -95,9 +95,6 @@ final class Settings: ObservableObject {
     didSetEnabled = true
   }
 
-  // We register the callback in the `watch` method rather than in `init`.
-  // If krbn_register_*_callback is called within init, there is a risk that `init` could be invoked again from the callback through `shared` before the initial `init` completes.
-
   public func watch() {
     if watching {
       return
@@ -105,7 +102,7 @@ final class Settings: ObservableObject {
     watching = true
 
     krbn_enable_configuration_monitor()
-    krbn_register_core_configuration_updated_callback(callback)
+    krbn_set_core_configuration_updated_callback(callback)
     krbn_enqueue_callback(callback)
 
     connectedDevicesCancellable = connectedDevices.$connectedDevices
