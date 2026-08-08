@@ -14,6 +14,7 @@
     - Fixed an issue where modifications could stop working for several seconds after waking from sleep on macOS.
     - Karabiner-EventViewer and the Settings window are now closed after an upgrade.
     - Added support for unbundled GUI apps in `frontmost_application_if` and `frontmost_application_unless`.
+    - Added the event timestamp in EventViewer.
     - The `karabiner_console_user_server`, Menu, and NotificationWindow components have been consolidated into a single app named Karabiner-Console-User-Server.
     - Refactored the C++ and Swift code for the Settings, EventViewer, and MultitouchExtension apps.
 
