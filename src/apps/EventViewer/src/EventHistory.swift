@@ -114,8 +114,10 @@ func hidValueArrivedCallback(
   // Add entry
   //
 
+  let timestamp = Date()
+
   Task { @MainActor in
-    let entry = EventHistoryEntry()
+    let entry = EventHistoryEntry(timestamp: timestamp)
     entry.product = EVCoreServiceDaemonClient.shared.productName(deviceId: deviceId)
 
     //
@@ -200,7 +202,21 @@ func hidValueArrivedCallback(
 
 @MainActor
 public class EventHistoryEntry: Identifiable, Equatable {
+  private static let timestampFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "HH:mm:ss.SSS"
+    return formatter
+  }()
+  private static let iso8601TimestampFormatter: ISO8601DateFormatter = {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    formatter.timeZone = .current
+    return formatter
+  }()
+
   nonisolated public let id = UUID()
+  public let timestamp: Date
   public var eventType = ""
   public var product = ""
   public var usagePage = ""
@@ -208,6 +224,18 @@ public class EventHistoryEntry: Identifiable, Equatable {
   public var integerValue = ""
   public var name = ""
   public var misc = ""
+
+  public init(timestamp: Date) {
+    self.timestamp = timestamp
+  }
+
+  public var timestampString: String {
+    Self.timestampFormatter.string(from: timestamp)
+  }
+
+  public var iso8601TimestampString: String {
+    Self.iso8601TimestampFormatter.string(from: timestamp)
+  }
 
   nonisolated public static func == (lhs: EventHistoryEntry, rhs: EventHistoryEntry) -> Bool {
     lhs.id == rhs.id
@@ -281,6 +309,7 @@ public class EventHistory: ObservableObject {
         }
 
         string += "  {\n"
+        string += "    \"timestamp\": \"\(entry.iso8601TimestampString)\",\n"
         string += "    \"type\": \"\(entry.eventType)\",\n"
         string += "    \"name\": \(entry.name),\n"
         string += "    \"usagePage\": \"\(entry.usagePage)\",\n"
