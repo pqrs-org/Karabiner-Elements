@@ -41,6 +41,12 @@ void run_device_identifiers_test() {
       expect(false == di.get_is_virtual_device());
       expect(false == di.empty());
       expect(json == nlohmann::json(di));
+      expect(
+          nlohmann::json::object({
+              {"vendor_id", 1234},
+              {"product_id", 5678},
+              {"is_keyboard", true},
+          }) == di.to_normalized_json());
     }
     {
       auto json = nlohmann::json::object({

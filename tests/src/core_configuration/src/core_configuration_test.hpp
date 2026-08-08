@@ -302,25 +302,17 @@ void run_core_configuration_test() {
       expect(profile.get_fn_function_keys()->get_pairs().size() == 12);
       expect(profile.get_devices().size() == 0);
 
-      expect(profile.get_device(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
-                                                         pqrs::hid::product_id::value_t(1031),
-                                                         true,  // is_keyboard
-                                                         false, // is_pointing_device
-                                                         false, // is_game_pad
-                                                         false, // is_consumer
-                                                         false, // is_virtual_device
-                                                         ""     // device_address
-                                                         ))
+      expect(profile.get_device(krbn::device_identifiers({
+                                    .vendor_id = pqrs::hid::vendor_id::value_t(4176),
+                                    .product_id = pqrs::hid::product_id::value_t(1031),
+                                    .is_keyboard = true,
+                                }))
                  ->get_ignore() == true);
-      expect(profile.get_device(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(0x05ac),
-                                                         pqrs::hid::product_id::value_t(0x262),
-                                                         true,  // is_keyboard
-                                                         false, // is_pointing_device
-                                                         false, // is_game_pad
-                                                         false, // is_consumer
-                                                         false, // is_virtual_device
-                                                         ""     // device_address
-                                                         ))
+      expect(profile.get_device(krbn::device_identifiers({
+                                    .vendor_id = pqrs::hid::vendor_id::value_t(0x05ac),
+                                    .product_id = pqrs::hid::product_id::value_t(0x262),
+                                    .is_keyboard = true,
+                                }))
                  ->get_ignore() == false);
     }
 
@@ -607,15 +599,12 @@ void run_core_configuration_test() {
         }
 
         {
-          krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1112),
-                                               pqrs::hid::product_id::value_t(2222),
-                                               false,              // is_keyboard
-                                               true,               // is_pointing_device
-                                               false,              // is_game_pad
-                                               false,              // is_consumer
-                                               false,              // is_virtual_device
-                                               "ec-ba-73-21-e6-f5" // device_address (ignored)
-          );
+          krbn::device_identifiers identifiers({
+              .vendor_id = pqrs::hid::vendor_id::value_t(1112),
+              .product_id = pqrs::hid::product_id::value_t(2222),
+              .is_pointing_device = true,
+              .device_address = "ec-ba-73-21-e6-f5", // ignored
+          });
           profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
           expect(profile.get_devices().size() == 5);
           expect((profile.get_devices())[4]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1112));
@@ -628,15 +617,10 @@ void run_core_configuration_test() {
         }
 
         {
-          krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(0),
-                                               pqrs::hid::product_id::value_t(0),
-                                               false,              // is_keyboard
-                                               true,               // is_pointing_device
-                                               false,              // is_game_pad
-                                               false,              // is_consumer
-                                               false,              // is_virtual_device
-                                               "ec-ba-73-21-e6-f5" // device_address
-          );
+          krbn::device_identifiers identifiers({
+              .is_pointing_device = true,
+              .device_address = "ec-ba-73-21-e6-f5",
+          });
           profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
           expect(profile.get_devices().size() == 6);
           expect((profile.get_devices())[5]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));
