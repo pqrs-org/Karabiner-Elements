@@ -52,7 +52,6 @@ struct UnknownEventsView: View {
 
                   Divider()
 
-                  VStack(alignment: .trailing, spacing: 0) {
                     HStack(alignment: .bottom, spacing: 0) {
                       Text("integer value: ")
                         .font(.caption)
@@ -60,12 +59,7 @@ struct UnknownEventsView: View {
                         .font(.callout)
                         .monospaced()
                     }
-
-                    Text("")
-                      .font(.callout)
-                      .monospaced()
                   }
-                  .frame(alignment: .leading)
 
                   Divider()
 

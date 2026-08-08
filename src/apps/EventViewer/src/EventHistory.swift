@@ -430,17 +430,16 @@ public class EventHistory: ObservableObject {
     var string = "[\n"
 
     unknownEventEntries.forEach { entry in
-      if entry.eventType.count > 0 {
-        if string != "[\n" {
-          string += ",\n"
-        }
-
-        string += "  {\n"
-        string += "    \"value\": \"\(entry.eventType)\",\n"
-        string += "    \"usagePage\": \"\(entry.usagePage)\",\n"
-        string += "    \"usage\": \"\(entry.usage)\"\n"
-        string += "  }"
+      if string != "[\n" {
+        string += ",\n"
       }
+
+      string += "  {\n"
+      string += "    \"timestamp\": \"\(entry.iso8601TimestampString)\",\n"
+      string += "    \"value\": \"\(entry.integerValue)\",\n"
+      string += "    \"usagePage\": \"\(entry.usagePage)\",\n"
+      string += "    \"usage\": \"\(entry.usage)\"\n"
+      string += "  }"
     }
 
     string += "\n"
