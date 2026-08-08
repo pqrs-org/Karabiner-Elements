@@ -64,7 +64,9 @@ final class NotificationWindowManager: NSObject {
 
   func updateWindowsVisibility() {
     let state = ConsoleUserServerUIState.shared
-    let hide = !state.notificationWindowSettings.enabled || state.notificationMessage.isEmpty
+    let hide =
+      !state.configurationLoaded || !state.notificationWindowSettings.enabled
+      || state.notificationMessage.isEmpty
     for window in screenWindows {
       if hide {
         window.orderOut(self)

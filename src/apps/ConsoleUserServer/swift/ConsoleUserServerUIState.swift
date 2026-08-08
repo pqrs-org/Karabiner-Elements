@@ -47,13 +47,16 @@ private func notificationMessageUpdated(_ value: UnsafePointer<CChar>?) {
 final class ConsoleUserServerUIState: ObservableObject {
   static let shared = ConsoleUserServerUIState()
 
+  @Published private(set) var configurationLoaded = false
   @Published private(set) var menuSettings = UIStatePayload.MenuSettings()
   @Published private(set) var notificationWindowSettings =
     UIStatePayload.NotificationWindowSettings()
   @Published private(set) var profiles: [UIStatePayload.Profile] = []
   @Published var notificationMessage = ""
 
-  var menuVisible: Bool { menuSettings.showIcon || menuSettings.showProfileName }
+  var menuVisible: Bool {
+    configurationLoaded && (menuSettings.showIcon || menuSettings.showProfileName)
+  }
 
   var selectedProfileName: String {
     profiles.first(where: { $0.selected })?.name ?? ""
@@ -72,6 +75,7 @@ final class ConsoleUserServerUIState: ObservableObject {
     menuSettings = payload.menuSettings
     notificationWindowSettings = payload.notificationWindowSettings
     profiles = payload.profiles
+    configurationLoaded = true
     NotificationWindowManager.shared.updateWindowsVisibility()
   }
 }
