@@ -22,7 +22,16 @@ void krbn_initialize(krbn_core_service_connection_changed_callback _Nonnull core
                      krbn_json_received_callback _Nonnull connected_devices_received_callback,
                      krbn_json_received_callback _Nonnull frontmost_application_history_received_callback,
                      krbn_hid_value_monitor_stopped_callback _Nonnull hid_value_monitor_stopped_callback,
-                     krbn_hid_value_arrived_callback _Nonnull hid_value_arrived_callback);
+                     krbn_hid_value_arrived_callback _Nonnull hid_value_arrived_callback)
+    __attribute__((swift_name(
+        "krbn_initialize("
+        "coreServiceConnectionChanged:"
+        "manipulatorEnvironmentReceived:"
+        "connectedDevicesReceived:"
+        "frontmostApplicationHistoryReceived:"
+        "hidValueMonitorStopped:"
+        "hidValueArrived:"
+        ")")));
 void krbn_terminate(void);
 
 void krbn_core_service_async_get_manipulator_environment(void);

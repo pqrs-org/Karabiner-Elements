@@ -13,12 +13,12 @@ struct KarabinerEventViewerApp: App {
     _ = EventHistory.shared
 
     krbn_initialize(
-      coreServiceConnectionChangedCallback,
-      manipulatorEnvironmentReceivedCallback,
-      connectedDevicesReceivedCallback,
-      frontmostApplicationHistoryReceivedCallback,
-      hidValueMonitorStoppedCallback,
-      hidValueArrivedCallback)
+      coreServiceConnectionChanged: coreServiceConnectionChangedCallback,
+      manipulatorEnvironmentReceived: manipulatorEnvironmentReceivedCallback,
+      connectedDevicesReceived: connectedDevicesReceivedCallback,
+      frontmostApplicationHistoryReceived: frontmostApplicationHistoryReceivedCallback,
+      hidValueMonitorStopped: hidValueMonitorStoppedCallback,
+      hidValueArrived: hidValueArrivedCallback)
 
     let userSettings = UserSettings()
     _userSettings = StateObject(wrappedValue: userSettings)
