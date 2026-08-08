@@ -12,9 +12,12 @@ class settings_configuration_monitor final : public pqrs::dispatcher::extra::dis
 public:
   settings_configuration_monitor(const settings_configuration_monitor&) = delete;
 
-  settings_configuration_monitor(krbn_core_configuration_updated_t callback)
+  settings_configuration_monitor(
+      krbn_core_configuration_updated_t callback,
+      krbn_core_configuration_load_state_changed_t load_state_changed_callback)
       : dispatcher_client(),
-        callback_(callback) {
+        callback_(callback),
+        load_state_changed_callback_(load_state_changed_callback) {
   }
 
   ~settings_configuration_monitor() override {
@@ -41,6 +44,23 @@ public:
 
       if (auto core_configuration = weak_core_configuration.lock()) {
         invoke_callback(*core_configuration);
+      }
+    });
+
+    monitor_->load_state_changed.connect([this](auto load_state) {
+      switch (load_state) {
+        case krbn::core_configuration::core_configuration::load_state::loaded:
+          load_state_changed_callback_(krbn_core_configuration_load_state_loaded);
+          break;
+        case krbn::core_configuration::core_configuration::load_state::permission_error:
+          load_state_changed_callback_(krbn_core_configuration_load_state_permission_error);
+          break;
+        case krbn::core_configuration::core_configuration::load_state::json_error:
+          load_state_changed_callback_(krbn_core_configuration_load_state_json_error);
+          break;
+        case krbn::core_configuration::core_configuration::load_state::other_error:
+          load_state_changed_callback_(krbn_core_configuration_load_state_other_error);
+          break;
       }
     });
 
@@ -78,4 +98,5 @@ private:
   mutable std::mutex core_configuration_mutex_;
   std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
   const krbn_core_configuration_updated_t callback_;
+  const krbn_core_configuration_load_state_changed_t load_state_changed_callback_;
 };

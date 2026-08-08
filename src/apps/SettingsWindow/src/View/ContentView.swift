@@ -6,9 +6,16 @@ struct ContentView: View {
 
   private let padding = 6.0
 
+  private var karabinerJsonPermissionError: Bool {
+    settings.configurationLoadState == krbn_core_configuration_load_state_permission_error
+      || (settings.configurationLoaded && contentViewStates.karabinerJsonPermissionError)
+  }
+
   var body: some View {
     ZStack {
-      if settings.configurationLoaded {
+      if karabinerJsonPermissionError {
+        KarabinerJsonPermissionErrorView()
+      } else if settings.configurationLoaded {
         ContentMainView()
 
         if contentViewStates.displayedAlert == .doctor {

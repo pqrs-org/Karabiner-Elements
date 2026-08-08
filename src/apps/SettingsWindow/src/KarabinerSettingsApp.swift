@@ -8,6 +8,7 @@ struct KarabinerSettingsApp: App {
   init() {
     krbn_initialize(
       coreConfigurationUpdated: coreConfigurationUpdatedCallback,
+      coreConfigurationLoadStateChanged: coreConfigurationLoadStateChangedCallback,
       logMessagesUpdated: logMessagesUpdatedCallback,
       connectedDevicesReceived: connectedDevicesReceivedCallback,
       systemVariablesReceived: systemVariablesReceivedCallback,

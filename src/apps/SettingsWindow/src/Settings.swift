@@ -24,6 +24,12 @@ func coreConfigurationUpdatedCallback(_ json: UnsafePointer<CChar>, _ length: In
   }
 }
 
+func coreConfigurationLoadStateChangedCallback(_ state: krbn_core_configuration_load_state) {
+  Task { @MainActor in
+    Settings.shared.coreConfigurationLoadStateChanged(state)
+  }
+}
+
 private func settingsJSONOutputCallback(
   _ json: UnsafePointer<CChar>,
   _ length: Int,
@@ -66,6 +72,7 @@ final class Settings: ObservableObject {
 
   @Published var saveErrorMessage = ""
   @Published private(set) var configurationLoaded = false
+  @Published private(set) var configurationLoadState: krbn_core_configuration_load_state?
   @Published private var configurationStorage: SettingsConfiguration?
 
   var configuration: SettingsConfiguration {
@@ -113,7 +120,18 @@ final class Settings: ObservableObject {
   func componentsManagerStopped() {
     didSetEnabled = false
     configurationLoaded = false
+    configurationLoadState = nil
     saveErrorMessage = ""
+  }
+
+  func coreConfigurationLoadStateChanged(_ state: krbn_core_configuration_load_state) {
+    configurationLoadState = state
+
+    if state != krbn_core_configuration_load_state_loaded {
+      didSetEnabled = false
+      configurationLoaded = false
+      saveErrorMessage = ""
+    }
   }
 
   public func updateProperties() {
@@ -141,6 +159,7 @@ final class Settings: ObservableObject {
     updateSystemDefaultProfileExists()
 
     didSetEnabled = true
+    configurationLoadState = krbn_core_configuration_load_state_loaded
     configurationLoaded = true
   }
 

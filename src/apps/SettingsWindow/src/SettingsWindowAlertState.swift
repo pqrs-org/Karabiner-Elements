@@ -19,6 +19,8 @@ struct SettingsWindowCoreServiceState: Codable, Equatable {
   var currentProcessPermissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
   var bundlePermissionCheckResult: SettingsWindowCoreServicePermissionCheckResult?
   var karabinerJsonParseErrorMessage = ""
+  // nil means that the initial configuration load has not completed yet.
+  var karabinerJsonPermissionError: Bool?
   var virtualHidKeyboardTypeNotSet: Bool?
 
   var inputMonitoringGranted: Bool? {
@@ -38,6 +40,7 @@ struct SettingsWindowCoreServiceState: Codable, Equatable {
     case currentProcessPermissionCheckResult = "current_process_permission_check_result"
     case bundlePermissionCheckResult = "bundle_permission_check_result"
     case karabinerJsonParseErrorMessage = "karabiner_json_parse_error_message"
+    case karabinerJsonPermissionError = "karabiner_json_permission_error"
     case virtualHidKeyboardTypeNotSet = "virtual_hid_keyboard_type_not_set"
   }
 }
@@ -65,11 +68,15 @@ struct SettingsWindowGuidanceState: Codable, Equatable {
   var currentAlert: SettingsWindowGuidanceAlert
   var guidanceContext: SettingsWindowGuidanceContext
   var coreServiceDaemonState = SettingsWindowCoreServiceState()
+  // nil means that the initial configuration load has not completed yet.
+  var consoleUserServerKarabinerJsonPermissionError: Bool?
 
   enum CodingKeys: String, CodingKey {
     case currentSetup = "current_setup"
     case currentAlert = "current_alert"
     case guidanceContext = "guidance_context"
     case coreServiceDaemonState = "core_service_daemon_state"
+    case consoleUserServerKarabinerJsonPermissionError =
+      "console_user_server_karabiner_json_permission_error"
   }
 }

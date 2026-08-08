@@ -12,6 +12,13 @@ extern "C" {
 // The JSON data is valid only while the callback is being invoked.
 typedef void (*krbn_core_configuration_updated_t)(const char* _Nonnull json,
                                                   size_t length);
+typedef enum {
+  krbn_core_configuration_load_state_loaded,
+  krbn_core_configuration_load_state_permission_error,
+  krbn_core_configuration_load_state_json_error,
+  krbn_core_configuration_load_state_other_error,
+} krbn_core_configuration_load_state;
+typedef void (*krbn_core_configuration_load_state_changed_t)(krbn_core_configuration_load_state state);
 typedef void (*krbn_log_messages_updated_t)(const char* _Nonnull json,
                                             size_t length);
 typedef void (*krbn_core_service_daemon_client_connected_devices_received_t)(const char* _Nonnull json_string);
@@ -21,6 +28,7 @@ typedef void (*krbn_console_user_server_client_settings_window_guidance_received
 typedef void (*krbn_components_manager_stopped_t)(void);
 
 void krbn_initialize(krbn_core_configuration_updated_t _Nonnull core_configuration_updated_callback,
+                     krbn_core_configuration_load_state_changed_t _Nonnull core_configuration_load_state_changed_callback,
                      krbn_log_messages_updated_t _Nonnull log_messages_updated_callback,
                      krbn_core_service_daemon_client_connected_devices_received_t _Nonnull connected_devices_received_callback,
                      krbn_core_service_daemon_client_system_variables_received_t _Nonnull system_variables_received_callback,
@@ -30,6 +38,7 @@ void krbn_initialize(krbn_core_configuration_updated_t _Nonnull core_configurati
     __attribute__((swift_name(
         "krbn_initialize("
         "coreConfigurationUpdated:"
+        "coreConfigurationLoadStateChanged:"
         "logMessagesUpdated:"
         "connectedDevicesReceived:"
         "systemVariablesReceived:"

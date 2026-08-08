@@ -62,6 +62,7 @@ std::weak_ptr<settings_components_manager> settings_components_manager_;
 std::mutex settings_components_manager_mutex_;
 
 void krbn_initialize(krbn_core_configuration_updated_t core_configuration_updated_callback,
+                     krbn_core_configuration_load_state_changed_t core_configuration_load_state_changed_callback,
                      krbn_log_messages_updated_t log_messages_updated_callback,
                      krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received_callback,
                      krbn_core_service_daemon_client_system_variables_received_t system_variables_received_callback,
@@ -81,6 +82,7 @@ void krbn_initialize(krbn_core_configuration_updated_t core_configuration_update
 
   auto callbacks = settings_components_manager::callbacks{
       .core_configuration_updated = core_configuration_updated_callback,
+      .core_configuration_load_state_changed = core_configuration_load_state_changed_callback,
       .log_messages_updated = log_messages_updated_callback,
       .connected_devices_received = connected_devices_received_callback,
       .system_variables_received = system_variables_received_callback,

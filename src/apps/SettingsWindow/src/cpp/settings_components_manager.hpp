@@ -13,6 +13,7 @@ class settings_components_manager {
 public:
   struct callbacks final {
     krbn_core_configuration_updated_t core_configuration_updated;
+    krbn_core_configuration_load_state_changed_t core_configuration_load_state_changed;
     krbn_log_messages_updated_t log_messages_updated;
     krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received;
     krbn_core_service_daemon_client_system_variables_received_t system_variables_received;
@@ -21,7 +22,8 @@ public:
   };
 
   settings_components_manager(const callbacks& callbacks)
-      : configuration_monitor_(callbacks.core_configuration_updated),
+      : configuration_monitor_(callbacks.core_configuration_updated,
+                               callbacks.core_configuration_load_state_changed),
         log_monitor_(callbacks.log_messages_updated),
         core_service_daemon_client_(
             [this](const auto& connected_devices) {

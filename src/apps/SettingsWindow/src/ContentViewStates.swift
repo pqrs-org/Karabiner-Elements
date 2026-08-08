@@ -21,6 +21,7 @@ final class ContentViewStates: ObservableObject {
   @Published private var dismissedAlert: SettingsWindowGuidanceAlert = .none
   @Published var guidanceContext = SettingsWindowGuidanceContext()
   @Published var coreServiceDaemonState = SettingsWindowCoreServiceState()
+  @Published private(set) var consoleUserServerKarabinerJsonPermissionError: Bool?
   @Published private var consoleUserServerClientReady = false {
     didSet {
       resetDismissedAlertIfNeeded()
@@ -92,6 +93,12 @@ final class ContentViewStates: ObservableObject {
     if coreServiceDaemonState != state.coreServiceDaemonState {
       coreServiceDaemonState = state.coreServiceDaemonState
     }
+    if consoleUserServerKarabinerJsonPermissionError
+      != state.consoleUserServerKarabinerJsonPermissionError
+    {
+      consoleUserServerKarabinerJsonPermissionError =
+        state.consoleUserServerKarabinerJsonPermissionError
+    }
 
     if let item = SetupItem.from(setup: state.currentSetup) {
       if state.currentSetup != lastAutoPresentedSetup {
@@ -110,9 +117,22 @@ final class ContentViewStates: ObservableObject {
   }
 
   func updateConsoleUserServerClientReady(_ ready: Bool) {
+    if !ready {
+      resetRemoteGuidanceState()
+    }
+
     if consoleUserServerClientReady != ready {
       consoleUserServerClientReady = ready
     }
+  }
+
+  private func resetRemoteGuidanceState() {
+    currentAlert = .none
+    currentSetup = .none
+    guidanceContext = SettingsWindowGuidanceContext()
+    coreServiceDaemonState = SettingsWindowCoreServiceState()
+    consoleUserServerKarabinerJsonPermissionError = nil
+    lastAutoPresentedSetup = .none
   }
 
   func updateConsoleUserServerClientDisconnectedForAWhile(_ disconnectedForAWhile: Bool) {
@@ -180,6 +200,11 @@ final class ContentViewStates: ObservableObject {
 
   func allSetupItemsCompleted() -> Bool {
     SetupItem.allCases.allSatisfy { setupItemCompleted($0) }
+  }
+
+  var karabinerJsonPermissionError: Bool {
+    consoleUserServerKarabinerJsonPermissionError == true
+      || coreServiceDaemonState.karabinerJsonPermissionError == true
   }
 
   func setupItemCompleted(_ item: SetupItem) -> Bool {
