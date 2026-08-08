@@ -185,7 +185,9 @@ public:
     core_service_daemon_client_ = std::make_shared<krbn::core_service_daemon_client>();
     std::atomic_store(&core_service_daemon_client, core_service_daemon_client_);
 
-    core_service_daemon_client_->connected.connect([] {
+    core_service_daemon_client_->connected.connect([this] {
+      core_service_daemon_client_->async_observe_connected_devices();
+
       if (auto callback = core_service_connection_changed_callback.load()) {
         callback(true);
       }
@@ -320,12 +322,6 @@ void krbn_terminate() {
 void krbn_core_service_async_get_manipulator_environment() {
   if (auto client = std::atomic_load(&core_service_daemon_client)) {
     client->async_get_manipulator_environment();
-  }
-}
-
-void krbn_core_service_async_get_connected_devices() {
-  if (auto client = std::atomic_load(&core_service_daemon_client)) {
-    client->async_get_connected_devices();
   }
 }
 

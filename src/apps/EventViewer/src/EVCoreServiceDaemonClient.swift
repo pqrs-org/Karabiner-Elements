@@ -33,20 +33,12 @@ final class EVCoreServiceDaemonClient: ObservableObject {
   private var manipulatorEnvironmentStartCount = 0
   @Published private(set) var manipulatorEnvironmentText = ""
 
-  private let connectedDevicesTimer: AsyncTimerSequence<ContinuousClock>
-  private var connectedDevicesTimerTask: Task<Void, Never>?
-  private var connectedDevicesStartCount = 0
   @Published private(set) var connectedDevicesText = ""
   @Published private(set) var productsByDeviceId: [UInt64: String] = [:]
 
   init() {
     manipulatorEnvironmentTimer = AsyncTimerSequence(
       interval: .milliseconds(500),
-      clock: .continuous
-    )
-
-    connectedDevicesTimer = AsyncTimerSequence(
-      interval: .milliseconds(1000),
       clock: .continuous
     )
   }
@@ -70,28 +62,6 @@ final class EVCoreServiceDaemonClient: ObservableObject {
       manipulatorEnvironmentStartCount = 0
       manipulatorEnvironmentTimerTask?.cancel()
       manipulatorEnvironmentTimerTask = nil
-    }
-  }
-
-  public func startConnectedDevices() {
-    connectedDevicesStartCount += 1
-    if connectedDevicesStartCount == 1 {
-      connectedDevicesTimerTask = Task { @MainActor in
-        krbn_core_service_async_get_connected_devices()
-
-        for await _ in connectedDevicesTimer {
-          krbn_core_service_async_get_connected_devices()
-        }
-      }
-    }
-  }
-
-  public func stopConnectedDevices() {
-    connectedDevicesStartCount -= 1
-    if connectedDevicesStartCount <= 0 {
-      connectedDevicesStartCount = 0
-      connectedDevicesTimerTask?.cancel()
-      connectedDevicesTimerTask = nil
     }
   }
 

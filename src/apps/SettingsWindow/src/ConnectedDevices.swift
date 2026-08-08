@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import Combine
 import Foundation
 import SwiftUI
@@ -43,33 +42,9 @@ private struct ConnectedDevicePayload: Decodable {
 final class ConnectedDevices: ObservableObject {
   static let shared = ConnectedDevices()
 
-  private let timer: AsyncTimerSequence<ContinuousClock>
-  private var timerTask: Task<Void, Never>?
-
   private(set) var connectedDevicesJSONString = ""
   @Published var connectedDevices: [ConnectedDevice] = []
   @Published var notConnectedConfiguredDevicesCount: UInt64 = 0
-
-  init() {
-    timer = AsyncTimerSequence(
-      interval: .milliseconds(1000),
-      clock: .continuous
-    )
-  }
-
-  public func watch() {
-    if timerTask != nil {
-      return
-    }
-
-    timerTask = Task { @MainActor in
-      krbn_core_service_daemon_client_async_get_connected_devices()
-
-      for await _ in timer {
-        krbn_core_service_daemon_client_async_get_connected_devices()
-      }
-    }
-  }
 
   public func update(_ jsonString: String) {
     if connectedDevicesJSONString == jsonString {

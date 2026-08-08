@@ -59,10 +59,6 @@ public:
     complex_modifications_assets_manager_.erase_file(index);
   }
 
-  void async_get_connected_devices() {
-    core_service_daemon_client_.async_get_connected_devices();
-  }
-
   void async_get_system_variables() {
     core_service_daemon_client_.async_get_system_variables();
   }

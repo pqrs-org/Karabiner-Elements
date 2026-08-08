@@ -189,6 +189,7 @@ private:
 
     core_service_daemon_client_->connected.connect([this] {
       core_service_daemon_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
+      core_service_daemon_client_->async_observe_notification_message();
 
       stop_child_components();
       start_child_components();

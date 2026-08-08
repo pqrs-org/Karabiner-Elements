@@ -35,7 +35,6 @@ void krbn_initialize(krbn_core_service_connection_changed_callback _Nonnull core
 void krbn_terminate(void);
 
 void krbn_core_service_async_get_manipulator_environment(void);
-void krbn_core_service_async_get_connected_devices(void);
 void krbn_core_service_async_temporarily_ignore_all_devices(bool value);
 void krbn_core_service_async_clear_user_variables(void);
 

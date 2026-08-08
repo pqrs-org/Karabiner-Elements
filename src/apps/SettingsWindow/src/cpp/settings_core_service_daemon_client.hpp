@@ -34,6 +34,12 @@ public:
 
     auto client = std::make_shared<krbn::core_service_daemon_client>();
 
+    client->connected.connect([this] {
+      if (auto client = std::atomic_load(&core_service_daemon_client_)) {
+        client->async_observe_connected_devices();
+      }
+    });
+
     client->received.connect([this](auto&& operation_type,
                                     auto&& json) {
       try {
@@ -82,12 +88,6 @@ public:
   void async_start() const {
     if (auto client = std::atomic_load(&core_service_daemon_client_)) {
       client->async_start();
-    }
-  }
-
-  void async_get_connected_devices() const {
-    if (auto client = std::atomic_load(&core_service_daemon_client_)) {
-      client->async_get_connected_devices();
     }
   }
 

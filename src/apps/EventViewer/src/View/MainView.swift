@@ -160,10 +160,8 @@ struct MainView: View {
     .task {
       eventHistory.start()
       eventHistory.pause(false)
-      evCoreServiceDaemonClient.startConnectedDevices()
       defer {
         eventHistory.stop()
-        evCoreServiceDaemonClient.stopConnectedDevices()
       }
 
       do {

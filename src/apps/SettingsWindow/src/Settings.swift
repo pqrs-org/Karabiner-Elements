@@ -110,7 +110,6 @@ final class Settings: ObservableObject {
           self?.updateConnectedDeviceSettingsFromConnectedDevices()
         }
       }
-    connectedDevices.watch()
   }
 
   func save() {

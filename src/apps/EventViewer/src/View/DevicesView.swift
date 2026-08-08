@@ -29,11 +29,5 @@ struct DevicesView: View {
       .background(Color(NSColor.textBackgroundColor))
       .border(Color(NSColor.separatorColor), width: 2)
     }
-    .onAppear {
-      evCoreServiceDaemonClient.startConnectedDevices()
-    }
-    .onDisappear {
-      evCoreServiceDaemonClient.stopConnectedDevices()
-    }
   }
 }

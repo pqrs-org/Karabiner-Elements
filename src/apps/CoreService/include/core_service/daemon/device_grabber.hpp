@@ -45,6 +45,11 @@
 namespace krbn::core_service::daemon {
 class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
+  // Signals (invoked from the shared dispatcher thread)
+
+  nod::signal<void()> connected_devices_changed;
+  nod::signal<void(const std::string&)> notification_message_changed;
+
   device_grabber(const device_grabber&) = delete;
 
   device_grabber(std::weak_ptr<console_user_server_peer> weak_console_user_server_peer,
@@ -58,15 +63,9 @@ public:
     notification_message_manager_ = std::make_shared<notification_message_manager>();
 
     notification_message_manager_->notification_message_changed.connect(
-        [weak_console_user_server_peer](const auto& notification_message) {
-          if (auto peer = weak_console_user_server_peer.lock()) {
-            peer->async_notification_message(notification_message);
-          }
+        [this](const auto& notification_message) {
+          notification_message_changed(notification_message);
         });
-
-    if (auto peer = weak_console_user_server_peer.lock()) {
-      peer->async_notification_message(notification_message_manager_->get_full_message());
-    }
 
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
@@ -267,6 +266,8 @@ public:
         entries_.insert_or_assign(device_id,
                                   entry);
 
+        connected_devices_changed();
+
         entry->set_temporarily_ignore(temporarily_ignore_all_devices_);
 
         entry->hid_queue_values_arrived.connect([this](auto&& entry,
@@ -336,6 +337,7 @@ public:
           logger_unique_filter_.reset();
 
           entries_.erase(it);
+          connected_devices_changed();
         }
       }
 
@@ -655,6 +657,12 @@ public:
       }
 
       function(nlohmann::json(connected_devices));
+    });
+  }
+
+  void async_invoke_with_notification_message(std::function<void(const std::string&)> function) const {
+    enqueue_to_dispatcher([this, function] {
+      function(notification_message_manager_->get_full_message());
     });
   }
 

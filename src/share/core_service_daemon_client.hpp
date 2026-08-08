@@ -230,10 +230,20 @@ public:
     });
   }
 
-  void async_get_connected_devices() const {
+  void async_observe_connected_devices() const {
     enqueue_to_dispatcher([this] {
       nlohmann::json json{
-          {"operation_type", operation_type::get_connected_devices},
+          {"operation_type", operation_type::observe_connected_devices},
+      };
+
+      async_request(std::move(json));
+    });
+  }
+
+  void async_observe_notification_message() const {
+    enqueue_to_dispatcher([this] {
+      nlohmann::json json{
+          {"operation_type", operation_type::observe_notification_message},
       };
 
       async_request(std::move(json));

@@ -237,12 +237,6 @@ void krbn_complex_modifications_assets_manager_erase_file(size_t index) {
 // core_service_client
 //
 
-void krbn_core_service_daemon_client_async_get_connected_devices() {
-  if (auto manager = settings_cpp::get_components_manager()) {
-    manager->async_get_connected_devices();
-  }
-}
-
 void krbn_core_service_daemon_client_async_get_system_variables() {
   if (auto manager = settings_cpp::get_components_manager()) {
     manager->async_get_system_variables();
