@@ -3,6 +3,7 @@
 #include "core_service_daemon_client.hpp"
 #include "settings.hpp"
 #include <atomic>
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -17,7 +18,8 @@ public:
       : dispatcher_client(),
         connected_devices_updated_callback_(std::move(connected_devices_updated_callback)),
         connected_devices_received_callback_(connected_devices_received_callback),
-        system_variables_received_callback_(system_variables_received_callback) {
+        system_variables_received_callback_(system_variables_received_callback),
+        system_variables_timer_(*this) {
     start();
   }
 
@@ -38,6 +40,20 @@ public:
       if (auto client = std::atomic_load(&core_service_daemon_client_)) {
         client->async_observe_connected_devices();
       }
+
+      system_variables_timer_.start(
+          [this] {
+            async_get_system_variables();
+          },
+          std::chrono::seconds(1));
+    });
+
+    client->connect_failed.connect([this](auto&&) {
+      system_variables_timer_.stop();
+    });
+
+    client->closed.connect([this] {
+      system_variables_timer_.stop();
     });
 
     client->received.connect([this](auto&& operation_type,
@@ -81,6 +97,8 @@ public:
   }
 
   void stop() {
+    system_variables_timer_.stop();
+
     std::atomic_store(&core_service_daemon_client_,
                       std::shared_ptr<krbn::core_service_daemon_client>());
   }
@@ -91,12 +109,6 @@ public:
     }
   }
 
-  void async_get_system_variables() const {
-    if (auto client = std::atomic_load(&core_service_daemon_client_)) {
-      client->async_get_system_variables();
-    }
-  }
-
   void async_set_app_icon(int number) const {
     if (auto client = std::atomic_load(&core_service_daemon_client_)) {
       client->async_set_app_icon(number);
@@ -104,8 +116,15 @@ public:
   }
 
 private:
+  void async_get_system_variables() const {
+    if (auto client = std::atomic_load(&core_service_daemon_client_)) {
+      client->async_get_system_variables();
+    }
+  }
+
   const std::function<void(const krbn::connected_devices&)> connected_devices_updated_callback_;
   std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client_;
   const krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received_callback_;
   const krbn_core_service_daemon_client_system_variables_received_t system_variables_received_callback_;
+  pqrs::dispatcher::extra::timer system_variables_timer_;
 };

@@ -40,7 +40,6 @@ struct KarabinerSettingsApp: App {
     //
 
     Settings.shared.watch()
-    SettingsCoreServiceDaemonClient.shared.startSystemVariablesMonitoring()
     SystemPreferences.shared.start()
   }
 

@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import Combine
 import Foundation
 
@@ -74,30 +73,6 @@ final class SettingsCoreServiceDaemonClient: ObservableObject {
 
   @Published var temporarilyIgnoreAllDevices: Bool = false
   @Published var useFkeysAsStandardFunctionKeys: Bool = false
-
-  private let systemVariablesTimer: AsyncTimerSequence<ContinuousClock>
-  private var systemVariablesTimerTask: Task<Void, Never>?
-
-  init() {
-    systemVariablesTimer = AsyncTimerSequence(
-      interval: .milliseconds(1000),
-      clock: .continuous
-    )
-  }
-
-  public func startSystemVariablesMonitoring() {
-    systemVariablesTimerTask = Task { @MainActor in
-      krbn_core_service_daemon_client_async_get_system_variables()
-
-      for await _ in systemVariablesTimer {
-        krbn_core_service_daemon_client_async_get_system_variables()
-      }
-    }
-  }
-
-  public func stopSystemVariablesMonitoring() {
-    systemVariablesTimerTask?.cancel()
-  }
 
   public func setAppIcon(_ number: Int32) {
     krbn_core_service_daemon_client_async_set_app_icon(number)

@@ -303,8 +303,6 @@ void krbn_complex_modifications_assets_manager_erase_file(size_t index);
 // settings_core_service_daemon_client
 //
 
-void krbn_core_service_daemon_client_async_get_system_variables(void);
-
 void krbn_core_service_daemon_client_async_set_app_icon(int number);
 
 //
