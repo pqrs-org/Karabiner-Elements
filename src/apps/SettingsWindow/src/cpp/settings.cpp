@@ -31,16 +31,20 @@ class settings_process_lifecycle_components_manager final : public pqrs::dispatc
 public:
   settings_process_lifecycle_components_manager(const settings_process_lifecycle_components_manager&) = delete;
 
-  settings_process_lifecycle_components_manager(const settings_components_manager::callbacks& callbacks)
+  settings_process_lifecycle_components_manager(const settings_components_manager::callbacks& callbacks,
+                                                krbn_components_manager_stopped_t components_manager_stopped_callback)
       : dispatcher_client(),
-        components_manager_(std::make_shared<settings_components_manager>(callbacks)) {
+        components_manager_(std::make_shared<settings_components_manager>(callbacks)),
+        components_manager_stopped_callback_(components_manager_stopped_callback) {
     settings_cpp::set_components_manager(components_manager_);
   }
 
   ~settings_process_lifecycle_components_manager() override {
     detach_from_dispatcher([this] {
+      components_manager_->sync_save_core_configuration_if_pending();
       settings_cpp::set_components_manager(std::weak_ptr<settings_components_manager>());
       components_manager_ = nullptr;
+      components_manager_stopped_callback_();
     });
   }
 
@@ -50,6 +54,7 @@ public:
 
 private:
   std::shared_ptr<settings_components_manager> components_manager_;
+  const krbn_components_manager_stopped_t components_manager_stopped_callback_;
 };
 } // namespace
 
@@ -61,7 +66,8 @@ void krbn_initialize(krbn_core_configuration_updated_t core_configuration_update
                      krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received_callback,
                      krbn_core_service_daemon_client_system_variables_received_t system_variables_received_callback,
                      krbn_console_user_server_client_status_changed_t console_user_server_client_status_changed_callback,
-                     krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback) {
+                     krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback,
+                     krbn_components_manager_stopped_t components_manager_stopped_callback) {
   krbn::logger::get_logger()->debug(__func__);
 
   if (!scoped_dispatcher_manager_) {
@@ -84,8 +90,10 @@ void krbn_initialize(krbn_core_configuration_updated_t core_configuration_update
   krbn::process_lifecycle_manager::initialize_shared_instance(
       krbn::process_lifecycle_manager::configuration{
           .components_manager_maker =
-              [callbacks] {
-                return std::make_unique<settings_process_lifecycle_components_manager>(callbacks);
+              [callbacks, components_manager_stopped_callback] {
+                return std::make_unique<settings_process_lifecycle_components_manager>(
+                    callbacks,
+                    components_manager_stopped_callback);
               },
           .termination_completion_handler = [] {},
       });

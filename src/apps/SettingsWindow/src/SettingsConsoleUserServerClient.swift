@@ -29,6 +29,18 @@ final class SettingsConsoleUserServerClient {
     updateLocalServicesGuidanceContext()
   }
 
+  func componentsManagerStopped() {
+    consoleUserServerClientReady = false
+    disconnectedForAWhileTask?.cancel()
+    disconnectedForAWhileTask = nil
+
+    ContentViewStates.shared.updateConsoleUserServerClientReady(false)
+    ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(false)
+
+    updateConsoleUserServerClientState()
+    updateLocalServicesGuidanceContext()
+  }
+
   func updateConsoleUserServerClientState() {
     if !krbn_console_user_server_client_connected() {
       consoleUserServerClientReady = false

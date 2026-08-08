@@ -46,6 +46,12 @@ final class ConnectedDevices: ObservableObject {
   @Published var connectedDevices: [ConnectedDevice] = []
   @Published var notConnectedConfiguredDevicesCount: UInt64 = 0
 
+  func componentsManagerStopped() {
+    connectedDevicesJSONString = ""
+    connectedDevices = []
+    notConnectedConfiguredDevicesCount = 0
+  }
+
   public func update(_ jsonString: String) {
     if connectedDevicesJSONString == jsonString {
       return

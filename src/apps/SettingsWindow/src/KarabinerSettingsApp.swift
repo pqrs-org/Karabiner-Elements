@@ -12,7 +12,8 @@ struct KarabinerSettingsApp: App {
       connectedDevicesReceived: connectedDevicesReceivedCallback,
       systemVariablesReceived: systemVariablesReceivedCallback,
       consoleUserServerClientStatusChanged: consoleUserServerClientStatusChangedCallback,
-      settingsWindowGuidanceReceived: settingsWindowGuidanceReceivedCallback)
+      settingsWindowGuidanceReceived: settingsWindowGuidanceReceivedCallback,
+      componentsManagerStopped: componentsManagerStoppedCallback)
     krbn_load_custom_environment_variables()
 
     //

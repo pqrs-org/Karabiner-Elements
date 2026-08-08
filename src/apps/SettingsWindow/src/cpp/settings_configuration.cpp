@@ -60,10 +60,13 @@ bool krbn_core_configuration_save(char* error_message_buffer,
 
   if (auto manager = settings_cpp::get_components_manager()) {
     if (auto c = manager->get_current_core_configuration()) {
+      static_cast<void>(manager->take_core_configuration_save_pending());
+
       try {
         c->sync_save_to_file();
         return true;
       } catch (const std::exception& e) {
+        manager->mark_core_configuration_save_pending();
         strlcpy(error_message_buffer, e.what(), error_message_buffer_length);
         return false;
       }
@@ -72,6 +75,12 @@ bool krbn_core_configuration_save(char* error_message_buffer,
 
   strlcpy(error_message_buffer, "core_configuration is not ready", error_message_buffer_length);
   return false;
+}
+
+void krbn_core_configuration_mark_save_pending(void) {
+  if (auto manager = settings_cpp::get_components_manager()) {
+    manager->mark_core_configuration_save_pending();
+  }
 }
 
 void krbn_core_configuration_get_settings_configuration_snapshot_json(krbn_json_output_callback_with_context output,

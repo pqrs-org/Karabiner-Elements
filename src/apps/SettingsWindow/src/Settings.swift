@@ -3,6 +3,15 @@ import Combine
 import Foundation
 import SwiftUI
 
+func componentsManagerStoppedCallback() {
+  Task { @MainActor in
+    Settings.shared.componentsManagerStopped()
+    ConnectedDevices.shared.componentsManagerStopped()
+    SettingsCoreServiceDaemonClient.shared.componentsManagerStopped()
+    SettingsConsoleUserServerClient.shared.componentsManagerStopped()
+  }
+}
+
 func coreConfigurationUpdatedCallback(_ json: UnsafePointer<CChar>, _ length: Int) {
   let data = Data(bytes: json, count: length)
 
@@ -87,6 +96,8 @@ final class Settings: ObservableObject {
 
     self.saveTask = Task { @MainActor in
       for await _ in self.saveStream.debounce(for: .seconds(0.2)) {
+        guard self.configurationLoaded else { continue }
+
         print("save")
 
         self.saveErrorMessage = ""
@@ -113,7 +124,14 @@ final class Settings: ObservableObject {
   }
 
   func save() {
+    krbn_core_configuration_mark_save_pending()
     saveContinuation.yield(())
+  }
+
+  func componentsManagerStopped() {
+    didSetEnabled = false
+    configurationLoaded = false
+    saveErrorMessage = ""
   }
 
   public func updateProperties() {

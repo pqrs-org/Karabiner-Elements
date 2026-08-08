@@ -5,6 +5,8 @@
 #include "logger.hpp"
 #include "settings.hpp"
 #include <pqrs/spdlog.hpp>
+#include <set>
+#include <tuple>
 
 class settings_log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -58,6 +60,7 @@ public:
 private:
   [[nodiscard]] std::string make_lines_json_string() const {
     auto json = nlohmann::json::array();
+    std::set<std::tuple<uint64_t, std::string, std::string>> entries;
 
     if (lines_) {
       for (const auto& line : *lines_) {
@@ -65,7 +68,7 @@ private:
           continue;
         }
 
-        auto level = "info";
+        std::string level = "info";
         if (auto log_level = pqrs::spdlog::find_level(line)) {
           switch (*log_level) {
             case spdlog::level::debug:
@@ -82,10 +85,18 @@ private:
           }
         }
 
+        auto date_number = pqrs::spdlog::find_date_number(line).value_or(0);
+
+        // Swift uses this tuple as the stable selection anchor ID. Drop duplicate entries so
+        // every ID maps to exactly one location in the rendered log.
+        if (!entries.emplace(date_number, level, line).second) {
+          continue;
+        }
+
         json.push_back({
             {"text", line},
             {"log_level", level},
-            {"date_number", pqrs::spdlog::find_date_number(line).value_or(0)},
+            {"date_number", date_number},
         });
       }
     }

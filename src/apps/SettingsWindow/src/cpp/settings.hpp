@@ -18,13 +18,15 @@ typedef void (*krbn_core_service_daemon_client_connected_devices_received_t)(con
 typedef void (*krbn_core_service_daemon_client_system_variables_received_t)(const char* _Nonnull json_string);
 typedef void (*krbn_console_user_server_client_status_changed_t)(void);
 typedef void (*krbn_console_user_server_client_settings_window_guidance_received_t)(const char* _Nonnull json_string);
+typedef void (*krbn_components_manager_stopped_t)(void);
 
 void krbn_initialize(krbn_core_configuration_updated_t _Nonnull core_configuration_updated_callback,
                      krbn_log_messages_updated_t _Nonnull log_messages_updated_callback,
                      krbn_core_service_daemon_client_connected_devices_received_t _Nonnull connected_devices_received_callback,
                      krbn_core_service_daemon_client_system_variables_received_t _Nonnull system_variables_received_callback,
                      krbn_console_user_server_client_status_changed_t _Nonnull console_user_server_client_status_changed_callback,
-                     krbn_console_user_server_client_settings_window_guidance_received_t _Nonnull settings_window_guidance_received_callback)
+                     krbn_console_user_server_client_settings_window_guidance_received_t _Nonnull settings_window_guidance_received_callback,
+                     krbn_components_manager_stopped_t _Nonnull components_manager_stopped_callback)
     __attribute__((swift_name(
         "krbn_initialize("
         "coreConfigurationUpdated:"
@@ -33,6 +35,7 @@ void krbn_initialize(krbn_core_configuration_updated_t _Nonnull core_configurati
         "systemVariablesReceived:"
         "consoleUserServerClientStatusChanged:"
         "settingsWindowGuidanceReceived:"
+        "componentsManagerStopped:"
         ")")));
 void krbn_terminate(void);
 
@@ -80,6 +83,7 @@ void krbn_save_prettierrc(void);
 
 bool krbn_core_configuration_save(char* _Nonnull error_message_buffer,
                                   size_t error_message_buffer_length);
+void krbn_core_configuration_mark_save_pending(void);
 void krbn_core_configuration_get_settings_configuration_snapshot_json(krbn_json_output_callback_with_context _Nonnull output,
                                                                       void* _Nonnull context);
 bool krbn_core_configuration_apply_settings_configuration_update(const char* _Nonnull json_string);
