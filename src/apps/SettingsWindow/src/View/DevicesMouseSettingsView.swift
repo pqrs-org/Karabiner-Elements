@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct DevicesMouseSettingsView: View {
-  @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
+  let connectedDevice: ConnectedDevice
+  @Binding var deviceConfiguration: SettingsConfiguration.Device
   @Binding var showing: Bool
 
   @ObservedObject private var settings = Settings.shared
@@ -10,7 +11,7 @@ struct DevicesMouseSettingsView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 40.0) {
         Text(
-          "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))"
+          "\(connectedDevice.productName) (\(connectedDevice.manufacturerName))"
         )
         .font(.title)
         .padding(.leading, 40)
@@ -22,7 +23,7 @@ struct DevicesMouseSettingsView: View {
               Text("XY movement multiplier:")
 
               DoubleTextField(
-                value: $connectedDeviceSetting.pointingMotionXYMultiplier,
+                value: $deviceConfiguration.pointingMotionXyMultiplier,
                 range: 0...10000,
                 step: 0.1,
                 maximumFractionDigits: 1,
@@ -37,7 +38,7 @@ struct DevicesMouseSettingsView: View {
               Text("Wheels multiplier:")
 
               DoubleTextField(
-                value: $connectedDeviceSetting.pointingMotionWheelsMultiplier,
+                value: $deviceConfiguration.pointingMotionWheelsMultiplier,
                 range: 0...10000,
                 step: 0.1,
                 maximumFractionDigits: 1,
@@ -51,7 +52,7 @@ struct DevicesMouseSettingsView: View {
           .padding()
         }
 
-        DevicesMouseFlagsView(connectedDeviceSetting: connectedDeviceSetting)
+        DevicesMouseFlagsView(deviceConfiguration: $deviceConfiguration)
       }
 
       SheetCloseButton {

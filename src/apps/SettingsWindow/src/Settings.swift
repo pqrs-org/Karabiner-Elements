@@ -1,5 +1,4 @@
 import AsyncAlgorithms
-import Combine
 import Foundation
 import SwiftUI
 
@@ -59,9 +58,6 @@ final class Settings: ObservableObject {
 
   static let didConfigurationLoad = Notification.Name("didConfigurationLoad")
 
-  @ObservedObject private var connectedDevices = ConnectedDevices.shared
-  private var connectedDevicesCancellable: AnyCancellable?
-  private var watching = false
   private var didSetEnabled = false
 
   private let saveStream: AsyncStream<Void>
@@ -107,20 +103,6 @@ final class Settings: ObservableObject {
         }
       }
     }
-  }
-
-  public func watch() {
-    if watching {
-      return
-    }
-    watching = true
-
-    connectedDevicesCancellable = connectedDevices.$connectedDevices
-      .sink { [weak self] _ in
-        Task { @MainActor in
-          self?.updateConnectedDeviceSettingsFromConnectedDevices()
-        }
-      }
   }
 
   func save() {
@@ -169,8 +151,6 @@ final class Settings: ObservableObject {
       selectedProfile.complexModifications.rules
     )
 
-    updateConnectedDeviceSettingsFromSnapshot()
-
     updateSystemDefaultProfileExists()
 
     didSetEnabled = true
@@ -198,9 +178,21 @@ final class Settings: ObservableObject {
 
   public func simpleModifications(connectedDevice: ConnectedDevice?) -> [SimpleModification] {
     if let connectedDevice = connectedDevice {
-      return findConnectedDeviceSetting(connectedDevice)?.simpleModifications ?? []
+      return makeSimpleModifications(
+        configuration.selectedProfile.devices[connectedDevice.id]?.simpleModifications ?? [],
+        toCategories: SimpleModificationDefinitions.shared.toCategories)
     } else {
       return simpleModifications
+    }
+  }
+
+  public func fnFunctionKeys(connectedDevice: ConnectedDevice?) -> [SimpleModification] {
+    if let connectedDevice {
+      return makeSimpleModifications(
+        configuration.selectedProfile.devices[connectedDevice.id]?.fnFunctionKeys ?? [],
+        toCategories: SimpleModificationDefinitions.shared.toCategoriesWithInheritBase)
+    } else {
+      return fnFunctionKeys
     }
   }
 
@@ -437,65 +429,110 @@ final class Settings: ObservableObject {
   // Devices
   //
 
-  @Published var connectedDeviceSettings: [ConnectedDeviceSetting] = []
-
-  private func updateConnectedDeviceSettingsFromConnectedDevices() {
-    updateConnectedDeviceSettings(updateProperties: false)
+  func deviceConfiguration(_ connectedDevice: ConnectedDevice) -> SettingsConfiguration.Device? {
+    configurationStorage?.selectedProfile.devices[connectedDevice.id]
   }
 
-  private func updateConnectedDeviceSettingsFromSnapshot() {
-    updateConnectedDeviceSettings(updateProperties: true)
-  }
-
-  private func updateConnectedDeviceSettings(updateProperties: Bool) {
-    guard let deviceSettings = configurationStorage?.selectedProfile.devices else {
-      return
-    }
-
-    var existingConnectedDeviceSettings = connectedDeviceSettings
-    var newConnectedDeviceSettings: [ConnectedDeviceSetting] = []
-
-    connectedDevices.connectedDevices.forEach { connectedDevice in
-      guard let deviceSetting = deviceSettings[connectedDevice.id] else {
-        return
-      }
-
-      if let index = existingConnectedDeviceSettings.firstIndex(where: {
-        $0.connectedDevice.id == connectedDevice.id
-      }) {
-        let connectedDeviceSetting = existingConnectedDeviceSettings.remove(at: index)
-        connectedDeviceSetting.connectedDevice = connectedDevice
-
-        if updateProperties {
-          connectedDeviceSetting.updateProperties(deviceSetting)
-        }
-
-        newConnectedDeviceSettings.append(connectedDeviceSetting)
-      } else {
-        newConnectedDeviceSettings.append(ConnectedDeviceSetting(connectedDevice, deviceSetting))
-      }
-    }
-
-    connectedDeviceSettings = newConnectedDeviceSettings
-  }
-
-  public func findConnectedDeviceSetting(_ connectedDevice: ConnectedDevice)
-    -> ConnectedDeviceSetting?
+  func deviceConfigurationBinding(_ connectedDevice: ConnectedDevice)
+    -> Binding<SettingsConfiguration.Device>?
   {
-    for connectedDeviceSetting in connectedDeviceSettings
-    where connectedDeviceSetting.connectedDevice == connectedDevice {
-      return connectedDeviceSetting
+    guard deviceConfiguration(connectedDevice) != nil else { return nil }
+
+    return Binding(
+      get: {
+        guard let device = self.deviceConfiguration(connectedDevice) else {
+          preconditionFailure("Device configuration is not available")
+        }
+        return device
+      },
+      set: { device in
+        self.configuration.selectedProfile.devices[connectedDevice.id] = device
+      })
+  }
+
+  enum GamePadStickFormula {
+    case x
+    case y
+    case verticalWheel
+    case horizontalWheel
+  }
+
+  func setGamePadStickFormula(
+    _ formula: GamePadStickFormula,
+    value: String,
+    connectedDevice: ConnectedDevice
+  ) -> Bool {
+    let valid = value.withCString { value in
+      connectedDevice.withDeviceIdentifiersJSONCString { identifiers in
+        switch formula {
+        case .x:
+          krbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(
+            identifiers, value)
+        case .y:
+          krbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(
+            identifiers, value)
+        case .verticalWheel:
+          krbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+            identifiers, value)
+        case .horizontalWheel:
+          krbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
+            identifiers, value)
+        }
+      }
     }
 
-    return nil
+    if valid {
+      var nextConfiguration = configuration
+      switch formula {
+      case .x:
+        nextConfiguration.selectedProfile.devices[connectedDevice.id]?.gamePadStickXFormula = value
+      case .y:
+        nextConfiguration.selectedProfile.devices[connectedDevice.id]?.gamePadStickYFormula = value
+      case .verticalWheel:
+        nextConfiguration.selectedProfile.devices[connectedDevice.id]?
+          .gamePadStickVerticalWheelFormula = value
+      case .horizontalWheel:
+        nextConfiguration.selectedProfile.devices[connectedDevice.id]?
+          .gamePadStickHorizontalWheelFormula = value
+      }
+      didSetEnabled = false
+      configuration = nextConfiguration
+      didSetEnabled = true
+      save()
+    }
+
+    return valid
+  }
+
+  func resetGamePadStickFormula(
+    _ formula: GamePadStickFormula,
+    connectedDevice: ConnectedDevice
+  ) {
+    connectedDevice.withDeviceIdentifiersJSONCString { identifiers in
+      switch formula {
+      case .x:
+        krbn_core_configuration_reset_selected_profile_device_game_pad_stick_x_formula(identifiers)
+      case .y:
+        krbn_core_configuration_reset_selected_profile_device_game_pad_stick_y_formula(identifiers)
+      case .verticalWheel:
+        krbn_core_configuration_reset_selected_profile_device_game_pad_stick_vertical_wheel_formula(
+          identifiers)
+      case .horizontalWheel:
+        krbn_core_configuration_reset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
+          identifiers)
+      }
+    }
+
+    save()
+    updateProperties()
   }
 
   public func eraseNotConnectedDeviceSettings() {
-    connectedDevices.connectedDevicesJSONString.withCString {
+    ConnectedDevices.shared.connectedDevicesJSONString.withCString {
       krbn_core_configuration_erase_selected_profile_not_connected_configured_devices($0)
     }
 
-    connectedDevices.notConnectedConfiguredDevicesCount = 0
+    ConnectedDevices.shared.notConnectedConfiguredDevicesCount = 0
 
     updateProperties()
 
@@ -614,8 +651,8 @@ final class Settings: ObservableObject {
   }
 
   // Returns a JSON Merge Patch that contains only values changed in `newValue`.
-  // SettingsConfigurationUpdate does not contain arrays or null values, so recursively comparing
-  // JSON objects and treating every other value as a leaf is sufficient here.
+  // SettingsConfigurationUpdate does not contain null values, so recursively comparing JSON
+  // objects and treating arrays and primitive values as leaves is sufficient here.
   private func makeJSONMergePatch(from oldValue: Any, to newValue: Any) -> Any? {
     if let oldObject = oldValue as? [String: Any],
       let newObject = newValue as? [String: Any]

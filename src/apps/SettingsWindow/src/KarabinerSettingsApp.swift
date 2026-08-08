@@ -40,7 +40,6 @@ struct KarabinerSettingsApp: App {
     // Start components
     //
 
-    Settings.shared.watch()
     SystemPreferences.shared.start()
   }
 

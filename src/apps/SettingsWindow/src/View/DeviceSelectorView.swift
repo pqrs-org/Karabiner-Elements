@@ -10,7 +10,7 @@ struct DeviceSelectorView: View {
   var body: some View {
     // Build a combined array with `ConnectedDevice.zero` for "For all devices"
     let filtered = connectedDevices.connectedDevices.filter {
-      (settings.findConnectedDeviceSetting($0)?.modifyEvents ?? false)
+      (settings.deviceConfiguration($0)?.modifyEvents ?? false)
         && !$0.isVirtualDevice
     }
     let targets = [ConnectedDevice.zero] + filtered

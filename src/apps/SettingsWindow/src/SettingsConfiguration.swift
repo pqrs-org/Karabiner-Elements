@@ -48,7 +48,7 @@ struct SettingsConfiguration: Decodable {
     }
   }
 
-  struct SimpleModification: Decodable {
+  struct SimpleModification: Codable {
     let index: Int
     let fromJsonString: String
     let toJsonString: String
@@ -63,39 +63,44 @@ struct SettingsConfiguration: Decodable {
     let codeType: String
   }
 
-  struct Device: Decodable {
-    let ignore: Bool
-    let manipulateCapsLockLed: Bool
-    let ignoreVendorEvents: Bool
-    let treatAsBuiltInKeyboard: Bool
-    let disableBuiltInKeyboardIfExists: Bool
-    let pointingMotionXyMultiplier: Double
-    let pointingMotionWheelsMultiplier: Double
-    let mouseFlipX: Bool
-    let mouseFlipY: Bool
-    let mouseFlipVerticalWheel: Bool
-    let mouseFlipHorizontalWheel: Bool
-    let mouseDiscardX: Bool
-    let mouseDiscardY: Bool
-    let mouseDiscardVerticalWheel: Bool
-    let mouseDiscardHorizontalWheel: Bool
-    let mouseSwapXy: Bool
-    let mouseSwapWheels: Bool
-    let gamePadSwapSticks: Bool
-    let gamePadXyStickDeadzone: Double
-    let gamePadXyStickDeltaMagnitudeDetectionThreshold: Double
-    let gamePadXyStickContinuedMovementAbsoluteMagnitudeThreshold: Double
-    let gamePadXyStickContinuedMovementIntervalMilliseconds: Int
-    let gamePadWheelsStickDeadzone: Double
-    let gamePadWheelsStickDeltaMagnitudeDetectionThreshold: Double
-    let gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: Double
-    let gamePadWheelsStickContinuedMovementIntervalMilliseconds: Int
-    let gamePadStickXFormula: String
-    let gamePadStickYFormula: String
-    let gamePadStickVerticalWheelFormula: String
-    let gamePadStickHorizontalWheelFormula: String
+  struct Device: Codable {
+    var ignore: Bool
+    var manipulateCapsLockLed: Bool
+    var ignoreVendorEvents: Bool
+    var treatAsBuiltInKeyboard: Bool
+    var disableBuiltInKeyboardIfExists: Bool
+    var pointingMotionXyMultiplier: Double
+    var pointingMotionWheelsMultiplier: Double
+    var mouseFlipX: Bool
+    var mouseFlipY: Bool
+    var mouseFlipVerticalWheel: Bool
+    var mouseFlipHorizontalWheel: Bool
+    var mouseDiscardX: Bool
+    var mouseDiscardY: Bool
+    var mouseDiscardVerticalWheel: Bool
+    var mouseDiscardHorizontalWheel: Bool
+    var mouseSwapXy: Bool
+    var mouseSwapWheels: Bool
+    var gamePadSwapSticks: Bool
+    var gamePadXyStickDeadzone: Double
+    var gamePadXyStickDeltaMagnitudeDetectionThreshold: Double
+    var gamePadXyStickContinuedMovementAbsoluteMagnitudeThreshold: Double
+    var gamePadXyStickContinuedMovementIntervalMilliseconds: Int
+    var gamePadWheelsStickDeadzone: Double
+    var gamePadWheelsStickDeltaMagnitudeDetectionThreshold: Double
+    var gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: Double
+    var gamePadWheelsStickContinuedMovementIntervalMilliseconds: Int
+    var gamePadStickXFormula: String
+    var gamePadStickYFormula: String
+    var gamePadStickVerticalWheelFormula: String
+    var gamePadStickHorizontalWheelFormula: String
     let simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
+
+    var modifyEvents: Bool {
+      get { !ignore }
+      set { ignore = !newValue }
+    }
   }
 
   struct SelectedProfile: Decodable {
@@ -125,7 +130,7 @@ struct SettingsConfiguration: Decodable {
     var parameters: Parameters
     let simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
-    let devices: [String: Device]
+    var devices: [String: Device]
     var complexModifications: ComplexModifications
     var virtualHidKeyboard: VirtualHidKeyboard
   }
@@ -138,7 +143,8 @@ struct SettingsConfiguration: Decodable {
 }
 
 // This is intentionally limited to the values that SettingsWindow edits directly.
-// Read-only and derived snapshot data, such as devices and rules, is not sent back to C++.
+// Read-only and independently updated snapshot data, such as rules and simple modifications,
+// is not sent back to C++.
 struct SettingsConfigurationUpdate: Encodable {
   struct SelectedProfile: Encodable {
     struct ComplexModifications: Encodable {
@@ -146,6 +152,7 @@ struct SettingsConfigurationUpdate: Encodable {
     }
 
     let parameters: SettingsConfiguration.SelectedProfile.Parameters
+    let devices: [String: SettingsConfiguration.Device]
     let complexModifications: ComplexModifications
     let virtualHidKeyboard: SettingsConfiguration.SelectedProfile.VirtualHidKeyboard
   }
@@ -159,6 +166,7 @@ struct SettingsConfigurationUpdate: Encodable {
     machineSpecific = configuration.machineSpecific
     selectedProfile = SelectedProfile(
       parameters: configuration.selectedProfile.parameters,
+      devices: configuration.selectedProfile.devices,
       complexModifications: SelectedProfile.ComplexModifications(
         parameters: configuration.selectedProfile.complexModifications.parameters),
       virtualHidKeyboard: configuration.selectedProfile.virtualHidKeyboard)

@@ -187,87 +187,8 @@ bool krbn_eval_js_to_json_string(const char* _Nonnull code,
 
 // profile::devices
 
-void krbn_core_configuration_set_selected_profile_device_ignore(const char* _Nullable device_identifiers_json,
-                                                                bool value);
-void krbn_core_configuration_set_selected_profile_device_manipulate_caps_lock_led(const char* _Nullable device_identifiers_json,
-                                                                                  bool value);
-void krbn_core_configuration_set_selected_profile_device_ignore_vendor_events(const char* _Nullable device_identifiers_json,
-                                                                              bool value);
-void krbn_core_configuration_set_selected_profile_device_treat_as_built_in_keyboard(const char* _Nullable device_identifiers_json,
-                                                                                    bool value);
-void krbn_core_configuration_set_selected_profile_device_disable_built_in_keyboard_if_exists(const char* _Nullable device_identifiers_json,
-                                                                                             bool value);
-void krbn_core_configuration_set_selected_profile_device_pointing_motion_xy_multiplier(const char* _Nullable device_identifiers_json,
-                                                                                       double value);
-void krbn_core_configuration_set_selected_profile_device_pointing_motion_wheels_multiplier(const char* _Nullable device_identifiers_json,
-                                                                                           double value);
-void krbn_core_configuration_set_selected_profile_device_mouse_flip_x(const char* _Nullable device_identifiers_json,
-                                                                      bool value);
-void krbn_core_configuration_set_selected_profile_device_mouse_flip_y(const char* _Nullable device_identifiers_json,
-                                                                      bool value);
-void krbn_core_configuration_set_selected_profile_device_mouse_flip_vertical_wheel(const char* _Nullable device_identifiers_json,
-                                                                                   bool value);
-void krbn_core_configuration_set_selected_profile_device_mouse_flip_horizontal_wheel(const char* _Nullable device_identifiers_json,
-                                                                                     bool value);
-
-void krbn_core_configuration_set_selected_profile_device_mouse_discard_x(const char* _Nullable device_identifiers_json,
-                                                                         bool value);
-void krbn_core_configuration_set_selected_profile_device_mouse_discard_y(const char* _Nullable device_identifiers_json,
-                                                                         bool value);
-void krbn_core_configuration_set_selected_profile_device_mouse_discard_vertical_wheel(const char* _Nullable device_identifiers_json,
-                                                                                      bool value);
-void krbn_core_configuration_set_selected_profile_device_mouse_discard_horizontal_wheel(const char* _Nullable device_identifiers_json,
-                                                                                        bool value);
-
-void krbn_core_configuration_set_selected_profile_device_mouse_swap_xy(const char* _Nullable device_identifiers_json,
-                                                                       bool value);
-void krbn_core_configuration_set_selected_profile_device_mouse_swap_wheels(const char* _Nullable device_identifiers_json,
-                                                                           bool value);
-void krbn_core_configuration_set_selected_profile_device_game_pad_swap_sticks(const char* _Nullable device_identifiers_json,
-                                                                              bool value);
-
 size_t krbn_core_configuration_get_selected_profile_not_connected_configured_devices_count(const char* _Nonnull connected_devices_json);
 void krbn_core_configuration_erase_selected_profile_not_connected_configured_devices(const char* _Nonnull connected_devices_json);
-
-// game_pad_xy_stick_deadzone
-
-void krbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_deadzone(const char* _Nullable device_identifiers_json,
-                                                                                    double value);
-
-// game_pad_xy_stick_delta_magnitude_detection_threshold
-
-void krbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_delta_magnitude_detection_threshold(const char* _Nullable device_identifiers_json,
-                                                                                                               double value);
-
-// game_pad_xy_stick_continued_movement_absolute_magnitude_threshold
-
-void krbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(const char* _Nullable device_identifiers_json,
-                                                                                                                           double value);
-
-// game_pad_xy_stick_continued_movement_interval_milliseconds
-
-void krbn_core_configuration_set_selected_profile_device_game_pad_xy_stick_continued_movement_interval_milliseconds(const char* _Nullable device_identifiers_json,
-                                                                                                                    int value);
-
-// game_pad_wheels_stick_deadzone
-
-void krbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_deadzone(const char* _Nullable device_identifiers_json,
-                                                                                        double value);
-
-// game_pad_wheels_stick_delta_magnitude_detection_threshold
-
-void krbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_delta_magnitude_detection_threshold(const char* _Nullable device_identifiers_json,
-                                                                                                                   double value);
-
-// game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold
-
-void krbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(const char* _Nullable device_identifiers_json,
-                                                                                                                               double value);
-
-// game_pad_wheels_stick_continued_movement_interval_milliseconds
-
-void krbn_core_configuration_set_selected_profile_device_game_pad_wheels_stick_continued_movement_interval_milliseconds(const char* _Nullable device_identifiers_json,
-                                                                                                                        int value);
 
 // game_pad_stick_x_formula
 

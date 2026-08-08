@@ -80,6 +80,41 @@ public:
                                     });
       }
 
+      if (const auto devices_it = selected_profile_json.find("devices");
+          devices_it != selected_profile_json.end()) {
+        for (const auto& [identifiers_json_string, device_json] : devices_it->items()) {
+          auto identifiers = nlohmann::json::parse(identifiers_json_string).get<krbn::device_identifiers>();
+          auto device = selected_profile.get_device(identifiers);
+
+          changed |= apply_value<bool>(device_json, "ignore", device->get_ignore(), [&](auto value) { device->set_ignore(value); });
+          changed |= apply_value<bool>(device_json, "manipulate_caps_lock_led", device->get_manipulate_caps_lock_led(), [&](auto value) { device->set_manipulate_caps_lock_led(value); });
+          changed |= apply_value<bool>(device_json, "ignore_vendor_events", device->get_ignore_vendor_events(), [&](auto value) { device->set_ignore_vendor_events(value); });
+          changed |= apply_value<bool>(device_json, "treat_as_built_in_keyboard", device->get_treat_as_built_in_keyboard(), [&](auto value) { device->set_treat_as_built_in_keyboard(value); });
+          changed |= apply_value<bool>(device_json, "disable_built_in_keyboard_if_exists", device->get_disable_built_in_keyboard_if_exists(), [&](auto value) { device->set_disable_built_in_keyboard_if_exists(value); });
+          changed |= apply_value<double>(device_json, "pointing_motion_xy_multiplier", device->get_pointing_motion_xy_multiplier(), [&](auto value) { device->set_pointing_motion_xy_multiplier(value); });
+          changed |= apply_value<double>(device_json, "pointing_motion_wheels_multiplier", device->get_pointing_motion_wheels_multiplier(), [&](auto value) { device->set_pointing_motion_wheels_multiplier(value); });
+          changed |= apply_value<bool>(device_json, "mouse_flip_x", device->get_mouse_flip_x(), [&](auto value) { device->set_mouse_flip_x(value); });
+          changed |= apply_value<bool>(device_json, "mouse_flip_y", device->get_mouse_flip_y(), [&](auto value) { device->set_mouse_flip_y(value); });
+          changed |= apply_value<bool>(device_json, "mouse_flip_vertical_wheel", device->get_mouse_flip_vertical_wheel(), [&](auto value) { device->set_mouse_flip_vertical_wheel(value); });
+          changed |= apply_value<bool>(device_json, "mouse_flip_horizontal_wheel", device->get_mouse_flip_horizontal_wheel(), [&](auto value) { device->set_mouse_flip_horizontal_wheel(value); });
+          changed |= apply_value<bool>(device_json, "mouse_discard_x", device->get_mouse_discard_x(), [&](auto value) { device->set_mouse_discard_x(value); });
+          changed |= apply_value<bool>(device_json, "mouse_discard_y", device->get_mouse_discard_y(), [&](auto value) { device->set_mouse_discard_y(value); });
+          changed |= apply_value<bool>(device_json, "mouse_discard_vertical_wheel", device->get_mouse_discard_vertical_wheel(), [&](auto value) { device->set_mouse_discard_vertical_wheel(value); });
+          changed |= apply_value<bool>(device_json, "mouse_discard_horizontal_wheel", device->get_mouse_discard_horizontal_wheel(), [&](auto value) { device->set_mouse_discard_horizontal_wheel(value); });
+          changed |= apply_value<bool>(device_json, "mouse_swap_xy", device->get_mouse_swap_xy(), [&](auto value) { device->set_mouse_swap_xy(value); });
+          changed |= apply_value<bool>(device_json, "mouse_swap_wheels", device->get_mouse_swap_wheels(), [&](auto value) { device->set_mouse_swap_wheels(value); });
+          changed |= apply_value<bool>(device_json, "game_pad_swap_sticks", device->get_game_pad_swap_sticks(), [&](auto value) { device->set_game_pad_swap_sticks(value); });
+          changed |= apply_value<double>(device_json, "game_pad_xy_stick_deadzone", device->get_game_pad_xy_stick_deadzone(), [&](auto value) { device->set_game_pad_xy_stick_deadzone(value); });
+          changed |= apply_value<double>(device_json, "game_pad_xy_stick_delta_magnitude_detection_threshold", device->get_game_pad_xy_stick_delta_magnitude_detection_threshold(), [&](auto value) { device->set_game_pad_xy_stick_delta_magnitude_detection_threshold(value); });
+          changed |= apply_value<double>(device_json, "game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", device->get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(), [&](auto value) { device->set_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold(value); });
+          changed |= apply_value<int>(device_json, "game_pad_xy_stick_continued_movement_interval_milliseconds", device->get_game_pad_xy_stick_continued_movement_interval_milliseconds(), [&](auto value) { device->set_game_pad_xy_stick_continued_movement_interval_milliseconds(value); });
+          changed |= apply_value<double>(device_json, "game_pad_wheels_stick_deadzone", device->get_game_pad_wheels_stick_deadzone(), [&](auto value) { device->set_game_pad_wheels_stick_deadzone(value); });
+          changed |= apply_value<double>(device_json, "game_pad_wheels_stick_delta_magnitude_detection_threshold", device->get_game_pad_wheels_stick_delta_magnitude_detection_threshold(), [&](auto value) { device->set_game_pad_wheels_stick_delta_magnitude_detection_threshold(value); });
+          changed |= apply_value<double>(device_json, "game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold", device->get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(), [&](auto value) { device->set_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold(value); });
+          changed |= apply_value<int>(device_json, "game_pad_wheels_stick_continued_movement_interval_milliseconds", device->get_game_pad_wheels_stick_continued_movement_interval_milliseconds(), [&](auto value) { device->set_game_pad_wheels_stick_continued_movement_interval_milliseconds(value); });
+        }
+      }
+
       if (const auto complex_modifications_it = selected_profile_json.find("complex_modifications");
           complex_modifications_it != selected_profile_json.end()) {
         if (const auto parameters_it = complex_modifications_it->find("parameters");

@@ -1,31 +1,31 @@
 import SwiftUI
 
 struct DevicesMouseFlagsView: View {
-  @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
+  @Binding var deviceConfiguration: SettingsConfiguration.Device
 
   var body: some View {
     GroupBox(label: Text("Mouse Flags")) {
       HStack(alignment: .top, spacing: 60.0) {
         VStack(alignment: .leading, spacing: 6.0) {
-          Toggle(isOn: $connectedDeviceSetting.mouseFlipX) {
+          Toggle(isOn: $deviceConfiguration.mouseFlipX) {
             Text("Flip mouse X")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
           .switchToggleStyle(controlSize: .mini, font: .callout)
 
-          Toggle(isOn: $connectedDeviceSetting.mouseFlipY) {
+          Toggle(isOn: $deviceConfiguration.mouseFlipY) {
             Text("Flip mouse Y")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
           .switchToggleStyle(controlSize: .mini, font: .callout)
 
-          Toggle(isOn: $connectedDeviceSetting.mouseFlipVerticalWheel) {
+          Toggle(isOn: $deviceConfiguration.mouseFlipVerticalWheel) {
             Text("Flip mouse vertical wheel")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
           .switchToggleStyle(controlSize: .mini, font: .callout)
 
-          Toggle(isOn: $connectedDeviceSetting.mouseFlipHorizontalWheel) {
+          Toggle(isOn: $deviceConfiguration.mouseFlipHorizontalWheel) {
             Text("Flip mouse horizontal wheel")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
@@ -34,25 +34,25 @@ struct DevicesMouseFlagsView: View {
         .frame(width: 200.0)
 
         VStack(alignment: .leading, spacing: 6.0) {
-          Toggle(isOn: $connectedDeviceSetting.mouseDiscardX) {
+          Toggle(isOn: $deviceConfiguration.mouseDiscardX) {
             Text("Discard mouse X")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
           .switchToggleStyle(controlSize: .mini, font: .callout)
 
-          Toggle(isOn: $connectedDeviceSetting.mouseDiscardY) {
+          Toggle(isOn: $deviceConfiguration.mouseDiscardY) {
             Text("Discard mouse Y")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
           .switchToggleStyle(controlSize: .mini, font: .callout)
 
-          Toggle(isOn: $connectedDeviceSetting.mouseDiscardVerticalWheel) {
+          Toggle(isOn: $deviceConfiguration.mouseDiscardVerticalWheel) {
             Text("Discard mouse vertical wheel")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
           .switchToggleStyle(controlSize: .mini, font: .callout)
 
-          Toggle(isOn: $connectedDeviceSetting.mouseDiscardHorizontalWheel) {
+          Toggle(isOn: $deviceConfiguration.mouseDiscardHorizontalWheel) {
             Text("Discard mouse horizontal wheel")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
@@ -61,13 +61,13 @@ struct DevicesMouseFlagsView: View {
         .frame(width: 220.0)
 
         VStack(alignment: .leading, spacing: 6.0) {
-          Toggle(isOn: $connectedDeviceSetting.mouseSwapXY) {
+          Toggle(isOn: $deviceConfiguration.mouseSwapXy) {
             Text("Swap mouse X and Y")
               .frame(maxWidth: .infinity, alignment: .leading)
           }
           .switchToggleStyle(controlSize: .mini, font: .callout)
 
-          Toggle(isOn: $connectedDeviceSetting.mouseSwapWheels) {
+          Toggle(isOn: $deviceConfiguration.mouseSwapWheels) {
             Text("Swap mouse wheels")
               .frame(maxWidth: .infinity, alignment: .leading)
           }

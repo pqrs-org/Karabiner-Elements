@@ -57,9 +57,7 @@ struct FunctionKeysView: View {
     init(selectedDevice: ConnectedDevice?) {
       self.selectedDevice = selectedDevice
       self.fnFunctionKeys =
-        selectedDevice == nil
-        ? Settings.shared.fnFunctionKeys
-        : Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
+        Settings.shared.fnFunctionKeys(connectedDevice: selectedDevice)
     }
 
     var body: some View {
