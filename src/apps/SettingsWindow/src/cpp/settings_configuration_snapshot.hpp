@@ -29,6 +29,7 @@ public:
     }
 
     return {
+        {"device_defaults", make_device_defaults_json()},
         {"global_configuration",
          {
              {"check_for_updates", global.get_check_for_updates()},
@@ -79,6 +80,23 @@ public:
   }
 
 private:
+  [[nodiscard]] static nlohmann::json make_device_defaults_json() {
+    krbn::core_configuration::details::device device;
+
+    return {
+        {"pointing_motion_xy_multiplier", device.find_default_value(device.get_pointing_motion_xy_multiplier())},
+        {"pointing_motion_wheels_multiplier", device.find_default_value(device.get_pointing_motion_wheels_multiplier())},
+        {"game_pad_xy_stick_deadzone", device.find_default_value(device.get_game_pad_xy_stick_deadzone())},
+        {"game_pad_xy_stick_delta_magnitude_detection_threshold", device.find_default_value(device.get_game_pad_xy_stick_delta_magnitude_detection_threshold())},
+        {"game_pad_xy_stick_continued_movement_absolute_magnitude_threshold", device.find_default_value(device.get_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold())},
+        {"game_pad_xy_stick_continued_movement_interval_milliseconds", device.find_default_value(device.get_game_pad_xy_stick_continued_movement_interval_milliseconds())},
+        {"game_pad_wheels_stick_deadzone", device.find_default_value(device.get_game_pad_wheels_stick_deadzone())},
+        {"game_pad_wheels_stick_delta_magnitude_detection_threshold", device.find_default_value(device.get_game_pad_wheels_stick_delta_magnitude_detection_threshold())},
+        {"game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold", device.find_default_value(device.get_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold())},
+        {"game_pad_wheels_stick_continued_movement_interval_milliseconds", device.find_default_value(device.get_game_pad_wheels_stick_continued_movement_interval_milliseconds())},
+    };
+  }
+
   [[nodiscard]] static nlohmann::json make_simple_modifications_json(const krbn::core_configuration::details::simple_modifications& simple_modifications) {
     auto json = nlohmann::json::array();
     const auto& pairs = simple_modifications.get_pairs();

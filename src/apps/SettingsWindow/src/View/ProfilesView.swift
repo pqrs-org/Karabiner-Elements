@@ -5,8 +5,8 @@ struct ProfilesView: View {
   @ObservedObject private var settings = Settings.shared
   @State private var moveDisabled: Bool = true
   @State private var showingSheet = false
-  @State private var hoverProfile: Profile?
-  @State private var editingProfile: Profile?
+  @State private var hoverProfile: SettingsConfigurationSnapshot.Profile?
+  @State private var editingProfile: SettingsConfigurationSnapshot.Profile?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {

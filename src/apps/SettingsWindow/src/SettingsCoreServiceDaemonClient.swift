@@ -2,7 +2,7 @@ import AsyncAlgorithms
 import Combine
 import Foundation
 
-private func systemVariablesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+func systemVariablesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   struct SystemVariables: Decodable {
     let temporarilyIgnoreAllDevices: Bool
     let useFkeysAsStandardFunctionKeys: Bool
@@ -83,15 +83,6 @@ final class SettingsCoreServiceDaemonClient: ObservableObject {
       interval: .milliseconds(1000),
       clock: .continuous
     )
-  }
-
-  public func start() {
-    krbn_enable_core_service_daemon_client()
-
-    krbn_set_core_service_daemon_client_system_variables_received_callback(
-      systemVariablesReceivedCallback)
-
-    krbn_core_service_daemon_client_async_start()
   }
 
   public func startSystemVariablesMonitoring() {

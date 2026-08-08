@@ -9,10 +9,14 @@ class settings_console_user_server_client final : public pqrs::dispatcher::extra
 public:
   settings_console_user_server_client(const settings_console_user_server_client&) = delete;
 
-  explicit settings_console_user_server_client(uid_t uid)
+  settings_console_user_server_client(uid_t uid,
+                                      krbn_console_user_server_client_status_changed_t status_changed_callback,
+                                      krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback)
       : dispatcher_client(),
         uid_(uid),
-        status_(krbn_console_user_server_client_status_none) {
+        status_(krbn_console_user_server_client_status_none),
+        status_changed_callback_(status_changed_callback),
+        settings_window_guidance_received_callback_(settings_window_guidance_received_callback) {
     start();
   }
 
@@ -49,9 +53,7 @@ public:
 
       try {
         auto json_dump = krbn::json_utility::dump(json.at("settings_window_guidance"));
-        if (auto callback = settings_window_guidance_received_callback_.load()) {
-          callback(json_dump.c_str());
-        }
+        settings_window_guidance_received_callback_(json_dump.c_str());
       } catch (const std::exception&) {
         krbn::logger::get_logger()->error("settings_console_user_server_client received data is corrupted");
       }
@@ -82,27 +84,17 @@ public:
     }
   }
 
-  void set_status_changed_callback(krbn_console_user_server_client_status_changed_t callback) {
-    status_changed_callback_.store(callback);
-  }
-
-  void set_settings_window_guidance_received_callback(krbn_console_user_server_client_settings_window_guidance_received_t callback) {
-    settings_window_guidance_received_callback_.store(callback);
-  }
-
 private:
   // This method should be called in the shared dispatcher thread.
   void set_status(krbn_console_user_server_client_status status) {
     status_.store(status);
 
-    if (auto callback = status_changed_callback_.load()) {
-      callback();
-    }
+    status_changed_callback_();
   }
 
   uid_t uid_;
   std::shared_ptr<krbn::console_user_server_client> console_user_server_client_;
   std::atomic<krbn_console_user_server_client_status> status_;
-  std::atomic<krbn_console_user_server_client_status_changed_t> status_changed_callback_{nullptr};
-  std::atomic<krbn_console_user_server_client_settings_window_guidance_received_t> settings_window_guidance_received_callback_{nullptr};
+  const krbn_console_user_server_client_status_changed_t status_changed_callback_;
+  const krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback_;
 };

@@ -3,9 +3,11 @@ import Combine
 import Foundation
 import SwiftUI
 
-private func callback() {
+func coreConfigurationUpdatedCallback(_ json: UnsafePointer<CChar>, _ length: Int) {
+  let data = Data(bytes: json, count: length)
+
   Task { @MainActor in
-    Settings.shared.updateProperties()
+    Settings.shared.updateProperties(data)
 
     NotificationCenter.default.post(
       name: Settings.didConfigurationLoad,
@@ -30,27 +32,6 @@ private func dataFromJSONOutput(_ body: (UnsafeMutableRawPointer) -> Void) -> Da
   return data
 }
 
-private struct SimpleModificationPayload: Decodable {
-  let index: Int
-  let fromJsonString: String
-  let toJsonString: String
-}
-
-private struct ComplexModificationsRulePayload: Decodable {
-  let index: Int
-  let description: String
-  let enabled: Bool
-  let codeString: String
-  let searchText: String
-  let codeType: String
-}
-
-private struct ProfilePayload: Decodable {
-  let index: Int
-  let name: String
-  let selected: Bool
-}
-
 private let settingsJSONDecoder: JSONDecoder = {
   let decoder = JSONDecoder()
   decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -67,12 +48,15 @@ final class Settings: ObservableObject {
   private var connectedDevicesCancellable: AnyCancellable?
   private var watching = false
   private var didSetEnabled = false
+  private var deviceSettings: [String: SettingsConfigurationSnapshot.Device] = [:]
 
   private let saveStream: AsyncStream<Void>
   private let saveContinuation: AsyncStream<Void>.Continuation
   private var saveTask: Task<Void, Never>?
 
   @Published var saveErrorMessage = ""
+  @Published private(set) var configurationLoaded = false
+  @Published private(set) var deviceDefaults: SettingsConfigurationSnapshot.DeviceDefaults?
 
   private init() {
     var continuation: AsyncStream<Void>.Continuation!
@@ -90,9 +74,6 @@ final class Settings: ObservableObject {
         }
       }
     }
-
-    updateProperties()
-    didSetEnabled = true
   }
 
   public func watch() {
@@ -101,14 +82,10 @@ final class Settings: ObservableObject {
     }
     watching = true
 
-    krbn_enable_configuration_monitor()
-    krbn_set_core_configuration_updated_callback(callback)
-    krbn_enqueue_callback(callback)
-
     connectedDevicesCancellable = connectedDevices.$connectedDevices
       .sink { [weak self] _ in
         Task { @MainActor in
-          self?.updateConnectedDeviceSettings()
+          self?.updateConnectedDeviceSettingsFromConnectedDevices()
         }
       }
     connectedDevices.watch()
@@ -119,79 +96,82 @@ final class Settings: ObservableObject {
   }
 
   public func updateProperties() {
+    let data = dataFromJSONOutput { context in
+      krbn_core_configuration_get_settings_configuration_snapshot_json(
+        settingsJSONOutputCallback,
+        context)
+    }
+
+    updateProperties(data)
+  }
+
+  fileprivate func updateProperties(_ data: Data) {
+    let snapshot: SettingsConfigurationSnapshot
+    do {
+      snapshot = try settingsJSONDecoder.decode(SettingsConfigurationSnapshot.self, from: data)
+    } catch {
+      print("Failed to decode settings configuration snapshot JSON: \(error)")
+      return
+    }
+
     didSetEnabled = false
+    deviceDefaults = snapshot.deviceDefaults
 
-    simpleModifications = makeSimpleModifications(nil)
-    fnFunctionKeys = makeFnFunctionKeys(nil)
-
-    updateComplexModificationsRules()
-
-    complexModificationsParameterToIfAloneTimeoutMilliseconds = Int(
-      krbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds()
+    let selectedProfile = snapshot.selectedProfile
+    deviceSettings = selectedProfile.devices
+    simpleModifications = makeSimpleModifications(
+      selectedProfile.simpleModifications,
+      toCategories: SimpleModificationDefinitions.shared.toCategories
     )
-    complexModificationsParameterToIfHeldDownThresholdMilliseconds = Int(
-      krbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds()
+    fnFunctionKeys = makeSimpleModifications(
+      selectedProfile.fnFunctionKeys,
+      toCategories: SimpleModificationDefinitions.shared.toCategories
     )
-    complexModificationsParameterToDelayedActionDelayMilliseconds = Int(
-      krbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds()
-    )
-    complexModificationsParameterSimultaneousThresholdMilliseconds = Int(
-      krbn_core_configuration_get_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds()
-    )
-    complexModificationsParameterMouseMotionToScrollSpeed = Int(
-      krbn_core_configuration_get_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed()
+    complexModificationsRules = makeComplexModificationsRules(
+      selectedProfile.complexModifications.rules
     )
 
-    updateConnectedDeviceSettings()
+    let complexParameters = selectedProfile.complexModifications.parameters
+    complexModificationsParameterToIfAloneTimeoutMilliseconds =
+      complexParameters.basicToIfAloneTimeoutMilliseconds
+    complexModificationsParameterToIfHeldDownThresholdMilliseconds =
+      complexParameters.basicToIfHeldDownThresholdMilliseconds
+    complexModificationsParameterToDelayedActionDelayMilliseconds =
+      complexParameters.basicToDelayedActionDelayMilliseconds
+    complexModificationsParameterSimultaneousThresholdMilliseconds =
+      complexParameters.basicSimultaneousThresholdMilliseconds
+    complexModificationsParameterMouseMotionToScrollSpeed =
+      complexParameters.mouseMotionToScrollSpeed
 
-    delayMillisecondsBeforeOpenDevice = Int(
-      krbn_core_configuration_get_selected_profile_parameters_delay_milliseconds_before_open_device()
-    )
+    updateConnectedDeviceSettingsFromSnapshot()
 
-    do {
-      var buffer = [Int8](repeating: 0, count: 32)
-      krbn_core_configuration_get_selected_profile_virtual_hid_keyboard_keyboard_type_v2(
-        &buffer, buffer.count
-      )
-      virtualHIDKeyboardKeyboardTypeV2 = String(utf8String: buffer) ?? ""
-    }
-
-    virtualHIDKeyboardMouseKeyXYScale = Int(
-      krbn_core_configuration_get_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale())
+    delayMillisecondsBeforeOpenDevice = selectedProfile.parameters.delayMillisecondsBeforeOpenDevice
+    virtualHIDKeyboardKeyboardTypeV2 = selectedProfile.virtualHidKeyboard.keyboardTypeV2
+    virtualHIDKeyboardMouseKeyXYScale = selectedProfile.virtualHidKeyboard.mouseKeyXyScale
     virtualHIDKeyboardIndicateStickyModifierKeysState =
-      krbn_core_configuration_get_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state()
+      selectedProfile.virtualHidKeyboard.indicateStickyModifierKeysState
 
-    updateProfiles()
+    profiles = snapshot.profiles
 
-    checkForUpdates =
-      krbn_core_configuration_get_global_configuration_check_for_updates()
-    showIconInMenuBar = krbn_core_configuration_get_global_configuration_show_in_menu_bar()
-    showProfileNameInMenuBar =
-      krbn_core_configuration_get_global_configuration_show_profile_name_in_menu_bar()
-    showAdditionalMenuItems =
-      krbn_core_configuration_get_global_configuration_show_additional_menu_items()
-    enableNotificationWindow =
-      krbn_core_configuration_get_global_configuration_enable_notification_window()
-    enableMultitouchExtension =
-      krbn_core_configuration_get_machine_specific_enable_multitouch_extension()
-    do {
-      var buffer = [Int8](repeating: 0, count: 4 * 1024)
-      krbn_core_configuration_get_machine_specific_external_editor_path(
-        &buffer, buffer.count
-      )
-      externalEditorPath = String(utf8String: buffer) ?? ""
-    }
-    unsafeUI = krbn_core_configuration_get_global_configuration_unsafe_ui()
-    filterUselessEventsFromSpecificDevices =
-      krbn_core_configuration_get_global_configuration_filter_useless_events_from_specific_devices()
+    let global = snapshot.globalConfiguration
+    checkForUpdates = global.checkForUpdates
+    showIconInMenuBar = global.showInMenuBar
+    showProfileNameInMenuBar = global.showProfileNameInMenuBar
+    showAdditionalMenuItems = global.showAdditionalMenuItems
+    enableNotificationWindow = global.enableNotificationWindow
+    unsafeUI = global.unsafeUi
+    filterUselessEventsFromSpecificDevices = global.filterUselessEventsFromSpecificDevices
     reorderSameTimestampInputEventsToPrioritizeModifiers =
-      krbn_core_configuration_get_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers()
-    enableCGEventTapFallback =
-      krbn_core_configuration_get_global_configuration_enable_cgeventtap_fallback()
+      global.reorderSameTimestampInputEventsToPrioritizeModifiers
+    enableCGEventTapFallback = global.enableCgeventtapFallback
+
+    enableMultitouchExtension = snapshot.machineSpecific.enableMultitouchExtension
+    externalEditorPath = snapshot.machineSpecific.externalEditorPath
 
     updateSystemDefaultProfileExists()
 
     didSetEnabled = true
+    configurationLoaded = true
   }
 
   //
@@ -200,27 +180,16 @@ final class Settings: ObservableObject {
 
   @Published var simpleModifications: [SimpleModification] = []
 
-  public func makeSimpleModifications(_ connectedDevice: ConnectedDevice?) -> [SimpleModification] {
-    let data = connectedDevice.withDeviceIdentifiersCPointer { deviceIdentifiers in
-      dataFromJSONOutput { context in
-        krbn_core_configuration_get_selected_profile_simple_modifications_json(
-          deviceIdentifiers,
-          settingsJSONOutputCallback,
-          context)
-      }
-    }
-
-    do {
-      return try settingsJSONDecoder.decode([SimpleModificationPayload].self, from: data).map {
-        SimpleModification(
-          index: $0.index,
-          fromJsonString: $0.fromJsonString,
-          toJsonString: $0.toJsonString,
-          toCategories: SimpleModificationDefinitions.shared.toCategories)
-      }
-    } catch {
-      print("Failed to decode simple modifications JSON: \(error)")
-      return []
+  private func makeSimpleModifications(
+    _ payloads: [SettingsConfigurationSnapshot.SimpleModification],
+    toCategories: SimpleModificationDefinitionCategories
+  ) -> [SimpleModification] {
+    payloads.map {
+      SimpleModification(
+        index: $0.index,
+        fromJsonString: $0.fromJsonString,
+        toJsonString: $0.toJsonString,
+        toCategories: toCategories)
     }
   }
 
@@ -232,12 +201,8 @@ final class Settings: ObservableObject {
     }
   }
 
-  private func reflectSimpleModificationChanges(_ connectedDevice: ConnectedDevice?) {
-    if connectedDevice == nil {
-      simpleModifications = makeSimpleModifications(nil)
-    } else {
-      updateConnectedDeviceSettings()
-    }
+  private func reflectSimpleModificationChanges() {
+    updateProperties()
   }
 
   public func updateSimpleModification(
@@ -246,35 +211,38 @@ final class Settings: ObservableObject {
     toJsonString: String,
     device: ConnectedDevice?
   ) {
-    device.withDeviceIdentifiersCPointer {
+    device.withDeviceIdentifiersJSONCString {
       if let fromJson = fromJsonString.cString(using: .utf8),
         let toJson = toJsonString.cString(using: .utf8)
       {
         krbn_core_configuration_replace_selected_profile_simple_modification(
-          index, fromJson, toJson, $0)
+          index: index,
+          fromJSON: fromJson,
+          toJSON: toJson,
+          deviceIdentifiersJSON: $0)
       }
     }
 
-    reflectSimpleModificationChanges(device)
+    reflectSimpleModificationChanges()
 
     save()
   }
 
   public func appendSimpleModification(device: ConnectedDevice?) {
-    device.withDeviceIdentifiersCPointer {
+    device.withDeviceIdentifiersJSONCString {
       krbn_core_configuration_push_back_selected_profile_simple_modification($0)
     }
 
-    reflectSimpleModificationChanges(device)
+    reflectSimpleModificationChanges()
 
     // Do not to call `save()` here because partial settings will be erased at save.
   }
 
   public func appendSimpleModificationIfEmpty(device: ConnectedDevice?) {
-    device.withDeviceIdentifiersCPointer {
-      if krbn_core_configuration_selected_profile_simple_modifications_empty($0) {
-        appendSimpleModification(device: device)
-      }
+    guard configurationLoaded else { return }
+
+    if simpleModifications(connectedDevice: device).isEmpty {
+      appendSimpleModification(device: device)
     }
   }
 
@@ -282,11 +250,11 @@ final class Settings: ObservableObject {
     index: Int,
     device: ConnectedDevice?
   ) {
-    device.withDeviceIdentifiersCPointer {
+    device.withDeviceIdentifiersJSONCString {
       krbn_core_configuration_erase_selected_profile_simple_modification(index, $0)
     }
 
-    reflectSimpleModificationChanges(device)
+    reflectSimpleModificationChanges()
 
     save()
   }
@@ -297,38 +265,8 @@ final class Settings: ObservableObject {
 
   @Published var fnFunctionKeys: [SimpleModification] = []
 
-  public func makeFnFunctionKeys(_ connectedDevice: ConnectedDevice?) -> [SimpleModification] {
-    let data = connectedDevice.withDeviceIdentifiersCPointer { deviceIdentifiers in
-      dataFromJSONOutput { context in
-        krbn_core_configuration_get_selected_profile_fn_function_keys_json(
-          deviceIdentifiers,
-          settingsJSONOutputCallback,
-          context)
-      }
-    }
-
-    do {
-      return try settingsJSONDecoder.decode([SimpleModificationPayload].self, from: data).map {
-        SimpleModification(
-          index: $0.index,
-          fromJsonString: $0.fromJsonString,
-          toJsonString: $0.toJsonString,
-          toCategories: connectedDevice == nil
-            ? SimpleModificationDefinitions.shared.toCategories
-            : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase)
-      }
-    } catch {
-      print("Failed to decode fn function keys JSON: \(error)")
-      return []
-    }
-  }
-
-  private func reflectFnFunctionKeyChanges(_ connectedDevice: ConnectedDevice?) {
-    if connectedDevice == nil {
-      fnFunctionKeys = makeFnFunctionKeys(nil)
-    } else {
-      updateConnectedDeviceSettings()
-    }
+  private func reflectFnFunctionKeyChanges() {
+    updateProperties()
   }
 
   public func updateFnFunctionKey(
@@ -336,15 +274,18 @@ final class Settings: ObservableObject {
     toJsonString: String,
     device: ConnectedDevice?
   ) {
-    device.withDeviceIdentifiersCPointer {
+    device.withDeviceIdentifiersJSONCString {
       if let fromJson = fromJsonString.cString(using: .utf8),
         let toJson = toJsonString.cString(using: .utf8)
       {
-        krbn_core_configuration_replace_selected_profile_fn_function_key(fromJson, toJson, $0)
+        krbn_core_configuration_replace_selected_profile_fn_function_key(
+          fromJSON: fromJson,
+          toJSON: toJson,
+          deviceIdentifiersJSON: $0)
       }
     }
 
-    reflectFnFunctionKeyChanges(device)
+    reflectFnFunctionKeyChanges()
 
     save()
   }
@@ -355,34 +296,24 @@ final class Settings: ObservableObject {
 
   @Published var complexModificationsRules: [ComplexModificationsRule] = []
 
-  private func updateComplexModificationsRules() {
-    let data = dataFromJSONOutput { context in
-      krbn_core_configuration_get_selected_profile_complex_modifications_rules_json(
-        settingsJSONOutputCallback,
-        context)
-    }
-
-    do {
-      complexModificationsRules =
-        try settingsJSONDecoder.decode([ComplexModificationsRulePayload].self, from: data).map {
-          ComplexModificationsRule(
-            index: $0.index,
-            description: $0.description,
-            enabled: $0.enabled,
-            codeString: $0.codeString,
-            searchText: $0.searchText,
-            codeType: $0.codeType == "javascript"
-              ? krbn_complex_modifications_rule_code_type_javascript
-              : krbn_complex_modifications_rule_code_type_json)
-        }
-    } catch {
-      print("Failed to decode complex modifications rules JSON: \(error)")
-      complexModificationsRules = []
+  private func makeComplexModificationsRules(
+    _ payloads: [SettingsConfigurationSnapshot.ComplexModificationsRule]
+  ) -> [ComplexModificationsRule] {
+    payloads.map {
+      ComplexModificationsRule(
+        index: $0.index,
+        description: $0.description,
+        enabled: $0.enabled,
+        codeString: $0.codeString,
+        searchText: $0.searchText,
+        codeType: $0.codeType == "javascript"
+          ? krbn_complex_modifications_rule_code_type_javascript
+          : krbn_complex_modifications_rule_code_type_json)
     }
   }
 
   private func reflectComplexModificationsRuleChanges() {
-    updateComplexModificationsRules()
+    updateProperties()
   }
 
   public func replaceComplexModificationsRule(
@@ -393,11 +324,11 @@ final class Settings: ObservableObject {
     var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
     if let cString = codeString.cString(using: .utf8) {
       krbn_core_configuration_replace_selected_profile_complex_modifications_rule(
-        complexModificationRule.index,
-        cString,
-        codeType,
-        &errorMessageBuffer,
-        errorMessageBuffer.count
+        index: complexModificationRule.index,
+        code: cString,
+        codeType: codeType,
+        errorMessageBuffer: &errorMessageBuffer,
+        errorMessageBufferLength: errorMessageBuffer.count
       )
 
       let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
@@ -420,10 +351,10 @@ final class Settings: ObservableObject {
     var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
     if let cString = codeString.cString(using: .utf8) {
       krbn_core_configuration_push_front_selected_profile_complex_modifications_rule(
-        cString,
-        codeType,
-        &errorMessageBuffer,
-        errorMessageBuffer.count
+        code: cString,
+        codeType: codeType,
+        errorMessageBuffer: &errorMessageBuffer,
+        errorMessageBufferLength: errorMessageBuffer.count
       )
 
       let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
@@ -560,11 +491,37 @@ final class Settings: ObservableObject {
 
   @Published var connectedDeviceSettings: [ConnectedDeviceSetting] = []
 
-  private func updateConnectedDeviceSettings() {
+  private func updateConnectedDeviceSettingsFromConnectedDevices() {
+    updateConnectedDeviceSettings(updateProperties: false)
+  }
+
+  private func updateConnectedDeviceSettingsFromSnapshot() {
+    updateConnectedDeviceSettings(updateProperties: true)
+  }
+
+  private func updateConnectedDeviceSettings(updateProperties: Bool) {
+    var existingConnectedDeviceSettings = connectedDeviceSettings
     var newConnectedDeviceSettings: [ConnectedDeviceSetting] = []
 
     connectedDevices.connectedDevices.forEach { connectedDevice in
-      newConnectedDeviceSettings.append(ConnectedDeviceSetting(connectedDevice))
+      guard let deviceSetting = deviceSettings[connectedDevice.id] else {
+        return
+      }
+
+      if let index = existingConnectedDeviceSettings.firstIndex(where: {
+        $0.connectedDevice.id == connectedDevice.id
+      }) {
+        let connectedDeviceSetting = existingConnectedDeviceSettings.remove(at: index)
+        connectedDeviceSetting.connectedDevice = connectedDevice
+
+        if updateProperties {
+          connectedDeviceSetting.updateProperties(deviceSetting)
+        }
+
+        newConnectedDeviceSettings.append(connectedDeviceSetting)
+      } else {
+        newConnectedDeviceSettings.append(ConnectedDeviceSetting(connectedDevice, deviceSetting))
+      }
     }
 
     connectedDeviceSettings = newConnectedDeviceSettings
@@ -588,7 +545,7 @@ final class Settings: ObservableObject {
 
     connectedDevices.notConnectedConfiguredDevicesCount = 0
 
-    updateConnectedDeviceSettings()
+    updateProperties()
 
     save()
   }
@@ -647,37 +604,17 @@ final class Settings: ObservableObject {
   // Profiles
   //
 
-  @Published var profiles: [Profile] = []
-
-  private func updateProfiles() {
-    let data = dataFromJSONOutput { context in
-      krbn_core_configuration_get_profiles_json(settingsJSONOutputCallback, context)
-    }
-
-    do {
-      profiles = try settingsJSONDecoder.decode([ProfilePayload].self, from: data).map {
-        Profile($0.index, $0.name, $0.selected)
-      }
-    } catch {
-      print("Failed to decode profiles JSON: \(error)")
-      profiles = []
-    }
-  }
+  @Published var profiles: [SettingsConfigurationSnapshot.Profile] = []
 
   private func reflectProfileChanges() {
-    updateProfiles()
+    updateProperties()
   }
 
   public func selectedProfileName() -> String {
-    var buffer = [Int8](repeating: 0, count: 32 * 1024)
-    if krbn_core_configuration_get_selected_profile_name(&buffer, buffer.count) {
-      return String(utf8String: buffer) ?? ""
-    }
-
-    return ""
+    profiles.first { $0.selected }?.name ?? ""
   }
 
-  public func selectProfile(_ profile: Profile) {
+  public func selectProfile(_ profile: SettingsConfigurationSnapshot.Profile) {
     krbn_core_configuration_select_profile(profile.index)
 
     // To update all settings to the new profile's contents, it is necessary to call `updateProperties`.
@@ -686,7 +623,7 @@ final class Settings: ObservableObject {
     save()
   }
 
-  public func updateProfileName(_ profile: Profile, _ name: String) {
+  public func updateProfileName(_ profile: SettingsConfigurationSnapshot.Profile, _ name: String) {
     if let cString = name.cString(using: .utf8) {
       krbn_core_configuration_set_profile_name(profile.index, cString)
 
@@ -704,7 +641,7 @@ final class Settings: ObservableObject {
     save()
   }
 
-  public func duplicateProfile(_ profile: Profile) {
+  public func duplicateProfile(_ profile: SettingsConfigurationSnapshot.Profile) {
     krbn_core_configuration_duplicate_profile(profile.index)
 
     reflectProfileChanges()
@@ -738,7 +675,7 @@ final class Settings: ObservableObject {
     save()
   }
 
-  public func removeProfile(_ profile: Profile) {
+  public func removeProfile(_ profile: SettingsConfigurationSnapshot.Profile) {
     krbn_core_configuration_erase_profile(profile.index)
 
     reflectProfileChanges()

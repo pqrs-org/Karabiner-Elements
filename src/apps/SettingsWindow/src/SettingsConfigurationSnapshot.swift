@@ -1,6 +1,19 @@
 import Foundation
 
 struct SettingsConfigurationSnapshot: Decodable {
+  struct DeviceDefaults: Decodable {
+    let pointingMotionXyMultiplier: Double
+    let pointingMotionWheelsMultiplier: Double
+    let gamePadXyStickDeadzone: Double
+    let gamePadXyStickDeltaMagnitudeDetectionThreshold: Double
+    let gamePadXyStickContinuedMovementAbsoluteMagnitudeThreshold: Double
+    let gamePadXyStickContinuedMovementIntervalMilliseconds: Int
+    let gamePadWheelsStickDeadzone: Double
+    let gamePadWheelsStickDeltaMagnitudeDetectionThreshold: Double
+    let gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold: Double
+    let gamePadWheelsStickContinuedMovementIntervalMilliseconds: Int
+  }
+
   struct GlobalConfiguration: Decodable {
     let checkForUpdates: Bool
     let showInMenuBar: Bool
@@ -18,10 +31,21 @@ struct SettingsConfigurationSnapshot: Decodable {
     let externalEditorPath: String
   }
 
-  struct Profile: Decodable {
-    let index: Int
+  struct Profile: Decodable, Identifiable, Equatable {
+    let id = UUID()
+    var index: Int
     let name: String
     let selected: Bool
+
+    private enum CodingKeys: String, CodingKey {
+      case index
+      case name
+      case selected
+    }
+
+    static func == (lhs: Profile, rhs: Profile) -> Bool {
+      lhs.id == rhs.id
+    }
   }
 
   struct SimpleModification: Decodable {
@@ -106,6 +130,7 @@ struct SettingsConfigurationSnapshot: Decodable {
     let virtualHidKeyboard: VirtualHidKeyboard
   }
 
+  let deviceDefaults: DeviceDefaults
   let globalConfiguration: GlobalConfiguration
   let machineSpecific: MachineSpecific
   let profiles: [Profile]

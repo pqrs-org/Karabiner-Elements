@@ -3,7 +3,7 @@ import Combine
 import Foundation
 import SwiftUI
 
-private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   let s = String(cString: jsonString)
 
   Task { @MainActor in
@@ -14,7 +14,7 @@ private func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>
 // device_properties.hpp
 private struct ConnectedDevicePayload: Decodable {
   // device_identifiers.hpp
-  struct DeviceIdentifiers: Codable {
+  struct DeviceIdentifiers: Decodable {
     let vendorId: UInt64?
     let productId: UInt64?
     let isKeyboard: Bool?
@@ -27,6 +27,7 @@ private struct ConnectedDevicePayload: Decodable {
 
   let deviceId: UInt64
   let deviceIdentifiers: DeviceIdentifiers
+  let deviceIdentifiersJsonString: String
   let locationId: UInt64?
   let manufacturer: String?
   let product: String?
@@ -61,9 +62,6 @@ final class ConnectedDevices: ObservableObject {
       return
     }
 
-    krbn_set_core_service_daemon_client_connected_devices_received_callback(
-      connectedDevicesReceivedCallback)
-
     timerTask = Task { @MainActor in
       krbn_core_service_daemon_client_async_get_connected_devices()
 
@@ -82,17 +80,11 @@ final class ConnectedDevices: ObservableObject {
     guard let data = jsonString.data(using: .utf8) else { return }
     let decoder = JSONDecoder()
     decoder.keyDecodingStrategy = .convertFromSnakeCase
-    let encoder = JSONEncoder()
-    encoder.keyEncodingStrategy = .convertToSnakeCase
 
     do {
       let payloads = try decoder.decode([ConnectedDevicePayload].self, from: data)
 
-      connectedDevices = try payloads.enumerated().map { index, payload in
-        let deviceIdentifiersJSONData = try encoder.encode(payload.deviceIdentifiers)
-        let deviceIdentifiersJSONString =
-          String(data: deviceIdentifiersJSONData, encoding: .utf8) ?? ""
-
+      let newConnectedDevices = payloads.enumerated().map { index, payload in
         var manufacturer = (payload.manufacturer ?? "")
           .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
         if manufacturer.isEmpty {
@@ -110,7 +102,7 @@ final class ConnectedDevices: ObservableObject {
         }
 
         return ConnectedDevice(
-          id: deviceIdentifiersJSONString,
+          id: payload.deviceIdentifiersJsonString,
           index: index,
           manufacturerName: manufacturer,
           productName: product,
@@ -128,11 +120,13 @@ final class ConnectedDevices: ObservableObject {
         )
       }
 
-      connectedDevicesJSONString.withCString {
-        notConnectedConfiguredDevicesCount = UInt64(
+      notConnectedConfiguredDevicesCount = connectedDevicesJSONString.withCString {
+        UInt64(
           krbn_core_configuration_get_selected_profile_not_connected_configured_devices_count(
             $0))
       }
+
+      connectedDevices = newConnectedDevices
     } catch {
       print(error.localizedDescription)
       return

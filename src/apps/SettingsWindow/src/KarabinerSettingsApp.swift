@@ -6,7 +6,13 @@ struct KarabinerSettingsApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
   init() {
-    krbn_initialize()
+    krbn_initialize(
+      coreConfigurationUpdated: coreConfigurationUpdatedCallback,
+      logMessagesUpdated: logMessagesUpdatedCallback,
+      connectedDevicesReceived: connectedDevicesReceivedCallback,
+      systemVariablesReceived: systemVariablesReceivedCallback,
+      consoleUserServerClientStatusChanged: consoleUserServerClientStatusChangedCallback,
+      settingsWindowGuidanceReceived: settingsWindowGuidanceReceivedCallback)
     krbn_load_custom_environment_variables()
 
     //
@@ -27,7 +33,6 @@ struct KarabinerSettingsApp: App {
     // Setup CoreServiceClient
     //
 
-    SettingsCoreServiceDaemonClient.shared.start()
     SettingsConsoleUserServerClient.shared.start()
 
     //

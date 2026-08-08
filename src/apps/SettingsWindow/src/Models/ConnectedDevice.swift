@@ -18,8 +18,6 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
   let isBuiltInKeyboard: Bool
   let isAppleDevice: Bool
 
-  let krbnDeviceIdentifiers: krbn_device_identifiers
-
   static var zero: ConnectedDevice {
     return ConnectedDevice(
       id: "",
@@ -72,17 +70,6 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
     self.isVirtualDevice = isVirtualDevice
     self.isBuiltInKeyboard = isBuiltInKeyboard
     self.isAppleDevice = isAppleDevice
-
-    krbnDeviceIdentifiers = krbn_device_identifiers(
-      vendorId: vendorId,
-      productId: productId,
-      deviceAddress: deviceAddress,
-      isKeyboard: isKeyboard,
-      isPointingDevice: isPointingDevice,
-      isGamePad: isGamePad,
-      isConsumer: isConsumer,
-      isVirtualDevice: isVirtualDevice,
-    )
   }
 
   nonisolated public static func == (lhs: ConnectedDevice, rhs: ConnectedDevice) -> Bool {
@@ -93,21 +80,21 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
     hasher.combine(id)
   }
 
-  func withDeviceIdentifiersCPointer<Result>(
-    _ body: (UnsafePointer<krbn_device_identifiers>?) -> Result
+  func withDeviceIdentifiersJSONCString<Result>(
+    _ body: (UnsafePointer<CChar>?) -> Result
   ) -> Result {
-    return withUnsafePointer(to: krbnDeviceIdentifiers) { body($0) }
+    id.withCString(body)
   }
 }
 
 extension Optional where Wrapped: ConnectedDevice {
   @MainActor
-  func withDeviceIdentifiersCPointer<Result>(
-    _ body: (UnsafePointer<krbn_device_identifiers>?) -> Result
+  func withDeviceIdentifiersJSONCString<Result>(
+    _ body: (UnsafePointer<CChar>?) -> Result
   ) -> Result {
     switch self {
     case .some(let connectedDevice):
-      return connectedDevice.withDeviceIdentifiersCPointer(body)
+      return connectedDevice.withDeviceIdentifiersJSONCString(body)
     case .none:
       return body(nil)
     }

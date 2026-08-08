@@ -318,13 +318,13 @@ struct ComplexModificationsEditView: View {
 
     let ok = code.withCString { codeCString in
       krbn_eval_js_to_json_string(
-        codeCString,
-        &jsonBuffer,
-        jsonBuffer.count,
-        &logBuffer,
-        logBuffer.count,
-        &errorBuffer,
-        errorBuffer.count
+        code: codeCString,
+        jsonBuffer: &jsonBuffer,
+        jsonBufferLength: jsonBuffer.count,
+        logMessageBuffer: &logBuffer,
+        logMessageBufferLength: logBuffer.count,
+        errorMessageBuffer: &errorBuffer,
+        errorMessageBufferLength: errorBuffer.count
       )
     }
 

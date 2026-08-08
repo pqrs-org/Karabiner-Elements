@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProfileEditView: View {
-  @Binding var profile: Profile?
+  @Binding var profile: SettingsConfigurationSnapshot.Profile?
   @Binding var showing: Bool
   @State private var name = ""
   @ObservedObject private var settings = Settings.shared

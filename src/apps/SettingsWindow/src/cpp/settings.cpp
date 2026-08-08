@@ -31,33 +31,37 @@ class settings_process_lifecycle_components_manager final : public pqrs::dispatc
 public:
   settings_process_lifecycle_components_manager(const settings_process_lifecycle_components_manager&) = delete;
 
-  explicit settings_process_lifecycle_components_manager(std::weak_ptr<settings_components_manager> weak_components_manager)
+  settings_process_lifecycle_components_manager(const settings_components_manager::callbacks& callbacks)
       : dispatcher_client(),
-        weak_components_manager_(weak_components_manager) {
+        components_manager_(std::make_shared<settings_components_manager>(callbacks)) {
+    settings_cpp::set_components_manager(components_manager_);
   }
 
   ~settings_process_lifecycle_components_manager() override {
     detach_from_dispatcher([this] {
-      if (auto manager = weak_components_manager_.lock()) {
-        manager->stop();
-      }
+      settings_cpp::set_components_manager(std::weak_ptr<settings_components_manager>());
+      components_manager_ = nullptr;
     });
   }
 
   void async_start() {
-    if (auto manager = weak_components_manager_.lock()) {
-      manager->start();
-    }
+    components_manager_->async_start();
   }
 
 private:
-  std::weak_ptr<settings_components_manager> weak_components_manager_;
+  std::shared_ptr<settings_components_manager> components_manager_;
 };
 } // namespace
 
-std::shared_ptr<settings_components_manager> settings_components_manager_;
+std::weak_ptr<settings_components_manager> settings_components_manager_;
+std::mutex settings_components_manager_mutex_;
 
-void krbn_initialize() {
+void krbn_initialize(krbn_core_configuration_updated_t core_configuration_updated_callback,
+                     krbn_log_messages_updated_t log_messages_updated_callback,
+                     krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received_callback,
+                     krbn_core_service_daemon_client_system_variables_received_t system_variables_received_callback,
+                     krbn_console_user_server_client_status_changed_t console_user_server_client_status_changed_callback,
+                     krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback) {
   krbn::logger::get_logger()->debug(__func__);
 
   if (!scoped_dispatcher_manager_) {
@@ -69,15 +73,19 @@ void krbn_initialize() {
         pqrs::cf::run_loop_thread::failure_policy::exit);
   }
 
-  if (!settings_components_manager_) {
-    settings_components_manager_ = std::make_shared<settings_components_manager>();
-  }
-
+  auto callbacks = settings_components_manager::callbacks{
+      .core_configuration_updated = core_configuration_updated_callback,
+      .log_messages_updated = log_messages_updated_callback,
+      .connected_devices_received = connected_devices_received_callback,
+      .system_variables_received = system_variables_received_callback,
+      .console_user_server_client_status_changed = console_user_server_client_status_changed_callback,
+      .settings_window_guidance_received = settings_window_guidance_received_callback,
+  };
   krbn::process_lifecycle_manager::initialize_shared_instance(
       krbn::process_lifecycle_manager::configuration{
           .components_manager_maker =
-              [] {
-                return std::make_unique<settings_process_lifecycle_components_manager>(settings_components_manager_);
+              [callbacks] {
+                return std::make_unique<settings_process_lifecycle_components_manager>(callbacks);
               },
           .termination_completion_handler = [] {},
       });
@@ -89,7 +97,7 @@ void krbn_terminate() {
 
   krbn::process_lifecycle_manager::terminate_shared_instance();
 
-  settings_components_manager_ = nullptr;
+  settings_cpp::set_components_manager(std::weak_ptr<settings_components_manager>());
 
   scoped_run_loop_thread_manager_ = nullptr;
 
@@ -99,12 +107,6 @@ void krbn_terminate() {
 void krbn_load_custom_environment_variables() {
   auto environment_variables = krbn::environment_variable_utility::load_custom_environment_variables();
   krbn::environment_variable_utility::log(environment_variables);
-}
-
-void krbn_enqueue_callback(void (*callback)()) {
-  if (auto manager = settings_components_manager_) {
-    manager->enqueue_callback(callback);
-  }
 }
 
 void krbn_get_user_configuration_directory(char* buffer,
@@ -203,40 +205,14 @@ void krbn_save_prettierrc() {
 }
 
 //
-// configuration_monitor
-//
-
-void krbn_enable_configuration_monitor() {
-  if (auto manager = settings_components_manager_) {
-    manager->enable_configuration_monitor();
-  }
-}
-
-void krbn_set_core_configuration_updated_callback(krbn_core_configuration_updated_t callback) {
-  if (auto manager = settings_components_manager_) {
-    if (auto m = manager->get_settings_configuration_monitor()) {
-      m->set_core_configuration_updated_callback(callback);
-    }
-  }
-}
-
-//
 // complex_modifications_assets_manager
 //
-
-void krbn_enable_complex_modifications_assets_manager() {
-  if (auto manager = settings_components_manager_) {
-    manager->enable_complex_modifications_assets_manager();
-  }
-}
 
 void krbn_complex_modifications_assets_manager_reload(krbn_json_output_callback output) {
   auto json = nlohmann::json::array();
 
-  if (auto manager = settings_components_manager_) {
-    if (auto m = manager->get_complex_modifications_assets_manager()) {
-      json = m->reload_and_get_files_json();
-    }
+  if (auto manager = settings_cpp::get_components_manager()) {
+    json = manager->reload_complex_modifications_assets();
   }
 
   auto json_string = krbn::json_utility::dump(json);
@@ -245,46 +221,15 @@ void krbn_complex_modifications_assets_manager_reload(krbn_json_output_callback 
 
 void krbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
                                                                                                size_t index) {
-  if (auto manager = settings_components_manager_) {
-    if (auto m = manager->get_complex_modifications_assets_manager()) {
-      if (auto c = manager->get_current_core_configuration()) {
-        m->add_rule_to_core_configuration_selected_profile(file_index,
-                                                           index,
-                                                           *c);
-      }
-    }
+  if (auto manager = settings_cpp::get_components_manager()) {
+    manager->add_complex_modifications_rule_to_core_configuration_selected_profile(file_index,
+                                                                                   index);
   }
 }
 
 void krbn_complex_modifications_assets_manager_erase_file(size_t index) {
-  if (auto manager = settings_components_manager_) {
-    if (auto m = manager->get_complex_modifications_assets_manager()) {
-      return m->erase_file(index);
-    }
-  }
-}
-
-//
-// log_monitor
-//
-
-void krbn_enable_log_monitor() {
-  if (auto manager = settings_components_manager_) {
-    manager->enable_log_monitor();
-  }
-}
-
-void krbn_disable_log_monitor() {
-  if (auto manager = settings_components_manager_) {
-    manager->disable_log_monitor();
-  }
-}
-
-void krbn_set_log_messages_updated_callback(krbn_log_messages_updated_t callback) {
-  if (auto manager = settings_components_manager_) {
-    if (auto m = manager->get_settings_log_monitor()) {
-      m->set_log_messages_updated_callback(callback);
-    }
+  if (auto manager = settings_cpp::get_components_manager()) {
+    manager->erase_complex_modifications_asset_file(index);
   }
 }
 
@@ -292,57 +237,21 @@ void krbn_set_log_messages_updated_callback(krbn_log_messages_updated_t callback
 // core_service_client
 //
 
-void krbn_enable_core_service_daemon_client() {
-  if (auto manager = settings_components_manager_) {
-    manager->enable_core_service_daemon_client();
-  }
-}
-
-void krbn_core_service_daemon_client_async_start() {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_core_service_daemon_client()) {
-      c->async_start();
-    }
-  }
-}
-
 void krbn_core_service_daemon_client_async_get_connected_devices() {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_core_service_daemon_client()) {
-      c->async_get_connected_devices();
-    }
-  }
-}
-
-void krbn_set_core_service_daemon_client_connected_devices_received_callback(krbn_core_service_daemon_client_connected_devices_received_t _Nonnull callback) {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_core_service_daemon_client()) {
-      c->set_connected_devices_received_callback(callback);
-    }
+  if (auto manager = settings_cpp::get_components_manager()) {
+    manager->async_get_connected_devices();
   }
 }
 
 void krbn_core_service_daemon_client_async_get_system_variables() {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_core_service_daemon_client()) {
-      c->async_get_system_variables();
-    }
-  }
-}
-
-void krbn_set_core_service_daemon_client_system_variables_received_callback(krbn_core_service_daemon_client_system_variables_received_t _Nonnull callback) {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_core_service_daemon_client()) {
-      c->set_system_variables_received_callback(callback);
-    }
+  if (auto manager = settings_cpp::get_components_manager()) {
+    manager->async_get_system_variables();
   }
 }
 
 void krbn_core_service_daemon_client_async_set_app_icon(int number) {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_core_service_daemon_client()) {
-      c->async_set_app_icon(number);
-    }
+  if (auto manager = settings_cpp::get_components_manager()) {
+    manager->async_set_app_icon(number);
   }
 }
 
@@ -350,50 +259,16 @@ void krbn_core_service_daemon_client_async_set_app_icon(int number) {
 // console_user_server_client
 //
 
-void krbn_enable_console_user_server_client(uid_t uid) {
-  if (auto manager = settings_components_manager_) {
-    manager->enable_console_user_server_client(uid);
-  }
-}
-
-void krbn_console_user_server_client_async_start() {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_console_user_server_client()) {
-      c->async_start();
-    }
-  }
-}
-
-void krbn_set_console_user_server_client_status_changed_callback(krbn_console_user_server_client_status_changed_t callback) {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_console_user_server_client()) {
-      c->set_status_changed_callback(callback);
-    }
-  }
-}
-
 krbn_console_user_server_client_status krbn_console_user_server_client_get_status() {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_console_user_server_client()) {
-      return c->get_status();
-    }
+  if (auto manager = settings_cpp::get_components_manager()) {
+    return manager->get_console_user_server_client_status();
   }
 
   return krbn_console_user_server_client_status_none;
 }
 
 void krbn_console_user_server_client_async_get_settings_window_guidance() {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_console_user_server_client()) {
-      c->async_get_settings_window_guidance();
-    }
-  }
-}
-
-void krbn_set_console_user_server_client_settings_window_guidance_received_callback(krbn_console_user_server_client_settings_window_guidance_received_t callback) {
-  if (auto manager = settings_components_manager_) {
-    if (auto c = manager->get_settings_console_user_server_client()) {
-      c->set_settings_window_guidance_received_callback(callback);
-    }
+  if (auto manager = settings_cpp::get_components_manager()) {
+    manager->async_get_settings_window_guidance();
   }
 }

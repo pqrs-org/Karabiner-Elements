@@ -14,7 +14,7 @@ private struct LogMessagePayload: Decodable {
   let dateNumber: UInt64
 }
 
-private func callback(
+func logMessagesUpdatedCallback(
   _ json: UnsafePointer<CChar>,
   _ length: Int
 ) {
@@ -103,11 +103,6 @@ public class LogMessages: ObservableObject {
   }
 
   public func watch() {
-    entries = []
-
-    krbn_enable_log_monitor()
-    krbn_set_log_messages_updated_callback(callback)
-
     //
     // Create timer
     //
@@ -122,8 +117,6 @@ public class LogMessages: ObservableObject {
   }
 
   public func unwatch() {
-    krbn_disable_log_monitor()
-
     timerTask?.cancel()
   }
 

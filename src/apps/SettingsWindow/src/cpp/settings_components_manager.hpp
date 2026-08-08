@@ -4,138 +4,85 @@
 #include "settings_configuration_monitor.hpp"
 #include "settings_console_user_server_client.hpp"
 #include "settings_core_service_daemon_client.hpp"
-#include "settings_dispatcher_client.hpp"
 #include "settings_log_monitor.hpp"
-#include <pqrs/gsl.hpp>
+#include <unistd.h>
 
 class settings_components_manager {
 public:
-  settings_components_manager()
-      : dispatcher_client_(std::make_shared<settings_dispatcher_client>()) {
+  struct callbacks final {
+    krbn_core_configuration_updated_t core_configuration_updated;
+    krbn_log_messages_updated_t log_messages_updated;
+    krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received;
+    krbn_core_service_daemon_client_system_variables_received_t system_variables_received;
+    krbn_console_user_server_client_status_changed_t console_user_server_client_status_changed;
+    krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received;
+  };
+
+  settings_components_manager(const callbacks& callbacks)
+      : configuration_monitor_(callbacks.core_configuration_updated),
+        log_monitor_(callbacks.log_messages_updated),
+        core_service_daemon_client_(
+            [this](const auto& connected_devices) {
+              configuration_monitor_.remember_connected_devices(connected_devices);
+            },
+            callbacks.connected_devices_received,
+            callbacks.system_variables_received),
+        console_user_server_client_(geteuid(),
+                                    callbacks.console_user_server_client_status_changed,
+                                    callbacks.settings_window_guidance_received) {
   }
 
-  void start() {
-    if (configuration_monitor_) {
-      configuration_monitor_->start();
-    }
-    if (log_monitor_) {
-      log_monitor_->start();
-    }
-    if (core_service_daemon_client_) {
-      core_service_daemon_client_->start();
-      core_service_daemon_client_->async_start();
-    }
-    if (console_user_server_client_) {
-      console_user_server_client_->start();
-      console_user_server_client_->async_start();
-    }
-  }
-
-  void stop() {
-    if (configuration_monitor_) {
-      configuration_monitor_->stop();
-    }
-    if (log_monitor_) {
-      log_monitor_->stop();
-    }
-    if (core_service_daemon_client_) {
-      core_service_daemon_client_->stop();
-    }
-    if (console_user_server_client_) {
-      console_user_server_client_->stop();
-    }
-  }
-
-  void enqueue_callback(void (*callback)()) {
-    dispatcher_client_->enqueue(callback);
-  }
-
-  //
-  // configuration_monitor_
-  //
-
-  void enable_configuration_monitor() {
-    if (!configuration_monitor_) {
-      configuration_monitor_ = std::make_shared<settings_configuration_monitor>();
-    }
-  }
-
-  [[nodiscard]] std::shared_ptr<settings_configuration_monitor> get_settings_configuration_monitor() const {
-    return configuration_monitor_;
+  void async_start() {
+    configuration_monitor_.start();
+    core_service_daemon_client_.async_start();
+    console_user_server_client_.async_start();
   }
 
   [[nodiscard]] std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration() const {
-    if (auto m = configuration_monitor_) {
-      return m->get_weak_core_configuration().lock();
-    }
-    return nullptr;
+    return configuration_monitor_.get_weak_core_configuration().lock();
   }
 
-  //
-  // complex_modifications_assets_manager_;
-  //
-
-  void enable_complex_modifications_assets_manager() {
-    if (!complex_modifications_assets_manager_) {
-      complex_modifications_assets_manager_ = std::make_unique<settings_complex_modifications_assets_manager>();
-    }
+  [[nodiscard]] nlohmann::json reload_complex_modifications_assets() const {
+    return complex_modifications_assets_manager_.reload_and_get_files_json();
   }
 
-  [[nodiscard]] std::shared_ptr<settings_complex_modifications_assets_manager> get_complex_modifications_assets_manager() const {
-    return complex_modifications_assets_manager_;
-  }
-
-  //
-  // log_monitor_
-  //
-
-  void enable_log_monitor() {
-    if (!log_monitor_) {
-      log_monitor_ = std::make_shared<settings_log_monitor>();
+  void add_complex_modifications_rule_to_core_configuration_selected_profile(size_t file_index,
+                                                                             size_t index) const {
+    if (auto core_configuration = get_current_core_configuration()) {
+      complex_modifications_assets_manager_.add_rule_to_core_configuration_selected_profile(file_index,
+                                                                                            index,
+                                                                                            *core_configuration);
     }
   }
 
-  void disable_log_monitor() {
-    log_monitor_ = nullptr;
+  void erase_complex_modifications_asset_file(size_t index) const {
+    complex_modifications_assets_manager_.erase_file(index);
   }
 
-  [[nodiscard]] std::shared_ptr<settings_log_monitor> get_settings_log_monitor() const {
-    return log_monitor_;
+  void async_get_connected_devices() {
+    core_service_daemon_client_.async_get_connected_devices();
   }
 
-  //
-  // core_service_daemon_client_
-  //
-
-  void enable_core_service_daemon_client() {
-    if (!core_service_daemon_client_) {
-      core_service_daemon_client_ = std::make_shared<settings_core_service_daemon_client>();
-    }
+  void async_get_system_variables() {
+    core_service_daemon_client_.async_get_system_variables();
   }
 
-  [[nodiscard]] std::shared_ptr<settings_core_service_daemon_client> get_settings_core_service_daemon_client() const {
-    return core_service_daemon_client_;
+  void async_set_app_icon(int number) {
+    core_service_daemon_client_.async_set_app_icon(number);
   }
 
-  //
-  // console_user_server_client_
-  //
-
-  void enable_console_user_server_client(uid_t uid) {
-    if (!console_user_server_client_) {
-      console_user_server_client_ = std::make_shared<settings_console_user_server_client>(uid);
-    }
+  [[nodiscard]] krbn_console_user_server_client_status get_console_user_server_client_status() const {
+    return console_user_server_client_.get_status();
   }
 
-  [[nodiscard]] std::shared_ptr<settings_console_user_server_client> get_settings_console_user_server_client() const {
-    return console_user_server_client_;
+  void async_get_settings_window_guidance() {
+    console_user_server_client_.async_get_settings_window_guidance();
   }
 
 private:
-  pqrs::not_null_shared_ptr_t<settings_dispatcher_client> dispatcher_client_;
-  std::shared_ptr<settings_configuration_monitor> configuration_monitor_;
-  std::shared_ptr<settings_complex_modifications_assets_manager> complex_modifications_assets_manager_;
-  std::shared_ptr<settings_log_monitor> log_monitor_;
-  std::shared_ptr<settings_core_service_daemon_client> core_service_daemon_client_;
-  std::shared_ptr<settings_console_user_server_client> console_user_server_client_;
+  settings_configuration_monitor configuration_monitor_;
+  settings_complex_modifications_assets_manager complex_modifications_assets_manager_;
+  settings_log_monitor log_monitor_;
+  settings_core_service_daemon_client core_service_daemon_client_;
+  settings_console_user_server_client console_user_server_client_;
 };

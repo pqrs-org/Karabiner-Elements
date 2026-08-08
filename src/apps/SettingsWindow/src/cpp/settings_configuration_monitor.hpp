@@ -1,17 +1,20 @@
 #pragma once
 
+#include "connected_devices.hpp"
+#include "json_utility.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "settings.hpp"
-#include <atomic>
-#include <pqrs/thread_wait.hpp>
+#include "settings_configuration_snapshot.hpp"
+#include "settings_remembered_device_identifiers.hpp"
+#include <mutex>
 
 class settings_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   settings_configuration_monitor(const settings_configuration_monitor&) = delete;
 
-  settings_configuration_monitor()
-      : dispatcher_client() {
-    start(true);
+  settings_configuration_monitor(krbn_core_configuration_updated_t callback)
+      : dispatcher_client(),
+        callback_(callback) {
   }
 
   ~settings_configuration_monitor() override {
@@ -21,23 +24,6 @@ public:
   }
 
   void start() {
-    start(false);
-  }
-
-  void stop() {
-    monitor_ = nullptr;
-  }
-
-  [[nodiscard]] std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration() const {
-    return weak_core_configuration_;
-  }
-
-  void set_core_configuration_updated_callback(krbn_core_configuration_updated_t callback) {
-    callback_.store(callback);
-  }
-
-private:
-  void start(bool wait_for_initial_update) {
     if (monitor_) {
       return;
     }
@@ -47,31 +33,49 @@ private:
         geteuid(),
         krbn::core_configuration::error_handling::loose);
 
-    std::shared_ptr<pqrs::thread_wait> wait;
-    if (wait_for_initial_update) {
-      wait = pqrs::make_thread_wait();
-    }
-
-    monitor_->core_configuration_updated.connect([this, wait](auto&& weak_core_configuration) {
-      weak_core_configuration_ = weak_core_configuration;
-
-      if (auto callback = callback_.load()) {
-        callback();
+    monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
+      {
+        std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+        weak_core_configuration_ = weak_core_configuration;
       }
 
-      if (wait) {
-        wait->notify();
+      if (auto core_configuration = weak_core_configuration.lock()) {
+        invoke_callback(*core_configuration);
       }
     });
 
     monitor_->async_start();
+  }
 
-    if (wait) {
-      wait->wait_notice();
+  void stop() {
+    monitor_ = nullptr;
+  }
+
+  [[nodiscard]] std::weak_ptr<krbn::core_configuration::core_configuration> get_weak_core_configuration() const {
+    std::lock_guard<std::mutex> lock(core_configuration_mutex_);
+    return weak_core_configuration_;
+  }
+
+  void remember_connected_devices(const krbn::connected_devices& connected_devices) {
+    // The process-wide singleton retains identifiers for disconnected devices
+    // while this monitor is destroyed and recreated across sleep and wake.
+    if (settings_remembered_device_identifiers::get_instance().remember_connected_devices(connected_devices)) {
+      if (auto core_configuration = get_weak_core_configuration().lock()) {
+        invoke_callback(*core_configuration);
+      }
     }
   }
 
+private:
+  void invoke_callback(const krbn::core_configuration::core_configuration& core_configuration) const {
+    auto json = krbn::json_utility::dump(
+        settings_configuration_snapshot(core_configuration)
+            .to_json());
+    callback_(json.data(), json.size());
+  }
+
   std::unique_ptr<krbn::configuration_monitor> monitor_;
+  mutable std::mutex core_configuration_mutex_;
   std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
-  std::atomic<krbn_core_configuration_updated_t> callback_{nullptr};
+  const krbn_core_configuration_updated_t callback_;
 };

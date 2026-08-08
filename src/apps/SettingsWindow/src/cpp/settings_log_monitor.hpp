@@ -4,15 +4,15 @@
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "settings.hpp"
-#include <atomic>
 #include <pqrs/spdlog.hpp>
 
 class settings_log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   settings_log_monitor(const settings_log_monitor&) = delete;
 
-  settings_log_monitor()
-      : dispatcher_client() {
+  explicit settings_log_monitor(krbn_log_messages_updated_t callback)
+      : dispatcher_client(),
+        callback_(callback) {
     start();
   }
 
@@ -45,9 +45,7 @@ public:
       lines_ = lines;
 
       auto json_string = make_lines_json_string();
-      if (auto callback = callback_.load()) {
-        callback(json_string.data(), json_string.size());
-      }
+      callback_(json_string.data(), json_string.size());
     });
 
     monitor_->async_start(std::chrono::milliseconds(1000));
@@ -55,15 +53,6 @@ public:
 
   void stop() {
     monitor_ = nullptr;
-  }
-
-  void set_log_messages_updated_callback(krbn_log_messages_updated_t callback) {
-    enqueue_to_dispatcher([this, callback] {
-      callback_.store(callback);
-
-      auto json_string = make_lines_json_string();
-      callback(json_string.data(), json_string.size());
-    });
   }
 
 private:
@@ -106,5 +95,5 @@ private:
 
   std::unique_ptr<pqrs::spdlog::monitor> monitor_;
   std::shared_ptr<std::deque<std::string>> lines_;
-  std::atomic<krbn_log_messages_updated_t> callback_{nullptr};
+  const krbn_log_messages_updated_t callback_;
 };

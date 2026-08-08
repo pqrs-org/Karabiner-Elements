@@ -4,6 +4,8 @@ struct DevicesGamePadSettingsView: View {
   @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
   @Binding var showing: Bool
 
+  @ObservedObject private var settings = Settings.shared
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 12.0) {
@@ -14,14 +16,18 @@ struct DevicesGamePadSettingsView: View {
         .padding(.top, 20)
 
         TabView {
-          XYStickTabView(connectedDeviceSetting: connectedDeviceSetting)
+          XYStickTabView(
+            connectedDeviceSetting: connectedDeviceSetting,
+            defaults: settings.deviceDefaults)
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .tabItem {
               Text("XY stick")
             }
 
-          WheelsStickTabView(connectedDeviceSetting: connectedDeviceSetting)
+          WheelsStickTabView(
+            connectedDeviceSetting: connectedDeviceSetting,
+            defaults: settings.deviceDefaults)
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .tabItem {
@@ -47,29 +53,28 @@ struct DevicesGamePadSettingsView: View {
 
   struct XYStickTabView: View {
     @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
+    let defaults: SettingsConfigurationSnapshot.DeviceDefaults?
 
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
           deadzone: $connectedDeviceSetting.gamePadXYStickDeadzone,
-          deadzoneDefaultValue:
-            krbn_core_configuration_game_pad_xy_stick_deadzone_default_value(),
+          deadzoneDefaultValue: defaults?.gamePadXyStickDeadzone ?? 0.0,
 
           deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
             .gamePadXYStickDeltaMagnitudeDetectionThreshold,
           deltaMagnitudeDetectionThresholdDefaultValue:
-            krbn_core_configuration_game_pad_xy_stick_delta_magnitude_detection_threshold_default_value(),
+            defaults?.gamePadXyStickDeltaMagnitudeDetectionThreshold ?? 0.0,
 
           continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
             .gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold,
           continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
-            krbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value(),
+            defaults?.gamePadXyStickContinuedMovementAbsoluteMagnitudeThreshold ?? 0.0,
 
           continuedMovementIntervalMilliseconds: $connectedDeviceSetting
             .gamePadXYStickContinuedMovementIntervalMilliseconds,
-          continuedMovementIntervalMillisecondsDefaultValue: Int(
-            krbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
-          )
+          continuedMovementIntervalMillisecondsDefaultValue:
+            defaults?.gamePadXyStickContinuedMovementIntervalMilliseconds ?? 0
         )
 
         HStack(spacing: 20.0) {
@@ -98,29 +103,28 @@ struct DevicesGamePadSettingsView: View {
 
   struct WheelsStickTabView: View {
     @ObservedObject var connectedDeviceSetting: ConnectedDeviceSetting
+    let defaults: SettingsConfigurationSnapshot.DeviceDefaults?
 
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
           deadzone: $connectedDeviceSetting.gamePadWheelsStickDeadzone,
-          deadzoneDefaultValue:
-            krbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(),
+          deadzoneDefaultValue: defaults?.gamePadWheelsStickDeadzone ?? 0.0,
 
           deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
             .gamePadWheelsStickDeltaMagnitudeDetectionThreshold,
           deltaMagnitudeDetectionThresholdDefaultValue:
-            krbn_core_configuration_game_pad_wheels_stick_delta_magnitude_detection_threshold_default_value(),
+            defaults?.gamePadWheelsStickDeltaMagnitudeDetectionThreshold ?? 0.0,
 
           continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
             .gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold,
           continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
-            krbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value(),
+            defaults?.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold ?? 0.0,
 
           continuedMovementIntervalMilliseconds: $connectedDeviceSetting
             .gamePadWheelsStickContinuedMovementIntervalMilliseconds,
-          continuedMovementIntervalMillisecondsDefaultValue: Int(
-            krbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
-          )
+          continuedMovementIntervalMillisecondsDefaultValue:
+            defaults?.gamePadWheelsStickContinuedMovementIntervalMilliseconds ?? 0
         )
 
         HStack(spacing: 20.0) {

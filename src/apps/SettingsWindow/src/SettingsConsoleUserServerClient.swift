@@ -1,7 +1,7 @@
 import AsyncAlgorithms
 import Foundation
 
-private func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   let data = Data(String(cString: jsonString).utf8)
 
   if let state = try? JSONDecoder().decode(SettingsWindowGuidanceState.self, from: data) {
@@ -11,7 +11,7 @@ private func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<
   }
 }
 
-private func consoleUserServerClientStatusChangedCallback() {
+func consoleUserServerClientStatusChangedCallback() {
   Task { @MainActor in
     SettingsConsoleUserServerClient.shared.updateConsoleUserServerClientState()
     SettingsConsoleUserServerClient.shared.updateLocalServicesGuidanceContext()
@@ -39,15 +39,6 @@ final class SettingsConsoleUserServerClient {
   }
 
   public func start() {
-    krbn_enable_console_user_server_client(geteuid())
-
-    krbn_set_console_user_server_client_status_changed_callback(
-      consoleUserServerClientStatusChangedCallback)
-    krbn_set_console_user_server_client_settings_window_guidance_received_callback(
-      settingsWindowGuidanceReceivedCallback)
-
-    krbn_console_user_server_client_async_start()
-
     currentAlertTimerTask = Task { @MainActor in
       updateConsoleUserServerClientState()
       updateLocalServicesGuidanceContext()

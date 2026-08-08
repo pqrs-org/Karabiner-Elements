@@ -18,10 +18,6 @@ private func complexModificationsAssetsJSONOutputCallback(
 final class ComplexModificationsAssetFiles: ObservableObject {
   static let shared = ComplexModificationsAssetFiles()
 
-  init() {
-    krbn_enable_complex_modifications_assets_manager()
-  }
-
   @Published var files: [ComplexModificationsAssetFile] = []
 
   public func updateFiles() {
