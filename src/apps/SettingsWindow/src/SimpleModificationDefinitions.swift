@@ -45,16 +45,14 @@ public struct SimpleModificationDefinitions {
 
               if !notFrom {
                 if data.count > 0 {
-                  if let canonicalDataJson = CanonicalJSON.string(fromJSONObject: data[0])
-                  {
+                  if let canonicalDataJson = CanonicalJSON.string(fromJSONObject: data[0]) {
                     fromCategory.entries.append(
                       SimpleModificationDefinitionEntry(label, canonicalDataJson, unsafeFrom))
                   }
                 }
               }
               if !notTo {
-                if let canonicalDataJson = CanonicalJSON.string(fromJSONObject: data)
-                {
+                if let canonicalDataJson = CanonicalJSON.string(fromJSONObject: data) {
                   toCategory.entries.append(
                     SimpleModificationDefinitionEntry(label, canonicalDataJson, false))
                 }

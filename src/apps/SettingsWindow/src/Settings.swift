@@ -138,10 +138,6 @@ final class Settings: ObservableObject {
     didSetEnabled = false
     configuration = snapshot
 
-    complexModificationsRules = makeComplexModificationsRules(
-      snapshot.selectedProfile.complexModifications.rules
-    )
-
     updateSystemDefaultProfileExists()
 
     didSetEnabled = true
@@ -263,39 +259,32 @@ final class Settings: ObservableObject {
   // Complex modifications
   //
 
-  @Published var complexModificationsRules: [ComplexModificationsRule] = []
-
-  private func makeComplexModificationsRules(
-    _ payloads: [SettingsConfiguration.ComplexModificationsRule]
-  ) -> [ComplexModificationsRule] {
-    payloads.map {
-      ComplexModificationsRule(
-        index: $0.index,
-        description: $0.description,
-        enabled: $0.enabled,
-        codeString: $0.codeString,
-        searchText: $0.searchText,
-        codeType: $0.codeType == "javascript"
-          ? krbn_complex_modifications_rule_code_type_javascript
-          : krbn_complex_modifications_rule_code_type_json)
-    }
-  }
-
   private func reflectComplexModificationsRuleChanges() {
     updateProperties()
   }
 
+  private func krbnCodeType(
+    _ codeType: SettingsConfiguration.ComplexModificationsRule.CodeType
+  ) -> krbn_complex_modifications_rule_code_type {
+    switch codeType {
+    case .json:
+      return krbn_complex_modifications_rule_code_type_json
+    case .javascript:
+      return krbn_complex_modifications_rule_code_type_javascript
+    }
+  }
+
   public func replaceComplexModificationsRule(
-    _ complexModificationRule: ComplexModificationsRule,
-    _ codeString: String,
-    _ codeType: krbn_complex_modifications_rule_code_type,
+    index: Int,
+    codeString: String,
+    codeType: SettingsConfiguration.ComplexModificationsRule.CodeType
   ) -> String? {
     var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
     if let cString = codeString.cString(using: .utf8) {
       krbn_core_configuration_replace_selected_profile_complex_modifications_rule(
-        index: complexModificationRule.index,
+        index: index,
         code: cString,
-        codeType: codeType,
+        codeType: krbnCodeType(codeType),
         errorMessageBuffer: &errorMessageBuffer,
         errorMessageBufferLength: errorMessageBuffer.count
       )
@@ -314,14 +303,14 @@ final class Settings: ObservableObject {
   }
 
   public func pushFrontComplexModificationsRule(
-    _ codeString: String,
-    _ codeType: krbn_complex_modifications_rule_code_type,
+    codeString: String,
+    codeType: SettingsConfiguration.ComplexModificationsRule.CodeType
   ) -> String? {
     var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
     if let cString = codeString.cString(using: .utf8) {
       krbn_core_configuration_push_front_selected_profile_complex_modifications_rule(
         code: cString,
-        codeType: codeType,
+        codeType: krbnCodeType(codeType),
         errorMessageBuffer: &errorMessageBuffer,
         errorMessageBufferLength: errorMessageBuffer.count
       )
@@ -345,8 +334,10 @@ final class Settings: ObservableObject {
       destinationIndex
     )
 
-    // Avoid reflectComplexModificationsRuleChanges here because rebuilding the array can reset List scroll state.
-    var rules = complexModificationsRules
+    // Reorder the currently decoded rules locally so their UUIDs are preserved during the move.
+    // Decoding a fresh snapshot here would assign new UUIDs and reset the List scroll state.
+    var configuration = configuration
+    var rules = configuration.selectedProfile.complexModifications.rules
     if sourceIndex >= 0 && sourceIndex < rules.count {
       let item = rules.remove(at: sourceIndex)
       var destination = destinationIndex
@@ -356,19 +347,30 @@ final class Settings: ObservableObject {
       destination = max(0, min(destination, rules.count))
       rules.insert(item, at: destination)
 
-      for (index, rule) in rules.enumerated() {
-        rule.index = index
+      for index in rules.indices {
+        rules[index].index = index
       }
-      complexModificationsRules = rules
+      configuration.selectedProfile.complexModifications.rules = rules
+      self.configuration = configuration
     }
 
     save()
   }
 
-  public func removeComplexModificationsRule(_ complexModificationRule: ComplexModificationsRule) {
-    krbn_core_configuration_erase_selected_profile_complex_modifications_rule(
-      complexModificationRule.index
-    )
+  public func setComplexModificationsRuleEnabled(index: Int, enabled: Bool) {
+    krbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(index, enabled)
+
+    var configuration = configuration
+    if configuration.selectedProfile.complexModifications.rules.indices.contains(index) {
+      configuration.selectedProfile.complexModifications.rules[index].enabled = enabled
+      self.configuration = configuration
+    }
+
+    save()
+  }
+
+  public func removeComplexModificationsRule(index: Int) {
+    krbn_core_configuration_erase_selected_profile_complex_modifications_rule(index)
 
     reflectComplexModificationsRuleChanges()
 

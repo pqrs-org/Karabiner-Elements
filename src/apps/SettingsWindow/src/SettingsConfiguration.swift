@@ -82,13 +82,44 @@ struct SettingsConfiguration: Decodable {
     }
   }
 
-  struct ComplexModificationsRule: Decodable {
-    let index: Int
+  struct ComplexModificationsRule: Decodable, Identifiable {
+    enum CodeType: String, Decodable {
+      case json
+      case javascript
+    }
+
+    let id = UUID()
+    var index: Int
     let description: String
-    let enabled: Bool
+    var enabled: Bool
     let codeString: String
     let searchText: String
-    let codeType: String
+    let codeType: CodeType
+
+    private enum CodingKeys: String, CodingKey {
+      case index
+      case description
+      case enabled
+      case codeString
+      case searchText
+      case codeType
+    }
+
+    init(
+      index: Int,
+      description: String,
+      enabled: Bool,
+      codeString: String,
+      searchText: String,
+      codeType: CodeType
+    ) {
+      self.index = index
+      self.description = description
+      self.enabled = enabled
+      self.codeString = codeString
+      self.searchText = searchText
+      self.codeType = codeType
+    }
   }
 
   struct Device: Codable {
@@ -145,7 +176,7 @@ struct SettingsConfiguration: Decodable {
         var mouseMotionToScrollSpeed: Int
       }
 
-      let rules: [ComplexModificationsRule]
+      var rules: [ComplexModificationsRule]
       var parameters: Parameters
     }
 
@@ -171,8 +202,8 @@ struct SettingsConfiguration: Decodable {
 }
 
 // This is intentionally limited to the values that SettingsWindow edits directly.
-// Read-only and independently updated snapshot data, such as rules and simple modifications,
-// is not sent back to C++.
+// Snapshot data updated through dedicated C++ APIs, such as rules and simple modifications,
+// is not included.
 struct SettingsConfigurationUpdate: Encodable {
   struct SelectedProfile: Encodable {
     struct ComplexModifications: Encodable {
