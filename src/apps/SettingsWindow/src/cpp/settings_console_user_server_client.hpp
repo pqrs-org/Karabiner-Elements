@@ -14,7 +14,7 @@ public:
                                       krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback)
       : dispatcher_client(),
         uid_(uid),
-        status_(krbn_console_user_server_client_status_none),
+        connected_(false),
         status_changed_callback_(status_changed_callback),
         settings_window_guidance_received_callback_(settings_window_guidance_received_callback) {
     start();
@@ -34,15 +34,15 @@ public:
     auto client = std::make_shared<krbn::console_user_server_client>(uid_);
 
     client->connected.connect([this] {
-      set_status(krbn_console_user_server_client_status_connected);
+      set_connected(true);
     });
 
     client->connect_failed.connect([this](auto&&) {
-      set_status(krbn_console_user_server_client_status_connect_failed);
+      set_connected(false);
     });
 
     client->closed.connect([this] {
-      set_status(krbn_console_user_server_client_status_closed);
+      set_connected(false);
     });
 
     client->received.connect([this](auto&& operation_type,
@@ -65,7 +65,7 @@ public:
   void stop() {
     std::atomic_store(&console_user_server_client_,
                       std::shared_ptr<krbn::console_user_server_client>());
-    status_.store(krbn_console_user_server_client_status_none);
+    connected_.store(false);
   }
 
   void async_start() const {
@@ -74,8 +74,8 @@ public:
     }
   }
 
-  [[nodiscard]] krbn_console_user_server_client_status get_status() const {
-    return status_.load();
+  [[nodiscard]] bool connected() const {
+    return connected_.load();
   }
 
   void async_get_settings_window_guidance() const {
@@ -86,15 +86,15 @@ public:
 
 private:
   // This method should be called in the shared dispatcher thread.
-  void set_status(krbn_console_user_server_client_status status) {
-    status_.store(status);
-
-    status_changed_callback_();
+  void set_connected(bool value) {
+    if (connected_.exchange(value) != value) {
+      status_changed_callback_();
+    }
   }
 
   uid_t uid_;
   std::shared_ptr<krbn::console_user_server_client> console_user_server_client_;
-  std::atomic<krbn_console_user_server_client_status> status_;
+  std::atomic_bool connected_;
   const krbn_console_user_server_client_status_changed_t status_changed_callback_;
   const krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback_;
 };

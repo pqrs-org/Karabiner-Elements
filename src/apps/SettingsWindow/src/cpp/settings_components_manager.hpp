@@ -71,8 +71,8 @@ public:
     core_service_daemon_client_.async_set_app_icon(number);
   }
 
-  [[nodiscard]] krbn_console_user_server_client_status get_console_user_server_client_status() const {
-    return console_user_server_client_.get_status();
+  [[nodiscard]] bool console_user_server_client_connected() const {
+    return console_user_server_client_.connected();
   }
 
   void async_get_settings_window_guidance() {

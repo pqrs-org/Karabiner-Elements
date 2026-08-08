@@ -259,12 +259,12 @@ void krbn_core_service_daemon_client_async_set_app_icon(int number) {
 // console_user_server_client
 //
 
-krbn_console_user_server_client_status krbn_console_user_server_client_get_status() {
+bool krbn_console_user_server_client_connected() {
   if (auto manager = settings_cpp::get_components_manager()) {
-    return manager->get_console_user_server_client_status();
+    return manager->console_user_server_client_connected();
   }
 
-  return krbn_console_user_server_client_status_none;
+  return false;
 }
 
 void krbn_console_user_server_client_async_get_settings_window_guidance() {

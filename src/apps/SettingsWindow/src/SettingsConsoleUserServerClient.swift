@@ -53,9 +53,7 @@ final class SettingsConsoleUserServerClient {
   }
 
   func updateConsoleUserServerClientState() {
-    if krbn_console_user_server_client_get_status()
-      != krbn_console_user_server_client_status_connected
-    {
+    if !krbn_console_user_server_client_connected() {
       consoleUserServerClientReady = false
     }
 
