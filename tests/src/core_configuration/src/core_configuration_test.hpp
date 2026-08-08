@@ -4,7 +4,10 @@
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
 #include <boost/ut.hpp>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <unistd.h>
 
 void run_core_configuration_test() {
   using namespace boost::ut;
@@ -114,7 +117,7 @@ void run_core_configuration_test() {
     expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == false);
     expect(configuration.get_global_configuration().get_enable_cgeventtap_fallback() == true);
 
-    expect(configuration.is_loaded() == true);
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
     expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::user_file);
 
     {
@@ -130,9 +133,58 @@ void run_core_configuration_test() {
                                                                  geteuid(),
                                                                  krbn::core_configuration::error_handling::strict);
       expect(configuration.get_selected_profile().get_name() == "Default profile");
-      expect(configuration.is_loaded() == false);
+      expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
       expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
     }
+  };
+
+  "load_state.permission_error"_test = [] {
+    // A process running as root can read a mode 000 file, so this test is only meaningful for
+    // the regular user account used to run Karabiner-Elements.
+    if (geteuid() == 0) {
+      return;
+    }
+
+    auto file_path = std::filesystem::temp_directory_path() /
+                     ("karabiner_core_configuration_permission_error_" + std::to_string(getpid()) + ".json");
+    {
+      std::ofstream output(file_path);
+      output << "{}";
+    }
+    std::filesystem::permissions(file_path,
+                                 std::filesystem::perms::none);
+
+    krbn::core_configuration::core_configuration configuration(file_path,
+                                                               geteuid(),
+                                                               krbn::core_configuration::error_handling::strict);
+
+    std::filesystem::remove(file_path);
+
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::permission_error);
+  };
+
+  "load_state.other_error"_test = [] {
+    // Files owned by root are always accepted, so an owner mismatch cannot be produced when the
+    // test itself is running as root.
+    if (geteuid() == 0) {
+      return;
+    }
+
+    auto file_path = std::filesystem::temp_directory_path() /
+                     ("karabiner_core_configuration_other_error_" + std::to_string(getpid()) + ".json");
+    {
+      std::ofstream output(file_path);
+      output << "{}";
+    }
+
+    auto unexpected_owner = static_cast<uid_t>(geteuid() + 1);
+    krbn::core_configuration::core_configuration configuration(file_path,
+                                                               unexpected_owner,
+                                                               krbn::core_configuration::error_handling::strict);
+
+    std::filesystem::remove(file_path);
+
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::other_error);
   };
 
   "broken.json"_test = [] {
@@ -142,7 +194,7 @@ void run_core_configuration_test() {
                                                                  krbn::core_configuration::error_handling::strict);
 
       expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
-      expect(configuration.is_loaded() == false);
+      expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::json_error);
       expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
       expect(configuration.get_parse_error_message() == "[json.exception.parse_error.101] parse error at line 7, column 1: syntax error while parsing object key - unexpected end of input; expected string literal");
 
@@ -160,7 +212,7 @@ void run_core_configuration_test() {
       expect((configuration.get_profiles())[0]->get_fn_function_keys()->get_pairs().size() == 12);
 
       {
-        // to_json result is default json if is_loaded == false
+        // to_json result is default json if load_state is not loaded.
         std::ifstream input("json/to_json_default.json");
         auto expected = krbn::json_utility::parse_jsonc(input);
         expect(configuration.to_json() == expected) << UT_SHOW_LINE;
@@ -172,7 +224,7 @@ void run_core_configuration_test() {
                                                                  krbn::core_configuration::error_handling::strict);
 
       expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
-      expect(configuration.is_loaded() == false);
+      expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::json_error);
       expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
     }
   };
@@ -191,7 +243,7 @@ void run_core_configuration_test() {
                           nlohmann::json::array({nlohmann::json::object({{"key_code", "spacebar"}})}).dump());
 
     expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs() == expected);
-    expect(configuration.is_loaded() == true);
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
   };
 
   "global_configuration.to_json"_test = [] {

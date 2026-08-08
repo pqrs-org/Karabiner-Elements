@@ -8,6 +8,7 @@
 #include "logger.hpp"
 #include <filesystem>
 #include <nod/nod.hpp>
+#include <optional>
 #include <pqrs/osx/file_monitor.hpp>
 
 namespace krbn {
@@ -16,6 +17,7 @@ public:
   // Signals (invoked from the shared dispatcher thread)
 
   nod::signal<void(std::weak_ptr<core_configuration::core_configuration>)> core_configuration_updated;
+  nod::signal<void(core_configuration::core_configuration::load_state)> load_state_changed;
   nod::signal<void(const std::string&)> parse_error_message_changed;
 
   // Methods
@@ -39,7 +41,7 @@ public:
                                          system_core_configuration_file_path](auto&& changed_file_path,
                                                                               auto&& changed_file_body) {
       auto file_path = changed_file_path;
-      if (filesystem_utility::exists(user_core_configuration_file_path)) {
+      if (path_may_exist(user_core_configuration_file_path)) {
         // Note:
         // user_core_configuration_file_path == system_core_configuration_file_path
         // if console_user_server is not running.
@@ -54,19 +56,28 @@ public:
         if (changed_file_path == user_core_configuration_file_path) {
           // user_core_configuration_file_path is removed.
 
-          if (filesystem_utility::exists(system_core_configuration_file_path)) {
+          if (path_may_exist(system_core_configuration_file_path)) {
             file_path = system_core_configuration_file_path;
           }
         }
       }
 
-      if (filesystem_utility::exists(file_path)) {
+      if (path_may_exist(file_path)) {
         logger::get_logger()->info("Load {0}...", file_path);
       }
 
       auto c = std::make_shared<core_configuration::core_configuration>(file_path,
                                                                         expected_user_core_configuration_file_owner,
                                                                         error_handling);
+
+      auto previous_load_state = load_state_;
+      auto load_state = c->get_load_state();
+      if (!load_state_ || *load_state_ != load_state) {
+        load_state_ = load_state;
+        enqueue_to_dispatcher([this, load_state] {
+          this->load_state_changed(load_state);
+        });
+      }
 
       // If a parse error occurs, parse_error_message_changed should be called, but core_configuration_updated should not.
       // Therefore, we handle the parse error first.
@@ -79,11 +90,15 @@ public:
         });
       }
 
-      if (core_configuration_ && !c->is_loaded()) {
+      if (load_state != core_configuration::core_configuration::load_state::loaded) {
         return;
       }
 
-      if (core_configuration_ && core_configuration_->to_json() == c->to_json()) {
+      auto recovered_from_error = previous_load_state &&
+                                  *previous_load_state != core_configuration::core_configuration::load_state::loaded;
+      if (!recovered_from_error &&
+          core_configuration_ &&
+          core_configuration_->to_json() == c->to_json()) {
         return;
       }
 
@@ -108,9 +123,24 @@ public:
   }
 
 private:
+  // Unlike std::filesystem::exists, this treats errors such as permission_denied as evidence that
+  // the path is not missing. This prevents falling back to another configuration when the intended
+  // configuration exists but cannot be accessed.
+  [[nodiscard]] static bool path_may_exist(const std::filesystem::path& path) {
+    std::error_code error;
+    auto status = std::filesystem::status(path, error);
+    if (!error) {
+      return std::filesystem::exists(status);
+    }
+
+    return error != std::errc::no_such_file_or_directory &&
+           error != std::errc::not_a_directory;
+  }
+
   std::unique_ptr<pqrs::osx::file_monitor> file_monitor_;
 
   std::shared_ptr<core_configuration::core_configuration> core_configuration_;
+  std::optional<core_configuration::core_configuration::load_state> load_state_;
   std::string parse_error_message_;
 };
 } // namespace krbn

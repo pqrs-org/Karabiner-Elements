@@ -38,6 +38,22 @@ public:
     system_file,
   };
 
+  enum class load_state {
+    // The configuration is ready to use.
+    // This also includes the case where the file does not exist and the default configuration is used.
+    loaded,
+
+    // The configuration file exists, but macOS denied access to it (EACCES or EPERM).
+    // For example, this can occur when karabiner.json is stored in ~/Desktop and access has not been granted.
+    permission_error,
+
+    // The file was readable, but its JSON could not be parsed or applied to the configuration.
+    json_error,
+
+    // Loading failed for another reason, such as an invalid file owner or an I/O error.
+    other_error,
+  };
+
   core_configuration(const core_configuration&) = delete;
 
   core_configuration()
@@ -51,7 +67,7 @@ public:
                      error_handling error_handling)
       : json_(nlohmann::json::object()),
         error_handling_(error_handling),
-        loaded_(false),
+        load_state_(load_state::loaded),
         source_(source::default_configuration),
         global_configuration_(std::make_shared<details::global_configuration>(nlohmann::json::object(),
                                                                               error_handling)),
@@ -66,10 +82,23 @@ public:
     helper_values_.push_back_array<details::profile>("profiles",
                                                      profiles_);
 
-    bool valid_file_owner = false;
+    std::error_code status_error;
+    auto file_status = std::filesystem::status(file_path, status_error);
+    if (status_error) {
+      if (status_error != std::errc::no_such_file_or_directory &&
+          status_error != std::errc::not_a_directory) {
+        load_state_ = is_permission_error(status_error)
+                          ? load_state::permission_error
+                          : load_state::other_error;
+        logger::get_logger()->error("failed to access {0}: {1}",
+                                    file_path,
+                                    status_error.message());
+      }
 
-    // Load karabiner.json only when the owner is root or current session user.
-    if (filesystem_utility::exists(file_path)) {
+    } else if (std::filesystem::exists(file_status)) {
+      bool valid_file_owner = false;
+
+      // Load karabiner.json only when the owner is root or current session user.
       if (pqrs::filesystem::is_owned(file_path, 0)) {
         valid_file_owner = true;
       } else {
@@ -80,8 +109,13 @@ public:
 
       if (!valid_file_owner) {
         logger::get_logger()->warn("{0} is not owned by a valid user.", file_path);
+        load_state_ = load_state::other_error;
 
       } else {
+        // errno is thread-local on macOS, so another thread cannot overwrite it.
+        // Clear it before opening the file and capture it immediately if opening fails because
+        // another function call on this thread could overwrite it.
+        errno = 0;
         std::ifstream input(file_path);
         if (input) {
           try {
@@ -90,7 +124,7 @@ public:
             helper_values_.update_value(json_,
                                         error_handling);
 
-            loaded_ = true;
+            load_state_ = load_state::loaded;
             source_ = file_path == constants::get_system_core_configuration_file_path().string()
                           ? source::system_file
                           : source::user_file;
@@ -98,9 +132,16 @@ public:
           } catch (std::exception& e) {
             logger::get_logger()->error("parse error in {0}: {1}", file_path, e.what());
             parse_error_message_ = e.what();
+            load_state_ = load_state::json_error;
           }
         } else {
-          logger::get_logger()->error("failed to open {0}", file_path);
+          auto error = std::error_code(errno, std::generic_category());
+          load_state_ = is_permission_error(error)
+                            ? load_state::permission_error
+                            : load_state::other_error;
+          logger::get_logger()->error("failed to open {0}: {1}",
+                                      file_path,
+                                      error.message());
         }
       }
     }
@@ -123,7 +164,9 @@ public:
     return j;
   }
 
-  [[nodiscard]] bool is_loaded() const { return loaded_; }
+  [[nodiscard]] load_state get_load_state() const {
+    return load_state_;
+  }
 
   [[nodiscard]] source get_source() const {
     return source_;
@@ -228,11 +271,16 @@ public:
                               file_path,
                               user_core_configuration_file_mode);
 
-    loaded_ = true;
+    load_state_ = load_state::loaded;
     source_ = source::user_file;
   }
 
 private:
+  [[nodiscard]] static bool is_permission_error(const std::error_code& error) {
+    return error == std::errc::permission_denied ||
+           error == std::errc::operation_not_permitted;
+  }
+
   void make_backup_file() {
     auto file_path = constants::get_user_core_configuration_file_path();
 
@@ -303,7 +351,7 @@ private:
 
   nlohmann::json json_;
   error_handling error_handling_;
-  bool loaded_;
+  load_state load_state_;
   source source_;
   std::string parse_error_message_;
 
