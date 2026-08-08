@@ -446,6 +446,13 @@ public:
         }
       });
 
+      configuration_monitor_->load_state_changed.connect([this](auto load_state) {
+        if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+          m->set_karabiner_json_permission_error(
+              load_state == core_configuration::core_configuration::load_state::permission_error);
+        }
+      });
+
       configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
         if (auto core_configuration = weak_core_configuration.lock()) {
           core_configuration_ = core_configuration;

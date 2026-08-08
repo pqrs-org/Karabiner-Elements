@@ -19,6 +19,7 @@ struct UIStatePayload: Decodable {
     let selected: Bool
   }
 
+  let configurationLoaded: Bool
   let menuSettings: MenuSettings
   let notificationWindowSettings: NotificationWindowSettings
   let profiles: [Profile]
@@ -75,7 +76,7 @@ final class ConsoleUserServerUIState: ObservableObject {
     menuSettings = payload.menuSettings
     notificationWindowSettings = payload.notificationWindowSettings
     profiles = payload.profiles
-    configurationLoaded = true
+    configurationLoaded = payload.configurationLoaded
     NotificationWindowManager.shared.updateWindowsVisibility()
   }
 }

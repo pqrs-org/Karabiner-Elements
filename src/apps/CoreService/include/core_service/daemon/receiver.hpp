@@ -555,7 +555,9 @@ private:
       return;
     }
 
-    clear_device_grabber_state();
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      m->reset_device_grabber_state();
+    }
 
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_peer_,
                                                        weak_core_service_daemon_state_manager_);
@@ -587,7 +589,9 @@ private:
     connected_devices_changed_connection_.disconnect();
     notification_message_changed_connection_.disconnect();
     device_grabber_ = nullptr;
-    clear_device_grabber_state();
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      m->reset_device_grabber_state();
+    }
 
     send_connected_devices_to_observers();
     send_notification_message_to_observers();
@@ -672,16 +676,6 @@ private:
       device_grabber_->async_invoke_with_notification_message(invoke);
     } else {
       invoke("");
-    }
-  }
-
-  void clear_device_grabber_state() {
-    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-      m->set_virtual_hid_device_service_client_connected(std::nullopt);
-      m->set_driver_activated(std::nullopt);
-      m->set_driver_connected(std::nullopt);
-      m->set_driver_version_mismatched(std::nullopt);
-      m->set_virtual_hid_keyboard_ready(std::nullopt);
     }
   }
 

@@ -56,6 +56,15 @@ public:
       }
     });
 
+    configuration_monitor_->load_state_changed.connect([this](auto load_state) {
+      settings_window_guidance_manager_->async_update_console_user_server_karabiner_json_permission_error(
+          load_state == core_configuration::core_configuration::load_state::permission_error);
+
+      if (load_state != core_configuration::core_configuration::load_state::loaded) {
+        publish_unloaded_ui_state();
+      }
+    });
+
     select_profile_connection_ = ui_bridge_->profile_selection_requested.connect([this](auto index) {
       if (core_configuration_) {
         core_configuration_->select_profile(index);
@@ -111,6 +120,7 @@ public:
   ~components_manager() override {
     detach_from_dispatcher([this] {
       stop_core_service_daemon_client();
+      publish_unloaded_ui_state();
 
       receiver_ = nullptr;
       software_function_handler_ = nullptr;
@@ -137,6 +147,26 @@ public:
   }
 
 private:
+  void publish_unloaded_ui_state() const {
+    ui_bridge_->set_ui_state(
+        nlohmann::json({
+                           {"configurationLoaded", false},
+                           {"menuSettings",
+                            {
+                                {"showIcon", false},
+                                {"showProfileName", false},
+                                {"showAdditionalMenuItems", false},
+                                {"enableMultitouchExtension", false},
+                            }},
+                           {"notificationWindowSettings",
+                            {
+                                {"enabled", false},
+                            }},
+                           {"profiles", nlohmann::json::array()},
+                       })
+            .dump());
+  }
+
   void publish_ui_state(const core_configuration::core_configuration& core_configuration) const {
     const auto& global_configuration = core_configuration.get_global_configuration();
     nlohmann::json profiles = nlohmann::json::array();
@@ -153,6 +183,10 @@ private:
     ui_bridge_->set_ui_state(
         nlohmann::json(
             {
+                {
+                    "configurationLoaded",
+                    true,
+                },
                 {
                     "menuSettings",
                     {

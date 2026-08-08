@@ -81,6 +81,14 @@ public:
     karabiner_json_parse_error_message_ = value;
   }
 
+  [[nodiscard]] const std::optional<bool>& get_karabiner_json_permission_error() const {
+    return karabiner_json_permission_error_;
+  }
+
+  void set_karabiner_json_permission_error(const std::optional<bool>& value) {
+    karabiner_json_permission_error_ = value;
+  }
+
   bool operator==(const core_service_daemon_state&) const = default;
 
 private:
@@ -97,6 +105,8 @@ private:
   std::optional<bool> virtual_hid_keyboard_ready_;
   std::optional<bool> virtual_hid_keyboard_type_not_set_;
   std::string karabiner_json_parse_error_message_;
+  // nullopt means that the initial configuration load has not completed yet.
+  std::optional<bool> karabiner_json_permission_error_;
 };
 
 inline void to_json(nlohmann::json& json, const core_service_daemon_state& value) {
@@ -135,6 +145,9 @@ inline void to_json(nlohmann::json& json, const core_service_daemon_state& value
   }
 
   json["karabiner_json_parse_error_message"] = value.get_karabiner_json_parse_error_message();
+  if (auto v = value.get_karabiner_json_permission_error()) {
+    json["karabiner_json_permission_error"] = *v;
+  }
 }
 
 inline void from_json(const nlohmann::json& json, core_service_daemon_state& value) {
@@ -148,5 +161,6 @@ inline void from_json(const nlohmann::json& json, core_service_daemon_state& val
   value.set_virtual_hid_keyboard_type_not_set(pqrs::json::find<bool>(json, "virtual_hid_keyboard_type_not_set"));
   value.set_karabiner_json_parse_error_message(json.value("karabiner_json_parse_error_message",
                                                           std::string()));
+  value.set_karabiner_json_permission_error(pqrs::json::find<bool>(json, "karabiner_json_permission_error"));
 }
 } // namespace krbn
