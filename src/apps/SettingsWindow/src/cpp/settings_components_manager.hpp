@@ -67,10 +67,6 @@ public:
     return console_user_server_client_.connected();
   }
 
-  void async_get_settings_window_guidance() {
-    console_user_server_client_.async_get_settings_window_guidance();
-  }
-
 private:
   settings_configuration_monitor configuration_monitor_;
   settings_complex_modifications_assets_manager complex_modifications_assets_manager_;

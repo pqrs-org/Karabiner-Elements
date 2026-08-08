@@ -3,6 +3,7 @@
 #include "console_user_server_client.hpp"
 #include "settings.hpp"
 #include <atomic>
+#include <chrono>
 #include <memory>
 
 class settings_console_user_server_client final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -16,7 +17,8 @@ public:
         uid_(uid),
         connected_(false),
         status_changed_callback_(status_changed_callback),
-        settings_window_guidance_received_callback_(settings_window_guidance_received_callback) {
+        settings_window_guidance_received_callback_(settings_window_guidance_received_callback),
+        settings_window_guidance_timer_(*this) {
     start();
   }
 
@@ -35,13 +37,23 @@ public:
 
     client->connected.connect([this] {
       set_connected(true);
+
+      // Swift uses the settings_window_guidance response as its once-per-second update trigger
+      // for the local services guidance context as well.
+      settings_window_guidance_timer_.start(
+          [this] {
+            async_get_settings_window_guidance();
+          },
+          std::chrono::seconds(1));
     });
 
     client->connect_failed.connect([this](auto&&) {
+      settings_window_guidance_timer_.stop();
       set_connected(false);
     });
 
     client->closed.connect([this] {
+      settings_window_guidance_timer_.stop();
       set_connected(false);
     });
 
@@ -63,6 +75,8 @@ public:
   }
 
   void stop() {
+    settings_window_guidance_timer_.stop();
+
     std::atomic_store(&console_user_server_client_,
                       std::shared_ptr<krbn::console_user_server_client>());
     connected_.store(false);
@@ -78,13 +92,13 @@ public:
     return connected_.load();
   }
 
+private:
   void async_get_settings_window_guidance() const {
     if (auto client = std::atomic_load(&console_user_server_client_)) {
       client->async_get_settings_window_guidance();
     }
   }
 
-private:
   // This method should be called in the shared dispatcher thread.
   void set_connected(bool value) {
     if (connected_.exchange(value) != value) {
@@ -97,4 +111,5 @@ private:
   std::atomic_bool connected_;
   const krbn_console_user_server_client_status_changed_t status_changed_callback_;
   const krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback_;
+  pqrs::dispatcher::extra::timer settings_window_guidance_timer_;
 };

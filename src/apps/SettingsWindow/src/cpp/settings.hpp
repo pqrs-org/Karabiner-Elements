@@ -311,8 +311,6 @@ void krbn_core_service_daemon_client_async_set_app_icon(int number);
 
 bool krbn_console_user_server_client_connected(void);
 
-void krbn_console_user_server_client_async_get_settings_window_guidance(void);
-
 #ifdef __cplusplus
 }
 #endif

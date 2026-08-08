@@ -254,9 +254,3 @@ bool krbn_console_user_server_client_connected() {
 
   return false;
 }
-
-void krbn_console_user_server_client_async_get_settings_window_guidance() {
-  if (auto manager = settings_cpp::get_components_manager()) {
-    manager->async_get_settings_window_guidance();
-  }
-}
