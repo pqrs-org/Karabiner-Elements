@@ -7,18 +7,18 @@ struct SimpleModificationDefinitionCategories: Identifiable {
   var categories: [SimpleModificationDefinitionCategory] = []
 
   func findLabel(jsonString: String) -> String {
-    if let compactJsonString = SimpleModification.formatCompactJsonString(string: jsonString) {
+    if let canonicalJsonString = CanonicalJSON.string(fromJSONString: jsonString) {
       for category in categories {
-        for entry in category.entries where entry.json == compactJsonString {
+        for entry in category.entries where entry.json == canonicalJsonString {
           return entry.label
         }
       }
 
-      if compactJsonString == "{}" || compactJsonString == "[]" {
+      if canonicalJsonString == "{}" || canonicalJsonString == "[]" {
         return "---"
       }
 
-      return compactJsonString
+      return canonicalJsonString
     }
 
     return jsonString

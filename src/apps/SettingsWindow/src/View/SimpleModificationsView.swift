@@ -29,7 +29,7 @@ struct SimpleModificationsView: View {
     @ObservedObject private var settings = Settings.shared
 
     private let selectedDevice: ConnectedDevice?
-    private let simpleModifications: [SimpleModification]
+    private let simpleModifications: [SettingsConfiguration.SimpleModification]
 
     init(selectedDevice: ConnectedDevice?) {
       self.selectedDevice = selectedDevice
@@ -42,15 +42,19 @@ struct SimpleModificationsView: View {
       ScrollView {
         VStack(alignment: .leading, spacing: 4.0) {
           ForEach(simpleModifications) { simpleModification in
+            let fromEntry = simpleModification.fromEntry
+            let toEntry = simpleModification.toEntry(
+              categories: SimpleModificationDefinitions.shared.toCategories)
+
             HStack {
               SimpleModificationPickerView(
                 categories: SimpleModificationDefinitions.shared.fromCategories,
-                label: simpleModification.fromEntry.label,
+                label: fromEntry.label,
                 action: { json in
                   Settings.shared.updateSimpleModification(
                     index: simpleModification.index,
                     fromJsonString: json,
-                    toJsonString: simpleModification.toEntry.json,
+                    toJsonString: toEntry.json,
                     device: selectedDevice)
                 },
                 showUnsafe: settings.configuration.globalConfiguration.unsafeUi
@@ -62,11 +66,11 @@ struct SimpleModificationsView: View {
 
               SimpleModificationPickerView(
                 categories: SimpleModificationDefinitions.shared.toCategories,
-                label: simpleModification.toEntry.label,
+                label: toEntry.label,
                 action: { json in
                   Settings.shared.updateSimpleModification(
                     index: simpleModification.index,
-                    fromJsonString: simpleModification.fromEntry.json,
+                    fromJsonString: fromEntry.json,
                     toJsonString: json,
                     device: selectedDevice)
                 },

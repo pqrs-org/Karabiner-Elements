@@ -52,7 +52,7 @@ struct FunctionKeysView: View {
       .shared
 
     private let selectedDevice: ConnectedDevice?
-    private let fnFunctionKeys: [SimpleModification]
+    private let fnFunctionKeys: [SettingsConfiguration.SimpleModification]
 
     init(selectedDevice: ConnectedDevice?) {
       self.selectedDevice = selectedDevice
@@ -64,11 +64,17 @@ struct FunctionKeysView: View {
       ScrollView {
         VStack(alignment: .leading, spacing: 4.0) {
           ForEach(fnFunctionKeys) { fnFunctionKey in
+            let fromEntry = fnFunctionKey.fromEntry
+            let toEntry = fnFunctionKey.toEntry(
+              categories: selectedDevice == nil
+                ? SimpleModificationDefinitions.shared.toCategories
+                : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase)
+
             HStack {
               Text(
                 settingsCoreServiceDaemonClient.useFkeysAsStandardFunctionKeys
-                  ? "fn + \(fnFunctionKey.fromEntry.label)"
-                  : fnFunctionKey.fromEntry.label
+                  ? "fn + \(fromEntry.label)"
+                  : fromEntry.label
               )
               .monospaced()
               .frame(width: 80, alignment: .trailing)
@@ -80,10 +86,10 @@ struct FunctionKeysView: View {
                 categories: selectedDevice == nil
                   ? SimpleModificationDefinitions.shared.toCategories
                   : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
-                label: fnFunctionKey.toEntry.label,
+                label: toEntry.label,
                 action: { json in
                   Settings.shared.updateFnFunctionKey(
-                    fromJsonString: fnFunctionKey.fromEntry.json,
+                    fromJsonString: fromEntry.json,
                     toJsonString: json,
                     device: selectedDevice)
                 },

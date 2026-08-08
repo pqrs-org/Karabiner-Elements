@@ -138,17 +138,8 @@ final class Settings: ObservableObject {
     didSetEnabled = false
     configuration = snapshot
 
-    let selectedProfile = snapshot.selectedProfile
-    simpleModifications = makeSimpleModifications(
-      selectedProfile.simpleModifications,
-      toCategories: SimpleModificationDefinitions.shared.toCategories
-    )
-    fnFunctionKeys = makeSimpleModifications(
-      selectedProfile.fnFunctionKeys,
-      toCategories: SimpleModificationDefinitions.shared.toCategories
-    )
     complexModificationsRules = makeComplexModificationsRules(
-      selectedProfile.complexModifications.rules
+      snapshot.selectedProfile.complexModifications.rules
     )
 
     updateSystemDefaultProfileExists()
@@ -161,38 +152,23 @@ final class Settings: ObservableObject {
   // Simple Modifications
   //
 
-  @Published var simpleModifications: [SimpleModification] = []
-
-  private func makeSimpleModifications(
-    _ payloads: [SettingsConfiguration.SimpleModification],
-    toCategories: SimpleModificationDefinitionCategories
-  ) -> [SimpleModification] {
-    payloads.map {
-      SimpleModification(
-        index: $0.index,
-        fromJsonString: $0.fromJsonString,
-        toJsonString: $0.toJsonString,
-        toCategories: toCategories)
-    }
-  }
-
-  public func simpleModifications(connectedDevice: ConnectedDevice?) -> [SimpleModification] {
+  public func simpleModifications(connectedDevice: ConnectedDevice?)
+    -> [SettingsConfiguration.SimpleModification]
+  {
     if let connectedDevice = connectedDevice {
-      return makeSimpleModifications(
-        configuration.selectedProfile.devices[connectedDevice.id]?.simpleModifications ?? [],
-        toCategories: SimpleModificationDefinitions.shared.toCategories)
+      return configuration.selectedProfile.devices[connectedDevice.id]?.simpleModifications ?? []
     } else {
-      return simpleModifications
+      return configuration.selectedProfile.simpleModifications
     }
   }
 
-  public func fnFunctionKeys(connectedDevice: ConnectedDevice?) -> [SimpleModification] {
+  public func fnFunctionKeys(connectedDevice: ConnectedDevice?)
+    -> [SettingsConfiguration.SimpleModification]
+  {
     if let connectedDevice {
-      return makeSimpleModifications(
-        configuration.selectedProfile.devices[connectedDevice.id]?.fnFunctionKeys ?? [],
-        toCategories: SimpleModificationDefinitions.shared.toCategoriesWithInheritBase)
+      return configuration.selectedProfile.devices[connectedDevice.id]?.fnFunctionKeys ?? []
     } else {
-      return fnFunctionKeys
+      return configuration.selectedProfile.fnFunctionKeys
     }
   }
 
@@ -257,8 +233,6 @@ final class Settings: ObservableObject {
   //
   // Fn Function Keys
   //
-
-  @Published var fnFunctionKeys: [SimpleModification] = []
 
   private func reflectFnFunctionKeyChanges() {
     updateProperties()

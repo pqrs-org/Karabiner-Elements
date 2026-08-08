@@ -48,10 +48,38 @@ struct SettingsConfiguration: Decodable {
     }
   }
 
-  struct SimpleModification: Codable {
+  struct SimpleModification: Codable, Identifiable {
     let index: Int
     let fromJsonString: String
     let toJsonString: String
+
+    var id: Int { index }
+
+    @MainActor
+    var fromEntry: SimpleModificationDefinitionEntry {
+      makeEntry(
+        jsonString: fromJsonString,
+        categories: SimpleModificationDefinitions.shared.fromCategories)
+    }
+
+    @MainActor
+    func toEntry(
+      categories: SimpleModificationDefinitionCategories
+    ) -> SimpleModificationDefinitionEntry {
+      makeEntry(jsonString: toJsonString, categories: categories)
+    }
+
+    @MainActor
+    private func makeEntry(
+      jsonString: String,
+      categories: SimpleModificationDefinitionCategories
+    ) -> SimpleModificationDefinitionEntry {
+      let json = CanonicalJSON.string(fromJSONString: jsonString) ?? ""
+      return SimpleModificationDefinitionEntry(
+        categories.findLabel(jsonString: json),
+        json,
+        false)
+    }
   }
 
   struct ComplexModificationsRule: Decodable {
