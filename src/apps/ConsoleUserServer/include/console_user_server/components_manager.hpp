@@ -33,7 +33,7 @@ public:
       : dispatcher_client(),
         console_user_id_changed_client_(std::make_shared<console_user_id_changed_client>()),
         session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
-        configuration_monitor_(std::make_unique<configuration_monitor>(constants::get_user_core_configuration_file_path(),
+        configuration_monitor_(std::make_unique<configuration_monitor>(constants::get_user_core_configuration_file_path().string(),
                                                                        geteuid(),
                                                                        core_configuration::error_handling::loose)),
         settings_window_guidance_manager_dispatcher_time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),

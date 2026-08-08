@@ -6,8 +6,8 @@
 namespace {
 class test_configuration_monitor final {
 public:
-  test_configuration_monitor() : count_(0) {
-    configuration_monitor_ = std::make_unique<krbn::configuration_monitor>("target/user.json",
+  test_configuration_monitor(std::optional<std::string> user_core_configuration_file_path = "target/user.json") : count_(0) {
+    configuration_monitor_ = std::make_unique<krbn::configuration_monitor>(user_core_configuration_file_path,
                                                                            geteuid(),
                                                                            krbn::core_configuration::error_handling::loose,
                                                                            "target/system.json");
@@ -17,6 +17,10 @@ public:
       if (auto c = weak_core_configuration.lock()) {
         last_core_configuration_ = c;
       }
+    });
+
+    configuration_monitor_->load_state_changed.connect([this](auto load_state) {
+      last_load_state_ = load_state;
     });
 
     configuration_monitor_->async_start();
@@ -32,18 +36,23 @@ public:
     return last_core_configuration_;
   }
 
+  [[nodiscard]] std::optional<krbn::core_configuration::core_configuration::load_state> get_last_load_state() const {
+    return last_load_state_;
+  }
+
   [[nodiscard]] std::string get_selected_profile_name() const {
     return last_core_configuration_->get_selected_profile().get_name();
   }
 
-  void wait() const {
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  void wait(std::chrono::milliseconds duration = std::chrono::milliseconds(500)) const {
+    std::this_thread::sleep_for(duration);
   }
 
 private:
   std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
   size_t count_;
   std::shared_ptr<const krbn::core_configuration::core_configuration> last_core_configuration_;
+  std::optional<krbn::core_configuration::core_configuration::load_state> last_load_state_;
 };
 } // namespace
 
@@ -94,22 +103,22 @@ int main() {
 
       system("rm target/user.json");
 
-      monitor.wait();
+      monitor.wait(std::chrono::milliseconds(1500));
 
       expect(monitor.get_count() == 3);
       expect(monitor.get_selected_profile_name() == "system1");
 
       // ============================================================
-      // Remove system.json (ignored)
+      // Remove system.json (load default configuration)
       // ============================================================
 
       std::cout << "rm target/system.json" << std::endl;
       system("rm target/system.json");
 
-      monitor.wait();
+      monitor.wait(std::chrono::milliseconds(1500));
 
-      expect(monitor.get_count() == 3);
-      expect(monitor.get_selected_profile_name() == "system1");
+      expect(monitor.get_count() == 4);
+      expect(monitor.get_selected_profile_name() == "Default profile");
 
       // ============================================================
       // Update system.json
@@ -119,7 +128,7 @@ int main() {
 
       monitor.wait();
 
-      expect(monitor.get_count() == 4);
+      expect(monitor.get_count() == 5);
       expect(monitor.get_selected_profile_name() == "system2");
 
       // ============================================================
@@ -130,7 +139,7 @@ int main() {
 
       monitor.wait();
 
-      expect(monitor.get_count() == 5);
+      expect(monitor.get_count() == 6);
       expect(monitor.get_selected_profile_name() == "user2");
     }
 
@@ -176,6 +185,36 @@ int main() {
     }
 
     // ============================================================
+    // Monitor only system.json
+    // ============================================================
+
+    {
+      system("rm -rf target");
+      system("mkdir -p target");
+      system("echo '{\"profiles\":[{\"name\":\"system1\",\"selected\":true}]}' > target/system.json");
+
+      test_configuration_monitor monitor(std::nullopt);
+
+      expect(monitor.get_count() == 1);
+      expect(monitor.get_selected_profile_name() == "system1");
+
+      // user.json is not monitored in system-only mode.
+      system("echo '{\"profiles\":[{\"name\":\"user1\",\"selected\":true}]}' > target/user.json");
+
+      monitor.wait();
+
+      expect(monitor.get_count() == 1);
+      expect(monitor.get_selected_profile_name() == "system1");
+
+      system("rm target/system.json");
+
+      monitor.wait(std::chrono::milliseconds(1500));
+
+      expect(monitor.get_count() == 2);
+      expect(monitor.get_selected_profile_name() == "Default profile");
+    }
+
+    // ============================================================
     // Broken json
     // ============================================================
 
@@ -186,8 +225,9 @@ int main() {
 
       test_configuration_monitor monitor;
 
-      expect(monitor.get_count() == 1);
-      expect(monitor.get_selected_profile_name() == "Default profile");
+      expect(monitor.get_count() == 0);
+      expect(monitor.get_last_core_configuration() == nullptr);
+      expect(monitor.get_last_load_state() == krbn::core_configuration::core_configuration::load_state::json_error);
 
       // ============================================================
       // Update user.json
@@ -197,8 +237,9 @@ int main() {
 
       monitor.wait();
 
-      expect(monitor.get_count() == 2);
+      expect(monitor.get_count() == 1);
       expect(monitor.get_selected_profile_name() == "user1");
+      expect(monitor.get_last_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
 
       // ============================================================
       // Break user.json (ignored)
@@ -208,8 +249,9 @@ int main() {
 
       monitor.wait();
 
-      expect(monitor.get_count() == 2);
+      expect(monitor.get_count() == 1);
       expect(monitor.get_selected_profile_name() == "user1");
+      expect(monitor.get_last_load_state() == krbn::core_configuration::core_configuration::load_state::json_error);
     }
   };
 

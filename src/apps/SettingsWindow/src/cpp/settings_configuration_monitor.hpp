@@ -32,7 +32,7 @@ public:
     }
 
     monitor_ = std::make_unique<krbn::configuration_monitor>(
-        krbn::constants::get_user_core_configuration_file_path(),
+        krbn::constants::get_user_core_configuration_file_path().string(),
         geteuid(),
         krbn::core_configuration::error_handling::loose);
 

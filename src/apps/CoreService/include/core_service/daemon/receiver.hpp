@@ -541,11 +541,11 @@ private:
     auto file_path = constants::get_system_core_configuration_file_path();
     if (filesystem_utility::exists(file_path)) {
       stop_device_grabber();
-      start_device_grabber(file_path);
+      start_device_grabber(std::nullopt);
     }
   }
 
-  void start_device_grabber(const std::string& configuration_file_path) {
+  void start_device_grabber(const std::optional<std::string>& user_core_configuration_file_path) {
     if (device_grabber_) {
       return;
     }
@@ -575,7 +575,7 @@ private:
     set_focused_ui_element_variables();
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
 
-    device_grabber_->async_start(configuration_file_path,
+    device_grabber_->async_start(user_core_configuration_file_path,
                                  current_console_user_id_);
 
     logger::get_logger()->debug("device_grabber is started.");

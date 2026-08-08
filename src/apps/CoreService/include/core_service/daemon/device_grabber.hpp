@@ -427,7 +427,7 @@ public:
     });
   }
 
-  void async_start(const std::string& user_core_configuration_file_path,
+  void async_start(const std::optional<std::string>& user_core_configuration_file_path,
                    std::optional<uid_t> expected_user_core_configuration_file_owner) {
     enqueue_to_dispatcher([this,
                            user_core_configuration_file_path,
