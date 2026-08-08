@@ -38,6 +38,12 @@ private let settingsJSONDecoder: JSONDecoder = {
   return decoder
 }()
 
+private let settingsJSONEncoder: JSONEncoder = {
+  let encoder = JSONEncoder()
+  encoder.keyEncodingStrategy = .convertToSnakeCase
+  return encoder
+}()
+
 @MainActor
 final class Settings: ObservableObject {
   static let shared = Settings()
@@ -48,7 +54,6 @@ final class Settings: ObservableObject {
   private var connectedDevicesCancellable: AnyCancellable?
   private var watching = false
   private var didSetEnabled = false
-  private var deviceSettings: [String: SettingsConfigurationSnapshot.Device] = [:]
 
   private let saveStream: AsyncStream<Void>
   private let saveContinuation: AsyncStream<Void>.Continuation
@@ -56,7 +61,24 @@ final class Settings: ObservableObject {
 
   @Published var saveErrorMessage = ""
   @Published private(set) var configurationLoaded = false
-  @Published private(set) var deviceDefaults: SettingsConfigurationSnapshot.DeviceDefaults?
+  @Published private var configurationStorage: SettingsConfiguration?
+
+  var configuration: SettingsConfiguration {
+    get {
+      guard let configurationStorage else {
+        preconditionFailure("Settings configuration has not been loaded")
+      }
+      return configurationStorage
+    }
+    set {
+      let oldValue = configurationStorage
+      configurationStorage = newValue
+
+      if didSetEnabled, let oldValue {
+        applyConfigurationPatch(from: oldValue, to: newValue)
+      }
+    }
+  }
 
   private init() {
     var continuation: AsyncStream<Void>.Continuation!
@@ -106,19 +128,18 @@ final class Settings: ObservableObject {
   }
 
   fileprivate func updateProperties(_ data: Data) {
-    let snapshot: SettingsConfigurationSnapshot
+    let snapshot: SettingsConfiguration
     do {
-      snapshot = try settingsJSONDecoder.decode(SettingsConfigurationSnapshot.self, from: data)
+      snapshot = try settingsJSONDecoder.decode(SettingsConfiguration.self, from: data)
     } catch {
       print("Failed to decode settings configuration snapshot JSON: \(error)")
       return
     }
 
     didSetEnabled = false
-    deviceDefaults = snapshot.deviceDefaults
+    configuration = snapshot
 
     let selectedProfile = snapshot.selectedProfile
-    deviceSettings = selectedProfile.devices
     simpleModifications = makeSimpleModifications(
       selectedProfile.simpleModifications,
       toCategories: SimpleModificationDefinitions.shared.toCategories
@@ -131,42 +152,7 @@ final class Settings: ObservableObject {
       selectedProfile.complexModifications.rules
     )
 
-    let complexParameters = selectedProfile.complexModifications.parameters
-    complexModificationsParameterToIfAloneTimeoutMilliseconds =
-      complexParameters.basicToIfAloneTimeoutMilliseconds
-    complexModificationsParameterToIfHeldDownThresholdMilliseconds =
-      complexParameters.basicToIfHeldDownThresholdMilliseconds
-    complexModificationsParameterToDelayedActionDelayMilliseconds =
-      complexParameters.basicToDelayedActionDelayMilliseconds
-    complexModificationsParameterSimultaneousThresholdMilliseconds =
-      complexParameters.basicSimultaneousThresholdMilliseconds
-    complexModificationsParameterMouseMotionToScrollSpeed =
-      complexParameters.mouseMotionToScrollSpeed
-
     updateConnectedDeviceSettingsFromSnapshot()
-
-    delayMillisecondsBeforeOpenDevice = selectedProfile.parameters.delayMillisecondsBeforeOpenDevice
-    virtualHIDKeyboardKeyboardTypeV2 = selectedProfile.virtualHidKeyboard.keyboardTypeV2
-    virtualHIDKeyboardMouseKeyXYScale = selectedProfile.virtualHidKeyboard.mouseKeyXyScale
-    virtualHIDKeyboardIndicateStickyModifierKeysState =
-      selectedProfile.virtualHidKeyboard.indicateStickyModifierKeysState
-
-    profiles = snapshot.profiles
-
-    let global = snapshot.globalConfiguration
-    checkForUpdates = global.checkForUpdates
-    showIconInMenuBar = global.showInMenuBar
-    showProfileNameInMenuBar = global.showProfileNameInMenuBar
-    showAdditionalMenuItems = global.showAdditionalMenuItems
-    enableNotificationWindow = global.enableNotificationWindow
-    unsafeUI = global.unsafeUi
-    filterUselessEventsFromSpecificDevices = global.filterUselessEventsFromSpecificDevices
-    reorderSameTimestampInputEventsToPrioritizeModifiers =
-      global.reorderSameTimestampInputEventsToPrioritizeModifiers
-    enableCGEventTapFallback = global.enableCgeventtapFallback
-
-    enableMultitouchExtension = snapshot.machineSpecific.enableMultitouchExtension
-    externalEditorPath = snapshot.machineSpecific.externalEditorPath
 
     updateSystemDefaultProfileExists()
 
@@ -181,7 +167,7 @@ final class Settings: ObservableObject {
   @Published var simpleModifications: [SimpleModification] = []
 
   private func makeSimpleModifications(
-    _ payloads: [SettingsConfigurationSnapshot.SimpleModification],
+    _ payloads: [SettingsConfiguration.SimpleModification],
     toCategories: SimpleModificationDefinitionCategories
   ) -> [SimpleModification] {
     payloads.map {
@@ -297,7 +283,7 @@ final class Settings: ObservableObject {
   @Published var complexModificationsRules: [ComplexModificationsRule] = []
 
   private func makeComplexModificationsRules(
-    _ payloads: [SettingsConfigurationSnapshot.ComplexModificationsRule]
+    _ payloads: [SettingsConfiguration.ComplexModificationsRule]
   ) -> [ComplexModificationsRule] {
     payloads.map {
       ComplexModificationsRule(
@@ -430,61 +416,6 @@ final class Settings: ObservableObject {
     save()
   }
 
-  @Published var complexModificationsParameterToIfAloneTimeoutMilliseconds: Int = 0 {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds(
-          Int32(complexModificationsParameterToIfAloneTimeoutMilliseconds)
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var complexModificationsParameterToIfHeldDownThresholdMilliseconds: Int = 0 {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds(
-          Int32(complexModificationsParameterToIfHeldDownThresholdMilliseconds)
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var complexModificationsParameterToDelayedActionDelayMilliseconds: Int = 0 {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds(
-          Int32(complexModificationsParameterToDelayedActionDelayMilliseconds)
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var complexModificationsParameterSimultaneousThresholdMilliseconds: Int = 0 {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds(
-          Int32(complexModificationsParameterSimultaneousThresholdMilliseconds)
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var complexModificationsParameterMouseMotionToScrollSpeed: Int = 0 {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(
-          Int32(complexModificationsParameterMouseMotionToScrollSpeed)
-        )
-        save()
-      }
-    }
-  }
-
   //
   // Devices
   //
@@ -500,6 +431,10 @@ final class Settings: ObservableObject {
   }
 
   private func updateConnectedDeviceSettings(updateProperties: Bool) {
+    guard let deviceSettings = configurationStorage?.selectedProfile.devices else {
+      return
+    }
+
     var existingConnectedDeviceSettings = connectedDeviceSettings
     var newConnectedDeviceSettings: [ConnectedDeviceSetting] = []
 
@@ -550,71 +485,19 @@ final class Settings: ObservableObject {
     save()
   }
 
-  @Published var delayMillisecondsBeforeOpenDevice: Int = 0 {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(
-          Int32(delayMillisecondsBeforeOpenDevice)
-        )
-        save()
-      }
-    }
-  }
-
-  //
-  // Virtual keyboard
-  //
-
-  @Published var virtualHIDKeyboardKeyboardTypeV2 = "" {
-    didSet {
-      if didSetEnabled {
-        if let cString = virtualHIDKeyboardKeyboardTypeV2.cString(using: .utf8) {
-          krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(
-            cString
-          )
-          save()
-        }
-      }
-    }
-  }
-
-  @Published var virtualHIDKeyboardMouseKeyXYScale: Int = 0 {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(
-          Int32(virtualHIDKeyboardMouseKeyXYScale)
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var virtualHIDKeyboardIndicateStickyModifierKeysState: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(
-          virtualHIDKeyboardIndicateStickyModifierKeysState
-        )
-        save()
-      }
-    }
-  }
-
   //
   // Profiles
   //
-
-  @Published var profiles: [SettingsConfigurationSnapshot.Profile] = []
 
   private func reflectProfileChanges() {
     updateProperties()
   }
 
   public func selectedProfileName() -> String {
-    profiles.first { $0.selected }?.name ?? ""
+    configuration.profiles.first { $0.selected }?.name ?? ""
   }
 
-  public func selectProfile(_ profile: SettingsConfigurationSnapshot.Profile) {
+  public func selectProfile(_ profile: SettingsConfiguration.Profile) {
     krbn_core_configuration_select_profile(profile.index)
 
     // To update all settings to the new profile's contents, it is necessary to call `updateProperties`.
@@ -623,7 +506,7 @@ final class Settings: ObservableObject {
     save()
   }
 
-  public func updateProfileName(_ profile: SettingsConfigurationSnapshot.Profile, _ name: String) {
+  public func updateProfileName(_ profile: SettingsConfiguration.Profile, _ name: String) {
     if let cString = name.cString(using: .utf8) {
       krbn_core_configuration_set_profile_name(profile.index, cString)
 
@@ -641,7 +524,7 @@ final class Settings: ObservableObject {
     save()
   }
 
-  public func duplicateProfile(_ profile: SettingsConfigurationSnapshot.Profile) {
+  public func duplicateProfile(_ profile: SettingsConfiguration.Profile) {
     krbn_core_configuration_duplicate_profile(profile.index)
 
     reflectProfileChanges()
@@ -656,7 +539,7 @@ final class Settings: ObservableObject {
     )
 
     // Avoid reflectProfileChanges here because rebuilding the array can reset List scroll state.
-    var nextProfiles = profiles
+    var nextProfiles = configuration.profiles
     if sourceIndex >= 0 && sourceIndex < nextProfiles.count {
       let item = nextProfiles.remove(at: sourceIndex)
       var destination = destinationIndex
@@ -669,13 +552,13 @@ final class Settings: ObservableObject {
       for index in nextProfiles.indices {
         nextProfiles[index].index = index
       }
-      profiles = nextProfiles
+      configuration.profiles = nextProfiles
     }
 
     save()
   }
 
-  public func removeProfile(_ profile: SettingsConfigurationSnapshot.Profile) {
+  public func removeProfile(_ profile: SettingsConfiguration.Profile) {
     krbn_core_configuration_erase_profile(profile.index)
 
     reflectProfileChanges()
@@ -687,125 +570,61 @@ final class Settings: ObservableObject {
   // Misc
   //
 
-  @Published var checkForUpdates: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_check_for_updates(
-          checkForUpdates
-        )
+  private func applyConfigurationPatch(
+    from oldConfiguration: SettingsConfiguration,
+    to newConfiguration: SettingsConfiguration
+  ) {
+    do {
+      let oldData = try settingsJSONEncoder.encode(SettingsConfigurationUpdate(oldConfiguration))
+      let newData = try settingsJSONEncoder.encode(SettingsConfigurationUpdate(newConfiguration))
+      let oldJSON = try JSONSerialization.jsonObject(with: oldData)
+      let newJSON = try JSONSerialization.jsonObject(with: newData)
+
+      guard let patch = makeJSONMergePatch(from: oldJSON, to: newJSON) else {
+        return
+      }
+
+      let data = try JSONSerialization.data(withJSONObject: patch)
+      guard let jsonString = String(data: data, encoding: .utf8) else { return }
+
+      if jsonString.withCString({ krbn_core_configuration_apply_settings_configuration_update($0) })
+      {
         save()
       }
+    } catch {
+      print("Failed to make settings configuration update JSON: \(error)")
     }
   }
 
-  @Published var showIconInMenuBar: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_show_in_menu_bar(
-          showIconInMenuBar
-        )
-        save()
-      }
-    }
-  }
+  // Returns a JSON Merge Patch that contains only values changed in `newValue`.
+  // SettingsConfigurationUpdate does not contain arrays or null values, so recursively comparing
+  // JSON objects and treating every other value as a leaf is sufficient here.
+  private func makeJSONMergePatch(from oldValue: Any, to newValue: Any) -> Any? {
+    if let oldObject = oldValue as? [String: Any],
+      let newObject = newValue as? [String: Any]
+    {
+      var patch: [String: Any] = [:]
 
-  @Published var showProfileNameInMenuBar: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(
-          showProfileNameInMenuBar
-        )
-        save()
+      for (key, newChild) in newObject {
+        if let oldChild = oldObject[key] {
+          if let childPatch = makeJSONMergePatch(from: oldChild, to: newChild) {
+            patch[key] = childPatch
+          }
+        } else {
+          patch[key] = newChild
+        }
       }
-    }
-  }
 
-  @Published var showAdditionalMenuItems: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_show_additional_menu_items(
-          showAdditionalMenuItems
-        )
-        save()
-      }
+      return patch.isEmpty ? nil : patch
     }
-  }
 
-  @Published var enableNotificationWindow: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_enable_notification_window(
-          enableNotificationWindow
-        )
-        save()
-      }
+    if let oldObject = oldValue as? NSObject,
+      oldObject.isEqual(newValue)
+    {
+      return nil
     }
-  }
 
-  @Published var enableMultitouchExtension: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_machine_specific_enable_multitouch_extension(
-          enableMultitouchExtension
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var externalEditorPath: String = "" {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_machine_specific_external_editor_path(
-          externalEditorPath
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var unsafeUI: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_unsafe_ui(
-          unsafeUI
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var filterUselessEventsFromSpecificDevices: Bool = true {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_filter_useless_events_from_specific_devices(
-          filterUselessEventsFromSpecificDevices
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var reorderSameTimestampInputEventsToPrioritizeModifiers: Bool = true {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers(
-          reorderSameTimestampInputEventsToPrioritizeModifiers
-        )
-        save()
-      }
-    }
-  }
-
-  @Published var enableCGEventTapFallback: Bool = false {
-    didSet {
-      if didSetEnabled {
-        krbn_core_configuration_set_global_configuration_enable_cgeventtap_fallback(
-          enableCGEventTapFallback
-        )
-        save()
-      }
-    }
+    return newValue
   }
 
   @Published var systemDefaultProfileExists: Bool = false

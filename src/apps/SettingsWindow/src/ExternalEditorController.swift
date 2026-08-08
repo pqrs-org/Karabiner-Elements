@@ -35,7 +35,7 @@ final class ExternalEditorController: ObservableObject {
   func chooseEditor() {
     Task { @MainActor in
       if let url = await chooseEditorURLAsync() {
-        Settings.shared.externalEditorPath = url.path
+        Settings.shared.configuration.machineSpecific.externalEditorPath = url.path
       }
     }
   }
@@ -191,7 +191,7 @@ final class ExternalEditorController: ObservableObject {
   }
 
   private func externalEditorURL() -> URL? {
-    let externalEditorPath = Settings.shared.externalEditorPath
+    let externalEditorPath = Settings.shared.configuration.machineSpecific.externalEditorPath
     if externalEditorPath.isEmpty {
       return nil
     }

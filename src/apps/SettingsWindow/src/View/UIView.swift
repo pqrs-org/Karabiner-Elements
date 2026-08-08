@@ -9,17 +9,17 @@ struct UIView: View {
       VStack(alignment: .leading, spacing: 24.0) {
         GroupBox(label: Text("Menu bar")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            Toggle(isOn: $settings.showIconInMenuBar) {
+            Toggle(isOn: $settings.configuration.globalConfiguration.showInMenuBar) {
               Text("Show icon in menu bar (Default: on)")
             }
             .switchToggleStyle()
 
-            Toggle(isOn: $settings.showProfileNameInMenuBar) {
+            Toggle(isOn: $settings.configuration.globalConfiguration.showProfileNameInMenuBar) {
               Text("Show profile name in menu bar (Default: off)")
             }
             .switchToggleStyle()
 
-            Toggle(isOn: $settings.showAdditionalMenuItems) {
+            Toggle(isOn: $settings.configuration.globalConfiguration.showAdditionalMenuItems) {
               Text("Show additional menu items (Default: off)")
             }
             .switchToggleStyle()
@@ -30,12 +30,15 @@ struct UIView: View {
 
         GroupBox(label: Text("Karabiner Notification Window")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            Toggle(isOn: $settings.enableNotificationWindow) {
+            Toggle(isOn: $settings.configuration.globalConfiguration.enableNotificationWindow) {
               Text("Enable Karabiner Notification Window (Default: on)")
             }
             .switchToggleStyle()
 
-            Toggle(isOn: $settings.virtualHIDKeyboardIndicateStickyModifierKeysState) {
+            Toggle(
+              isOn: $settings.configuration.selectedProfile.virtualHidKeyboard
+                .indicateStickyModifierKeysState
+            ) {
               Text("Indicate sticky modifier keys state (Default: on)")
             }
             .switchToggleStyle()

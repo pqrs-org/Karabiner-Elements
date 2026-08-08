@@ -12,7 +12,7 @@ struct UpdateView: View {
           VStack(alignment: .leading, spacing: 12.0) {
             Text("Karabiner-Elements version \(version)")
 
-            Toggle(isOn: $settings.checkForUpdates) {
+            Toggle(isOn: $settings.configuration.globalConfiguration.checkForUpdates) {
               Text("Check for updates automatically (Default: on)")
             }
             .switchToggleStyle()

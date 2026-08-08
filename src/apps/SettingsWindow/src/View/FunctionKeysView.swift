@@ -89,7 +89,8 @@ struct FunctionKeysView: View {
                     toJsonString: json,
                     device: selectedDevice)
                 },
-                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
+                showUnsafe: settings.configuration.globalConfiguration.unsafeUi
+                  || (selectedDevice?.isGamePad ?? false)
               )
             }
 

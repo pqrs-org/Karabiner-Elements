@@ -9,14 +9,14 @@ final class ConnectedDeviceSetting: Identifiable, Equatable, ObservableObject {
 
   init(
     _ connectedDevice: ConnectedDevice,
-    _ deviceSetting: SettingsConfigurationSnapshot.Device
+    _ deviceSetting: SettingsConfiguration.Device
   ) {
     self.connectedDevice = connectedDevice
 
     updateProperties(deviceSetting)
   }
 
-  func updateProperties(_ deviceSetting: SettingsConfigurationSnapshot.Device) {
+  func updateProperties(_ deviceSetting: SettingsConfiguration.Device) {
     didSetEnabled = false
 
     modifyEvents = !deviceSetting.ignore

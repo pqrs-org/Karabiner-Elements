@@ -29,7 +29,7 @@ struct DevicesMouseSettingsView: View {
                 width: 60)
 
               Text(
-                "(Default: \(String(format: "%.01f)", settings.deviceDefaults?.pointingMotionXyMultiplier ?? 0.0))"
+                "(Default: \(String(format: "%.01f)", settings.configuration.deviceDefaults.pointingMotionXyMultiplier))"
               )
             }
 
@@ -44,7 +44,7 @@ struct DevicesMouseSettingsView: View {
                 width: 60)
 
               Text(
-                "(Default: \(String(format: "%.01f)", settings.deviceDefaults?.pointingMotionWheelsMultiplier ?? 0.0))"
+                "(Default: \(String(format: "%.01f)", settings.configuration.deviceDefaults.pointingMotionWheelsMultiplier))"
               )
             }
           }

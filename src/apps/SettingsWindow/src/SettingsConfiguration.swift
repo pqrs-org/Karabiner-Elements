@@ -1,6 +1,6 @@
 import Foundation
 
-struct SettingsConfigurationSnapshot: Decodable {
+struct SettingsConfiguration: Decodable {
   struct DeviceDefaults: Decodable {
     let pointingMotionXyMultiplier: Double
     let pointingMotionWheelsMultiplier: Double
@@ -14,21 +14,21 @@ struct SettingsConfigurationSnapshot: Decodable {
     let gamePadWheelsStickContinuedMovementIntervalMilliseconds: Int
   }
 
-  struct GlobalConfiguration: Decodable {
-    let checkForUpdates: Bool
-    let showInMenuBar: Bool
-    let showProfileNameInMenuBar: Bool
-    let showAdditionalMenuItems: Bool
-    let enableNotificationWindow: Bool
-    let unsafeUi: Bool
-    let filterUselessEventsFromSpecificDevices: Bool
-    let reorderSameTimestampInputEventsToPrioritizeModifiers: Bool
-    let enableCgeventtapFallback: Bool
+  struct GlobalConfiguration: Codable {
+    var checkForUpdates: Bool
+    var showInMenuBar: Bool
+    var showProfileNameInMenuBar: Bool
+    var showAdditionalMenuItems: Bool
+    var enableNotificationWindow: Bool
+    var unsafeUi: Bool
+    var filterUselessEventsFromSpecificDevices: Bool
+    var reorderSameTimestampInputEventsToPrioritizeModifiers: Bool
+    var enableCgeventtapFallback: Bool
   }
 
-  struct MachineSpecific: Decodable {
-    let enableMultitouchExtension: Bool
-    let externalEditorPath: String
+  struct MachineSpecific: Codable {
+    var enableMultitouchExtension: Bool
+    var externalEditorPath: String
   }
 
   struct Profile: Decodable, Identifiable, Equatable {
@@ -99,40 +99,68 @@ struct SettingsConfigurationSnapshot: Decodable {
   }
 
   struct SelectedProfile: Decodable {
-    struct Parameters: Decodable {
-      let delayMillisecondsBeforeOpenDevice: Int
+    struct Parameters: Codable {
+      var delayMillisecondsBeforeOpenDevice: Int
     }
 
     struct ComplexModifications: Decodable {
-      struct Parameters: Decodable {
-        let basicSimultaneousThresholdMilliseconds: Int
-        let basicToIfAloneTimeoutMilliseconds: Int
-        let basicToIfHeldDownThresholdMilliseconds: Int
-        let basicToDelayedActionDelayMilliseconds: Int
-        let mouseMotionToScrollSpeed: Int
+      struct Parameters: Codable {
+        var basicSimultaneousThresholdMilliseconds: Int
+        var basicToIfAloneTimeoutMilliseconds: Int
+        var basicToIfHeldDownThresholdMilliseconds: Int
+        var basicToDelayedActionDelayMilliseconds: Int
+        var mouseMotionToScrollSpeed: Int
       }
 
       let rules: [ComplexModificationsRule]
-      let parameters: Parameters
+      var parameters: Parameters
     }
 
-    struct VirtualHidKeyboard: Decodable {
-      let keyboardTypeV2: String
-      let mouseKeyXyScale: Int
-      let indicateStickyModifierKeysState: Bool
+    struct VirtualHidKeyboard: Codable {
+      var keyboardTypeV2: String
+      var mouseKeyXyScale: Int
+      var indicateStickyModifierKeysState: Bool
     }
 
-    let parameters: Parameters
+    var parameters: Parameters
     let simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
     let devices: [String: Device]
-    let complexModifications: ComplexModifications
-    let virtualHidKeyboard: VirtualHidKeyboard
+    var complexModifications: ComplexModifications
+    var virtualHidKeyboard: VirtualHidKeyboard
   }
 
   let deviceDefaults: DeviceDefaults
-  let globalConfiguration: GlobalConfiguration
-  let machineSpecific: MachineSpecific
-  let profiles: [Profile]
+  var globalConfiguration: GlobalConfiguration
+  var machineSpecific: MachineSpecific
+  var profiles: [Profile]
+  var selectedProfile: SelectedProfile
+}
+
+// This is intentionally limited to the values that SettingsWindow edits directly.
+// Read-only and derived snapshot data, such as devices and rules, is not sent back to C++.
+struct SettingsConfigurationUpdate: Encodable {
+  struct SelectedProfile: Encodable {
+    struct ComplexModifications: Encodable {
+      let parameters: SettingsConfiguration.SelectedProfile.ComplexModifications.Parameters
+    }
+
+    let parameters: SettingsConfiguration.SelectedProfile.Parameters
+    let complexModifications: ComplexModifications
+    let virtualHidKeyboard: SettingsConfiguration.SelectedProfile.VirtualHidKeyboard
+  }
+
+  let globalConfiguration: SettingsConfiguration.GlobalConfiguration
+  let machineSpecific: SettingsConfiguration.MachineSpecific
   let selectedProfile: SelectedProfile
+
+  init(_ configuration: SettingsConfiguration) {
+    globalConfiguration = configuration.globalConfiguration
+    machineSpecific = configuration.machineSpecific
+    selectedProfile = SelectedProfile(
+      parameters: configuration.selectedProfile.parameters,
+      complexModifications: SelectedProfile.ComplexModifications(
+        parameters: configuration.selectedProfile.complexModifications.parameters),
+      virtualHidKeyboard: configuration.selectedProfile.virtualHidKeyboard)
+  }
 }

@@ -41,7 +41,7 @@ line_length:
 
 nesting:
   type_level:
-    warning: 2
+    warning: 3
 
 type_body_length:
   warning: 1200

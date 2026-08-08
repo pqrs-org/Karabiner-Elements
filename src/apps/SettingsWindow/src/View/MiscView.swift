@@ -8,7 +8,7 @@ struct MiscView: View {
       VStack(alignment: .leading, spacing: 24.0) {
         GroupBox(label: Text("Extra tool: Multitouch Extension")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            Toggle(isOn: $settings.enableMultitouchExtension) {
+            Toggle(isOn: $settings.configuration.machineSpecific.enableMultitouchExtension) {
               Text("Enable Multitouch Extension (Default: off)")
             }
             .switchToggleStyle()
@@ -21,7 +21,7 @@ struct MiscView: View {
             )
             .modifier(InfoBorder())
 
-            if settings.enableMultitouchExtension {
+            if settings.configuration.machineSpecific.enableMultitouchExtension {
               Button(
                 action: {
                   KarabinerAppHelper.shared.openMultitouchExtensionSettings()
@@ -32,7 +32,7 @@ struct MiscView: View {
                     systemImage: "rectangle.and.hand.point.up.left.filled")
                 }
               )
-              .disabled(!settings.enableMultitouchExtension)
+              .disabled(!settings.configuration.machineSpecific.enableMultitouchExtension)
 
               Label(
                 "You can also open the Multitouch Extension settings from the menu.",

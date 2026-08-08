@@ -163,7 +163,7 @@ struct DevicesView: View {
         if connectedDeviceSetting.connectedDevice.isAppleDevice,
           !connectedDeviceSetting.connectedDevice.isKeyboard,
           connectedDeviceSetting.connectedDevice.isPointingDevice,
-          !settings.unsafeUI
+          !settings.configuration.globalConfiguration.unsafeUi
         {
           Text("Apple pointing devices are not supported")
             .foregroundColor(Color(NSColor.placeholderTextColor))
@@ -176,7 +176,8 @@ struct DevicesView: View {
             .switchToggleStyle()
             .frame(width: 140.0)
 
-            if settings.enableCGEventTapFallback && !connectedDeviceSetting.modifyEvents
+            if settings.configuration.globalConfiguration.enableCgeventtapFallback
+              && !connectedDeviceSetting.modifyEvents
               && connectedDeviceSetting.connectedDevice.isKeyboard
             {
               Label(

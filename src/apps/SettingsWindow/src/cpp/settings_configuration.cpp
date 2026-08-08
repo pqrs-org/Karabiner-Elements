@@ -2,9 +2,11 @@
 #include "connected_devices.hpp"
 #include "duktape_utility.hpp"
 #include "json_utility.hpp"
+#include "logger.hpp"
 #include "settings_components_manager.hpp"
 #include "settings_configuration_monitor.hpp"
 #include "settings_configuration_snapshot.hpp"
+#include "settings_configuration_updater.hpp"
 #include "settings_cpp.hpp"
 
 namespace {
@@ -81,61 +83,19 @@ void krbn_core_configuration_get_settings_configuration_snapshot_json(krbn_json_
               context);
 }
 
-void krbn_core_configuration_set_global_configuration_check_for_updates(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_check_for_updates(value);
-}
-
-void krbn_core_configuration_set_global_configuration_show_in_menu_bar(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_show_in_menu_bar(value);
-}
-
-void krbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_show_profile_name_in_menu_bar(value);
-}
-
-void krbn_core_configuration_set_global_configuration_show_additional_menu_items(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_show_additional_menu_items(value);
-}
-
-void krbn_core_configuration_set_global_configuration_enable_notification_window(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_enable_notification_window(value);
-}
-
-void krbn_core_configuration_set_global_configuration_unsafe_ui(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_unsafe_ui(value);
-}
-
-void krbn_core_configuration_set_global_configuration_filter_useless_events_from_specific_devices(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_filter_useless_events_from_specific_devices(value);
-}
-
-void krbn_core_configuration_set_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_reorder_same_timestamp_input_events_to_prioritize_modifiers(value);
-}
-
-void krbn_core_configuration_set_global_configuration_enable_cgeventtap_fallback(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_global_configuration().set_enable_cgeventtap_fallback(value);
-}
-
-void krbn_core_configuration_set_machine_specific_enable_multitouch_extension(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_machine_specific().get_entry().set_enable_multitouch_extension(value);
-}
-
-void krbn_core_configuration_set_machine_specific_external_editor_path(const char* value) {
-  if (value) {
-    auto c = get_current_core_configuration();
-    c->get_machine_specific().get_entry().set_external_editor_path(value);
+bool krbn_core_configuration_apply_settings_configuration_update(const char* json_string) {
+  if (json_string) {
+    try {
+      auto c = get_current_core_configuration();
+      return settings_configuration_updater::apply(
+          nlohmann::json::parse(json_string),
+          *c);
+    } catch (const std::exception& e) {
+      krbn::logger::get_logger()->error("Failed to apply settings configuration: {0}", e.what());
+    }
   }
+
+  return false;
 }
 
 void krbn_core_configuration_set_profile_name(size_t index, const char* value) {
@@ -171,12 +131,6 @@ void krbn_core_configuration_move_profile(size_t source_index, size_t destinatio
 void krbn_core_configuration_erase_profile(size_t index) {
   auto c = get_current_core_configuration();
   c->erase_profile(index);
-}
-
-void krbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(int value) {
-  auto c = get_current_core_configuration();
-  c->get_selected_profile().get_parameters()->set_delay_milliseconds_before_open_device(
-      std::chrono::milliseconds(value));
 }
 
 void krbn_core_configuration_replace_selected_profile_simple_modification(size_t index,
@@ -316,56 +270,6 @@ void krbn_core_configuration_push_front_selected_profile_complex_modifications_r
   }
 }
 
-//
-// basic_simultaneous_threshold_milliseconds
-//
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds(int value) {
-  auto c = get_current_core_configuration();
-  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
-  p->set_basic_simultaneous_threshold_milliseconds(value);
-}
-
-//
-// basic_to_if_alone_timeout_milliseconds
-//
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds(int value) {
-  auto c = get_current_core_configuration();
-  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
-  p->set_basic_to_if_alone_timeout_milliseconds(value);
-}
-
-//
-// basic_to_if_held_down_threshold_milliseconds
-//
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds(int value) {
-  auto c = get_current_core_configuration();
-  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
-  p->set_basic_to_if_held_down_threshold_milliseconds(value);
-}
-
-//
-// basic_to_delayed_action_delay_milliseconds
-//
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds(int value) {
-  auto c = get_current_core_configuration();
-  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
-  p->set_basic_to_delayed_action_delay_milliseconds(value);
-}
-
-//
-// mouse_motion_to_scroll_speed
-//
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(int value) {
-  auto c = get_current_core_configuration();
-  auto p = c->get_selected_profile().get_complex_modifications()->get_parameters();
-  p->set_mouse_motion_to_scroll_speed(value);
-}
-
 void krbn_core_configuration_get_new_complex_modifications_rule_json_string(char* buffer,
                                                                             size_t length) {
   auto json_string = krbn::complex_modifications_utility::get_new_rule_json_string();
@@ -420,27 +324,6 @@ bool krbn_eval_js_to_json_string(const char* code,
   }
 
   return false;
-}
-
-void krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(const char* value) {
-  auto c = get_current_core_configuration();
-  c->get_selected_profile()
-      .get_virtual_hid_keyboard()
-      ->set_keyboard_type_v2(value);
-}
-
-void krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(int value) {
-  auto c = get_current_core_configuration();
-  c->get_selected_profile()
-      .get_virtual_hid_keyboard()
-      ->set_mouse_key_xy_scale(value);
-}
-
-void krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(bool value) {
-  auto c = get_current_core_configuration();
-  c->get_selected_profile()
-      .get_virtual_hid_keyboard()
-      ->set_indicate_sticky_modifier_keys_state(value);
 }
 
 void krbn_core_configuration_set_selected_profile_device_ignore(const char* device_identifiers_json,

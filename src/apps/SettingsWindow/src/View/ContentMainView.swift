@@ -148,7 +148,7 @@ struct ContentMainView: View {
       },
       detail: {
         VStack(alignment: .leading, spacing: 0) {
-          if settings.unsafeUI {
+          if settings.configuration.globalConfiguration.unsafeUi {
             Button(
               action: {
                 selectedSidebarItem = .expert

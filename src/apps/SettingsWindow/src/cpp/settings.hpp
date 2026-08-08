@@ -82,23 +82,7 @@ bool krbn_core_configuration_save(char* _Nonnull error_message_buffer,
                                   size_t error_message_buffer_length);
 void krbn_core_configuration_get_settings_configuration_snapshot_json(krbn_json_output_callback_with_context _Nonnull output,
                                                                       void* _Nonnull context);
-
-// global_configuration
-
-void krbn_core_configuration_set_global_configuration_check_for_updates(bool value);
-void krbn_core_configuration_set_global_configuration_show_in_menu_bar(bool value);
-void krbn_core_configuration_set_global_configuration_show_profile_name_in_menu_bar(bool value);
-void krbn_core_configuration_set_global_configuration_show_additional_menu_items(bool value);
-void krbn_core_configuration_set_global_configuration_enable_notification_window(bool value);
-void krbn_core_configuration_set_global_configuration_unsafe_ui(bool value);
-void krbn_core_configuration_set_global_configuration_filter_useless_events_from_specific_devices(bool value);
-void krbn_core_configuration_set_global_configuration_reorder_same_timestamp_input_events_to_prioritize_modifiers(bool value);
-void krbn_core_configuration_set_global_configuration_enable_cgeventtap_fallback(bool value);
-
-// machine_specific
-
-void krbn_core_configuration_set_machine_specific_enable_multitouch_extension(bool value);
-void krbn_core_configuration_set_machine_specific_external_editor_path(const char* _Nonnull value);
+bool krbn_core_configuration_apply_settings_configuration_update(const char* _Nonnull json_string);
 
 // profiles
 
@@ -109,10 +93,6 @@ void krbn_core_configuration_push_back_profile(void);
 void krbn_core_configuration_duplicate_profile(size_t source_index);
 void krbn_core_configuration_move_profile(size_t source_index, size_t destination_index);
 void krbn_core_configuration_erase_profile(size_t index);
-
-// profile::parameters
-
-void krbn_core_configuration_set_selected_profile_parameters_delay_milliseconds_before_open_device(int value);
 
 // profile::simple_modifications
 
@@ -178,16 +158,6 @@ void krbn_core_configuration_push_front_selected_profile_complex_modifications_r
 void krbn_core_configuration_erase_selected_profile_complex_modifications_rule(size_t index);
 void krbn_core_configuration_move_selected_profile_complex_modifications_rule(size_t source_index, size_t destination_index);
 
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_simultaneous_threshold_milliseconds(int value);
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_alone_timeout_milliseconds(int value);
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_if_held_down_threshold_milliseconds(int value);
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_basic_to_delayed_action_delay_milliseconds(int value);
-
-void krbn_core_configuration_set_selected_profile_complex_modifications_parameter_mouse_motion_to_scroll_speed(int value);
-
 void krbn_core_configuration_get_new_complex_modifications_rule_json_string(char* _Nonnull buffer,
                                                                             size_t length);
 void krbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(char* _Nonnull buffer,
@@ -210,14 +180,6 @@ bool krbn_eval_js_to_json_string(const char* _Nonnull code,
         "errorMessageBuffer:"
         "errorMessageBufferLength:"
         ")")));
-
-// profile::virtual_hid_device
-
-void krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_keyboard_type_v2(const char* _Nonnull value);
-
-void krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_mouse_key_xy_scale(int value);
-
-void krbn_core_configuration_set_selected_profile_virtual_hid_keyboard_indicate_sticky_modifier_keys_state(bool value);
 
 // profile::devices
 

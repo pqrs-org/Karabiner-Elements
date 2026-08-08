@@ -8,7 +8,7 @@ struct ExpertView: View {
       VStack(alignment: .leading, spacing: 24.0) {
         GroupBox(label: Text("Expert mode")) {
           VStack(alignment: .leading, spacing: 4.0) {
-            Toggle(isOn: $settings.unsafeUI) {
+            Toggle(isOn: $settings.configuration.globalConfiguration.unsafeUi) {
               Text("Enable unsafe configuration (Default: off)")
             }
             .switchToggleStyle()
@@ -30,7 +30,7 @@ struct ExpertView: View {
         GroupBox(label: Text("CGEventTap fallback")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {
-              Toggle(isOn: $settings.enableCGEventTapFallback) {
+              Toggle(isOn: $settings.configuration.globalConfiguration.enableCgeventtapFallback) {
                 Text("Enable CGEventTap fallback (Default: off)")
               }
               .switchToggleStyle()
@@ -50,7 +50,10 @@ struct ExpertView: View {
         GroupBox(label: Text("Options")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {
-              Toggle(isOn: $settings.filterUselessEventsFromSpecificDevices) {
+              Toggle(
+                isOn: $settings.configuration.globalConfiguration
+                  .filterUselessEventsFromSpecificDevices
+              ) {
                 Text("Filter useless events from specific devices (Default: on)")
               }
               .switchToggleStyle()
@@ -67,7 +70,10 @@ struct ExpertView: View {
             }
 
             VStack(alignment: .leading, spacing: 4.0) {
-              Toggle(isOn: $settings.reorderSameTimestampInputEventsToPrioritizeModifiers) {
+              Toggle(
+                isOn: $settings.configuration.globalConfiguration
+                  .reorderSameTimestampInputEventsToPrioritizeModifiers
+              ) {
                 Text("Reorder same timestamp input events to prioritize modifiers (Default: on)")
               }
               .switchToggleStyle()
@@ -87,7 +93,8 @@ struct ExpertView: View {
           VStack(alignment: .leading, spacing: 4.0) {
             HStack {
               IntTextField(
-                value: $settings.delayMillisecondsBeforeOpenDevice,
+                value: $settings.configuration.selectedProfile.parameters
+                  .delayMillisecondsBeforeOpenDevice,
                 range: 0...10000,
                 step: 100,
                 width: 50)

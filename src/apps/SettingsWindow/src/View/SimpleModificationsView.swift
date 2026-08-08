@@ -53,7 +53,8 @@ struct SimpleModificationsView: View {
                     toJsonString: simpleModification.toEntry.json,
                     device: selectedDevice)
                 },
-                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
+                showUnsafe: settings.configuration.globalConfiguration.unsafeUi
+                  || (selectedDevice?.isGamePad ?? false)
               )
 
               Image(systemName: "arrow.forward")
@@ -69,7 +70,8 @@ struct SimpleModificationsView: View {
                     toJsonString: json,
                     device: selectedDevice)
                 },
-                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
+                showUnsafe: settings.configuration.globalConfiguration.unsafeUi
+                  || (selectedDevice?.isGamePad ?? false)
               )
               .padding(.trailing, 24.0)
 
