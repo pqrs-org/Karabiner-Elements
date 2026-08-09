@@ -11,6 +11,7 @@
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_hid_value.hpp>
 #include <pqrs/thread_wait.hpp>
+#include <span>
 #include <vector>
 
 namespace krbn {
