@@ -6,6 +6,7 @@
 
 #include "usage.hpp"
 #include "usage_page.hpp"
+#include <pqrs/hash.hpp>
 
 namespace pqrs::hid {
 class usage_pair final {
