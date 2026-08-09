@@ -4,16 +4,18 @@
 // declares as constant padding. macOS creates no IOHIDElement for those bits, so they
 // have to be recovered from the raw input report.
 
+#include "hid_report_only_events/report_handler.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <pqrs/hid.hpp>
 #include <span>
 #include <vector>
 
-namespace krbn::undeclared_buttons {
+namespace krbn::hid_report_only_events::elecom::trackball {
 struct configuration final {
   uint8_t report_id;
   size_t buttons_bit_offset;
@@ -59,6 +61,16 @@ namespace details {
 }
 } // namespace details
 
+[[nodiscard]] inline bool is_target_device(
+    pqrs::hid::vendor_id::value_t vendor_id,
+    pqrs::hid::product_id::value_t product_id) noexcept {
+  return vendor_id == pqrs::hid::vendor_id::value_t(0x056e) &&    // Elecom Co., Ltd.
+         (product_id == pqrs::hid::product_id::value_t(0x00fe) || // M-DT1URBK or M-DT2URBK DEFT Optical TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x01aa) || // M-HT1MRBK
+          product_id == pqrs::hid::product_id::value_t(0x01ab) || // M-HT1MRBK
+          product_id == pqrs::hid::product_id::value_t(0x01ac));  // M-HT1MRBK
+}
+
 // Return the raw-report layout only when both the device id and the descriptor's
 // semantic structure match the known quirk. A changed descriptor must fall back to
 // macOS rather than risk emitting duplicate or incorrectly numbered buttons.
@@ -66,12 +78,7 @@ namespace details {
     pqrs::hid::vendor_id::value_t vendor_id,
     pqrs::hid::product_id::value_t product_id,
     std::span<const uint8_t> report_descriptor) {
-  if (vendor_id != pqrs::hid::vendor_id::value_t(0x056e) ||    // Elecom Co., Ltd.
-      (product_id != pqrs::hid::product_id::value_t(0x00fe) && // M-DT1URBK or M-DT2URBK DEFT Optical TrackBall
-       product_id != pqrs::hid::product_id::value_t(0x01aa) && // M-HT1MRBK
-       product_id != pqrs::hid::product_id::value_t(0x01ab) && // M-HT1MRBK
-       product_id != pqrs::hid::product_id::value_t(0x01ac)    // M-HT1MRBK
-       )) {
+  if (!is_target_device(vendor_id, product_id)) {
     return std::nullopt;
   }
 
@@ -167,23 +174,17 @@ namespace details {
   return std::nullopt;
 }
 
-struct button_change final {
-  uint8_t button;
-  bool pressed;
-
-  bool operator==(const button_change&) const = default;
-};
-
-class decoder final {
+class handler final : public krbn::hid_report_only_events::report_handler {
 public:
-  explicit decoder(const configuration& configuration)
+  explicit handler(const configuration& configuration)
       : configuration_(configuration),
         last_buttons_(configuration.button_count, 0) {
   }
 
-  [[nodiscard]] std::vector<button_change> update(uint8_t report_id,
-                                                  std::span<const uint8_t> report) {
-    std::vector<button_change> result;
+  [[nodiscard]] std::vector<event> handle(
+      uint32_t report_id,
+      std::span<const uint8_t> report) override {
+    std::vector<event> result;
 
     if (report_id != configuration_.report_id ||
         configuration_.button_count == 0 ||
@@ -204,9 +205,13 @@ public:
       auto pressed = (report[bit_offset / 8] & mask) != 0;
 
       if (pressed != (last_buttons_[i] != 0)) {
-        result.push_back(button_change{
-            .button = static_cast<uint8_t>(configuration_.first_button + i),
-            .pressed = pressed,
+        result.push_back(event{
+            .usage_page = pqrs::hid::usage_page::button,
+            .usage = pqrs::hid::usage::value_t(
+                static_cast<uint8_t>(configuration_.first_button + i)),
+            .value = pressed ? 1 : 0,
+            .logical_max = 1,
+            .logical_min = 0,
         });
       }
 
@@ -216,7 +221,7 @@ public:
     return result;
   }
 
-  void reset() {
+  void reset() override {
     std::fill(last_buttons_.begin(), last_buttons_.end(), 0);
   }
 
@@ -224,4 +229,18 @@ private:
   configuration configuration_;
   std::vector<uint8_t> last_buttons_;
 };
-} // namespace krbn::undeclared_buttons
+
+[[nodiscard]] inline std::shared_ptr<krbn::hid_report_only_events::report_handler>
+make_report_handler(
+    pqrs::hid::vendor_id::value_t vendor_id,
+    pqrs::hid::product_id::value_t product_id,
+    std::span<const uint8_t> report_descriptor) {
+  if (auto configuration = find_configuration(vendor_id,
+                                              product_id,
+                                              report_descriptor)) {
+    return std::make_shared<handler>(*configuration);
+  }
+
+  return nullptr;
+}
+} // namespace krbn::hid_report_only_events::elecom::trackball

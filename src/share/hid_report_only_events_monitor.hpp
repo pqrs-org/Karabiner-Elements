@@ -1,8 +1,7 @@
 #pragma once
 
 #include "device_properties.hpp"
-#include "types.hpp"
-#include "undeclared_buttons.hpp"
+#include "hid_report_only_events.hpp"
 #include <mach/mach_time.h>
 #include <nod/nod.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
@@ -15,13 +14,12 @@
 #include <vector>
 
 namespace krbn {
-// Publishes the pointing buttons that krbn::undeclared_buttons recovers from a device's
-// raw input reports as ordinary HID values, so they flow through the rest of Karabiner as
-// regular pointing buttons.
+// Publishes events recovered from a device's raw input reports as ordinary HID values,
+// so they flow through the rest of Karabiner normally.
 //
 // This class is the only part of the feature that touches IOKit; decoding stays in
-// undeclared_buttons.hpp so it can be tested without hardware.
-class undeclared_buttons_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
+// the device-specific implementation so it can be tested without hardware.
+class hid_report_only_events_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   //
   // Signals (invoked from the shared dispatcher thread)
@@ -33,16 +31,16 @@ public:
   // Methods
   //
 
-  undeclared_buttons_monitor(const undeclared_buttons_monitor&) = delete;
+  hid_report_only_events_monitor(const hid_report_only_events_monitor&) = delete;
 
-  undeclared_buttons_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                             pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
-                             IOHIDDeviceRef device,
-                             const undeclared_buttons::configuration& configuration)
+  hid_report_only_events_monitor(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
+                                 pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
+                                 IOHIDDeviceRef device,
+                                 pqrs::not_null_shared_ptr_t<hid_report_only_events::report_handler> report_handler)
       : dispatcher_client(weak_dispatcher),
         run_loop_thread_(run_loop_thread),
         hid_device_(device),
-        decoder_(configuration),
+        report_handler_(report_handler),
         registered_(false) {
     // IOHIDDeviceRegisterInputReportCallback writes into a buffer we own, so it has to be
     // large enough for anything the device can send.
@@ -53,7 +51,7 @@ public:
     buffer_.resize(static_cast<size_t>(size));
   }
 
-  ~undeclared_buttons_monitor() override {
+  ~hid_report_only_events_monitor() override {
     detach_from_dispatcher();
 
     // IOKit retains the report buffer even after the callback is cleared, so owners must
@@ -71,31 +69,30 @@ public:
   }
 
   // Build a monitor only for known devices with the expected report descriptor.
-  [[nodiscard]] static std::shared_ptr<undeclared_buttons_monitor> make(
+  [[nodiscard]] static std::shared_ptr<hid_report_only_events_monitor> make_if_target(
       std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
       pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
       IOHIDDeviceRef device,
       const device_properties& device_properties) {
     const auto& identifiers = device_properties.get_device_identifiers();
 
-    // The spec describes the mouse collection's report, so it must not be applied to the
-    // keyboard or vendor-defined interfaces of the same physical device.
-    if (!identifiers.get_is_pointing_device()) {
-      return nullptr;
+    if (hid_report_only_events::is_target_device(identifiers)) {
+      // The descriptor is read only for a target device interface.
+      auto report_descriptor = find_report_descriptor(device);
+      if (auto report_handler =
+              hid_report_only_events::make_report_handler(
+                  identifiers,
+                  report_descriptor)) {
+        return std::make_shared<hid_report_only_events_monitor>(
+            weak_dispatcher,
+            run_loop_thread,
+            device,
+            pqrs::not_null_shared_ptr_t<hid_report_only_events::report_handler>(
+                report_handler));
+      }
     }
 
-    auto report_descriptor = find_report_descriptor(device);
-    auto configuration = undeclared_buttons::find_configuration(identifiers.get_vendor_id(),
-                                                                identifiers.get_product_id(),
-                                                                report_descriptor);
-    if (!configuration) {
-      return nullptr;
-    }
-
-    return std::make_shared<undeclared_buttons_monitor>(weak_dispatcher,
-                                                        run_loop_thread,
-                                                        device,
-                                                        *configuration);
+    return nullptr;
   }
 
   void async_start() {
@@ -154,7 +151,7 @@ private:
     }
 
     registered_ = false;
-    decoder_.reset();
+    report_handler_->reset();
   }
 
   static void static_input_report_callback(void* context,
@@ -164,7 +161,7 @@ private:
                                            uint32_t report_id,
                                            uint8_t* report,
                                            CFIndex report_length) {
-    if (auto self = static_cast<undeclared_buttons_monitor*>(context)) {
+    if (auto self = static_cast<hid_report_only_events_monitor*>(context)) {
       self->input_report_callback(result,
                                   type,
                                   report_id,
@@ -186,23 +183,24 @@ private:
       return;
     }
 
-    auto changes = decoder_.update(static_cast<uint8_t>(report_id),
-                                   std::span<const uint8_t>(report,
-                                                            static_cast<size_t>(report_length)));
-    if (changes.empty()) {
+    auto events = report_handler_->handle(
+        report_id,
+        std::span<const uint8_t>(report,
+                                 static_cast<size_t>(report_length)));
+    if (events.empty()) {
       return;
     }
 
     auto time_stamp = pqrs::osx::chrono::absolute_time_point(mach_absolute_time());
     auto values = std::make_shared<std::vector<pqrs::osx::iokit_hid_value>>();
 
-    for (const auto& c : changes) {
+    for (const auto& event : events) {
       values->push_back(pqrs::osx::iokit_hid_value(time_stamp,
-                                                   c.pressed ? 1 : 0,
-                                                   pqrs::hid::usage_page::button,
-                                                   pqrs::hid::usage::value_t(c.button),
-                                                   1,
-                                                   0));
+                                                   event.value,
+                                                   event.usage_page,
+                                                   event.usage,
+                                                   event.logical_max,
+                                                   event.logical_min));
     }
 
     enqueue_to_dispatcher([this, values] {
@@ -215,7 +213,7 @@ private:
   std::vector<uint8_t> buffer_;
 
   // The following are touched only in run_loop_thread_.
-  undeclared_buttons::decoder decoder_;
+  pqrs::not_null_shared_ptr_t<hid_report_only_events::report_handler> report_handler_;
   bool registered_;
 };
 } // namespace krbn

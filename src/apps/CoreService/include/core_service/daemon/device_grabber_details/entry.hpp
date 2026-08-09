@@ -7,11 +7,11 @@
 #include "game_pad_stick_converter.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "hid_queue_values_converter.hpp"
+#include "hid_report_only_events_monitor.hpp"
 #include "iokit_utility.hpp"
 #include "pressed_keys_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
-#include "undeclared_buttons_monitor.hpp"
 #include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
 namespace krbn::core_service::daemon::device_grabber_details {
@@ -52,8 +52,8 @@ public:
 
       // Input reports are delivered only while the device is open, which the hid queue
       // value monitor has just done.
-      if (undeclared_buttons_monitor_) {
-        undeclared_buttons_monitor_->async_start();
+      if (hid_report_only_events_monitor_) {
+        hid_report_only_events_monitor_->async_start();
       }
 
       if (seized()) {
@@ -73,8 +73,8 @@ public:
     hid_queue_value_monitor_->stopped.connect([this] {
       control_caps_lock_led_state_manager();
 
-      if (undeclared_buttons_monitor_) {
-        undeclared_buttons_monitor_->async_stop();
+      if (hid_report_only_events_monitor_) {
+        hid_report_only_events_monitor_->async_stop();
       }
 
       game_pad_stick_converter_ = nullptr;
@@ -171,14 +171,14 @@ public:
     // Buttons which the device reports but does not declare
     //
 
-    undeclared_buttons_monitor_ = undeclared_buttons_monitor::make(
+    hid_report_only_events_monitor_ = hid_report_only_events_monitor::make_if_target(
         pqrs::dispatcher::extra::get_shared_dispatcher(),
         pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
         device,
         *device_properties_);
 
-    if (undeclared_buttons_monitor_) {
-      undeclared_buttons_monitor_->values_arrived.connect([this](auto&& values) {
+    if (hid_report_only_events_monitor_) {
+      hid_report_only_events_monitor_->values_arrived.connect([this](auto&& values) {
         // These values need none of the filtering the hid queue values above go through:
         // they are always on pqrs::hid::usage_page::button, which "ignore_vendor_events"
         // never matches, and no device we recover buttons for is the game pad that
@@ -204,7 +204,7 @@ public:
   ~entry() {
     detach_from_dispatcher([this] {
       // The order matters: hid_queue_value_monitor_ owns the device being open, and
-      // undeclared_buttons_monitor_ owns the buffer IOKit copies input reports into. The
+      // hid_report_only_events_monitor_ owns the buffer IOKit copies input reports into. The
       // device has to be closed before that buffer goes away, or reports arriving in
       // between are written into freed memory.
       //
@@ -212,7 +212,7 @@ public:
       // emits started() only after IOHIDDeviceOpen and stopped() only after
       // IOHIDDeviceClose.
       hid_queue_value_monitor_ = nullptr;
-      undeclared_buttons_monitor_ = nullptr;
+      hid_report_only_events_monitor_ = nullptr;
       game_pad_stick_converter_ = nullptr;
       caps_lock_led_state_manager_ = nullptr;
     });
@@ -386,7 +386,7 @@ private:
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
-  std::shared_ptr<undeclared_buttons_monitor> undeclared_buttons_monitor_;
+  std::shared_ptr<hid_report_only_events_monitor> hid_report_only_events_monitor_;
   std::unique_ptr<game_pad_stick_converter> game_pad_stick_converter_;
   hid_queue_values_converter hid_queue_values_converter_;
   std::string device_name_;

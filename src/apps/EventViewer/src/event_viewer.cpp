@@ -4,10 +4,10 @@
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "hat_switch_convert.hpp"
+#include "hid_report_only_events_monitor.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
-#include "undeclared_buttons_monitor.hpp"
 #include <atomic>
 #include <memory>
 #include <optional>
@@ -92,25 +92,25 @@ public:
 
       // Devices which under-declare their buttons need those buttons recovered from
       // the raw input report, otherwise EventViewer shows nothing when they are pressed.
-      if (auto undeclared_buttons_monitor = krbn::undeclared_buttons_monitor::make(
+      if (auto hid_report_only_events_monitor = krbn::hid_report_only_events_monitor::make_if_target(
               pqrs::dispatcher::extra::get_shared_dispatcher(),
               pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
               *device_ptr,
               *device_properties)) {
-        undeclared_buttons_monitors_.insert_or_assign(device_id,
-                                                      undeclared_buttons_monitor);
+        hid_report_only_events_monitors_.insert_or_assign(device_id,
+                                                          hid_report_only_events_monitor);
 
-        undeclared_buttons_monitor->values_arrived.connect([this, device_id](auto&& values) {
+        hid_report_only_events_monitor->values_arrived.connect([this, device_id](auto&& values) {
           handle_hid_values(device_id,
                             *values);
         });
 
-        monitor->started.connect([undeclared_buttons_monitor] {
-          undeclared_buttons_monitor->async_start();
+        monitor->started.connect([hid_report_only_events_monitor] {
+          hid_report_only_events_monitor->async_start();
         });
 
-        monitor->stopped.connect([undeclared_buttons_monitor] {
-          undeclared_buttons_monitor->async_stop();
+        monitor->stopped.connect([hid_report_only_events_monitor] {
+          hid_report_only_events_monitor->async_stop();
         });
       }
 
@@ -123,7 +123,7 @@ public:
 
       // Closing the device has to come before releasing the report buffer.
       hid_queue_value_monitors_.erase(device_id);
-      undeclared_buttons_monitors_.erase(device_id);
+      hid_report_only_events_monitors_.erase(device_id);
 
       krbn::hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
     });
@@ -141,7 +141,7 @@ public:
 
       // Close the devices before releasing the buffers IOKit copies their input reports into.
       hid_queue_value_monitors_.clear();
-      undeclared_buttons_monitors_.clear();
+      hid_report_only_events_monitors_.clear();
 
       if (auto callback = hid_value_monitor_stopped_callback.load()) {
         callback();
@@ -215,8 +215,8 @@ private:
                      pqrs::not_null_shared_ptr_t<pqrs::osx::iokit_hid_queue_value_monitor>>
       hid_queue_value_monitors_;
   std::unordered_map<krbn::device_id,
-                     pqrs::not_null_shared_ptr_t<krbn::undeclared_buttons_monitor>>
-      undeclared_buttons_monitors_;
+                     pqrs::not_null_shared_ptr_t<krbn::hid_report_only_events_monitor>>
+      hid_report_only_events_monitors_;
 };
 
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {

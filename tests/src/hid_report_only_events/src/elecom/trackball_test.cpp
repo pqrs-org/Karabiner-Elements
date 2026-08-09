@@ -1,8 +1,9 @@
-#include "undeclared_buttons.hpp"
+#include "hid_report_only_events/elecom/trackball.hpp"
 #include <boost/ut.hpp>
 
 namespace {
-using krbn::undeclared_buttons::button_change;
+namespace elecom_trackball = krbn::hid_report_only_events::elecom::trackball;
+using krbn::hid_report_only_events::event;
 
 std::vector<uint8_t> huge_plus_descriptor() {
   // Mouse Application Collection extracted from the
@@ -78,25 +79,55 @@ std::vector<uint8_t> deft_descriptor() {
   // clang-format on
 }
 
-std::optional<krbn::undeclared_buttons::configuration> huge_plus_configuration() {
-  return krbn::undeclared_buttons::find_configuration(
+std::optional<elecom_trackball::configuration> huge_plus_configuration() {
+  return elecom_trackball::find_configuration(
       pqrs::hid::vendor_id::value_t(0x056e),
       pqrs::hid::product_id::value_t(0x01aa),
       huge_plus_descriptor());
 }
 
-krbn::undeclared_buttons::decoder huge_plus_decoder() {
-  return krbn::undeclared_buttons::decoder(*huge_plus_configuration());
+elecom_trackball::handler huge_plus_handler() {
+  return elecom_trackball::handler(*huge_plus_configuration());
 }
 
 std::vector<uint8_t> report(uint8_t buttons) {
   return {0x01, buttons, 0x00, 0x00, 0x00, 0x00};
+}
+
+event button_event(uint32_t button, bool pressed) {
+  return event{
+      .usage_page = pqrs::hid::usage_page::button,
+      .usage = pqrs::hid::usage::value_t(button),
+      .value = pressed ? 1 : 0,
+      .logical_max = 1,
+      .logical_min = 0,
+  };
 }
 } // namespace
 
 int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
+
+  "identify target devices"_test = [] {
+    for (auto product_id : {
+             pqrs::hid::product_id::value_t(0x00fe),
+             pqrs::hid::product_id::value_t(0x01aa),
+             pqrs::hid::product_id::value_t(0x01ab),
+             pqrs::hid::product_id::value_t(0x01ac),
+         }) {
+      expect(elecom_trackball::is_target_device(
+          pqrs::hid::vendor_id::value_t(0x056e),
+          product_id));
+    }
+
+    expect(!elecom_trackball::is_target_device(
+        pqrs::hid::vendor_id::value_t(0x056e),
+        pqrs::hid::product_id::value_t(0x0001)));
+    expect(!elecom_trackball::is_target_device(
+        pqrs::hid::vendor_id::value_t(0x05ac),
+        pqrs::hid::product_id::value_t(0x01aa)));
+  };
 
   "find HUGE PLUS configuration from its descriptor"_test = [] {
     auto configuration = huge_plus_configuration();
@@ -108,7 +139,7 @@ int main() {
   };
 
   "find DEFT configuration from its descriptor"_test = [] {
-    auto configuration = krbn::undeclared_buttons::find_configuration(
+    auto configuration = elecom_trackball::find_configuration(
         pqrs::hid::vendor_id::value_t(0x056e),
         pqrs::hid::product_id::value_t(0x00fe),
         deft_descriptor());
@@ -125,7 +156,7 @@ int main() {
              pqrs::hid::product_id::value_t(0x01ab),
              pqrs::hid::product_id::value_t(0x01ac),
          }) {
-      expect(krbn::undeclared_buttons::find_configuration(
+      expect(elecom_trackball::find_configuration(
                  pqrs::hid::vendor_id::value_t(0x056e),
                  product_id,
                  huge_plus_descriptor()) != std::nullopt);
@@ -133,11 +164,11 @@ int main() {
   };
 
   "reject unknown device"_test = [] {
-    expect(krbn::undeclared_buttons::find_configuration(
+    expect(elecom_trackball::find_configuration(
                pqrs::hid::vendor_id::value_t(0x056e),
                pqrs::hid::product_id::value_t(0x0001),
                huge_plus_descriptor()) == std::nullopt);
-    expect(krbn::undeclared_buttons::find_configuration(
+    expect(elecom_trackball::find_configuration(
                pqrs::hid::vendor_id::value_t(0x05ac),
                pqrs::hid::product_id::value_t(0x01aa),
                huge_plus_descriptor()) == std::nullopt);
@@ -146,14 +177,14 @@ int main() {
   "reject changed descriptor"_test = [] {
     auto descriptor = huge_plus_descriptor();
     descriptor[17] = 0x08; // Firmware now declares all eight buttons.
-    expect(krbn::undeclared_buttons::find_configuration(
+    expect(elecom_trackball::find_configuration(
                pqrs::hid::vendor_id::value_t(0x056e),
                pqrs::hid::product_id::value_t(0x01aa),
                descriptor) == std::nullopt);
 
     descriptor = huge_plus_descriptor();
     descriptor.resize(33);
-    expect(krbn::undeclared_buttons::find_configuration(
+    expect(elecom_trackball::find_configuration(
                pqrs::hid::vendor_id::value_t(0x056e),
                pqrs::hid::product_id::value_t(0x01aa),
                descriptor) == std::nullopt);
@@ -166,7 +197,7 @@ int main() {
     // The recovered buttons therefore span two bytes and are numbered 6-16.
     descriptor[29] = 0x0b;
 
-    auto configuration = krbn::undeclared_buttons::find_configuration(
+    auto configuration = elecom_trackball::find_configuration(
         pqrs::hid::vendor_id::value_t(0x056e),
         pqrs::hid::product_id::value_t(0x01aa),
         descriptor);
@@ -175,56 +206,56 @@ int main() {
     expect(configuration->button_count == 11_u);
     expect(configuration->first_button == 6_u);
 
-    auto decoder = krbn::undeclared_buttons::decoder(*configuration);
-    auto changes = decoder.update(1, std::vector<uint8_t>{0x01, 0x20, 0x81});
-    expect(changes == std::vector<button_change>{
-                          {.button = 6, .pressed = true},
-                          {.button = 9, .pressed = true},
-                          {.button = 16, .pressed = true},
-                      });
+    auto handler = elecom_trackball::handler(*configuration);
+    auto events = handler.handle(1, std::vector<uint8_t>{0x01, 0x20, 0x81});
+    expect(events == std::vector<event>{
+                         button_event(6, true),
+                         button_event(9, true),
+                         button_event(16, true),
+                     });
   };
 
-  "decode press, repeat and release"_test = [] {
-    auto decoder = huge_plus_decoder();
+  "handle press, repeat and release"_test = [] {
+    auto handler = huge_plus_handler();
 
-    auto down = decoder.update(1, report(0x20));
-    expect(down == std::vector<button_change>{{.button = 6, .pressed = true}});
-    expect(decoder.update(1, report(0x20)).empty());
+    auto down = handler.handle(1, report(0x20));
+    expect(down == std::vector<event>{button_event(6, true)});
+    expect(handler.handle(1, report(0x20)).empty());
 
-    auto up = decoder.update(1, report(0x00));
-    expect(up == std::vector<button_change>{{.button = 6, .pressed = false}});
+    auto up = handler.handle(1, report(0x00));
+    expect(up == std::vector<event>{button_event(6, false)});
   };
 
-  "decode recovered buttons only"_test = [] {
-    auto decoder = huge_plus_decoder();
+  "handle recovered buttons only"_test = [] {
+    auto handler = huge_plus_handler();
 
     // Declared button 1 is ignored; undeclared buttons 6 and 8 are reported.
-    auto changes = decoder.update(1, report(0xa1));
-    expect(changes == std::vector<button_change>{
-                          {.button = 6, .pressed = true},
-                          {.button = 8, .pressed = true},
-                      });
+    auto events = handler.handle(1, report(0xa1));
+    expect(events == std::vector<event>{
+                         button_event(6, true),
+                         button_event(8, true),
+                     });
 
-    auto mixed = decoder.update(1, report(0x40));
-    expect(mixed == std::vector<button_change>{
-                        {.button = 6, .pressed = false},
-                        {.button = 7, .pressed = true},
-                        {.button = 8, .pressed = false},
+    auto mixed = handler.handle(1, report(0x40));
+    expect(mixed == std::vector<event>{
+                        button_event(6, false),
+                        button_event(7, true),
+                        button_event(8, false),
                     });
   };
 
   "ignore unrelated or short report"_test = [] {
-    auto decoder = huge_plus_decoder();
-    expect(decoder.update(2, std::vector<uint8_t>{0x02, 0xff}).empty());
-    expect(decoder.update(1, std::vector<uint8_t>{0x01}).empty());
-    expect(decoder.update(1, std::vector<uint8_t>{}).empty());
+    auto handler = huge_plus_handler();
+    expect(handler.handle(2, std::vector<uint8_t>{0x02, 0xff}).empty());
+    expect(handler.handle(1, std::vector<uint8_t>{0x01}).empty());
+    expect(handler.handle(1, std::vector<uint8_t>{}).empty());
   };
 
-  "reset decoder"_test = [] {
-    auto decoder = huge_plus_decoder();
-    expect(decoder.update(1, report(0x20)).size() == 1_u);
-    decoder.reset();
-    expect(decoder.update(1, report(0x20)).size() == 1_u);
+  "reset handler"_test = [] {
+    auto handler = huge_plus_handler();
+    expect(handler.handle(1, report(0x20)).size() == 1_u);
+    handler.reset();
+    expect(handler.handle(1, report(0x20)).size() == 1_u);
   };
 
   return 0;

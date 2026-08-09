@@ -6,5 +6,5 @@ project (karabiner_test)
 
 add_executable(
   karabiner_test
-  src/test.cpp
+  src/elecom/trackball_test.cpp
 )
