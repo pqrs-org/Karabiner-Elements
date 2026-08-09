@@ -1,0 +1,116 @@
+import Combine
+import Foundation
+import SwiftUI
+
+func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+  let s = String(cString: jsonString)
+
+  Task { @MainActor in
+    ConnectedDevices.shared.update(s)
+  }
+}
+
+// device_properties.hpp
+private struct ConnectedDevicePayload: Decodable {
+  // device_identifiers.hpp
+  struct DeviceIdentifiers: Decodable {
+    let vendorId: UInt64?
+    let productId: UInt64?
+    let isKeyboard: Bool?
+    let isPointingDevice: Bool?
+    let isGamePad: Bool?
+    let isConsumer: Bool?
+    let isVirtualDevice: Bool?
+    let deviceAddress: String?
+  }
+
+  let deviceId: UInt64
+  let deviceIdentifiers: DeviceIdentifiers
+  let deviceIdentifiersJsonString: String
+  let locationId: UInt64?
+  let manufacturer: String?
+  let product: String?
+  let serialNumber: String?
+  let transport: String?
+  let isBuiltInKeyboard: Bool?
+  let isBuiltInPointingDevice: Bool?
+  let isBuiltInTouchBar: Bool?
+  let isApple: Bool?
+}
+
+@MainActor
+final class ConnectedDevices: ObservableObject {
+  static let shared = ConnectedDevices()
+
+  private(set) var connectedDevicesJSONString = ""
+  @Published var connectedDevices: [ConnectedDevice] = []
+  @Published var notConnectedConfiguredDevicesCount: UInt64 = 0
+
+  func componentsManagerStopped() {
+    connectedDevicesJSONString = ""
+    connectedDevices = []
+    notConnectedConfiguredDevicesCount = 0
+  }
+
+  public func update(_ jsonString: String) {
+    if connectedDevicesJSONString == jsonString {
+      return
+    }
+    connectedDevicesJSONString = jsonString
+
+    guard let data = jsonString.data(using: .utf8) else { return }
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+    do {
+      let payloads = try decoder.decode([ConnectedDevicePayload].self, from: data)
+
+      let newConnectedDevices = payloads.enumerated().map { index, payload in
+        var manufacturer = (payload.manufacturer ?? "")
+          .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+        if manufacturer.isEmpty {
+          manufacturer = "No manufacturer name"
+        }
+
+        var product = (payload.product ?? "")
+          .replacingOccurrences(of: "[\r\n]", with: " ", options: .regularExpression)
+        if product.isEmpty {
+          if payload.transport == "FIFO" {
+            product = "Apple Internal Keyboard / Trackpad"
+          } else {
+            product = "No product name"
+          }
+        }
+
+        return ConnectedDevice(
+          id: payload.deviceIdentifiersJsonString,
+          index: index,
+          manufacturerName: manufacturer,
+          productName: product,
+          transport: payload.transport ?? "",
+          vendorId: payload.deviceIdentifiers.vendorId ?? 0,
+          productId: payload.deviceIdentifiers.productId ?? 0,
+          deviceAddress: payload.deviceIdentifiers.deviceAddress ?? "",
+          isKeyboard: payload.deviceIdentifiers.isKeyboard ?? false,
+          isPointingDevice: payload.deviceIdentifiers.isPointingDevice ?? false,
+          isGamePad: payload.deviceIdentifiers.isGamePad ?? false,
+          isConsumer: payload.deviceIdentifiers.isConsumer ?? false,
+          isVirtualDevice: payload.deviceIdentifiers.isVirtualDevice ?? false,
+          isBuiltInKeyboard: payload.isBuiltInKeyboard ?? false,
+          isAppleDevice: payload.isApple ?? false
+        )
+      }
+
+      notConnectedConfiguredDevicesCount = connectedDevicesJSONString.withCString {
+        UInt64(
+          krbn_core_configuration_get_selected_profile_not_connected_configured_devices_count(
+            $0))
+      }
+
+      connectedDevices = newConnectedDevices
+    } catch {
+      print(error.localizedDescription)
+      return
+    }
+  }
+}

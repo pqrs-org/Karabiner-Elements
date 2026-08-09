@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SimpleModificationsView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
@@ -19,17 +19,21 @@ struct SimpleModificationsView: View {
     .onChange(of: contentViewStates.simpleModificationsViewSelectedDevice) { newDevice in
       settings.appendSimpleModificationIfEmpty(device: newDevice)
     }
+    .onReceive(NotificationCenter.default.publisher(for: Settings.didConfigurationLoad)) { _ in
+      settings.appendSimpleModificationIfEmpty(
+        device: contentViewStates.simpleModificationsViewSelectedDevice)
+    }
   }
 
   struct SimpleModificationView: View {
-    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var settings = Settings.shared
 
-    private let selectedDevice: LibKrbn.ConnectedDevice?
-    private let simpleModifications: [LibKrbn.SimpleModification]
+    private let selectedDevice: ConnectedDevice?
+    private let simpleModifications: [SettingsConfiguration.SimpleModification]
 
-    init(selectedDevice: LibKrbn.ConnectedDevice?) {
+    init(selectedDevice: ConnectedDevice?) {
       self.selectedDevice = selectedDevice
-      self.simpleModifications = LibKrbn.Settings.shared.simpleModifications(
+      self.simpleModifications = Settings.shared.simpleModifications(
         connectedDevice: selectedDevice)
     }
 
@@ -38,41 +42,47 @@ struct SimpleModificationsView: View {
       ScrollView {
         VStack(alignment: .leading, spacing: 4.0) {
           ForEach(simpleModifications) { simpleModification in
+            let fromEntry = simpleModification.fromEntry
+            let toEntry = simpleModification.toEntry(
+              categories: SimpleModificationDefinitions.shared.toCategories)
+
             HStack {
               SimpleModificationPickerView(
-                categories: LibKrbn.SimpleModificationDefinitions.shared.fromCategories,
-                label: simpleModification.fromEntry.label,
+                categories: SimpleModificationDefinitions.shared.fromCategories,
+                label: fromEntry.label,
                 action: { json in
-                  LibKrbn.Settings.shared.updateSimpleModification(
+                  Settings.shared.updateSimpleModification(
                     index: simpleModification.index,
                     fromJsonString: json,
-                    toJsonString: simpleModification.toEntry.json,
+                    toJsonString: toEntry.json,
                     device: selectedDevice)
                 },
-                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
+                showUnsafe: settings.configuration.globalConfiguration.unsafeUi
+                  || (selectedDevice?.isGamePad ?? false)
               )
 
               Image(systemName: "arrow.forward")
                 .padding(.horizontal, 6.0)
 
               SimpleModificationPickerView(
-                categories: LibKrbn.SimpleModificationDefinitions.shared.toCategories,
-                label: simpleModification.toEntry.label,
+                categories: SimpleModificationDefinitions.shared.toCategories,
+                label: toEntry.label,
                 action: { json in
-                  LibKrbn.Settings.shared.updateSimpleModification(
+                  Settings.shared.updateSimpleModification(
                     index: simpleModification.index,
-                    fromJsonString: simpleModification.fromEntry.json,
+                    fromJsonString: fromEntry.json,
                     toJsonString: json,
                     device: selectedDevice)
                 },
-                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
+                showUnsafe: settings.configuration.globalConfiguration.unsafeUi
+                  || (selectedDevice?.isGamePad ?? false)
               )
               .padding(.trailing, 24.0)
 
               Button(
                 role: .destructive,
                 action: {
-                  LibKrbn.Settings.shared.removeSimpleModification(
+                  Settings.shared.removeSimpleModification(
                     index: simpleModification.index,
                     device: selectedDevice)
                 },
@@ -90,7 +100,7 @@ struct SimpleModificationsView: View {
 
           Button(
             action: {
-              LibKrbn.Settings.shared.appendSimpleModification(device: selectedDevice)
+              Settings.shared.appendSimpleModification(device: selectedDevice)
             },
             label: {
               // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.

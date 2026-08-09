@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct VirtualKeyboardView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
 
   var body: some View {
     ScrollView {
@@ -20,7 +20,7 @@ struct VirtualKeyboardView: View {
               Text("Cursor speed:")
 
               IntTextField(
-                value: $settings.virtualHIDKeyboardMouseKeyXYScale,
+                value: $settings.configuration.selectedProfile.virtualHidKeyboard.mouseKeyXyScale,
                 range: 0...100_000,
                 step: 10,
                 width: 50)

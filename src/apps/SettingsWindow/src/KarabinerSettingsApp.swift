@@ -6,36 +6,41 @@ struct KarabinerSettingsApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
   init() {
-    libkrbn_initialize()
-    libkrbn_load_custom_environment_variables()
+    krbn_initialize(
+      coreConfigurationUpdated: coreConfigurationUpdatedCallback,
+      coreConfigurationLoadStateChanged: coreConfigurationLoadStateChangedCallback,
+      logMessagesUpdated: logMessagesUpdatedCallback,
+      connectedDevicesReceived: connectedDevicesReceivedCallback,
+      systemVariablesReceived: systemVariablesReceivedCallback,
+      consoleUserServerClientStatusChanged: consoleUserServerClientStatusChangedCallback,
+      settingsWindowGuidanceReceived: settingsWindowGuidanceReceivedCallback,
+      componentsManagerStopped: componentsManagerStoppedCallback)
+    krbn_load_custom_environment_variables()
 
     //
     // Unregister old agents
     //
 
-    libkrbn_services_bootout_old_agents()
+    krbn_services_bootout_old_agents()
 
     //
     // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.
     // So we should enable them once before checking the status.
     //
 
-    libkrbn_services_register_core_daemons()
-    libkrbn_services_register_core_agents()
+    krbn_services_register_core_daemons()
+    krbn_services_register_core_agents()
 
     //
     // Setup CoreServiceClient
     //
 
-    SettingsCoreServiceDaemonClient.shared.start()
     SettingsConsoleUserServerClient.shared.start()
 
     //
     // Start components
     //
 
-    LibKrbn.Settings.shared.watch()
-    SettingsCoreServiceDaemonClient.shared.startSystemVariablesMonitoring()
     SystemPreferences.shared.start()
   }
 
@@ -45,7 +50,11 @@ struct KarabinerSettingsApp: App {
       id: "main",
       content: {
         ContentView()
-      })
+      }
+    )
+    .commands {
+      FindCommands()
+    }
   }
 }
 
@@ -80,7 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       userAttentionRequestIdentifier = nil
     }
 
-    libkrbn_terminate()
+    krbn_terminate()
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {

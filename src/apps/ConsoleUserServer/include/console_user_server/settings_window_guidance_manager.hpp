@@ -82,6 +82,13 @@ public:
     });
   }
 
+  void async_update_console_user_server_karabiner_json_permission_error(std::optional<bool> value) {
+    enqueue_to_dispatcher([this, value] {
+      std::lock_guard<std::mutex> lock(mutex_);
+      console_user_server_karabiner_json_permission_error_ = value;
+    });
+  }
+
   [[nodiscard]] settings_window_guidance_state get_guidance_state() const {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -90,6 +97,7 @@ public:
     state.set_current_alert(current_alert_);
     state.set_guidance_context(guidance_context_);
     state.set_core_service_daemon_state(core_service_daemon_state_);
+    state.set_console_user_server_karabiner_json_permission_error(console_user_server_karabiner_json_permission_error_);
 
     return state;
   }
@@ -326,6 +334,7 @@ private:
   settings_window_guidance_alert current_alert_ = settings_window_guidance_alert::none;
   settings_window_guidance_context guidance_context_;
   core_service_daemon_state core_service_daemon_state_;
+  std::optional<bool> console_user_server_karabiner_json_permission_error_;
 
   bool needs_to_launch_settings_ = false;
 

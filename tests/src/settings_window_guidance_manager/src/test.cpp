@@ -293,5 +293,32 @@ int main() {
     expect(c.manager.get_guidance_state().get_current_alert() == krbn::settings_window_guidance_alert::doctor);
   };
 
+  "settings_window_guidance_manager karabiner.json permission errors"_test = [] {
+    auto c = manager_test_context(manager_test_context::initialization_parameters{
+        .enabled = true,
+        .running = true,
+    });
+
+    auto initial_state = c.manager.get_guidance_state();
+    expect(initial_state.get_console_user_server_karabiner_json_permission_error() == std::nullopt);
+    expect(initial_state.get_core_service_daemon_state().get_karabiner_json_permission_error() == std::nullopt);
+
+    c.manager.async_update_console_user_server_karabiner_json_permission_error(true);
+
+    auto core_service_daemon_state = krbn::core_service_daemon_state();
+    core_service_daemon_state.set_karabiner_json_permission_error(true);
+    c.manager.async_update_core_service_daemon_state(core_service_daemon_state);
+
+    c.wait_until(std::chrono::milliseconds(0));
+
+    auto state = c.manager.get_guidance_state();
+    expect(state.get_console_user_server_karabiner_json_permission_error() == std::optional<bool>(true));
+    expect(state.get_core_service_daemon_state().get_karabiner_json_permission_error() == std::optional<bool>(true));
+
+    auto decoded = nlohmann::json(state).get<krbn::settings_window_guidance_state>();
+    expect(decoded.get_console_user_server_karabiner_json_permission_error() == std::optional<bool>(true));
+    expect(decoded.get_core_service_daemon_state().get_karabiner_json_permission_error() == std::optional<bool>(true));
+  };
+
   return 0;
 }

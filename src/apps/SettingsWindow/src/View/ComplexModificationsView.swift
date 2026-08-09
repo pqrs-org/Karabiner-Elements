@@ -8,24 +8,28 @@ enum ComplexModificationsSheetView: String {
 
 struct ComplexModificationsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @State private var moveDisabled: Bool = true
   @State private var showingEditSheet = false
   @State private var hoverRuleIndex: Int?
-  @State private var editingRule: LibKrbn.ComplexModificationsRule?
+  @State private var editingRule: SettingsConfiguration.ComplexModificationsRule?
   @State private var filterKeyword = ""
 
   private var normalizedFilterKeyword: String {
     filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
-  private func matchesFilter(_ rule: LibKrbn.ComplexModificationsRule) -> Bool {
+  private var rules: [SettingsConfiguration.ComplexModificationsRule] {
+    settings.configuration.selectedProfile.complexModifications.rules
+  }
+
+  private func matchesFilter(_ rule: SettingsConfiguration.ComplexModificationsRule) -> Bool {
     let keyword = normalizedFilterKeyword
     if keyword.isEmpty {
       return true
     }
 
-    return rule.searchText?.localizedCaseInsensitiveContains(keyword) == true
+    return rule.searchText.localizedCaseInsensitiveContains(keyword)
   }
 
   var body: some View {
@@ -44,15 +48,16 @@ struct ComplexModificationsView: View {
         Button(
           action: {
             var buffer = [Int8](repeating: 0, count: 32 * 1024)
-            libkrbn_core_configuration_get_new_complex_modifications_rule_json_string(
+            krbn_core_configuration_get_new_complex_modifications_rule_json_string(
               &buffer, buffer.count)
 
-            editingRule = LibKrbn.ComplexModificationsRule(
+            editingRule = SettingsConfiguration.ComplexModificationsRule(
               index: -1,
               description: "Edit the following setting and press the Save button.",
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
-              codeType: libkrbn_complex_modifications_rule_code_type_json,
+              searchText: "",
+              codeType: .json
             )
             showingEditSheet = true
           },
@@ -67,15 +72,16 @@ struct ComplexModificationsView: View {
         Button(
           action: {
             var buffer = [Int8](repeating: 0, count: 32 * 1024)
-            libkrbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(
+            krbn_core_configuration_get_new_complex_modifications_rule_eval_js_string(
               &buffer, buffer.count)
 
-            editingRule = LibKrbn.ComplexModificationsRule(
+            editingRule = SettingsConfiguration.ComplexModificationsRule(
               index: -1,
               description: "Edit the following script and press the Save button.",
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
-              codeType: libkrbn_complex_modifications_rule_code_type_javascript,
+              searchText: "",
+              codeType: .javascript
             )
             showingEditSheet = true
           },
@@ -91,7 +97,7 @@ struct ComplexModificationsView: View {
       Divider()
 
       HStack {
-        if normalizedFilterKeyword.isEmpty && settings.complexModificationsRules.count > 1 {
+        if normalizedFilterKeyword.isEmpty && rules.count > 1 {
           HStack {
             Text("You can reorder list by dragging")
             Image(systemName: "arrow.up.arrow.down.square.fill")
@@ -110,13 +116,13 @@ struct ComplexModificationsView: View {
       .padding(.top)
 
       List {
-        ForEach($settings.complexModificationsRules) { $complexModificationRule in
+        ForEach(rules) { complexModificationRule in
           if matchesFilter(complexModificationRule) {
             // Store the ruleIndex here to prevent referencing a deleted complexModificationRule in onHover when a rule is removed.
             let ruleIndex = complexModificationRule.index
 
             HStack(alignment: .center, spacing: 0) {
-              if normalizedFilterKeyword.isEmpty && settings.complexModificationsRules.count > 1 {
+              if normalizedFilterKeyword.isEmpty && rules.count > 1 {
                 Image(systemName: "arrow.up.arrow.down.square.fill")
                   .resizable(resizingMode: .stretch)
                   .frame(width: 16.0, height: 16.0)
@@ -138,7 +144,7 @@ struct ComplexModificationsView: View {
 
                       Button {
                         settings.moveComplexModificationsRule(
-                          complexModificationRule.index, settings.complexModificationsRules.count)
+                          complexModificationRule.index, rules.count)
                       } label: {
                         Label("Move item to bottom", systemImage: "arrow.down.to.line")
                       }
@@ -170,7 +176,15 @@ struct ComplexModificationsView: View {
               }
 
               HStack(alignment: .center, spacing: 10) {
-                Toggle(isOn: $complexModificationRule.enabled) {
+                Toggle(
+                  isOn: Binding(
+                    get: { complexModificationRule.enabled },
+                    set: {
+                      settings.setComplexModificationsRuleEnabled(
+                        index: complexModificationRule.index,
+                        enabled: $0)
+                    })
+                ) {
                   Text("")
                 }
                 .switchToggleStyle()
@@ -189,7 +203,7 @@ struct ComplexModificationsView: View {
                 Button(
                   role: .destructive,
                   action: {
-                    settings.removeComplexModificationsRule(complexModificationRule)
+                    settings.removeComplexModificationsRule(index: complexModificationRule.index)
                   },
                   label: {
                     Image(systemName: "trash")

@@ -41,6 +41,13 @@ class FingerState: Identifiable {
     self.identifier = identifier
   }
 
+  func setTouchedPhysically(_ value: Bool, now: Date) {
+    if touchedPhysically != value {
+      touchedPhysically = value
+      touchedPhysicallyAt = now
+    }
+  }
+
   func updateTouchedFixed(now: Date) {
     let delay =
       touchedPhysically

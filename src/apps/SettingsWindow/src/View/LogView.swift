@@ -1,85 +1,47 @@
+import AppKit
 import SwiftUI
 
 struct LogView: View {
   @ObservedObject private var logMessages = LogMessages.shared
-  @State private var filterKeyword = ""
-  @State private var filterContextLineCount = 5
-  private let bottomAnchorID = "bottomAnchor"
 
-  private var trimmedFilterKeyword: String {
-    filterKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
-  }
+  private func renderLog() -> RenderedLog {
+    let string = NSMutableAttributedString()
+    var entryLocations: [String: Int] = [:]
+    let font = NSFont.monospacedSystemFont(
+      ofSize: NSFont.systemFontSize,
+      weight: .regular)
 
-  private var filteredEntries: [FilteredLogMessageEntry] {
-    let keyword = trimmedFilterKeyword
-    if keyword.isEmpty {
-      return logMessages.entries.map {
-        FilteredLogMessageEntry(logMessageEntry: $0, isMatched: false)
-      }
-    }
-
-    var indexes = Set<Int>()
-    var matchedIndexes = Set<Int>()
-
-    for index in logMessages.entries.indices
-    where logMessages.entries[index].text.localizedCaseInsensitiveContains(keyword) {
-      matchedIndexes.insert(index)
-
-      let lowerBound = max(logMessages.entries.startIndex, index - filterContextLineCount)
-      let upperBound = min(
-        logMessages.entries.index(before: logMessages.entries.endIndex),
-        index + filterContextLineCount)
-
-      for contextIndex in lowerBound...upperBound {
-        indexes.insert(contextIndex)
-      }
-    }
-
-    var filteredEntries: [FilteredLogMessageEntry] = []
-    var previousIndex: Int?
-
-    for index in indexes.sorted() {
-      if let previousIndex {
-        if index > previousIndex + 1 {
-          filteredEntries.append(
-            FilteredLogMessageEntry.omittedLinesMarker(
-              from: previousIndex + 1,
-              to: index - 1))
-        }
-      } else if index > logMessages.entries.startIndex {
-        filteredEntries.append(
-          FilteredLogMessageEntry.omittedLinesMarker(
-            from: logMessages.entries.startIndex,
-            to: index - 1))
+    for (index, entry) in logMessages.entries.enumerated() {
+      if index > 0 {
+        string.append(NSAttributedString(string: "\n"))
       }
 
-      filteredEntries.append(
-        FilteredLogMessageEntry(
-          logMessageEntry: logMessages.entries[index],
-          isMatched: matchedIndexes.contains(index)))
-
-      previousIndex = index
+      let entryLocation = string.length
+      entryLocations[entry.id] = entryLocation
+      string.append(
+        NSAttributedString(
+          string: entry.text,
+          attributes: [
+            .font: font,
+            .foregroundColor: NSColor(entry.foregroundColor),
+            .backgroundColor: NSColor(entry.backgroundColor),
+          ]))
     }
 
-    if let previousIndex,
-      previousIndex < logMessages.entries.index(before: logMessages.entries.endIndex)
-    {
-      filteredEntries.append(
-        FilteredLogMessageEntry.omittedLinesMarker(
-          from: previousIndex + 1,
-          to: logMessages.entries.index(before: logMessages.entries.endIndex)))
-    }
-
-    return filteredEntries
+    return RenderedLog(
+      attributedString: NSAttributedString(attributedString: string),
+      entryLocations: entryLocations)
   }
 
   var body: some View {
+    let renderedLog = renderLog()
+
     VStack(alignment: .leading, spacing: 0.0) {
       HStack(alignment: .top) {
         Button(
           action: {
             var text = ""
-            for e in filteredEntries {
+            for e in logMessages.entries {
               text += e.text + "\n"
             }
 
@@ -92,68 +54,16 @@ struct LogView: View {
           })
 
         Spacer()
-
-        VStack(alignment: .trailing) {
-          SearchField(text: $filterKeyword)
-            .frame(width: 300)
-
-          if !trimmedFilterKeyword.isEmpty {
-            Stepper(
-              "Show \(filterContextLineCount) surrounding lines",
-              value: $filterContextLineCount,
-              in: 0...50
-            )
-          }
-        }
       }
       .padding()
 
-      ScrollViewReader { proxy in
-        ScrollView {
-          VStack(alignment: .leading, spacing: 0) {
-            ForEach(filteredEntries) { e in
-              if e.showsMatchIndicator {
-                HStack(spacing: 0) {
-                  Rectangle()
-                    .fill(Color.infoBackground)
-                    .frame(width: 10)
-
-                  LogMessageText(e: e)
-                }
-                .id(e.id)
-              } else {
-                LogMessageText(e: e)
-                  .id(e.id)
-              }
-            }
-
-            Color.clear
-              .frame(height: 1)
-              .id(bottomAnchorID)
-          }
-          .padding()
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        }
-        .onAppear {
-          if trimmedFilterKeyword.isEmpty {
-            Task { @MainActor in
-              proxy.scrollTo(bottomAnchorID, anchor: .bottom)
-            }
-          }
-        }
-        .onChange(of: logMessages.entries) { _ in
-          // Keep the filtered view at the current position while new non-matching lines arrive.
-          if trimmedFilterKeyword.isEmpty {
-            Task { @MainActor in
-              proxy.scrollTo(bottomAnchorID, anchor: .bottom)
-            }
-          }
-        }
-      }
-      // Setting a background color on the inner VStack triggers a bug in macOS 15 and earlier,
-      // where only the top-left corner renders until the logs finish loading,
-      // so the background needs to be applied directly to the ScrollView.
-      .background(Color(NSColor.textBackgroundColor))
+      LiveSelectableTextView(
+        attributedString: renderedLog.attributedString,
+        selectionAnchorLocations: renderedLog.entryLocations,
+        followsTail: true,
+        textContainerInset: NSSize(width: 14, height: 8),
+        lineFragmentPadding: 5
+      )
       .border(Color(NSColor.separatorColor), width: 2)
 
       HStack {
@@ -178,67 +88,7 @@ struct LogView: View {
   }
 }
 
-private struct LogMessageText: View {
-  let e: FilteredLogMessageEntry
-
-  var body: some View {
-    Text(e.text)
-      .font(.callout)
-      .monospaced()
-      .foregroundColor(e.foregroundColor)
-      .background(e.backgroundColor)
-      .textSelection(.enabled)
-  }
-}
-
-private struct FilteredLogMessageEntry: Identifiable {
-  let id: String
-  let text: String
-  let showsMatchIndicator: Bool
-  let foregroundColor: Color
-  let backgroundColor: Color
-
-  init(
-    id: String,
-    text: String,
-    showsMatchIndicator: Bool,
-    foregroundColor: Color,
-    backgroundColor: Color
-  ) {
-    self.id = id
-    self.text = text
-    self.showsMatchIndicator = showsMatchIndicator
-    self.foregroundColor = foregroundColor
-    self.backgroundColor = backgroundColor
-  }
-
-  @MainActor
-  init(logMessageEntry: LogMessageEntry, isMatched: Bool) {
-    id = logMessageEntry.id.uuidString
-    text = logMessageEntry.text
-    // Show an indicator for warn and error logs when they match the filter,
-    // instead of changing their colors.
-    showsMatchIndicator =
-      isMatched
-      && (logMessageEntry.logLevel == .warn || logMessageEntry.logLevel == .error)
-
-    if isMatched, !showsMatchIndicator {
-      // Use info colors for entries that match the filter.
-      foregroundColor = Color.infoForeground
-      backgroundColor = Color.infoBackground
-    } else {
-      foregroundColor = logMessageEntry.foregroundColor
-      backgroundColor = logMessageEntry.backgroundColor
-    }
-  }
-
-  static func omittedLinesMarker(from startIndex: Int, to endIndex: Int) -> FilteredLogMessageEntry
-  {
-    FilteredLogMessageEntry(
-      id: "omittedLines:\(startIndex)-\(endIndex)",
-      text: String(repeating: "~", count: 80),
-      showsMatchIndicator: false,
-      foregroundColor: Color(NSColor.textBackgroundColor),
-      backgroundColor: Color(NSColor.textColor))
-  }
+private struct RenderedLog {
+  let attributedString: NSAttributedString
+  let entryLocations: [String: Int]
 }

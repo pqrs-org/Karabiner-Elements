@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FunctionKeysView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @ObservedObject private var settingsCoreServiceDaemonClient = SettingsCoreServiceDaemonClient
     .shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
@@ -47,30 +47,34 @@ struct FunctionKeysView: View {
   }
 
   struct FnFunctionKeysView: View {
-    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var settings = Settings.shared
     @ObservedObject private var settingsCoreServiceDaemonClient = SettingsCoreServiceDaemonClient
       .shared
 
-    private let selectedDevice: LibKrbn.ConnectedDevice?
-    private let fnFunctionKeys: [LibKrbn.SimpleModification]
+    private let selectedDevice: ConnectedDevice?
+    private let fnFunctionKeys: [SettingsConfiguration.SimpleModification]
 
-    init(selectedDevice: LibKrbn.ConnectedDevice?) {
+    init(selectedDevice: ConnectedDevice?) {
       self.selectedDevice = selectedDevice
       self.fnFunctionKeys =
-        selectedDevice == nil
-        ? LibKrbn.Settings.shared.fnFunctionKeys
-        : LibKrbn.Settings.shared.findConnectedDeviceSetting(selectedDevice!)?.fnFunctionKeys ?? []
+        Settings.shared.fnFunctionKeys(connectedDevice: selectedDevice)
     }
 
     var body: some View {
       ScrollView {
         VStack(alignment: .leading, spacing: 4.0) {
           ForEach(fnFunctionKeys) { fnFunctionKey in
+            let fromEntry = fnFunctionKey.fromEntry
+            let toEntry = fnFunctionKey.toEntry(
+              categories: selectedDevice == nil
+                ? SimpleModificationDefinitions.shared.toCategories
+                : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase)
+
             HStack {
               Text(
                 settingsCoreServiceDaemonClient.useFkeysAsStandardFunctionKeys
-                  ? "fn + \(fnFunctionKey.fromEntry.label)"
-                  : fnFunctionKey.fromEntry.label
+                  ? "fn + \(fromEntry.label)"
+                  : fromEntry.label
               )
               .monospaced()
               .frame(width: 80, alignment: .trailing)
@@ -80,16 +84,17 @@ struct FunctionKeysView: View {
 
               SimpleModificationPickerView(
                 categories: selectedDevice == nil
-                  ? LibKrbn.SimpleModificationDefinitions.shared.toCategories
-                  : LibKrbn.SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
-                label: fnFunctionKey.toEntry.label,
+                  ? SimpleModificationDefinitions.shared.toCategories
+                  : SimpleModificationDefinitions.shared.toCategoriesWithInheritBase,
+                label: toEntry.label,
                 action: { json in
-                  LibKrbn.Settings.shared.updateFnFunctionKey(
-                    fromJsonString: fnFunctionKey.fromEntry.json,
+                  Settings.shared.updateFnFunctionKey(
+                    fromJsonString: fromEntry.json,
                     toJsonString: json,
                     device: selectedDevice)
                 },
-                showUnsafe: settings.unsafeUI || (selectedDevice?.isGamePad ?? false)
+                showUnsafe: settings.configuration.globalConfiguration.unsafeUi
+                  || (selectedDevice?.isGamePad ?? false)
               )
             }
 

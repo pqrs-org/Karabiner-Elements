@@ -8,8 +8,17 @@ struct KarabinerEventViewerApp: App {
   @StateObject private var userSettings: UserSettings
 
   init() {
-    libkrbn_initialize()
-    libkrbn_load_custom_environment_variables()
+    _ = EVCoreServiceDaemonClient.shared
+    _ = FrontmostApplicationHistory.shared
+    _ = EventHistory.shared
+
+    krbn_initialize(
+      coreServiceConnectionChanged: coreServiceConnectionChangedCallback,
+      manipulatorEnvironmentReceived: manipulatorEnvironmentReceivedCallback,
+      connectedDevicesReceived: connectedDevicesReceivedCallback,
+      frontmostApplicationHistoryReceived: frontmostApplicationHistoryReceivedCallback,
+      hidValueMonitorStopped: hidValueMonitorStoppedCallback,
+      hidValueArrived: hidValueArrivedCallback)
 
     let userSettings = UserSettings()
     _userSettings = StateObject(wrappedValue: userSettings)
@@ -18,21 +27,7 @@ struct KarabinerEventViewerApp: App {
       InputMonitoringAlertData.shared.showing = true
     }
 
-    EVCoreServiceDaemonClient.shared.start()
-    EVConsoleUserServerClient.shared.start()
-    LibKrbn.FrontmostApplicationHistory.shared.watch()
-
-    NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event -> NSEvent? in
-      if event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command {
-        if event.charactersIgnoringModifiers == "q" || event.charactersIgnoringModifiers == "w" {
-          if userSettings.quitUsingKeyboardShortcut {
-            NSApplication.shared.terminate(nil)
-          }
-          return nil
-        }
-      }
-      return event
-    }
+    FrontmostApplicationHistory.shared.watch()
   }
 
   var body: some Scene {
@@ -44,12 +39,15 @@ struct KarabinerEventViewerApp: App {
           .environmentObject(userSettings)
       }
     )
+    .commands {
+      FindCommands()
+    }
   }
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
   public func applicationWillTerminate(_: Notification) {
-    libkrbn_terminate()
+    krbn_terminate()
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {

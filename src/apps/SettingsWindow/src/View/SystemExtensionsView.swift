@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct SystemExtensionsView: View {
+  @ObservedObject private var systemExtensionsStreamer = SystemExtensions.shared.streamer
+  @ObservedObject private var sysextdLogStreamer = SysextdLogMessages.shared.streamer
+
   var body: some View {
     VStack(alignment: .leading, spacing: 12.0) {
       GroupBox(label: Text("States")) {
@@ -10,7 +13,7 @@ struct SystemExtensionsView: View {
               action: {
                 let pboard = NSPasteboard.general
                 pboard.clearContents()
-                pboard.writeObjects([SystemExtensions.shared.stream.text as NSString])
+                pboard.writeObjects([systemExtensionsStreamer.text as NSString])
               },
               label: {
                 Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
@@ -25,11 +28,12 @@ struct SystemExtensionsView: View {
               })
           }
 
-          RealtimeTextWithProgress(
-            stream: SystemExtensions.shared.stream,
+          LiveSelectableTextView(
+            text: systemExtensionsStreamer.text,
             font: NSFont.monospacedSystemFont(
               ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
-              weight: .regular)
+              weight: .regular),
+            isLoading: !systemExtensionsStreamer.isTextReady
           )
           .frame(height: 160)
           .background(Color(NSColor.textBackgroundColor))
@@ -46,7 +50,7 @@ struct SystemExtensionsView: View {
               action: {
                 let pboard = NSPasteboard.general
                 pboard.clearContents()
-                pboard.writeObjects([SysextdLogMessages.shared.stream.text as NSString])
+                pboard.writeObjects([sysextdLogStreamer.text as NSString])
               },
               label: {
                 Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
@@ -61,11 +65,12 @@ struct SystemExtensionsView: View {
               })
           }
 
-          RealtimeTextWithProgress(
-            stream: SysextdLogMessages.shared.stream,
+          LiveSelectableTextView(
+            text: sysextdLogStreamer.text,
             font: NSFont.monospacedSystemFont(
               ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize,
-              weight: .regular)
+              weight: .regular),
+            isLoading: !sysextdLogStreamer.isTextReady
           )
           .background(Color(NSColor.textBackgroundColor))
           .border(Color(NSColor.separatorColor), width: 2)

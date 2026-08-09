@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct DevicesView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
-  @ObservedObject private var connectedDevices = LibKrbn.ConnectedDevices.shared
+  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var connectedDevices = ConnectedDevices.shared
   @State private var showEraseNotConnectedDeviceSettingsButton = false
 
   static let detailedSettingWidth = 400.0
@@ -11,7 +11,7 @@ struct DevicesView: View {
     VStack(alignment: .leading, spacing: 0.0) {
       List {
         ForEach(connectedDevices.connectedDevices) { connectedDevice in
-          if let connectedDeviceSetting = settings.findConnectedDeviceSetting(connectedDevice) {
+          if let deviceConfiguration = settings.deviceConfigurationBinding(connectedDevice) {
             VStack(alignment: .leading, spacing: 0.0) {
               DeviceName(connectedDevice: connectedDevice)
                 .if(connectedDevice.isVirtualDevice) {
@@ -20,16 +20,26 @@ struct DevicesView: View {
 
               if !connectedDevice.isVirtualDevice {
                 VStack(alignment: .leading, spacing: 0.0) {
-                  ModifyEventsSetting(connectedDeviceSetting: connectedDeviceSetting)
+                  ModifyEventsSetting(
+                    connectedDevice: connectedDevice,
+                    deviceConfiguration: deviceConfiguration)
 
                   VStack(alignment: .leading, spacing: 6.0) {
-                    KeyboardSettings(connectedDeviceSetting: connectedDeviceSetting)
+                    KeyboardSettings(
+                      connectedDevice: connectedDevice,
+                      deviceConfiguration: deviceConfiguration)
 
-                    MouseSettings(connectedDeviceSetting: connectedDeviceSetting)
+                    MouseSettings(
+                      connectedDevice: connectedDevice,
+                      deviceConfiguration: deviceConfiguration)
 
-                    GamePadSettings(connectedDeviceSetting: connectedDeviceSetting)
+                    GamePadSettings(
+                      connectedDevice: connectedDevice,
+                      deviceConfiguration: deviceConfiguration)
 
-                    ExtraSettings(connectedDeviceSetting: connectedDeviceSetting)
+                    ExtraSettings(
+                      connectedDevice: connectedDevice,
+                      deviceConfiguration: deviceConfiguration)
                   }
                   .padding(.leading, 20.0)
                   .padding(.top, 8.0)
@@ -45,8 +55,8 @@ struct DevicesView: View {
               RoundedRectangle(cornerRadius: 8)
                 .stroke(
                   Color(NSColor.selectedControlColor),
-                  lineWidth: settings.findConnectedDeviceSetting(connectedDevice)?.modifyEvents
-                    ?? false && !connectedDevice.isVirtualDevice
+                  lineWidth: deviceConfiguration.wrappedValue.modifyEvents
+                    && !connectedDevice.isVirtualDevice
                     ? 3 : 0
                 )
                 .padding(2)
@@ -98,7 +108,7 @@ struct DevicesView: View {
   }
 
   struct DeviceName: View {
-    let connectedDevice: LibKrbn.ConnectedDevice
+    let connectedDevice: ConnectedDevice
 
     var body: some View {
       HStack(alignment: .center, spacing: 0) {
@@ -154,30 +164,32 @@ struct DevicesView: View {
   }
 
   struct ModifyEventsSetting: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: ConnectedDevice
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
 
-    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var settings = Settings.shared
 
     var body: some View {
       HStack(alignment: .top) {
-        if connectedDeviceSetting.connectedDevice.isAppleDevice,
-          !connectedDeviceSetting.connectedDevice.isKeyboard,
-          connectedDeviceSetting.connectedDevice.isPointingDevice,
-          !settings.unsafeUI
+        if connectedDevice.isAppleDevice,
+          !connectedDevice.isKeyboard,
+          connectedDevice.isPointingDevice,
+          !settings.configuration.globalConfiguration.unsafeUi
         {
           Text("Apple pointing devices are not supported")
             .foregroundColor(Color(NSColor.placeholderTextColor))
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
           VStack(alignment: .leading) {
-            Toggle(isOn: $connectedDeviceSetting.modifyEvents) {
+            Toggle(isOn: $deviceConfiguration.modifyEvents) {
               Text("Modify events")
             }
             .switchToggleStyle()
             .frame(width: 140.0)
 
-            if settings.enableCGEventTapFallback && !connectedDeviceSetting.modifyEvents
-              && connectedDeviceSetting.connectedDevice.isKeyboard
+            if settings.configuration.globalConfiguration.enableCgeventtapFallback
+              && !deviceConfiguration.modifyEvents
+              && connectedDevice.isKeyboard
             {
               Label(
                 title: {
@@ -199,18 +211,19 @@ struct DevicesView: View {
   }
 
   struct KeyboardSettings: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: ConnectedDevice
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
 
-    @ObservedObject private var settings = LibKrbn.Settings.shared
+    @ObservedObject private var settings = Settings.shared
 
     var body: some View {
       VStack {
-        if connectedDeviceSetting.connectedDevice.isKeyboard {
+        if connectedDevice.isKeyboard {
           VStack(alignment: .leading, spacing: 6.0) {
-            if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
-              && !connectedDeviceSetting.disableBuiltInKeyboardIfExists
+            if !connectedDevice.isBuiltInKeyboard
+              && !deviceConfiguration.disableBuiltInKeyboardIfExists
             {
-              Toggle(isOn: $connectedDeviceSetting.treatAsBuiltInKeyboard) {
+              Toggle(isOn: $deviceConfiguration.treatAsBuiltInKeyboard) {
                 Text("Treat as a built-in keyboard")
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
@@ -218,10 +231,10 @@ struct DevicesView: View {
               .frame(width: detailedSettingWidth)
             }
 
-            if !connectedDeviceSetting.connectedDevice.isBuiltInKeyboard
-              && !connectedDeviceSetting.treatAsBuiltInKeyboard
+            if !connectedDevice.isBuiltInKeyboard
+              && !deviceConfiguration.treatAsBuiltInKeyboard
             {
-              Toggle(isOn: $connectedDeviceSetting.disableBuiltInKeyboardIfExists) {
+              Toggle(isOn: $deviceConfiguration.disableBuiltInKeyboardIfExists) {
                 Text("Disable the built-in keyboard while this device is connected")
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
@@ -229,8 +242,8 @@ struct DevicesView: View {
               .frame(width: detailedSettingWidth)
             }
 
-            if connectedDeviceSetting.modifyEvents {
-              Toggle(isOn: $connectedDeviceSetting.manipulateCapsLockLed) {
+            if deviceConfiguration.modifyEvents {
+              Toggle(isOn: $deviceConfiguration.manipulateCapsLockLed) {
                 Text("Manipulate caps lock LED")
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
@@ -244,12 +257,13 @@ struct DevicesView: View {
   }
 
   struct MouseSettings: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: ConnectedDevice
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
     @State var showing = false
 
     var body: some View {
-      if connectedDeviceSetting.modifyEvents
-        && connectedDeviceSetting.connectedDevice.isPointingDevice
+      if deviceConfiguration.modifyEvents
+        && connectedDevice.isPointingDevice
       {
         Button(
           action: {
@@ -262,7 +276,8 @@ struct DevicesView: View {
         )
         .sheet(isPresented: $showing) {
           DevicesMouseSettingsView(
-            connectedDeviceSetting: connectedDeviceSetting,
+            connectedDevice: connectedDevice,
+            deviceConfiguration: $deviceConfiguration,
             showing: $showing
           )
         }
@@ -273,11 +288,12 @@ struct DevicesView: View {
   }
 
   struct GamePadSettings: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: ConnectedDevice
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
     @State var showing = false
 
     var body: some View {
-      if connectedDeviceSetting.modifyEvents && connectedDeviceSetting.connectedDevice.isGamePad {
+      if deviceConfiguration.modifyEvents && connectedDevice.isGamePad {
         Button(
           action: {
             showing = true
@@ -289,7 +305,8 @@ struct DevicesView: View {
         )
         .sheet(isPresented: $showing) {
           DevicesGamePadSettingsView(
-            connectedDeviceSetting: connectedDeviceSetting,
+            connectedDevice: connectedDevice,
+            deviceConfiguration: $deviceConfiguration,
             showing: $showing
           )
         }
@@ -300,14 +317,15 @@ struct DevicesView: View {
   }
 
   struct ExtraSettings: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    let connectedDevice: ConnectedDevice
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
 
     var body: some View {
       VStack {
-        if connectedDeviceSetting.modifyEvents {
-          if !connectedDeviceSetting.connectedDevice.isAppleDevice {
+        if deviceConfiguration.modifyEvents {
+          if !connectedDevice.isAppleDevice {
             VStack(alignment: .leading, spacing: 4.0) {
-              Toggle(isOn: $connectedDeviceSetting.ignoreVendorEvents) {
+              Toggle(isOn: $deviceConfiguration.ignoreVendorEvents) {
                 Text(
                   "Ignore vendor events"
                 )

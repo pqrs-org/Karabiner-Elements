@@ -9,7 +9,7 @@ struct UninstallView: View {
             Button(
               role: .destructive,
               action: {
-                libkrbn_launch_uninstaller()
+                krbn_launch_uninstaller()
 
                 NSApplication.shared.terminate(nil)
               },

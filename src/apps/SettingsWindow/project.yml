@@ -16,14 +16,17 @@ targets:
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
       HEADER_SEARCH_PATHS:
-        - ../../lib/libkrbn/include
+        - ../../share
+        - ../../../vendor/duktape-src
+        - ../../../vendor/duktape-2.7.0/extras/console
+        - ../../../vendor/duktape-2.7.0/extras/module-node
       OTHER_LDFLAGS:
-        - ../../lib/libkrbn/build/Release/libkrbn.a
         - ../../../vendor/duktape-src/build/Release/libduktape.a
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER:
         - src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../../vendor/vendor/include
       DEAD_CODE_STRIPPING: 'YES'
       SWIFT_VERSION: '6.0'
@@ -35,6 +38,7 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
+          - '-std=c++23'
       - path: ../share/swift
         compilerFlags:
           - -Wall

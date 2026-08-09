@@ -84,7 +84,7 @@ void list_connected_devices() {
     });
 
     client.connected.connect([&client] {
-      client.async_get_connected_devices();
+      client.async_observe_connected_devices();
     });
 
     client.received.connect([&wait](auto&& operation_type,

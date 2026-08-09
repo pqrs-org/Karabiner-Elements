@@ -7,7 +7,6 @@ struct UIStatePayload: Decodable {
     var showProfileName = false
     var showAdditionalMenuItems = false
     var enableMultitouchExtension = false
-    var askForConfirmationBeforeQuitting = false
   }
 
   struct NotificationWindowSettings: Decodable {
@@ -20,6 +19,7 @@ struct UIStatePayload: Decodable {
     let selected: Bool
   }
 
+  let configurationLoaded: Bool
   let menuSettings: MenuSettings
   let notificationWindowSettings: NotificationWindowSettings
   let profiles: [Profile]
@@ -48,13 +48,16 @@ private func notificationMessageUpdated(_ value: UnsafePointer<CChar>?) {
 final class ConsoleUserServerUIState: ObservableObject {
   static let shared = ConsoleUserServerUIState()
 
+  @Published private(set) var configurationLoaded = false
   @Published private(set) var menuSettings = UIStatePayload.MenuSettings()
   @Published private(set) var notificationWindowSettings =
     UIStatePayload.NotificationWindowSettings()
   @Published private(set) var profiles: [UIStatePayload.Profile] = []
   @Published var notificationMessage = ""
 
-  var menuVisible: Bool { menuSettings.showIcon || menuSettings.showProfileName }
+  var menuVisible: Bool {
+    configurationLoaded && (menuSettings.showIcon || menuSettings.showProfileName)
+  }
 
   var selectedProfileName: String {
     profiles.first(where: { $0.selected })?.name ?? ""
@@ -73,6 +76,7 @@ final class ConsoleUserServerUIState: ObservableObject {
     menuSettings = payload.menuSettings
     notificationWindowSettings = payload.notificationWindowSettings
     profiles = payload.profiles
+    configurationLoaded = payload.configurationLoaded
     NotificationWindowManager.shared.updateWindowsVisibility()
   }
 }

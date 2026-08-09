@@ -128,7 +128,7 @@ main()
 }
 
 // Save .prettierrc.json to ~/.local/share/karabiner for external editors.
-void save_prettierrc() {
+inline void save_prettierrc() {
   auto directory = constants::get_user_data_directory();
   if (!directory.empty()) {
     auto json = nlohmann::ordered_json::object({

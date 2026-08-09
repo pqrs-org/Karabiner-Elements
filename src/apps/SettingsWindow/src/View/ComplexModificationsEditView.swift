@@ -4,16 +4,16 @@ import CodeEditor
 import SwiftUI
 
 struct ComplexModificationsEditView: View {
-  @Binding var rule: LibKrbn.ComplexModificationsRule?
+  @Binding var rule: SettingsConfiguration.ComplexModificationsRule?
   @Binding var showing: Bool
   @State private var description = ""
   @State private var disabled = true
   @State private var codeString = ""
-  @State private var codeType = libkrbn_complex_modifications_rule_code_type_json
+  @State private var codeType = SettingsConfiguration.ComplexModificationsRule.CodeType.json
   @State private var errorMessage: String?
   @StateObject private var externalEditorController = ExternalEditorController.shared
   @State private var didOpenExternalEditor = false
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @Environment(\.colorScheme) var colorScheme
 
   @State private var evalResultString = ""
@@ -49,7 +49,7 @@ struct ComplexModificationsEditView: View {
                     externalEditorController.openEditor(
                       with: codeString,
                       fileExtension:
-                        codeType == libkrbn_complex_modifications_rule_code_type_javascript
+                        codeType == .javascript
                         ? "js"
                         : "json",
                       onError: { errorMessage = $0 },
@@ -135,7 +135,7 @@ struct ComplexModificationsEditView: View {
 
             CodeEditor(
               source: $codeString,
-              language: codeType == libkrbn_complex_modifications_rule_code_type_javascript
+              language: codeType == .javascript
                 ? .javascript
                 : .json,
               theme: CodeEditor.ThemeName(
@@ -143,7 +143,7 @@ struct ComplexModificationsEditView: View {
             )
             .border(Color(NSColor.separatorColor), width: 2)
 
-            if codeType == libkrbn_complex_modifications_rule_code_type_javascript {
+            if codeType == .javascript {
               if let evalErrorMessage = evalErrorMessage {
                 Label(
                   title: {
@@ -212,7 +212,7 @@ struct ComplexModificationsEditView: View {
         codeString = ""
       }
 
-      codeType = rule?.codeType ?? libkrbn_complex_modifications_rule_code_type_json
+      codeType = rule?.codeType ?? .json
 
       externalEditorController.reset()
 
@@ -227,7 +227,7 @@ struct ComplexModificationsEditView: View {
               break
             }
 
-            if disabled || codeType != libkrbn_complex_modifications_rule_code_type_javascript {
+            if disabled || codeType != .javascript {
               await MainActor.run {
                 evalResultString = ""
                 evalLogMessages = ""
@@ -290,7 +290,8 @@ struct ComplexModificationsEditView: View {
   private func save() -> Bool {
     if rule!.index < 0 {
       errorMessage = settings.pushFrontComplexModificationsRule(
-        codeString, codeType)
+        codeString: codeString,
+        codeType: codeType)
       if errorMessage == nil {
         // Set index to call replaceComplexModificationsRule on the next save.
         rule!.index = 0
@@ -298,7 +299,9 @@ struct ComplexModificationsEditView: View {
       }
     } else {
       errorMessage = settings.replaceComplexModificationsRule(
-        rule!, codeString, codeType)
+        index: rule!.index,
+        codeString: codeString,
+        codeType: codeType)
       if errorMessage == nil {
         return true
       }
@@ -317,14 +320,14 @@ struct ComplexModificationsEditView: View {
     var errorBuffer = [Int8](repeating: 0, count: 4 * 1024)
 
     let ok = code.withCString { codeCString in
-      libkrbn_eval_js_to_json_string(
-        codeCString,
-        &jsonBuffer,
-        jsonBuffer.count,
-        &logBuffer,
-        logBuffer.count,
-        &errorBuffer,
-        errorBuffer.count
+      krbn_eval_js_to_json_string(
+        code: codeCString,
+        jsonBuffer: &jsonBuffer,
+        jsonBufferLength: jsonBuffer.count,
+        logMessageBuffer: &logBuffer,
+        logMessageBufferLength: logBuffer.count,
+        errorMessageBuffer: &errorBuffer,
+        errorMessageBufferLength: errorBuffer.count
       )
     }
 

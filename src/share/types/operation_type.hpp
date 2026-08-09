@@ -43,13 +43,14 @@ enum class operation_type : uint8_t {
   set_app_icon,
   set_variables,
   clear_user_variables,
+  observe_connected_devices,
+  observe_notification_message,
+  get_system_variables, // Return only the system.* entries from manipulator_environment.variables.
+  get_multitouch_extension_variables,
   // core_service (daemon) -> any
-  get_connected_devices,
   connected_devices,
   notification_message,
-  get_system_variables, // Return only the system.* entries from manipulator_environment.variables.
   system_variables,
-  get_multitouch_extension_variables,
   multitouch_extension_variables,
   end_,
 };
@@ -84,12 +85,13 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::set_app_icon, "set_app_icon"},
         {operation_type::set_variables, "set_variables"},
         {operation_type::clear_user_variables, "clear_user_variables"},
-        {operation_type::get_connected_devices, "get_connected_devices"},
+        {operation_type::observe_connected_devices, "observe_connected_devices"},
+        {operation_type::observe_notification_message, "observe_notification_message"},
+        {operation_type::get_system_variables, "get_system_variables"},
+        {operation_type::get_multitouch_extension_variables, "get_multitouch_extension_variables"},
         {operation_type::connected_devices, "connected_devices"},
         {operation_type::notification_message, "notification_message"},
-        {operation_type::get_system_variables, "get_system_variables"},
         {operation_type::system_variables, "system_variables"},
-        {operation_type::get_multitouch_extension_variables, "get_multitouch_extension_variables"},
         {operation_type::multitouch_extension_variables, "multitouch_extension_variables"},
         {operation_type::end_, "end_"},
     });

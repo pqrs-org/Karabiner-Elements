@@ -8,44 +8,49 @@ enum LogLevel {
   case error
 }
 
-private func callback() {
+private struct LogMessagePayload: Decodable {
+  let text: String
+  let logLevel: String
+  let dateNumber: UInt64
+}
+
+func logMessagesUpdatedCallback(
+  _ json: UnsafePointer<CChar>,
+  _ length: Int
+) {
+  let data = Data(bytes: json, count: length)
+
   Task { @MainActor in
-    var logMessageEntries: [LogMessageEntry] = []
-    let size = libkrbn_log_lines_get_size()
-    for i in 0..<size {
-      var buffer = [Int8](repeating: 0, count: 32 * 1024)
-      var line = ""
-      if libkrbn_log_lines_get_line(i, &buffer, buffer.count) {
-        line = String(utf8String: buffer) ?? ""
-      }
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-      if line != "" {
-        var logLevel = LogLevel.info
-        if libkrbn_log_lines_is_debug_line(line) {
-          logLevel = LogLevel.debug
-        }
-        if libkrbn_log_lines_is_warn_line(line) {
-          logLevel = LogLevel.warn
-        }
-        if libkrbn_log_lines_is_error_line(line) {
-          logLevel = LogLevel.error
-        }
+    do {
+      let payloads = try decoder.decode([LogMessagePayload].self, from: data)
+      let entries = payloads.map {
+        let logLevel: LogLevel =
+          switch $0.logLevel {
+          case "debug": .debug
+          case "warn": .warn
+          case "error": .error
+          default: .info
+          }
 
-        logMessageEntries.append(
-          LogMessageEntry(
-            text: line,
-            logLevel: logLevel,
-            dateNumber: libkrbn_log_lines_get_date_number(line)))
+        return LogMessageEntry(
+          text: $0.text,
+          logLevel: logLevel,
+          dateNumber: $0.dateNumber)
       }
+      LogMessages.shared.setEntries(entries)
+    } catch {
+      print("Failed to decode log lines JSON: \(error)")
+      LogMessages.shared.setEntries([])
     }
-
-    LogMessages.shared.setEntries(logMessageEntries)
   }
 }
 
 @MainActor
 public class LogMessageEntry: Identifiable, Equatable {
-  nonisolated public let id = UUID()
+  nonisolated public let id: String
   public var text = ""
   let logLevel: LogLevel
   public var dateNumber: UInt64
@@ -53,6 +58,7 @@ public class LogMessageEntry: Identifiable, Equatable {
   public var backgroundColor = Color.clear
 
   init(text: String, logLevel: LogLevel, dateNumber: UInt64) {
+    id = "\(dateNumber):\(logLevel):\(text)"
     self.text = text
     self.logLevel = logLevel
     self.dateNumber = dateNumber
@@ -97,12 +103,6 @@ public class LogMessages: ObservableObject {
   }
 
   public func watch() {
-    entries = []
-
-    libkrbn_enable_log_monitor()
-    libkrbn_register_log_messages_updated_callback(callback)
-    libkrbn_enqueue_callback(callback)
-
     //
     // Create timer
     //
@@ -117,8 +117,6 @@ public class LogMessages: ObservableObject {
   }
 
   public func unwatch() {
-    libkrbn_disable_log_monitor()
-
     timerTask?.cancel()
   }
 

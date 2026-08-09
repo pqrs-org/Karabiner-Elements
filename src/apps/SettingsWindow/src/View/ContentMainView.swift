@@ -56,7 +56,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .uninstall: return "trash"
     case .expert: return "flame"
     case .action: return "xmark.rectangle"
-    case .log: return "doc.plaintext"
+    case .log: return "list.bullet.rectangle"
     case .systemExtensions: return "puzzlepiece.extension"
     case .setup: return "checklist"
     }
@@ -65,7 +65,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 
 struct ContentMainView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @ObservedObject private var settingsCoreServiceDaemonClient = SettingsCoreServiceDaemonClient
     .shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared
@@ -148,7 +148,7 @@ struct ContentMainView: View {
       },
       detail: {
         VStack(alignment: .leading, spacing: 0) {
-          if settings.unsafeUI {
+          if settings.configuration.globalConfiguration.unsafeUi {
             Button(
               action: {
                 selectedSidebarItem = .expert

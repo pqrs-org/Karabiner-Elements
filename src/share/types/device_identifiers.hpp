@@ -8,41 +8,37 @@
 namespace krbn {
 class device_identifiers final {
 public:
+  struct initialization_parameters final {
+    pqrs::hid::vendor_id::value_t vendor_id = pqrs::hid::vendor_id::value_t(0);
+    pqrs::hid::product_id::value_t product_id = pqrs::hid::product_id::value_t(0);
+    bool is_keyboard = false;
+    bool is_pointing_device = false;
+    bool is_game_pad = false;
+    bool is_consumer = false;
+    bool is_virtual_device = false;
+    std::string device_address;
+  };
+
   device_identifiers()
-      : json_(nlohmann::json::object()),
-        vendor_id_(pqrs::hid::vendor_id::value_t(0)),
-        product_id_(pqrs::hid::product_id::value_t(0)),
-        is_keyboard_(false),
-        is_pointing_device_(false),
-        is_game_pad_(false),
-        is_consumer_(false),
-        is_virtual_device_(false),
-        device_address_("") {
+      : device_identifiers(initialization_parameters{}) {
   }
 
-  device_identifiers(pqrs::hid::vendor_id::value_t vendor_id,
-                     pqrs::hid::product_id::value_t product_id,
-                     bool is_keyboard,
-                     bool is_pointing_device,
-                     bool is_game_pad,
-                     bool is_consumer,
-                     bool is_virtual_device,
-                     std::string device_address)
+  explicit device_identifiers(const initialization_parameters& parameters)
       : json_(nlohmann::json::object()),
-        vendor_id_(vendor_id),
-        product_id_(product_id),
-        is_keyboard_(is_keyboard),
-        is_pointing_device_(is_pointing_device),
-        is_game_pad_(is_game_pad),
-        is_consumer_(is_consumer),
-        is_virtual_device_(is_virtual_device) {
+        vendor_id_(parameters.vendor_id),
+        product_id_(parameters.product_id),
+        is_keyboard_(parameters.is_keyboard),
+        is_pointing_device_(parameters.is_pointing_device),
+        is_game_pad_(parameters.is_game_pad),
+        is_consumer_(parameters.is_consumer),
+        is_virtual_device_(parameters.is_virtual_device) {
     // Some bluetooth devices do not have a vendor_id or product_id.
     // Such devices use device_address to distinguish between devices.
     // The device_address will be changed when the hardware is replaced,
     // so we use device_address only when vendor_id and product_id are zero.
-    if (vendor_id == pqrs::hid::vendor_id::value_t(0) &&
-        product_id == pqrs::hid::product_id::value_t(0)) {
-      device_address_ = device_address;
+    if (parameters.vendor_id == pqrs::hid::vendor_id::value_t(0) &&
+        parameters.product_id == pqrs::hid::product_id::value_t(0)) {
+      device_address_ = parameters.device_address;
     }
   }
 
@@ -134,6 +130,11 @@ public:
   [[nodiscard]] const std::string& get_device_address() const {
     return device_address_;
   }
+
+  // Returns a canonical representation based only on the values that define
+  // device identity. Unlike to_json, this excludes unknown source JSON keys
+  // and normalizes device_address according to the constructor rules.
+  [[nodiscard]] nlohmann::json to_normalized_json() const;
 
   [[nodiscard]] bool empty() const {
     return vendor_id_ == pqrs::hid::vendor_id::value_t(0) &&
@@ -261,6 +262,19 @@ inline void to_json(nlohmann::json& json, const device_identifiers& value) {
       json.erase(key);
     }
   }
+}
+
+inline nlohmann::json device_identifiers::to_normalized_json() const {
+  return device_identifiers({
+      .vendor_id = vendor_id_,
+      .product_id = product_id_,
+      .is_keyboard = is_keyboard_,
+      .is_pointing_device = is_pointing_device_,
+      .is_game_pad = is_game_pad_,
+      .is_consumer = is_consumer_,
+      .is_virtual_device = is_virtual_device_,
+      .device_address = device_address_,
+  });
 }
 
 inline void from_json(const nlohmann::json& json, device_identifiers& value) {

@@ -185,11 +185,21 @@ public:
     core_service_daemon_state_ = value;
   }
 
+  [[nodiscard]] const std::optional<bool>& get_console_user_server_karabiner_json_permission_error() const {
+    return console_user_server_karabiner_json_permission_error_;
+  }
+
+  void set_console_user_server_karabiner_json_permission_error(const std::optional<bool>& value) {
+    console_user_server_karabiner_json_permission_error_ = value;
+  }
+
 private:
   settings_window_guidance_setup current_setup_;
   settings_window_guidance_alert current_alert_;
   settings_window_guidance_context guidance_context_;
   core_service_daemon_state core_service_daemon_state_;
+  // nullopt means that the initial configuration load has not completed yet.
+  std::optional<bool> console_user_server_karabiner_json_permission_error_;
 };
 
 inline void to_json(nlohmann::json& json, const settings_window_guidance_state& value) {
@@ -199,6 +209,10 @@ inline void to_json(nlohmann::json& json, const settings_window_guidance_state& 
       {"guidance_context", value.get_guidance_context()},
       {"core_service_daemon_state", value.get_core_service_daemon_state()},
   });
+
+  if (auto v = value.get_console_user_server_karabiner_json_permission_error()) {
+    json["console_user_server_karabiner_json_permission_error"] = *v;
+  }
 }
 
 inline void from_json(const nlohmann::json& json, settings_window_guidance_state& value) {
@@ -207,5 +221,8 @@ inline void from_json(const nlohmann::json& json, settings_window_guidance_state
   value.set_guidance_context(json.at("guidance_context").get<settings_window_guidance_context>());
   value.set_core_service_daemon_state(json.value("core_service_daemon_state",
                                                  core_service_daemon_state()));
+  value.set_console_user_server_karabiner_json_permission_error(
+      pqrs::json::find<bool>(json,
+                             "console_user_server_karabiner_json_permission_error"));
 }
 } // namespace krbn

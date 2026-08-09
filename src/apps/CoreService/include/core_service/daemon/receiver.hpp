@@ -14,6 +14,7 @@
 #include "types/core_service_daemon_state.hpp"
 #include <array>
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/session.hpp>
@@ -179,6 +180,8 @@ private:
 
   void handle_peer_closed(pqrs::unix_domain_stream::peer_id peer_id) {
     temporarily_ignore_all_devices_peer_ids_.erase(peer_id);
+    connected_devices_observer_peer_ids_.erase(peer_id);
+    notification_message_observer_peer_ids_.erase(peer_id);
 
     // Restore the flags when all clients have closed.
     if (temporarily_ignore_all_devices_peer_ids_.empty()) {
@@ -436,21 +439,16 @@ private:
           }
           break;
 
-        case operation_type::get_connected_devices:
-          if (device_grabber_) {
-            device_grabber_->async_invoke_with_connected_devices(
-                [this, peer_id, request_id](auto&& connected_devices_json) {
-                  async_respond(peer_id,
-                                request_id,
-                                nlohmann::json{
-                                    {"operation_type", operation_type::connected_devices},
-                                    {"connected_devices", connected_devices_json},
-                                });
-                });
-          } else {
-            async_respond_none(peer_id,
-                               request_id);
-          }
+        case operation_type::observe_connected_devices:
+          connected_devices_observer_peer_ids_.insert(peer_id);
+          async_respond_connected_devices(peer_id,
+                                          request_id);
+          break;
+
+        case operation_type::observe_notification_message:
+          notification_message_observer_peer_ids_.insert(peer_id);
+          async_respond_notification_message(peer_id,
+                                             request_id);
           break;
 
         case operation_type::get_system_variables:
@@ -543,11 +541,11 @@ private:
     auto file_path = constants::get_system_core_configuration_file_path();
     if (filesystem_utility::exists(file_path)) {
       stop_device_grabber();
-      start_device_grabber(file_path);
+      start_device_grabber(std::nullopt);
     }
   }
 
-  void start_device_grabber(const std::string& configuration_file_path) {
+  void start_device_grabber(const std::optional<std::string>& user_core_configuration_file_path) {
     if (device_grabber_) {
       return;
     }
@@ -557,17 +555,27 @@ private:
       return;
     }
 
-    clear_device_grabber_state();
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      m->reset_device_grabber_state();
+    }
 
     device_grabber_ = std::make_unique<device_grabber>(console_user_server_peer_,
                                                        weak_core_service_daemon_state_manager_);
+
+    connected_devices_changed_connection_ = device_grabber_->connected_devices_changed.connect([this] {
+      send_connected_devices_to_observers();
+    });
+
+    notification_message_changed_connection_ = device_grabber_->notification_message_changed.connect([this](const auto&) {
+      send_notification_message_to_observers();
+    });
 
     device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
     set_focused_ui_element_variables();
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
 
-    device_grabber_->async_start(configuration_file_path,
+    device_grabber_->async_start(user_core_configuration_file_path,
                                  current_console_user_id_);
 
     logger::get_logger()->debug("device_grabber is started.");
@@ -578,8 +586,15 @@ private:
       return;
     }
 
+    connected_devices_changed_connection_.disconnect();
+    notification_message_changed_connection_.disconnect();
     device_grabber_ = nullptr;
-    clear_device_grabber_state();
+    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+      m->reset_device_grabber_state();
+    }
+
+    send_connected_devices_to_observers();
+    send_notification_message_to_observers();
 
     logger::get_logger()->debug("device_grabber is stopped.");
   }
@@ -594,13 +609,73 @@ private:
     return false;
   }
 
-  void clear_device_grabber_state() {
-    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-      m->set_virtual_hid_device_service_client_connected(std::nullopt);
-      m->set_driver_activated(std::nullopt);
-      m->set_driver_connected(std::nullopt);
-      m->set_driver_version_mismatched(std::nullopt);
-      m->set_virtual_hid_keyboard_ready(std::nullopt);
+  void async_respond_connected_devices(pqrs::unix_domain_stream::peer_id peer_id,
+                                       pqrs::unix_domain_stream::request_id request_id) {
+    async_invoke_with_connected_devices_message(
+        [this, peer_id, request_id](const auto& message) {
+          async_respond(peer_id,
+                        request_id,
+                        message);
+        });
+  }
+
+  void send_connected_devices_to_observers() {
+    async_invoke_with_connected_devices_message(
+        [this](const auto& message) {
+          for (const auto& peer_id : connected_devices_observer_peer_ids_) {
+            async_request(peer_id,
+                          message);
+          }
+        });
+  }
+
+  void async_invoke_with_connected_devices_message(std::function<void(const nlohmann::json&)> function) {
+    auto invoke = [function](const auto& connected_devices_json) {
+      function(nlohmann::json{
+          {"operation_type", operation_type::connected_devices},
+          {"connected_devices", connected_devices_json},
+      });
+    };
+
+    if (device_grabber_) {
+      device_grabber_->async_invoke_with_connected_devices(invoke);
+    } else {
+      invoke(nlohmann::json::array());
+    }
+  }
+
+  void async_respond_notification_message(pqrs::unix_domain_stream::peer_id peer_id,
+                                          pqrs::unix_domain_stream::request_id request_id) {
+    async_invoke_with_notification_message_message(
+        [this, peer_id, request_id](const auto& message) {
+          async_respond(peer_id,
+                        request_id,
+                        message);
+        });
+  }
+
+  void send_notification_message_to_observers() {
+    async_invoke_with_notification_message_message(
+        [this](const auto& message) {
+          for (const auto& peer_id : notification_message_observer_peer_ids_) {
+            async_request(peer_id,
+                          message);
+          }
+        });
+  }
+
+  void async_invoke_with_notification_message_message(std::function<void(const nlohmann::json&)> function) {
+    auto invoke = [function](const auto& notification_message) {
+      function(nlohmann::json{
+          {"operation_type", operation_type::notification_message},
+          {"notification_message", notification_message},
+      });
+    };
+
+    if (device_grabber_) {
+      device_grabber_->async_invoke_with_notification_message(invoke);
+    } else {
+      invoke("");
     }
   }
 
@@ -724,11 +799,15 @@ private:
 
   std::shared_ptr<pqrs::unix_domain_stream::server> server_;
   std::unique_ptr<device_grabber> device_grabber_;
+  nod::scoped_connection connected_devices_changed_connection_;
+  nod::scoped_connection notification_message_changed_connection_;
   std::optional<pqrs::unix_domain_stream::peer_id> core_service_agent_peer_id_;
   std::optional<pqrs::unix_domain_stream::peer_id> console_user_server_peer_id_;
   std::shared_ptr<console_user_server_peer> console_user_server_peer_;
   std::optional<pqrs::unix_domain_stream::peer_id> multitouch_extension_peer_id_;
   std::unordered_set<pqrs::unix_domain_stream::peer_id> temporarily_ignore_all_devices_peer_ids_;
+  std::unordered_set<pqrs::unix_domain_stream::peer_id> connected_devices_observer_peer_ids_;
+  std::unordered_set<pqrs::unix_domain_stream::peer_id> notification_message_observer_peer_ids_;
 
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   application frontmost_application_;

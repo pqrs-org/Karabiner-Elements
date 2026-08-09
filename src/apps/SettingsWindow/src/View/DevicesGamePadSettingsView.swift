@@ -1,34 +1,90 @@
 import SwiftUI
 
 struct DevicesGamePadSettingsView: View {
-  @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+  let connectedDevice: ConnectedDevice
+  @Binding var deviceConfiguration: SettingsConfiguration.Device
   @Binding var showing: Bool
+
+  @ObservedObject private var settings = Settings.shared
+
+  @State private var gamePadStickXFormula: String
+  @State private var gamePadStickYFormula: String
+  @State private var gamePadStickVerticalWheelFormula: String
+  @State private var gamePadStickHorizontalWheelFormula: String
+  @State private var gamePadStickXFormulaError = false
+  @State private var gamePadStickYFormulaError = false
+  @State private var gamePadStickVerticalWheelFormulaError = false
+  @State private var gamePadStickHorizontalWheelFormulaError = false
+
+  init(
+    connectedDevice: ConnectedDevice,
+    deviceConfiguration: Binding<SettingsConfiguration.Device>,
+    showing: Binding<Bool>
+  ) {
+    self.connectedDevice = connectedDevice
+    self._deviceConfiguration = deviceConfiguration
+    self._showing = showing
+
+    let device = deviceConfiguration.wrappedValue
+    self._gamePadStickXFormula = State(initialValue: device.gamePadStickXFormula)
+    self._gamePadStickYFormula = State(initialValue: device.gamePadStickYFormula)
+    self._gamePadStickVerticalWheelFormula = State(
+      initialValue: device.gamePadStickVerticalWheelFormula)
+    self._gamePadStickHorizontalWheelFormula = State(
+      initialValue: device.gamePadStickHorizontalWheelFormula)
+  }
 
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 12.0) {
         Text(
-          "\(connectedDeviceSetting.connectedDevice.productName) (\(connectedDeviceSetting.connectedDevice.manufacturerName))"
+          "\(connectedDevice.productName) (\(connectedDevice.manufacturerName))"
         )
         .padding(.leading, 40)
         .padding(.top, 20)
 
         TabView {
-          XYStickTabView(connectedDeviceSetting: connectedDeviceSetting)
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .tabItem {
-              Text("XY stick")
-            }
+          XYStickTabView(
+            deviceConfiguration: $deviceConfiguration,
+            defaults: settings.configuration.deviceDefaults,
+            xFormula: formulaBinding(
+              .x, value: $gamePadStickXFormula, error: $gamePadStickXFormulaError),
+            xFormulaError: $gamePadStickXFormulaError,
+            resetXFormula: { resetFormula(.x) },
+            yFormula: formulaBinding(
+              .y, value: $gamePadStickYFormula, error: $gamePadStickYFormulaError),
+            yFormulaError: $gamePadStickYFormulaError,
+            resetYFormula: { resetFormula(.y) }
+          )
+          .padding()
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+          .tabItem {
+            Text("XY stick")
+          }
 
-          WheelsStickTabView(connectedDeviceSetting: connectedDeviceSetting)
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .tabItem {
-              Text("Wheels stick")
-            }
+          WheelsStickTabView(
+            deviceConfiguration: $deviceConfiguration,
+            defaults: settings.configuration.deviceDefaults,
+            verticalWheelFormula: formulaBinding(
+              .verticalWheel,
+              value: $gamePadStickVerticalWheelFormula,
+              error: $gamePadStickVerticalWheelFormulaError),
+            verticalWheelFormulaError: $gamePadStickVerticalWheelFormulaError,
+            resetVerticalWheelFormula: { resetFormula(.verticalWheel) },
+            horizontalWheelFormula: formulaBinding(
+              .horizontalWheel,
+              value: $gamePadStickHorizontalWheelFormula,
+              error: $gamePadStickHorizontalWheelFormulaError),
+            horizontalWheelFormulaError: $gamePadStickHorizontalWheelFormulaError,
+            resetHorizontalWheelFormula: { resetFormula(.horizontalWheel) }
+          )
+          .padding()
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+          .tabItem {
+            Text("Wheels stick")
+          }
 
-          OthersTabView(connectedDeviceSetting: connectedDeviceSetting)
+          OthersTabView(deviceConfiguration: $deviceConfiguration)
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .tabItem {
@@ -43,52 +99,111 @@ struct DevicesGamePadSettingsView: View {
     }
     .padding()
     .frame(width: 1000, height: 600, alignment: .top)
+    // Keep valid formula fields synchronized with configuration reloads, including changes made
+    // in an external editor. Preserve an invalid local draft so it can still be corrected.
+    .onChange(of: deviceConfiguration.gamePadStickXFormula) { value in
+      if !gamePadStickXFormulaError {
+        gamePadStickXFormula = value
+      }
+    }
+    .onChange(of: deviceConfiguration.gamePadStickYFormula) { value in
+      if !gamePadStickYFormulaError {
+        gamePadStickYFormula = value
+      }
+    }
+    .onChange(of: deviceConfiguration.gamePadStickVerticalWheelFormula) { value in
+      if !gamePadStickVerticalWheelFormulaError {
+        gamePadStickVerticalWheelFormula = value
+      }
+    }
+    .onChange(of: deviceConfiguration.gamePadStickHorizontalWheelFormula) { value in
+      if !gamePadStickHorizontalWheelFormulaError {
+        gamePadStickHorizontalWheelFormula = value
+      }
+    }
+  }
+
+  private func formulaBinding(
+    _ formula: Settings.GamePadStickFormula,
+    value: Binding<String>,
+    error: Binding<Bool>
+  ) -> Binding<String> {
+    Binding(
+      get: { value.wrappedValue },
+      set: { newValue in
+        value.wrappedValue = newValue
+        error.wrappedValue = !settings.setGamePadStickFormula(
+          formula,
+          value: newValue,
+          connectedDevice: connectedDevice)
+      })
+  }
+
+  private func resetFormula(_ formula: Settings.GamePadStickFormula) {
+    settings.resetGamePadStickFormula(formula, connectedDevice: connectedDevice)
+
+    guard let device = settings.deviceConfiguration(connectedDevice) else { return }
+    switch formula {
+    case .x:
+      gamePadStickXFormula = device.gamePadStickXFormula
+      gamePadStickXFormulaError = false
+    case .y:
+      gamePadStickYFormula = device.gamePadStickYFormula
+      gamePadStickYFormulaError = false
+    case .verticalWheel:
+      gamePadStickVerticalWheelFormula = device.gamePadStickVerticalWheelFormula
+      gamePadStickVerticalWheelFormulaError = false
+    case .horizontalWheel:
+      gamePadStickHorizontalWheelFormula = device.gamePadStickHorizontalWheelFormula
+      gamePadStickHorizontalWheelFormulaError = false
+    }
   }
 
   struct XYStickTabView: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
+    let defaults: SettingsConfiguration.DeviceDefaults
+    @Binding var xFormula: String
+    @Binding var xFormulaError: Bool
+    let resetXFormula: () -> Void
+    @Binding var yFormula: String
+    @Binding var yFormulaError: Bool
+    let resetYFormula: () -> Void
 
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
-          deadzone: $connectedDeviceSetting.gamePadXYStickDeadzone,
-          deadzoneDefaultValue:
-            libkrbn_core_configuration_game_pad_xy_stick_deadzone_default_value(),
+          deadzone: $deviceConfiguration.gamePadXyStickDeadzone,
+          deadzoneDefaultValue: defaults.gamePadXyStickDeadzone,
 
-          deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
-            .gamePadXYStickDeltaMagnitudeDetectionThreshold,
+          deltaMagnitudeDetectionThreshold: $deviceConfiguration
+            .gamePadXyStickDeltaMagnitudeDetectionThreshold,
           deltaMagnitudeDetectionThresholdDefaultValue:
-            libkrbn_core_configuration_game_pad_xy_stick_delta_magnitude_detection_threshold_default_value(),
+            defaults.gamePadXyStickDeltaMagnitudeDetectionThreshold,
 
-          continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
-            .gamePadXYStickContinuedMovementAbsoluteMagnitudeThreshold,
+          continuedMovementAbsoluteMagnitudeThreshold: $deviceConfiguration
+            .gamePadXyStickContinuedMovementAbsoluteMagnitudeThreshold,
           continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
-            libkrbn_core_configuration_game_pad_xy_stick_continued_movement_absolute_magnitude_threshold_default_value(),
+            defaults.gamePadXyStickContinuedMovementAbsoluteMagnitudeThreshold,
 
-          continuedMovementIntervalMilliseconds: $connectedDeviceSetting
-            .gamePadXYStickContinuedMovementIntervalMilliseconds,
-          continuedMovementIntervalMillisecondsDefaultValue: Int(
-            libkrbn_core_configuration_game_pad_xy_stick_continued_movement_interval_milliseconds_default_value()
-          )
+          continuedMovementIntervalMilliseconds: $deviceConfiguration
+            .gamePadXyStickContinuedMovementIntervalMilliseconds,
+          continuedMovementIntervalMillisecondsDefaultValue:
+            defaults.gamePadXyStickContinuedMovementIntervalMilliseconds
         )
 
         HStack(spacing: 20.0) {
           FormulaView(
             name: "X formula",
-            value: $connectedDeviceSetting.gamePadStickXFormula,
-            error: $connectedDeviceSetting.gamePadStickXFormulaError,
-            resetFunction: {
-              connectedDeviceSetting.resetGamePadStickXFormula()
-            }
+            value: $xFormula,
+            error: $xFormulaError,
+            resetFunction: resetXFormula
           )
 
           FormulaView(
             name: "Y formula",
-            value: $connectedDeviceSetting.gamePadStickYFormula,
-            error: $connectedDeviceSetting.gamePadStickYFormulaError,
-            resetFunction: {
-              connectedDeviceSetting.resetGamePadStickYFormula()
-            }
+            value: $yFormula,
+            error: $yFormulaError,
+            resetFunction: resetYFormula
           )
         }
         .padding(.top, 20.0)
@@ -97,49 +212,50 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct WheelsStickTabView: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
+    let defaults: SettingsConfiguration.DeviceDefaults
+    @Binding var verticalWheelFormula: String
+    @Binding var verticalWheelFormulaError: Bool
+    let resetVerticalWheelFormula: () -> Void
+    @Binding var horizontalWheelFormula: String
+    @Binding var horizontalWheelFormulaError: Bool
+    let resetHorizontalWheelFormula: () -> Void
 
     var body: some View {
       VStack(alignment: .leading) {
         StickParametersView(
-          deadzone: $connectedDeviceSetting.gamePadWheelsStickDeadzone,
-          deadzoneDefaultValue:
-            libkrbn_core_configuration_game_pad_wheels_stick_deadzone_default_value(),
+          deadzone: $deviceConfiguration.gamePadWheelsStickDeadzone,
+          deadzoneDefaultValue: defaults.gamePadWheelsStickDeadzone,
 
-          deltaMagnitudeDetectionThreshold: $connectedDeviceSetting
+          deltaMagnitudeDetectionThreshold: $deviceConfiguration
             .gamePadWheelsStickDeltaMagnitudeDetectionThreshold,
           deltaMagnitudeDetectionThresholdDefaultValue:
-            libkrbn_core_configuration_game_pad_wheels_stick_delta_magnitude_detection_threshold_default_value(),
+            defaults.gamePadWheelsStickDeltaMagnitudeDetectionThreshold,
 
-          continuedMovementAbsoluteMagnitudeThreshold: $connectedDeviceSetting
+          continuedMovementAbsoluteMagnitudeThreshold: $deviceConfiguration
             .gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold,
           continuedMovementAbsoluteMagnitudeThresholdDefaultValue:
-            libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold_default_value(),
+            defaults.gamePadWheelsStickContinuedMovementAbsoluteMagnitudeThreshold,
 
-          continuedMovementIntervalMilliseconds: $connectedDeviceSetting
+          continuedMovementIntervalMilliseconds: $deviceConfiguration
             .gamePadWheelsStickContinuedMovementIntervalMilliseconds,
-          continuedMovementIntervalMillisecondsDefaultValue: Int(
-            libkrbn_core_configuration_game_pad_wheels_stick_continued_movement_interval_milliseconds_default_value()
-          )
+          continuedMovementIntervalMillisecondsDefaultValue:
+            defaults.gamePadWheelsStickContinuedMovementIntervalMilliseconds
         )
 
         HStack(spacing: 20.0) {
           FormulaView(
             name: "vertical wheel formula",
-            value: $connectedDeviceSetting.gamePadStickVerticalWheelFormula,
-            error: $connectedDeviceSetting.gamePadStickVerticalWheelFormulaError,
-            resetFunction: {
-              connectedDeviceSetting.resetGamePadStickVerticalWheelFormula()
-            }
+            value: $verticalWheelFormula,
+            error: $verticalWheelFormulaError,
+            resetFunction: resetVerticalWheelFormula
           )
 
           FormulaView(
             name: "horizontal wheel formula",
-            value: $connectedDeviceSetting.gamePadStickHorizontalWheelFormula,
-            error: $connectedDeviceSetting.gamePadStickHorizontalWheelFormulaError,
-            resetFunction: {
-              connectedDeviceSetting.resetGamePadStickHorizontalWheelFormula()
-            }
+            value: $horizontalWheelFormula,
+            error: $horizontalWheelFormulaError,
+            resetFunction: resetHorizontalWheelFormula
           )
         }
         .padding(.top, 20.0)
@@ -148,16 +264,16 @@ struct DevicesGamePadSettingsView: View {
   }
 
   struct OthersTabView: View {
-    @ObservedObject var connectedDeviceSetting: LibKrbn.ConnectedDeviceSetting
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
 
     var body: some View {
       VStack(alignment: .leading, spacing: 40.0) {
-        Toggle(isOn: $connectedDeviceSetting.gamePadSwapSticks) {
+        Toggle(isOn: $deviceConfiguration.gamePadSwapSticks) {
           Text("Swap gamepad XY and wheels sticks")
         }
         .switchToggleStyle(controlSize: .mini, font: .callout)
 
-        DevicesMouseFlagsView(connectedDeviceSetting: connectedDeviceSetting)
+        DevicesMouseFlagsView(deviceConfiguration: $deviceConfiguration)
       }
     }
   }

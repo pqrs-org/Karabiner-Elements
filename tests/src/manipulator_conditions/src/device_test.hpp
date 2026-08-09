@@ -359,15 +359,11 @@ void run_device_test() {
       }
       {
         auto d = manipulator_conditions_helper.get_core_configuration()->get_selected_profile().get_device(
-            krbn::device_identifiers(pqrs::hid::vendor_id::value_t(1000),
-                                     pqrs::hid::product_id::value_t(2000),
-                                     true,  // is_keyboard
-                                     false, // is_pointing_device
-                                     false, // is_game_pad
-                                     false, // is_consumer
-                                     false, // is_virtual_device
-                                     ""     // device_address
-                                     ));
+            krbn::device_identifiers({
+                .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+                .product_id = pqrs::hid::product_id::value_t(2000),
+                .is_keyboard = true,
+            }));
         d->set_treat_as_built_in_keyboard(true);
         krbn::manipulator::conditions::condition_context condition_context{
             .device_id = device_id_1000_2000,
@@ -378,15 +374,11 @@ void run_device_test() {
       }
       {
         auto d = manipulator_conditions_helper.get_core_configuration()->get_selected_profile().get_device(
-            krbn::device_identifiers(pqrs::hid::vendor_id::value_t(1000),
-                                     pqrs::hid::product_id::value_t(2000),
-                                     true,  // is_keyboard
-                                     false, // is_pointing_device
-                                     false, // is_game_pad
-                                     false, // is_consumer
-                                     false, // is_virtual_device
-                                     ""     // device_address
-                                     ));
+            krbn::device_identifiers({
+                .vendor_id = pqrs::hid::vendor_id::value_t(1000),
+                .product_id = pqrs::hid::product_id::value_t(2000),
+                .is_keyboard = true,
+            }));
         d->set_treat_as_built_in_keyboard(false);
         krbn::manipulator::conditions::condition_context condition_context{
             .device_id = device_id_1000_2000,

@@ -1,5 +1,4 @@
 #include "game_pad_viewer.hpp"
-#include "device_properties.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "logger.hpp"
@@ -28,6 +27,7 @@ public:
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::hid::usage_page::generic_desktop,
             pqrs::hid::usage::generic_desktop::joystick),
+
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::hid::usage_page::generic_desktop,
             pqrs::hid::usage::generic_desktop::game_pad),
@@ -44,8 +44,6 @@ public:
       }
 
       auto device_id = krbn::make_device_id(registry_entry_id);
-      auto device_properties = krbn::device_properties::make_device_properties(device_id,
-                                                                               *device_ptr);
       auto monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(
           pqrs::dispatcher::extra::get_shared_dispatcher(),
           pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
@@ -56,10 +54,8 @@ public:
         hid_value_monitor_observed = true;
       });
 
-      monitor->values_arrived.connect([this, device_id, device_properties](auto&& values) {
-        values_arrived(device_id,
-                       device_properties,
-                       values);
+      monitor->values_arrived.connect([this](auto&& values) {
+        values_arrived(values);
       });
 
       monitor->async_start(kIOHIDOptionsTypeNone,
@@ -86,9 +82,7 @@ public:
   }
 
 private:
-  void values_arrived(krbn::device_id device_id,
-                      pqrs::not_null_shared_ptr_t<krbn::device_properties> device_properties,
-                      pqrs::not_null_shared_ptr_t<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
+  void values_arrived(pqrs::not_null_shared_ptr_t<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) {
     if (!callback_) {
       return;
     }
@@ -101,11 +95,7 @@ private:
       auto logical_min = v.get_logical_min();
 
       if (usage_page && usage && logical_max && logical_min) {
-        callback_(type_safe::get(device_id),
-                  device_properties->get_device_identifiers().get_is_keyboard(),
-                  device_properties->get_device_identifiers().get_is_pointing_device(),
-                  device_properties->get_device_identifiers().get_is_game_pad(),
-                  type_safe::get(*usage_page),
+        callback_(type_safe::get(*usage_page),
                   type_safe::get(*usage),
                   *logical_max,
                   *logical_min,

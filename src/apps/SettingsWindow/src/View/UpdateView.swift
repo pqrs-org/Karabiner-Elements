@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct UpdateView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   let version =
     Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
 
@@ -12,7 +12,7 @@ struct UpdateView: View {
           VStack(alignment: .leading, spacing: 12.0) {
             Text("Karabiner-Elements version \(version)")
 
-            Toggle(isOn: $settings.checkForUpdates) {
+            Toggle(isOn: $settings.configuration.globalConfiguration.checkForUpdates) {
               Text("Check for updates automatically (Default: on)")
             }
             .switchToggleStyle()
@@ -20,7 +20,7 @@ struct UpdateView: View {
             HStack {
               Button(
                 action: {
-                  libkrbn_updater_check_for_updates_stable_only()
+                  krbn_updater_check_for_updates_stable_only()
                 },
                 label: {
                   Label("Check for updates", systemImage: "network")
@@ -31,7 +31,7 @@ struct UpdateView: View {
 
               Button(
                 action: {
-                  libkrbn_updater_check_for_updates_with_beta_version()
+                  krbn_updater_check_for_updates_with_beta_version()
                 },
                 label: {
                   Label("Check for beta updates", systemImage: "hare")

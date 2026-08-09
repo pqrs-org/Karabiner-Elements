@@ -33,7 +33,7 @@ public:
       : dispatcher_client(),
         console_user_id_changed_client_(std::make_shared<console_user_id_changed_client>()),
         session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
-        configuration_monitor_(std::make_unique<configuration_monitor>(constants::get_user_core_configuration_file_path(),
+        configuration_monitor_(std::make_unique<configuration_monitor>(constants::get_user_core_configuration_file_path().string(),
                                                                        geteuid(),
                                                                        core_configuration::error_handling::loose)),
         settings_window_guidance_manager_dispatcher_time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
@@ -53,6 +53,15 @@ public:
         }
 
         publish_ui_state(*core_configuration);
+      }
+    });
+
+    configuration_monitor_->load_state_changed.connect([this](auto load_state) {
+      settings_window_guidance_manager_->async_update_console_user_server_karabiner_json_permission_error(
+          load_state == core_configuration::core_configuration::load_state::permission_error);
+
+      if (load_state != core_configuration::core_configuration::load_state::loaded) {
+        publish_unloaded_ui_state();
       }
     });
 
@@ -111,6 +120,7 @@ public:
   ~components_manager() override {
     detach_from_dispatcher([this] {
       stop_core_service_daemon_client();
+      publish_unloaded_ui_state();
 
       receiver_ = nullptr;
       software_function_handler_ = nullptr;
@@ -137,6 +147,26 @@ public:
   }
 
 private:
+  void publish_unloaded_ui_state() const {
+    ui_bridge_->set_ui_state(
+        nlohmann::json({
+                           {"configurationLoaded", false},
+                           {"menuSettings",
+                            {
+                                {"showIcon", false},
+                                {"showProfileName", false},
+                                {"showAdditionalMenuItems", false},
+                                {"enableMultitouchExtension", false},
+                            }},
+                           {"notificationWindowSettings",
+                            {
+                                {"enabled", false},
+                            }},
+                           {"profiles", nlohmann::json::array()},
+                       })
+            .dump());
+  }
+
   void publish_ui_state(const core_configuration::core_configuration& core_configuration) const {
     const auto& global_configuration = core_configuration.get_global_configuration();
     nlohmann::json profiles = nlohmann::json::array();
@@ -154,13 +184,16 @@ private:
         nlohmann::json(
             {
                 {
+                    "configurationLoaded",
+                    true,
+                },
+                {
                     "menuSettings",
                     {
                         {"showIcon", global_configuration.get_show_in_menu_bar()},
                         {"showProfileName", global_configuration.get_show_profile_name_in_menu_bar()},
                         {"showAdditionalMenuItems", global_configuration.get_show_additional_menu_items()},
                         {"enableMultitouchExtension", core_configuration.get_machine_specific().get_entry().get_enable_multitouch_extension()},
-                        {"askForConfirmationBeforeQuitting", global_configuration.get_ask_for_confirmation_before_quitting()},
                     },
                 },
                 {
@@ -190,6 +223,7 @@ private:
 
     core_service_daemon_client_->connected.connect([this] {
       core_service_daemon_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
+      core_service_daemon_client_->async_observe_notification_message();
 
       stop_child_components();
       start_child_components();

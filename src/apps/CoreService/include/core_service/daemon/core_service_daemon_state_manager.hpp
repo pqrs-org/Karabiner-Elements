@@ -82,6 +82,25 @@ public:
     });
   }
 
+  void set_karabiner_json_permission_error(std::optional<bool> value) {
+    update([&value](auto& state) {
+      state.set_karabiner_json_permission_error(value);
+    });
+  }
+
+  void reset_device_grabber_state() {
+    update([](auto& state) {
+      state.set_virtual_hid_device_service_client_connected(std::nullopt);
+      state.set_driver_activated(std::nullopt);
+      state.set_driver_connected(std::nullopt);
+      state.set_driver_version_mismatched(std::nullopt);
+      state.set_virtual_hid_keyboard_ready(std::nullopt);
+      state.set_virtual_hid_keyboard_type_not_set(std::nullopt);
+      state.set_karabiner_json_parse_error_message("");
+      state.set_karabiner_json_permission_error(std::nullopt);
+    });
+  }
+
   core_service_daemon_state copy_state() const {
     std::lock_guard<std::mutex> guard(mutex_);
 

@@ -2,11 +2,11 @@ import AppKit
 import SwiftUI
 
 struct ProfilesView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
+  @ObservedObject private var settings = Settings.shared
   @State private var moveDisabled: Bool = true
   @State private var showingSheet = false
-  @State private var hoverProfile: LibKrbn.Profile?
-  @State private var editingProfile: LibKrbn.Profile?
+  @State private var hoverProfile: SettingsConfiguration.Profile?
+  @State private var editingProfile: SettingsConfiguration.Profile?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
@@ -22,7 +22,7 @@ struct ProfilesView: View {
 
         Spacer()
 
-        if settings.profiles.count > 1 {
+        if settings.configuration.profiles.count > 1 {
           HStack {
             Text("You can reorder list by dragging")
             Image(systemName: "arrow.up.arrow.down.square.fill")
@@ -35,13 +35,13 @@ struct ProfilesView: View {
       .padding()
 
       List {
-        ForEach($settings.profiles) { $profile in
+        ForEach($settings.configuration.profiles) { $profile in
           // Make a copy to use it in onHover.
           // (Without copy, the program crashes with an incorrect reference when the profile is deleted.)
           let profileCopy = profile
 
           HStack(alignment: .center, spacing: 0) {
-            if settings.profiles.count > 1 {
+            if settings.configuration.profiles.count > 1 {
               Image(systemName: "arrow.up.arrow.down.square.fill")
                 .resizable(resizingMode: .stretch)
                 .frame(width: 16.0, height: 16.0)

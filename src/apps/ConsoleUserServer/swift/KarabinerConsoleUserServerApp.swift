@@ -65,14 +65,7 @@ struct KarabinerConsoleUserServerApp: App {
         if state.menuSettings.enableMultitouchExtension {
           Button(
             action: {
-              guard
-                let url = NSWorkspace.shared.urlForApplication(
-                  withBundleIdentifier: "org.pqrs.Karabiner-MultitouchExtension")
-              else { return }
-
-              NSWorkspace.shared.openApplication(
-                at: url,
-                configuration: NSWorkspace.OpenConfiguration())
+              KarabinerAppHelper.shared.openMultitouchExtensionSettings()
             },
             label: {
               Label(
@@ -128,36 +121,25 @@ struct KarabinerConsoleUserServerApp: App {
           }
         )
 
-        if state.menuSettings.askForConfirmationBeforeQuitting {
-          Menu(
-            content: {
-              Text("Are you sure you want to quit?")
+        Menu(
+          content: {
+            Text("Are you sure you want to quit?")
 
-              Divider()
+            Divider()
 
-              Button(
-                action: {
-                  console_user_server_quit()
-                },
-                label: {
-                  quitLabel
-                }
-              )
-            },
-            label: {
-              quitLabel
-            }
-          )
-        } else {
-          Button(
-            action: {
-              console_user_server_quit()
-            },
-            label: {
-              quitLabel
-            }
-          )
-        }
+            Button(
+              action: {
+                console_user_server_quit()
+              },
+              label: {
+                quitLabel
+              }
+            )
+          },
+          label: {
+            quitLabel
+          }
+        )
       },
       label: {
         HStack(spacing: 8.0) {

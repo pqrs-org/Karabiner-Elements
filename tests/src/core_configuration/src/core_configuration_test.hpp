@@ -4,7 +4,10 @@
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
 #include <boost/ut.hpp>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <unistd.h>
 
 void run_core_configuration_test() {
   using namespace boost::ut;
@@ -109,13 +112,12 @@ void run_core_configuration_test() {
     expect(configuration.get_global_configuration().get_show_in_menu_bar() == false);
     expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
     expect(configuration.get_global_configuration().get_show_additional_menu_items() == false);
-    expect(configuration.get_global_configuration().get_ask_for_confirmation_before_quitting() == false);
     expect(configuration.get_global_configuration().get_unsafe_ui() == true);
     expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == false);
     expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == false);
     expect(configuration.get_global_configuration().get_enable_cgeventtap_fallback() == true);
 
-    expect(configuration.is_loaded() == true);
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
     expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::user_file);
 
     {
@@ -131,9 +133,58 @@ void run_core_configuration_test() {
                                                                  geteuid(),
                                                                  krbn::core_configuration::error_handling::strict);
       expect(configuration.get_selected_profile().get_name() == "Default profile");
-      expect(configuration.is_loaded() == false);
+      expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
       expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
     }
+  };
+
+  "load_state.permission_error"_test = [] {
+    // A process running as root can read a mode 000 file, so this test is only meaningful for
+    // the regular user account used to run Karabiner-Elements.
+    if (geteuid() == 0) {
+      return;
+    }
+
+    auto file_path = std::filesystem::temp_directory_path() /
+                     ("karabiner_core_configuration_permission_error_" + std::to_string(getpid()) + ".json");
+    {
+      std::ofstream output(file_path);
+      output << "{}";
+    }
+    std::filesystem::permissions(file_path,
+                                 std::filesystem::perms::none);
+
+    krbn::core_configuration::core_configuration configuration(file_path,
+                                                               geteuid(),
+                                                               krbn::core_configuration::error_handling::strict);
+
+    std::filesystem::remove(file_path);
+
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::permission_error);
+  };
+
+  "load_state.other_error"_test = [] {
+    // Files owned by root are always accepted, so an owner mismatch cannot be produced when the
+    // test itself is running as root.
+    if (geteuid() == 0) {
+      return;
+    }
+
+    auto file_path = std::filesystem::temp_directory_path() /
+                     ("karabiner_core_configuration_other_error_" + std::to_string(getpid()) + ".json");
+    {
+      std::ofstream output(file_path);
+      output << "{}";
+    }
+
+    auto unexpected_owner = static_cast<uid_t>(geteuid() + 1);
+    krbn::core_configuration::core_configuration configuration(file_path,
+                                                               unexpected_owner,
+                                                               krbn::core_configuration::error_handling::strict);
+
+    std::filesystem::remove(file_path);
+
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::other_error);
   };
 
   "broken.json"_test = [] {
@@ -143,7 +194,7 @@ void run_core_configuration_test() {
                                                                  krbn::core_configuration::error_handling::strict);
 
       expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
-      expect(configuration.is_loaded() == false);
+      expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::json_error);
       expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
       expect(configuration.get_parse_error_message() == "[json.exception.parse_error.101] parse error at line 7, column 1: syntax error while parsing object key - unexpected end of input; expected string literal");
 
@@ -151,7 +202,6 @@ void run_core_configuration_test() {
       expect(configuration.get_global_configuration().get_show_in_menu_bar() == true);
       expect(configuration.get_global_configuration().get_show_profile_name_in_menu_bar() == false);
       expect(configuration.get_global_configuration().get_show_additional_menu_items() == false);
-      expect(configuration.get_global_configuration().get_ask_for_confirmation_before_quitting() == true);
       expect(configuration.get_global_configuration().get_unsafe_ui() == false);
       expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == true);
       expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
@@ -162,7 +212,7 @@ void run_core_configuration_test() {
       expect((configuration.get_profiles())[0]->get_fn_function_keys()->get_pairs().size() == 12);
 
       {
-        // to_json result is default json if is_loaded == false
+        // to_json result is default json if load_state is not loaded.
         std::ifstream input("json/to_json_default.json");
         auto expected = krbn::json_utility::parse_jsonc(input);
         expect(configuration.to_json() == expected) << UT_SHOW_LINE;
@@ -174,7 +224,7 @@ void run_core_configuration_test() {
                                                                  krbn::core_configuration::error_handling::strict);
 
       expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs().empty());
-      expect(configuration.is_loaded() == false);
+      expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::json_error);
       expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
     }
   };
@@ -193,7 +243,7 @@ void run_core_configuration_test() {
                           nlohmann::json::array({nlohmann::json::object({{"key_code", "spacebar"}})}).dump());
 
     expect(configuration.get_selected_profile().get_simple_modifications()->get_pairs() == expected);
-    expect(configuration.is_loaded() == true);
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
   };
 
   "global_configuration.to_json"_test = [] {
@@ -217,7 +267,6 @@ void run_core_configuration_test() {
       global_configuration.set_show_in_menu_bar(false);
       global_configuration.set_show_profile_name_in_menu_bar(true);
       global_configuration.set_show_additional_menu_items(true);
-      global_configuration.set_ask_for_confirmation_before_quitting(false);
       global_configuration.set_unsafe_ui(true);
       global_configuration.set_filter_useless_events_from_specific_devices(false);
       global_configuration.set_reorder_same_timestamp_input_events_to_prioritize_modifiers(false);
@@ -228,7 +277,6 @@ void run_core_configuration_test() {
           {"show_in_menu_bar", false},
           {"show_profile_name_in_menu_bar", true},
           {"show_additional_menu_items", true},
-          {"ask_for_confirmation_before_quitting", false},
           {"unsafe_ui", true},
           {"filter_useless_events_from_specific_devices", false},
           {"reorder_same_timestamp_input_events_to_prioritize_modifiers", false},
@@ -306,25 +354,17 @@ void run_core_configuration_test() {
       expect(profile.get_fn_function_keys()->get_pairs().size() == 12);
       expect(profile.get_devices().size() == 0);
 
-      expect(profile.get_device(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(4176),
-                                                         pqrs::hid::product_id::value_t(1031),
-                                                         true,  // is_keyboard
-                                                         false, // is_pointing_device
-                                                         false, // is_game_pad
-                                                         false, // is_consumer
-                                                         false, // is_virtual_device
-                                                         ""     // device_address
-                                                         ))
+      expect(profile.get_device(krbn::device_identifiers({
+                                    .vendor_id = pqrs::hid::vendor_id::value_t(4176),
+                                    .product_id = pqrs::hid::product_id::value_t(1031),
+                                    .is_keyboard = true,
+                                }))
                  ->get_ignore() == true);
-      expect(profile.get_device(krbn::device_identifiers(pqrs::hid::vendor_id::value_t(0x05ac),
-                                                         pqrs::hid::product_id::value_t(0x262),
-                                                         true,  // is_keyboard
-                                                         false, // is_pointing_device
-                                                         false, // is_game_pad
-                                                         false, // is_consumer
-                                                         false, // is_virtual_device
-                                                         ""     // device_address
-                                                         ))
+      expect(profile.get_device(krbn::device_identifiers({
+                                    .vendor_id = pqrs::hid::vendor_id::value_t(0x05ac),
+                                    .product_id = pqrs::hid::product_id::value_t(0x262),
+                                    .is_keyboard = true,
+                                }))
                  ->get_ignore() == false);
     }
 
@@ -611,15 +651,12 @@ void run_core_configuration_test() {
         }
 
         {
-          krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(1112),
-                                               pqrs::hid::product_id::value_t(2222),
-                                               false,              // is_keyboard
-                                               true,               // is_pointing_device
-                                               false,              // is_game_pad
-                                               false,              // is_consumer
-                                               false,              // is_virtual_device
-                                               "ec-ba-73-21-e6-f5" // device_address (ignored)
-          );
+          krbn::device_identifiers identifiers({
+              .vendor_id = pqrs::hid::vendor_id::value_t(1112),
+              .product_id = pqrs::hid::product_id::value_t(2222),
+              .is_pointing_device = true,
+              .device_address = "ec-ba-73-21-e6-f5", // ignored
+          });
           profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
           expect(profile.get_devices().size() == 5);
           expect((profile.get_devices())[4]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1112));
@@ -632,15 +669,10 @@ void run_core_configuration_test() {
         }
 
         {
-          krbn::device_identifiers identifiers(pqrs::hid::vendor_id::value_t(0),
-                                               pqrs::hid::product_id::value_t(0),
-                                               false,              // is_keyboard
-                                               true,               // is_pointing_device
-                                               false,              // is_game_pad
-                                               false,              // is_consumer
-                                               false,              // is_virtual_device
-                                               "ec-ba-73-21-e6-f5" // device_address
-          );
+          krbn::device_identifiers identifiers({
+              .is_pointing_device = true,
+              .device_address = "ec-ba-73-21-e6-f5",
+          });
           profile.get_device(identifiers)->set_disable_built_in_keyboard_if_exists(true);
           expect(profile.get_devices().size() == 6);
           expect((profile.get_devices())[5]->get_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(0));

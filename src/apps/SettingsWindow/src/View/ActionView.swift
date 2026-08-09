@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct ActionView: View {
-  @ObservedObject private var settings = LibKrbn.Settings.shared
-
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
@@ -10,7 +8,7 @@ struct ActionView: View {
           VStack(alignment: .leading, spacing: 16) {
             Button(
               action: {
-                libkrbn_services_restart_console_user_server_agent()
+                krbn_services_restart_console_user_server_agent()
                 Relauncher.relaunch()
               },
               label: {
@@ -19,9 +17,8 @@ struct ActionView: View {
 
             Button(
               action: {
-                KarabinerAppHelper.shared.quitKarabiner(
-                  askForConfirmation: settings.askForConfirmationBeforeQuitting,
-                  quitFrom: .settings)
+                krbn_services_unregister_all_agents()
+                krbn_killall_settings()
               },
               label: {
                 Label("Quit Karabiner-Elements", systemImage: "xmark.rectangle")

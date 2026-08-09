@@ -172,7 +172,5 @@ void console_user_server_restart(void) {
 
 void console_user_server_quit(void) {
   krbn::application_launcher::killall_settings();
-  krbn::services_utility::unregister_multitouch_extension_agent();
-  // This unregisters console_user_server itself, so it must be last.
-  krbn::services_utility::unregister_core_agents();
+  krbn::services_utility::unregister_all_agents();
 }

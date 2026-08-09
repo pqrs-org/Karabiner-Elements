@@ -5,6 +5,7 @@ enum TabTag: String {
   case power
   case advanced
   case action
+  case log
 }
 
 struct SettingsView: View {
@@ -35,6 +36,12 @@ struct SettingsView: View {
           Label("Restart", systemImage: "arrow.clockwise")
         }
         .tag(TabTag.action)
+
+      SettingsLogView()
+        .tabItem {
+          Label("Log", systemImage: "list.bullet.rectangle")
+        }
+        .tag(TabTag.log)
     }
     .scenePadding()
     .frame(width: 600)

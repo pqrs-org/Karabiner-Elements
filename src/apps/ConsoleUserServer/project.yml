@@ -35,6 +35,7 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
+      - path: ../../apps/share/swift/KarabinerAppHelper.swift
       - path: ../../apps/share/swift/Views/MouseInsideModifier.swift
       - path: ../../apps/share/swift/Views/View+Extensions.swift
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info

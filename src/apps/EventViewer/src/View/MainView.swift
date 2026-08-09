@@ -75,10 +75,17 @@ struct MainView: View {
           } else {
             VStack(alignment: .leading, spacing: 0.0) {
               ForEach($eventHistory.entries) { $entry in
-                HStack(alignment: .center, spacing: 8.0) {
-                  Text(entry.eventType)
-                    .font(.title)
-                    .frame(width: 70, alignment: .leading)
+                HStack(alignment: .center, spacing: 12.0) {
+                  VStack(alignment: .leading, spacing: 2.0) {
+                    Text(entry.eventType)
+                      .font(.title2)
+                      .frame(width: 70, alignment: .leading)
+
+                    Text(entry.timestampString)
+                      .font(.caption)
+                      .monospacedDigit()
+                      .foregroundStyle(.secondary)
+                  }
 
                   VStack(alignment: .leading, spacing: 2.0) {
                     Text(entry.name)
@@ -160,10 +167,8 @@ struct MainView: View {
     .task {
       eventHistory.start()
       eventHistory.pause(false)
-      evCoreServiceDaemonClient.startConnectedDevices()
       defer {
         eventHistory.stop()
-        evCoreServiceDaemonClient.stopConnectedDevices()
       }
 
       do {

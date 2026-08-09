@@ -36,15 +36,16 @@ public:
         is_built_in_pointing_device_(false),
         is_built_in_touch_bar_(false),
         is_apple_(false) {
-    device_identifiers_ = device_identifiers(
-        parameters.vendor_id,
-        parameters.product_id,
-        parameters.is_keyboard,
-        parameters.is_pointing_device,
-        parameters.is_game_pad,
-        parameters.is_consumer,
-        iokit_utility::is_karabiner_virtual_hid_device(manufacturer_, product_),
-        parameters.device_address);
+    device_identifiers_ = device_identifiers({
+        .vendor_id = parameters.vendor_id,
+        .product_id = parameters.product_id,
+        .is_keyboard = parameters.is_keyboard,
+        .is_pointing_device = parameters.is_pointing_device,
+        .is_game_pad = parameters.is_game_pad,
+        .is_consumer = parameters.is_consumer,
+        .is_virtual_device = iokit_utility::is_karabiner_virtual_hid_device(manufacturer_, product_),
+        .device_address = parameters.device_address,
+    });
 
     //
     // Override manufacturer_ and product_

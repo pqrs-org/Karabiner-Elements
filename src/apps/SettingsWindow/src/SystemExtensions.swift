@@ -4,11 +4,10 @@ import SwiftUI
 public class SystemExtensions {
   public static let shared = SystemExtensions()
 
-  let streamer = RealtimeCommandStreamer()
-  var stream: RealtimeTextStream { streamer.stream }
+  let streamer = CommandOutputStreamer()
 
   public func update() {
-    stream.clear()
+    streamer.clear()
 
     streamer.start(
       launchPath: "/usr/bin/systemextensionsctl",

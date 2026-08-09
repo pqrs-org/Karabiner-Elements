@@ -5,11 +5,10 @@ import SwiftUI
 public class SysextdLogMessages {
   public static let shared = SysextdLogMessages()
 
-  let streamer = RealtimeCommandStreamer()
-  var stream: RealtimeTextStream { streamer.stream }
+  let streamer = CommandOutputStreamer()
 
   public func update() {
-    stream.clear()
+    streamer.clear()
 
     streamer.start(
       launchPath: "/usr/bin/log",

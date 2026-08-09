@@ -13,12 +13,11 @@ targets:
       CODE_SIGN_IDENTITY: '-'
       CODE_SIGN_STYLE: Manual
       HEADER_SEARCH_PATHS:
-        - ../../lib/libkrbn/include
-      OTHER_LDFLAGS:
-        - ../../lib/libkrbn/build/Release/libkrbn.a
+        - ../../share
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
+        - ../../../vendor/Karabiner-DriverKit-VirtualHIDDevice/include
         - ../../../vendor/vendor/include
       DEAD_CODE_STRIPPING: 'YES'
       SWIFT_VERSION: '6.0'
@@ -30,12 +29,11 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
-      - path: ../share/swift
+          - '-std=c++23'
+      - path: ../share/swift/Views
         compilerFlags:
           - -Wall
           - -Werror
-      - path: ../../../vendor/vendor/src/pqrs/osx/process_info
-      - path: ../../../vendor/vendor/src/pqrs/osx/workspace
       - path: Resources
         excludes:
           - .gitignore
@@ -43,4 +41,6 @@ targets:
           - '*.plist.in'
     dependencies:
       - package: AsyncAlgorithms
-      - sdk: libc++.tbd
+      - sdk: CoreFoundation.framework
+      - sdk: IOKit.framework
+      - sdk: Security.framework

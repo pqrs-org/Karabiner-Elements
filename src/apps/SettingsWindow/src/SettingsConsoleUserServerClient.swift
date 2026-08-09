@@ -1,7 +1,6 @@
-import AsyncAlgorithms
 import Foundation
 
-private func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
+func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   let data = Data(String(cString: jsonString).utf8)
 
   if let state = try? JSONDecoder().decode(SettingsWindowGuidanceState.self, from: data) {
@@ -11,75 +10,57 @@ private func settingsWindowGuidanceReceivedCallback(_ jsonString: UnsafePointer<
   }
 }
 
-private func consoleUserServerClientStatusChangedCallback() {
+func consoleUserServerClientStatusChangedCallback() {
   Task { @MainActor in
     SettingsConsoleUserServerClient.shared.updateConsoleUserServerClientState()
     SettingsConsoleUserServerClient.shared.updateLocalServicesGuidanceContext()
   }
-
-  libkrbn_console_user_server_client_async_get_settings_window_guidance()
 }
 
 @MainActor
 final class SettingsConsoleUserServerClient {
   static let shared = SettingsConsoleUserServerClient()
 
-  private let continuousClock: ContinuousClock
-  private let currentAlertTimer: AsyncTimerSequence<ContinuousClock>
-  private var currentAlertTimerTask: Task<Void, Never>?
+  private var disconnectedForAWhileTask: Task<Void, Never>?
   private var consoleUserServerClientReady = false
-  private var consoleUserServerClientDisconnectedAt: ContinuousClock.Instant?
-
-  init() {
-    continuousClock = ContinuousClock()
-    currentAlertTimer = AsyncTimerSequence(
-      interval: .seconds(1),
-      clock: continuousClock
-    )
-  }
 
   public func start() {
-    libkrbn_enable_console_user_server_client(geteuid())
+    updateConsoleUserServerClientState()
+    updateLocalServicesGuidanceContext()
+  }
 
-    libkrbn_register_console_user_server_client_status_changed_callback(
-      consoleUserServerClientStatusChangedCallback)
-    libkrbn_register_console_user_server_client_settings_window_guidance_received_callback(
-      settingsWindowGuidanceReceivedCallback)
+  func componentsManagerStopped() {
+    consoleUserServerClientReady = false
+    disconnectedForAWhileTask?.cancel()
+    disconnectedForAWhileTask = nil
 
-    libkrbn_console_user_server_client_async_start()
+    ContentViewStates.shared.updateConsoleUserServerClientReady(false)
+    ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(false)
 
-    currentAlertTimerTask = Task { @MainActor in
-      updateConsoleUserServerClientState()
-      updateLocalServicesGuidanceContext()
-      libkrbn_console_user_server_client_async_get_settings_window_guidance()
-
-      for await _ in currentAlertTimer {
-        updateConsoleUserServerClientState()
-        updateLocalServicesGuidanceContext()
-        libkrbn_console_user_server_client_async_get_settings_window_guidance()
-      }
-    }
+    updateConsoleUserServerClientState()
+    updateLocalServicesGuidanceContext()
   }
 
   func updateConsoleUserServerClientState() {
-    if libkrbn_console_user_server_client_get_status()
-      != libkrbn_console_user_server_client_status_connected
-    {
+    if !krbn_console_user_server_client_connected() {
       consoleUserServerClientReady = false
     }
 
-    if !consoleUserServerClientReady && consoleUserServerClientDisconnectedAt == nil {
-      consoleUserServerClientDisconnectedAt = continuousClock.now
-    }
-
-    let disconnectedForAWhile =
-      consoleUserServerClientDisconnectedAt.map {
-        $0.duration(to: continuousClock.now) >= .seconds(5)
-      } ?? false
-
     ContentViewStates.shared.updateConsoleUserServerClientReady(consoleUserServerClientReady)
-    ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(
-      disconnectedForAWhile)
+
+    if !consoleUserServerClientReady && disconnectedForAWhileTask == nil {
+      disconnectedForAWhileTask = Task { @MainActor [weak self] in
+        try? await Task.sleep(for: .seconds(5))
+
+        guard !Task.isCancelled,
+          let self,
+          !self.consoleUserServerClientReady
+        else { return }
+
+        ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(true)
+        self.updateLocalServicesGuidanceContext()
+      }
+    }
   }
 
   func settingsWindowGuidanceReceived(_ state: SettingsWindowGuidanceState) {
@@ -88,11 +69,16 @@ final class SettingsConsoleUserServerClient {
     // as peer verification fails. Receiving a guidance response proves that the connection has
     // passed verification and is ready for communication.
     consoleUserServerClientReady = true
-    consoleUserServerClientDisconnectedAt = nil
+    disconnectedForAWhileTask?.cancel()
+    disconnectedForAWhileTask = nil
 
     ContentViewStates.shared.updateConsoleUserServerClientReady(true)
     ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(false)
     ContentViewStates.shared.updateGuidanceState(state)
+
+    // The C++ client requests settings_window_guidance once per second while connected,
+    // so this also keeps the locally obtained services state up to date without a Swift timer.
+    updateLocalServicesGuidanceContext()
   }
 
   func updateLocalServicesGuidanceContext() {
@@ -100,7 +86,7 @@ final class SettingsConsoleUserServerClient {
     // console_user_server, it cannot fetch that guidance. Keep the service-enabled states updated
     // locally so ContentViewStates can open SetupServicesView as a fallback.
     ContentViewStates.shared.updateLocalServicesGuidanceContext(
-      coreDaemonsEnabled: libkrbn_services_daemons_enabled(),
-      coreAgentsEnabled: libkrbn_services_agents_enabled())
+      coreDaemonsEnabled: krbn_services_daemons_enabled(),
+      coreAgentsEnabled: krbn_services_agents_enabled())
   }
 }

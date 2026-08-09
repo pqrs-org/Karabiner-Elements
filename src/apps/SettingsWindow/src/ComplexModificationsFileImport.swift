@@ -54,7 +54,7 @@ final class ComplexModificationsFileImport: ObservableObject {
   public func save() {
     if let data = self.jsonData {
       var buffer = [Int8](repeating: 0, count: 32 * 1024)
-      libkrbn_get_user_complex_modifications_assets_directory(&buffer, buffer.count)
+      krbn_get_user_complex_modifications_assets_directory(&buffer, buffer.count)
       guard let directory = String(utf8String: buffer) else { return }
 
       let time = Int(NSDate().timeIntervalSince1970)

@@ -8,11 +8,7 @@
 extern "C" {
 #endif
 
-typedef void (*game_pad_viewer_hid_value_arrived_callback)(uint64_t device_id,
-                                                           bool is_keyboard,
-                                                           bool is_pointing_device,
-                                                           bool is_game_pad,
-                                                           int32_t usage_page,
+typedef void (*game_pad_viewer_hid_value_arrived_callback)(int32_t usage_page,
                                                            int32_t usage,
                                                            int64_t logical_max,
                                                            int64_t logical_min,

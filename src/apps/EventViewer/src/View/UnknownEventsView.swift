@@ -44,21 +44,21 @@ struct UnknownEventsView: View {
           } else {
             VStack(alignment: .leading, spacing: 0.0) {
               ForEach($eventHistory.unknownEventEntries) { $entry in
-                HStack(alignment: .center, spacing: 8) {
-                  VStack(alignment: .trailing, spacing: 0) {
-                    HStack(alignment: .bottom, spacing: 0) {
-                      Text("integer value: ")
-                        .font(.caption)
-                      Text("\(entry.integerValue)")
-                        .font(.callout)
-                        .monospaced()
-                    }
+                HStack(alignment: .center, spacing: 12.0) {
+                  Text(entry.iso8601TimestampString)
+                    .font(.caption)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
 
-                    Text("")
+                  Divider()
+
+                  HStack(alignment: .bottom, spacing: 0) {
+                    Text("integer value: ")
+                      .font(.caption)
+                    Text("\(entry.integerValue)")
                       .font(.callout)
                       .monospaced()
                   }
-                  .frame(alignment: .leading)
 
                   Divider()
 
