@@ -4,7 +4,7 @@
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "hat_switch_convert.hpp"
-#include "hid_report_only_events_monitor.hpp"
+#include "hid_device_events_monitor.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
@@ -13,7 +13,6 @@
 #include <optional>
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
-#include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -79,40 +78,17 @@ public:
       auto device_id = krbn::make_device_id(registry_entry_id);
       auto device_properties = krbn::device_properties::make_device_properties(device_id,
                                                                                *device_ptr);
-      auto monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(
+      auto monitor = std::make_shared<krbn::hid_device_events_monitor>(
           pqrs::dispatcher::extra::get_shared_dispatcher(),
           pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
-          *device_ptr);
-      hid_queue_value_monitors_.insert_or_assign(device_id, monitor);
+          *device_ptr,
+          *device_properties);
+      hid_device_events_monitors_.insert_or_assign(device_id, monitor);
 
       monitor->values_arrived.connect([this, device_id](auto&& values) {
-        values_arrived(device_id,
-                       values);
+        handle_hid_values(device_id,
+                          *values);
       });
-
-      // Devices which under-declare their buttons need those buttons recovered from
-      // the raw input report, otherwise EventViewer shows nothing when they are pressed.
-      if (auto hid_report_only_events_monitor = krbn::hid_report_only_events_monitor::make_if_target(
-              pqrs::dispatcher::extra::get_shared_dispatcher(),
-              pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
-              *device_ptr,
-              *device_properties)) {
-        hid_report_only_events_monitors_.insert_or_assign(device_id,
-                                                          hid_report_only_events_monitor);
-
-        hid_report_only_events_monitor->values_arrived.connect([this, device_id](auto&& values) {
-          handle_hid_values(device_id,
-                            *values);
-        });
-
-        monitor->started.connect([hid_report_only_events_monitor] {
-          hid_report_only_events_monitor->async_start();
-        });
-
-        monitor->stopped.connect([hid_report_only_events_monitor] {
-          hid_report_only_events_monitor->async_stop();
-        });
-      }
 
       monitor->async_start(kIOHIDOptionsTypeNone,
                            std::chrono::milliseconds(3000));
@@ -121,9 +97,7 @@ public:
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       auto device_id = krbn::make_device_id(registry_entry_id);
 
-      // Closing the device has to come before releasing the report buffer.
-      hid_queue_value_monitors_.erase(device_id);
-      hid_report_only_events_monitors_.erase(device_id);
+      hid_device_events_monitors_.erase(device_id);
 
       krbn::hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
     });
@@ -139,9 +113,7 @@ public:
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
 
-      // Close the devices before releasing the buffers IOKit copies their input reports into.
-      hid_queue_value_monitors_.clear();
-      hid_report_only_events_monitors_.clear();
+      hid_device_events_monitors_.clear();
 
       if (auto callback = hid_value_monitor_stopped_callback.load()) {
         callback();
@@ -150,17 +122,6 @@ public:
   }
 
 private:
-  void values_arrived(krbn::device_id device_id,
-                      pqrs::not_null_shared_ptr_t<std::vector<pqrs::cf::cf_ptr<IOHIDValueRef>>> values) const {
-    std::vector<pqrs::osx::iokit_hid_value> hid_values;
-    for (const auto& value : *values) {
-      hid_values.emplace_back(*value);
-    }
-
-    handle_hid_values(device_id,
-                      hid_values);
-  }
-
   void handle_hid_values(krbn::device_id device_id,
                          const std::vector<pqrs::osx::iokit_hid_value>& values) const {
     auto callback = hid_value_arrived_callback.load();
@@ -212,11 +173,8 @@ private:
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<krbn::device_id,
-                     pqrs::not_null_shared_ptr_t<pqrs::osx::iokit_hid_queue_value_monitor>>
-      hid_queue_value_monitors_;
-  std::unordered_map<krbn::device_id,
-                     pqrs::not_null_shared_ptr_t<krbn::hid_report_only_events_monitor>>
-      hid_report_only_events_monitors_;
+                     pqrs::not_null_shared_ptr_t<krbn::hid_device_events_monitor>>
+      hid_device_events_monitors_;
 };
 
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {

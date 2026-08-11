@@ -6,8 +6,8 @@
 #include "run_loop_thread_utility.hpp"
 #include <atomic>
 #include <pqrs/gsl.hpp>
+#include <pqrs/osx/iokit_hid_device_events_monitor.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
-#include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 #include <unordered_map>
 
 namespace {
@@ -44,17 +44,17 @@ public:
       }
 
       auto device_id = krbn::make_device_id(registry_entry_id);
-      auto monitor = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(
+      auto monitor = std::make_shared<pqrs::osx::iokit_hid_device_events_monitor>(
           pqrs::dispatcher::extra::get_shared_dispatcher(),
           pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
           *device_ptr);
-      hid_queue_value_monitors_.insert_or_assign(device_id, monitor);
+      hid_device_events_monitors_.insert_or_assign(device_id, monitor);
 
       monitor->started.connect([] {
         hid_value_monitor_observed = true;
       });
 
-      monitor->values_arrived.connect([this](auto&& values) {
+      monitor->input_values_arrived.connect([this](auto&& values) {
         values_arrived(values);
       });
 
@@ -63,7 +63,7 @@ public:
     });
 
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
-      hid_queue_value_monitors_.erase(krbn::make_device_id(registry_entry_id));
+      hid_device_events_monitors_.erase(krbn::make_device_id(registry_entry_id));
     });
 
     hid_manager_->error_occurred.connect([](auto&& message, auto&& kern_return) {
@@ -76,7 +76,7 @@ public:
   ~hid_value_monitor() {
     detach_from_dispatcher([this] {
       hid_manager_ = nullptr;
-      hid_queue_value_monitors_.clear();
+      hid_device_events_monitors_.clear();
       hid_value_monitor_observed = false;
     });
   }
@@ -106,8 +106,8 @@ private:
 
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<krbn::device_id,
-                     pqrs::not_null_shared_ptr_t<pqrs::osx::iokit_hid_queue_value_monitor>>
-      hid_queue_value_monitors_;
+                     pqrs::not_null_shared_ptr_t<pqrs::osx::iokit_hid_device_events_monitor>>
+      hid_device_events_monitors_;
   game_pad_viewer_hid_value_arrived_callback callback_;
 };
 

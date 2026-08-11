@@ -1,7 +1,7 @@
 #pragma once
 
-#include "hid_report_only_events/report_handler.hpp"
 #include "hid_report_only_events/elecom/trackball.hpp"
+#include "hid_report_only_events/report_handler.hpp"
 #include "types/device_identifiers.hpp"
 #include <memory>
 #include <span>

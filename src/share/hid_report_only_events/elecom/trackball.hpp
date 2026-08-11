@@ -65,10 +65,10 @@ namespace details {
     pqrs::hid::vendor_id::value_t vendor_id,
     pqrs::hid::product_id::value_t product_id) noexcept {
   return vendor_id == pqrs::hid::vendor_id::value_t(0x056e) &&    // Elecom Co., Ltd.
-         (product_id == pqrs::hid::product_id::value_t(0x00fe) || // M-DT1URBK or M-DT2URBK DEFT Optical TrackBall
-          product_id == pqrs::hid::product_id::value_t(0x01aa) || // M-HT1MRBK
-          product_id == pqrs::hid::product_id::value_t(0x01ab) || // M-HT1MRBK
-          product_id == pqrs::hid::product_id::value_t(0x01ac));  // M-HT1MRBK
+         (product_id == pqrs::hid::product_id::value_t(0x00fe) || // M-DT1URBK or M-DT2URBK DEFT TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x01aa) || // M-HT1MRBK HUGE PLUS TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x01ab) || // M-HT1MRBK HUGE PLUS TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x01ac));  // M-HT1MRBK HUGE PLUS TrackBall
 }
 
 // Return the raw-report layout only when both the device id and the descriptor's
@@ -136,9 +136,7 @@ namespace details {
       continue;
     }
     auto padding_bit_count = padding_size_bits * padding_count;
-    auto first_button = static_cast<uint64_t>(
-                            type_safe::get(buttons.get_usage_maximum()->get_usage())) +
-                        1;
+    auto first_button = static_cast<uint64_t>(type_safe::get(buttons.get_usage_maximum()->get_usage())) + 1;
     if (report_id < 0 ||
         report_id > 255 ||
         padding_bit_count == 0 ||
@@ -181,23 +179,26 @@ public:
         last_buttons_(configuration.button_count, 0) {
   }
 
-  [[nodiscard]] std::vector<event> handle(
+  [[nodiscard]] bool should_accept_report(
       uint32_t report_id,
       std::span<const uint8_t> report) override {
-    std::vector<event> result;
-
     if (report_id != configuration_.report_id ||
         configuration_.button_count == 0 ||
         configuration_.button_count - 1 >
             std::numeric_limits<size_t>::max() - configuration_.buttons_bit_offset) {
-      return result;
+      return false;
     }
 
     auto last_bit_offset = configuration_.buttons_bit_offset +
                            configuration_.button_count - 1;
-    if (last_bit_offset / 8 >= report.size()) {
-      return result;
-    }
+    return last_bit_offset / 8 < report.size();
+  }
+
+  [[nodiscard]] std::vector<pqrs::osx::iokit_hid_value> handle(
+      uint32_t report_id,
+      std::span<const uint8_t> report,
+      pqrs::osx::chrono::absolute_time_point time_stamp) override {
+    std::vector<pqrs::osx::iokit_hid_value> result;
 
     for (size_t i = 0; i < configuration_.button_count; ++i) {
       auto bit_offset = configuration_.buttons_bit_offset + i;
@@ -205,14 +206,14 @@ public:
       auto pressed = (report[bit_offset / 8] & mask) != 0;
 
       if (pressed != (last_buttons_[i] != 0)) {
-        result.push_back(event{
-            .usage_page = pqrs::hid::usage_page::button,
-            .usage = pqrs::hid::usage::value_t(
+        result.emplace_back(
+            time_stamp,
+            pressed ? 1 : 0,
+            pqrs::hid::usage_page::button,
+            pqrs::hid::usage::value_t(
                 static_cast<uint8_t>(configuration_.first_button + i)),
-            .value = pressed ? 1 : 0,
-            .logical_max = 1,
-            .logical_min = 0,
-        });
+            1,
+            0);
       }
 
       last_buttons_[i] = pressed ? 1 : 0;
@@ -226,7 +227,7 @@ public:
   }
 
 private:
-  configuration configuration_;
+  const configuration configuration_;
   std::vector<uint8_t> last_buttons_;
 };
 

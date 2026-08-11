@@ -3,7 +3,8 @@
 
 namespace {
 namespace elecom_trackball = krbn::hid_report_only_events::elecom::trackball;
-using krbn::hid_report_only_events::event;
+
+const auto time_stamp = pqrs::osx::chrono::absolute_time_point(12345);
 
 std::vector<uint8_t> huge_plus_descriptor() {
   // Mouse Application Collection extracted from the
@@ -94,14 +95,14 @@ std::vector<uint8_t> report(uint8_t buttons) {
   return {0x01, buttons, 0x00, 0x00, 0x00, 0x00};
 }
 
-event button_event(uint32_t button, bool pressed) {
-  return event{
-      .usage_page = pqrs::hid::usage_page::button,
-      .usage = pqrs::hid::usage::value_t(button),
-      .value = pressed ? 1 : 0,
-      .logical_max = 1,
-      .logical_min = 0,
-  };
+pqrs::osx::iokit_hid_value button_value(uint32_t button, bool pressed) {
+  return pqrs::osx::iokit_hid_value(
+      time_stamp,
+      pressed ? 1 : 0,
+      pqrs::hid::usage_page::button,
+      pqrs::hid::usage::value_t(button),
+      1,
+      0);
 }
 } // namespace
 
@@ -207,55 +208,59 @@ int main() {
     expect(configuration->first_button == 6_u);
 
     auto handler = elecom_trackball::handler(*configuration);
-    auto events = handler.handle(1, std::vector<uint8_t>{0x01, 0x20, 0x81});
-    expect(events == std::vector<event>{
-                         button_event(6, true),
-                         button_event(9, true),
-                         button_event(16, true),
+    auto values = handler.handle(1,
+                                 std::vector<uint8_t>{0x01, 0x20, 0x81},
+                                 time_stamp);
+    expect(values == std::vector<pqrs::osx::iokit_hid_value>{
+                         button_value(6, true),
+                         button_value(9, true),
+                         button_value(16, true),
                      });
   };
 
   "handle press, repeat and release"_test = [] {
     auto handler = huge_plus_handler();
 
-    auto down = handler.handle(1, report(0x20));
-    expect(down == std::vector<event>{button_event(6, true)});
-    expect(handler.handle(1, report(0x20)).empty());
+    auto down = handler.handle(1, report(0x20), time_stamp);
+    expect(down == std::vector<pqrs::osx::iokit_hid_value>{button_value(6, true)});
+    expect(handler.handle(1, report(0x20), time_stamp).empty());
 
-    auto up = handler.handle(1, report(0x00));
-    expect(up == std::vector<event>{button_event(6, false)});
+    auto up = handler.handle(1, report(0x00), time_stamp);
+    expect(up == std::vector<pqrs::osx::iokit_hid_value>{button_value(6, false)});
+  };
+
+  "match applicable reports"_test = [] {
+    auto handler = huge_plus_handler();
+
+    expect(handler.should_accept_report(1, report(0x00)));
+    expect(!handler.should_accept_report(2, report(0x00)));
+    expect(!handler.should_accept_report(1, std::vector<uint8_t>{0x01}));
+    expect(!handler.should_accept_report(1, std::vector<uint8_t>{}));
   };
 
   "handle recovered buttons only"_test = [] {
     auto handler = huge_plus_handler();
 
     // Declared button 1 is ignored; undeclared buttons 6 and 8 are reported.
-    auto events = handler.handle(1, report(0xa1));
-    expect(events == std::vector<event>{
-                         button_event(6, true),
-                         button_event(8, true),
+    auto values = handler.handle(1, report(0xa1), time_stamp);
+    expect(values == std::vector<pqrs::osx::iokit_hid_value>{
+                         button_value(6, true),
+                         button_value(8, true),
                      });
 
-    auto mixed = handler.handle(1, report(0x40));
-    expect(mixed == std::vector<event>{
-                        button_event(6, false),
-                        button_event(7, true),
-                        button_event(8, false),
+    auto mixed = handler.handle(1, report(0x40), time_stamp);
+    expect(mixed == std::vector<pqrs::osx::iokit_hid_value>{
+                        button_value(6, false),
+                        button_value(7, true),
+                        button_value(8, false),
                     });
-  };
-
-  "ignore unrelated or short report"_test = [] {
-    auto handler = huge_plus_handler();
-    expect(handler.handle(2, std::vector<uint8_t>{0x02, 0xff}).empty());
-    expect(handler.handle(1, std::vector<uint8_t>{0x01}).empty());
-    expect(handler.handle(1, std::vector<uint8_t>{}).empty());
   };
 
   "reset handler"_test = [] {
     auto handler = huge_plus_handler();
-    expect(handler.handle(1, report(0x20)).size() == 1_u);
+    expect(handler.handle(1, report(0x20), time_stamp).size() == 1_u);
     handler.reset();
-    expect(handler.handle(1, report(0x20)).size() == 1_u);
+    expect(handler.handle(1, report(0x20), time_stamp).size() == 1_u);
   };
 
   return 0;
