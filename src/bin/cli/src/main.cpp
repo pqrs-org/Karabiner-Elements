@@ -410,6 +410,10 @@ int main(int argc, char** argv) {
                         "Suppress messages",
                         cxxopts::value<bool>()->default_value("false"));
 
+  options.add_options()("verbose",
+                        "Print variables successfully set by --set-variables-from-stdin",
+                        cxxopts::value<bool>()->default_value("false"));
+
   options.parse_positional({
       "lint-complex-modifications",
       "format-json",
@@ -494,7 +498,8 @@ int main(int argc, char** argv) {
     {
       std::string key = "set-variables-from-stdin";
       if (parse_result.count(key)) {
-        krbn::cli::set_variables_from_stdin::runner runner;
+        krbn::cli::set_variables_from_stdin::runner runner(
+            parse_result["verbose"].as<bool>());
         exit_code = runner.run(std::cin);
         goto finish;
       }
@@ -684,7 +689,7 @@ int main(int argc, char** argv) {
   std::cout << "  karabiner_cli --show-current-profile-name" << std::endl;
   std::cout << "  karabiner_cli --list-profile-names" << std::endl;
   std::cout << "  karabiner_cli --set-variables '{\"cli_flag1\":1, \"cli_flag2\":2}'" << std::endl;
-  std::cout << "  printf '{\"cli_flag1\":1}\\n{\"cli_flag2\":2}\\n' | karabiner_cli --set-variables-from-stdin" << std::endl;
+  std::cout << "  printf '{\"cli_flag1\":1}\\n{\"cli_flag2\":2}\\n' | karabiner_cli --set-variables-from-stdin --verbose" << std::endl;
   std::cout << std::endl;
 
   exit_code = 1;

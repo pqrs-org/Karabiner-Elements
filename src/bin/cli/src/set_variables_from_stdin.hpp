@@ -20,8 +20,9 @@ class runner final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   runner(const runner&) = delete;
 
-  runner(void)
+  explicit runner(bool verbose)
       : dispatcher_client(),
+        verbose_(verbose),
         input_completion_wait_(pqrs::make_thread_wait()) {
   }
 
@@ -123,10 +124,11 @@ private:
       }
 
       request_in_flight_ = true;
+      auto variables = *request_variables_;
       auto weak_callback_lifetime = std::weak_ptr(callback_lifetime_);
       client_->async_set_variables_with_completion_handler(
-          *request_variables_,
-          [this, weak_callback_lifetime](const auto& error_code) {
+          variables,
+          [this, variables, weak_callback_lifetime](const auto& error_code) {
             // The completion handler and components destruction are serialized
             // on the shared dispatcher thread. The token prevents a handler
             // retained by the transport from accessing a destroyed manager.
@@ -137,6 +139,7 @@ private:
             request_in_flight_ = false;
 
             if (!error_code) {
+              runner_.output_variables_if_verbose(variables);
               runner_.complete_pending_variables();
               request_variables_.reset();
               request_failed_ = false;
@@ -191,6 +194,12 @@ private:
     std::lock_guard<std::mutex> lock(pending_variables_mutex_);
 
     pending_variables_.push_back(variables);
+  }
+
+  void output_variables_if_verbose(const nlohmann::json& variables) const {
+    if (verbose_) {
+      std::cout << variables.dump() << std::endl;
+    }
   }
 
   void complete_pending_variables() {
@@ -268,6 +277,7 @@ private:
 
   mutable std::mutex pending_variables_mutex_;
   std::deque<nlohmann::json> pending_variables_;
+  bool verbose_;
   std::shared_ptr<pqrs::thread_wait> input_completion_wait_;
   components_manager* components_manager_{nullptr};
 };
