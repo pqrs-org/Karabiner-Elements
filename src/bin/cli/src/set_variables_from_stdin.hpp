@@ -183,7 +183,7 @@ private:
     std::lock_guard<std::mutex> lock(pending_variables_mutex_);
 
     if (pending_variables_.empty() ||
-        pending_variables_.front().is_null()) {
+        end_of_input_marker(pending_variables_.front())) {
       return std::nullopt;
     }
 
@@ -216,7 +216,7 @@ private:
       std::lock_guard<std::mutex> lock(pending_variables_mutex_);
 
       if (!pending_variables_.empty() &&
-          pending_variables_.front().is_null()) {
+          end_of_input_marker(pending_variables_.front())) {
         pending_variables_.pop_front();
         completed = true;
       }
@@ -237,7 +237,7 @@ private:
       // The completion entry is enqueued only after the stdin loop ends, so it
       // is always the final entry and no further variables can follow it.
       if (!pending_variables_.empty() &&
-          pending_variables_.back().is_null()) {
+          end_of_input_marker(pending_variables_.back())) {
         pending_variables_.clear();
         completed = true;
       }
@@ -273,6 +273,10 @@ private:
     }
 
     enqueue_task();
+  }
+
+  static bool end_of_input_marker(const nlohmann::json& value) {
+    return value.is_null();
   }
 
   mutable std::mutex pending_variables_mutex_;
