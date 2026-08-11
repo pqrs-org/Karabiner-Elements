@@ -65,7 +65,8 @@ public:
           if (!result) {
             // During an update, retrieving the Team ID may fail, causing an error once.
             // Since this can occur during normal use, treat it as debug rather than warn.
-            logger::get_logger()->debug("receiver: peer is not code-signed with same Team ID");
+            logger::get_logger()->debug("receiver: peer is not code-signed with same Team ID (pid: {0})",
+                                        peer_credentials.pid.value_or(-1));
           }
           return result;
         });
