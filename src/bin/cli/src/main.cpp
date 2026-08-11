@@ -16,10 +16,11 @@
 #include "logger.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "run_loop_thread_utility.hpp"
-#include <atomic>
+#include "set_variables_from_stdin.hpp"
+#include "watch_multitouch_extension_variables.hpp"
 #include <filesystem>
+#include <functional>
 #include <iostream>
-#include <nlohmann/json.hpp>
 #include <pqrs/gsl.hpp>
 #include <pqrs/thread_wait.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -201,64 +202,6 @@ void list_multitouch_extension_variables() {
   }
 }
 
-void watch_multitouch_extension_variables(int interval) {
-  try {
-    auto wait = pqrs::make_thread_wait();
-    std::string json_string;
-    std::atomic_bool connected = false;
-
-    krbn::core_service_daemon_client client;
-
-    client.connect_failed.connect([](auto&& error_code) {
-      std::cerr << "watch-multitouch-extension-variables error:" << error_code << std::endl;
-      exit(1);
-    });
-
-    client.connected.connect([&client, &connected] {
-      connected = true;
-      client.async_get_multitouch_extension_variables();
-    });
-
-    client.closed.connect([&connected] {
-      connected = false;
-    });
-
-    client.received.connect([&json_string](auto&& operation_type,
-                                           auto&& json) {
-      try {
-        switch (operation_type) {
-          case krbn::operation_type::multitouch_extension_variables: {
-            auto s = json.at("multitouch_extension_variables").dump();
-            if (json_string != s) {
-              json_string = s;
-              std::cout << s << std::endl;
-            }
-            break;
-          }
-
-          default:
-            break;
-        }
-      } catch (std::exception& e) {
-        std::cerr << "watch-multitouch-extension-variables error:" << std::endl
-                  << e.what() << std::endl;
-      }
-    });
-
-    client.async_start();
-
-    while (true) {
-      if (connected) {
-        client.async_get_multitouch_extension_variables();
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(interval));
-    }
-  } catch (std::exception& e) {
-    std::cerr << "watch-multitouch-extension-variables error:" << std::endl
-              << e.what() << std::endl;
-  }
-}
-
 void set_variables(const std::string& variables) {
   try {
     auto json = krbn::json_utility::parse_jsonc(variables);
@@ -266,14 +209,16 @@ void set_variables(const std::string& variables) {
     auto wait = pqrs::make_thread_wait();
 
     krbn::core_service_daemon_client client;
-    client.connect_failed.connect([&wait](auto&& error_code) {
+    client.connect_failed.connect([wait](auto&& error_code) {
       std::cerr << "set-variables error:" << error_code << std::endl;
       wait->notify();
     });
-    client.connected.connect([&client, &json, &wait] {
-      client.async_set_variables(json, [&wait] {
-        wait->notify();
-      });
+    client.connected.connect([&client, &json, wait] {
+      client.async_set_variables_with_completion_handler(
+          json,
+          [wait](auto&&) {
+            wait->notify();
+          });
     });
 
     client.async_start();
@@ -425,6 +370,9 @@ int main(int argc, char** argv) {
                         "Json string: {[key: string]: number|boolean|string}",
                         cxxopts::value<std::string>());
 
+  options.add_options()("set-variables-from-stdin",
+                        "Read one variables JSON object per line from stdin");
+
   options.add_options()("copy-current-profile-to-system-default-profile",
                         "Copy the current profile to system default profile");
 
@@ -530,7 +478,7 @@ int main(int argc, char** argv) {
     {
       std::string key = "watch-multitouch-extension-variables";
       if (parse_result.count(key)) {
-        watch_multitouch_extension_variables(parse_result[key].as<int>());
+        exit_code = krbn::cli::watch_multitouch_extension_variables::run(parse_result[key].as<int>());
         goto finish;
       }
     }
@@ -539,6 +487,15 @@ int main(int argc, char** argv) {
       std::string key = "set-variables";
       if (parse_result.count(key)) {
         set_variables(parse_result[key].as<std::string>());
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "set-variables-from-stdin";
+      if (parse_result.count(key)) {
+        krbn::cli::set_variables_from_stdin::runner runner;
+        exit_code = runner.run(std::cin);
         goto finish;
       }
     }
@@ -727,6 +684,7 @@ int main(int argc, char** argv) {
   std::cout << "  karabiner_cli --show-current-profile-name" << std::endl;
   std::cout << "  karabiner_cli --list-profile-names" << std::endl;
   std::cout << "  karabiner_cli --set-variables '{\"cli_flag1\":1, \"cli_flag2\":2}'" << std::endl;
+  std::cout << "  printf '{\"cli_flag1\":1}\\n{\"cli_flag2\":2}\\n' | karabiner_cli --set-variables-from-stdin" << std::endl;
   std::cout << std::endl;
 
   exit_code = 1;

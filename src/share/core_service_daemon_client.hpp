@@ -7,6 +7,7 @@
 #include "logger.hpp"
 #include "types.hpp"
 #include <filesystem>
+#include <functional>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_types.hpp>
@@ -291,23 +292,22 @@ public:
     });
   }
 
-  /**
-   * @brief Set variables
-   *
-   * @param variables nlohmann::json::object which type is {[key: string]: number|boolean|string}.
-   * @param processed A callback which is called when the request is processed.
-   *                  (When data is sent to core_service_daemon or error occurred)
-   */
-  void async_set_variables(const nlohmann::json& variables,
-                           std::function<void()> processed = nullptr) const {
-    enqueue_to_dispatcher([this, variables, processed] {
+  void async_set_variables(const nlohmann::json& variables) const {
+    async_set_variables_with_completion_handler(variables,
+                                                nullptr);
+  }
+
+  void async_set_variables_with_completion_handler(
+      const nlohmann::json& variables,
+      std::function<void(const asio::error_code&)> completion_handler) const {
+    enqueue_to_dispatcher([this, variables, completion_handler = std::move(completion_handler)] {
       nlohmann::json json{
           {"operation_type", operation_type::set_variables},
           {"variables", variables},
       };
 
       async_request(std::move(json),
-                    processed);
+                    std::move(completion_handler));
     });
   }
 
@@ -322,29 +322,34 @@ public:
   }
 
 private:
+  using request_completion_handler = std::function<void(const asio::error_code&)>;
+
   void async_request(nlohmann::json&& json,
-                     std::function<void()> processed = nullptr) const {
+                     request_completion_handler completion_handler = nullptr) const {
     if (!client_) {
+      if (completion_handler) {
+        completion_handler(asio::error::not_connected);
+      }
       return;
     }
 
+    // unix_domain_stream::client delivers this callback on the shared
+    // dispatcher thread, so it does not need to be enqueued again here.
     client_->async_request(
         nlohmann::json::to_msgpack(json),
-        [this, processed](auto&& error_code, auto&& buffer) {
-          enqueue_to_dispatcher([this, error_code, buffer, processed] {
-            if (error_code) {
-              logger::get_logger()->debug("core_service_daemon_client request failed: {0}", error_code.message());
-            }
+        [this, completion_handler = std::move(completion_handler)](auto&& error_code, auto&& buffer) {
+          if (error_code) {
+            logger::get_logger()->debug("core_service_daemon_client request failed: {0}", error_code.message());
+          }
 
-            if (buffer &&
-                !buffer->empty()) {
-              handle_message(buffer);
-            }
+          if (buffer &&
+              !buffer->empty()) {
+            handle_message(buffer);
+          }
 
-            if (processed) {
-              processed();
-            }
-          });
+          if (completion_handler) {
+            completion_handler(error_code);
+          }
         });
   }
 
