@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::hid v3.1.0
+// pqrs::hid v3.2.0
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
@@ -11,6 +11,8 @@
 #include "hid/manufacturer_string.hpp"
 #include "hid/product_id.hpp"
 #include "hid/product_string.hpp"
+#include "hid/report_descriptor/descriptor.hpp"
+#include "hid/report_descriptor/parser.hpp"
 #include "hid/report_id.hpp"
 #include "hid/usage.hpp"
 #include "hid/usage_page.hpp"

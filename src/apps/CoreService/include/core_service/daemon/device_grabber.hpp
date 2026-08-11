@@ -270,16 +270,16 @@ public:
 
         entry->set_temporarily_ignore(temporarily_ignore_all_devices_);
 
-        entry->hid_queue_values_arrived.connect([this](auto&& entry,
-                                                       auto&& event_queue_entries) {
-          hid_queue_values_arrived(entry,
-                                   event_queue_entries);
+        entry->hid_values_arrived.connect([this](auto&& entry,
+                                                 auto&& event_queue_entries) {
+          hid_values_arrived(entry,
+                             event_queue_entries);
         });
 
-        entry->get_hid_queue_value_monitor()->started.connect([this, device_id] {
+        entry->get_hid_device_events_monitor()->started.connect([this, device_id] {
           if (auto it = entries_.find(device_id);
               it != entries_.end()) {
-            logger::get_logger()->info("{0} hid queue value monitor is started ({1}).",
+            logger::get_logger()->info("{0} hid device events monitor is started ({1}).",
                                        it->second->get_device_name(),
                                        it->second->seized() ? "grabbed" : "observed");
             logger_unique_filter_.reset();
@@ -292,10 +292,10 @@ public:
           }
         });
 
-        entry->get_hid_queue_value_monitor()->stopped.connect([this, device_id] {
+        entry->get_hid_device_events_monitor()->stopped.connect([this, device_id] {
           if (auto it = entries_.find(device_id);
               it != entries_.end()) {
-            logger::get_logger()->info("{0} hid queue value monitor is stopped.",
+            logger::get_logger()->info("{0} hid device events monitor is stopped.",
                                        it->second->get_device_name());
             logger_unique_filter_.reset();
 
@@ -306,9 +306,9 @@ public:
           }
         });
 
-        entry->get_hid_queue_value_monitor()->error_occurred.connect([](auto&& message, auto&& kr) {
+        entry->get_hid_device_events_monitor()->error_occurred.connect([](auto&& message, auto&& kr) {
           if (kr.not_permitted()) {
-            logger::get_logger()->warn("hid_queue_value_monitor not_permitted error");
+            logger::get_logger()->warn("hid_device_events_monitor not_permitted error");
             process_lifecycle_manager::async_request_termination();
           }
         });
@@ -679,7 +679,7 @@ private:
 
     enqueue_to_dispatcher([this] {
       for (auto&& entry : entries_ | std::views::values) {
-        entry->get_hid_queue_value_monitor()->async_stop();
+        entry->get_hid_device_events_monitor()->async_stop();
       }
 
       logger::get_logger()->info("Connected devices are ungrabbed");
@@ -715,8 +715,8 @@ private:
   }
 
   // This method is executed in the shared dispatcher thread.
-  void hid_queue_values_arrived(device_grabber_details::entry& entry,
-                                event_queue::not_null_entries_ptr_t event_queue_entries) {
+  void hid_values_arrived(device_grabber_details::entry& entry,
+                          event_queue::not_null_entries_ptr_t event_queue_entries) {
     if (entry.get_device_properties()->get_device_identifiers().get_is_virtual_device()) {
       // Handle caps_lock_state_changed event only if the hid is Karabiner-DriverKit-VirtualHIDDevice.
       for (const auto& e : *event_queue_entries) {
@@ -850,13 +850,13 @@ private:
     auto state = make_grabbable_state(entry);
     switch (state) {
       case grabbable_state::state::grabbable:
-        entry.async_start_queue_value_monitor(state);
+        entry.async_start_hid_device_events_monitor(state);
         break;
 
       case grabbable_state::state::ungrabbable:
       case grabbable_state::state::none:
       case grabbable_state::state::end_:
-        entry.async_stop_queue_value_monitor();
+        entry.async_stop_hid_device_events_monitor();
         break;
     }
   }

@@ -7,6 +7,7 @@
       Open the Multitouch Extension settings from the Karabiner-Elements menu.
 - ✨ New Features
     - Added filtering functionality to the Complex Modifications list.
+    - Added support for buttons 6–8 on the ELECOM HUGE PLUS and DEFT trackballs. (Thanks to @z11i)
 - 🐛 Bug Fixes
     - Fixed CGEventTap leaks (Thanks to @MrMage and @VitalyShein)
 - ⚡️ Improvements

@@ -5,13 +5,12 @@
 #include "device_utility.hpp"
 #include "event_queue.hpp"
 #include "game_pad_stick_converter.hpp"
+#include "hid_device_events_monitor.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
-#include "hid_queue_values_converter.hpp"
 #include "iokit_utility.hpp"
 #include "pressed_keys_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
-#include <pqrs/osx/iokit_hid_queue_value_monitor.hpp>
 
 namespace krbn::core_service::daemon::device_grabber_details {
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -22,7 +21,7 @@ public:
 
   nod::signal<void(entry&,
                    event_queue::not_null_entries_ptr_t event_queue_entries)>
-      hid_queue_values_arrived;
+      hid_values_arrived;
 
   //
   // Methods
@@ -43,10 +42,12 @@ public:
         temporarily_ignore_(false) {
     caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
 
-    hid_queue_value_monitor_ = std::make_shared<pqrs::osx::iokit_hid_queue_value_monitor>(pqrs::dispatcher::extra::get_shared_dispatcher(),
-                                                                                          pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
-                                                                                          device);
-    hid_queue_value_monitor_->started.connect([this] {
+    hid_device_events_monitor_ = std::make_shared<hid_device_events_monitor>(
+        pqrs::dispatcher::extra::get_shared_dispatcher(),
+        pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+        device,
+        *device_properties_);
+    hid_device_events_monitor_->started.connect([this] {
       control_caps_lock_led_state_manager();
 
       if (seized()) {
@@ -57,22 +58,21 @@ public:
             auto event_queue_entries = std::make_shared<std::vector<event_queue::not_null_const_entry_ptr_t>>();
             event_queue_entries->push_back(event_queue_entry);
 
-            hid_queue_values_arrived(*this,
-                                     event_queue_entries);
+            hid_values_arrived(*this,
+                               event_queue_entries);
           });
         }
       }
     });
-    hid_queue_value_monitor_->stopped.connect([this] {
+    hid_device_events_monitor_->stopped.connect([this] {
       control_caps_lock_led_state_manager();
 
       game_pad_stick_converter_ = nullptr;
     });
-    hid_queue_value_monitor_->values_arrived.connect([this](auto&& values_ptr) {
+    hid_device_events_monitor_->values_arrived.connect([this](auto&& values_ptr) {
       auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
 
-      auto hid_values = hid_queue_values_converter_.make_hid_values(device_id_,
-                                                                    values_ptr);
+      auto hid_values = *values_ptr;
 
       //
       // Eliminated the entries that needed to be removed from hid_values
@@ -144,8 +144,8 @@ public:
       event_queue_entries = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue_entries,
                                                                                                              device_id_,
                                                                                                              pressed_keys_manager_);
-      hid_queue_values_arrived(*this,
-                               event_queue_entries);
+      hid_values_arrived(*this,
+                         event_queue_entries);
 
       //
       // game pad stick to pointing motion
@@ -163,7 +163,7 @@ public:
 
   ~entry() {
     detach_from_dispatcher([this] {
-      hid_queue_value_monitor_ = nullptr;
+      hid_device_events_monitor_ = nullptr;
       game_pad_stick_converter_ = nullptr;
       caps_lock_led_state_manager_ = nullptr;
     });
@@ -192,8 +192,8 @@ public:
     return pressed_keys_manager_;
   }
 
-  [[nodiscard]] std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> get_hid_queue_value_monitor() const {
-    return hid_queue_value_monitor_;
+  [[nodiscard]] std::shared_ptr<hid_device_events_monitor> get_hid_device_events_monitor() const {
+    return hid_device_events_monitor_;
   }
 
   void set_caps_lock_led_state(std::optional<led_state> state) {
@@ -247,7 +247,7 @@ public:
     return device_utility::determine_is_built_in_keyboard(*core_configuration_, *device_properties_);
   }
 
-  void async_start_queue_value_monitor(grabbable_state::state state) {
+  void async_start_hid_device_events_monitor(grabbable_state::state state) {
     auto options = kIOHIDOptionsTypeNone;
 
     if (device_properties_->get_device_identifiers().get_is_virtual_device()) {
@@ -263,7 +263,7 @@ public:
         case grabbable_state::state::ungrabbable:
         case grabbable_state::state::none:
         case grabbable_state::state::end_:
-          // Do not start hid_queue_value_monitor_.
+          // Do not start hid_device_events_monitor_.
           return;
       }
     }
@@ -272,16 +272,16 @@ public:
     // Start
     //
 
-    hid_queue_value_monitor_->async_start(options,
-                                          std::chrono::milliseconds(1000));
+    hid_device_events_monitor_->async_start(options,
+                                            std::chrono::milliseconds(1000));
   }
 
-  void async_stop_queue_value_monitor() {
-    hid_queue_value_monitor_->async_stop();
+  void async_stop_hid_device_events_monitor() {
+    hid_device_events_monitor_->async_stop();
   }
 
   [[nodiscard]] bool seized() const {
-    return hid_queue_value_monitor_->seized();
+    return hid_device_events_monitor_->seized();
   }
 
   [[nodiscard]] bool needs_to_observe_device() const {
@@ -336,9 +336,8 @@ private:
   pqrs::not_null_shared_ptr_t<device_properties> device_properties_;
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
-  std::shared_ptr<pqrs::osx::iokit_hid_queue_value_monitor> hid_queue_value_monitor_;
+  std::shared_ptr<hid_device_events_monitor> hid_device_events_monitor_;
   std::unique_ptr<game_pad_stick_converter> game_pad_stick_converter_;
-  hid_queue_values_converter hid_queue_values_converter_;
   std::string device_name_;
   std::string device_short_name_;
 
