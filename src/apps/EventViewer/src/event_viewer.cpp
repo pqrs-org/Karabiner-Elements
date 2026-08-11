@@ -292,7 +292,8 @@ void krbn_initialize(krbn_core_service_connection_changed_callback core_connecti
                      krbn_json_received_callback connected_devices_callback,
                      krbn_json_received_callback frontmost_application_callback,
                      krbn_hid_value_monitor_stopped_callback hid_monitor_stopped_callback,
-                     krbn_hid_value_arrived_callback hid_callback) {
+                     krbn_hid_value_arrived_callback hid_callback,
+                     krbn_termination_completion_callback termination_completion_callback) {
   scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
@@ -313,12 +314,16 @@ void krbn_initialize(krbn_core_service_connection_changed_callback core_connecti
               [] {
                 return std::make_unique<components_manager>();
               },
-          .termination_completion_handler = [] {},
+          .termination_completion_handler = termination_completion_callback,
       });
   krbn::process_lifecycle_manager::async_start();
 }
 
-void krbn_terminate() {
+bool krbn_async_request_termination(void) {
+  return krbn::process_lifecycle_manager::async_request_termination();
+}
+
+void krbn_finalize() {
   krbn::process_lifecycle_manager::terminate_shared_instance();
   scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;

@@ -18,7 +18,8 @@ struct KarabinerEventViewerApp: App {
       connectedDevicesReceived: connectedDevicesReceivedCallback,
       frontmostApplicationHistoryReceived: frontmostApplicationHistoryReceivedCallback,
       hidValueMonitorStopped: hidValueMonitorStoppedCallback,
-      hidValueArrived: hidValueArrivedCallback)
+      hidValueArrived: hidValueArrivedCallback,
+      terminationCompleted: completePendingApplicationTermination)
 
     let userSettings = UserSettings()
     _userSettings = StateObject(wrappedValue: userSettings)
@@ -46,8 +47,15 @@ struct KarabinerEventViewerApp: App {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+  public func applicationShouldTerminate(_: NSApplication) -> NSApplication.TerminateReply {
+    // Keep AppKit running until the asynchronous C++ component cleanup finishes.
+    requestApplicationTermination {
+      krbn_async_request_termination()
+    }
+  }
+
   public func applicationWillTerminate(_: Notification) {
-    krbn_terminate()
+    krbn_finalize()
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {

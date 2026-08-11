@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 typedef void (*krbn_core_service_connected_changed_callback)(bool connected);
+typedef void (*krbn_termination_completion_callback)(void);
 
 typedef struct {
   int32_t finger_count_upper_quarter_area;
@@ -26,8 +27,10 @@ typedef struct {
   int32_t palm_count_total;
 } krbn_multitouch_extension_variables;
 
-void krbn_initialize(krbn_core_service_connected_changed_callback callback);
-void krbn_terminate(void);
+void krbn_initialize(krbn_core_service_connected_changed_callback callback,
+                     krbn_termination_completion_callback termination_completion_callback);
+bool krbn_async_request_termination(void);
+void krbn_finalize(void);
 
 bool krbn_core_service_async_set_variables(krbn_multitouch_extension_variables variables);
 

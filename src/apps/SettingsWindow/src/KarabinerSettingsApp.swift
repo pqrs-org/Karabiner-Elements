@@ -14,7 +14,8 @@ struct KarabinerSettingsApp: App {
       systemVariablesReceived: systemVariablesReceivedCallback,
       consoleUserServerClientStatusChanged: consoleUserServerClientStatusChangedCallback,
       settingsWindowGuidanceReceived: settingsWindowGuidanceReceivedCallback,
-      componentsManagerStopped: componentsManagerStoppedCallback)
+      componentsManagerStopped: componentsManagerStoppedCallback,
+      terminationCompleted: completePendingApplicationTermination)
     krbn_load_custom_environment_variables()
 
     //
@@ -89,7 +90,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       userAttentionRequestIdentifier = nil
     }
 
-    krbn_terminate()
+    krbn_finalize()
+  }
+
+  public func applicationShouldTerminate(_: NSApplication) -> NSApplication.TerminateReply {
+    // Keep AppKit running until the asynchronous C++ component cleanup finishes.
+    requestApplicationTermination {
+      krbn_async_request_termination()
+    }
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {

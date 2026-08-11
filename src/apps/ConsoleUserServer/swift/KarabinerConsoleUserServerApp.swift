@@ -1,11 +1,5 @@
 import SwiftUI
 
-private func consoleUserServerTerminated() {
-  Task { @MainActor in
-    NSApplication.shared.terminate(nil)
-  }
-}
-
 @main
 struct KarabinerConsoleUserServerApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -161,12 +155,19 @@ struct KarabinerConsoleUserServerApp: App {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
   func applicationDidFinishLaunching(_: Notification) {
-    console_user_server_start(consoleUserServerTerminated)
+    console_user_server_start(completePendingApplicationTermination)
     ConsoleUserServerUIState.shared.start()
     _ = NotificationWindowManager.shared
   }
 
+  func applicationShouldTerminate(_: NSApplication) -> NSApplication.TerminateReply {
+    // Keep AppKit running until the asynchronous C++ component cleanup finishes.
+    requestApplicationTermination {
+      console_user_server_async_request_termination()
+    }
+  }
+
   func applicationWillTerminate(_: Notification) {
-    console_user_server_terminate()
+    console_user_server_finalize()
   }
 }

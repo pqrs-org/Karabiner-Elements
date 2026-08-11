@@ -15,7 +15,9 @@ struct KarabinerMultitouchExtensionApp: App {
 
   init() {
     _ = MECoreServiceDaemonClient.shared
-    krbn_initialize(coreServiceConnectionChangedCallback)
+    krbn_initialize(
+      coreServiceConnectionChangedCallback,
+      completePendingApplicationTermination)
   }
 
   var body: some Scene {
@@ -90,7 +92,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     MultitouchDeviceManager.shared.setCallback(false)
 
-    krbn_terminate()
+    krbn_finalize()
+  }
+
+  public func applicationShouldTerminate(_: NSApplication) -> NSApplication.TerminateReply {
+    // Keep AppKit running until the asynchronous C++ component cleanup finishes.
+    requestApplicationTermination {
+      krbn_async_request_termination()
+    }
   }
 
   private func startActivity() {

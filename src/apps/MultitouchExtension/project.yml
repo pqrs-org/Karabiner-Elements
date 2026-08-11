@@ -37,6 +37,7 @@ targets:
         compilerFlags:
           - -Wall
           - -Werror
+      - path: ../share/swift/ApplicationTermination.swift
       - path: Resources
         excludes:
           - .gitignore

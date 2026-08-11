@@ -141,7 +141,8 @@ std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_disp
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager;
 } // namespace
 
-void game_pad_viewer_initialize(game_pad_viewer_hid_value_arrived_callback callback) {
+void game_pad_viewer_initialize(game_pad_viewer_hid_value_arrived_callback callback,
+                                game_pad_viewer_termination_completion_callback termination_completion_callback) {
   scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
@@ -157,12 +158,16 @@ void game_pad_viewer_initialize(game_pad_viewer_hid_value_arrived_callback callb
               [] {
                 return std::make_unique<components_manager>();
               },
-          .termination_completion_handler = [] {},
+          .termination_completion_handler = termination_completion_callback,
       });
   krbn::process_lifecycle_manager::async_start();
 }
 
-void game_pad_viewer_terminate(void) {
+bool game_pad_viewer_async_request_termination(void) {
+  return krbn::process_lifecycle_manager::async_request_termination();
+}
+
+void game_pad_viewer_finalize(void) {
   krbn::process_lifecycle_manager::terminate_shared_instance();
   scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;

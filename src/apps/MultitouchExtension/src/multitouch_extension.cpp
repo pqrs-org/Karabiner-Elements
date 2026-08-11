@@ -61,7 +61,8 @@ std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_disp
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager;
 } // namespace
 
-void krbn_initialize(krbn_core_service_connected_changed_callback callback) {
+void krbn_initialize(krbn_core_service_connected_changed_callback callback,
+                     krbn_termination_completion_callback termination_completion_callback) {
   scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
@@ -77,13 +78,17 @@ void krbn_initialize(krbn_core_service_connected_changed_callback callback) {
               [] {
                 return std::make_unique<components_manager>();
               },
-          .termination_completion_handler = [] {},
+          .termination_completion_handler = termination_completion_callback,
           .system_will_sleep_delay = std::chrono::seconds(1),
       });
   krbn::process_lifecycle_manager::async_start();
 }
 
-void krbn_terminate(void) {
+bool krbn_async_request_termination(void) {
+  return krbn::process_lifecycle_manager::async_request_termination();
+}
+
+void krbn_finalize(void) {
   krbn::process_lifecycle_manager::terminate_shared_instance();
   scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;

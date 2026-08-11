@@ -115,7 +115,11 @@ void console_user_server_start(console_user_server_terminated_callback callback)
   krbn::process_lifecycle_manager::async_start();
 }
 
-void console_user_server_terminate(void) {
+bool console_user_server_async_request_termination(void) {
+  return krbn::process_lifecycle_manager::async_request_termination();
+}
+
+void console_user_server_finalize(void) {
   if (!started) {
     return;
   }

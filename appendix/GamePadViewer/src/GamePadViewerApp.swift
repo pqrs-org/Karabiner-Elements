@@ -17,7 +17,9 @@ struct GamePadViewerAppApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
   init() {
-    game_pad_viewer_initialize(hidValueArrivedCallback)
+    game_pad_viewer_initialize(
+      hidValueArrivedCallback,
+      completePendingApplicationTermination)
 
     if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
       InputMonitoringAlertData.shared.showing = true
@@ -32,8 +34,15 @@ struct GamePadViewerAppApp: App {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+  public func applicationShouldTerminate(_: NSApplication) -> NSApplication.TerminateReply {
+    // Keep AppKit running until the asynchronous C++ component cleanup finishes.
+    requestApplicationTermination {
+      game_pad_viewer_async_request_termination()
+    }
+  }
+
   public func applicationWillTerminate(_: Notification) {
-    game_pad_viewer_terminate()
+    game_pad_viewer_finalize()
   }
 
   public func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {

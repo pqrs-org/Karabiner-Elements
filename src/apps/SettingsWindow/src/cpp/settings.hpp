@@ -26,6 +26,7 @@ typedef void (*krbn_core_service_daemon_client_system_variables_received_t)(cons
 typedef void (*krbn_console_user_server_client_status_changed_t)(void);
 typedef void (*krbn_console_user_server_client_settings_window_guidance_received_t)(const char* _Nonnull json_string);
 typedef void (*krbn_components_manager_stopped_t)(void);
+typedef void (*krbn_termination_completion_callback_t)(void);
 
 void krbn_initialize(krbn_core_configuration_updated_t _Nonnull core_configuration_updated_callback,
                      krbn_core_configuration_load_state_changed_t _Nonnull core_configuration_load_state_changed_callback,
@@ -34,7 +35,8 @@ void krbn_initialize(krbn_core_configuration_updated_t _Nonnull core_configurati
                      krbn_core_service_daemon_client_system_variables_received_t _Nonnull system_variables_received_callback,
                      krbn_console_user_server_client_status_changed_t _Nonnull console_user_server_client_status_changed_callback,
                      krbn_console_user_server_client_settings_window_guidance_received_t _Nonnull settings_window_guidance_received_callback,
-                     krbn_components_manager_stopped_t _Nonnull components_manager_stopped_callback)
+                     krbn_components_manager_stopped_t _Nonnull components_manager_stopped_callback,
+                     krbn_termination_completion_callback_t _Nonnull termination_completion_callback)
     __attribute__((swift_name(
         "krbn_initialize("
         "coreConfigurationUpdated:"
@@ -45,8 +47,10 @@ void krbn_initialize(krbn_core_configuration_updated_t _Nonnull core_configurati
         "consoleUserServerClientStatusChanged:"
         "settingsWindowGuidanceReceived:"
         "componentsManagerStopped:"
+        "terminationCompleted:"
         ")")));
-void krbn_terminate(void);
+bool krbn_async_request_termination(void);
+void krbn_finalize(void);
 
 void krbn_load_custom_environment_variables(void);
 

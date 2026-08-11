@@ -10,6 +10,7 @@ extern "C" {
 typedef void (*krbn_core_service_connection_changed_callback)(bool connected);
 typedef void (*krbn_json_received_callback)(const char* _Nonnull json_string);
 typedef void (*krbn_hid_value_monitor_stopped_callback)(void);
+typedef void (*krbn_termination_completion_callback)(void);
 typedef void (*krbn_hid_value_arrived_callback)(uint64_t device_id,
                                                 int32_t usage_page,
                                                 int32_t usage,
@@ -22,7 +23,8 @@ void krbn_initialize(krbn_core_service_connection_changed_callback _Nonnull core
                      krbn_json_received_callback _Nonnull connected_devices_received_callback,
                      krbn_json_received_callback _Nonnull frontmost_application_history_received_callback,
                      krbn_hid_value_monitor_stopped_callback _Nonnull hid_value_monitor_stopped_callback,
-                     krbn_hid_value_arrived_callback _Nonnull hid_value_arrived_callback)
+                     krbn_hid_value_arrived_callback _Nonnull hid_value_arrived_callback,
+                     krbn_termination_completion_callback _Nonnull termination_completion_callback)
     __attribute__((swift_name(
         "krbn_initialize("
         "coreServiceConnectionChanged:"
@@ -31,8 +33,10 @@ void krbn_initialize(krbn_core_service_connection_changed_callback _Nonnull core
         "frontmostApplicationHistoryReceived:"
         "hidValueMonitorStopped:"
         "hidValueArrived:"
+        "terminationCompleted:"
         ")")));
-void krbn_terminate(void);
+bool krbn_async_request_termination(void);
+void krbn_finalize(void);
 
 void krbn_core_service_async_get_manipulator_environment(void);
 void krbn_core_service_async_temporarily_ignore_all_devices(bool value);

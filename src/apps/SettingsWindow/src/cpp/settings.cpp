@@ -68,7 +68,8 @@ void krbn_initialize(krbn_core_configuration_updated_t core_configuration_update
                      krbn_core_service_daemon_client_system_variables_received_t system_variables_received_callback,
                      krbn_console_user_server_client_status_changed_t console_user_server_client_status_changed_callback,
                      krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback,
-                     krbn_components_manager_stopped_t components_manager_stopped_callback) {
+                     krbn_components_manager_stopped_t components_manager_stopped_callback,
+                     krbn_termination_completion_callback_t termination_completion_callback) {
   krbn::logger::get_logger()->debug(__func__);
 
   if (!scoped_dispatcher_manager_) {
@@ -97,12 +98,16 @@ void krbn_initialize(krbn_core_configuration_updated_t core_configuration_update
                     callbacks,
                     components_manager_stopped_callback);
               },
-          .termination_completion_handler = [] {},
+          .termination_completion_handler = termination_completion_callback,
       });
   krbn::process_lifecycle_manager::async_start();
 }
 
-void krbn_terminate() {
+bool krbn_async_request_termination(void) {
+  return krbn::process_lifecycle_manager::async_request_termination();
+}
+
+void krbn_finalize() {
   krbn::logger::get_logger()->debug(__func__);
 
   krbn::process_lifecycle_manager::terminate_shared_instance();
