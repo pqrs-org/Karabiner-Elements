@@ -1,5 +1,6 @@
 #include "duktape_utility.hpp"
 #include <boost/ut.hpp>
+#include <optional>
 
 int main() {
   using namespace boost::ut;
@@ -7,7 +8,48 @@ int main() {
   using namespace std::literals;
 
   "duktape_utility"_test = [] {
+    // Context initialization must not consume the execution budget intended
+    // for user JavaScript. Also verify that an unexpected timeout during
+    // console setup becomes an exception instead of aborting the process.
+    {
+      auto context = krbn::duktape_utility::impl::create_context_with_limits();
+      expect(context.heap_state->base.timeout.deadline_ns == 0);
+
+      context.heap_state->base.timeout.deadline_ns = 1;
+      try {
+        krbn::duktape_utility::impl::setup_console(context.ctx.get(),
+                                                   *context.heap_state,
+                                                   context.log_messages);
+        expect(false);
+      } catch (krbn::duktape_eval_error&) {
+        expect(context.heap_state->base.timeout.timed_out == 1);
+      }
+    }
+
+    // Duktape keeps a pointer to heap_state as callback data. Verify that the
+    // pointer remains valid after the original eval_context has been moved and
+    // destroyed.
+    {
+      std::optional<krbn::duktape_utility::impl::eval_context> moved_context;
+      {
+        auto context = krbn::duktape_utility::impl::create_context_with_limits();
+        moved_context.emplace(std::move(context));
+      }
+
+      auto& context = *moved_context;
+      krbn::duktape_utility::impl::start_execution_timeout(*context.heap_state);
+      expect(duk_peval_string(context.ctx.get(), "1 + 1") == 0);
+      expect(duk_get_int(context.ctx.get(), -1) == 2);
+    }
+
     krbn::duktape_utility::eval_file_with_fs_access("data/valid.js");
+
+    try {
+      krbn::duktape_utility::eval_file_with_fs_access("data/execution_timeout.js");
+      expect(false);
+    } catch (krbn::duktape_eval_error& ex) {
+      expect("javascript error: execution timed out"sv == ex.what());
+    }
 
     try {
       krbn::duktape_utility::eval_file_with_fs_access("data/syntax_error.js");

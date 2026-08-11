@@ -127,48 +127,74 @@ inline void free(void* udata, void* ptr) {
 }
 
 inline void setup_console(duk_context* ctx,
+                          eval_heap_state& heap_state,
                           pqrs::not_null_shared_ptr_t<std::string> log_messages) {
-  duk_console_init(ctx, DUK_CONSOLE_FLUSH);
+  auto setup = [](duk_context* ctx, void* udata) -> duk_ret_t {
+    auto log_messages = static_cast<std::string*>(udata);
 
-  {
-    duk_push_heap_stash(ctx);
-    duk_push_pointer(ctx, log_messages.get().get());
-    duk_put_prop_string(ctx, -2, "krbn_console_log_messages");
-    duk_pop(ctx);
-  }
+    duk_console_init(ctx, DUK_CONSOLE_FLUSH);
 
-  duk_push_object(ctx);
-  duk_push_c_function(
-      ctx,
-      [](duk_context* ctx) -> duk_ret_t {
-        std::string* log_messages = nullptr;
-        duk_push_heap_stash(ctx);
-        duk_get_prop_string(ctx, -1, "krbn_console_log_messages");
-        log_messages = static_cast<std::string*>(duk_get_pointer(ctx, -1));
-        duk_pop_2(ctx);
+    {
+      duk_push_heap_stash(ctx);
+      duk_push_pointer(ctx, log_messages);
+      duk_put_prop_string(ctx, -2, "krbn_console_log_messages");
+      duk_pop(ctx);
+    }
 
-        if (!log_messages) {
-          return 0;
-        }
+    duk_push_object(ctx);
+    duk_push_c_function(
+        ctx,
+        [](duk_context* ctx) -> duk_ret_t {
+          std::string* log_messages = nullptr;
+          duk_push_heap_stash(ctx);
+          duk_get_prop_string(ctx, -1, "krbn_console_log_messages");
+          log_messages = static_cast<std::string*>(duk_get_pointer(ctx, -1));
+          duk_pop_2(ctx);
 
-        auto n = duk_get_top(ctx);
-        std::ostringstream ss;
-        for (duk_idx_t i = 0; i < n; ++i) {
-          if (i > 0) {
-            ss << ' ';
+          if (!log_messages) {
+            return 0;
           }
-          ss << duk_safe_to_string(ctx, i);
-        }
-        auto message = cesu8_to_utf8(ss.str());
-        if (!log_messages->empty()) {
-          log_messages->append("\n");
-        }
-        log_messages->append(message);
-        return 0;
-      },
-      DUK_VARARGS);
-  duk_put_prop_string(ctx, -2, "log");
-  duk_put_global_string(ctx, "console");
+
+          auto n = duk_get_top(ctx);
+          std::ostringstream ss;
+          for (duk_idx_t i = 0; i < n; ++i) {
+            if (i > 0) {
+              ss << ' ';
+            }
+            ss << duk_safe_to_string(ctx, i);
+          }
+          auto message = cesu8_to_utf8(ss.str());
+          if (!log_messages->empty()) {
+            log_messages->append("\n");
+          }
+          log_messages->append(message);
+          return 0;
+        },
+        DUK_VARARGS);
+    duk_put_prop_string(ctx, -2, "log");
+    duk_put_global_string(ctx, "console");
+
+    return 0;
+  };
+
+  // duk_console_init evaluates its helper JavaScript with an unprotected
+  // Duktape API. Run the entire setup in a protected call so that an
+  // initialization failure is reported instead of invoking Duktape's fatal
+  // handler and aborting the process.
+  if (duk_safe_call(ctx,
+                    setup,
+                    log_messages.get().get(),
+                    0, // nargs
+                    1  // nrets
+                    ) != DUK_EXEC_SUCCESS) {
+    auto message = heap_state.base.memory_exceeded
+                       ? "javascript error: max memory exceeded"
+                       : fmt::format("javascript initialization error: {0}",
+                                     duk_safe_to_string(ctx, -1));
+    duk_pop(ctx);
+    throw duktape_eval_error(message);
+  }
+  duk_pop(ctx);
 }
 
 inline std::string build_eval_error_message(const eval_heap_state& heap_state,
@@ -183,19 +209,32 @@ inline std::string build_eval_error_message(const eval_heap_state& heap_state,
                      duk_safe_to_string(ctx, -1));
 }
 
+struct duk_context_deleter {
+  void operator()(duk_context* ctx) const {
+    if (ctx) {
+      duk_destroy_heap(ctx);
+    }
+  }
+};
+
 struct eval_context {
-  eval_heap_state heap_state;
-  duk_context* ctx;
+  // Duktape retains this address as its allocator and timeout callback data,
+  // so it must remain stable when eval_context is returned or moved.
+  std::unique_ptr<eval_heap_state> heap_state;
   pqrs::not_null_shared_ptr_t<std::string> log_messages;
+  // Keep this member last so that the Duktape heap is destroyed before the
+  // callback data owned by the preceding members.
+  std::unique_ptr<duk_context, duk_context_deleter> ctx;
 };
 
 inline eval_context create_context_with_limits() {
   eval_context result{
-      .heap_state = {
+      .heap_state = std::make_unique<eval_heap_state>(eval_heap_state{
           .base = {
-              // 1-second timeout for JavaScript evaluation.
+              // Execution timeout is armed immediately before evaluating user
+              // JavaScript, after the Duktape context has been initialized.
               .timeout = {
-                  .deadline_ns = krbn_duktape_get_monotonic_ns() + 1000000000ULL,
+                  .deadline_ns = 0,
                   .timed_out = 0,
               },
               // 32MB soft cap; actual allocations add sizeof(size_t) per block,
@@ -204,18 +243,33 @@ inline eval_context create_context_with_limits() {
               .memory_used_bytes = 0,
               .memory_exceeded = 0,
           },
-      },
-      .ctx = nullptr,
+      }),
       .log_messages = std::make_shared<std::string>(),
+      .ctx = nullptr,
   };
 
-  result.ctx = duk_create_heap(alloc,
-                               realloc,
-                               free,
-                               &result.heap_state,
-                               nullptr);
-  setup_console(result.ctx, result.log_messages);
+  result.ctx.reset(duk_create_heap(alloc,
+                                   realloc,
+                                   free,
+                                   result.heap_state.get(),
+                                   nullptr));
+  if (!result.ctx) {
+    auto message = result.heap_state->base.memory_exceeded
+                       ? "javascript error: max memory exceeded"
+                       : "javascript initialization error: failed to create heap";
+    throw duktape_eval_error(message);
+  }
+
+  setup_console(result.ctx.get(),
+                *result.heap_state,
+                result.log_messages);
   return result;
+}
+
+inline void start_execution_timeout(eval_heap_state& heap_state) {
+  heap_state.base.timeout.timed_out = 0;
+  heap_state.base.timeout.deadline_ns =
+      krbn_duktape_get_monotonic_ns() + 1000000000ULL;
 }
 
 inline void check_input_size(const std::string& code) {
@@ -235,7 +289,7 @@ inline std::string eval_file_with_fs_access(const std::filesystem::path& path) n
     impl::check_input_size(*code);
 
     auto context = impl::create_context_with_limits();
-    duk_context* ctx = context.ctx;
+    duk_context* ctx = context.ctx.get();
 
     //
     // module-node
@@ -314,13 +368,12 @@ inline std::string eval_file_with_fs_access(const std::filesystem::path& path) n
     // eval
     //
 
+    impl::start_execution_timeout(*context.heap_state);
     if (duk_peval_string(ctx, code->c_str()) != 0) {
-      auto message = impl::build_eval_error_message(context.heap_state, ctx);
-      duk_destroy_heap(ctx);
+      auto message = impl::build_eval_error_message(*context.heap_state, ctx);
       throw duktape_eval_error(message);
     }
 
-    duk_destroy_heap(ctx);
     return std::move(*context.log_messages);
   }
   return "";
@@ -330,15 +383,15 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
   impl::check_input_size(code);
 
   auto context = impl::create_context_with_limits();
-  duk_context* ctx = context.ctx;
+  duk_context* ctx = context.ctx.get();
 
   //
   // eval
   //
 
+  impl::start_execution_timeout(*context.heap_state);
   if (duk_peval_string(ctx, code.c_str()) != 0) {
-    auto message = impl::build_eval_error_message(context.heap_state, ctx);
-    duk_destroy_heap(ctx);
+    auto message = impl::build_eval_error_message(*context.heap_state, ctx);
     throw duktape_eval_error(message);
   }
 
@@ -348,7 +401,12 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
   };
 
   nlohmann::json json;
-  if (duk_safe_call(ctx, json_encode, nullptr, 1, 1) == DUK_EXEC_SUCCESS) {
+  if (duk_safe_call(ctx,
+                    json_encode,
+                    nullptr,
+                    1, // nargs
+                    1  // nrets
+                    ) == DUK_EXEC_SUCCESS) {
     try {
       duk_size_t len = 0;
       auto s = duk_get_lstring(ctx, -1, &len);
@@ -360,8 +418,6 @@ inline eval_string_to_json_result eval_string_to_json(const std::string& code) n
     } catch (std::exception& e) {
     }
   }
-
-  duk_destroy_heap(ctx);
 
   return {
       .json = json,
