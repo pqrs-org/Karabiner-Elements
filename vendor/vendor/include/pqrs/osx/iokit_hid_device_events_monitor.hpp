@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device_events_monitor v4.2.0
+// pqrs::osx::iokit_hid_device_events_monitor v5.0.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -18,6 +18,7 @@
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/gsl.hpp>
+#include <pqrs/osx/chrono.hpp>
 #include <pqrs/osx/iokit_hid_device.hpp>
 #include <pqrs/osx/iokit_return.hpp>
 #include <pqrs/osx/iokit_types.hpp>
@@ -37,7 +38,10 @@ public:
   nod::signal<void()> stopped;
   nod::signal<void(not_null_shared_ptr_t<std::vector<cf::cf_ptr<IOHIDValueRef>>>)> input_values_arrived;
   // The report span is valid only for the duration of the signal invocation.
-  nod::signal<void(uint32_t report_id, std::span<const uint8_t> report)> input_report_arrived;
+  nod::signal<void(uint32_t report_id,
+                   std::span<const uint8_t> report,
+                   chrono::absolute_time_point time_stamp)>
+      input_report_arrived;
   nod::signal<void(const std::string&, iokit_return)> error_occurred;
 
   //
@@ -546,6 +550,10 @@ private:
       }
     }
 
+    // Capture the arrival time in run_loop_thread_ before filtering and
+    // dispatching, so dispatcher congestion does not change the event time.
+    auto time_stamp = chrono::mach_absolute_time_point();
+
     // Run the filter before copying the borrowed IOKit buffer or enqueueing work
     // to the dispatcher. The filter is invoked synchronously in run_loop_thread_.
     if (input_report_filter_) {
@@ -562,9 +570,10 @@ private:
     auto report_copy = std::make_shared<std::vector<uint8_t>>(report.begin(),
                                                               report.end());
 
-    enqueue_to_dispatcher([this, report_id, report_copy] {
+    enqueue_to_dispatcher([this, report_id, report_copy, time_stamp] {
       input_report_arrived(report_id,
-                           std::span<const uint8_t>(*report_copy));
+                           std::span<const uint8_t>(*report_copy),
+                           time_stamp);
     });
   }
 
