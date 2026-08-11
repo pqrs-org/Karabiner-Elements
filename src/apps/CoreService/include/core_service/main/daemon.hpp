@@ -11,6 +11,7 @@
 #include "logger.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "services_utility.hpp"
+#include "termination_signal_monitor.hpp"
 #include <iostream>
 #include <mach/mach.h>
 #include <pqrs/osx/workspace.hpp>
@@ -110,6 +111,11 @@ int daemon() {
           // before acknowledging the system sleep notification.
           .system_will_sleep_delay = std::chrono::seconds(3),
       });
+
+  termination_signal_monitor signal_monitor([](int) {
+    process_lifecycle_manager::async_request_termination();
+  });
+
   process_lifecycle_manager::async_start();
 
   CFRunLoopRun();
