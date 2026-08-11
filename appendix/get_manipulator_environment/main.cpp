@@ -4,6 +4,7 @@
 #include "json_utility.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "run_loop_thread_utility.hpp"
+#include "termination_signal_monitor.hpp"
 #include <iostream>
 #include <pqrs/thread_wait.hpp>
 #include <thread>
@@ -71,18 +72,19 @@ int main() {
   auto environment_variables = krbn::environment_variable_utility::load_custom_environment_variables();
   krbn::environment_variable_utility::log(environment_variables);
 
-  signal(SIGINT, [](int) noexcept {
-    global_wait->notify();
-  });
-
   krbn::process_lifecycle_manager::initialize_shared_instance(
       krbn::process_lifecycle_manager::configuration{
           .components_manager_maker =
               [] {
                 return std::make_unique<components_manager>();
               },
-          .termination_completion_handler = [] {},
+          .termination_completion_handler = [] { global_wait->notify(); },
       });
+
+  krbn::termination_signal_monitor signal_monitor([](int) {
+    krbn::process_lifecycle_manager::async_request_termination();
+  });
+
   krbn::process_lifecycle_manager::async_start();
 
   std::this_thread::sleep_for(std::chrono::seconds(1));

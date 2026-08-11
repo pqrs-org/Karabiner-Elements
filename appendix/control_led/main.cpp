@@ -2,7 +2,7 @@
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
 #include "iokit_utility.hpp"
 #include "run_loop_thread_utility.hpp"
-#include <csignal>
+#include "termination_signal_monitor.hpp"
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <pqrs/osx/iokit_return.hpp>
@@ -75,7 +75,7 @@ int main(int argc, const char* argv[]) {
   auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
 
-  std::signal(SIGINT, [](int) noexcept {
+  krbn::termination_signal_monitor signal_monitor([](int) {
     global_wait->notify();
   });
 
