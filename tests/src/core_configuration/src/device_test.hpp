@@ -129,6 +129,7 @@ void run_device_test() {
       expect(false == device.get_identifiers().get_is_pointing_device());
       expect(false == device.get_ignore());
       expect(false == device.get_manipulate_caps_lock_led());
+      expect(false == device.get_swap_grave_accent_and_non_us_backslash());
       expect(false == device.get_treat_as_built_in_keyboard());
       expect(false == device.get_disable_built_in_keyboard_if_exists());
       {
@@ -202,6 +203,7 @@ void run_device_test() {
           {"disable_built_in_keyboard_if_exists", true},
           {"ignore", true},
           {"manipulate_caps_lock_led", false},
+          {"swap_grave_accent_and_non_us_backslash", true},
           {"treat_as_built_in_keyboard", false},
           {"pointing_motion_xy_multiplier", 2.0},
           {"pointing_motion_wheels_multiplier", 0.5},
@@ -228,6 +230,7 @@ void run_device_test() {
       expect(device.get_identifiers().get_is_pointing_device() == true);
       expect(device.get_ignore() == true);
       expect(device.get_manipulate_caps_lock_led() == false);
+      expect(device.get_swap_grave_accent_and_non_us_backslash() == true);
       expect(device.get_treat_as_built_in_keyboard() == false);
       expect(device.get_disable_built_in_keyboard_if_exists() == true);
       expect(device.get_pointing_motion_xy_multiplier() == 2.0);
@@ -375,6 +378,7 @@ void run_device_test() {
                           }},
           {"ignore", true},
           {"manipulate_caps_lock_led", false},
+          {"swap_grave_accent_and_non_us_backslash", true},
           {"treat_as_built_in_keyboard", true},
           {"pointing_motion_xy_multiplier", 2.0},
           {"pointing_motion_wheels_multiplier", 0.5},
@@ -445,6 +449,7 @@ void run_device_test() {
           {"mouse_swap_xy", true},
           {"pointing_motion_xy_multiplier", 2.0},
           {"pointing_motion_wheels_multiplier", 0.5},
+          {"swap_grave_accent_and_non_us_backslash", true},
           {"treat_as_built_in_keyboard", true},
       });
       expect(device.to_json() == expected) << UT_SHOW_LINE;

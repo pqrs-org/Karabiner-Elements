@@ -30,6 +30,10 @@ public:
                                          manipulate_caps_lock_led_,
                                          false);
 
+    helper_values_.push_back_value<bool>("swap_grave_accent_and_non_us_backslash",
+                                         swap_grave_accent_and_non_us_backslash_,
+                                         false);
+
     helper_values_.push_back_value<bool>("ignore_vendor_events",
                                          ignore_vendor_events_,
                                          false);
@@ -343,6 +347,15 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
+  [[nodiscard]] const bool& get_swap_grave_accent_and_non_us_backslash() const {
+    return swap_grave_accent_and_non_us_backslash_;
+  }
+  void set_swap_grave_accent_and_non_us_backslash(bool value) {
+    swap_grave_accent_and_non_us_backslash_ = value;
+
+    coordinate_between_properties();
+  }
+
   [[nodiscard]] const bool& get_ignore_vendor_events() const {
     return ignore_vendor_events_;
   }
@@ -639,6 +652,11 @@ private:
   device_identifiers identifiers_;
   bool ignore_;
   bool manipulate_caps_lock_led_;
+  // macOS maps these two HID usages differently depending on the keyboard's
+  // device type. This setting compensates when the physical device and the
+  // virtual keyboard require opposite mappings.
+  // https://github.com/apple-oss-distributions/IOHIDFamily/blob/777ccd9698845aadf711e32d843c8c9b777431d9/IOHIDFamily/IOHIDKeyboard.cpp#L415-L432
+  bool swap_grave_accent_and_non_us_backslash_;
   bool ignore_vendor_events_;
   bool treat_as_built_in_keyboard_;
   bool disable_built_in_keyboard_if_exists_;

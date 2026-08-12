@@ -3,6 +3,7 @@
 #include "console_user_server_peer.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
+#include "device_grabber_details/device_key_code_manipulator_manager.hpp"
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
@@ -67,12 +68,18 @@ public:
           notification_message_changed(notification_message);
         });
 
+    // Apply per-device key-code swaps through basic manipulators rather than
+    // rewriting events when they are added to the queue. A basic manipulator
+    // retains the mapping selected at key_down until the corresponding key_up,
+    // even if the configuration is updated while the key is held.
+    device_key_code_manipulator_manager_ = std::make_shared<device_grabber_details::device_key_code_manipulator_manager>();
     simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
     complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
     fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
     post_event_to_virtual_devices_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
 
     merged_input_event_queue_ = std::make_shared<event_queue::queue>();
+    device_key_code_manipulated_event_queue_ = std::make_shared<event_queue::queue>();
     simple_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
     complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
     fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>();
@@ -197,8 +204,10 @@ public:
 
     // Connect manipulator_managers
 
-    manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(simple_modifications_manipulator_manager_->get_manipulator_manager()),
+    manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(device_key_code_manipulator_manager_->get_manipulator_manager()),
                                                             merged_input_event_queue_,
+                                                            device_key_code_manipulated_event_queue_);
+    manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(simple_modifications_manipulator_manager_->get_manipulator_manager()),
                                                             simple_modifications_applied_event_queue_);
     manipulator_managers_connector_.emplace_back_connection(complex_modifications_manipulator_manager_,
                                                             complex_modifications_applied_event_queue_);
@@ -414,6 +423,7 @@ public:
 
       post_event_to_virtual_devices_manipulator_ = nullptr;
 
+      device_key_code_manipulator_manager_ = nullptr;
       simple_modifications_manipulator_manager_ = nullptr;
       complex_modifications_manipulator_manager_ = nullptr;
       fn_function_keys_manipulator_manager_ = nullptr;
@@ -502,6 +512,7 @@ public:
             hid_manager_->async_start();
           }
 
+          device_key_code_manipulator_manager_->update(profile);
           simple_modifications_manipulator_manager_->update(profile);
           fn_function_keys_manipulator_manager_->update(profile,
                                                         system_preferences_properties_);
@@ -1218,6 +1229,9 @@ private:
   std::shared_ptr<notification_message_manager> notification_message_manager_;
 
   std::shared_ptr<event_queue::queue> merged_input_event_queue_;
+
+  std::shared_ptr<device_grabber_details::device_key_code_manipulator_manager> device_key_code_manipulator_manager_;
+  std::shared_ptr<event_queue::queue> device_key_code_manipulated_event_queue_;
 
   std::shared_ptr<device_grabber_details::simple_modifications_manipulator_manager> simple_modifications_manipulator_manager_;
   std::shared_ptr<event_queue::queue> simple_modifications_applied_event_queue_;

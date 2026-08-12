@@ -88,6 +88,7 @@ public:
 
           changed |= apply_value<bool>(device_json, "ignore", device->get_ignore(), [&](auto value) { device->set_ignore(value); });
           changed |= apply_value<bool>(device_json, "manipulate_caps_lock_led", device->get_manipulate_caps_lock_led(), [&](auto value) { device->set_manipulate_caps_lock_led(value); });
+          changed |= apply_value<bool>(device_json, "swap_grave_accent_and_non_us_backslash", device->get_swap_grave_accent_and_non_us_backslash(), [&](auto value) { device->set_swap_grave_accent_and_non_us_backslash(value); });
           changed |= apply_value<bool>(device_json, "ignore_vendor_events", device->get_ignore_vendor_events(), [&](auto value) { device->set_ignore_vendor_events(value); });
           changed |= apply_value<bool>(device_json, "treat_as_built_in_keyboard", device->get_treat_as_built_in_keyboard(), [&](auto value) { device->set_treat_as_built_in_keyboard(value); });
           changed |= apply_value<bool>(device_json, "disable_built_in_keyboard_if_exists", device->get_disable_built_in_keyboard_if_exists(), [&](auto value) { device->set_disable_built_in_keyboard_if_exists(value); });

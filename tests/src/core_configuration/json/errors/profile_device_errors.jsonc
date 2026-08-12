@@ -35,6 +35,16 @@
         "error": "`manipulate_caps_lock_led` must be boolean, but is `null`"
     },
 
+    // swap_grave_accent_and_non_us_backslash
+
+    {
+        "class": "devices",
+        "input": {
+            "swap_grave_accent_and_non_us_backslash": null
+        },
+        "error": "`swap_grave_accent_and_non_us_backslash` must be boolean, but is `null`"
+    },
+
     // treat_as_built_in_keyboard
 
     {

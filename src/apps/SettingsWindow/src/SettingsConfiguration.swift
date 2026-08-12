@@ -125,6 +125,7 @@ struct SettingsConfiguration: Decodable {
   struct Device: Codable {
     var ignore: Bool
     var manipulateCapsLockLed: Bool
+    var swapGraveAccentAndNonUsBackslash: Bool
     var ignoreVendorEvents: Bool
     var treatAsBuiltInKeyboard: Bool
     var disableBuiltInKeyboardIfExists: Bool

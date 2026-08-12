@@ -141,6 +141,7 @@ private:
       json[i.to_normalized_json().dump()] = {
           {"ignore", device->get_ignore()},
           {"manipulate_caps_lock_led", device->get_manipulate_caps_lock_led()},
+          {"swap_grave_accent_and_non_us_backslash", device->get_swap_grave_accent_and_non_us_backslash()},
           {"ignore_vendor_events", device->get_ignore_vendor_events()},
           {"treat_as_built_in_keyboard", device->get_treat_as_built_in_keyboard()},
           {"disable_built_in_keyboard_if_exists", device->get_disable_built_in_keyboard_if_exists()},

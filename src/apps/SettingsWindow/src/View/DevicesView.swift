@@ -249,6 +249,13 @@ struct DevicesView: View {
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
               .frame(width: detailedSettingWidth)
+
+              Toggle(isOn: $deviceConfiguration.swapGraveAccentAndNonUsBackslash) {
+                Text("Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)")
+                  .frame(maxWidth: .infinity, alignment: .leading)
+              }
+              .switchToggleStyle(controlSize: .mini, font: .callout)
+              .frame(width: detailedSettingWidth)
             }
           }
         }
