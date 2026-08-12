@@ -10,6 +10,7 @@
     - Added filtering functionality to the Complex Modifications list.
     - Added support for buttons 6–8 on the ELECOM HUGE PLUS and DEFT trackballs. (Thanks to @z11i)
     - Added `--set-variables-from-stdin` option to karabiner_cli.
+    - Added the `duration_milliseconds` option to `set_notification_message`.
 - 🐛 Bug Fixes
     - Fixed CGEventTap leaks (Thanks to @MrMage and @VitalyShein)
 - ⚡️ Improvements
