@@ -4,9 +4,11 @@
 #include "modifier_flag_manager.hpp"
 #include "types/device_id.hpp"
 #include <map>
+#include <memory>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <sstream>
+#include <utility>
 
 // `krbn::notification_message_manager` can be used safely in a multi-threaded environment.
 
@@ -15,11 +17,16 @@ class notification_message_manager final : public pqrs::dispatcher::extra::dispa
 public:
   nod::signal<void(const std::string&)> notification_message_changed;
 
-  notification_message_manager()
-      : dispatcher_client() {
+  explicit notification_message_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher =
+                                            pqrs::dispatcher::extra::get_shared_dispatcher())
+      : dispatcher_client(std::move(weak_dispatcher)) {
   }
 
   ~notification_message_manager() override {
+    for (auto& entry : expiration_tasks_) {
+      entry.second->cancel();
+    }
+
     detach_from_dispatcher();
   }
 
@@ -84,7 +91,29 @@ public:
 
   void async_set_notification_message(const notification_message& notification_message) {
     enqueue_to_dispatcher([this, notification_message] {
-      messages_[fmt::format("__user__{0}", notification_message.get_id())] = notification_message.get_text();
+      auto id = fmt::format("__user__{0}", notification_message.get_id());
+
+      messages_[id] = notification_message.get_text();
+
+      if (auto it = expiration_tasks_.find(id); it != std::end(expiration_tasks_)) {
+        it->second->cancel();
+      }
+
+      auto duration_milliseconds = notification_message.get_duration_milliseconds();
+      if (!notification_message.get_text().empty() &&
+          duration_milliseconds.count() > 0) {
+        auto& expiration_task = expiration_tasks_[id];
+        if (!expiration_task) {
+          expiration_task = std::make_unique<pqrs::dispatcher::extra::debounced_task>(*this);
+        }
+
+        expiration_task->debounce_after(
+            [this, id] {
+              messages_[id] = "";
+              update_full_message();
+            },
+            duration_milliseconds);
+      }
 
       update_full_message();
     });
@@ -111,6 +140,7 @@ private:
   }
 
   std::map<std::string, std::string> messages_;
+  std::map<std::string, std::unique_ptr<pqrs::dispatcher::extra::debounced_task>> expiration_tasks_;
   std::string full_message_;
 };
 } // namespace krbn
