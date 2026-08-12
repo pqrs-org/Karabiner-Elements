@@ -186,6 +186,7 @@ struct SettingsConfiguration: Decodable {
       var indicateStickyModifierKeysState: Bool
     }
 
+    var modifyMouseEventsByDefault: Bool
     var parameters: Parameters
     let simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
@@ -210,6 +211,7 @@ struct SettingsConfigurationUpdate: Encodable {
       let parameters: SettingsConfiguration.SelectedProfile.ComplexModifications.Parameters
     }
 
+    let modifyMouseEventsByDefault: Bool
     let parameters: SettingsConfiguration.SelectedProfile.Parameters
     let devices: [String: SettingsConfiguration.Device]
     let complexModifications: ComplexModifications
@@ -224,6 +226,7 @@ struct SettingsConfigurationUpdate: Encodable {
     globalConfiguration = configuration.globalConfiguration
     machineSpecific = configuration.machineSpecific
     selectedProfile = SelectedProfile(
+      modifyMouseEventsByDefault: configuration.selectedProfile.modifyMouseEventsByDefault,
       parameters: configuration.selectedProfile.parameters,
       devices: configuration.selectedProfile.devices,
       complexModifications: SelectedProfile.ComplexModifications(

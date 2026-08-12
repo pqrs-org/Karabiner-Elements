@@ -333,6 +333,12 @@ cos(radian) * m;
 
     coordinate_between_properties();
   }
+  void set_ignore_default_value(bool value) {
+    helper_values_.set_default_value(ignore_,
+                                     value);
+
+    coordinate_between_properties();
+  }
 
   [[nodiscard]] const bool& get_manipulate_caps_lock_led() const {
     return manipulate_caps_lock_led_;

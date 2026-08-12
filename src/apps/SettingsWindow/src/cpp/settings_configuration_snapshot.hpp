@@ -50,6 +50,7 @@ public:
         {"profiles", profiles},
         {"selected_profile",
          {
+             {"modify_mouse_events_by_default", selected_profile.get_modify_mouse_events_by_default()},
              {"parameters",
               {
                   {"delay_milliseconds_before_open_device", selected_profile.get_parameters()->get_delay_milliseconds_before_open_device().count()},
