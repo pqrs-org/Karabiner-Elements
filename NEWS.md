@@ -6,6 +6,7 @@
     - Integrated the Multitouch Extension menu into the Karabiner-Elements menu.
       Open the Multitouch Extension settings from the Karabiner-Elements menu.
 - ✨ New Features
+    - Added the `Swap ISO layout-specific keys` configuration to Device tab.
     - Added filtering functionality to the Complex Modifications list.
     - Added support for buttons 6–8 on the ELECOM HUGE PLUS and DEFT trackballs. (Thanks to @z11i)
     - Added `--set-variables-from-stdin` option to karabiner_cli.
