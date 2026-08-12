@@ -29,6 +29,19 @@ fi
 tar -C /Applications -cf '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app.tar.gz' Karabiner-Elements.app
 
 #
+# Refresh SMAppService agent registrations after all files have been updated.
+#
+
+console_user=$(stat -f %Su /dev/console)
+console_user_uid=$(stat -f %u /dev/console)
+non_privileged_agents='/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents v2.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v2'
+
+if [ "$console_user" != 'root' ] && [ "$console_user_uid" != '0' ] && [ -x "$non_privileged_agents" ]; then
+    launchctl asuser "$console_user_uid" sudo -u "$console_user" "$non_privileged_agents" unregister-core-agents
+    launchctl asuser "$console_user_uid" sudo -u "$console_user" "$non_privileged_agents" register-core-agents
+fi
+
+#
 # Relaunch launchd-managed processes after all files have been updated
 #
 
