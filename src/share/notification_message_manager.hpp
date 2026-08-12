@@ -3,6 +3,7 @@
 #include "json_writer.hpp"
 #include "modifier_flag_manager.hpp"
 #include "types/device_id.hpp"
+#include <functional>
 #include <map>
 #include <memory>
 #include <nod/nod.hpp>
@@ -23,11 +24,9 @@ public:
   }
 
   ~notification_message_manager() override {
-    for (auto& entry : expiration_tasks_) {
-      entry.second->cancel();
-    }
-
-    detach_from_dispatcher();
+    detach_from_dispatcher([this] {
+      messages_.clear();
+    });
   }
 
   [[nodiscard]] const std::string& get_full_message() const {
@@ -51,11 +50,11 @@ public:
 
         if (modifier_flag_manager.is_sticky_active(f)) {
           enqueue_to_dispatcher([this, id, name] {
-            messages_[id] = fmt::format("sticky {0}", *name);
+            messages_[id].set_message(fmt::format("sticky {0}", *name));
           });
         } else {
           enqueue_to_dispatcher([this, id] {
-            messages_[id] = "";
+            messages_[id].set_message("");
           });
         }
       }
@@ -81,7 +80,7 @@ public:
            }) {
         if (auto name = get_modifier_flag_name(f)) {
           auto id = fmt::format("__system__sticky_{0}", *name);
-          messages_[id] = "";
+          messages_[id].set_message("");
         }
       }
 
@@ -92,27 +91,22 @@ public:
   void async_set_notification_message(const notification_message& notification_message) {
     enqueue_to_dispatcher([this, notification_message] {
       auto id = fmt::format("__user__{0}", notification_message.get_id());
+      auto& entry = messages_[id];
 
-      messages_[id] = notification_message.get_text();
-
-      if (auto it = expiration_tasks_.find(id); it != std::end(expiration_tasks_)) {
-        it->second->cancel();
-      }
+      entry.set_message(notification_message.get_text());
 
       auto duration_milliseconds = notification_message.get_duration_milliseconds();
       if (!notification_message.get_text().empty() &&
           duration_milliseconds.count() > 0) {
-        auto& expiration_task = expiration_tasks_[id];
-        if (!expiration_task) {
-          expiration_task = std::make_unique<pqrs::dispatcher::extra::debounced_task>(*this);
-        }
-
-        expiration_task->debounce_after(
+        entry.debounce_expiration(
+            *this,
             [this, id] {
-              messages_[id] = "";
+              messages_[id].set_message("");
               update_full_message();
             },
             duration_milliseconds);
+      } else {
+        entry.cancel_expiration();
       }
 
       update_full_message();
@@ -120,15 +114,50 @@ public:
   }
 
 private:
+  class message_entry final {
+  public:
+    ~message_entry() {
+      cancel_expiration();
+    }
+
+    [[nodiscard]] const std::string& get_message() const {
+      return message_;
+    }
+
+    void set_message(std::string value) {
+      message_ = std::move(value);
+    }
+
+    void cancel_expiration() {
+      if (expiration_task_) {
+        expiration_task_->cancel();
+      }
+    }
+
+    void debounce_expiration(pqrs::dispatcher::extra::dispatcher_client& dispatcher_client,
+                             std::function<void()> function,
+                             pqrs::dispatcher::duration delay) {
+      if (!expiration_task_) {
+        expiration_task_ = std::make_unique<pqrs::dispatcher::extra::debounced_task>(dispatcher_client);
+      }
+
+      expiration_task_->debounce_after(std::move(function), delay);
+    }
+
+  private:
+    std::string message_;
+    std::unique_ptr<pqrs::dispatcher::extra::debounced_task> expiration_task_;
+  };
+
   void update_full_message() {
     std::stringstream ss;
 
     for (const auto& m : messages_) {
-      if (!m.second.empty()) {
+      if (!m.second.get_message().empty()) {
         if (ss.tellp() > 0) {
           ss << "\n";
         }
-        ss << m.second;
+        ss << m.second.get_message();
       }
     }
 
@@ -139,8 +168,7 @@ private:
     }
   }
 
-  std::map<std::string, std::string> messages_;
-  std::map<std::string, std::unique_ptr<pqrs::dispatcher::extra::debounced_task>> expiration_tasks_;
+  std::map<std::string, message_entry> messages_;
   std::string full_message_;
 };
 } // namespace krbn
