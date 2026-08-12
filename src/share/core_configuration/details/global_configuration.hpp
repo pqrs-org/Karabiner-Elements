@@ -2,6 +2,7 @@
 
 #include "../configuration_json_helper.hpp"
 #include <pqrs/json.hpp>
+#include <string>
 
 namespace krbn::core_configuration::details {
 class global_configuration final {
@@ -31,6 +32,10 @@ public:
                                          enable_notification_window_,
                                          true);
 
+    helper_values_.push_back_value<std::string>("notification_window_position",
+                                                notification_window_position_,
+                                                "bottom_right");
+
     helper_values_.push_back_value<bool>("unsafe_ui",
                                          unsafe_ui_,
                                          false);
@@ -57,6 +62,8 @@ public:
     json_.erase("ask_for_confirmation_before_quitting");
 
     helper_values_.update_value(json_, error_handling);
+
+    set_notification_window_position(notification_window_position_);
   }
 
   nlohmann::json to_json() const {
@@ -102,6 +109,17 @@ public:
     enable_notification_window_ = value;
   }
 
+  [[nodiscard]] const std::string& get_notification_window_position() const {
+    return notification_window_position_;
+  }
+  void set_notification_window_position(const std::string& value) {
+    if (value == "top_right") {
+      notification_window_position_ = value;
+    } else {
+      notification_window_position_ = "bottom_right";
+    }
+  }
+
   [[nodiscard]] const bool& get_unsafe_ui() const {
     return unsafe_ui_;
   }
@@ -137,6 +155,7 @@ private:
   bool show_profile_name_in_menu_bar_;
   bool show_additional_menu_items_;
   bool enable_notification_window_;
+  std::string notification_window_position_;
   bool unsafe_ui_;
   bool filter_useless_events_from_specific_devices_;
   bool reorder_same_timestamp_input_events_to_prioritize_modifiers_;

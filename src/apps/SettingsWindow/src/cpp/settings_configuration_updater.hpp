@@ -32,6 +32,10 @@ public:
                                    "enable_notification_window",
                                    global.get_enable_notification_window(),
                                    [&](auto value) { global.set_enable_notification_window(value); });
+      changed |= apply_value<std::string>(global_json,
+                                          "notification_window_position",
+                                          global.get_notification_window_position(),
+                                          [&](const auto& value) { global.set_notification_window_position(value); });
       changed |= apply_value<bool>(global_json,
                                    "unsafe_ui",
                                    global.get_unsafe_ui(),

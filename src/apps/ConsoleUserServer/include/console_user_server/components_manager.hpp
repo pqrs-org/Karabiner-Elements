@@ -200,6 +200,7 @@ private:
                     "notificationWindowSettings",
                     {
                         {"enabled", global_configuration.get_enable_notification_window()},
+                        {"position", global_configuration.get_notification_window_position()},
                     },
                 },
                 {

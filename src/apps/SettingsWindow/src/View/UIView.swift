@@ -35,6 +35,15 @@ struct UIView: View {
             }
             .switchToggleStyle()
 
+            Picker(
+              selection: $settings.configuration.globalConfiguration.notificationWindowPosition,
+              label: Text("Position")
+            ) {
+              Text("Bottom right").tag("bottom_right")
+              Text("Top right").tag("top_right")
+            }
+            .pickerStyle(.radioGroup)
+
             Toggle(
               isOn: $settings.configuration.selectedProfile.virtualHidKeyboard
                 .indicateStickyModifierKeysState
@@ -46,8 +55,8 @@ struct UIView: View {
             VStack(alignment: .leading, spacing: 12.0) {
               Label(
                 "What is the Karabiner Notification Window?\n\n"
-                  + "Karabiner Notification Window is a window that displays messages, located at the bottom right of the screen."
-                  + "It is used for temporary alerts, displaying the status of sticky modifiers, and showing messages for some complex modifications.",
+                  + "Karabiner Notification Window is a window that displays messages."
+                  + " It is used for temporary alerts, displaying the status of sticky modifiers, and showing messages for some complex modifications.",
                 systemImage: InfoBorder.icon
               )
 

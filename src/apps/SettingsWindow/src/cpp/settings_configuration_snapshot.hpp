@@ -37,6 +37,7 @@ public:
              {"show_profile_name_in_menu_bar", global.get_show_profile_name_in_menu_bar()},
              {"show_additional_menu_items", global.get_show_additional_menu_items()},
              {"enable_notification_window", global.get_enable_notification_window()},
+             {"notification_window_position", global.get_notification_window_position()},
              {"unsafe_ui", global.get_unsafe_ui()},
              {"filter_useless_events_from_specific_devices", global.get_filter_useless_events_from_specific_devices()},
              {"reorder_same_timestamp_input_events_to_prioritize_modifiers", global.get_reorder_same_timestamp_input_events_to_prioritize_modifiers()},

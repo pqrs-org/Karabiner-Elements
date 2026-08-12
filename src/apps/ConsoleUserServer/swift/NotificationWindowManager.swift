@@ -55,10 +55,21 @@ final class NotificationWindowManager: NSObject {
   func updateWindowsFrameOrigin(_ screens: [NSScreen] = NSScreen.screens) {
     for (index, window) in screenWindows.enumerated() {
       let frame = screens[index].visibleFrame
+      let windowSize = window.contentView?.fittingSize ?? NSSize(width: 410.0, height: 70.0)
+      let position = ConsoleUserServerUIState.shared.notificationWindowSettings.position
+      let x = frame.origin.x + frame.width - windowSize.width
+      let y: CGFloat
+
+      if position == "top_right" {
+        y = frame.origin.y + frame.height - windowSize.height - 10.0
+      } else {
+        y = frame.origin.y + 10.0
+      }
+
       window.setFrameOrigin(
         NSPoint(
-          x: frame.origin.x + frame.width - 410.0,
-          y: frame.origin.y + 10.0))
+          x: x,
+          y: y))
     }
   }
 
@@ -67,6 +78,11 @@ final class NotificationWindowManager: NSObject {
     let hide =
       !state.configurationLoaded || !state.notificationWindowSettings.enabled
       || state.notificationMessage.isEmpty
+
+    if !hide {
+      updateWindowsFrameOrigin()
+    }
+
     for window in screenWindows {
       if hide {
         window.orderOut(self)
