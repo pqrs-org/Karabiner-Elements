@@ -11,6 +11,7 @@ struct UIStatePayload: Decodable {
 
   struct NotificationWindowSettings: Decodable {
     var enabled = false
+    var position = "bottom_right"
   }
 
   struct Profile: Decodable, Identifiable {

@@ -20,6 +20,7 @@ struct SettingsConfiguration: Decodable {
     var showProfileNameInMenuBar: Bool
     var showAdditionalMenuItems: Bool
     var enableNotificationWindow: Bool
+    var notificationWindowPosition: String
     var unsafeUi: Bool
     var filterUselessEventsFromSpecificDevices: Bool
     var reorderSameTimestampInputEventsToPrioritizeModifiers: Bool
