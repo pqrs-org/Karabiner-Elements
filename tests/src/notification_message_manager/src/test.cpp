@@ -97,5 +97,46 @@ int main() {
     expect(c.get_manager().get_full_message().empty());
   };
 
+  "notification_message_manager duration cancel"_test = [] {
+    auto c = manager_test_context();
+
+    c.get_manager().async_set_notification_message(
+        make_notification_message("first", std::chrono::milliseconds(50)));
+    c.flush_immediate_dispatcher_jobs();
+
+    c.wait_until(std::chrono::milliseconds(40));
+    c.get_manager().async_set_notification_message(
+        make_notification_message("second", std::chrono::milliseconds(0)));
+    c.flush_immediate_dispatcher_jobs();
+
+    c.wait_until(std::chrono::milliseconds(60));
+    expect(c.get_manager().get_full_message() == "second");
+  };
+
+  "notification_message_manager duration reset after clear"_test = [] {
+    auto c = manager_test_context();
+
+    c.get_manager().async_set_notification_message(
+        make_notification_message("first", std::chrono::milliseconds(50)));
+    c.flush_immediate_dispatcher_jobs();
+
+    c.wait_until(std::chrono::milliseconds(20));
+    c.get_manager().async_set_notification_message(
+        make_notification_message("", std::chrono::milliseconds(0)));
+    c.flush_immediate_dispatcher_jobs();
+    expect(c.get_manager().get_full_message().empty());
+
+    c.wait_until(std::chrono::milliseconds(30));
+    c.get_manager().async_set_notification_message(
+        make_notification_message("second", std::chrono::milliseconds(50)));
+    c.flush_immediate_dispatcher_jobs();
+
+    c.wait_until(std::chrono::milliseconds(60));
+    expect(c.get_manager().get_full_message() == "second");
+
+    c.wait_until(std::chrono::milliseconds(80));
+    expect(c.get_manager().get_full_message().empty());
+  };
+
   return 0;
 }
