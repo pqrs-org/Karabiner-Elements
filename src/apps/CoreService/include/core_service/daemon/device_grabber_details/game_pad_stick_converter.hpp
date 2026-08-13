@@ -462,7 +462,7 @@ private:
 
       } else if (!xy_.continued_movement() &&
                  !wheels_.continued_movement()) {
-        // Stop continued_movement when both the xy stick and wheels stick are not in the continued movement position.​
+        // Stop continued_movement when both the xy stick and wheels stick are not in the continued movement position.
         continued_movement_mode_ = continued_movement_mode::none;
         continued_movement_timer_.stop();
       }
