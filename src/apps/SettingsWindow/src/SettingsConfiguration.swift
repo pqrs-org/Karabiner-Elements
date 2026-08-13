@@ -113,6 +113,7 @@ struct SettingsConfiguration: Decodable {
     let id = UUID()
     var index: Int
     let description: String
+    let notes: [String]
     var enabled: Bool
     let codeString: String
     let searchText: String
@@ -121,6 +122,7 @@ struct SettingsConfiguration: Decodable {
     private enum CodingKeys: String, CodingKey {
       case index
       case description
+      case notes
       case enabled
       case codeString
       case searchText
@@ -130,6 +132,7 @@ struct SettingsConfiguration: Decodable {
     init(
       index: Int,
       description: String,
+      notes: [String],
       enabled: Bool,
       codeString: String,
       searchText: String,
@@ -137,6 +140,7 @@ struct SettingsConfiguration: Decodable {
     ) {
       self.index = index
       self.description = description
+      self.notes = notes
       self.enabled = enabled
       self.codeString = codeString
       self.searchText = searchText

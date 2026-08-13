@@ -46,18 +46,26 @@ struct ComplexModificationsAssetsView: View {
                 VStack(alignment: .leading, spacing: 4.0) {
                   ForEach($assetFile.assetRules) { $assetRule in
                     HStack(alignment: .center, spacing: 16.0) {
-                      Text(assetRule.description)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .if(hoverRuleId == assetRule.id) {
-                          $0.overlay(
-                            RoundedRectangle(cornerRadius: 2)
-                              .inset(by: -4)
-                              .stroke(
-                                Color.accentColor,
-                                lineWidth: 2
-                              )
-                          )
+                      VStack(alignment: .leading, spacing: 2.0) {
+                        Text(assetRule.description)
+
+                        ForEach(assetRule.notes.indices, id: \.self) { index in
+                          Text(assetRule.notes[index])
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                         }
+                      }
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                      .if(hoverRuleId == assetRule.id) {
+                        $0.overlay(
+                          RoundedRectangle(cornerRadius: 2)
+                            .inset(by: -4)
+                            .stroke(
+                              Color.accentColor,
+                              lineWidth: 2
+                            )
+                        )
+                      }
 
                       Button(
                         action: {

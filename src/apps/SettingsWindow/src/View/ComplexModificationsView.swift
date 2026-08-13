@@ -54,6 +54,7 @@ struct ComplexModificationsView: View {
             editingRule = SettingsConfiguration.ComplexModificationsRule(
               index: -1,
               description: "Edit the following setting and press the Save button.",
+              notes: [],
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
               searchText: "",
@@ -78,6 +79,7 @@ struct ComplexModificationsView: View {
             editingRule = SettingsConfiguration.ComplexModificationsRule(
               index: -1,
               description: "Edit the following script and press the Save button.",
+              notes: [],
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
               searchText: "",
@@ -153,11 +155,19 @@ struct ComplexModificationsView: View {
               }
 
               HStack {
-                Text(complexModificationRule.description)
-                  .frame(maxWidth: .infinity, alignment: .leading)
-                  .if(!complexModificationRule.enabled) {
-                    $0.foregroundColor(.gray)
+                VStack(alignment: .leading, spacing: 2.0) {
+                  Text(complexModificationRule.description)
+
+                  ForEach(complexModificationRule.notes.indices, id: \.self) { index in
+                    Text(complexModificationRule.notes[index])
+                      .font(.caption)
+                      .foregroundColor(.secondary)
                   }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .if(!complexModificationRule.enabled) {
+                  $0.foregroundColor(.gray)
+                }
 
                 if !complexModificationRule.enabled {
                   Text("disabled")

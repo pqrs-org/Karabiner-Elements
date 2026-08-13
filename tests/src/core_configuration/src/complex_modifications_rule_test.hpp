@@ -18,6 +18,7 @@ void run_complex_modifications_rule_test() {
 
 {
   "description": "example",
+  "notes": ["example note 1", "example note 2"],
   "manipulators": [
     {
       "from": { "key_code": "f12" },
@@ -40,6 +41,7 @@ void run_complex_modifications_rule_test() {
         expect(1 == rule.get_manipulators().size());
         expect(rule.get_enabled());
         expect("example"s == rule.get_description());
+        expect(std::vector<std::string>{"example note 1", "example note 2"} == rule.get_notes());
         expect(rule_t::code_type::json == rule.get_code_type());
         expect(krbn::json_utility::dump(json) == rule.get_code_string());
         expect(json == rule.to_json());
@@ -54,6 +56,7 @@ void run_complex_modifications_rule_test() {
         expect(1 == rule.get_manipulators().size());
         expect(rule.get_enabled());
         expect("example"s == rule.get_description());
+        expect(std::vector<std::string>{"example note 1", "example note 2"} == rule.get_notes());
         expect(rule_t::code_type::json == rule.get_code_type());
         expect(krbn::json_utility::dump(json) == rule.get_code_string());
         expect(json == rule.to_json());

@@ -37,6 +37,7 @@ public:
             {"file_index", file_index},
             {"rule_index", rule_index},
             {"description", rules[rule_index]->get_description()},
+            {"notes", rules[rule_index]->get_notes()},
         });
       }
 

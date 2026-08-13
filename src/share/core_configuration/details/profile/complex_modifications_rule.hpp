@@ -120,6 +120,14 @@ public:
 
         description_ = value.get<std::string>();
 
+      } else if (key == "notes") {
+        pqrs::json::requires_array(value, "`" + key + "`");
+
+        for (const auto& note : value) {
+          pqrs::json::requires_string(note, "`" + key + "` entry");
+          notes_.push_back(note.get<std::string>());
+        }
+
       } else if (key == "available_since") {
         // `available_since` is used in <https://ke-complex-modifications.pqrs.org/>.
         pqrs::json::requires_string(value, "`" + key + "`");
@@ -144,6 +152,9 @@ public:
     }
 
     append_search_text(description_, search_text_);
+    for (const auto& note : notes_) {
+      append_search_text(note, search_text_);
+    }
     for (const auto& manipulator : manipulators_) {
       append_search_text(manipulator->to_json().dump(),
                          search_text_);
@@ -186,6 +197,10 @@ public:
 
   [[nodiscard]] const std::string& get_description() const {
     return description_;
+  }
+
+  [[nodiscard]] const std::vector<std::string>& get_notes() const {
+    return notes_;
   }
 
   [[nodiscard]] const code_type get_code_type() const {
@@ -241,11 +256,12 @@ private:
   std::vector<pqrs::not_null_shared_ptr_t<manipulator>> manipulators_;
   bool enabled_;
   std::string description_;
+  std::vector<std::string> notes_;
   code_type code_type_;
   std::string code_string_;
-  // Contains the rule description and the JSON representation of each
-  // resolved manipulator. Top-level metadata is intentionally omitted to avoid
-  // broad matches on common names such as `enabled`.
+  // Contains the rule description, notes, and the JSON representation of each
+  // resolved manipulator. Other top-level metadata is intentionally omitted to
+  // avoid broad matches on common names such as `enabled`.
   std::string search_text_;
   configuration_json_helper::helper_values helper_values_;
 };
