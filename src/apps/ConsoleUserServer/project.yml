@@ -38,7 +38,9 @@ targets:
       - path: ../../apps/share/swift/KarabinerAppHelper.swift
       - path: ../../apps/share/swift/ApplicationTermination.swift
       - path: ../../apps/share/swift/Views/MouseInsideModifier.swift
+      - path: ../../apps/share/swift/Views/Color+Extensions.swift
       - path: ../../apps/share/swift/Views/View+Extensions.swift
+      - path: ../../apps/share/swift/NSImage+Extensions.swift
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
       - path: ../../apps/share/Resources/app.icns

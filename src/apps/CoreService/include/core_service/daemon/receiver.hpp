@@ -390,6 +390,10 @@ private:
 
           application_launcher::launch_app_icon_switcher();
 
+          if (console_user_server_peer_) {
+            console_user_server_peer_->async_app_icon_changed(number);
+          }
+
           async_respond_none(peer_id,
                              request_id);
           break;

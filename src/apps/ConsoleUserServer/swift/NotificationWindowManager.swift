@@ -33,7 +33,8 @@ final class NotificationWindowManager: NSObject {
         backing: .buffered,
         defer: false)
 
-      mainWindow.contentView = NSHostingView(rootView: NotificationView())
+      mainWindow.contentView = NSHostingView(
+        rootView: NotificationView(maximumWidth: .greatestFiniteMagnitude))
       mainWindow.backgroundColor = .clear
       mainWindow.isOpaque = false
       mainWindow.level = .statusBar
@@ -53,16 +54,56 @@ final class NotificationWindowManager: NSObject {
   }
 
   func updateWindowsFrameOrigin(_ screens: [NSScreen] = NSScreen.screens) {
+    guard screenWindows.count == screens.count else {
+      updateWindows()
+      return
+    }
+
     for (index, window) in screenWindows.enumerated() {
-      let frame = screens[index].visibleFrame
-      let windowSize = window.contentView?.fittingSize ?? NSSize(width: 410.0, height: 70.0)
-      let position = ConsoleUserServerUIState.shared.notificationWindowSettings.position
-      let x = frame.origin.x + frame.width - windowSize.width
+      let settings = ConsoleUserServerUIState.shared.notificationWindowSettings
+      let screen = screens[index]
+      let frame: NSRect
+      if settings.respectScreenVisibleFrame {
+        frame = screen.visibleFrame
+      } else {
+        // Use the Dock area while keeping the notification below the menu bar.
+        frame = NSRect(
+          x: screen.frame.minX,
+          y: screen.frame.minY,
+          width: screen.frame.width,
+          height: screen.visibleFrame.maxY - screen.frame.minY)
+      }
+      guard let contentView = window.contentView else {
+        continue
+      }
+
+      if let hostingView = contentView as? NSHostingView<NotificationView> {
+        let maximumWidth = max(1.0, frame.width - 20.0)
+        if hostingView.rootView.maximumWidth != maximumWidth {
+          hostingView.rootView = NotificationView(maximumWidth: maximumWidth)
+        }
+      }
+
+      contentView.layoutSubtreeIfNeeded()
+      let windowSize = contentView.fittingSize
+      if window.contentLayoutRect.size != windowSize {
+        window.setContentSize(windowSize)
+      }
+      let x: CGFloat
       let y: CGFloat
 
-      if position == "top_right" {
+      switch settings.position {
+      case .topLeft:
+        x = frame.origin.x + 10.0
         y = frame.origin.y + frame.height - windowSize.height - 10.0
-      } else {
+      case .topRight:
+        x = frame.origin.x + frame.width - windowSize.width - 10.0
+        y = frame.origin.y + frame.height - windowSize.height - 10.0
+      case .bottomLeft:
+        x = frame.origin.x + 10.0
+        y = frame.origin.y + 10.0
+      case .bottomRight:
+        x = frame.origin.x + frame.width - windowSize.width - 10.0
         y = frame.origin.y + 10.0
       }
 

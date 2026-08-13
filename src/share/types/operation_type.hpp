@@ -19,6 +19,7 @@ enum class operation_type : uint8_t {
   // core_service (daemon) -> console_user_server
   core_service_daemon_server_bound,
   core_service_daemon_state,
+  app_icon_changed,
   check_for_updates,
   shell_command_execution,
   send_user_command,
@@ -69,6 +70,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::input_source_changed, "input_source_changed"},
         {operation_type::core_service_daemon_server_bound, "core_service_daemon_server_bound"},
         {operation_type::core_service_daemon_state, "core_service_daemon_state"},
+        {operation_type::app_icon_changed, "app_icon_changed"},
         {operation_type::check_for_updates, "check_for_updates"},
         {operation_type::shell_command_execution, "shell_command_execution"},
         {operation_type::send_user_command, "send_user_command"},

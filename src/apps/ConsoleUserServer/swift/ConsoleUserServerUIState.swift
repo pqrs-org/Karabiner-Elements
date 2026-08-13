@@ -10,8 +10,29 @@ struct UIStatePayload: Decodable {
   }
 
   struct NotificationWindowSettings: Decodable {
+    enum Position: String, Decodable {
+      case topLeft = "top_left"
+      case topRight = "top_right"
+      case bottomLeft = "bottom_left"
+      case bottomRight = "bottom_right"
+    }
+
+    struct Colors: Decodable {
+      struct Theme: Decodable {
+        var backgroundColor = "system"
+        var textColor = "system"
+      }
+
+      var light = Theme()
+      var dark = Theme()
+    }
+
     var enabled = false
-    var position = "bottom_right"
+    var position = Position.bottomRight
+    var respectScreenVisibleFrame = true
+    var showIcon = true
+    var fontSize = 13
+    var colors = Colors()
   }
 
   struct Profile: Decodable, Identifiable {
@@ -21,6 +42,7 @@ struct UIStatePayload: Decodable {
   }
 
   let configurationLoaded: Bool
+  let appIconNumber: Int
   let menuSettings: MenuSettings
   let notificationWindowSettings: NotificationWindowSettings
   let profiles: [Profile]
@@ -50,6 +72,7 @@ final class ConsoleUserServerUIState: ObservableObject {
   static let shared = ConsoleUserServerUIState()
 
   @Published private(set) var configurationLoaded = false
+  @Published private(set) var appIconNumber = 0
   @Published private(set) var menuSettings = UIStatePayload.MenuSettings()
   @Published private(set) var notificationWindowSettings =
     UIStatePayload.NotificationWindowSettings()
@@ -74,6 +97,7 @@ final class ConsoleUserServerUIState: ObservableObject {
   }
 
   fileprivate func apply(_ payload: UIStatePayload) {
+    appIconNumber = payload.appIconNumber
     menuSettings = payload.menuSettings
     notificationWindowSettings = payload.notificationWindowSettings
     profiles = payload.profiles

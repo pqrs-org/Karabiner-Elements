@@ -1,6 +1,9 @@
 #pragma once
 
 #include "../configuration_json_helper.hpp"
+#include "notification_window_colors.hpp"
+#include <algorithm>
+#include <memory>
 #include <pqrs/json.hpp>
 #include <string>
 
@@ -11,7 +14,8 @@ public:
 
   global_configuration(const nlohmann::json& json,
                        error_handling error_handling)
-      : json_(json) {
+      : json_(json),
+        notification_window_colors_(std::make_shared<notification_window_colors>(nlohmann::json::object(), error_handling)) {
     helper_values_.push_back_value<bool>("check_for_updates",
                                          check_for_updates_,
                                          true);
@@ -35,6 +39,21 @@ public:
     helper_values_.push_back_value<std::string>("notification_window_position",
                                                 notification_window_position_,
                                                 "bottom_right");
+
+    helper_values_.push_back_value<bool>("notification_window_respect_screen_visible_frame",
+                                         notification_window_respect_screen_visible_frame_,
+                                         true);
+
+    helper_values_.push_back_value<bool>("notification_window_show_icon",
+                                         notification_window_show_icon_,
+                                         true);
+
+    helper_values_.push_back_value<int>("notification_window_font_size",
+                                        notification_window_font_size_,
+                                        13);
+
+    helper_values_.push_back_object<notification_window_colors>("notification_window_colors",
+                                                                notification_window_colors_);
 
     helper_values_.push_back_value<bool>("unsafe_ui",
                                          unsafe_ui_,
@@ -64,6 +83,7 @@ public:
     helper_values_.update_value(json_, error_handling);
 
     set_notification_window_position(notification_window_position_);
+    set_notification_window_font_size(notification_window_font_size_);
   }
 
   nlohmann::json to_json() const {
@@ -113,11 +133,39 @@ public:
     return notification_window_position_;
   }
   void set_notification_window_position(const std::string& value) {
-    if (value == "top_right") {
+    if (value == "top_left" ||
+        value == "top_right" ||
+        value == "bottom_left" ||
+        value == "bottom_right") {
       notification_window_position_ = value;
     } else {
       notification_window_position_ = "bottom_right";
     }
+  }
+
+  [[nodiscard]] const bool& get_notification_window_respect_screen_visible_frame() const {
+    return notification_window_respect_screen_visible_frame_;
+  }
+  void set_notification_window_respect_screen_visible_frame(bool value) {
+    notification_window_respect_screen_visible_frame_ = value;
+  }
+
+  [[nodiscard]] const bool& get_notification_window_show_icon() const {
+    return notification_window_show_icon_;
+  }
+  void set_notification_window_show_icon(bool value) {
+    notification_window_show_icon_ = value;
+  }
+
+  [[nodiscard]] const int& get_notification_window_font_size() const {
+    return notification_window_font_size_;
+  }
+  void set_notification_window_font_size(int value) {
+    notification_window_font_size_ = std::clamp(value, 8, 64);
+  }
+
+  [[nodiscard]] notification_window_colors& get_notification_window_colors() const {
+    return *notification_window_colors_;
   }
 
   [[nodiscard]] const bool& get_unsafe_ui() const {
@@ -156,6 +204,10 @@ private:
   bool show_additional_menu_items_;
   bool enable_notification_window_;
   std::string notification_window_position_;
+  bool notification_window_respect_screen_visible_frame_;
+  bool notification_window_show_icon_;
+  int notification_window_font_size_;
+  pqrs::not_null_shared_ptr_t<notification_window_colors> notification_window_colors_;
   bool unsafe_ui_;
   bool filter_useless_events_from_specific_devices_;
   bool reorder_same_timestamp_input_events_to_prioritize_modifiers_;

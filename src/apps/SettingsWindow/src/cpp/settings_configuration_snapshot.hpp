@@ -38,6 +38,22 @@ public:
              {"show_additional_menu_items", global.get_show_additional_menu_items()},
              {"enable_notification_window", global.get_enable_notification_window()},
              {"notification_window_position", global.get_notification_window_position()},
+             {"notification_window_respect_screen_visible_frame", global.get_notification_window_respect_screen_visible_frame()},
+             {"notification_window_show_icon", global.get_notification_window_show_icon()},
+             {"notification_window_font_size", global.get_notification_window_font_size()},
+             {"notification_window_colors",
+              {
+                  {"light",
+                   {
+                       {"background_color", global.get_notification_window_colors().get_light().get_background_color()},
+                       {"text_color", global.get_notification_window_colors().get_light().get_text_color()},
+                   }},
+                  {"dark",
+                   {
+                       {"background_color", global.get_notification_window_colors().get_dark().get_background_color()},
+                       {"text_color", global.get_notification_window_colors().get_dark().get_text_color()},
+                   }},
+              }},
              {"unsafe_ui", global.get_unsafe_ui()},
              {"filter_useless_events_from_specific_devices", global.get_filter_useless_events_from_specific_devices()},
              {"reorder_same_timestamp_input_events_to_prioritize_modifiers", global.get_reorder_same_timestamp_input_events_to_prioritize_modifiers()},

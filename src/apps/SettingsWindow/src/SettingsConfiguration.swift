@@ -15,12 +15,33 @@ struct SettingsConfiguration: Decodable {
   }
 
   struct GlobalConfiguration: Codable {
+    enum NotificationWindowPosition: String, Codable {
+      case topLeft = "top_left"
+      case topRight = "top_right"
+      case bottomLeft = "bottom_left"
+      case bottomRight = "bottom_right"
+    }
+
+    struct NotificationWindowColors: Codable {
+      struct Theme: Codable {
+        var backgroundColor: String
+        var textColor: String
+      }
+
+      var light: Theme
+      var dark: Theme
+    }
+
     var checkForUpdates: Bool
     var showInMenuBar: Bool
     var showProfileNameInMenuBar: Bool
     var showAdditionalMenuItems: Bool
     var enableNotificationWindow: Bool
-    var notificationWindowPosition: String
+    var notificationWindowPosition: NotificationWindowPosition
+    var notificationWindowRespectScreenVisibleFrame: Bool
+    var notificationWindowShowIcon: Bool
+    var notificationWindowFontSize: Int
+    var notificationWindowColors: NotificationWindowColors
     var unsafeUi: Bool
     var filterUselessEventsFromSpecificDevices: Bool
     var reorderSameTimestampInputEventsToPrioritizeModifiers: Bool

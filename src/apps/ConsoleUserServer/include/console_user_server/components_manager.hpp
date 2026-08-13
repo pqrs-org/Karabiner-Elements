@@ -2,6 +2,7 @@
 
 // `krbn::console_user_server::components_manager` can be used safely in a multi-threaded environment.
 
+#include "app_icon.hpp"
 #include "application_launcher.hpp"
 #include "console_user_id_changed_client.hpp"
 #include "console_user_server/ui_bridge.hpp"
@@ -52,7 +53,7 @@ public:
           services_utility::unregister_multitouch_extension_agent();
         }
 
-        publish_ui_state(*core_configuration);
+        publish_ui_state(core_configuration.get());
       }
     });
 
@@ -61,7 +62,8 @@ public:
           load_state == core_configuration::core_configuration::load_state::permission_error);
 
       if (load_state != core_configuration::core_configuration::load_state::loaded) {
-        publish_unloaded_ui_state();
+        core_configuration_ = nullptr;
+        publish_ui_state(nullptr);
       }
     });
 
@@ -69,7 +71,7 @@ public:
       if (core_configuration_) {
         core_configuration_->select_profile(index);
         core_configuration_->sync_save_to_file();
-        publish_ui_state(*core_configuration_);
+        publish_ui_state(core_configuration_.get());
       }
     });
 
@@ -120,7 +122,7 @@ public:
   ~components_manager() override {
     detach_from_dispatcher([this] {
       stop_core_service_daemon_client();
-      publish_unloaded_ui_state();
+      publish_ui_state(nullptr);
 
       receiver_ = nullptr;
       software_function_handler_ = nullptr;
@@ -147,37 +149,26 @@ public:
   }
 
 private:
-  void publish_unloaded_ui_state() const {
-    ui_bridge_->set_ui_state(
-        nlohmann::json({
-                           {"configurationLoaded", false},
-                           {"menuSettings",
-                            {
-                                {"showIcon", false},
-                                {"showProfileName", false},
-                                {"showAdditionalMenuItems", false},
-                                {"enableMultitouchExtension", false},
-                            }},
-                           {"notificationWindowSettings",
-                            {
-                                {"enabled", false},
-                            }},
-                           {"profiles", nlohmann::json::array()},
-                       })
-            .dump());
-  }
+  void publish_ui_state(const core_configuration::core_configuration* configuration) const {
+    const auto configuration_loaded = configuration != nullptr;
+    const core_configuration::details::global_configuration default_global_configuration(
+        nlohmann::json::object(),
+        core_configuration::error_handling::loose);
+    const auto& global_configuration = configuration_loaded
+                                           ? configuration->get_global_configuration()
+                                           : default_global_configuration;
 
-  void publish_ui_state(const core_configuration::core_configuration& core_configuration) const {
-    const auto& global_configuration = core_configuration.get_global_configuration();
     nlohmann::json profiles = nlohmann::json::array();
-    size_t index = 0;
-    for (const auto& profile : core_configuration.get_profiles()) {
-      profiles.push_back({
-          {"id", index},
-          {"name", profile->get_name()},
-          {"selected", profile->get_selected()},
-      });
-      ++index;
+    if (configuration) {
+      size_t index = 0;
+      for (const auto& profile : configuration->get_profiles()) {
+        profiles.push_back({
+            {"id", index},
+            {"name", profile->get_name()},
+            {"selected", profile->get_selected()},
+        });
+        ++index;
+      }
     }
 
     ui_bridge_->set_ui_state(
@@ -185,22 +176,42 @@ private:
             {
                 {
                     "configurationLoaded",
-                    true,
+                    configuration_loaded,
+                },
+                {
+                    "appIconNumber",
+                    app_icon(constants::get_system_app_icon_configuration_file_path()).get_number(),
                 },
                 {
                     "menuSettings",
                     {
-                        {"showIcon", global_configuration.get_show_in_menu_bar()},
-                        {"showProfileName", global_configuration.get_show_profile_name_in_menu_bar()},
-                        {"showAdditionalMenuItems", global_configuration.get_show_additional_menu_items()},
-                        {"enableMultitouchExtension", core_configuration.get_machine_specific().get_entry().get_enable_multitouch_extension()},
+                        {"showIcon", configuration_loaded && global_configuration.get_show_in_menu_bar()},
+                        {"showProfileName", configuration_loaded && global_configuration.get_show_profile_name_in_menu_bar()},
+                        {"showAdditionalMenuItems", configuration_loaded && global_configuration.get_show_additional_menu_items()},
+                        {"enableMultitouchExtension", configuration && configuration->get_machine_specific().get_entry().get_enable_multitouch_extension()},
                     },
                 },
                 {
                     "notificationWindowSettings",
                     {
-                        {"enabled", global_configuration.get_enable_notification_window()},
+                        {"enabled", configuration_loaded && global_configuration.get_enable_notification_window()},
                         {"position", global_configuration.get_notification_window_position()},
+                        {"respectScreenVisibleFrame", global_configuration.get_notification_window_respect_screen_visible_frame()},
+                        {"showIcon", global_configuration.get_notification_window_show_icon()},
+                        {"fontSize", global_configuration.get_notification_window_font_size()},
+                        {"colors",
+                         {
+                             {"light",
+                              {
+                                  {"backgroundColor", global_configuration.get_notification_window_colors().get_light().get_background_color()},
+                                  {"textColor", global_configuration.get_notification_window_colors().get_light().get_text_color()},
+                              }},
+                             {"dark",
+                              {
+                                  {"backgroundColor", global_configuration.get_notification_window_colors().get_dark().get_background_color()},
+                                  {"textColor", global_configuration.get_notification_window_colors().get_dark().get_text_color()},
+                              }},
+                         }},
                     },
                 },
                 {
@@ -240,6 +251,11 @@ private:
 
     core_service_daemon_client_->received.connect([this](auto&& operation_type,
                                                          auto&& json) {
+      if (operation_type == krbn::operation_type::app_icon_changed) {
+        publish_ui_state(core_configuration_.get());
+        return;
+      }
+
       if (operation_type == krbn::operation_type::notification_message) {
         ui_bridge_->set_notification_message(json.at("notification_message").template get<std::string>());
         return;

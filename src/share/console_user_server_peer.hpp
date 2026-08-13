@@ -39,6 +39,13 @@ public:
     });
   }
 
+  void async_app_icon_changed(int number) {
+    async_request(nlohmann::json{
+        {"operation_type", operation_type::app_icon_changed},
+        {"number", number},
+    });
+  }
+
   void async_check_for_updates(bool enabled) {
     async_request(nlohmann::json{
         {"operation_type", operation_type::check_for_updates},

@@ -52,8 +52,6 @@ targets:
           - '*.plist.in'
       - path: ../share/Resources/app.icns
       - path: ../share/Resources/icons
-        excludes:
-          - '*.icns'
     dependencies:
       - package: AsyncAlgorithms
       - package: CodeEditor

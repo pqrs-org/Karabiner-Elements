@@ -10,16 +10,27 @@ public class AppIcon: Identifiable, Equatable {
   init(_ id: Int32) {
     self.id = id
 
-    karabinerElementsThumbnailImage = NSImage(
-      named: String(format: "%03d-KarabinerElements.png", id))
-    eventViewerThumbnailImage = NSImage(
-      named: String(format: "%03d-EventViewer.png", id))
-    multitouchExtensionThumbnailImage = NSImage(
-      named: String(format: "%03d-MultitouchExtension.png", id))
+    karabinerElementsThumbnailImage = Self.loadIcon(
+      named: String(format: "%03d-KarabinerElements", id))
+    eventViewerThumbnailImage = Self.loadIcon(
+      named: String(format: "%03d-EventViewer", id))
+    multitouchExtensionThumbnailImage = Self.loadIcon(
+      named: String(format: "%03d-MultitouchExtension", id))
   }
 
   nonisolated public static func == (lhs: AppIcon, rhs: AppIcon) -> Bool {
     lhs.id == rhs.id
+  }
+
+  private static func loadIcon(named name: String) -> NSImage? {
+    guard
+      let url = Bundle.main.url(forResource: name, withExtension: "icns"),
+      let image = NSImage(contentsOf: url)
+    else {
+      return nil
+    }
+
+    return image.removingTransparentPadding()
   }
 }
 

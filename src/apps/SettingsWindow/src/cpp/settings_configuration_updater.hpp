@@ -37,6 +37,51 @@ public:
                                           global.get_notification_window_position(),
                                           [&](const auto& value) { global.set_notification_window_position(value); });
       changed |= apply_value<bool>(global_json,
+                                   "notification_window_respect_screen_visible_frame",
+                                   global.get_notification_window_respect_screen_visible_frame(),
+                                   [&](auto value) { global.set_notification_window_respect_screen_visible_frame(value); });
+      changed |= apply_value<bool>(global_json,
+                                   "notification_window_show_icon",
+                                   global.get_notification_window_show_icon(),
+                                   [&](auto value) { global.set_notification_window_show_icon(value); });
+      changed |= apply_value<int>(global_json,
+                                  "notification_window_font_size",
+                                  global.get_notification_window_font_size(),
+                                  [&](auto value) { global.set_notification_window_font_size(value); });
+      if (const auto colors_it = global_json.find("notification_window_colors");
+          colors_it != global_json.end()) {
+        const auto& colors_json = *colors_it;
+        auto& colors = global.get_notification_window_colors();
+
+        if (const auto light_it = colors_json.find("light");
+            light_it != colors_json.end()) {
+          const auto& light_json = *light_it;
+          auto& light = colors.get_light();
+          changed |= apply_value<std::string>(light_json,
+                                              "background_color",
+                                              light.get_background_color(),
+                                              [&](const auto& value) { light.set_background_color(value); });
+          changed |= apply_value<std::string>(light_json,
+                                              "text_color",
+                                              light.get_text_color(),
+                                              [&](const auto& value) { light.set_text_color(value); });
+        }
+
+        if (const auto dark_it = colors_json.find("dark");
+            dark_it != colors_json.end()) {
+          const auto& dark_json = *dark_it;
+          auto& dark = colors.get_dark();
+          changed |= apply_value<std::string>(dark_json,
+                                              "background_color",
+                                              dark.get_background_color(),
+                                              [&](const auto& value) { dark.set_background_color(value); });
+          changed |= apply_value<std::string>(dark_json,
+                                              "text_color",
+                                              dark.get_text_color(),
+                                              [&](const auto& value) { dark.set_text_color(value); });
+        }
+      }
+      changed |= apply_value<bool>(global_json,
                                    "unsafe_ui",
                                    global.get_unsafe_ui(),
                                    [&](auto value) { global.set_unsafe_ui(value); });
