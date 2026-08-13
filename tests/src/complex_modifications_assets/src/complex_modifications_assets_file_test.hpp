@@ -23,4 +23,14 @@ void run_complex_modifications_assets_file_test() {
       expect(error_messages == assets_json_entry.at("errors").get<std::vector<std::string>>());
     }
   };
+
+  "examples"_test = [] {
+    auto file = krbn::complex_modifications_assets_file("../../../files/complex_modifications_rules_example.json",
+                                                        krbn::core_configuration::error_handling::strict);
+
+    expect(file.get_title() == "Examples");
+    expect(file.get_rules().size() == 4);
+    expect(file.get_rules().back()->get_description() == "Change control-left click to command-left click");
+    expect(file.lint().empty());
+  };
 }

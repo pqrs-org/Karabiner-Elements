@@ -133,6 +133,30 @@
                     ]
                 }
             ]
+        },
+        {
+            "description": "Change control-left click to command-left click",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "pointing_button": "button1",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "pointing_button": "button1",
+                            "modifiers": [
+                                "command"
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
