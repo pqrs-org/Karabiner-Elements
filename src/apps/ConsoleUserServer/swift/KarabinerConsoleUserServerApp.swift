@@ -16,7 +16,11 @@ struct KarabinerConsoleUserServerApp: App {
   var body: some Scene {
     MenuBarExtra(
       isInserted: Binding(
-        get: { state.menuVisible },
+        // Keep the menu bar extra inserted while the configuration is loading.
+        // If MenuBarExtra is initially created with isInserted == false and inserted only after
+        // the asynchronous configuration load completes, macOS does not persist its position
+        // after the user Command-drags it in the menu bar.
+        get: { !state.configurationLoaded || state.menuVisible },
         set: { _ in }
       ),
       content: {
