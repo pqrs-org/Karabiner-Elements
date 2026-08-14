@@ -2,6 +2,11 @@ import SwiftUI
 
 @MainActor
 public class AppIcon: Identifiable, Equatable {
+  private static let appIconSwitcherBundle = Bundle(
+    path:
+      "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app"
+  )
+
   nonisolated public let id: Int32
   public var karabinerElementsThumbnailImage: NSImage?
   public var eventViewerThumbnailImage: NSImage?
@@ -24,7 +29,7 @@ public class AppIcon: Identifiable, Equatable {
 
   private static func loadIcon(named name: String) -> NSImage? {
     guard
-      let url = Bundle.main.url(forResource: name, withExtension: "icns"),
+      let url = appIconSwitcherBundle?.url(forResource: name, withExtension: "icns"),
       let image = NSImage(contentsOf: url)
     else {
       return nil
