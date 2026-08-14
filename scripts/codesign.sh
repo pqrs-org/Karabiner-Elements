@@ -6,8 +6,36 @@ set -e # forbid command failure
 readonly PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
-trap "echo -ne '\033[0m'" EXIT
-echo -ne '\033[33;40m'
+trap "printf '\033[0m'" EXIT
+
+set_normal_color() {
+    printf '\033[32;49m'
+}
+
+set_error_color() {
+    printf '\033[31;49m'
+}
+
+run_with_result_color() {
+    local output
+    local status
+
+    if output=$("$@" 2>&1); then
+        set_normal_color
+        if [[ -n $output ]]; then
+            printf '%s\n' "$output"
+        fi
+    else
+        status=$?
+        set_error_color
+        if [[ -n $output ]]; then
+            printf '%s\n' "$output" >&2
+        fi
+        return "$status"
+    fi
+}
+
+set_normal_color
 
 readonly CODE_SIGN_IDENTITY=$(bash $(dirname $0)/get-codesign-identity.sh)
 
@@ -17,7 +45,7 @@ if [[ -z $CODE_SIGN_IDENTITY ]]; then
 fi
 
 do_codesign() {
-    codesign \
+    run_with_result_color codesign \
         --force \
         --deep \
         --options runtime \
@@ -26,6 +54,7 @@ do_codesign() {
 }
 
 if [[ ! -e "$1" ]]; then
+    set_error_color
     echo "Invalid argument: '$1'"
     exit 1
 fi
@@ -55,7 +84,7 @@ if [[ -d "$1" ]]; then
     #
 
     find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
-        codesign --verify --deep "$f"
+        run_with_result_color codesign --verify --deep "$f"
     done
 else
     #
