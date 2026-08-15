@@ -47,6 +47,7 @@ inline std::string dump(const T& json) {
        .error_handler = nlohmann::json::error_handler_t::ignore,
        .force_multi_line_array_object_keys = {
            "bundle_identifiers",
+           "description_notes",
            "game_pad_stick_horizontal_wheel_formula",
            "game_pad_stick_vertical_wheel_formula",
            "game_pad_stick_x_formula",

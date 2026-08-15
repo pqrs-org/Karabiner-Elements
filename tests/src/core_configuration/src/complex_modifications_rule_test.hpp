@@ -44,6 +44,7 @@ void run_complex_modifications_rule_test() {
         expect(std::vector<std::string>{"example note 1", "example note 2"} == rule.get_description_notes());
         expect(rule_t::code_type::json == rule.get_code_type());
         expect(krbn::json_utility::dump(json) == rule.get_code_string());
+        expect(rule.get_code_string().contains("\"description_notes\": [\n"));
         expect(json == rule.to_json());
       }
 

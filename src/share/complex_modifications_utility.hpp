@@ -31,7 +31,11 @@ inline std::vector<std::string> lint_rule(const core_configuration::details::com
 }
 
 [[nodiscard]] inline std::string get_new_rule_json_string() {
-  nlohmann::json json({{"description", "New Rule (change left_shift+caps_lock to page_down, right_shift+caps_lock to left_command+mission_control)"},
+  nlohmann::json json({{"description", "New Rule"},
+                       {"description_notes", nlohmann::json::array({
+                                                 "- Change left_shift+caps_lock to page_down",
+                                                 "- Change right_shift+caps_lock to left_command+mission_control",
+                                             })},
                        {"manipulators", nlohmann::json::array({
                                             nlohmann::json::object({
                                                 {
@@ -93,11 +97,14 @@ function main() {
     { key_code: '3', app: 'com.apple.ActivityMonitor' },
   ]
 
+  const notes = []
   const manipulators = []
   for (var i = 0; i < apps.length; ++i) {
     const app = apps[i]
 
     console.log('right_shift+' + app.key_code + ' to ' + app.app)
+
+    notes.push('- Open ' + app.app + ' by right_shift+' + app.key_code)
 
     manipulators.push({
       type: 'basic',
@@ -119,6 +126,7 @@ function main() {
 
   return {
     description: 'Open apps with right_shift+1/2/3',
+    description_notes: notes,
     manipulators: manipulators,
   }
 }
