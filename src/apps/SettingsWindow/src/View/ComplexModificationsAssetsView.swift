@@ -49,8 +49,8 @@ struct ComplexModificationsAssetsView: View {
                       VStack(alignment: .leading, spacing: 2.0) {
                         Text(assetRule.description)
 
-                        ForEach(assetRule.notes.indices, id: \.self) { index in
-                          Text(assetRule.notes[index])
+                        ForEach(assetRule.descriptionNotes.indices, id: \.self) { index in
+                          Text(assetRule.descriptionNotes[index])
                             .font(.caption)
                             .foregroundColor(.secondary)
                         }

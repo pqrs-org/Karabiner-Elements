@@ -134,7 +134,7 @@ private:
       json.push_back({
           {"index", index},
           {"description", rule->get_description()},
-          {"notes", rule->get_notes()},
+          {"description_notes", rule->get_description_notes()},
           {"enabled", rule->get_enabled()},
           {"code_string", rule->get_code_string()},
           {"search_text", rule->get_search_text()},

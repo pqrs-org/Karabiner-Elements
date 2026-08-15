@@ -31,10 +31,10 @@ void run_complex_modifications_assets_file_test() {
     expect(file.get_title() == "Examples");
     expect(file.get_rules().size() == 4);
     expect(file.get_rules().back()->get_description() == "Change control-left click to command-left click");
-    expect(file.get_rules().back()->get_notes() == std::vector<std::string>{
-                                                       "Enable \"Modify events\" for your mouse in the Devices tab before using this rule.",
-                                                       "This rule works only with standard USB or Bluetooth mice. Trackpads and Magic Mouse are not supported.",
-                                                   });
+    expect(file.get_rules().back()->get_description_notes() == std::vector<std::string>{
+                                                                   "Enable \"Modify events\" for your mouse in the Devices tab before using this rule.",
+                                                                   "This rule works only with standard USB or Bluetooth mice. Trackpads and Magic Mouse are not supported.",
+                                                               });
     expect(file.lint().empty());
   };
 }

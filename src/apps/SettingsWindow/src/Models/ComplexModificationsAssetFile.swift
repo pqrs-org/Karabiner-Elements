@@ -37,7 +37,7 @@ struct ComplexModificationsAssetFile: Identifiable, Decodable {
 
     for assetRule in assetRules {
       if assetRule.description.range(of: search, options: .caseInsensitive) != nil
-        || assetRule.notes.contains(where: {
+        || assetRule.descriptionNotes.contains(where: {
           $0.range(of: search, options: .caseInsensitive) != nil
         })
       {
