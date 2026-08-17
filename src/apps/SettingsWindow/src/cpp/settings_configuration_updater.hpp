@@ -116,6 +116,11 @@ public:
       auto& selected_profile = core_configuration.get_selected_profile();
       const auto& selected_profile_json = *it;
 
+      changed |= apply_value<bool>(selected_profile_json,
+                                   "modify_mouse_events_by_default",
+                                   selected_profile.get_modify_mouse_events_by_default(),
+                                   [&](auto value) { selected_profile.set_modify_mouse_events_by_default(value); });
+
       if (const auto parameters_it = selected_profile_json.find("parameters");
           parameters_it != selected_profile_json.end()) {
         auto parameters = selected_profile.get_parameters();

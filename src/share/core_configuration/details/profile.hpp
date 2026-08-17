@@ -31,6 +31,10 @@ public:
                                          selected_,
                                          false);
 
+    helper_values_.push_back_value<bool>("modify_mouse_events_by_default",
+                                         modify_mouse_events_by_default_,
+                                         false);
+
     helper_values_.push_back_object<details::parameters>("parameters",
                                                          parameters_);
 
@@ -78,6 +82,8 @@ public:
         }
       }
     }
+
+    update_devices_default_values();
   }
 
   static nlohmann::json make_default_fn_function_keys_json() {
@@ -188,6 +194,16 @@ public:
     selected_ = value;
   }
 
+  [[nodiscard]] const bool& get_modify_mouse_events_by_default() const {
+    return modify_mouse_events_by_default_;
+  }
+
+  void set_modify_mouse_events_by_default(bool value) {
+    modify_mouse_events_by_default_ = value;
+
+    update_devices_default_values();
+  }
+
   [[nodiscard]] pqrs::not_null_shared_ptr_t<details::parameters> get_parameters() const {
     return parameters_;
   }
@@ -230,10 +246,12 @@ public:
     // Add device
     //
 
-    devices_.push_back(std::make_shared<details::device>(nlohmann::json({
-                                                             {"identifiers", identifiers},
-                                                         }),
-                                                         error_handling_));
+    auto device = std::make_shared<details::device>(nlohmann::json({
+                                                        {"identifiers", identifiers},
+                                                    }),
+                                                    error_handling_);
+    update_device_default_values(*device);
+    devices_.push_back(device);
     return devices_.back();
   }
 
@@ -261,6 +279,7 @@ private:
   error_handling error_handling_;
   std::string name_;
   bool selected_;
+  bool modify_mouse_events_by_default_;
   pqrs::not_null_shared_ptr_t<details::parameters> parameters_;
   pqrs::not_null_shared_ptr_t<simple_modifications> simple_modifications_;
   pqrs::not_null_shared_ptr_t<simple_modifications> fn_function_keys_;
@@ -268,6 +287,18 @@ private:
   pqrs::not_null_shared_ptr_t<details::virtual_hid_keyboard> virtual_hid_keyboard_;
   mutable std::vector<pqrs::not_null_shared_ptr_t<details::device>> devices_;
   configuration_json_helper::helper_values helper_values_;
+
+  void update_devices_default_values() const {
+    for (const auto& device : devices_) {
+      update_device_default_values(*device);
+    }
+  }
+
+  void update_device_default_values(details::device& device) const {
+    if (device.get_identifiers().get_is_pointing_device()) {
+      device.set_ignore_default_value(!modify_mouse_events_by_default_);
+    }
+  }
 };
 
 inline void to_json(nlohmann::json& json, const profile& profile) {

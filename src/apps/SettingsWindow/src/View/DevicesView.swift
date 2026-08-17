@@ -9,6 +9,12 @@ struct DevicesView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
+      Toggle(isOn: $settings.configuration.selectedProfile.modifyMouseEventsByDefault) {
+        Text("Modify mouse events by default")
+      }
+      .switchToggleStyle()
+      .padding()
+
       List {
         ForEach(connectedDevices.connectedDevices) { connectedDevice in
           if let deviceConfiguration = settings.deviceConfigurationBinding(connectedDevice) {

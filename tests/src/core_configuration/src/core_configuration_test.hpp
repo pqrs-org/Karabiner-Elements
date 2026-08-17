@@ -127,6 +127,73 @@ void run_core_configuration_test() {
     }
   };
 
+  "profile.modify_mouse_events_by_default"_test = [] {
+    {
+      krbn::core_configuration::details::profile profile(nlohmann::json::object(),
+                                                         krbn::core_configuration::error_handling::strict);
+      expect(profile.get_modify_mouse_events_by_default() == false);
+
+      auto identifiers = nlohmann::json::object({
+                             {"vendor_id", 1234},
+                             {"product_id", 5678},
+                             {"is_pointing_device", true},
+                         })
+                             .get<krbn::device_identifiers>();
+      expect(profile.get_device(identifiers)->get_ignore() == true);
+    }
+
+    {
+      nlohmann::json json({
+          {"modify_mouse_events_by_default", true},
+          {"devices", nlohmann::json::array({
+                          {
+                              {"identifiers", {
+                                                  {"vendor_id", 1234},
+                                                  {"product_id", 5678},
+                                                  {"is_pointing_device", true},
+                                              }},
+                          },
+                          {
+                              {"identifiers", {
+                                                  {"vendor_id", 1235},
+                                                  {"product_id", 5678},
+                                                  {"is_pointing_device", true},
+                                              }},
+                              {"ignore", true},
+                          },
+                          {
+                              {"identifiers", {
+                                                  {"vendor_id", 1236},
+                                                  {"product_id", 5678},
+                                                  {"is_keyboard", true},
+                                              }},
+                          },
+                      })},
+      });
+
+      krbn::core_configuration::details::profile profile(json,
+                                                         krbn::core_configuration::error_handling::strict);
+      expect(profile.get_modify_mouse_events_by_default() == true);
+      expect(profile.get_devices()[0]->get_ignore() == false);
+      expect(profile.get_devices()[1]->get_ignore() == true);
+      expect(profile.get_devices()[2]->get_ignore() == false);
+
+      auto identifiers = nlohmann::json::object({
+                             {"vendor_id", 1237},
+                             {"product_id", 5678},
+                             {"is_pointing_device", true},
+                         })
+                             .get<krbn::device_identifiers>();
+      expect(profile.get_device(identifiers)->get_ignore() == false);
+
+      profile.set_modify_mouse_events_by_default(false);
+      expect(profile.get_devices()[0]->get_ignore() == true);
+      expect(profile.get_devices()[1]->get_ignore() == true);
+      expect(profile.get_devices()[2]->get_ignore() == false);
+      expect(profile.get_device(identifiers)->get_ignore() == true);
+    }
+  };
+
   "not found"_test = [] {
     {
       krbn::core_configuration::core_configuration configuration("json/not_found.json",
