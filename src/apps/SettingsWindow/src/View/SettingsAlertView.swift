@@ -19,7 +19,9 @@ struct SettingsAlertView: View {
           )
 
           VStack {
-            KeyboardTypeSelectorView()
+            KeyboardTypeSelectorView {
+              contentViewStates.dismissCurrentAlert()
+            }
           }
           .padding(20.0)
           .overlay(
