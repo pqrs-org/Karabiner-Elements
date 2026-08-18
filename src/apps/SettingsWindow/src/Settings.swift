@@ -15,7 +15,7 @@ func coreConfigurationUpdatedCallback(_ json: UnsafePointer<CChar>, _ length: In
   let data = Data(bytes: json, count: length)
 
   Task { @MainActor in
-    Settings.shared.updateProperties(data)
+    Settings.shared.applyConfigurationSnapshot(data)
 
     NotificationCenter.default.post(
       name: Settings.didConfigurationLoad,
@@ -101,20 +101,22 @@ final class Settings: ObservableObject {
       for await _ in self.saveStream.debounce(for: .seconds(0.2)) {
         guard self.configurationLoaded else { continue }
 
-        print("save")
-
-        self.saveErrorMessage = ""
-        var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-        if !krbn_core_configuration_save(&errorMessageBuffer, errorMessageBuffer.count) {
-          self.saveErrorMessage = String(utf8String: errorMessageBuffer) ?? ""
-        }
+        _ = self.saveImmediately()
       }
     }
   }
 
-  func save() {
-    krbn_core_configuration_mark_save_pending()
-    saveContinuation.yield(())
+  private func saveImmediately() -> Bool {
+    print("save")
+
+    saveErrorMessage = ""
+    var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
+    let result = krbn_core_configuration_save(&errorMessageBuffer, errorMessageBuffer.count)
+    if !result {
+      saveErrorMessage = String(utf8String: errorMessageBuffer) ?? ""
+    }
+
+    return result
   }
 
   func componentsManagerStopped() {
@@ -134,17 +136,25 @@ final class Settings: ObservableObject {
     }
   }
 
-  public func updateProperties() {
+  // C++ owns the canonical configuration. After mutating it, reload the whole
+  // snapshot instead of mirroring individual changes in the Swift model.
+  private func reloadConfigurationSnapshot() {
     let data = dataFromJSONOutput { context in
       krbn_core_configuration_get_settings_configuration_snapshot_json(
         settingsJSONOutputCallback,
         context)
     }
 
-    updateProperties(data)
+    applyConfigurationSnapshot(data)
   }
 
-  fileprivate func updateProperties(_ data: Data) {
+  private func reloadConfigurationSnapshotAndSave() {
+    reloadConfigurationSnapshot()
+    krbn_core_configuration_mark_save_pending()
+    saveContinuation.yield(())
+  }
+
+  fileprivate func applyConfigurationSnapshot(_ data: Data) {
     let snapshot: SettingsConfiguration
     do {
       snapshot = try settingsJSONDecoder.decode(SettingsConfiguration.self, from: data)
@@ -187,10 +197,6 @@ final class Settings: ObservableObject {
     }
   }
 
-  private func reflectSimpleModificationChanges() {
-    updateProperties()
-  }
-
   public func updateSimpleModification(
     index: Int,
     fromJsonString: String,
@@ -209,9 +215,7 @@ final class Settings: ObservableObject {
       }
     }
 
-    reflectSimpleModificationChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func appendSimpleModification(device: ConnectedDevice?) {
@@ -219,9 +223,8 @@ final class Settings: ObservableObject {
       krbn_core_configuration_push_back_selected_profile_simple_modification($0)
     }
 
-    reflectSimpleModificationChanges()
-
-    // Do not to call `save()` here because partial settings will be erased at save.
+    // Do not save here because the partial entry would be erased.
+    reloadConfigurationSnapshot()
   }
 
   public func appendSimpleModificationIfEmpty(device: ConnectedDevice?) {
@@ -240,18 +243,12 @@ final class Settings: ObservableObject {
       krbn_core_configuration_erase_selected_profile_simple_modification(index, $0)
     }
 
-    reflectSimpleModificationChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   //
   // Fn Function Keys
   //
-
-  private func reflectFnFunctionKeyChanges() {
-    updateProperties()
-  }
 
   public func updateFnFunctionKey(
     fromJsonString: String,
@@ -269,18 +266,12 @@ final class Settings: ObservableObject {
       }
     }
 
-    reflectFnFunctionKeyChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   //
   // Complex modifications
   //
-
-  private func reflectComplexModificationsRuleChanges() {
-    updateProperties()
-  }
 
   private func krbnCodeType(
     _ codeType: SettingsConfiguration.ComplexModificationsRule.CodeType
@@ -313,9 +304,7 @@ final class Settings: ObservableObject {
         return errorMessage
       }
 
-      reflectComplexModificationsRuleChanges()
-
-      save()
+      reloadConfigurationSnapshotAndSave()
     }
 
     return nil
@@ -339,9 +328,7 @@ final class Settings: ObservableObject {
         return errorMessage
       }
 
-      reflectComplexModificationsRuleChanges()
-
-      save()
+      reloadConfigurationSnapshotAndSave()
     }
 
     return nil
@@ -353,29 +340,19 @@ final class Settings: ObservableObject {
       destinationIndex
     )
 
-    updateProperties()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func setComplexModificationsRuleEnabled(index: Int, enabled: Bool) {
     krbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(index, enabled)
 
-    var configuration = configuration
-    if configuration.selectedProfile.complexModifications.rules.indices.contains(index) {
-      configuration.selectedProfile.complexModifications.rules[index].enabled = enabled
-      self.configuration = configuration
-    }
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func removeComplexModificationsRule(index: Int) {
     krbn_core_configuration_erase_selected_profile_complex_modifications_rule(index)
 
-    reflectComplexModificationsRuleChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func addComplexModificationRules(
@@ -386,9 +363,7 @@ final class Settings: ObservableObject {
         rule.fileIndex, rule.ruleIndex)
     }
 
-    reflectComplexModificationsRuleChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func addComplexModificationRule(
@@ -397,9 +372,7 @@ final class Settings: ObservableObject {
     krbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
       complexModificationsAssetRule.fileIndex, complexModificationsAssetRule.ruleIndex)
 
-    reflectComplexModificationsRuleChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   //
@@ -459,23 +432,7 @@ final class Settings: ObservableObject {
     }
 
     if valid {
-      var nextConfiguration = configuration
-      switch formula {
-      case .x:
-        nextConfiguration.selectedProfile.devices[connectedDevice.id]?.gamePadStickXFormula = value
-      case .y:
-        nextConfiguration.selectedProfile.devices[connectedDevice.id]?.gamePadStickYFormula = value
-      case .verticalWheel:
-        nextConfiguration.selectedProfile.devices[connectedDevice.id]?
-          .gamePadStickVerticalWheelFormula = value
-      case .horizontalWheel:
-        nextConfiguration.selectedProfile.devices[connectedDevice.id]?
-          .gamePadStickHorizontalWheelFormula = value
-      }
-      didSetEnabled = false
-      configuration = nextConfiguration
-      didSetEnabled = true
-      save()
+      reloadConfigurationSnapshotAndSave()
     }
 
     return valid
@@ -500,8 +457,7 @@ final class Settings: ObservableObject {
       }
     }
 
-    save()
-    updateProperties()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func eraseNotConnectedDeviceSettings() {
@@ -511,18 +467,12 @@ final class Settings: ObservableObject {
 
     ConnectedDevices.shared.notConnectedConfiguredDevicesCount = 0
 
-    updateProperties()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   //
   // Profiles
   //
-
-  private func reflectProfileChanges() {
-    updateProperties()
-  }
 
   public func selectedProfileName() -> String {
     configuration.profiles.first { $0.selected }?.name ?? ""
@@ -531,36 +481,27 @@ final class Settings: ObservableObject {
   public func selectProfile(_ profile: SettingsConfiguration.Profile) {
     krbn_core_configuration_select_profile(profile.index)
 
-    // To update all settings to the new profile's contents, it is necessary to call `updateProperties`.
-    updateProperties()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func updateProfileName(_ profile: SettingsConfiguration.Profile, _ name: String) {
     if let cString = name.cString(using: .utf8) {
       krbn_core_configuration_set_profile_name(profile.index, cString)
 
-      reflectProfileChanges()
-
-      save()
+      reloadConfigurationSnapshotAndSave()
     }
   }
 
   public func appendProfile() {
     krbn_core_configuration_push_back_profile()
 
-    reflectProfileChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func duplicateProfile(_ profile: SettingsConfiguration.Profile) {
     krbn_core_configuration_duplicate_profile(profile.index)
 
-    reflectProfileChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func moveProfile(_ sourceIndex: Int, _ destinationIndex: Int) {
@@ -569,17 +510,13 @@ final class Settings: ObservableObject {
       destinationIndex
     )
 
-    updateProperties()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   public func removeProfile(_ profile: SettingsConfiguration.Profile) {
     krbn_core_configuration_erase_profile(profile.index)
 
-    reflectProfileChanges()
-
-    save()
+    reloadConfigurationSnapshotAndSave()
   }
 
   //
@@ -605,8 +542,7 @@ final class Settings: ObservableObject {
 
       if jsonString.withCString({ krbn_core_configuration_apply_settings_configuration_update($0) })
       {
-        updateProperties()
-        save()
+        reloadConfigurationSnapshotAndSave()
       }
     } catch {
       print("Failed to make settings configuration update JSON: \(error)")
@@ -650,8 +586,8 @@ final class Settings: ObservableObject {
   }
 
   func installSystemDefaultProfile() {
-    // Ensure karabiner.json exists before copy.
-    save()
+    // The copy must not start until the latest configuration has been written.
+    guard saveImmediately() else { return }
 
     let url = URL(
       fileURLWithPath:
