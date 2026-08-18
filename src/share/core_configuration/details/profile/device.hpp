@@ -3,6 +3,7 @@
 #include "../../configuration_json_helper.hpp"
 #include "exprtk_utility.hpp"
 #include "simple_modifications.hpp"
+#include <functional>
 #include <pqrs/string.hpp>
 #include <ranges>
 #include <string_view>
@@ -10,6 +11,17 @@
 namespace krbn::core_configuration::details {
 class device final {
 public:
+  // Some default values depend on the device identifiers. For example, `ignore` is
+  // false for ordinary keyboards, but true for game pads. These values are resolved
+  // before loading the JSON values so that omitted values use the device-specific
+  // defaults and only explicit overrides are serialized.
+  struct default_values final {
+    bool ignore;
+    bool manipulate_caps_lock_led;
+  };
+
+  using default_values_resolver = std::function<default_values(const device_identifiers&)>;
+
   device(const device&) = delete;
 
   device()
@@ -19,16 +31,32 @@ public:
 
   device(const nlohmann::json& json,
          error_handling error_handling)
+      : device(json,
+               error_handling,
+               [](const auto&) {
+                 return default_values{
+                     .ignore = false,
+                     .manipulate_caps_lock_led = false,
+                 };
+               }) {
+  }
+
+  device(const nlohmann::json& json,
+         error_handling error_handling,
+         const default_values_resolver& resolve_default_values)
       : json_(json),
+        identifiers_(make_device_identifiers(json)),
         simple_modifications_(std::make_shared<simple_modifications>()),
         fn_function_keys_(std::make_shared<simple_modifications>()) {
+    const auto default_values = resolve_default_values(identifiers_);
+
     helper_values_.push_back_value<bool>("ignore",
                                          ignore_,
-                                         false);
+                                         default_values.ignore);
 
     helper_values_.push_back_value<bool>("manipulate_caps_lock_led",
                                          manipulate_caps_lock_led_,
-                                         false);
+                                         default_values.manipulate_caps_lock_led);
 
     helper_values_.push_back_value<bool>("swap_grave_accent_and_non_us_backslash",
                                          swap_grave_accent_and_non_us_backslash_,
@@ -225,13 +253,7 @@ cos(radian) * m;
     helper_values_.update_value(json, error_handling);
 
     for (const auto& [key, value] : json.items()) {
-      if (key == "identifiers") {
-        try {
-          identifiers_ = value.get<device_identifiers>();
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
-      } else if (key == "simple_modifications") {
+      if (key == "simple_modifications") {
         try {
           simple_modifications_->update(value);
         } catch (const pqrs::json::unmarshal_error& e) {
@@ -245,28 +267,6 @@ cos(radian) * m;
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
       }
-    }
-
-    //
-    // Set special default value for specific devices.
-    //
-
-    // ignore_
-
-    if (identifiers_.get_is_pointing_device() ||
-        identifiers_.get_is_game_pad() ||
-        identifiers_.get_is_consumer() ||
-        // YubiKey token
-        identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x1050)) {
-      helper_values_.set_default_value(ignore_,
-                                       true);
-    }
-
-    // manipulate_caps_lock_led_
-
-    if (identifiers_.get_is_keyboard()) {
-      helper_values_.set_default_value(manipulate_caps_lock_led_,
-                                       true);
     }
 
     //
@@ -337,9 +337,12 @@ cos(radian) * m;
 
     coordinate_between_properties();
   }
-  void set_ignore_default_value(bool value) {
+
+  void update_default_values(const default_values& values) {
     helper_values_.set_default_value(ignore_,
-                                     value);
+                                     values.ignore);
+    helper_values_.set_default_value(manipulate_caps_lock_led_,
+                                     values.manipulate_caps_lock_led);
 
     coordinate_between_properties();
   }
@@ -645,6 +648,19 @@ cos(radian) * m;
   }
 
 private:
+  [[nodiscard]] static device_identifiers make_device_identifiers(const nlohmann::json& json) {
+    if (auto it = json.find("identifiers");
+        it != std::end(json)) {
+      try {
+        return it->get<device_identifiers>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`identifiers` error: {0}", e.what()));
+      }
+    }
+
+    return device_identifiers();
+  }
+
   void coordinate_between_properties() {
     // Set `disable_built_in_keyboard_if_exists_` false if `treat_as_built_in_keyboard_` is true.
     // If both settings are true, the device will always be disabled.

@@ -31,9 +31,9 @@ public:
                                          selected_,
                                          false);
 
-    helper_values_.push_back_value<bool>("modify_mouse_events_by_default",
-                                         modify_mouse_events_by_default_,
-                                         false);
+    helper_values_.push_back_value<bool>("ignore_pointing_device_events_by_default",
+                                         ignore_pointing_device_events_by_default_,
+                                         true);
 
     helper_values_.push_back_object<details::parameters>("parameters",
                                                          parameters_);
@@ -42,7 +42,14 @@ public:
                                                                    virtual_hid_keyboard_);
 
     helper_values_.push_back_array<details::device>("devices",
-                                                    devices_);
+                                                    devices_,
+                                                    [this](const auto& json, auto error_handling) {
+                                                      return std::make_shared<details::device>(json,
+                                                                                               error_handling,
+                                                                                               [this](const auto& identifiers) {
+                                                                                                 return make_device_default_values(identifiers);
+                                                                                               });
+                                                    });
 
     //
     // Set default value
@@ -82,8 +89,6 @@ public:
         }
       }
     }
-
-    update_devices_default_values();
   }
 
   static nlohmann::json make_default_fn_function_keys_json() {
@@ -194,12 +199,12 @@ public:
     selected_ = value;
   }
 
-  [[nodiscard]] const bool& get_modify_mouse_events_by_default() const {
-    return modify_mouse_events_by_default_;
+  [[nodiscard]] const bool& get_ignore_pointing_device_events_by_default() const {
+    return ignore_pointing_device_events_by_default_;
   }
 
-  void set_modify_mouse_events_by_default(bool value) {
-    modify_mouse_events_by_default_ = value;
+  void set_ignore_pointing_device_events_by_default(bool value) {
+    ignore_pointing_device_events_by_default_ = value;
 
     update_devices_default_values();
   }
@@ -249,8 +254,10 @@ public:
     auto device = std::make_shared<details::device>(nlohmann::json({
                                                         {"identifiers", identifiers},
                                                     }),
-                                                    error_handling_);
-    update_device_default_values(*device);
+                                                    error_handling_,
+                                                    [this](const auto& identifiers) {
+                                                      return make_device_default_values(identifiers);
+                                                    });
     devices_.push_back(device);
     return devices_.back();
   }
@@ -279,7 +286,7 @@ private:
   error_handling error_handling_;
   std::string name_;
   bool selected_;
-  bool modify_mouse_events_by_default_;
+  bool ignore_pointing_device_events_by_default_;
   pqrs::not_null_shared_ptr_t<details::parameters> parameters_;
   pqrs::not_null_shared_ptr_t<simple_modifications> simple_modifications_;
   pqrs::not_null_shared_ptr_t<simple_modifications> fn_function_keys_;
@@ -295,9 +302,29 @@ private:
   }
 
   void update_device_default_values(details::device& device) const {
-    if (device.get_identifiers().get_is_pointing_device()) {
-      device.set_ignore_default_value(!modify_mouse_events_by_default_);
+    device.update_default_values(make_device_default_values(device.get_identifiers()));
+  }
+
+  [[nodiscard]] details::device::default_values make_device_default_values(const device_identifiers& identifiers) const {
+    return {
+        .ignore = make_device_ignore_default_value(identifiers),
+        .manipulate_caps_lock_led = identifiers.get_is_keyboard(),
+    };
+  }
+
+  [[nodiscard]] bool make_device_ignore_default_value(const device_identifiers& identifiers) const {
+    if (identifiers.get_is_game_pad() ||
+        identifiers.get_is_consumer() ||
+        // YubiKey token
+        identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x1050)) {
+      return true;
     }
+
+    if (identifiers.get_is_pointing_device()) {
+      return ignore_pointing_device_events_by_default_;
+    }
+
+    return false;
   }
 };
 
