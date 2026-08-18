@@ -130,6 +130,7 @@
                         "product_id": 50475,
                         "vendor_id": 1133
                     },
+                    "ignore": false,
                     "simple_modifications": [
                         {
                             "from": {
@@ -181,6 +182,7 @@
                         "product_id": 50475,
                         "vendor_id": 1234
                     },
+                    "ignore": false,
                     "simple_modifications": [
                         {
                             "from": {

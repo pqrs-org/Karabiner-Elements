@@ -46,13 +46,13 @@ public:
          const default_values_resolver& resolve_default_values)
       : json_(json),
         identifiers_(make_device_identifiers(json)),
+        ignore_(false),
+        ignore_configured_(false),
         simple_modifications_(std::make_shared<simple_modifications>()),
         fn_function_keys_(std::make_shared<simple_modifications>()) {
     const auto default_values = resolve_default_values(identifiers_);
 
-    helper_values_.push_back_value<bool>("ignore",
-                                         ignore_,
-                                         default_values.ignore);
+    ignore_ = default_values.ignore;
 
     helper_values_.push_back_value<bool>("manipulate_caps_lock_led",
                                          manipulate_caps_lock_led_,
@@ -252,6 +252,21 @@ cos(radian) * m;
 
     helper_values_.update_value(json, error_handling);
 
+    if (auto it = json.find("ignore");
+        it != std::end(json)) {
+      try {
+        pqrs::json::requires_boolean(*it, "`ignore`");
+        ignore_ = it->get<bool>();
+        ignore_configured_ = true;
+      } catch (const std::exception& e) {
+        if (error_handling == error_handling::strict) {
+          throw;
+        } else {
+          logger::get_logger()->warn(e.what());
+        }
+      }
+    }
+
     for (const auto& [key, value] : json.items()) {
       if (key == "simple_modifications") {
         try {
@@ -294,6 +309,12 @@ cos(radian) * m;
 
     helper_values_.update_json(j);
 
+    if (ignore_configured_) {
+      j["ignore"] = ignore_;
+    } else {
+      j.erase("ignore");
+    }
+
     j["identifiers"] = identifiers_;
 
     {
@@ -334,13 +355,16 @@ cos(radian) * m;
   }
   void set_ignore(bool value) {
     ignore_ = value;
+    ignore_configured_ = true;
 
     coordinate_between_properties();
   }
 
   void update_default_values(const default_values& values) {
-    helper_values_.set_default_value(ignore_,
-                                     values.ignore);
+    if (!ignore_configured_) {
+      ignore_ = values.ignore;
+    }
+
     helper_values_.set_default_value(manipulate_caps_lock_led_,
                                      values.manipulate_caps_lock_led);
 
@@ -673,6 +697,29 @@ private:
   nlohmann::json json_;
   device_identifiers identifiers_;
   bool ignore_;
+  // The default value of `ignore_` can change at runtime, most notably when the
+  // profile's `ignore_pointing_device_events_by_default` setting changes. An
+  // explicitly configured value can then temporarily equal the new default. Keep
+  // track of that explicitness and continue serializing the value; otherwise, a
+  // subsequent profile default change would incorrectly treat it as inherited and
+  // overwrite the user's device-specific choice.
+  //
+  // For example, consider a pointing device for which the user explicitly enables
+  // event modification (`ignore_ == false`):
+  //
+  // ignore_pointing_device_events_by_default | configured | default | ignore_ | JSON
+  // ----------------------------------------- | ---------- | ------- | ------- | -----
+  // true                                      | false      | true    | true    | omitted
+  // true                                      | true       | true    | false   | false
+  // false                                     | true       | false   | false   | false
+  // true                                      | true       | true    | false   | false
+  //
+  // Without `ignore_configured_`, the explicit `ignore_ == false` from the second
+  // row would become indistinguishable from an inherited value in the third row,
+  // where it equals the new default. The value would then be omitted from JSON and
+  // changed back to true along with the default in the fourth row. Keeping it
+  // configured preserves the user's device-specific choice throughout the change.
+  bool ignore_configured_;
   bool manipulate_caps_lock_led_;
   // macOS maps these two HID usages differently depending on the keyboard's
   // device type. This setting compensates when the physical device and the
