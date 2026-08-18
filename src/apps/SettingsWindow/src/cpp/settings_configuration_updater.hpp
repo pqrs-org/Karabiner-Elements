@@ -116,11 +116,6 @@ public:
       auto& selected_profile = core_configuration.get_selected_profile();
       const auto& selected_profile_json = *it;
 
-      changed |= apply_value<bool>(selected_profile_json,
-                                   "modify_mouse_events_by_default",
-                                   selected_profile.get_modify_mouse_events_by_default(),
-                                   [&](auto value) { selected_profile.set_modify_mouse_events_by_default(value); });
-
       if (const auto parameters_it = selected_profile_json.find("parameters");
           parameters_it != selected_profile_json.end()) {
         auto parameters = selected_profile.get_parameters();
@@ -169,6 +164,13 @@ public:
           changed |= apply_value<int>(device_json, "game_pad_wheels_stick_continued_movement_interval_milliseconds", device->get_game_pad_wheels_stick_continued_movement_interval_milliseconds(), [&](auto value) { device->set_game_pad_wheels_stick_continued_movement_interval_milliseconds(value); });
         }
       }
+
+      // Apply this value after the device values so devices which use the default
+      // are not converted into explicit overrides by stale snapshot values.
+      changed |= apply_value<bool>(selected_profile_json,
+                                   "ignore_pointing_device_events_by_default",
+                                   selected_profile.get_ignore_pointing_device_events_by_default(),
+                                   [&](auto value) { selected_profile.set_ignore_pointing_device_events_by_default(value); });
 
       if (const auto complex_modifications_it = selected_profile_json.find("complex_modifications");
           complex_modifications_it != selected_profile_json.end()) {

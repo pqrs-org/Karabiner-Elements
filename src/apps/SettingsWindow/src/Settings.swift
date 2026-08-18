@@ -353,25 +353,7 @@ final class Settings: ObservableObject {
       destinationIndex
     )
 
-    // Reorder the currently decoded rules locally so their UUIDs are preserved during the move.
-    // Decoding a fresh snapshot here would assign new UUIDs and reset the List scroll state.
-    var configuration = configuration
-    var rules = configuration.selectedProfile.complexModifications.rules
-    if sourceIndex >= 0 && sourceIndex < rules.count {
-      let item = rules.remove(at: sourceIndex)
-      var destination = destinationIndex
-      if sourceIndex < destination {
-        destination -= 1
-      }
-      destination = max(0, min(destination, rules.count))
-      rules.insert(item, at: destination)
-
-      for index in rules.indices {
-        rules[index].index = index
-      }
-      configuration.selectedProfile.complexModifications.rules = rules
-      self.configuration = configuration
-    }
+    updateProperties()
 
     save()
   }
@@ -587,22 +569,7 @@ final class Settings: ObservableObject {
       destinationIndex
     )
 
-    // Avoid reflectProfileChanges here because rebuilding the array can reset List scroll state.
-    var nextProfiles = configuration.profiles
-    if sourceIndex >= 0 && sourceIndex < nextProfiles.count {
-      let item = nextProfiles.remove(at: sourceIndex)
-      var destination = destinationIndex
-      if sourceIndex < destination {
-        destination -= 1
-      }
-      destination = max(0, min(destination, nextProfiles.count))
-      nextProfiles.insert(item, at: destination)
-
-      for index in nextProfiles.indices {
-        nextProfiles[index].index = index
-      }
-      configuration.profiles = nextProfiles
-    }
+    updateProperties()
 
     save()
   }
@@ -638,6 +605,7 @@ final class Settings: ObservableObject {
 
       if jsonString.withCString({ krbn_core_configuration_apply_settings_configuration_update($0) })
       {
+        updateProperties()
         save()
       }
     } catch {
