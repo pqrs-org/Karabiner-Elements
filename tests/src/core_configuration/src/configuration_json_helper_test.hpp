@@ -181,7 +181,7 @@ void run_configuration_json_helper_test() {
       expect(json == actual.to_json()) << UT_SHOW_LINE;
     }
 
-    // JSON value is the old default value
+    // A JSON value equal to the old default value follows the new default value.
     {
       auto json = R"(
 
@@ -197,9 +197,9 @@ void run_configuration_json_helper_test() {
 
       actual.helper_values.set_default_value(actual.i, 42);
       expect(42_i == actual.helper_values.find_default_value(actual.i));
-      expect(2042_i == actual.i);
+      expect(42_i == actual.i);
 
-      expect(json == actual.to_json()) << UT_SHOW_LINE;
+      expect(nlohmann::json::object() == actual.to_json()) << UT_SHOW_LINE;
     }
 
     // JSON value is the new default value
@@ -220,6 +220,11 @@ void run_configuration_json_helper_test() {
       expect(42_i == actual.helper_values.find_default_value(actual.i));
       expect(42_i == actual.i);
 
+      expect(nlohmann::json::object() == actual.to_json()) << UT_SHOW_LINE;
+
+      actual.helper_values.set_default_value(actual.i, 43);
+      expect(43_i == actual.helper_values.find_default_value(actual.i));
+      expect(43_i == actual.i);
       expect(nlohmann::json::object() == actual.to_json()) << UT_SHOW_LINE;
     }
   };
