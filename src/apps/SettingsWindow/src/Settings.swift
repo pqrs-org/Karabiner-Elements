@@ -73,7 +73,15 @@ final class Settings: ObservableObject {
   @Published var saveErrorMessage = ""
   @Published private(set) var configurationLoaded = false
   @Published private(set) var configurationLoadState: krbn_core_configuration_load_state?
+  // This monotonically identifies the configuration snapshot exposed to SwiftUI.
+  // Editors capture it to reject changes based on a stale snapshot. For example,
+  // if the selected profile changes while the Complex Modifications Editor is open,
+  // its stored index may point to a rule in the newly selected profile. Saving with
+  // that stale index would modify the wrong rule.
+  @Published private(set) var configurationGeneration: UInt64 = 0
   @Published private var configurationStorage: SettingsConfiguration?
+  // Keep the source data so reapplying the same snapshot does not advance the generation.
+  private var configurationSnapshotData: Data?
 
   var configuration: SettingsConfiguration {
     get {
@@ -123,6 +131,7 @@ final class Settings: ObservableObject {
     didSetEnabled = false
     configurationLoaded = false
     configurationLoadState = nil
+    configurationSnapshotData = nil
     saveErrorMessage = ""
   }
 
@@ -132,6 +141,7 @@ final class Settings: ObservableObject {
     if state != krbn_core_configuration_load_state_loaded {
       didSetEnabled = false
       configurationLoaded = false
+      configurationSnapshotData = nil
       saveErrorMessage = ""
     }
   }
@@ -165,6 +175,11 @@ final class Settings: ObservableObject {
 
     didSetEnabled = false
     configuration = snapshot
+
+    if configurationSnapshotData != data {
+      configurationSnapshotData = data
+      configurationGeneration &+= 1
+    }
 
     updateSystemDefaultProfileExists()
 

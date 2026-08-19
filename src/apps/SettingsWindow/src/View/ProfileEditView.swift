@@ -4,6 +4,8 @@ struct ProfileEditView: View {
   @Binding var profile: SettingsConfiguration.Profile?
   @Binding var showing: Bool
   @State private var name = ""
+  @State private var expectedConfigurationGeneration: UInt64?
+  @State private var errorMessage: String?
   @ObservedObject private var settings = Settings.shared
 
   var body: some View {
@@ -13,6 +15,11 @@ struct ProfileEditView: View {
           HStack {
             Text("Profile name:")
             TextField("Profile name", text: $name)
+          }
+
+          if let errorMessage {
+            Label(errorMessage, systemImage: ErrorBorder.icon)
+              .modifier(ErrorBorder())
           }
 
           HStack(alignment: .center) {
@@ -26,6 +33,12 @@ struct ProfileEditView: View {
 
             Button(
               action: {
+                guard expectedConfigurationGeneration == settings.configurationGeneration else {
+                  errorMessage =
+                    "The configuration has changed. Close this editor and try again."
+                  return
+                }
+
                 settings.updateProfileName(profile!, name)
                 showing = false
               },
@@ -46,6 +59,7 @@ struct ProfileEditView: View {
     .frame(width: 400)
     .onAppear {
       name = profile?.name ?? ""
+      expectedConfigurationGeneration = settings.configurationGeneration
     }
   }
 }
