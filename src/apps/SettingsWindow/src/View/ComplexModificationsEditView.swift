@@ -11,6 +11,7 @@ struct ComplexModificationsEditView: View {
   @State private var codeString = ""
   @State private var codeType = SettingsConfiguration.ComplexModificationsRule.CodeType.json
   @State private var errorMessage: String?
+  @State private var expectedConfigurationGeneration: UInt64?
   @StateObject private var externalEditorController = ExternalEditorController.shared
   @State private var didOpenExternalEditor = false
   @ObservedObject private var settings = Settings.shared
@@ -213,6 +214,7 @@ struct ComplexModificationsEditView: View {
       }
 
       codeType = rule?.codeType ?? .json
+      expectedConfigurationGeneration = settings.configurationGeneration
 
       externalEditorController.reset()
 
@@ -288,6 +290,11 @@ struct ComplexModificationsEditView: View {
   }
 
   private func save() -> Bool {
+    guard expectedConfigurationGeneration == settings.configurationGeneration else {
+      errorMessage = "The configuration has changed. Close this editor and try again."
+      return false
+    }
+
     if rule!.index < 0 {
       errorMessage = settings.pushFrontComplexModificationsRule(
         codeString: codeString,
@@ -295,6 +302,7 @@ struct ComplexModificationsEditView: View {
       if errorMessage == nil {
         // Set index to call replaceComplexModificationsRule on the next save.
         rule!.index = 0
+        expectedConfigurationGeneration = settings.configurationGeneration
         return true
       }
     } else {
@@ -303,6 +311,7 @@ struct ComplexModificationsEditView: View {
         codeString: codeString,
         codeType: codeType)
       if errorMessage == nil {
+        expectedConfigurationGeneration = settings.configurationGeneration
         return true
       }
     }

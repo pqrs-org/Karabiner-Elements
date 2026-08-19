@@ -27,6 +27,18 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
+        GroupBox(label: Text("Pointing devices")) {
+          Toggle(
+            isOn: $settings.configuration.selectedProfile
+              .modifyPointingDeviceEventsByDefault
+          ) {
+            Text("Modify events for pointing devices by default (Default: off)")
+          }
+          .switchToggleStyle()
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
+        }
+
         GroupBox(label: Text("CGEventTap fallback")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {

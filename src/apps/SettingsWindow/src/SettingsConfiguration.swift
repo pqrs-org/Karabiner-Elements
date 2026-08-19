@@ -54,10 +54,11 @@ struct SettingsConfiguration: Decodable {
   }
 
   struct Profile: Decodable, Identifiable, Equatable {
-    let id = UUID()
     var index: Int
     let name: String
     let selected: Bool
+
+    var id: Int { index }
 
     private enum CodingKeys: String, CodingKey {
       case index
@@ -66,7 +67,7 @@ struct SettingsConfiguration: Decodable {
     }
 
     static func == (lhs: Profile, rhs: Profile) -> Bool {
-      lhs.id == rhs.id
+      lhs.index == rhs.index
     }
   }
 
@@ -110,7 +111,6 @@ struct SettingsConfiguration: Decodable {
       case javascript
     }
 
-    let id = UUID()
     var index: Int
     let description: String
     let descriptionNotes: [String]
@@ -118,6 +118,8 @@ struct SettingsConfiguration: Decodable {
     let codeString: String
     let searchText: String
     let codeType: CodeType
+
+    var id: Int { index }
 
     private enum CodingKeys: String, CodingKey {
       case index
@@ -213,6 +215,12 @@ struct SettingsConfiguration: Decodable {
       var indicateStickyModifierKeysState: Bool
     }
 
+    var ignorePointingDeviceEventsByDefault: Bool
+
+    var modifyPointingDeviceEventsByDefault: Bool {
+      get { !ignorePointingDeviceEventsByDefault }
+      set { ignorePointingDeviceEventsByDefault = !newValue }
+    }
     var parameters: Parameters
     let simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
@@ -237,6 +245,7 @@ struct SettingsConfigurationUpdate: Encodable {
       let parameters: SettingsConfiguration.SelectedProfile.ComplexModifications.Parameters
     }
 
+    let ignorePointingDeviceEventsByDefault: Bool
     let parameters: SettingsConfiguration.SelectedProfile.Parameters
     let devices: [String: SettingsConfiguration.Device]
     let complexModifications: ComplexModifications
@@ -251,6 +260,8 @@ struct SettingsConfigurationUpdate: Encodable {
     globalConfiguration = configuration.globalConfiguration
     machineSpecific = configuration.machineSpecific
     selectedProfile = SelectedProfile(
+      ignorePointingDeviceEventsByDefault: configuration.selectedProfile
+        .ignorePointingDeviceEventsByDefault,
       parameters: configuration.selectedProfile.parameters,
       devices: configuration.selectedProfile.devices,
       complexModifications: SelectedProfile.ComplexModifications(

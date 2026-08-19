@@ -102,22 +102,22 @@ struct DevicesGamePadSettingsView: View {
     // Keep valid formula fields synchronized with configuration reloads, including changes made
     // in an external editor. Preserve an invalid local draft so it can still be corrected.
     .onChange(of: deviceConfiguration.gamePadStickXFormula) { value in
-      if !gamePadStickXFormulaError {
+      if !gamePadStickXFormulaError && gamePadStickXFormula != value {
         gamePadStickXFormula = value
       }
     }
     .onChange(of: deviceConfiguration.gamePadStickYFormula) { value in
-      if !gamePadStickYFormulaError {
+      if !gamePadStickYFormulaError && gamePadStickYFormula != value {
         gamePadStickYFormula = value
       }
     }
     .onChange(of: deviceConfiguration.gamePadStickVerticalWheelFormula) { value in
-      if !gamePadStickVerticalWheelFormulaError {
+      if !gamePadStickVerticalWheelFormulaError && gamePadStickVerticalWheelFormula != value {
         gamePadStickVerticalWheelFormula = value
       }
     }
     .onChange(of: deviceConfiguration.gamePadStickHorizontalWheelFormula) { value in
-      if !gamePadStickHorizontalWheelFormulaError {
+      if !gamePadStickHorizontalWheelFormulaError && gamePadStickHorizontalWheelFormula != value {
         gamePadStickHorizontalWheelFormula = value
       }
     }

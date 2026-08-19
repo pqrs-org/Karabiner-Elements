@@ -127,6 +127,161 @@ void run_core_configuration_test() {
     }
   };
 
+  "profile.ignore_pointing_device_events_by_default"_test = [] {
+    {
+      // The profile default is true and is omitted from JSON.
+
+      krbn::core_configuration::details::profile profile(nlohmann::json::object(),
+                                                         krbn::core_configuration::error_handling::strict);
+      expect(profile.get_ignore_pointing_device_events_by_default() == true);
+      expect(!profile.to_json().contains("ignore_pointing_device_events_by_default"));
+
+      // A pointing device without an explicit `ignore` value inherits the profile
+      // default.
+
+      auto device1_identifiers = nlohmann::json::object({
+                                                            {"vendor_id", 1234},
+                                                            {"product_id", 5678},
+                                                            {"is_pointing_device", true},
+                                                        })
+                                     .get<krbn::device_identifiers>();
+      auto device2_identifiers = nlohmann::json::object({
+                                                            {"vendor_id", 1235},
+                                                            {"product_id", 5678},
+                                                            {"is_pointing_device", true},
+                                                        })
+                                     .get<krbn::device_identifiers>();
+      auto device1 = profile.get_device(device1_identifiers);
+      auto device2 = profile.get_device(device2_identifiers);
+      expect(device1->get_ignore() == true);
+      expect(device2->get_ignore() == true);
+
+      // An explicitly configured value is serialized. `device2` remains
+      // unconfigured and continues to inherit the profile default.
+
+      device1->set_ignore(false);
+      expect(device1->to_json().at("ignore") == false);
+      expect(device2->to_json().empty());
+
+      // When the profile default changes to false, the explicit device value now
+      // equals the default, but it must remain configured and serialized.
+
+      profile.set_ignore_pointing_device_events_by_default(false);
+      expect(device1->get_ignore() == false);
+      expect(device1->to_json().at("ignore") == false);
+      expect(device2->get_ignore() == false);
+      expect(device2->to_json().empty());
+      expect(profile.to_json().at("ignore_pointing_device_events_by_default") == false);
+
+      // Serializing and reloading the profile must preserve the explicit device
+      // value even though it equals the profile default.
+
+      krbn::core_configuration::details::profile reloaded_profile(
+          profile.to_json(),
+          krbn::core_configuration::error_handling::strict);
+      auto reloaded_device1 = reloaded_profile.get_device(device1_identifiers);
+      auto reloaded_device2 = reloaded_profile.get_device(device2_identifiers);
+      expect(reloaded_device1->get_ignore() == false);
+      expect(reloaded_device2->get_ignore() == false);
+
+      // After reloading, changing the profile default back to true must not
+      // overwrite the explicit device value.
+
+      reloaded_profile.set_ignore_pointing_device_events_by_default(true);
+      expect(reloaded_device1->get_ignore() == false);
+      expect(reloaded_device1->to_json().at("ignore") == false);
+      expect(reloaded_device2->get_ignore() == true);
+      expect(reloaded_device2->to_json().empty());
+
+      // The same explicit value must also survive the default change without an
+      // intervening reload.
+
+      profile.set_ignore_pointing_device_events_by_default(true);
+      expect(device1->get_ignore() == false);
+      expect(device1->to_json().at("ignore") == false);
+      expect(device2->get_ignore() == true);
+      expect(device2->to_json().empty());
+      expect(!profile.to_json().contains("ignore_pointing_device_events_by_default"));
+    }
+
+    {
+      nlohmann::json json({
+          {"ignore_pointing_device_events_by_default", false},
+          {"devices", nlohmann::json::array({
+                          {
+                              {"identifiers", {
+                                                  {"vendor_id", 1234},
+                                                  {"product_id", 5678},
+                                                  {"is_pointing_device", true},
+                                              }},
+                          },
+                          {
+                              {"identifiers", {
+                                                  {"vendor_id", 1235},
+                                                  {"product_id", 5678},
+                                                  {"is_pointing_device", true},
+                                              }},
+                              {"ignore", true},
+                          },
+                          {
+                              {"identifiers", {
+                                                  {"vendor_id", 1236},
+                                                  {"product_id", 5678},
+                                                  {"is_keyboard", true},
+                                              }},
+                          },
+                      })},
+      });
+
+      krbn::core_configuration::details::profile profile(json,
+                                                         krbn::core_configuration::error_handling::strict);
+
+      // Values omitted from JSON inherit the profile default. Explicit values
+      // are preserved, and keyboard devices keep their own false default.
+
+      expect(profile.get_ignore_pointing_device_events_by_default() == false);
+      expect(profile.get_devices()[0]->get_ignore() == false);
+      expect(profile.get_devices()[1]->get_ignore() == true);
+      expect(profile.get_devices()[2]->get_ignore() == false);
+
+      // A pointing device created after loading the profile also inherits the
+      // current profile default.
+
+      auto identifiers = nlohmann::json::object({
+                                                    {"vendor_id", 1237},
+                                                    {"product_id", 5678},
+                                                    {"is_pointing_device", true},
+                                                })
+                             .get<krbn::device_identifiers>();
+      expect(profile.get_device(identifiers)->get_ignore() == false);
+
+      // Changing the profile default updates pointing devices without an
+      // explicit value, including devices created after loading. It does not
+      // overwrite the explicit true value or affect the keyboard device.
+
+      profile.set_ignore_pointing_device_events_by_default(true);
+      expect(profile.get_devices()[0]->get_ignore() == true);
+      expect(profile.get_devices()[1]->get_ignore() == true);
+      expect(profile.get_devices()[2]->get_ignore() == false);
+      expect(profile.get_device(identifiers)->get_ignore() == true);
+
+      // Only the explicitly configured value is serialized. The inherited
+      // value is omitted even when it currently has the same value.
+
+      expect(profile.get_devices()[0]->to_json().empty());
+      expect(profile.get_devices()[1]->to_json().at("ignore") == true);
+
+      // Changing the default back updates only the inherited pointing-device
+      // values, while the explicit true value remains unchanged.
+
+      profile.set_ignore_pointing_device_events_by_default(false);
+      expect(profile.get_devices()[0]->get_ignore() == false);
+      expect(profile.get_devices()[1]->get_ignore() == true);
+      expect(profile.get_devices()[2]->get_ignore() == false);
+      expect(profile.get_device(identifiers)->get_ignore() == false);
+    }
+  };
+
   "not found"_test = [] {
     {
       krbn::core_configuration::core_configuration configuration("json/not_found.json",
@@ -354,18 +509,21 @@ void run_core_configuration_test() {
       expect(profile.get_fn_function_keys()->get_pairs().size() == 12);
       expect(profile.get_devices().size() == 0);
 
-      expect(profile.get_device(krbn::device_identifiers({
-                                    .vendor_id = pqrs::hid::vendor_id::value_t(4176),
-                                    .product_id = pqrs::hid::product_id::value_t(1031),
-                                    .is_keyboard = true,
-                                }))
-                 ->get_ignore() == true);
-      expect(profile.get_device(krbn::device_identifiers({
-                                    .vendor_id = pqrs::hid::vendor_id::value_t(0x05ac),
-                                    .product_id = pqrs::hid::product_id::value_t(0x262),
-                                    .is_keyboard = true,
-                                }))
-                 ->get_ignore() == false);
+      auto yubikey = profile.get_device(krbn::device_identifiers({
+          .vendor_id = pqrs::hid::vendor_id::value_t(0x1050),
+          .product_id = pqrs::hid::product_id::value_t(0x407),
+          .is_keyboard = true,
+      }));
+      expect(yubikey->get_ignore() == true);
+      expect(yubikey->get_manipulate_caps_lock_led() == true);
+
+      auto apple_keyboard = profile.get_device(krbn::device_identifiers({
+          .vendor_id = pqrs::hid::vendor_id::value_t(0x05ac),
+          .product_id = pqrs::hid::product_id::value_t(0x262),
+          .is_keyboard = true,
+      }));
+      expect(apple_keyboard->get_ignore() == false);
+      expect(apple_keyboard->get_manipulate_caps_lock_led() == true);
     }
 
     // load values from json
@@ -897,6 +1055,7 @@ void run_core_configuration_test() {
         "is_pointing_device": true
       },
       "disable_built_in_keyboard_if_exists": true,
+      "ignore": true,
       "manipulate_caps_lock_led": false
     }
   ],

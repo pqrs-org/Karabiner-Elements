@@ -3,6 +3,7 @@
 #include "../../configuration_json_helper.hpp"
 #include "exprtk_utility.hpp"
 #include "simple_modifications.hpp"
+#include <functional>
 #include <pqrs/string.hpp>
 #include <ranges>
 #include <string_view>
@@ -10,6 +11,17 @@
 namespace krbn::core_configuration::details {
 class device final {
 public:
+  // Some default values depend on the device identifiers. For example, `ignore` is
+  // false for ordinary keyboards, but true for game pads. These values are resolved
+  // before loading the JSON values so that omitted values use the device-specific
+  // defaults and only explicit overrides are serialized.
+  struct default_values final {
+    bool ignore;
+    bool manipulate_caps_lock_led;
+  };
+
+  using default_values_resolver = std::function<default_values(const device_identifiers&)>;
+
   device(const device&) = delete;
 
   device()
@@ -19,16 +31,32 @@ public:
 
   device(const nlohmann::json& json,
          error_handling error_handling)
+      : device(json,
+               error_handling,
+               [](const auto&) {
+                 return default_values{
+                     .ignore = false,
+                     .manipulate_caps_lock_led = false,
+                 };
+               }) {
+  }
+
+  device(const nlohmann::json& json,
+         error_handling error_handling,
+         const default_values_resolver& resolve_default_values)
       : json_(json),
+        identifiers_(make_device_identifiers(json)),
+        ignore_(false),
+        ignore_configured_(false),
         simple_modifications_(std::make_shared<simple_modifications>()),
         fn_function_keys_(std::make_shared<simple_modifications>()) {
-    helper_values_.push_back_value<bool>("ignore",
-                                         ignore_,
-                                         false);
+    const auto default_values = resolve_default_values(identifiers_);
+
+    ignore_ = default_values.ignore;
 
     helper_values_.push_back_value<bool>("manipulate_caps_lock_led",
                                          manipulate_caps_lock_led_,
-                                         false);
+                                         default_values.manipulate_caps_lock_led);
 
     helper_values_.push_back_value<bool>("swap_grave_accent_and_non_us_backslash",
                                          swap_grave_accent_and_non_us_backslash_,
@@ -224,14 +252,23 @@ cos(radian) * m;
 
     helper_values_.update_value(json, error_handling);
 
-    for (const auto& [key, value] : json.items()) {
-      if (key == "identifiers") {
-        try {
-          identifiers_ = value.get<device_identifiers>();
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+    if (auto it = json.find("ignore");
+        it != std::end(json)) {
+      try {
+        pqrs::json::requires_boolean(*it, "`ignore`");
+        ignore_ = it->get<bool>();
+        ignore_configured_ = true;
+      } catch (const std::exception& e) {
+        if (error_handling == error_handling::strict) {
+          throw;
+        } else {
+          logger::get_logger()->warn(e.what());
         }
-      } else if (key == "simple_modifications") {
+      }
+    }
+
+    for (const auto& [key, value] : json.items()) {
+      if (key == "simple_modifications") {
         try {
           simple_modifications_->update(value);
         } catch (const pqrs::json::unmarshal_error& e) {
@@ -245,28 +282,6 @@ cos(radian) * m;
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
         }
       }
-    }
-
-    //
-    // Set special default value for specific devices.
-    //
-
-    // ignore_
-
-    if (identifiers_.get_is_pointing_device() ||
-        identifiers_.get_is_game_pad() ||
-        identifiers_.get_is_consumer() ||
-        // YubiKey token
-        identifiers_.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x1050)) {
-      helper_values_.set_default_value(ignore_,
-                                       true);
-    }
-
-    // manipulate_caps_lock_led_
-
-    if (identifiers_.get_is_keyboard()) {
-      helper_values_.set_default_value(manipulate_caps_lock_led_,
-                                       true);
     }
 
     //
@@ -293,6 +308,12 @@ cos(radian) * m;
     auto j = json_;
 
     helper_values_.update_json(j);
+
+    if (ignore_configured_) {
+      j["ignore"] = ignore_;
+    } else {
+      j.erase("ignore");
+    }
 
     j["identifiers"] = identifiers_;
 
@@ -334,6 +355,18 @@ cos(radian) * m;
   }
   void set_ignore(bool value) {
     ignore_ = value;
+    ignore_configured_ = true;
+
+    coordinate_between_properties();
+  }
+
+  void update_default_values(const default_values& values) {
+    if (!ignore_configured_) {
+      ignore_ = values.ignore;
+    }
+
+    helper_values_.set_default_value(manipulate_caps_lock_led_,
+                                     values.manipulate_caps_lock_led);
 
     coordinate_between_properties();
   }
@@ -639,6 +672,19 @@ cos(radian) * m;
   }
 
 private:
+  [[nodiscard]] static device_identifiers make_device_identifiers(const nlohmann::json& json) {
+    if (auto it = json.find("identifiers");
+        it != std::end(json)) {
+      try {
+        return it->get<device_identifiers>();
+      } catch (const pqrs::json::unmarshal_error& e) {
+        throw pqrs::json::unmarshal_error(fmt::format("`identifiers` error: {0}", e.what()));
+      }
+    }
+
+    return device_identifiers();
+  }
+
   void coordinate_between_properties() {
     // Set `disable_built_in_keyboard_if_exists_` false if `treat_as_built_in_keyboard_` is true.
     // If both settings are true, the device will always be disabled.
@@ -651,6 +697,29 @@ private:
   nlohmann::json json_;
   device_identifiers identifiers_;
   bool ignore_;
+  // The default value of `ignore_` can change at runtime, most notably when the
+  // profile's `ignore_pointing_device_events_by_default` setting changes. An
+  // explicitly configured value can then temporarily equal the new default. Keep
+  // track of that explicitness and continue serializing the value; otherwise, a
+  // subsequent profile default change would incorrectly treat it as inherited and
+  // overwrite the user's device-specific choice.
+  //
+  // For example, consider a pointing device for which the user explicitly enables
+  // event modification (`ignore_ == false`):
+  //
+  // ignore_pointing_device_events_by_default | configured | default | ignore_ | JSON
+  // ----------------------------------------- | ---------- | ------- | ------- | -----
+  // true                                      | false      | true    | true    | omitted
+  // true                                      | true       | true    | false   | false
+  // false                                     | true       | false   | false   | false
+  // true                                      | true       | true    | false   | false
+  //
+  // Without `ignore_configured_`, the explicit `ignore_ == false` from the second
+  // row would become indistinguishable from an inherited value in the third row,
+  // where it equals the new default. The value would then be omitted from JSON and
+  // changed back to true along with the default in the fourth row. Keeping it
+  // configured preserves the user's device-specific choice throughout the change.
+  bool ignore_configured_;
   bool manipulate_caps_lock_led_;
   // macOS maps these two HID usages differently depending on the keyboard's
   // device type. This setting compensates when the physical device and the

@@ -3,15 +3,11 @@
 #include "logger.hpp"
 #include "types.hpp"
 #include <chrono>
+#include <functional>
 #include <pqrs/gsl.hpp>
 #include <pqrs/json.hpp>
 
 namespace krbn::core_configuration::configuration_json_helper {
-
-enum class value_origin {
-  default_value,
-  json,
-};
 
 class base_t {
 public:
@@ -30,8 +26,7 @@ public:
           const T& default_value)
       : key_(key),
         value_(value),
-        default_value_(default_value),
-        value_origin_(value_origin::default_value) {
+        default_value_(default_value) {
     value_ = default_value_;
   }
 
@@ -48,10 +43,12 @@ public:
   }
 
   void set_default_value(const T& value) {
+    const auto uses_default_value = (value_ == default_value_);
+
     default_value_ = value;
 
-    if (value_origin_ == value_origin::default_value) {
-      value_ = value;
+    if (uses_default_value) {
+      value_ = default_value_;
     }
   }
 
@@ -83,8 +80,6 @@ public:
 
         value_ = it->template get<T>();
       }
-
-      value_origin_ = value_origin::json;
 
     } catch (std::exception& e) {
       if (error_handling == error_handling::strict) {
@@ -118,7 +113,6 @@ private:
   std::string key_;
   T& value_;
   T default_value_;
-  value_origin value_origin_;
 };
 
 template <typename T>
@@ -166,10 +160,23 @@ private:
 template <typename T>
 class array_t final : public base_t {
 public:
+  using value_factory = std::function<pqrs::not_null_shared_ptr_t<T>(const nlohmann::json&, error_handling)>;
+
   array_t(const std::string& key,
           std::vector<pqrs::not_null_shared_ptr_t<T>>& value)
+      : array_t(key,
+                value,
+                [](const auto& json, auto error_handling) {
+                  return std::make_shared<T>(json, error_handling);
+                }) {
+  }
+
+  array_t(const std::string& key,
+          std::vector<pqrs::not_null_shared_ptr_t<T>>& value,
+          value_factory factory)
       : key_(key),
-        value_(value) {
+        value_(value),
+        factory_(std::move(factory)) {
   }
 
   [[nodiscard]] const std::string& get_key() const override {
@@ -189,8 +196,7 @@ public:
 
     for (const auto& j : *it) {
       try {
-        value_.push_back(std::make_shared<T>(j,
-                                             error_handling));
+        value_.push_back(factory_(j, error_handling));
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key_, e.what()));
       }
@@ -217,6 +223,7 @@ public:
 private:
   std::string key_;
   std::vector<pqrs::not_null_shared_ptr_t<T>>& value_;
+  value_factory factory_;
 };
 
 class helper_values final {
@@ -242,6 +249,15 @@ public:
                        std::vector<pqrs::not_null_shared_ptr_t<T>>& value) {
     values_.push_back(std::make_shared<array_t<T>>(key,
                                                    value));
+  }
+
+  template <typename T>
+  void push_back_array(const std::string& key,
+                       std::vector<pqrs::not_null_shared_ptr_t<T>>& value,
+                       typename array_t<T>::value_factory factory) {
+    values_.push_back(std::make_shared<array_t<T>>(key,
+                                                   value,
+                                                   std::move(factory)));
   }
 
   void update_value(const nlohmann::json& json,

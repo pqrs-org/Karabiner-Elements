@@ -246,73 +246,6 @@ void run_device_test() {
                                                       ")");
     }
 
-    // Special default value for specific devices
-    {
-      // ignore_ == true if is_pointing_device
-
-      nlohmann::json json({
-          {"identifiers", {
-                              {"vendor_id", 1234},
-                              {"product_id", 5678},
-                              {"is_pointing_device", true},
-                          }},
-      });
-      {
-        krbn::core_configuration::details::device device(json,
-                                                         krbn::core_configuration::error_handling::strict);
-        expect(device.get_ignore() == true);
-      }
-      {
-        json["ignore"] = false;
-        krbn::core_configuration::details::device device(json,
-                                                         krbn::core_configuration::error_handling::strict);
-        expect(device.get_ignore() == false);
-      }
-    }
-    {
-      // ignore_ == true for specific devices
-
-      nlohmann::json json({
-          {"identifiers", {
-                              {"vendor_id", 0x1050},
-                              {"product_id", 0x407},
-                              {"is_keyboard", true},
-                          }},
-      });
-      {
-        krbn::core_configuration::details::device device(json,
-                                                         krbn::core_configuration::error_handling::strict);
-        expect(device.get_ignore() == true);
-      }
-      {
-        json["ignore"] = false;
-        krbn::core_configuration::details::device device(json,
-                                                         krbn::core_configuration::error_handling::strict);
-        expect(device.get_ignore() == false);
-      }
-    }
-    {
-      // manipulate_caps_lock_led_ == true for specific devices
-
-      nlohmann::json json({
-          {"identifiers", {
-                              {"vendor_id", 0x5ac},
-                              {"product_id", 0x262},
-                              {"is_keyboard", true},
-                          }},
-      });
-      {
-        krbn::core_configuration::details::device device(json,
-                                                         krbn::core_configuration::error_handling::strict);
-        expect(device.get_manipulate_caps_lock_led() == true);
-      }
-      {
-        json["manipulate_caps_lock_led"] = false;
-        krbn::core_configuration::details::device device(json,
-                                                         krbn::core_configuration::error_handling::strict);
-        expect(device.get_manipulate_caps_lock_led() == false);
-      }
-    }
     // Coordinate between settings
     {
       nlohmann::json json({
@@ -408,7 +341,13 @@ void run_device_test() {
           {"game_pad_stick_horizontal_wheel_formula", "sgn(cos(radian))"},
       });
       krbn::core_configuration::details::device device(json,
-                                                       krbn::core_configuration::error_handling::strict);
+                                                       krbn::core_configuration::error_handling::strict,
+                                                       [](const auto&) {
+                                                         return krbn::core_configuration::details::device::default_values{
+                                                             .ignore = false,
+                                                             .manipulate_caps_lock_led = true,
+                                                         };
+                                                       });
       nlohmann::json expected({
           {"dummy", {{"keep_me", true}}},
           {"identifiers", {

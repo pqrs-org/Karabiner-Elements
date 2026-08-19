@@ -165,6 +165,13 @@ public:
         }
       }
 
+      // Apply this value after the device values so devices which use the default
+      // are not converted into explicit overrides by stale snapshot values.
+      changed |= apply_value<bool>(selected_profile_json,
+                                   "ignore_pointing_device_events_by_default",
+                                   selected_profile.get_ignore_pointing_device_events_by_default(),
+                                   [&](auto value) { selected_profile.set_ignore_pointing_device_events_by_default(value); });
+
       if (const auto complex_modifications_it = selected_profile_json.find("complex_modifications");
           complex_modifications_it != selected_profile_json.end()) {
         if (const auto parameters_it = complex_modifications_it->find("parameters");

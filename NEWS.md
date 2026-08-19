@@ -12,6 +12,7 @@
     - Added `--set-variables-from-stdin` option to karabiner_cli.
     - Added appearance settings for the notification window. (Thanks to @xianjianlf2)
     - Added the `duration_milliseconds` option to `set_notification_message`. (Thanks to @xianjianlf2)
+    - Added the `Modify events for pointing devices by default` setting to Expert tab. (Thanks to @xianjianlf2)
 - 🐛 Bug Fixes
     - Fixed CGEventTap leaks (Thanks to @MrMage and @VitalyShein)
 - ⚡️ Improvements
