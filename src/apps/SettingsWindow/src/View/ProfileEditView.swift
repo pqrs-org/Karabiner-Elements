@@ -15,6 +15,9 @@ struct ProfileEditView: View {
           HStack {
             Text("Profile name:")
             TextField("Profile name", text: $name)
+              .onSubmit {
+                save()
+              }
           }
 
           if let errorMessage {
@@ -33,14 +36,7 @@ struct ProfileEditView: View {
 
             Button(
               action: {
-                guard expectedConfigurationGeneration == settings.configurationGeneration else {
-                  errorMessage =
-                    "The configuration has changed. Close this editor and try again."
-                  return
-                }
-
-                settings.updateProfileName(profile!, name)
-                showing = false
+                save()
               },
               label: {
                 Label("Save", systemImage: "checkmark")
@@ -48,6 +44,7 @@ struct ProfileEditView: View {
               }
             )
             .buttonStyle(BorderedProminentButtonStyle())
+            .keyboardShortcut("s")
             .padding(.leading, 24.0)
           }
           .frame(maxWidth: .infinity, alignment: .center)
@@ -61,5 +58,15 @@ struct ProfileEditView: View {
       name = profile?.name ?? ""
       expectedConfigurationGeneration = settings.configurationGeneration
     }
+  }
+
+  private func save() {
+    guard expectedConfigurationGeneration == settings.configurationGeneration else {
+      errorMessage = "The configuration has changed. Close this editor and try again."
+      return
+    }
+
+    settings.updateProfileName(profile!, name)
+    showing = false
   }
 }
