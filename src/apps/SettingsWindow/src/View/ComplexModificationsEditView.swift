@@ -302,6 +302,8 @@ struct ComplexModificationsEditView: View {
       if errorMessage == nil {
         // Set index to call replaceComplexModificationsRule on the next save.
         rule!.index = 0
+        // The Settings update synchronously reloads the snapshot and may advance its generation.
+        // Follow that generation so the next save from the external editor remains valid.
         expectedConfigurationGeneration = settings.configurationGeneration
         return true
       }
@@ -311,6 +313,8 @@ struct ComplexModificationsEditView: View {
         codeString: codeString,
         codeType: codeType)
       if errorMessage == nil {
+        // The Settings update synchronously reloads the snapshot and may advance its generation.
+        // Follow that generation so the next save from the external editor remains valid.
         expectedConfigurationGeneration = settings.configurationGeneration
         return true
       }
