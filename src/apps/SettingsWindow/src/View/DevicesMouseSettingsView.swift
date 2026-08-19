@@ -60,6 +60,6 @@ struct DevicesMouseSettingsView: View {
       }
     }
     .padding()
-    .frame(width: 1000, height: 600, alignment: .top)
+    .frame(height: 600, alignment: .top)
   }
 }
