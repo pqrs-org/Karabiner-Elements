@@ -2,6 +2,9 @@
 
 ## Beta
 
+- 🔔 Important Notes
+    - When upgrading from v15.9.0 or earlier, automatic startup of the Karabiner-Elements services will be disabled.
+      After upgrading, open Karabiner-Elements.app to re-enable automatic startup.
 - 💥 Breaking changes
     - Integrated the Multitouch Extension menu into the Karabiner-Elements menu.
       Open the Multitouch Extension settings from the Karabiner-Elements menu.
