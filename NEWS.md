@@ -19,6 +19,7 @@
 - 🐛 Bug Fixes
     - Fixed CGEventTap leaks (Thanks to @MrMage and @VitalyShein)
 - ⚡️ Improvements
+    - Improved the handling of macOS sleep shortcuts to prevent key-up events from immediately waking the Mac.
     - Fixed an issue where the core service agent could rarely abort during termination.
     - Fixed an issue where modifications could stop working for several seconds after waking from sleep on macOS.
     - Karabiner-EventViewer and the Settings window are now closed after an upgrade.
