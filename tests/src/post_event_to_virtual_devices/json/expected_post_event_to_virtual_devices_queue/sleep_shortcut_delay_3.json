@@ -1,0 +1,18 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [{ "key_code": "escape" }],
+            "modifiers": []
+        },
+        "time_stamp": 510,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 515,
+        "type": "keyboard_input"
+    }
+]

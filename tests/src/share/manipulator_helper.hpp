@@ -164,7 +164,7 @@ public:
       std::ifstream ifs(test["input_event_queue"].get<std::string>());
       expect(static_cast<bool>(ifs));
       for (const auto& j : json_utility::parse_jsonc(ifs)) {
-        enqueue_to_dispatcher([this, core_configuration, connector, event_queues, j, &pause_manipulation] {
+        enqueue_to_dispatcher([this, core_configuration, connector, event_queues, post_event_to_virtual_devices_manipulator, j, &pause_manipulation] {
           if (auto s = pqrs::json::find<std::string>(j, "action")) {
             if (*s == "invalidate_manipulators") {
               connector->invalidate_manipulators();
@@ -197,6 +197,13 @@ public:
 
           } else if (auto v = pqrs::json::find<bool>(j, "reorder_same_timestamp_input_events_to_prioritize_modifiers")) {
             core_configuration->get_global_configuration().set_reorder_same_timestamp_input_events_to_prioritize_modifiers(*v);
+
+          } else if (auto v = pqrs::json::find<int>(j, "delay_milliseconds_before_sleep_shortcut")) {
+            core_configuration->get_global_configuration().set_delay_milliseconds_before_sleep_shortcut(*v);
+            if (post_event_to_virtual_devices_manipulator) {
+              post_event_to_virtual_devices_manipulator->set_sleep_shortcut_delay(
+                  std::chrono::milliseconds(core_configuration->get_global_configuration().get_delay_milliseconds_before_sleep_shortcut()));
+            }
 
           } else {
             auto e = event_queue::entry::make_from_json(j);

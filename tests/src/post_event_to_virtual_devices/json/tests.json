@@ -60,6 +60,24 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_between_events_1.json"
     },
     {
+        "description": "delay macOS sleep shortcut by default",
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue": "json/input_event_queue/sleep_shortcut_delay_1.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sleep_shortcut_delay_1.json"
+    },
+    {
+        "description": "disable macOS sleep shortcut delay",
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue": "json/input_event_queue/sleep_shortcut_delay_2.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sleep_shortcut_delay_2.json"
+    },
+    {
+        "description": "delay Escape at the macOS login window",
+        "rules": ["json/rules/empty.json"],
+        "input_event_queue": "json/input_event_queue/sleep_shortcut_delay_3.json",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sleep_shortcut_delay_3.json"
+    },
+    {
         "description": "wait_between_events_2 (key_up and single)",
         "rules": ["json/rules/empty.json"],
         "input_event_queue": "json/input_event_queue/wait_between_events_2.json",

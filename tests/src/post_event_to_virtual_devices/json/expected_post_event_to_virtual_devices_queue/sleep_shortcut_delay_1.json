@@ -1,0 +1,62 @@
+[
+    {
+        "keyboard_input": { "keys": [], "modifiers": ["left_command"] },
+        "time_stamp": 5,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": { "keys": [], "modifiers": ["left_option", "left_command"] },
+        "time_stamp": 10,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": { "keys": [{ "key_code": "power" }], "modifiers": ["left_option", "left_command"] },
+        "time_stamp": 520,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": { "keys": [], "modifiers": ["left_option", "left_command"] },
+        "time_stamp": 525,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": { "keys": [], "modifiers": ["left_command"] },
+        "time_stamp": 530,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": { "keys": [], "modifiers": [] },
+        "time_stamp": 535,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": { "keys": [], "modifiers": ["right_command"] },
+        "time_stamp": 1000,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": { "keys": [], "modifiers": ["right_option", "right_command"] },
+        "time_stamp": 1010,
+        "type": "keyboard_input"
+    },
+    {
+        "consumer_input": { "keys": [{ "consumer_key_code": "eject" }] },
+        "time_stamp": 1520,
+        "type": "consumer_input"
+    },
+    {
+        "consumer_input": { "keys": [] },
+        "time_stamp": 1525,
+        "type": "consumer_input"
+    },
+    {
+        "keyboard_input": { "keys": [], "modifiers": ["right_command"] },
+        "time_stamp": 1530,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": { "keys": [], "modifiers": [] },
+        "time_stamp": 1535,
+        "type": "keyboard_input"
+    }
+]

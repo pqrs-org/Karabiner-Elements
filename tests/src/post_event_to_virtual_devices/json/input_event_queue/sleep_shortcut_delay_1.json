@@ -1,0 +1,74 @@
+[
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "left_command" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 0 },
+        "event_type": "key_down"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "left_option" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 10 },
+        "event_type": "key_down"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "power" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 20 },
+        "event_type": "key_down"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "power" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 30 },
+        "event_type": "key_up"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "left_option" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 40 },
+        "event_type": "key_up"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "left_command" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 50 },
+        "event_type": "key_up"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "right_command" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1000 },
+        "event_type": "key_down"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "right_option" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1010 },
+        "event_type": "key_down"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "consumer_key_code": "eject" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1020 },
+        "event_type": "key_down"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "consumer_key_code": "eject" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1030 },
+        "event_type": "key_up"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "right_option" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1040 },
+        "event_type": "key_up"
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "right_command" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 1050 },
+        "event_type": "key_up"
+    }
+]

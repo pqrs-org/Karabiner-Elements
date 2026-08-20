@@ -121,7 +121,13 @@ public:
     nlohmann::json to_json() const {
       nlohmann::json json;
       json["type"] = to_c_string(type_);
-      json["time_stamp"] = pqrs::osx::chrono::make_milliseconds(time_stamp_ - absolute_time_point(0)).count();
+
+      // Use round instead of pqrs::osx::chrono::make_milliseconds, which uses duration_cast
+      // and truncates fractional milliseconds. Conversion from Mach absolute time can produce
+      // a value slightly below an exact millisecond boundary (e.g., 524.999... ms for 525 ms).
+      json["time_stamp"] = std::chrono::round<std::chrono::milliseconds>(
+                               pqrs::osx::chrono::make_nanoseconds(time_stamp_ - absolute_time_point(0)))
+                               .count();
 
       switch (type_) {
         case type::keyboard_input:

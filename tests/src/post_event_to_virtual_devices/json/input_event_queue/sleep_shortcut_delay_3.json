@@ -1,0 +1,32 @@
+[
+    {
+        "device_id": 0,
+        "event": {
+            "frontmost_application": {
+                "bundle_identifier": "com.apple.loginwindow",
+                "detection_source": "workspace"
+            },
+            "type": "frontmost_application_changed"
+        },
+        "event_time_stamp": { "time_stamp": 0 },
+        "event_type": "single"
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "escape" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 10 },
+        "event_type": "key_down"
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "momentary_switch_event": { "key_code": "escape" },
+            "type": "momentary_switch_event"
+        },
+        "event_time_stamp": { "time_stamp": 20 },
+        "event_type": "key_up"
+    }
+]
