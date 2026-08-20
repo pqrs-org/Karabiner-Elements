@@ -71,6 +71,10 @@ public:
                                          enable_cgeventtap_fallback_,
                                          false);
 
+    helper_values_.push_back_value<int>("delay_milliseconds_before_sleep_shortcut",
+                                        delay_milliseconds_before_sleep_shortcut_,
+                                        500);
+
     pqrs::json::requires_object(json, "json");
 
     if (!json_.contains("check_for_updates") &&
@@ -84,6 +88,7 @@ public:
 
     set_notification_window_position(notification_window_position_);
     set_notification_window_font_size(notification_window_font_size_);
+    set_delay_milliseconds_before_sleep_shortcut(delay_milliseconds_before_sleep_shortcut_);
   }
 
   nlohmann::json to_json() const {
@@ -196,6 +201,13 @@ public:
     enable_cgeventtap_fallback_ = value;
   }
 
+  [[nodiscard]] const int& get_delay_milliseconds_before_sleep_shortcut() const {
+    return delay_milliseconds_before_sleep_shortcut_;
+  }
+  void set_delay_milliseconds_before_sleep_shortcut(int value) {
+    delay_milliseconds_before_sleep_shortcut_ = std::clamp(value, 0, 10000);
+  }
+
 private:
   nlohmann::json json_;
   bool check_for_updates_;
@@ -212,6 +224,7 @@ private:
   bool filter_useless_events_from_specific_devices_;
   bool reorder_same_timestamp_input_events_to_prioritize_modifiers_;
   bool enable_cgeventtap_fallback_;
+  int delay_milliseconds_before_sleep_shortcut_;
   configuration_json_helper::helper_values helper_values_;
 };
 

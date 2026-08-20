@@ -28,6 +28,7 @@ void run_global_configuration_test() {
       expect(global_configuration.get_filter_useless_events_from_specific_devices() == true);
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
       expect(global_configuration.get_enable_cgeventtap_fallback() == false);
+      expect(global_configuration.get_delay_milliseconds_before_sleep_shortcut() == 500);
     }
 
     // load values from json
@@ -59,6 +60,7 @@ void run_global_configuration_test() {
           {"filter_useless_events_from_specific_devices", false},
           {"reorder_same_timestamp_input_events_to_prioritize_modifiers", false},
           {"enable_cgeventtap_fallback", true},
+          {"delay_milliseconds_before_sleep_shortcut", 250},
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::strict);
@@ -80,6 +82,7 @@ void run_global_configuration_test() {
       expect(global_configuration.get_filter_useless_events_from_specific_devices() == false);
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == false);
       expect(global_configuration.get_enable_cgeventtap_fallback() == true);
+      expect(global_configuration.get_delay_milliseconds_before_sleep_shortcut() == 250);
 
       //
       // Set default values
@@ -102,6 +105,7 @@ void run_global_configuration_test() {
       global_configuration.set_filter_useless_events_from_specific_devices(true);
       global_configuration.set_reorder_same_timestamp_input_events_to_prioritize_modifiers(true);
       global_configuration.set_enable_cgeventtap_fallback(false);
+      global_configuration.set_delay_milliseconds_before_sleep_shortcut(500);
       nlohmann::json j(global_configuration);
       expect(j.empty());
     }
@@ -123,6 +127,7 @@ void run_global_configuration_test() {
           {"filter_useless_events_from_specific_devices", nlohmann::json::object()},
           {"reorder_same_timestamp_input_events_to_prioritize_modifiers", nlohmann::json::object()},
           {"enable_cgeventtap_fallback", nlohmann::json::object()},
+          {"delay_milliseconds_before_sleep_shortcut", nlohmann::json::object()},
       };
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::loose);
@@ -140,6 +145,7 @@ void run_global_configuration_test() {
       expect(global_configuration.get_filter_useless_events_from_specific_devices() == true);
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
       expect(global_configuration.get_enable_cgeventtap_fallback() == false);
+      expect(global_configuration.get_delay_milliseconds_before_sleep_shortcut() == 500);
     }
 
     // invalid notification_window_position in json
@@ -161,6 +167,17 @@ void run_global_configuration_test() {
 
       global_configuration.set_notification_window_font_size(65);
       expect(global_configuration.get_notification_window_font_size() == 64);
+    }
+
+    // clamp delay_milliseconds_before_sleep_shortcut
+    {
+      krbn::core_configuration::details::global_configuration global_configuration(
+          nlohmann::json({{"delay_milliseconds_before_sleep_shortcut", -1}}),
+          krbn::core_configuration::error_handling::strict);
+      expect(global_configuration.get_delay_milliseconds_before_sleep_shortcut() == 0);
+
+      global_configuration.set_delay_milliseconds_before_sleep_shortcut(10001);
+      expect(global_configuration.get_delay_milliseconds_before_sleep_shortcut() == 10000);
     }
 
     // invalid notification window colors in json

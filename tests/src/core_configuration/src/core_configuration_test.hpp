@@ -116,6 +116,7 @@ void run_core_configuration_test() {
     expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == false);
     expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == false);
     expect(configuration.get_global_configuration().get_enable_cgeventtap_fallback() == true);
+    expect(configuration.get_global_configuration().get_delay_milliseconds_before_sleep_shortcut() == 250);
 
     expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
     expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::user_file);
@@ -361,6 +362,7 @@ void run_core_configuration_test() {
       expect(configuration.get_global_configuration().get_filter_useless_events_from_specific_devices() == true);
       expect(configuration.get_global_configuration().get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
       expect(configuration.get_global_configuration().get_enable_cgeventtap_fallback() == false);
+      expect(configuration.get_global_configuration().get_delay_milliseconds_before_sleep_shortcut() == 500);
       expect(configuration.get_profiles().size() == 1);
       expect((configuration.get_profiles())[0]->get_name() == "Default profile");
       expect((configuration.get_profiles())[0]->get_selected() == true);
@@ -426,6 +428,7 @@ void run_core_configuration_test() {
       global_configuration.set_filter_useless_events_from_specific_devices(false);
       global_configuration.set_reorder_same_timestamp_input_events_to_prioritize_modifiers(false);
       global_configuration.set_enable_cgeventtap_fallback(true);
+      global_configuration.set_delay_milliseconds_before_sleep_shortcut(250);
       nlohmann::json expected({
           {"check_for_updates", false},
           {"dummy", {{"keep_me", true}}},
@@ -436,6 +439,7 @@ void run_core_configuration_test() {
           {"filter_useless_events_from_specific_devices", false},
           {"reorder_same_timestamp_input_events_to_prioritize_modifiers", false},
           {"enable_cgeventtap_fallback", true},
+          {"delay_milliseconds_before_sleep_shortcut", 250},
       });
       expect(global_configuration.to_json() == expected);
     }

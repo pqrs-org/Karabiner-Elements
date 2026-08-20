@@ -5,7 +5,8 @@
         "unsafe_ui": true,
         "filter_useless_events_from_specific_devices": false,
         "reorder_same_timestamp_input_events_to_prioritize_modifiers": false,
-        "enable_cgeventtap_fallback": true
+        "enable_cgeventtap_fallback": true,
+        "delay_milliseconds_before_sleep_shortcut": 250
     },
     "profiles": [
         {
