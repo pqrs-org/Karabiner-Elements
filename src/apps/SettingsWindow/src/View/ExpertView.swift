@@ -124,6 +124,30 @@ struct ExpertView: View {
           .padding()
           .frame(maxWidth: .infinity, alignment: .leading)
         }
+
+        GroupBox(label: Text("Delay before sending sleep shortcut key-down events")) {
+          VStack(alignment: .leading, spacing: 4.0) {
+            HStack {
+              IntTextField(
+                value: $settings.configuration.globalConfiguration
+                  .delayMillisecondsBeforeSleepShortcut,
+                range: 0...10000,
+                step: 100,
+                width: 50)
+
+              Text("milliseconds (Default value is 500; 0 disables delay)")
+            }
+
+            Label(
+              "Karabiner-Elements delays the key-down event of the macOS sleep shortcut (command+option+power, command+option+eject, or escape at the login window). This prevents the shortcut's release events from waking the Mac immediately after sleep.",
+              systemImage: InfoBorder.icon
+            )
+            .modifier(InfoBorder())
+            .fixedSize(horizontal: false, vertical: true)
+          }
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
+        }
       }
       .padding()
     }

@@ -58,6 +58,7 @@ public:
              {"filter_useless_events_from_specific_devices", global.get_filter_useless_events_from_specific_devices()},
              {"reorder_same_timestamp_input_events_to_prioritize_modifiers", global.get_reorder_same_timestamp_input_events_to_prioritize_modifiers()},
              {"enable_cgeventtap_fallback", global.get_enable_cgeventtap_fallback()},
+             {"delay_milliseconds_before_sleep_shortcut", global.get_delay_milliseconds_before_sleep_shortcut()},
          }},
         {"machine_specific",
          {

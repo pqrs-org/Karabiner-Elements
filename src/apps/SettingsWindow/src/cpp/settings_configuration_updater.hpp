@@ -97,6 +97,10 @@ public:
                                    "enable_cgeventtap_fallback",
                                    global.get_enable_cgeventtap_fallback(),
                                    [&](auto value) { global.set_enable_cgeventtap_fallback(value); });
+      changed |= apply_value<int>(global_json,
+                                  "delay_milliseconds_before_sleep_shortcut",
+                                  global.get_delay_milliseconds_before_sleep_shortcut(),
+                                  [&](auto value) { global.set_delay_milliseconds_before_sleep_shortcut(value); });
     }
 
     if (const auto it = json.find("machine_specific"); it != json.end()) {

@@ -46,6 +46,7 @@ struct SettingsConfiguration: Decodable {
     var filterUselessEventsFromSpecificDevices: Bool
     var reorderSameTimestampInputEventsToPrioritizeModifiers: Bool
     var enableCgeventtapFallback: Bool
+    var delayMillisecondsBeforeSleepShortcut: Int
   }
 
   struct MachineSpecific: Codable {
