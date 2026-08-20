@@ -143,12 +143,17 @@ public:
 
               } else if (!front_input_event_modifier_key_event) {
                 switch (front_input_event.get_event_type()) {
-                  case event_type::key_down:
+                  case event_type::key_down: {
+                    const auto time_stamp = make_time_stamp_with_sleep_shortcut_delay_if_needed(
+                        *e,
+                        *output_event_queue,
+                        front_input_event.get_event_time_stamp().get_time_stamp());
+
                     key_event_dispatcher_.dispatch_key_down_event(front_input_event.get_device_id(),
                                                                   e->get_usage_pair(),
                                                                   queue_,
-                                                                  front_input_event.get_event_time_stamp().get_time_stamp());
-                    break;
+                                                                  time_stamp);
+                  } break;
 
                   case event_type::key_up:
                     key_event_dispatcher_.dispatch_key_up_event(e->get_usage_pair(),
@@ -405,6 +410,10 @@ public:
     queue_.set_cgeventtap_fallback_enabled(value);
   }
 
+  void set_sleep_shortcut_delay(std::chrono::milliseconds value) {
+    sleep_shortcut_delay_ = value;
+  }
+
   void async_post_events(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
     enqueue_to_dispatcher(
         [this, weak_virtual_hid_device_service_client] {
@@ -469,6 +478,64 @@ public:
   }
 
 private:
+  [[nodiscard]] absolute_time_point make_time_stamp_with_sleep_shortcut_delay_if_needed(
+      const momentary_switch_event& event,
+      const event_queue::queue& output_event_queue,
+      absolute_time_point time_stamp) const {
+    const auto usage_pair = event.get_usage_pair();
+    const auto usage_page = usage_pair.get_usage_page();
+    const auto usage = usage_pair.get_usage();
+
+    //
+    // command+option+power or command+option+eject
+    //
+
+    const auto power_or_eject =
+        (usage_page == pqrs::hid::usage_page::keyboard_or_keypad &&
+         usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_power) ||
+        (usage_page == pqrs::hid::usage_page::consumer &&
+         (usage == pqrs::hid::usage::consumer::power ||
+          usage == pqrs::hid::usage::consumer::eject));
+
+    if (power_or_eject) {
+      const auto& modifier_flag_manager = output_event_queue.get_modifier_flag_manager();
+      const auto option_pressed =
+          modifier_flag_manager.is_pressed(modifier_flag::left_option) ||
+          modifier_flag_manager.is_pressed(modifier_flag::right_option);
+      const auto command_pressed =
+          modifier_flag_manager.is_pressed(modifier_flag::left_command) ||
+          modifier_flag_manager.is_pressed(modifier_flag::right_command);
+
+      if (option_pressed && command_pressed) {
+        return make_time_stamp_with_sleep_shortcut_delay(time_stamp);
+      }
+    }
+
+    //
+    // escape at the login window
+    //
+
+    if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad &&
+        usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_escape) {
+      const auto& bundle_identifier =
+          output_event_queue.get_manipulator_environment().get_frontmost_application().get_bundle_identifier();
+
+      // Escape puts macOS to sleep at the login window, so delay its key-down event
+      // to prevent the following key-up event from waking macOS immediately.
+      if (bundle_identifier &&
+          *bundle_identifier == "com.apple.loginwindow") {
+        return make_time_stamp_with_sleep_shortcut_delay(time_stamp);
+      }
+    }
+
+    return time_stamp;
+  }
+
+  [[nodiscard]] absolute_time_point make_time_stamp_with_sleep_shortcut_delay(absolute_time_point time_stamp) const {
+    return time_stamp +
+           pqrs::osx::chrono::make_absolute_time_duration(sleep_shortcut_delay_);
+  }
+
   void post_pointing_input_report(event_queue::entry& front_input_event,
                                   std::shared_ptr<event_queue::queue> output_event_queue) {
     pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input report;
@@ -534,6 +601,7 @@ private:
   pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression_;
 
   queue queue_;
+  std::chrono::milliseconds sleep_shortcut_delay_{500};
   key_event_dispatcher key_event_dispatcher_;
   std::unique_ptr<mouse_key_handler> mouse_key_handler_;
   pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::buttons pressed_buttons_;

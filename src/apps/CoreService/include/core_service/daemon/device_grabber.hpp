@@ -200,6 +200,8 @@ public:
             weak_console_user_server_peer_,
             notification_message_manager_);
     post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
+    post_event_to_virtual_devices_manipulator_->set_sleep_shortcut_delay(
+        std::chrono::milliseconds(core_configuration_->get_global_configuration().get_delay_milliseconds_before_sleep_shortcut()));
     post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
 
     // Connect manipulator_managers
@@ -505,6 +507,11 @@ public:
           auto& profile = core_configuration_->get_selected_profile();
 
           set_cgeventtap_fallback_enabled(core_configuration_->get_global_configuration().get_enable_cgeventtap_fallback());
+
+          if (post_event_to_virtual_devices_manipulator_) {
+            post_event_to_virtual_devices_manipulator_->set_sleep_shortcut_delay(
+                std::chrono::milliseconds(core_configuration_->get_global_configuration().get_delay_milliseconds_before_sleep_shortcut()));
+          }
 
           if (hid_manager_) {
             hid_manager_->async_set_device_matched_delay(
