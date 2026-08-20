@@ -106,6 +106,9 @@ inline void bootout_old_agents() {
            "org.pqrs.karabiner.NotificationWindow",
            "org.pqrs.service.agent.karabiner_console_user_server",
            "org.pqrs.service.agent.karabiner_session_monitor",
+           // The current label is `org.pqrs.service.agent.Karabiner-Core-Service-rev2`,
+           // so boot out any service still registered under the former label.
+           "org.pqrs.service.agent.Karabiner-Core-Service",
            "org.pqrs.service.agent.Karabiner-Menu",
            "org.pqrs.service.agent.Karabiner-NotificationWindow",
        }) {
