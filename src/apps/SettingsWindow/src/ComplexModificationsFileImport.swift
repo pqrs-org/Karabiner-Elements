@@ -73,7 +73,9 @@ final class ComplexModificationsFileImport: ObservableObject {
 
         guard
           let code = nullTerminatedData.withUnsafeBytes({ buffer -> String? in
-            guard let baseAddress = buffer.bindMemory(to: CChar.self).baseAddress else { return nil }
+            guard let baseAddress = buffer.bindMemory(to: CChar.self).baseAddress else {
+              return nil
+            }
             return String(validatingCString: baseAddress)
           })
         else {
