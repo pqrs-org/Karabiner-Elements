@@ -60,7 +60,7 @@ struct ComplexModificationsFileImportView: View {
         )
         .buttonStyle(BorderedProminentButtonStyle())
         .padding(.leading, 24.0)
-        .disabled(complexModificationsFileImport.jsonData == nil)
+        .disabled(complexModificationsFileImport.fileData == nil)
       }
       .frame(maxWidth: .infinity, alignment: .center)
     }

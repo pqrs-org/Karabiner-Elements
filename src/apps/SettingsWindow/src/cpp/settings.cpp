@@ -223,6 +223,48 @@ void krbn_save_prettierrc() {
 // complex_modifications_assets_manager
 //
 
+void krbn_complex_modifications_assets_file_parse(const char* code,
+                                                  const char* file_extension,
+                                                  krbn_json_output_callback output) {
+  auto json = nlohmann::json::object();
+
+  try {
+    auto file_path = std::filesystem::path("import").replace_extension(file_extension);
+    auto file = krbn::complex_modifications_assets_file(file_path,
+                                                        code,
+                                                        krbn::core_configuration::error_handling::strict);
+
+    auto error_messages = file.lint();
+    if (!error_messages.empty()) {
+      auto message = std::string();
+      for (const auto& error_message : error_messages) {
+        if (!message.empty()) {
+          message += '\n';
+        }
+        message += error_message;
+      }
+      throw std::runtime_error(message);
+    }
+
+    auto descriptions = nlohmann::json::array();
+    for (const auto& rule : file.get_rules()) {
+      descriptions.push_back(rule->get_description());
+    }
+
+    json = {
+        {"title", file.get_title()},
+        {"descriptions", std::move(descriptions)},
+    };
+  } catch (const std::exception& e) {
+    json = {
+        {"error", e.what()},
+    };
+  }
+
+  auto json_string = krbn::json_utility::dump(json);
+  output(json_string.data(), json_string.size());
+}
+
 void krbn_complex_modifications_assets_manager_reload(krbn_json_output_callback output) {
   auto json = nlohmann::json::array();
 

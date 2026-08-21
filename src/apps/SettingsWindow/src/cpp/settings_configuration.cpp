@@ -215,7 +215,7 @@ void krbn_core_configuration_replace_selected_profile_complex_modifications_rule
   try {
     auto c = get_current_core_configuration();
     auto m = c->get_selected_profile().get_complex_modifications();
-    auto r = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
+    auto r = krbn::core_configuration::details::complex_modifications_rule::make_from_code(
         code_string,
         to_code_type(code_type),
         m->get_parameters(),
@@ -253,7 +253,7 @@ void krbn_core_configuration_push_front_selected_profile_complex_modifications_r
     auto c = get_current_core_configuration();
     auto m = c->get_selected_profile().get_complex_modifications();
 
-    auto r = std::make_shared<krbn::core_configuration::details::complex_modifications_rule>(
+    auto r = krbn::core_configuration::details::complex_modifications_rule::make_from_code(
         code_string,
         to_code_type(code_type),
         m->get_parameters(),

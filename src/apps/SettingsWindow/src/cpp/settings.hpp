@@ -233,6 +233,10 @@ void krbn_core_configuration_reset_selected_profile_device_game_pad_stick_horizo
 
 void krbn_complex_modifications_assets_manager_reload(krbn_json_output_callback _Nonnull output);
 
+void krbn_complex_modifications_assets_file_parse(const char* _Nonnull code,
+                                                  const char* _Nonnull file_extension,
+                                                  krbn_json_output_callback _Nonnull output);
+
 void krbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
                                                                                                size_t index);
 void krbn_complex_modifications_assets_manager_erase_file(size_t index);

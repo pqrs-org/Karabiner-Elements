@@ -143,7 +143,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       if let queryItems = urlComponents?.queryItems {
         for pair in queryItems where pair.name == "url" {
           Task { @MainActor in
-            ComplexModificationsFileImport.shared.fetchJson(URL(string: pair.value!)!)
+            ComplexModificationsFileImport.shared.fetch(URL(string: pair.value!)!)
 
             ContentViewStates.shared.navigationSelection = .complexModifications
             ContentViewStates.shared.complexModificationsViewSheetView = .fileImport

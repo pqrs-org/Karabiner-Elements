@@ -383,7 +383,7 @@ int main(int argc, char** argv) {
                         "Show the settings window guidance state");
 
   options.add_options()("lint-complex-modifications",
-                        "Check complex_modifications.json",
+                        "Validate complex modifications JSON and JavaScript files for distribution",
                         cxxopts::value<std::vector<std::string>>(),
                         "glob-patterns");
 
