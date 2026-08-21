@@ -246,14 +246,17 @@ void krbn_complex_modifications_assets_file_parse(const char* code,
       throw std::runtime_error(message);
     }
 
-    auto descriptions = nlohmann::json::array();
+    auto rules = nlohmann::json::array();
     for (const auto& rule : file.get_rules()) {
-      descriptions.push_back(rule->get_description());
+      rules.push_back({
+          {"description", rule->get_description()},
+          {"description_notes", rule->get_description_notes()},
+      });
     }
 
     json = {
         {"title", file.get_title()},
-        {"descriptions", std::move(descriptions)},
+        {"rules", std::move(rules)},
     };
   } catch (const std::exception& e) {
     json = {

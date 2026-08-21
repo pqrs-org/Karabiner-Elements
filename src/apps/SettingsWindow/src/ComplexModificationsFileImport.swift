@@ -15,9 +15,19 @@ private func complexModificationsFileImportJSONOutputCallback(
 final class ComplexModificationsFileImport: ObservableObject {
   static let shared = ComplexModificationsFileImport()
 
+  struct Rule: Decodable {
+    var description: String
+    var descriptionNotes: [String]
+
+    private enum CodingKeys: String, CodingKey {
+      case description
+      case descriptionNotes = "description_notes"
+    }
+  }
+
   private struct ParseResult: Decodable {
     var title: String?
-    var descriptions: [String]?
+    var rules: [Rule]?
     var error: String?
   }
 
@@ -44,7 +54,7 @@ final class ComplexModificationsFileImport: ObservableObject {
   @Published var error: String?
   @Published var fileData: Data?
   @Published var title: String = ""
-  @Published var descriptions: [String] = []
+  @Published var rules: [Rule] = []
 
   public func fetch(_ url: URL) {
     task?.cancel()
@@ -53,7 +63,7 @@ final class ComplexModificationsFileImport: ObservableObject {
     error = nil
     fileData = nil
     title = ""
-    descriptions = []
+    rules = []
 
     task = URLSession.shared.dataTask(with: url) { data, response, error in
       Task { @MainActor in
@@ -102,7 +112,7 @@ final class ComplexModificationsFileImport: ObservableObject {
             self.fileType = candidate
             self.fileData = fileData
             self.title = result.title ?? ""
-            self.descriptions = result.descriptions ?? []
+            self.rules = result.rules ?? []
             return
           }
         }

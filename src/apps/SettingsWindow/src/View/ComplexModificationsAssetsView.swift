@@ -46,15 +46,10 @@ struct ComplexModificationsAssetsView: View {
                 VStack(alignment: .leading, spacing: 4.0) {
                   ForEach($assetFile.assetRules) { $assetRule in
                     HStack(alignment: .center, spacing: 16.0) {
-                      VStack(alignment: .leading, spacing: 2.0) {
-                        Text(assetRule.description)
-
-                        ForEach(assetRule.descriptionNotes.indices, id: \.self) { index in
-                          Text(assetRule.descriptionNotes[index])
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        }
-                      }
+                      ComplexModificationsRuleDescriptionView(
+                        description: assetRule.description,
+                        descriptionNotes: assetRule.descriptionNotes
+                      )
                       .frame(maxWidth: .infinity, alignment: .leading)
                       .if(hoverRuleId == assetRule.id) {
                         $0.overlay(

@@ -26,8 +26,12 @@ struct ComplexModificationsFileImportView: View {
             .font(.title)
 
           VStack(alignment: .leading, spacing: 8) {
-            ForEach(complexModificationsFileImport.descriptions, id: \.self) { description in
-              Text(description)
+            ForEach(complexModificationsFileImport.rules.indices, id: \.self) { ruleIndex in
+              let rule = complexModificationsFileImport.rules[ruleIndex]
+
+              ComplexModificationsRuleDescriptionView(
+                description: rule.description,
+                descriptionNotes: rule.descriptionNotes)
             }
           }
           .padding(.leading, 32.0)
