@@ -19,6 +19,7 @@
 - 🐛 Bug Fixes
     - Fixed CGEventTap leaks (Thanks to @MrMage and @VitalyShein)
 - ⚡️ Improvements
+    - Complex Modifications import now supports JavaScript files and single-rule JSON files.
     - Improved the handling of macOS sleep shortcuts to prevent key-up events from immediately waking the Mac.
     - Fixed an issue where the core service agent could rarely abort during termination.
     - Fixed an issue where modifications could stop working for several seconds after waking from sleep on macOS.
