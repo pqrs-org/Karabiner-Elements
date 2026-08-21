@@ -238,6 +238,39 @@ main();
         expect(js == rule.get_code_string());
         expect(json == rule.to_json());
       }
+
+      // Ignore enabled in the evaluated JSON.
+      {
+        auto js_with_enabled = R"(
+
+function main() {
+  return {
+    description: "example",
+    enabled: false,
+    manipulators: [
+      {
+        type: "basic",
+        from: { key_code: "spacebar" },
+        to: [{ key_code: "tab" }],
+      },
+    ],
+  };
+}
+
+main();
+
+)"s;
+
+        auto parameters = std::make_shared<parameters_t>();
+        auto rule = rule_t::make_from_code(js_with_enabled,
+                                           rule_t::code_type::javascript,
+                                           parameters,
+                                           krbn::core_configuration::error_handling::strict);
+        expect(rule->get_enabled());
+        expect(nlohmann::json::object({
+                   {"eval_js", js_with_enabled},
+               }) == rule->to_json());
+      }
     }
 
     // search_text uses the evaluated manipulators, not the JavaScript source.

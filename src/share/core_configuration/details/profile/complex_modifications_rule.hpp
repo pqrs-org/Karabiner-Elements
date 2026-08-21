@@ -98,7 +98,7 @@ public:
 
     pqrs::json::requires_object(resolved_json, "json");
 
-    helper_values_.update_value(resolved_json, error_handling);
+    helper_values_.update_value(json, error_handling);
 
     for (const auto& [key, value] : resolved_json.items()) {
       if (key == "manipulators") {
@@ -238,10 +238,7 @@ private:
         code_string_ = value.get<std::string>();
 
         auto result = krbn::duktape_utility::eval_string_to_json(code_string_);
-
-        if (json.contains("enabled")) {
-          result.json["enabled"] = json["enabled"];
-        }
+        result.json.erase("enabled");
 
         return result.json;
       } catch (const std::exception& e) {
