@@ -64,12 +64,24 @@ final class ComplexModificationsFileImport: ObservableObject {
           return
         }
 
-        guard let data = data,
-          let code = String(data: data, encoding: .utf8)
+        guard var nullTerminatedData = data else { return }
+
+        // Treat the downloaded content as a null-terminated UTF-8 string to match the C API.
+        // Data received from URLSession does not include a terminator, so append one before decoding.
+        // String(validatingCString:) ignores any data after the first null character.
+        nullTerminatedData.append(0)
+
+        guard
+          let code = nullTerminatedData.withUnsafeBytes({ buffer -> String? in
+            guard let baseAddress = buffer.bindMemory(to: CChar.self).baseAddress else { return nil }
+            return String(validatingCString: baseAddress)
+          })
         else {
           self.error = "The downloaded file is not valid UTF-8."
           return
         }
+
+        let fileData = Data(code.utf8)
 
         let pathExtension =
           response?.url?.pathExtension.lowercased() ?? url.pathExtension.lowercased()
@@ -86,7 +98,7 @@ final class ComplexModificationsFileImport: ObservableObject {
         for candidate in candidates {
           if let result = self.parse(code, as: candidate), result.error == nil {
             self.fileType = candidate
-            self.fileData = data
+            self.fileData = fileData
             self.title = result.title ?? ""
             self.descriptions = result.descriptions ?? []
             return
