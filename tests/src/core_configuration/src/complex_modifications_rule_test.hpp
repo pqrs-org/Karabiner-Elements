@@ -133,7 +133,7 @@ void run_complex_modifications_rule_test() {
       auto json = nlohmann::json::object({
           {"description", "Search description"},
           {"enabled", false},
-          {"available_since", "top-level metadata"},
+          {"available_since", nullptr},
           {"manipulators", nlohmann::json::array({manipulator})},
       });
 

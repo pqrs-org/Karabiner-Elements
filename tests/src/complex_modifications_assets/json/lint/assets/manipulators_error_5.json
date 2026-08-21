@@ -1,9 +1,0 @@
-{
-    "title": "valid title",
-    "rules": [
-        {
-            "description": "rule 1",
-            "available_since": null
-        }
-    ]
-}

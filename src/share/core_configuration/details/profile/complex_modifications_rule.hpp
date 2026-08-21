@@ -128,10 +128,6 @@ public:
           description_notes_.push_back(note.get<std::string>());
         }
 
-      } else if (key == "available_since") {
-        // `available_since` is used in <https://ke-complex-modifications.pqrs.org/>.
-        pqrs::json::requires_string(value, "`" + key + "`");
-
       } else {
         // Allow unknown key
       }

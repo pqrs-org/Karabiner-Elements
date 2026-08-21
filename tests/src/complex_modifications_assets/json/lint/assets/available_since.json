@@ -1,0 +1,39 @@
+{
+    "title": "valid title",
+    "rules": [
+        {
+            "description": "available_since with a string",
+            "available_since": "15.0.0",
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "spacebar"
+                    },
+                    "to": [
+                        {
+                            "key_code": "tab"
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        },
+        {
+            "description": "available_since with null",
+            "available_since": null,
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "spacebar"
+                    },
+                    "to": [
+                        {
+                            "key_code": "tab"
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        }
+    ]
+}

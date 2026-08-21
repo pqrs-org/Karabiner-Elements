@@ -42,10 +42,8 @@
         ]
     },
     {
-        "input": "assets/manipulators_error_5.json",
-        "errors": [
-            "`rules` entry error: `available_since` must be string, but is `null`"
-        ]
+        "input": "assets/available_since.json",
+        "errors": []
     },
     {
         "input": "assets/manipulators_error_6.json",
