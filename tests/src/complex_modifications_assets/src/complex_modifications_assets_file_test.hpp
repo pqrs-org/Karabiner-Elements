@@ -37,4 +37,41 @@ void run_complex_modifications_assets_file_test() {
                                                                });
     expect(file.lint().empty());
   };
+
+  "single rule JSON"_test = [] {
+    auto file = krbn::complex_modifications_assets_file("json/single_rule.json",
+                                                        krbn::core_configuration::error_handling::strict);
+
+    expect(file.get_title() == "Single JSON rule");
+    expect(file.get_rules().size() == 1);
+    expect(file.get_rules()[0]->get_enabled());
+    expect(file.get_rules()[0]->get_description() == "Single JSON rule");
+    expect(file.get_rules()[0]->get_description_notes() == std::vector<std::string>{"example 1", "example 2"});
+    expect(file.get_rules()[0]->get_code_type() == krbn::core_configuration::details::complex_modifications_rule::code_type::json);
+    expect(file.lint().empty());
+  };
+
+  "single rule JSON with enabled false"_test = [] {
+    auto file = krbn::complex_modifications_assets_file("json/single_rule_enabled_false.json",
+                                                        krbn::core_configuration::error_handling::strict);
+
+    expect(file.get_title() == "Single JSON rule with enabled false");
+    expect(file.get_rules().size() == 1);
+    expect(file.get_rules()[0]->get_enabled());
+    expect(file.get_rules()[0]->get_description() == "Single JSON rule with enabled false");
+    expect(file.lint().empty());
+  };
+
+  "single rule JavaScript"_test = [] {
+    auto file = krbn::complex_modifications_assets_file("json/single_rule.js",
+                                                        krbn::core_configuration::error_handling::strict);
+
+    expect(file.get_title() == "Single JavaScript rule");
+    expect(file.get_rules().size() == 1);
+    expect(file.get_rules()[0]->get_description() == "Single JavaScript rule");
+    expect(file.get_rules()[0]->get_description_notes() == std::vector<std::string>{"example 1", "example 2"});
+    expect(file.get_rules()[0]->get_code_type() == krbn::core_configuration::details::complex_modifications_rule::code_type::javascript);
+    expect(file.get_rules()[0]->get_code_string().find("function main()") != std::string::npos);
+    expect(file.lint().empty());
+  };
 }

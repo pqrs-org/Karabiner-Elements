@@ -1,0 +1,23 @@
+{
+    "description": "Single JSON rule",
+    "description_notes": [
+        "example 1",
+        "example 2"
+    ],
+    "maintainers": [
+        "tekezo"
+    ],
+    "manipulators": [
+        {
+            "from": {
+                "key_code": "spacebar"
+            },
+            "to": [
+                {
+                    "key_code": "tab"
+                }
+            ],
+            "type": "basic"
+        }
+    ]
+}

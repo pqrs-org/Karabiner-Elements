@@ -1,0 +1,17 @@
+{
+    "description": "Single JSON rule with enabled false",
+    "enabled": false,
+    "manipulators": [
+        {
+            "from": {
+                "key_code": "spacebar"
+            },
+            "to": [
+                {
+                    "key_code": "tab"
+                }
+            ],
+            "type": "basic"
+        }
+    ]
+}
