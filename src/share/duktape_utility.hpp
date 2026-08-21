@@ -128,7 +128,8 @@ inline void free(void* udata, void* ptr) {
 
 inline void setup_console(duk_context* ctx,
                           eval_heap_state& heap_state,
-                          pqrs::not_null_shared_ptr_t<std::string> log_messages) {
+                          pqrs::not_null_shared_ptr_t<std::string> log_messages,
+                          bool enable_console_log = true) {
   auto setup = [](duk_context* ctx, void* udata) -> duk_ret_t {
     auto log_messages = static_cast<std::string*>(udata);
 
@@ -183,7 +184,7 @@ inline void setup_console(duk_context* ctx,
   // handler and aborting the process.
   if (duk_safe_call(ctx,
                     setup,
-                    log_messages.get().get(),
+                    enable_console_log ? log_messages.get().get() : nullptr,
                     0, // nargs
                     1  // nrets
                     ) != DUK_EXEC_SUCCESS) {
@@ -227,7 +228,7 @@ struct eval_context {
   std::unique_ptr<duk_context, duk_context_deleter> ctx;
 };
 
-inline eval_context create_context_with_limits() {
+inline eval_context create_context_with_limits(bool enable_console_log = true) {
   eval_context result{
       .heap_state = std::make_unique<eval_heap_state>(eval_heap_state{
           .base = {
@@ -262,7 +263,8 @@ inline eval_context create_context_with_limits() {
 
   setup_console(result.ctx.get(),
                 *result.heap_state,
-                result.log_messages);
+                result.log_messages,
+                enable_console_log);
   return result;
 }
 
@@ -379,10 +381,11 @@ inline std::string eval_file_with_fs_access(const std::filesystem::path& path) n
   return "";
 }
 
-inline eval_string_to_json_result eval_string_to_json(const std::string& code) noexcept(false) {
+inline eval_string_to_json_result eval_string_to_json(const std::string& code,
+                                                      bool enable_console_log = true) noexcept(false) {
   impl::check_input_size(code);
 
-  auto context = impl::create_context_with_limits();
+  auto context = impl::create_context_with_limits(enable_console_log);
   duk_context* ctx = context.ctx.get();
 
   //

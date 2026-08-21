@@ -113,6 +113,20 @@ main();
       expect(log_messages == result.log_messages);
     }
 
+    // Disable console.log.
+    {
+      auto result = krbn::duktape_utility::eval_string_to_json(R"(
+console.log("ignored");
+({ description: "example" });
+)",
+                                                               false);
+
+      expect(nlohmann::json::object({
+                 {"description", "example"},
+             }) == result.json);
+      expect(result.log_messages.empty());
+    }
+
     // Unicode
     {
       auto result = krbn::duktape_utility::eval_string_to_json(R"(

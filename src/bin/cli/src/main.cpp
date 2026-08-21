@@ -397,6 +397,11 @@ int main(int argc, char** argv) {
                         cxxopts::value<std::vector<std::string>>(),
                         "glob-patterns");
 
+  options.add_options()("eval-js-to-json",
+                        "Evaluate a JavaScript file and print the returned object as JSON",
+                        cxxopts::value<std::string>(),
+                        "file");
+
   options.add_options()("version",
                         "Displays version");
 
@@ -610,6 +615,28 @@ int main(int argc, char** argv) {
               }
             }
           }
+        }
+
+        goto finish;
+      }
+    }
+
+    {
+      std::string key = "eval-js-to-json";
+      if (parse_result.count(key)) {
+        auto file_path = parse_result[key].as<std::string>();
+
+        try {
+          if (auto code = krbn::filesystem_utility::read_file(file_path)) {
+            auto result = krbn::duktape_utility::eval_string_to_json(*code, false);
+            pqrs::json::requires_object(result.json, "javascript result");
+            std::cout << krbn::json_utility::dump(result.json) << std::endl;
+          } else {
+            throw std::runtime_error(fmt::format("failed to open {0}", file_path));
+          }
+        } catch (std::exception& e) {
+          exit_code = 1;
+          std::cerr << e.what() << std::endl;
         }
 
         goto finish;
