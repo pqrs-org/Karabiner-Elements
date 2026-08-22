@@ -91,43 +91,36 @@ inline std::vector<std::string> lint_rule(const core_configuration::details::com
   return R"(// JavaScript must be written in ECMAScript 5.1.
 
 function main() {
-  const apps = [
-    { key_code: '1', app: 'com.apple.Safari' },
-    { key_code: '2', app: 'com.apple.TextEdit' },
-    { key_code: '3', app: 'com.apple.ActivityMonitor' },
-  ]
-
-  const notes = []
-  const manipulators = []
-  for (var i = 0; i < apps.length; ++i) {
-    const app = apps[i]
-
-    console.log('right_shift+' + app.key_code + ' to ' + app.app)
-
-    notes.push('- Open ' + app.app + ' by right_shift+' + app.key_code)
-
-    manipulators.push({
-      type: 'basic',
-      from: {
-        key_code: app.key_code,
-        modifiers: {
-          mandatory: ['right_shift'],
-        },
-      },
-      to: [
-        {
-          software_function: {
-            open_application: { bundle_identifier: app.app },
-          },
-        },
-      ],
-    })
-  }
-
   return {
     description: 'Open apps with right_shift+1/2/3',
-    description_notes: notes,
-    manipulators: manipulators,
+    description_notes: ['- right_shift+1/2/3: Safari/TextEdit/ActivityMonitor'],
+    manipulators: [
+      openApplication('1', 'com.apple.Safari'),
+      openApplication('2', 'com.apple.TextEdit'),
+      openApplication('3', 'com.apple.ActivityMonitor'),
+    ],
+  }
+}
+
+function openApplication(from, bundleIdentifier) {
+  // Output a debug message
+  console.log(from + ' -> ' + bundleIdentifier)
+
+  return {
+    type: 'basic',
+    from: {
+      key_code: from,
+      modifiers: {
+        mandatory: ['right_shift'],
+      },
+    },
+    to: [
+      {
+        software_function: {
+          open_application: { bundle_identifier: bundleIdentifier },
+        },
+      },
+    ],
   }
 }
 
@@ -143,7 +136,7 @@ inline void save_prettierrc() {
         {"semi", false},
         {"singleQuote", true},
         {"tabWidth", 2},
-        {"printWidth", 200},
+        {"printWidth", 120},
         {"trailingComma", "es5"},
         {
             "overrides",
