@@ -27,7 +27,7 @@ struct CaptureInputEventsView: View {
           }
         }
 
-        testInputField
+        CaptureTestInputField(text: $testInput, focus: $testInputFocused)
         InputEventHistoryActions()
       }
       .padding()
@@ -53,13 +53,6 @@ struct CaptureInputEventsView: View {
       } catch {
       }
     }
-  }
-
-  private var testInputField: some View {
-    TextField("Type here to test input", text: $testInput)
-      .textFieldStyle(.roundedBorder)
-      .focused($testInputFocused)
-      .disableAutocorrection(true)
   }
 
   private var emptyMessage: String {

@@ -81,7 +81,7 @@ struct CaptureRawInputRecordsView: View {
         }
       }
 
-      testInputField
+      CaptureTestInputField(text: $testInput, focus: $testInputFocused)
     }
     .padding()
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -102,7 +102,7 @@ struct CaptureRawInputRecordsView: View {
           .foregroundStyle(.secondary)
       }
 
-      testInputField
+      CaptureTestInputField(text: $testInput, focus: $testInputFocused)
 
       if !history.entries.isEmpty {
         reportActions
@@ -136,13 +136,6 @@ struct CaptureRawInputRecordsView: View {
       return false
     }
     return client.hidDeviceIsOpen(deviceId)
-  }
-
-  private var testInputField: some View {
-    TextField("Type here to test input", text: $testInput)
-      .textFieldStyle(.roundedBorder)
-      .focused($testInputFocused)
-      .disableAutocorrection(true)
   }
 
   private func focusTestInput() {
