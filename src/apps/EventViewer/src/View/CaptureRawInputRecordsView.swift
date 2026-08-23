@@ -71,10 +71,13 @@ struct CaptureRawInputRecordsView: View {
         .keyboardShortcut(.escape, modifiers: [])
 
         if selectedDeviceIsOpen {
-          Label("Capturing raw input records", systemImage: "checkmark.circle.fill")
+          Label(
+            "Capturing raw input records without Karabiner-Elements modifications.",
+            systemImage: "checkmark.circle.fill"
+          )
             .foregroundStyle(.green)
         } else {
-          ProgressView("Waiting for device access…")
+          ProgressView("Waiting for device access...")
             .controlSize(.small)
             .foregroundStyle(.secondary)
         }
@@ -178,20 +181,8 @@ struct CaptureRawInputRecordsView: View {
   private var reports: some View {
     ScrollViewReader { proxy in
       ScrollView {
-        if history.selectedDeviceId == nil {
-          Text("Select the device whose raw input records you want to inspect.")
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        } else if !history.capturing && history.entries.isEmpty {
-          Text("Press Start capture to begin capturing raw input records from the selected device.")
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        } else if history.capturing && !selectedDeviceIsOpen {
-          Text("Waiting for Karabiner-Elements to release exclusive access to the device.")
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        } else if history.entries.isEmpty {
-          Text("No raw input records received.")
+        if history.entries.isEmpty {
+          Text(emptyMessage)
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
@@ -259,5 +250,15 @@ struct CaptureRawInputRecordsView: View {
         }
       }
     }
+  }
+
+  private var emptyMessage: String {
+    RawInputCaptureEmptyMessage.make(
+      deviceSelected: history.selectedDeviceId != nil,
+      capturing: history.capturing,
+      deviceIsOpen: selectedDeviceIsOpen,
+      subject: "raw input records",
+      capturingEmptyMessage: "No raw input records received."
+    )
   }
 }

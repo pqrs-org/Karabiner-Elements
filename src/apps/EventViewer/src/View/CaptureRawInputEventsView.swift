@@ -29,7 +29,7 @@ struct CaptureRawInputEventsView: View {
                 )
                 .foregroundStyle(.green)
               } else {
-                ProgressView("Waiting for device access…")
+                ProgressView("Waiting for device access...")
                   .controlSize(.small)
                   .foregroundStyle(.secondary)
               }
@@ -99,13 +99,13 @@ struct CaptureRawInputEventsView: View {
   }
 
   private var emptyMessage: String {
-    if eventHistory.rawInputEventsSelectedDeviceId == nil {
-      return "Select the device whose raw input events you want to inspect."
-    }
-    if eventHistory.rawInputEventsCapturing {
-      return "Type in the test input field to inspect raw input events."
-    }
-    return "Press Start capture to begin capturing raw input events."
+    RawInputCaptureEmptyMessage.make(
+      deviceSelected: eventHistory.rawInputEventsSelectedDeviceId != nil,
+      capturing: eventHistory.rawInputEventsCapturing,
+      deviceIsOpen: selectedDeviceIsOpen,
+      subject: "raw input events",
+      capturingEmptyMessage: "Type in the test input field to inspect raw input events."
+    )
   }
 
   private var deviceSelector: some View {
