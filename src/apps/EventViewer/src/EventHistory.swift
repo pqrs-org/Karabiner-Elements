@@ -203,19 +203,6 @@ func hidValueArrivedCallback(
 
 @MainActor
 public class EventHistoryEntry: Identifiable, Equatable {
-  private static let timestampFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.dateFormat = "HH:mm:ss.SSS"
-    return formatter
-  }()
-  private static let iso8601TimestampFormatter: ISO8601DateFormatter = {
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    formatter.timeZone = .current
-    return formatter
-  }()
-
   nonisolated public let id = UUID()
   public let timestamp: Date
   public var deviceId: UInt64 = 0
@@ -232,11 +219,11 @@ public class EventHistoryEntry: Identifiable, Equatable {
   }
 
   public var timestampString: String {
-    Self.timestampFormatter.string(from: timestamp)
+    EventViewerDateFormatters.timestamp.string(from: timestamp)
   }
 
   public var iso8601TimestampString: String {
-    Self.iso8601TimestampFormatter.string(from: timestamp)
+    EventViewerDateFormatters.iso8601.string(from: timestamp)
   }
 
   nonisolated public static func == (lhs: EventHistoryEntry, rhs: EventHistoryEntry) -> Bool {

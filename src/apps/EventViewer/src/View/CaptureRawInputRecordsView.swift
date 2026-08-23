@@ -112,41 +112,14 @@ struct CaptureRawInputRecordsView: View {
   }
 
   private var deviceSelector: some View {
-    List(
+    ConnectedDeviceSelector(
       selection: Binding(
         get: { history.selectedDeviceId },
         set: { deviceId in
           history.selectDevice(deviceId)
         }
       )
-    ) {
-      ForEach(client.connectedDevices) { device in
-        Label {
-          Text(deviceLabelTitle(device))
-            .lineLimit(nil)
-            .fixedSize(horizontal: false, vertical: true)
-        } icon: {
-          VStack {
-            if device.isKeyboard { Image(systemName: "keyboard") }
-            if device.isPointingDevice { Image(systemName: "computermouse") }
-            if device.isGamePad { Image(systemName: "gamecontroller") }
-            if device.isConsumer { Image(systemName: "headphones") }
-          }
-          .frame(width: 20)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 8)
-        .listRowSeparator(.visible, edges: .bottom)
-        .tag(device.id)
-      }
-    }
-    .listStyle(.sidebar)
-    .overlay {
-      if client.connectedDevices.isEmpty {
-        Text("No devices connected.")
-          .foregroundStyle(.secondary)
-      }
-    }
+    )
   }
 
   private var captureActions: some View {
@@ -169,19 +142,6 @@ struct CaptureRawInputRecordsView: View {
       .textFieldStyle(.roundedBorder)
       .focused($testInputFocused)
       .disableAutocorrection(true)
-  }
-
-  private func deviceLabelTitle(_ device: EVCoreServiceDaemonClient.ConnectedDevice) -> String {
-    var title = device.name
-    if !device.manufacturer.isEmpty {
-      title += " (\(device.manufacturer))"
-    }
-
-    if device.vendorId != 0 || device.productId != 0 {
-      title += "\n  [VID: \(device.vendorId), PID: \(device.productId)]"
-    }
-
-    return title
   }
 
   private func focusTestInput() {

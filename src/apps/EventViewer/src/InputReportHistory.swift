@@ -31,19 +31,6 @@ func hidDeviceOpenStateChangedCallback(_ deviceId: UInt64, _ opened: Bool) {
 
 @MainActor
 final class InputReportEntry: Identifiable, Equatable {
-  private static let timestampFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.dateFormat = "HH:mm:ss.SSS"
-    return formatter
-  }()
-  private static let iso8601TimestampFormatter: ISO8601DateFormatter = {
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    formatter.timeZone = .current
-    return formatter
-  }()
-
   nonisolated let id = UUID()
   let timestamp: Date
   let deviceId: UInt64
@@ -58,11 +45,11 @@ final class InputReportEntry: Identifiable, Equatable {
   }
 
   var timestampString: String {
-    Self.timestampFormatter.string(from: timestamp)
+    EventViewerDateFormatters.timestamp.string(from: timestamp)
   }
 
   var iso8601TimestampString: String {
-    Self.iso8601TimestampFormatter.string(from: timestamp)
+    EventViewerDateFormatters.iso8601.string(from: timestamp)
   }
 
   var reportIdString: String {
