@@ -550,8 +550,7 @@ public:
     });
   }
 
-  void async_set_temporarily_ignored_device_ids(
-      const std::unordered_set<device_id>& device_ids) {
+  void async_set_temporarily_ignored_device_ids(const std::unordered_set<device_id>& device_ids) {
     enqueue_to_dispatcher([this, device_ids] {
       temporarily_ignored_device_ids_ = device_ids;
 
