@@ -71,11 +71,9 @@ struct CaptureRawInputRecordsView: View {
         .keyboardShortcut(.escape, modifiers: [])
 
         if selectedDeviceIsOpen {
-          Label(
-            "Capturing raw input records without Karabiner-Elements modifications.",
-            systemImage: "checkmark.circle.fill"
+          CaptureActiveLabel(
+            text: "Capturing raw input records without Karabiner-Elements modifications."
           )
-            .foregroundStyle(.green)
         } else {
           ProgressView("Waiting for device access...")
             .controlSize(.small)

@@ -16,8 +16,7 @@ struct CaptureInputEventsView: View {
               Label("Stop capture", systemImage: "stop.fill")
             }
 
-            Label("Capturing input events", systemImage: "checkmark.circle.fill")
-              .foregroundStyle(.green)
+            CaptureActiveLabel(text: "Capturing input events")
           } else {
             Button {
               eventHistory.startInputEventsCapture()
