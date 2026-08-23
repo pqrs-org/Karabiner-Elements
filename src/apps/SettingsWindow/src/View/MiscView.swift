@@ -28,7 +28,7 @@ struct MiscView: View {
                 },
                 label: {
                   Label(
-                    "Open Multitouch Extension settings...",
+                    "Open Multitouch Extension settings…",
                     systemImage: "rectangle.and.hand.point.up.left.filled")
                 }
               )

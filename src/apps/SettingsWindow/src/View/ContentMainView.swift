@@ -172,7 +172,7 @@ struct ContentMainView: View {
                 macOS also remaps modifier keys. It's recommended to restore defaults and configure them via Karabiner-Elements.
 
                 You can reset the macOS setting by following steps:
-                1. Open System Settings and go to Keyboard Shortcuts... > Modifier Keys.
+                1. Open System Settings and go to Keyboard Shortcuts… > Modifier Keys.
                 2. Choose Karabiner DriverKit VirtualHIDKeyboard.
                 3. Click the Restore Defaults button.
                 """,
@@ -183,7 +183,7 @@ struct ContentMainView: View {
                 url: "x-apple.systempreferences:com.apple.preference.keyboard",
                 label: {
                   Label(
-                    "Open System Settings...",
+                    "Open System Settings…",
                     systemImage: "arrow.up.forward.app"
                   )
                 }
