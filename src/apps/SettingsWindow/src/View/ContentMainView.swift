@@ -66,8 +66,6 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 struct ContentMainView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
-  @ObservedObject private var settingsCoreServiceDaemonClient = SettingsCoreServiceDaemonClient
-    .shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared
 
   @State private var selectedSidebarItem: SidebarItem = .simpleModifications
@@ -165,16 +163,6 @@ struct ContentMainView: View {
             .buttonStyle(PlainButtonStyle())
             .background(Color.red)
             .foregroundColor(.white)
-          }
-
-          if settingsCoreServiceDaemonClient.temporarilyIgnoreAllDevices {
-            Label(
-              "All Karabiner-Elements modifications are temporarily disabled by EventViewer.",
-              systemImage: WarningBorder.icon
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .modifier(WarningBorder())
-            .padding()
           }
 
           if systemPreferences.virtualHIDKeyboardModifierMappingsExists {

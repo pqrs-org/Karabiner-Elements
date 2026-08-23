@@ -118,6 +118,7 @@ func hidValueArrivedCallback(
 
   Task { @MainActor in
     let entry = EventHistoryEntry(timestamp: timestamp)
+    entry.deviceId = deviceId
     entry.product = EVCoreServiceDaemonClient.shared.productName(deviceId: deviceId)
 
     //
@@ -217,6 +218,7 @@ public class EventHistoryEntry: Identifiable, Equatable {
 
   nonisolated public let id = UUID()
   public let timestamp: Date
+  public var deviceId: UInt64 = 0
   public var eventType = ""
   public var product = ""
   public var usagePage = ""
@@ -247,9 +249,10 @@ public class EventHistory: ObservableObject {
   public static let shared = EventHistory()
 
   // Keep maxCount small since too many entries causes performance issue at SwiftUI rendering.
-  private let maxCount = 32
+  private let maxCount = 128
   private var startCount = 0
   private var paused = false
+  private var mainKeyDownMonitor: Any?
   public var modifierFlags: [UInt64: Set<String>] = [:]
 
   private var pointingButtonModifierFlagsLocalMonitor: Any?
@@ -258,6 +261,45 @@ public class EventHistory: ObservableObject {
 
   @Published var entries: [EventHistoryEntry] = []
   @Published var unknownEventEntries: [EventHistoryEntry] = []
+  @Published private(set) var mainCapturing = false
+  @Published private(set) var mainSelectedDeviceId: UInt64?
+
+  public func startMainCapture() {
+    clear()
+    resetModifierFlags()
+    mainCapturing = true
+    startMainKeyDownMonitor()
+    TemporarilyIgnoredDeviceManager.shared.activate(
+      owner: .main,
+      deviceId: mainSelectedDeviceId)
+  }
+
+  public func stopMainCapture() {
+    stopMainKeyDownMonitor()
+    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .main)
+    mainCapturing = false
+  }
+
+  public func mainViewDisappeared() {
+    stopMainCapture()
+  }
+
+  public func selectMainDevice(_ deviceId: UInt64?) {
+    mainSelectedDeviceId = deviceId
+    clear()
+    resetModifierFlags()
+
+    if mainCapturing {
+      TemporarilyIgnoredDeviceManager.shared.update(
+        owner: .main,
+        deviceId: mainSelectedDeviceId)
+      startMainKeyDownMonitor()
+    }
+  }
+
+  public func mainSelectedDeviceDisconnected() {
+    selectMainDevice(nil)
+  }
 
   public func start() {
     startCount += 1
@@ -285,7 +327,9 @@ public class EventHistory: ObservableObject {
   }
 
   public func append(_ entry: EventHistoryEntry) {
-    if paused {
+    if !mainCapturing || paused
+      || (mainSelectedDeviceId != nil && entry.deviceId != mainSelectedDeviceId)
+    {
       return
     }
 
@@ -299,7 +343,7 @@ public class EventHistory: ObservableObject {
     entries.removeAll()
   }
 
-  public func copyToPasteboard() {
+  public func copyToPasteboardJSON() {
     var string = "[\n"
 
     entries.forEach { entry in
@@ -322,9 +366,63 @@ public class EventHistory: ObservableObject {
     string += "\n"
     string += "]"
 
+    copyToPasteboard(string)
+  }
+
+  public func copyToPasteboardTSV() {
+    var lines = ["Timestamp\tType\tName\tUsage page\tUsage\tMisc"]
+
+    for entry in entries where !entry.eventType.isEmpty {
+      let columns = [
+        entry.iso8601TimestampString,
+        entry.eventType,
+        entry.name,
+        entry.usagePage,
+        entry.usage,
+        entry.misc,
+      ]
+      lines.append(columns.map(tsvCell).joined(separator: "\t"))
+    }
+
+    copyToPasteboard(lines.joined(separator: "\n") + "\n")
+  }
+
+  private func tsvCell(_ value: String) -> String {
+    value
+      .replacingOccurrences(of: "\t", with: " ")
+      .replacingOccurrences(of: "\r\n", with: " ")
+      .replacingOccurrences(of: "\n", with: " ")
+      .replacingOccurrences(of: "\r", with: " ")
+  }
+
+  private func copyToPasteboard(_ string: String) {
     let pboard = NSPasteboard.general
     pboard.clearContents()
     pboard.writeObjects([string as NSString])
+  }
+
+  private func startMainKeyDownMonitor() {
+    stopMainKeyDownMonitor()
+
+    mainKeyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) {
+      (event: NSEvent) -> NSEvent? in
+      if event.keyCode == 53 {  // Escape
+        Task { @MainActor in
+          EventHistory.shared.stopMainCapture()
+        }
+      }
+
+      // The HID value has already been captured before the event reaches AppKit.
+      // Discard it here so test input does not operate the EventViewer interface.
+      return nil
+    }
+  }
+
+  private func stopMainKeyDownMonitor() {
+    if let mainKeyDownMonitor {
+      NSEvent.removeMonitor(mainKeyDownMonitor)
+      self.mainKeyDownMonitor = nil
+    }
   }
 
   //

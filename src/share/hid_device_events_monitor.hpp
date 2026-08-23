@@ -3,6 +3,7 @@
 #include "device_properties.hpp"
 #include "hid_report_only_events.hpp"
 #include <chrono>
+#include <functional>
 #include <memory>
 #include <nod/nod.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
@@ -15,8 +16,8 @@
 #include <vector>
 
 namespace krbn {
-// Combines the values exposed by IOHIDQueue with events recovered directly from
-// raw input reports, and publishes both through one chronologically consistent stream.
+// Publishes the values exposed by IOHIDQueue and, when enabled, events recovered
+// directly from raw input reports through one chronologically consistent stream.
 class hid_device_events_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   //
@@ -32,19 +33,26 @@ public:
   // Methods
   //
 
+  struct configuration final {
+    bool enable_input_report_handler = true;
+    std::function<void(uint32_t, std::span<const uint8_t>)> input_report_observer;
+  };
+
   hid_device_events_monitor(const hid_device_events_monitor&) = delete;
 
   hid_device_events_monitor(
       std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
       pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
       IOHIDDeviceRef device,
-      const device_properties& device_properties)
+      const device_properties& device_properties,
+      configuration configuration)
       : dispatcher_client(weak_dispatcher),
         last_time_stamp_(0) {
     pqrs::osx::iokit_hid_device_events_monitor::parameters parameters;
 
     const auto& identifiers = device_properties.get_device_identifiers();
-    if (hid_report_only_events::is_target_device(identifiers)) {
+    if (configuration.enable_input_report_handler &&
+        hid_report_only_events::is_target_device(identifiers)) {
       // Reading and parsing the descriptor is unnecessary for all other devices.
       auto report_descriptor = find_report_descriptor(device);
 
@@ -54,17 +62,25 @@ public:
               report_descriptor);
 
       if (input_report_handler_) {
-        parameters.observe_input_reports = true;
-
-        parameters.input_report_filter =
-            [handler = input_report_handler_](auto report_id, auto report) {
-              return handler->should_accept_report(report_id, report);
-            };
         parameters.input_report_filter_started =
             [handler = input_report_handler_] {
               handler->reset_filter_state();
             };
       }
+    }
+
+    if (configuration.input_report_observer || input_report_handler_) {
+      parameters.observe_input_reports = true;
+
+      parameters.input_report_filter =
+          [observer = std::move(configuration.input_report_observer),
+           handler = input_report_handler_](auto report_id, auto report) {
+            if (observer) {
+              observer(report_id, report);
+            }
+
+            return handler && handler->should_accept_report(report_id, report);
+          };
     }
 
     device_events_monitor_ =

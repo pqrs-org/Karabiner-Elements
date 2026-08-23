@@ -2,6 +2,7 @@ import SwiftUI
 
 enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case main
+  case inputReports
   case frontmostApplication
   case variables
   case devices
@@ -12,10 +13,11 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 
   var title: String {
     switch self {
-    case .main: return "Main"
+    case .main: return "Capture Input Events"
     case .frontmostApplication: return "Frontmost Application"
     case .variables: return "Variables"
     case .devices: return "Devices"
+    case .inputReports: return "Capture Raw Input Reports"
     case .unknownEvents: return "Unknown Events"
     case .settings: return "Settings"
     }
@@ -27,6 +29,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .frontmostApplication: return "triangle.circle"
     case .variables: return "cube"
     case .devices: return "keyboard"
+    case .inputReports: return "waveform.path.ecg"
     case .unknownEvents: return "questionmark.square.dashed"
     case .settings: return "gear"
     }
@@ -49,13 +52,15 @@ struct ContentMainView: View {
       detail: {
         switch selection {
         case .main:
-          MainView()
+          CaptureInputEventsView()
         case .frontmostApplication:
           FrontmostApplicationView()
         case .variables:
           VariablesView()
         case .devices:
           DevicesView()
+        case .inputReports:
+          CaptureRawInputReportsView()
         case .unknownEvents:
           UnknownEventsView()
         case .settings:
@@ -63,10 +68,5 @@ struct ContentMainView: View {
         }
       }
     )
-    .frame(
-      minWidth: 1100,
-      maxWidth: .infinity,
-      minHeight: 650,
-      maxHeight: .infinity)
   }
 }

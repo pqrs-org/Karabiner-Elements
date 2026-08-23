@@ -24,7 +24,7 @@ struct ContentView: View {
       }
     }
     .frame(
-      minWidth: 1100,
+      minWidth: 1300,
       maxWidth: .infinity,
       minHeight: 650,
       maxHeight: .infinity)

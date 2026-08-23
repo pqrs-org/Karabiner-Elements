@@ -34,7 +34,7 @@ enum class operation_type : uint8_t {
   // console_user_server -> event_viewer
   frontmost_application_history,
   // event_viewer -> core_service (daemon)
-  temporarily_ignore_all_devices,
+  temporarily_ignore_device,
   get_manipulator_environment, // The core_service daemon responds only if the client is code-signed with the same Team ID.
   // core_service (daemon) -> event_viewer
   manipulator_environment,
@@ -80,7 +80,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
         {operation_type::settings_window_guidance, "settings_window_guidance"},
         {operation_type::get_frontmost_application_history, "get_frontmost_application_history"},
         {operation_type::frontmost_application_history, "frontmost_application_history"},
-        {operation_type::temporarily_ignore_all_devices, "temporarily_ignore_all_devices"},
+        {operation_type::temporarily_ignore_device, "temporarily_ignore_device"},
         {operation_type::get_manipulator_environment, "get_manipulator_environment"},
         {operation_type::manipulator_environment, "manipulator_environment"},
         {operation_type::connect_multitouch_extension, "connect_multitouch_extension"},

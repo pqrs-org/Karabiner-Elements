@@ -21,6 +21,7 @@
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
 #include <pqrs/unix_domain_stream.hpp>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -180,16 +181,11 @@ private:
   }
 
   void handle_peer_closed(pqrs::unix_domain_stream::peer_id peer_id) {
-    temporarily_ignore_all_devices_peer_ids_.erase(peer_id);
+    if (temporarily_ignored_device_ids_by_peer_.erase(peer_id) > 0) {
+      update_temporarily_ignored_device_ids();
+    }
     connected_devices_observer_peer_ids_.erase(peer_id);
     notification_message_observer_peer_ids_.erase(peer_id);
-
-    // Restore the flags when all clients have closed.
-    if (temporarily_ignore_all_devices_peer_ids_.empty()) {
-      if (device_grabber_) {
-        device_grabber_->async_set_temporarily_ignore_all_devices(false);
-      }
-    }
 
     if (multitouch_extension_peer_id_ == peer_id) {
       logger::get_logger()->debug("multitouch_extension is closed.");
@@ -343,14 +339,20 @@ private:
                              request_id);
           break;
 
-        case operation_type::temporarily_ignore_all_devices: {
-          auto value = json.at("value").get<bool>();
+        case operation_type::temporarily_ignore_device: {
+          const auto& device_id_json = json.at("device_id");
 
-          if (device_grabber_) {
-            device_grabber_->async_set_temporarily_ignore_all_devices(value);
+          // null means that EventViewer no longer requests a device to be ignored,
+          // such as when capture stops or MainView captures All devices.
+          if (device_id_json.is_null()) {
+            temporarily_ignored_device_ids_by_peer_.erase(peer_id);
+          } else {
+            temporarily_ignored_device_ids_by_peer_.insert_or_assign(
+                peer_id,
+                device_id(device_id_json.get<uint64_t>()));
           }
 
-          temporarily_ignore_all_devices_peer_ids_.insert(peer_id);
+          update_temporarily_ignored_device_ids();
           async_respond_none(peer_id,
                              request_id);
           break;
@@ -477,10 +479,6 @@ private:
                                       manipulator_environment.get_variable("system.scroll_direction_is_natural"),
                                   },
                                   {
-                                      "system.temporarily_ignore_all_devices",
-                                      manipulator_environment.get_variable("system.temporarily_ignore_all_devices"),
-                                  },
-                                  {
                                       "system.use_fkeys_as_standard_function_keys",
                                       manipulator_environment.get_variable("system.use_fkeys_as_standard_function_keys"),
                                   },
@@ -579,6 +577,7 @@ private:
     device_grabber_->async_post_frontmost_application_changed_event(frontmost_application_);
     set_focused_ui_element_variables();
     device_grabber_->async_post_input_source_changed_event(input_source_properties_);
+    update_temporarily_ignored_device_ids();
 
     device_grabber_->async_start(user_core_configuration_file_path,
                                  current_console_user_id_);
@@ -602,6 +601,19 @@ private:
     send_notification_message_to_observers();
 
     logger::get_logger()->debug("device_grabber is stopped.");
+  }
+
+  void update_temporarily_ignored_device_ids() {
+    if (!device_grabber_) {
+      return;
+    }
+
+    std::unordered_set<device_id> device_ids;
+    for (const auto& device_id : temporarily_ignored_device_ids_by_peer_ | std::views::values) {
+      device_ids.insert(device_id);
+    }
+
+    device_grabber_->async_set_temporarily_ignored_device_ids(device_ids);
   }
 
   [[nodiscard]] bool required_permissions_granted() const {
@@ -810,7 +822,7 @@ private:
   std::optional<pqrs::unix_domain_stream::peer_id> console_user_server_peer_id_;
   std::shared_ptr<console_user_server_peer> console_user_server_peer_;
   std::optional<pqrs::unix_domain_stream::peer_id> multitouch_extension_peer_id_;
-  std::unordered_set<pqrs::unix_domain_stream::peer_id> temporarily_ignore_all_devices_peer_ids_;
+  std::unordered_map<pqrs::unix_domain_stream::peer_id, device_id> temporarily_ignored_device_ids_by_peer_;
   std::unordered_set<pqrs::unix_domain_stream::peer_id> connected_devices_observer_peer_ids_;
   std::unordered_set<pqrs::unix_domain_stream::peer_id> notification_message_observer_peer_ids_;
 
