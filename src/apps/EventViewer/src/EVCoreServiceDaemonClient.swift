@@ -4,9 +4,9 @@ import Foundation
 
 func coreServiceConnectionChangedCallback(_ connected: Bool) {
   Task { @MainActor in
-    InputReportHistory.shared.stopCapture()
     if !connected {
-      EventHistory.shared.stopMainCapture()
+      InputReportHistory.shared.stopCapture()
+      EventHistory.shared.stopRawInputEventsCapture()
     }
     TemporarilyIgnoredDeviceManager.shared.coreServiceConnectionChanged(connected)
   }
@@ -31,8 +31,10 @@ func connectedDevicesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
 @MainActor
 final class TemporarilyIgnoredDeviceManager {
   enum Owner: Equatable {
-    case main
-    case captureInputReports
+    case inputEvents
+    case rawInputEvents
+    case rawInputRecords
+    case unknownEvents
   }
 
   static let shared = TemporarilyIgnoredDeviceManager()
@@ -67,6 +69,11 @@ final class TemporarilyIgnoredDeviceManager {
 
   func coreServiceConnectionChanged(_ connected: Bool) {
     if connected {
+      if owner != nil {
+        // Close any devices opened while CoreService was unavailable before
+        // allowing CoreService to seize devices again.
+        krbn_set_hid_capture_target(false, 0)
+      }
       apply()
     }
   }
@@ -234,10 +241,10 @@ final class EVCoreServiceDaemonClient: ObservableObject {
       InputReportHistory.shared.deviceDisconnected()
     }
 
-    if let selectedDeviceId = EventHistory.shared.mainSelectedDeviceId,
+    if let selectedDeviceId = EventHistory.shared.rawInputEventsSelectedDeviceId,
       !devices.contains(where: { $0.id == selectedDeviceId })
     {
-      EventHistory.shared.mainSelectedDeviceDisconnected()
+      EventHistory.shared.rawInputEventsSelectedDeviceDisconnected()
     }
   }
 }

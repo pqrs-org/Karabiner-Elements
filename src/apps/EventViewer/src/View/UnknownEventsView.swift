@@ -110,7 +110,11 @@ struct UnknownEventsView: View {
     .task {
       eventHistory.start()
       eventHistory.pause(false)
-      defer { eventHistory.stop() }
+      eventHistory.startUnknownEventsMonitoring()
+      defer {
+        eventHistory.stopUnknownEventsMonitoring()
+        eventHistory.stop()
+      }
 
       do {
         while true {

@@ -1,13 +1,15 @@
 import SwiftUI
 
-struct CaptureRawInputReportsView: View {
+struct CaptureRawInputRecordsView: View {
   @ObservedObject private var client = EVCoreServiceDaemonClient.shared
   @ObservedObject private var history = InputReportHistory.shared
+  @State private var testInput = ""
+  @FocusState private var testInputFocused: Bool
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
       VStack(alignment: .leading, spacing: 12) {
-        Text("Capture Raw Input Reports")
+        Text("Capture Raw Input Records")
           .font(.title)
 
         Label {
@@ -64,12 +66,12 @@ struct CaptureRawInputReportsView: View {
         Button(role: .destructive) {
           history.stopCapture()
         } label: {
-          Label("Stop capture (Esc)", systemImage: "stop.circle")
+          Label("Stop capture (Esc)", systemImage: "stop.fill")
         }
         .keyboardShortcut(.escape, modifiers: [])
 
         if selectedDeviceIsOpen {
-          Label("Capturing input reports", systemImage: "checkmark.circle.fill")
+          Label("Capturing raw input records", systemImage: "checkmark.circle.fill")
             .foregroundStyle(.green)
         } else {
           ProgressView("Waiting for device access…")
@@ -78,6 +80,7 @@ struct CaptureRawInputReportsView: View {
         }
       }
 
+      testInputField
     }
     .padding()
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -87,15 +90,18 @@ struct CaptureRawInputReportsView: View {
     VStack(alignment: .leading, spacing: 12) {
       Button {
         history.startCapture()
+        focusTestInput()
       } label: {
         Label("Start capture", systemImage: "record.circle")
       }
       .disabled(history.selectedDeviceId == nil)
 
       if history.selectedDeviceId == nil {
-        Text("Select a device to start capturing input reports.")
+        Text("Select a device to start capturing raw input records.")
           .foregroundStyle(.secondary)
       }
+
+      testInputField
 
       if !history.entries.isEmpty {
         reportActions
@@ -109,7 +115,9 @@ struct CaptureRawInputReportsView: View {
     List(
       selection: Binding(
         get: { history.selectedDeviceId },
-        set: { history.selectDevice($0) }
+        set: { deviceId in
+          history.selectDevice(deviceId)
+        }
       )
     ) {
       ForEach(client.connectedDevices) { device in
@@ -156,6 +164,13 @@ struct CaptureRawInputReportsView: View {
     return client.hidDeviceIsOpen(deviceId)
   }
 
+  private var testInputField: some View {
+    TextField("Type here to test input", text: $testInput)
+      .textFieldStyle(.roundedBorder)
+      .focused($testInputFocused)
+      .disableAutocorrection(true)
+  }
+
   private func deviceLabelTitle(_ device: EVCoreServiceDaemonClient.ConnectedDevice) -> String {
     var title = device.name
     if !device.manufacturer.isEmpty {
@@ -167,6 +182,13 @@ struct CaptureRawInputReportsView: View {
     }
 
     return title
+  }
+
+  private func focusTestInput() {
+    Task { @MainActor in
+      await Task.yield()
+      testInputFocused = true
+    }
   }
 
   private var reportActions: some View {
@@ -197,11 +219,11 @@ struct CaptureRawInputReportsView: View {
     ScrollViewReader { proxy in
       ScrollView {
         if history.selectedDeviceId == nil {
-          Text("Select the device whose input reports you want to inspect.")
+          Text("Select the device whose raw input records you want to inspect.")
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
         } else if !history.capturing && history.entries.isEmpty {
-          Text("Press Start capture to begin capturing input reports from the selected device.")
+          Text("Press Start capture to begin capturing raw input records from the selected device.")
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
         } else if history.capturing && !selectedDeviceIsOpen {
@@ -209,7 +231,7 @@ struct CaptureRawInputReportsView: View {
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
         } else if history.entries.isEmpty {
-          Text("No input reports received.")
+          Text("No raw input records received.")
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {

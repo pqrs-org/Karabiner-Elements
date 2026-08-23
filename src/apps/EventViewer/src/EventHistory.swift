@@ -252,7 +252,7 @@ public class EventHistory: ObservableObject {
   private let maxCount = 128
   private var startCount = 0
   private var paused = false
-  private var mainKeyDownMonitor: Any?
+  private var rawInputEventsKeyDownMonitor: Any?
   public var modifierFlags: [UInt64: Set<String>] = [:]
 
   private var pointingButtonModifierFlagsLocalMonitor: Any?
@@ -261,44 +261,79 @@ public class EventHistory: ObservableObject {
 
   @Published var entries: [EventHistoryEntry] = []
   @Published var unknownEventEntries: [EventHistoryEntry] = []
-  @Published private(set) var mainCapturing = false
-  @Published private(set) var mainSelectedDeviceId: UInt64?
+  @Published private(set) var inputEventsCapturing = false
+  @Published private(set) var rawInputEventsCapturing = false
+  @Published private(set) var rawInputEventsSelectedDeviceId: UInt64?
 
-  public func startMainCapture() {
-    clear()
-    resetModifierFlags()
-    mainCapturing = true
-    startMainKeyDownMonitor()
-    TemporarilyIgnoredDeviceManager.shared.activate(
-      owner: .main,
-      deviceId: mainSelectedDeviceId)
-  }
-
-  public func stopMainCapture() {
-    stopMainKeyDownMonitor()
-    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .main)
-    mainCapturing = false
-  }
-
-  public func mainViewDisappeared() {
-    stopMainCapture()
-  }
-
-  public func selectMainDevice(_ deviceId: UInt64?) {
-    mainSelectedDeviceId = deviceId
-    clear()
-    resetModifierFlags()
-
-    if mainCapturing {
-      TemporarilyIgnoredDeviceManager.shared.update(
-        owner: .main,
-        deviceId: mainSelectedDeviceId)
-      startMainKeyDownMonitor()
+  public func startInputEventsCapture() {
+    guard !inputEventsCapturing else {
+      return
     }
+
+    stopRawInputEventsCapture()
+    InputReportHistory.shared.stopCapture()
+    clear()
+    resetModifierFlags()
+    inputEventsCapturing = true
+    TemporarilyIgnoredDeviceManager.shared.activate(
+      owner: .inputEvents,
+      deviceId: nil)
   }
 
-  public func mainSelectedDeviceDisconnected() {
-    selectMainDevice(nil)
+  public func stopInputEventsCapture() {
+    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .inputEvents)
+    inputEventsCapturing = false
+  }
+
+  public func startRawInputEventsCapture() {
+    guard let rawInputEventsSelectedDeviceId else {
+      return
+    }
+
+    stopInputEventsCapture()
+    InputReportHistory.shared.stopCapture()
+    clear()
+    resetModifierFlags()
+    rawInputEventsCapturing = true
+    startRawInputEventsKeyDownMonitor()
+    TemporarilyIgnoredDeviceManager.shared.activate(
+      owner: .rawInputEvents,
+      deviceId: rawInputEventsSelectedDeviceId)
+  }
+
+  public func stopRawInputEventsCapture() {
+    stopRawInputEventsKeyDownMonitor()
+    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .rawInputEvents)
+    rawInputEventsCapturing = false
+  }
+
+  public func selectRawInputEventsDevice(_ deviceId: UInt64?) {
+    guard deviceId != rawInputEventsSelectedDeviceId else {
+      return
+    }
+
+    stopRawInputEventsCapture()
+    rawInputEventsSelectedDeviceId = deviceId
+    clear()
+    resetModifierFlags()
+  }
+
+  public func rawInputEventsSelectedDeviceDisconnected() {
+    stopRawInputEventsCapture()
+    selectRawInputEventsDevice(nil)
+  }
+
+  public func startUnknownEventsMonitoring() {
+    stopInputEventsCapture()
+    stopRawInputEventsCapture()
+    InputReportHistory.shared.stopCapture()
+    TemporarilyIgnoredDeviceManager.shared.activate(
+      owner: .unknownEvents,
+      deviceId: nil)
+  }
+
+  public func stopUnknownEventsMonitoring() {
+    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .unknownEvents)
   }
 
   public func start() {
@@ -327,9 +362,17 @@ public class EventHistory: ObservableObject {
   }
 
   public func append(_ entry: EventHistoryEntry) {
-    if !mainCapturing || paused
-      || (mainSelectedDeviceId != nil && entry.deviceId != mainSelectedDeviceId)
+    if paused {
+      return
+    }
+
+    if inputEventsCapturing {
+      // Capture values from all devices that EventViewer can open.
+    } else if rawInputEventsCapturing,
+      entry.deviceId == rawInputEventsSelectedDeviceId
     {
+      // Capture values from the selected raw device.
+    } else {
       return
     }
 
@@ -401,27 +444,26 @@ public class EventHistory: ObservableObject {
     pboard.writeObjects([string as NSString])
   }
 
-  private func startMainKeyDownMonitor() {
-    stopMainKeyDownMonitor()
+  private func startRawInputEventsKeyDownMonitor() {
+    stopRawInputEventsKeyDownMonitor()
 
-    mainKeyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) {
+    rawInputEventsKeyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) {
       (event: NSEvent) -> NSEvent? in
       if event.keyCode == 53 {  // Escape
         Task { @MainActor in
-          EventHistory.shared.stopMainCapture()
+          EventHistory.shared.stopRawInputEventsCapture()
         }
+        return nil
       }
 
-      // The HID value has already been captured before the event reaches AppKit.
-      // Discard it here so test input does not operate the EventViewer interface.
-      return nil
+      return event
     }
   }
 
-  private func stopMainKeyDownMonitor() {
-    if let mainKeyDownMonitor {
-      NSEvent.removeMonitor(mainKeyDownMonitor)
-      self.mainKeyDownMonitor = nil
+  private func stopRawInputEventsKeyDownMonitor() {
+    if let rawInputEventsKeyDownMonitor {
+      NSEvent.removeMonitor(rawInputEventsKeyDownMonitor)
+      self.rawInputEventsKeyDownMonitor = nil
     }
   }
 

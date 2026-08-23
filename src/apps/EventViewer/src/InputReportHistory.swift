@@ -94,11 +94,13 @@ final class InputReportHistory: ObservableObject {
       return
     }
 
+    EventHistory.shared.stopInputEventsCapture()
+    EventHistory.shared.stopRawInputEventsCapture()
     clear()
     capturing = true
     startKeyDownMonitor()
     TemporarilyIgnoredDeviceManager.shared.activate(
-      owner: .captureInputReports,
+      owner: .rawInputRecords,
       deviceId: selectedDeviceId)
     krbn_set_hid_input_report_capture_device(selectedDeviceId)
   }
@@ -106,24 +108,18 @@ final class InputReportHistory: ObservableObject {
   func stopCapture() {
     stopKeyDownMonitor()
     krbn_set_hid_input_report_capture_device(0)
-    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .captureInputReports)
+    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .rawInputRecords)
     capturing = false
   }
 
   func selectDevice(_ deviceId: UInt64?) {
+    guard deviceId != selectedDeviceId else {
+      return
+    }
+
+    stopCapture()
     clear()
     selectedDeviceId = deviceId
-
-    if capturing, let deviceId {
-      TemporarilyIgnoredDeviceManager.shared.update(
-        owner: .captureInputReports,
-        deviceId: deviceId)
-      krbn_set_hid_input_report_capture_device(deviceId)
-      startKeyDownMonitor()
-    } else {
-      krbn_set_hid_input_report_capture_device(0)
-      stopKeyDownMonitor()
-    }
   }
 
   func deviceDisconnected() {
@@ -201,11 +197,10 @@ final class InputReportHistory: ObservableObject {
         Task { @MainActor in
           InputReportHistory.shared.stopCapture()
         }
+        return nil
       }
 
-      // The raw HID report has already been captured before the event reaches AppKit.
-      // Discard it here so test input does not operate the EventViewer interface.
-      return nil
+      return event
     }
   }
 
