@@ -12,8 +12,9 @@
     - Added the `Swap ISO layout-specific keys` configuration to Device tab.
     - Added filtering functionality to the Complex Modifications list.
     - Added support for buttons 6–8 on the ELECOM HUGE PLUS and DEFT trackballs. (Thanks to @z11i)
-    - Added `--set-variables-from-stdin` option to karabiner_cli.
     - Added appearance settings for the notification window. (Thanks to @xianjianlf2)
+    - Added `Capture Raw Input Events` and `Capture Raw Input Records` to EventViewer.
+    - Added `--set-variables-from-stdin` option to karabiner_cli.
     - Added the `duration_milliseconds` option to `set_notification_message`. (Thanks to @xianjianlf2)
     - Added the `Modify events for pointing devices by default` setting to Expert tab. (Thanks to @xianjianlf2)
 - 🐛 Bug Fixes
