@@ -27,7 +27,8 @@ struct CaptureActiveLabel: View {
     }
 
     let fullCycleDuration = 2.0
-    let phase = date.timeIntervalSinceReferenceDate
+    let phase =
+      date.timeIntervalSinceReferenceDate
       .truncatingRemainder(dividingBy: fullCycleDuration) / fullCycleDuration
     let dimmingProgress = (1 - cos(2 * .pi * phase)) / 2
     return 1 - 0.65 * dimmingProgress

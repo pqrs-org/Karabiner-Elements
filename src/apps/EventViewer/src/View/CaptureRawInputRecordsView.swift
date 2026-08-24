@@ -62,9 +62,9 @@ struct CaptureRawInputRecordsView: View {
         self.captureSession = nil
       }
     }
-    .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification))
-    {
-      _ in
+    .onReceive(
+      NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification)
+    ) { _ in
       if captureCoordinator.capturing {
         CaptureCoordinator.shared.stopCapture()
       }

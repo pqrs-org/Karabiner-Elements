@@ -27,7 +27,7 @@ struct ConnectedDeviceLabel: View {
   let isPointingDevice: Bool
   let isGamePad: Bool
   let isConsumer: Bool
-  var fallbackSystemImageName: String? = nil
+  var fallbackSystemImageName: String?
 
   var body: some View {
     Label {

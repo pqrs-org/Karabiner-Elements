@@ -1,5 +1,5 @@
-import os
 import SwiftUI
+import os
 
 struct CaptureEventToken: Equatable, Sendable {
   fileprivate let generation: UInt64
@@ -263,8 +263,9 @@ final class CaptureCoordinator: ObservableObject {
   private func startKeyDownMonitor() {
     stopKeyDownMonitor()
 
-    keyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) {
-      (event: NSEvent) -> NSEvent? in
+    keyDownMonitor = NSEvent.addLocalMonitorForEvents(
+      matching: .keyDown
+    ) { (event: NSEvent) -> NSEvent? in
       if event.keyCode == 53 {  // Escape
         Task { @MainActor in
           CaptureCoordinator.shared.stopCapture()
