@@ -6,5 +6,5 @@ final class UserSettings: ObservableObject {
 
   @AppStorage("kForceStayTop") var forceStayTop = false
   @AppStorage("kShowInAllSpaces") var showInAllSpaces = false
-  @AppStorage("kShowUnknownEvents") var showUnknownEvents = true
+  @AppStorage("captureUnknownEvents") var captureUnknownEvents = true
 }

@@ -12,6 +12,9 @@ func hidInputReportArrivedCallback(
       Array(UnsafeBufferPointer(start: $0, count: length))
     } ?? []
   let timestamp = Date()
+  guard let captureToken = CaptureEventValidator.shared.inputReportToken(deviceId: deviceId) else {
+    return
+  }
 
   Task { @MainActor in
     InputReportHistory.shared.append(
@@ -19,7 +22,8 @@ func hidInputReportArrivedCallback(
         timestamp: timestamp,
         deviceId: deviceId,
         reportId: reportId,
-        bytes: report))
+        bytes: report),
+      captureToken: captureToken)
   }
 }
 
@@ -73,8 +77,8 @@ final class InputReportHistory: ObservableObject {
 
   @Published private(set) var entries: [InputReportEntry] = []
 
-  func append(_ entry: InputReportEntry) {
-    guard CaptureCoordinator.shared.acceptsInputReport(deviceId: entry.deviceId) else {
+  func append(_ entry: InputReportEntry, captureToken: CaptureEventToken) {
+    guard CaptureEventValidator.shared.isCurrent(captureToken) else {
       return
     }
 

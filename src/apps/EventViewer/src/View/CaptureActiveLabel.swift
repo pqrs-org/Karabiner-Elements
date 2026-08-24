@@ -33,3 +33,17 @@ struct CaptureActiveLabel: View {
     return 1 - 0.65 * dimmingProgress
   }
 }
+
+struct CaptureWaitingForDeviceAccessLabel: View {
+  var body: some View {
+    HStack(spacing: 6) {
+      ProgressView()
+        .controlSize(.small)
+
+      Text("Waiting for device access...")
+        .lineLimit(1)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+    .foregroundStyle(.secondary)
+  }
+}

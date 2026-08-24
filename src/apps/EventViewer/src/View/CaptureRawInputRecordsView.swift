@@ -4,6 +4,7 @@ struct CaptureRawInputRecordsView: View {
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var client = EVCoreServiceDaemonClient.shared
   @ObservedObject private var history = InputReportHistory.shared
+  @State private var captureSession: CaptureCoordinator.Session?
   @State private var testInput = ""
   @FocusState private var testInputFocused: Bool
 
@@ -49,18 +50,16 @@ struct CaptureRawInputRecordsView: View {
       }
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    .task {
-      let session = CaptureCoordinator.shared.begin(.rawInputRecords)
-      defer {
-        CaptureCoordinator.shared.end(session)
+    .onAppear {
+      guard captureSession == nil else {
+        return
       }
-
-      do {
-        while true {
-          try Task.checkCancellation()
-          try await Task.sleep(for: .seconds(1))
-        }
-      } catch {
+      captureSession = CaptureCoordinator.shared.begin(.rawInputRecords)
+    }
+    .onDisappear {
+      if let captureSession {
+        CaptureCoordinator.shared.end(captureSession)
+        self.captureSession = nil
       }
     }
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification))
@@ -87,9 +86,7 @@ struct CaptureRawInputRecordsView: View {
             text: "Capturing raw input records without Karabiner-Elements modifications."
           )
         } else {
-          ProgressView("Waiting for device access...")
-            .controlSize(.small)
-            .foregroundStyle(.secondary)
+          CaptureWaitingForDeviceAccessLabel()
         }
       }
 

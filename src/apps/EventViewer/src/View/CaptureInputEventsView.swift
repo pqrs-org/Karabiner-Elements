@@ -3,6 +3,7 @@ import SwiftUI
 struct CaptureInputEventsView: View {
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var eventHistory = EventHistory.shared
+  @State private var captureSession: CaptureCoordinator.Session?
   @State private var testInput = ""
   @FocusState private var testInputFocused: Bool
 
@@ -36,19 +37,17 @@ struct CaptureInputEventsView: View {
       InputEventHistoryList(emptyMessage: emptyMessage)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    .task {
-      let session = CaptureCoordinator.shared.begin(.inputEvents)
-      focusTestInput()
-      defer {
-        CaptureCoordinator.shared.end(session)
+    .onAppear {
+      guard captureSession == nil else {
+        return
       }
-
-      do {
-        while true {
-          try Task.checkCancellation()
-          try await Task.sleep(for: .seconds(1))
-        }
-      } catch {
+      captureSession = CaptureCoordinator.shared.begin(.inputEvents)
+      focusTestInput()
+    }
+    .onDisappear {
+      if let captureSession {
+        CaptureCoordinator.shared.end(captureSession)
+        self.captureSession = nil
       }
     }
   }

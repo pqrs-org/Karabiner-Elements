@@ -3,6 +3,7 @@ import SwiftUI
 struct CaptureRawInputEventsView: View {
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var client = EVCoreServiceDaemonClient.shared
+  @State private var captureSession: CaptureCoordinator.Session?
   @State private var testInput = ""
   @FocusState private var testInputFocused: Bool
 
@@ -27,9 +28,7 @@ struct CaptureRawInputEventsView: View {
                   text: "Capturing raw input events without Karabiner-Elements modifications."
                 )
               } else {
-                ProgressView("Waiting for device access...")
-                  .controlSize(.small)
-                  .foregroundStyle(.secondary)
+                CaptureWaitingForDeviceAccessLabel()
               }
             } else {
               Button {
@@ -63,18 +62,16 @@ struct CaptureRawInputEventsView: View {
         CaptureCoordinator.shared.stopCapture()
       }
     }
-    .task {
-      let session = CaptureCoordinator.shared.begin(.rawInputEvents)
-      defer {
-        CaptureCoordinator.shared.end(session)
+    .onAppear {
+      guard captureSession == nil else {
+        return
       }
-
-      do {
-        while true {
-          try Task.checkCancellation()
-          try await Task.sleep(for: .seconds(1))
-        }
-      } catch {
+      captureSession = CaptureCoordinator.shared.begin(.rawInputEvents)
+    }
+    .onDisappear {
+      if let captureSession {
+        CaptureCoordinator.shared.end(captureSession)
+        self.captureSession = nil
       }
     }
   }

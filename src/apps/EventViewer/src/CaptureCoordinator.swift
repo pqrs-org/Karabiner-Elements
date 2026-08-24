@@ -1,4 +1,71 @@
+import os
 import SwiftUI
+
+struct CaptureEventToken: Equatable, Sendable {
+  fileprivate let generation: UInt64
+}
+
+private enum CaptureEventTarget: Equatable, Sendable {
+  case inactive
+  case inputEvents
+  case rawInputEvents(deviceId: UInt64)
+  case rawInputRecords(deviceId: UInt64)
+}
+
+private struct CaptureEventValidatorState: Sendable {
+  var generation: UInt64 = 0
+  var target: CaptureEventTarget = .inactive
+}
+
+final class CaptureEventValidator: Sendable {
+  static let shared = CaptureEventValidator()
+
+  private let state = OSAllocatedUnfairLock(initialState: CaptureEventValidatorState())
+
+  fileprivate func start(_ target: CaptureEventTarget) {
+    state.withLock {
+      $0.generation &+= 1
+      $0.target = target
+    }
+  }
+
+  func stop() {
+    state.withLock {
+      $0.generation &+= 1
+      $0.target = .inactive
+    }
+  }
+
+  func inputEventToken(deviceId: UInt64) -> CaptureEventToken? {
+    state.withLock {
+      switch $0.target {
+      case .inputEvents:
+        return CaptureEventToken(generation: $0.generation)
+      case .rawInputEvents(let selectedDeviceId) where selectedDeviceId == deviceId:
+        return CaptureEventToken(generation: $0.generation)
+      case .inactive, .rawInputEvents, .rawInputRecords:
+        return nil
+      }
+    }
+  }
+
+  func inputReportToken(deviceId: UInt64) -> CaptureEventToken? {
+    state.withLock {
+      guard case .rawInputRecords(let selectedDeviceId) = $0.target,
+        selectedDeviceId == deviceId
+      else {
+        return nil
+      }
+      return CaptureEventToken(generation: $0.generation)
+    }
+  }
+
+  func isCurrent(_ token: CaptureEventToken) -> Bool {
+    state.withLock {
+      $0.target != .inactive && $0.generation == token.generation
+    }
+  }
+}
 
 @MainActor
 final class CaptureCoordinator: ObservableObject {
@@ -68,6 +135,7 @@ final class CaptureCoordinator: ObservableObject {
     case .inputEvents:
       EventHistory.shared.clear()
       EventHistory.shared.resetModifierFlags()
+      CaptureEventValidator.shared.start(.inputEvents)
       capturing = true
       TemporarilyIgnoredDeviceManager.shared.activate(
         owner: .inputEvents,
@@ -80,6 +148,8 @@ final class CaptureCoordinator: ObservableObject {
 
       EventHistory.shared.clear()
       EventHistory.shared.resetModifierFlags()
+      CaptureEventValidator.shared.start(
+        .rawInputEvents(deviceId: rawInputEventsSelectedDeviceId))
       capturing = true
       startKeyDownMonitor()
       TemporarilyIgnoredDeviceManager.shared.activate(
@@ -92,6 +162,8 @@ final class CaptureCoordinator: ObservableObject {
       }
 
       InputReportHistory.shared.clear()
+      CaptureEventValidator.shared.start(
+        .rawInputRecords(deviceId: rawInputRecordsSelectedDeviceId))
       capturing = true
       startKeyDownMonitor()
       TemporarilyIgnoredDeviceManager.shared.activate(
@@ -105,6 +177,8 @@ final class CaptureCoordinator: ObservableObject {
   }
 
   func stopCapture() {
+    CaptureEventValidator.shared.stop()
+
     switch currentMode {
     case .inputEvents:
       TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .inputEvents)
@@ -156,27 +230,6 @@ final class CaptureCoordinator: ObservableObject {
 
   func rawInputRecordsDeviceDisconnected() {
     selectRawInputRecordsDevice(nil)
-  }
-
-  func acceptsInputEvent(deviceId: UInt64) -> Bool {
-    guard capturing else {
-      return false
-    }
-
-    switch currentMode {
-    case .inputEvents:
-      return true
-    case .rawInputEvents:
-      return deviceId == rawInputEventsSelectedDeviceId
-    case .rawInputRecords, nil:
-      return false
-    }
-  }
-
-  func acceptsInputReport(deviceId: UInt64) -> Bool {
-    capturing &&
-      currentMode == .rawInputRecords &&
-      deviceId == rawInputRecordsSelectedDeviceId
   }
 
   func coreServiceDisconnected() {

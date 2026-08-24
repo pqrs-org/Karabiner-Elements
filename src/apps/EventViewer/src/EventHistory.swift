@@ -115,6 +115,9 @@ func hidValueArrivedCallback(
   //
 
   let timestamp = Date()
+  guard let captureToken = CaptureEventValidator.shared.inputEventToken(deviceId: deviceId) else {
+    return
+  }
 
   Task { @MainActor in
     let entry = EventHistoryEntry(timestamp: timestamp)
@@ -143,7 +146,7 @@ func hidValueArrivedCallback(
 
     guard let momentarySwitchEventJsonString else {
       entry.isUnknownEvent = true
-      EventHistory.shared.append(entry)
+      EventHistory.shared.append(entry, captureToken: captureToken)
       return
     }
 
@@ -198,7 +201,7 @@ func hidValueArrivedCallback(
     // Add to entries
     //
 
-    EventHistory.shared.append(entry)
+    EventHistory.shared.append(entry, captureToken: captureToken)
   }
 }
 
@@ -252,12 +255,12 @@ public class EventHistory: ObservableObject {
     lastPointingButtonModifierFlags = ""
   }
 
-  public func append(_ entry: EventHistoryEntry) {
-    if entry.isUnknownEvent && !UserSettings.shared.showUnknownEvents {
+  func append(_ entry: EventHistoryEntry, captureToken: CaptureEventToken) {
+    if entry.isUnknownEvent && !UserSettings.shared.captureUnknownEvents {
       return
     }
 
-    if !CaptureCoordinator.shared.acceptsInputEvent(deviceId: entry.deviceId) {
+    if !CaptureEventValidator.shared.isCurrent(captureToken) {
       return
     }
 

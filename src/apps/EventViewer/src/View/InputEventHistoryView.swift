@@ -5,7 +5,7 @@ struct InputEventHistoryActions: View {
   @EnvironmentObject private var userSettings: UserSettings
 
   private var visibleEntries: [EventHistoryEntry] {
-    eventHistory.visibleEntries(showUnknownEvents: userSettings.showUnknownEvents)
+    eventHistory.visibleEntries(showUnknownEvents: userSettings.captureUnknownEvents)
   }
 
   var body: some View {
@@ -13,12 +13,12 @@ struct InputEventHistoryActions: View {
       Menu {
         Button("JSON") {
           eventHistory.copyToPasteboardJSON(
-            showUnknownEvents: userSettings.showUnknownEvents)
+            showUnknownEvents: userSettings.captureUnknownEvents)
         }
 
         Button("TSV") {
           eventHistory.copyToPasteboardTSV(
-            showUnknownEvents: userSettings.showUnknownEvents)
+            showUnknownEvents: userSettings.captureUnknownEvents)
         }
       } label: {
         Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
@@ -34,7 +34,7 @@ struct InputEventHistoryActions: View {
 
       Spacer()
 
-      Toggle("Show unknown events", isOn: $userSettings.showUnknownEvents)
+      Toggle("Capture unknown events", isOn: $userSettings.captureUnknownEvents)
         .toggleStyle(.checkbox)
     }
   }
@@ -46,7 +46,7 @@ struct InputEventHistoryList: View {
   let emptyMessage: String
 
   private var visibleEntries: [EventHistoryEntry] {
-    eventHistory.visibleEntries(showUnknownEvents: userSettings.showUnknownEvents)
+    eventHistory.visibleEntries(showUnknownEvents: userSettings.captureUnknownEvents)
   }
 
   var body: some View {
@@ -143,12 +143,12 @@ struct InputEventHistoryList: View {
       }
       .onChange(of: eventHistory.entries) { _ in
         if let last = eventHistory.visibleEntries(
-          showUnknownEvents: userSettings.showUnknownEvents
+          showUnknownEvents: userSettings.captureUnknownEvents
         ).last {
           proxy.scrollTo("divider \(last.id)", anchor: .bottom)
         }
       }
-      .onChange(of: userSettings.showUnknownEvents) { _ in
+      .onChange(of: userSettings.captureUnknownEvents) { _ in
         if let last = visibleEntries.last {
           proxy.scrollTo("divider \(last.id)", anchor: .bottom)
         }
