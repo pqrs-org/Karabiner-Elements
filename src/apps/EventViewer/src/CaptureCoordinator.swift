@@ -84,7 +84,7 @@ final class CaptureCoordinator: ObservableObject {
   private var generation: UInt64 = 0
   private var currentSession: Session?
   private var currentMode: Mode?
-  private var keyDownMonitor: Any?
+  private var emergencyStopMonitor: Any?
 
   @Published private(set) var capturing = false
   @Published private(set) var rawInputEventsSelectedDeviceId: UInt64?
@@ -151,7 +151,7 @@ final class CaptureCoordinator: ObservableObject {
       CaptureEventValidator.shared.start(
         .rawInputEvents(deviceId: rawInputEventsSelectedDeviceId))
       capturing = true
-      startKeyDownMonitor()
+      startEmergencyStopMonitor()
       TemporarilyIgnoredDeviceManager.shared.activate(
         owner: .rawInputEvents,
         deviceId: rawInputEventsSelectedDeviceId)
@@ -165,7 +165,7 @@ final class CaptureCoordinator: ObservableObject {
       CaptureEventValidator.shared.start(
         .rawInputRecords(deviceId: rawInputRecordsSelectedDeviceId))
       capturing = true
-      startKeyDownMonitor()
+      startEmergencyStopMonitor()
       TemporarilyIgnoredDeviceManager.shared.activate(
         owner: .rawInputRecords,
         deviceId: rawInputRecordsSelectedDeviceId)
@@ -184,11 +184,11 @@ final class CaptureCoordinator: ObservableObject {
       TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .inputEvents)
 
     case .rawInputEvents:
-      stopKeyDownMonitor()
+      stopEmergencyStopMonitor()
       TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .rawInputEvents)
 
     case .rawInputRecords:
-      stopKeyDownMonitor()
+      stopEmergencyStopMonitor()
       krbn_set_hid_input_report_capture_device(0)
       TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .rawInputRecords)
 
@@ -260,10 +260,14 @@ final class CaptureCoordinator: ObservableObject {
     self.currentMode = nil
   }
 
-  private func startKeyDownMonitor() {
-    stopKeyDownMonitor()
+  private func startEmergencyStopMonitor() {
+    stopEmergencyStopMonitor()
 
-    keyDownMonitor = NSEvent.addLocalMonitorForEvents(
+    // Capturing raw input events or records temporarily disables Karabiner-Elements
+    // modifications for the selected device, which may leave the keyboard unusable.
+    // Keep Escape available as an emergency way to stop the capture. Only Escape is
+    // consumed here; all other key-down events continue through the application.
+    emergencyStopMonitor = NSEvent.addLocalMonitorForEvents(
       matching: .keyDown
     ) { (event: NSEvent) -> NSEvent? in
       if event.keyCode == 53 {  // Escape
@@ -277,10 +281,10 @@ final class CaptureCoordinator: ObservableObject {
     }
   }
 
-  private func stopKeyDownMonitor() {
-    if let keyDownMonitor {
-      NSEvent.removeMonitor(keyDownMonitor)
-      self.keyDownMonitor = nil
+  private func stopEmergencyStopMonitor() {
+    if let emergencyStopMonitor {
+      NSEvent.removeMonitor(emergencyStopMonitor)
+      self.emergencyStopMonitor = nil
     }
   }
 }
