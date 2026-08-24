@@ -16,29 +16,22 @@ struct DeviceSelectorView: View {
     let targets = [ConnectedDevice.zero] + filtered
 
     List(targets, selection: $selected) { device in
-      Label(
-        title: {
-          Text(deviceLabelTitle(device))
-            .lineLimit(nil)
-            .fixedSize(horizontal: false, vertical: true)
-        },
-        icon: {
-          if device.index < 0 {
-            Image(systemName: "circle.grid.2x2")
-          } else {
-            VStack {
-              if device.isKeyboard { Image(systemName: "keyboard") }
-              if device.isPointingDevice { Image(systemName: "computermouse") }
-              if device.isGamePad { Image(systemName: "gamecontroller") }
-              if device.isConsumer { Image(systemName: "headphones") }
-            }
-            .frame(width: 20.0)
-          }
-        }
+      ConnectedDeviceLabel(
+        title: device.index < 0
+          ? "For all devices"
+          : connectedDeviceLabelTitle(
+            productName: device.productName,
+            manufacturerName: device.manufacturerName,
+            vendorId: device.vendorId,
+            productId: device.productId,
+            deviceAddress: device.deviceAddress
+          ),
+        isKeyboard: device.isKeyboard,
+        isPointingDevice: device.isPointingDevice,
+        isGamePad: device.isGamePad,
+        isConsumer: device.isConsumer,
+        fallbackSystemImageName: device.index < 0 ? "circle.grid.2x2" : nil
       )
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.vertical, 8)
-      .listRowSeparator(.visible, edges: .bottom)
       .tag(device)
     }
     .listStyle(.sidebar)
@@ -55,24 +48,6 @@ struct DeviceSelectorView: View {
       } else {
         selectedDevice = newValue
       }
-    }
-  }
-
-  private func deviceLabelTitle(_ device: ConnectedDevice) -> String {
-    if device.index < 0 {
-      return "For all devices"
-    } else {
-      var title = "\(device.productName) (\(device.manufacturerName))"
-
-      if device.vendorId == 0 && device.productId == 0 {
-        if !device.deviceAddress.isEmpty {
-          title += "\n  \(device.deviceAddress)"
-        }
-      } else {
-        title += "\n  [VID: \(device.vendorId), PID: \(device.productId)]"
-      }
-
-      return title
     }
   }
 }

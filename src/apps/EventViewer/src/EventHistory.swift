@@ -115,9 +115,13 @@ func hidValueArrivedCallback(
   //
 
   let timestamp = Date()
+  guard let captureToken = CaptureEventValidator.shared.inputEventToken(deviceId: deviceId) else {
+    return
+  }
 
   Task { @MainActor in
     let entry = EventHistoryEntry(timestamp: timestamp)
+    entry.deviceId = deviceId
     entry.product = EVCoreServiceDaemonClient.shared.productName(deviceId: deviceId)
 
     //
@@ -141,7 +145,8 @@ func hidValueArrivedCallback(
     //
 
     guard let momentarySwitchEventJsonString else {
-      EventHistory.shared.appendUnknownEvent(entry)
+      entry.isUnknownEvent = true
+      EventHistory.shared.append(entry, captureToken: captureToken)
       return
     }
 
@@ -196,27 +201,15 @@ func hidValueArrivedCallback(
     // Add to entries
     //
 
-    EventHistory.shared.append(entry)
+    EventHistory.shared.append(entry, captureToken: captureToken)
   }
 }
 
 @MainActor
 public class EventHistoryEntry: Identifiable, Equatable {
-  private static let timestampFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.dateFormat = "HH:mm:ss.SSS"
-    return formatter
-  }()
-  private static let iso8601TimestampFormatter: ISO8601DateFormatter = {
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    formatter.timeZone = .current
-    return formatter
-  }()
-
   nonisolated public let id = UUID()
   public let timestamp: Date
+  public var deviceId: UInt64 = 0
   public var eventType = ""
   public var product = ""
   public var usagePage = ""
@@ -224,17 +217,18 @@ public class EventHistoryEntry: Identifiable, Equatable {
   public var integerValue = ""
   public var name = ""
   public var misc = ""
+  public var isUnknownEvent = false
 
   public init(timestamp: Date) {
     self.timestamp = timestamp
   }
 
   public var timestampString: String {
-    Self.timestampFormatter.string(from: timestamp)
+    EventViewerDateFormatters.timestamp.string(from: timestamp)
   }
 
   public var iso8601TimestampString: String {
-    Self.iso8601TimestampFormatter.string(from: timestamp)
+    EventViewerDateFormatters.iso8601.string(from: timestamp)
   }
 
   nonisolated public static func == (lhs: EventHistoryEntry, rhs: EventHistoryEntry) -> Bool {
@@ -247,9 +241,7 @@ public class EventHistory: ObservableObject {
   public static let shared = EventHistory()
 
   // Keep maxCount small since too many entries causes performance issue at SwiftUI rendering.
-  private let maxCount = 32
-  private var startCount = 0
-  private var paused = false
+  private let maxCount = 128
   public var modifierFlags: [UInt64: Set<String>] = [:]
 
   private var pointingButtonModifierFlagsLocalMonitor: Any?
@@ -257,35 +249,18 @@ public class EventHistory: ObservableObject {
   public private(set) var lastPointingButtonModifierFlags: String = ""
 
   @Published var entries: [EventHistoryEntry] = []
-  @Published var unknownEventEntries: [EventHistoryEntry] = []
-
-  public func start() {
-    startCount += 1
-    if startCount == 1 {
-      startPointingButtonModifierFlagsMonitors()
-
-      paused = false
-    }
-  }
-
-  public func stop() {
-    startCount -= 1
-    if startCount == 0 {
-      stopPointingButtonModifierFlagsMonitors()
-    }
-  }
-
-  public func pause(_ value: Bool) {
-    paused = value
-  }
 
   public func resetModifierFlags() {
     modifierFlags.removeAll()
     lastPointingButtonModifierFlags = ""
   }
 
-  public func append(_ entry: EventHistoryEntry) {
-    if paused {
+  func append(_ entry: EventHistoryEntry, captureToken: CaptureEventToken) {
+    if entry.isUnknownEvent && !UserSettings.shared.captureUnknownEvents {
+      return
+    }
+
+    if !CaptureEventValidator.shared.isCurrent(captureToken) {
       return
     }
 
@@ -299,15 +274,30 @@ public class EventHistory: ObservableObject {
     entries.removeAll()
   }
 
-  public func copyToPasteboard() {
+  public func visibleEntries(showUnknownEvents: Bool) -> [EventHistoryEntry] {
+    if showUnknownEvents {
+      return entries
+    }
+    return entries.filter { !$0.isUnknownEvent }
+  }
+
+  public func copyToPasteboardJSON(showUnknownEvents: Bool) {
     var string = "[\n"
 
-    entries.forEach { entry in
-      if entry.eventType.count > 0 {
-        if string != "[\n" {
-          string += ",\n"
-        }
+    visibleEntries(showUnknownEvents: showUnknownEvents).forEach { entry in
+      if string != "[\n" {
+        string += ",\n"
+      }
 
+      if entry.isUnknownEvent {
+        string += "  {\n"
+        string += "    \"timestamp\": \"\(entry.iso8601TimestampString)\",\n"
+        string += "    \"type\": \"unknown\",\n"
+        string += "    \"value\": \"\(entry.integerValue)\",\n"
+        string += "    \"usagePage\": \"\(entry.usagePage)\",\n"
+        string += "    \"usage\": \"\(entry.usage)\"\n"
+        string += "  }"
+      } else {
         string += "  {\n"
         string += "    \"timestamp\": \"\(entry.iso8601TimestampString)\",\n"
         string += "    \"type\": \"\(entry.eventType)\",\n"
@@ -322,6 +312,36 @@ public class EventHistory: ObservableObject {
     string += "\n"
     string += "]"
 
+    copyToPasteboard(string)
+  }
+
+  public func copyToPasteboardTSV(showUnknownEvents: Bool) {
+    var lines = ["Timestamp\tType\tName\tUsage page\tUsage\tMisc"]
+
+    for entry in visibleEntries(showUnknownEvents: showUnknownEvents) {
+      let columns = [
+        entry.iso8601TimestampString,
+        entry.isUnknownEvent ? "unknown" : entry.eventType,
+        entry.isUnknownEvent ? "Unsupported HID usage" : entry.name,
+        entry.usagePage,
+        entry.usage,
+        entry.isUnknownEvent ? "integer value: \(entry.integerValue)" : entry.misc,
+      ]
+      lines.append(columns.map(tsvCell).joined(separator: "\t"))
+    }
+
+    copyToPasteboard(lines.joined(separator: "\n") + "\n")
+  }
+
+  private func tsvCell(_ value: String) -> String {
+    value
+      .replacingOccurrences(of: "\t", with: " ")
+      .replacingOccurrences(of: "\r\n", with: " ")
+      .replacingOccurrences(of: "\n", with: " ")
+      .replacingOccurrences(of: "\r", with: " ")
+  }
+
+  private func copyToPasteboard(_ string: String) {
     let pboard = NSPasteboard.general
     pboard.clearContents()
     pboard.writeObjects([string as NSString])
@@ -331,8 +351,8 @@ public class EventHistory: ObservableObject {
   // NSEvent modifier flags handling
   //
 
-  private func startPointingButtonModifierFlagsMonitors() {
-    stopPointingButtonModifierFlagsMonitors()
+  func startPointingButtonModifierFlagsMonitoring() {
+    stopPointingButtonModifierFlagsMonitoring()
 
     pointingButtonModifierFlagsLocalMonitor = NSEvent.addLocalMonitorForEvents(
       matching: .flagsChanged
@@ -352,7 +372,7 @@ public class EventHistory: ObservableObject {
     }
   }
 
-  private func stopPointingButtonModifierFlagsMonitors() {
+  func stopPointingButtonModifierFlagsMonitoring() {
     if let monitor = pointingButtonModifierFlagsLocalMonitor {
       NSEvent.removeMonitor(monitor)
       pointingButtonModifierFlagsLocalMonitor = nil
@@ -405,48 +425,5 @@ public class EventHistory: ObservableObject {
     }
 
     return names.joined(separator: ", ")
-  }
-
-  //
-  // Unknown Events
-  //
-
-  public func appendUnknownEvent(_ entry: EventHistoryEntry) {
-    if paused {
-      return
-    }
-
-    unknownEventEntries.append(entry)
-    if unknownEventEntries.count > maxCount {
-      unknownEventEntries.removeFirst()
-    }
-  }
-
-  public func clearUnknownEvents() {
-    unknownEventEntries.removeAll()
-  }
-
-  public func copyToPasteboardUnknownEvents() {
-    var string = "[\n"
-
-    unknownEventEntries.forEach { entry in
-      if string != "[\n" {
-        string += ",\n"
-      }
-
-      string += "  {\n"
-      string += "    \"timestamp\": \"\(entry.iso8601TimestampString)\",\n"
-      string += "    \"value\": \"\(entry.integerValue)\",\n"
-      string += "    \"usagePage\": \"\(entry.usagePage)\",\n"
-      string += "    \"usage\": \"\(entry.usage)\"\n"
-      string += "  }"
-    }
-
-    string += "\n"
-    string += "]"
-
-    let pboard = NSPasteboard.general
-    pboard.clearContents()
-    pboard.writeObjects([string as NSString])
   }
 }

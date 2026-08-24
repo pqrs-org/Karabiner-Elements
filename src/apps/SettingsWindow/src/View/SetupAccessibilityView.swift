@@ -27,7 +27,7 @@ struct SetupAccessibilityView: View {
         url: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
         label: {
           Label(
-            "Open Privacy & Security System Settings...",
+            "Open Privacy & Security System Settings…",
             systemImage: "arrow.forward.circle.fill")
         }
       )

@@ -55,7 +55,7 @@ struct KarabinerConsoleUserServerApp: App {
             console_user_server_launch_settings()
           },
           label: {
-            Label("Settings...", systemImage: "gear")
+            Label("Settings…", systemImage: "gear")
               .labelStyle(.titleAndIcon)
           }
         )
@@ -67,7 +67,7 @@ struct KarabinerConsoleUserServerApp: App {
             },
             label: {
               Label(
-                "Multitouch Extension Settings...",
+                "Multitouch Extension Settings…",
                 systemImage: "rectangle.and.hand.point.up.left.filled"
               )
               .labelStyle(.titleAndIcon)
@@ -80,7 +80,7 @@ struct KarabinerConsoleUserServerApp: App {
             console_user_server_check_for_updates(false)
           },
           label: {
-            Label("Check for updates...", systemImage: "network")
+            Label("Check for updates…", systemImage: "network")
               .labelStyle(.titleAndIcon)
           }
         )
@@ -91,7 +91,7 @@ struct KarabinerConsoleUserServerApp: App {
               console_user_server_check_for_updates(true)
             },
             label: {
-              Label("Check for beta updates...", systemImage: "hare")
+              Label("Check for beta updates…", systemImage: "hare")
                 .labelStyle(.titleAndIcon)
             }
           )
@@ -102,7 +102,7 @@ struct KarabinerConsoleUserServerApp: App {
             console_user_server_launch_event_viewer()
           },
           label: {
-            Label("Launch EventViewer...", systemImage: "magnifyingglass")
+            Label("Launch EventViewer…", systemImage: "magnifyingglass")
               .labelStyle(.titleAndIcon)
           }
         )

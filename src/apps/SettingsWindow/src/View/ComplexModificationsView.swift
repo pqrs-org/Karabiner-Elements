@@ -111,8 +111,10 @@ struct ComplexModificationsView: View {
 
         Spacer()
 
-        SearchField(text: $filterKeyword, placeholderString: "Filter by description or rule content")
-          .frame(width: 300)
+        SearchField(
+          text: $filterKeyword, placeholderString: "Filter by description or rule content"
+        )
+        .frame(width: 300)
       }
       .padding(.horizontal)
       .padding(.top)

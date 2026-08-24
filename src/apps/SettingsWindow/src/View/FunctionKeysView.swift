@@ -28,7 +28,7 @@ struct FunctionKeysView: View {
           url: "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?FunctionKeys",
           label: {
             Label(
-              "Open System Settings > Function Keys...",
+              "Open System Settings > Function Keys…",
               systemImage: "arrow.up.forward.app")
           }
         )

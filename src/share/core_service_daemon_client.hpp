@@ -210,11 +210,11 @@ public:
     });
   }
 
-  void async_temporarily_ignore_all_devices(bool value) const {
-    enqueue_to_dispatcher([this, value] {
+  void async_temporarily_ignore_device(std::optional<device_id> device_id) const {
+    enqueue_to_dispatcher([this, device_id] {
       nlohmann::json json{
-          {"operation_type", operation_type::temporarily_ignore_all_devices},
-          {"value", value},
+          {"operation_type", operation_type::temporarily_ignore_device},
+          {"device_id", device_id ? nlohmann::json(type_safe::get(*device_id)) : nlohmann::json(nullptr)},
       };
 
       async_request(std::move(json));

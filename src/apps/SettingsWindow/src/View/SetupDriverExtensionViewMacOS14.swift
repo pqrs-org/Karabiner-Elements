@@ -25,7 +25,7 @@ struct SetupDriverExtensionViewMacOS14: View {
             url: "x-apple.systempreferences:com.apple.preference.security?General",
             label: {
               Label(
-                "Open Privacy & Security System Settings...",
+                "Open Privacy & Security System Settings…",
                 systemImage: "arrow.forward.circle.fill")
             }
           )

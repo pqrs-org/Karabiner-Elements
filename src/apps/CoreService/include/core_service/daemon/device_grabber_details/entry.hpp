@@ -46,7 +46,10 @@ public:
         pqrs::dispatcher::extra::get_shared_dispatcher(),
         pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
         device,
-        *device_properties_);
+        *device_properties_,
+        hid_device_events_monitor::configuration{
+            .enable_input_report_handler = true,
+        });
     hid_device_events_monitor_->started.connect([this] {
       control_caps_lock_led_state_manager();
 

@@ -9,12 +9,14 @@
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace {
 std::atomic<krbn_core_service_connection_changed_callback> core_service_connection_changed_callback;
@@ -23,6 +25,9 @@ std::atomic<krbn_json_received_callback> connected_devices_received_callback;
 std::atomic<krbn_json_received_callback> frontmost_application_history_received_callback;
 std::atomic<krbn_hid_value_monitor_stopped_callback> hid_value_monitor_stopped_callback;
 std::atomic<krbn_hid_value_arrived_callback> hid_value_arrived_callback;
+std::atomic<krbn_hid_input_report_arrived_callback> hid_input_report_arrived_callback;
+std::atomic<krbn_hid_device_open_state_changed_callback> hid_device_open_state_changed_callback;
+std::atomic<uint64_t> hid_input_report_capture_device_id{0};
 
 std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client;
 std::shared_ptr<krbn::console_user_server_client> console_user_server_client;
@@ -82,22 +87,66 @@ public:
           pqrs::dispatcher::extra::get_shared_dispatcher(),
           pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
           *device_ptr,
-          *device_properties);
+          *device_properties,
+          krbn::hid_device_events_monitor::configuration{
+              // Some devices, such as ELECOM trackballs, produce additional input
+              // values through the input report handler. Capture Raw Input Events
+              // should observe only values delivered by IOHIDQueue, so disable the
+              // handler here. Raw Input Records remains available through
+              // input_report_observer.
+              .enable_input_report_handler = false,
+              .input_report_observer = [device_id](auto report_id, auto report) {
+                if (hid_input_report_capture_device_id.load() != type_safe::get(device_id)) {
+                  return;
+                }
+
+                if (auto callback = hid_input_report_arrived_callback.load()) {
+                  callback(type_safe::get(device_id),
+                           report_id,
+                           report.data(),
+                           report.size());
+                }
+              },
+          });
       hid_device_events_monitors_.insert_or_assign(device_id, monitor);
+
+      monitor->started.connect([device_id] {
+        if (auto callback = hid_device_open_state_changed_callback.load()) {
+          callback(type_safe::get(device_id), true);
+        }
+      });
+
+      monitor->stopped.connect([this, device_id] {
+        handle_monitor_stopped(device_id);
+
+        if (auto callback = hid_device_open_state_changed_callback.load()) {
+          callback(type_safe::get(device_id), false);
+        }
+      });
 
       monitor->values_arrived.connect([this, device_id](auto&& values) {
         handle_hid_values(device_id,
                           *values);
       });
 
-      monitor->async_start(kIOHIDOptionsTypeNone,
-                           std::chrono::milliseconds(3000));
+      start_monitor_if_desired(device_id,
+                               monitor);
     });
 
     hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
       auto device_id = krbn::make_device_id(registry_entry_id);
 
+      if (auto callback = hid_device_open_state_changed_callback.load()) {
+        callback(type_safe::get(device_id), false);
+      }
+
+      requested_monitor_device_ids_.erase(device_id);
+      auto pending_stop_erased = pending_stop_device_ids_.erase(device_id) > 0;
       hid_device_events_monitors_.erase(device_id);
+
+      if (pending_stop_erased) {
+        start_desired_monitors_if_ready();
+      }
 
       krbn::hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
     });
@@ -107,6 +156,39 @@ public:
     });
 
     hid_manager_->async_start();
+  }
+
+  void async_set_capture_target(bool active,
+                                std::optional<krbn::device_id> device_id,
+                                std::function<void()> ready_callback) {
+    enqueue_to_dispatcher([this, active, device_id, ready_callback = std::move(ready_callback)]() mutable {
+      if (capture_active_ == active &&
+          capture_device_id_ == device_id) {
+        if (pending_stop_device_ids_.empty()) {
+          ready_callback();
+        } else {
+          capture_target_ready_callback_ = std::move(ready_callback);
+        }
+        return;
+      }
+
+      capture_active_ = active;
+      capture_device_id_ = device_id;
+      capture_target_ready_callback_ = std::move(ready_callback);
+
+      // A monitor stops asynchronously. Wait for every previous open request to
+      // finish stopping before notifying the caller and opening the new target.
+      for (const auto& requested_device_id : requested_monitor_device_ids_) {
+        if (auto it = hid_device_events_monitors_.find(requested_device_id);
+            it != std::end(hid_device_events_monitors_)) {
+          pending_stop_device_ids_.insert(requested_device_id);
+          it->second->async_stop();
+        }
+      }
+      requested_monitor_device_ids_.clear();
+
+      start_desired_monitors_if_ready();
+    });
   }
 
   ~hid_value_monitor() override {
@@ -122,6 +204,46 @@ public:
   }
 
 private:
+  [[nodiscard]] bool monitor_is_desired(krbn::device_id device_id) const {
+    return capture_active_ &&
+           (!capture_device_id_ ||
+            *capture_device_id_ == device_id);
+  }
+
+  void start_monitor_if_desired(krbn::device_id device_id,
+                                const pqrs::not_null_shared_ptr_t<krbn::hid_device_events_monitor>& monitor) {
+    if (pending_stop_device_ids_.empty() &&
+        monitor_is_desired(device_id) &&
+        !requested_monitor_device_ids_.contains(device_id)) {
+      requested_monitor_device_ids_.insert(device_id);
+      monitor->async_start(kIOHIDOptionsTypeNone,
+                           std::chrono::milliseconds(3000));
+    }
+  }
+
+  void start_desired_monitors_if_ready() {
+    if (!pending_stop_device_ids_.empty()) {
+      return;
+    }
+
+    if (capture_target_ready_callback_) {
+      auto callback = std::move(capture_target_ready_callback_);
+      capture_target_ready_callback_ = nullptr;
+      callback();
+    }
+
+    for (const auto& [device_id, monitor] : hid_device_events_monitors_) {
+      start_monitor_if_desired(device_id,
+                               monitor);
+    }
+  }
+
+  void handle_monitor_stopped(krbn::device_id device_id) {
+    if (pending_stop_device_ids_.erase(device_id) > 0) {
+      start_desired_monitors_if_ready();
+    }
+  }
+
   void handle_hid_values(krbn::device_id device_id,
                          const std::vector<pqrs::osx::iokit_hid_value>& values) const {
     auto callback = hid_value_arrived_callback.load();
@@ -175,7 +297,17 @@ private:
   std::unordered_map<krbn::device_id,
                      pqrs::not_null_shared_ptr_t<krbn::hid_device_events_monitor>>
       hid_device_events_monitors_;
+  // Devices for which async_start has been requested, including monitors that
+  // are still retrying IOHIDDeviceOpen.
+  std::unordered_set<krbn::device_id> requested_monitor_device_ids_;
+  // Devices whose stopped signal must arrive before the next target can start.
+  std::unordered_set<krbn::device_id> pending_stop_device_ids_;
+  bool capture_active_ = false;
+  std::optional<krbn::device_id> capture_device_id_;
+  std::function<void()> capture_target_ready_callback_;
 };
+
+std::shared_ptr<hid_value_monitor> global_hid_value_monitor;
 
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -261,6 +393,8 @@ public:
                         std::shared_ptr<krbn::core_service_daemon_client>());
       std::atomic_store(&console_user_server_client,
                         std::shared_ptr<krbn::console_user_server_client>());
+      std::atomic_store(&global_hid_value_monitor,
+                        std::shared_ptr<hid_value_monitor>());
       core_service_daemon_client_ = nullptr;
       console_user_server_client_ = nullptr;
       hid_value_monitor_ = nullptr;
@@ -274,13 +408,15 @@ public:
   void async_start() {
     core_service_daemon_client_->async_start();
     console_user_server_client_->async_start();
-    hid_value_monitor_ = std::make_unique<hid_value_monitor>();
+    hid_value_monitor_ = std::make_shared<hid_value_monitor>();
+    std::atomic_store(&global_hid_value_monitor,
+                      hid_value_monitor_);
   }
 
 private:
   std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client_;
   std::shared_ptr<krbn::console_user_server_client> console_user_server_client_;
-  std::unique_ptr<hid_value_monitor> hid_value_monitor_;
+  std::shared_ptr<hid_value_monitor> hid_value_monitor_;
 };
 
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager;
@@ -293,6 +429,8 @@ void krbn_initialize(krbn_core_service_connection_changed_callback core_connecti
                      krbn_json_received_callback frontmost_application_callback,
                      krbn_hid_value_monitor_stopped_callback hid_monitor_stopped_callback,
                      krbn_hid_value_arrived_callback hid_callback,
+                     krbn_hid_input_report_arrived_callback hid_input_report_callback,
+                     krbn_hid_device_open_state_changed_callback hid_device_open_state_callback,
                      krbn_termination_completion_callback termination_completion_callback) {
   scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
@@ -307,6 +445,8 @@ void krbn_initialize(krbn_core_service_connection_changed_callback core_connecti
   frontmost_application_history_received_callback = frontmost_application_callback;
   hid_value_monitor_stopped_callback = hid_monitor_stopped_callback;
   hid_value_arrived_callback = hid_callback;
+  hid_input_report_arrived_callback = hid_input_report_callback;
+  hid_device_open_state_changed_callback = hid_device_open_state_callback;
 
   krbn::process_lifecycle_manager::initialize_shared_instance(
       krbn::process_lifecycle_manager::configuration{
@@ -324,6 +464,7 @@ bool krbn_async_request_termination(void) {
 }
 
 void krbn_finalize() {
+  hid_input_report_capture_device_id = 0;
   krbn::process_lifecycle_manager::terminate_shared_instance();
   scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;
@@ -335,16 +476,34 @@ void krbn_core_service_async_get_manipulator_environment() {
   }
 }
 
-void krbn_core_service_async_temporarily_ignore_all_devices(bool value) {
-  if (auto client = std::atomic_load(&core_service_daemon_client)) {
-    client->async_temporarily_ignore_all_devices(value);
-  }
-}
-
 void krbn_core_service_async_clear_user_variables() {
   if (auto client = std::atomic_load(&core_service_daemon_client)) {
     client->async_clear_user_variables();
   }
+}
+
+void krbn_set_hid_capture_target(bool active, uint64_t device_id) {
+  // Close EventViewer's previous monitors before asking CoreService to change
+  // which device it ignores. This serializes the IOHIDDevice ownership handoff.
+  auto update_core_service = [device_id] {
+    if (auto client = std::atomic_load(&core_service_daemon_client)) {
+      client->async_temporarily_ignore_device(
+          device_id == 0 ? std::nullopt : std::optional(krbn::device_id(device_id)));
+    }
+  };
+
+  if (auto monitor = std::atomic_load(&global_hid_value_monitor)) {
+    monitor->async_set_capture_target(
+        active,
+        device_id == 0 ? std::nullopt : std::optional(krbn::device_id(device_id)),
+        std::move(update_core_service));
+  } else {
+    update_core_service();
+  }
+}
+
+void krbn_set_hid_input_report_capture_device(uint64_t device_id) {
+  hid_input_report_capture_device_id = device_id;
 }
 
 void krbn_console_user_server_async_get_frontmost_application_history() {

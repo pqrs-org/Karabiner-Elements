@@ -66,8 +66,6 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 struct ContentMainView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
-  @ObservedObject private var settingsCoreServiceDaemonClient = SettingsCoreServiceDaemonClient
-    .shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared
 
   @State private var selectedSidebarItem: SidebarItem = .simpleModifications
@@ -167,16 +165,6 @@ struct ContentMainView: View {
             .foregroundColor(.white)
           }
 
-          if settingsCoreServiceDaemonClient.temporarilyIgnoreAllDevices {
-            Label(
-              "All Karabiner-Elements modifications are temporarily disabled by EventViewer.",
-              systemImage: WarningBorder.icon
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .modifier(WarningBorder())
-            .padding()
-          }
-
           if systemPreferences.virtualHIDKeyboardModifierMappingsExists {
             VStack(alignment: .leading) {
               Label(
@@ -184,7 +172,7 @@ struct ContentMainView: View {
                 macOS also remaps modifier keys. It's recommended to restore defaults and configure them via Karabiner-Elements.
 
                 You can reset the macOS setting by following steps:
-                1. Open System Settings and go to Keyboard Shortcuts... > Modifier Keys.
+                1. Open System Settings and go to Keyboard Shortcuts… > Modifier Keys.
                 2. Choose Karabiner DriverKit VirtualHIDKeyboard.
                 3. Click the Restore Defaults button.
                 """,
@@ -195,7 +183,7 @@ struct ContentMainView: View {
                 url: "x-apple.systempreferences:com.apple.preference.keyboard",
                 label: {
                   Label(
-                    "Open System Settings...",
+                    "Open System Settings…",
                     systemImage: "arrow.up.forward.app"
                   )
                 }

@@ -4,20 +4,22 @@ import SwiftUI
 struct FindCommands: Commands {
   var body: some Commands {
     CommandGroup(replacing: .textEditing) {
-      Button("Find…") {
-        FindCommand.perform(.showFindPanel)
-      }
-      .keyboardShortcut("f", modifiers: .command)
+      Menu("Find") {
+        Button("Find…") {
+          FindCommand.perform(.showFindPanel)
+        }
+        .keyboardShortcut("f", modifiers: .command)
 
-      Button("Find Next") {
-        FindCommand.perform(.next)
-      }
-      .keyboardShortcut("g", modifiers: .command)
+        Button("Find Next") {
+          FindCommand.perform(.next)
+        }
+        .keyboardShortcut("g", modifiers: .command)
 
-      Button("Find Previous") {
-        FindCommand.perform(.previous)
+        Button("Find Previous") {
+          FindCommand.perform(.previous)
+        }
+        .keyboardShortcut("g", modifiers: [.command, .shift])
       }
-      .keyboardShortcut("g", modifiers: [.command, .shift])
     }
   }
 

@@ -59,7 +59,6 @@ public:
         weak_console_user_server_peer_(weak_console_user_server_peer),
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
-        temporarily_ignore_all_devices_(false),
         logger_unique_filter_(logger::get_logger()) {
     notification_message_manager_ = std::make_shared<notification_message_manager>();
 
@@ -279,7 +278,8 @@ public:
 
         connected_devices_changed();
 
-        entry->set_temporarily_ignore(temporarily_ignore_all_devices_);
+        entry->set_temporarily_ignore(
+            temporarily_ignored_device_ids_.contains(device_id));
 
         entry->hid_values_arrived.connect([this](auto&& entry,
                                                  auto&& event_queue_entries) {
@@ -550,23 +550,15 @@ public:
     });
   }
 
-  void async_set_temporarily_ignore_all_devices(bool value) {
-    enqueue_to_dispatcher([this, value] {
-      temporarily_ignore_all_devices_ = value;
+  void async_set_temporarily_ignored_device_ids(const std::unordered_set<device_id>& device_ids) {
+    enqueue_to_dispatcher([this, device_ids] {
+      temporarily_ignored_device_ids_ = device_ids;
 
-      for (auto&& entry : entries_ | std::views::values) {
-        entry->set_temporarily_ignore(value);
+      for (const auto& [device_id, entry] : entries_) {
+        entry->set_temporarily_ignore(device_ids.contains(device_id));
       }
 
       async_grab_devices();
-
-      async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "system.temporarily_ignore_all_devices",
-              manipulator_environment_variable_value(value),
-              nullptr,
-              std::nullopt,
-              nullptr));
     });
   }
 
@@ -1225,7 +1217,7 @@ private:
   std::optional<bool> last_caps_lock_state_;
   std::unique_ptr<pqrs::osx::iokit_hid_manager> hid_manager_;
   std::unordered_map<device_id, pqrs::not_null_shared_ptr_t<device_grabber_details::entry>> entries_;
-  bool temporarily_ignore_all_devices_;
+  std::unordered_set<device_id> temporarily_ignored_device_ids_;
 
   std::unique_ptr<pqrs::osx::hitoolbox::secure_event_input_monitor> secure_event_input_monitor_;
 

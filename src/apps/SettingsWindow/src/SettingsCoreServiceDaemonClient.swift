@@ -3,19 +3,14 @@ import Foundation
 
 func systemVariablesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   struct SystemVariables: Decodable {
-    let temporarilyIgnoreAllDevices: Bool
     let useFkeysAsStandardFunctionKeys: Bool
 
     enum CodingKeys: String, CodingKey {
-      case temporarilyIgnoreAllDevices = "system.temporarily_ignore_all_devices"
       case useFkeysAsStandardFunctionKeys = "system.use_fkeys_as_standard_function_keys"
     }
 
     init(from decoder: Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
-
-      temporarilyIgnoreAllDevices = try container.decodeFlexibleBool(
-        forKey: .temporarilyIgnoreAllDevices)
 
       useFkeysAsStandardFunctionKeys = try container.decodeFlexibleBool(
         forKey: .useFkeysAsStandardFunctionKeys)
@@ -28,13 +23,6 @@ func systemVariablesReceivedCallback(_ jsonString: UnsafePointer<CChar>) {
   do {
     let systemVariables = try decoder.decode(SystemVariables.self, from: data)
     Task { @MainActor in
-      if SettingsCoreServiceDaemonClient.shared.temporarilyIgnoreAllDevices
-        != systemVariables.temporarilyIgnoreAllDevices
-      {
-        SettingsCoreServiceDaemonClient.shared.temporarilyIgnoreAllDevices =
-          systemVariables.temporarilyIgnoreAllDevices
-      }
-
       if SettingsCoreServiceDaemonClient.shared.useFkeysAsStandardFunctionKeys
         != systemVariables.useFkeysAsStandardFunctionKeys
       {
@@ -71,11 +59,9 @@ extension KeyedDecodingContainer {
 final class SettingsCoreServiceDaemonClient: ObservableObject {
   static let shared = SettingsCoreServiceDaemonClient()
 
-  @Published var temporarilyIgnoreAllDevices: Bool = false
   @Published var useFkeysAsStandardFunctionKeys: Bool = false
 
   func componentsManagerStopped() {
-    temporarilyIgnoreAllDevices = false
     useFkeysAsStandardFunctionKeys = false
   }
 

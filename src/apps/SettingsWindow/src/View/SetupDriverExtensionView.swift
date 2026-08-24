@@ -34,7 +34,7 @@ struct SetupDriverExtensionView: View {
             url: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension",
             label: {
               Label(
-                "Open Login Items & Extensions Settings...",
+                "Open Login Items & Extensions Settings…",
                 systemImage: "arrow.forward.circle.fill")
             }
           )
