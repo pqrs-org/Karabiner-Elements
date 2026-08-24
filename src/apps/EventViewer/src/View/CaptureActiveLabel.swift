@@ -42,8 +42,6 @@ struct CaptureWaitingForDeviceAccessLabel: View {
         .controlSize(.small)
 
       Text("Waiting for device access...")
-        .lineLimit(1)
-        .fixedSize(horizontal: true, vertical: false)
     }
     .foregroundStyle(.secondary)
   }
