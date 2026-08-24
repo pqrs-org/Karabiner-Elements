@@ -5,8 +5,7 @@ import Foundation
 func coreServiceConnectionChangedCallback(_ connected: Bool) {
   Task { @MainActor in
     if !connected {
-      InputReportHistory.shared.stopCapture()
-      EventHistory.shared.stopRawInputEventsCapture()
+      CaptureCoordinator.shared.coreServiceDisconnected()
     }
     TemporarilyIgnoredDeviceManager.shared.coreServiceConnectionChanged(connected)
   }
@@ -236,16 +235,16 @@ final class EVCoreServiceDaemonClient: ObservableObject {
     productsByDeviceId = result
     connectedDevices = devices
 
-    if let selectedDeviceId = InputReportHistory.shared.selectedDeviceId,
+    if let selectedDeviceId = CaptureCoordinator.shared.rawInputRecordsSelectedDeviceId,
       !devices.contains(where: { $0.id == selectedDeviceId })
     {
-      InputReportHistory.shared.deviceDisconnected()
+      CaptureCoordinator.shared.rawInputRecordsDeviceDisconnected()
     }
 
-    if let selectedDeviceId = EventHistory.shared.rawInputEventsSelectedDeviceId,
+    if let selectedDeviceId = CaptureCoordinator.shared.rawInputEventsSelectedDeviceId,
       !devices.contains(where: { $0.id == selectedDeviceId })
     {
-      EventHistory.shared.rawInputEventsSelectedDeviceDisconnected()
+      CaptureCoordinator.shared.rawInputEventsDeviceDisconnected()
     }
   }
 }

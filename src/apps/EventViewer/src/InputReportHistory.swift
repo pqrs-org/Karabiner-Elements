@@ -70,54 +70,11 @@ final class InputReportHistory: ObservableObject {
   static let shared = InputReportHistory()
 
   private let maxCount = 128
-  private var keyDownMonitor: Any?
 
-  @Published private(set) var capturing = false
-  @Published private(set) var selectedDeviceId: UInt64?
   @Published private(set) var entries: [InputReportEntry] = []
 
-  func startCapture() {
-    guard let selectedDeviceId else {
-      return
-    }
-
-    EventHistory.shared.stopInputEventsCapture()
-    EventHistory.shared.stopRawInputEventsCapture()
-    clear()
-    capturing = true
-    startKeyDownMonitor()
-    TemporarilyIgnoredDeviceManager.shared.activate(
-      owner: .rawInputRecords,
-      deviceId: selectedDeviceId)
-    krbn_set_hid_input_report_capture_device(selectedDeviceId)
-  }
-
-  func stopCapture() {
-    stopKeyDownMonitor()
-    krbn_set_hid_input_report_capture_device(0)
-    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .rawInputRecords)
-    capturing = false
-  }
-
-  func selectDevice(_ deviceId: UInt64?) {
-    guard deviceId != selectedDeviceId else {
-      return
-    }
-
-    stopCapture()
-    clear()
-    selectedDeviceId = deviceId
-  }
-
-  func deviceDisconnected() {
-    if capturing {
-      stopCapture()
-    }
-    selectDevice(nil)
-  }
-
   func append(_ entry: InputReportEntry) {
-    guard capturing, entry.deviceId == selectedDeviceId else {
+    guard CaptureCoordinator.shared.acceptsInputReport(deviceId: entry.deviceId) else {
       return
     }
 
@@ -175,26 +132,4 @@ final class InputReportHistory: ObservableObject {
     pasteboard.writeObjects([text as NSString])
   }
 
-  private func startKeyDownMonitor() {
-    stopKeyDownMonitor()
-
-    keyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) {
-      (event: NSEvent) -> NSEvent? in
-      if event.keyCode == 53 {  // Escape
-        Task { @MainActor in
-          InputReportHistory.shared.stopCapture()
-        }
-        return nil
-      }
-
-      return event
-    }
-  }
-
-  private func stopKeyDownMonitor() {
-    if let keyDownMonitor {
-      NSEvent.removeMonitor(keyDownMonitor)
-      self.keyDownMonitor = nil
-    }
-  }
 }

@@ -239,9 +239,6 @@ public class EventHistory: ObservableObject {
 
   // Keep maxCount small since too many entries causes performance issue at SwiftUI rendering.
   private let maxCount = 128
-  private var startCount = 0
-  private var paused = false
-  private var rawInputEventsKeyDownMonitor: Any?
   public var modifierFlags: [UInt64: Set<String>] = [:]
 
   private var pointingButtonModifierFlagsLocalMonitor: Any?
@@ -249,87 +246,6 @@ public class EventHistory: ObservableObject {
   public private(set) var lastPointingButtonModifierFlags: String = ""
 
   @Published var entries: [EventHistoryEntry] = []
-  @Published private(set) var inputEventsCapturing = false
-  @Published private(set) var rawInputEventsCapturing = false
-  @Published private(set) var rawInputEventsSelectedDeviceId: UInt64?
-
-  public func startInputEventsCapture() {
-    guard !inputEventsCapturing else {
-      return
-    }
-
-    stopRawInputEventsCapture()
-    InputReportHistory.shared.stopCapture()
-    clear()
-    resetModifierFlags()
-    inputEventsCapturing = true
-    TemporarilyIgnoredDeviceManager.shared.activate(
-      owner: .inputEvents,
-      deviceId: nil)
-  }
-
-  public func stopInputEventsCapture() {
-    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .inputEvents)
-    inputEventsCapturing = false
-  }
-
-  public func startRawInputEventsCapture() {
-    guard let rawInputEventsSelectedDeviceId else {
-      return
-    }
-
-    stopInputEventsCapture()
-    InputReportHistory.shared.stopCapture()
-    clear()
-    resetModifierFlags()
-    rawInputEventsCapturing = true
-    startRawInputEventsKeyDownMonitor()
-    TemporarilyIgnoredDeviceManager.shared.activate(
-      owner: .rawInputEvents,
-      deviceId: rawInputEventsSelectedDeviceId)
-  }
-
-  public func stopRawInputEventsCapture() {
-    stopRawInputEventsKeyDownMonitor()
-    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .rawInputEvents)
-    rawInputEventsCapturing = false
-  }
-
-  public func selectRawInputEventsDevice(_ deviceId: UInt64?) {
-    guard deviceId != rawInputEventsSelectedDeviceId else {
-      return
-    }
-
-    stopRawInputEventsCapture()
-    rawInputEventsSelectedDeviceId = deviceId
-    clear()
-    resetModifierFlags()
-  }
-
-  public func rawInputEventsSelectedDeviceDisconnected() {
-    stopRawInputEventsCapture()
-    selectRawInputEventsDevice(nil)
-  }
-
-  public func start() {
-    startCount += 1
-    if startCount == 1 {
-      startPointingButtonModifierFlagsMonitors()
-
-      paused = false
-    }
-  }
-
-  public func stop() {
-    startCount -= 1
-    if startCount == 0 {
-      stopPointingButtonModifierFlagsMonitors()
-    }
-  }
-
-  public func pause(_ value: Bool) {
-    paused = value
-  }
 
   public func resetModifierFlags() {
     modifierFlags.removeAll()
@@ -337,17 +253,11 @@ public class EventHistory: ObservableObject {
   }
 
   public func append(_ entry: EventHistoryEntry) {
-    if paused || (entry.isUnknownEvent && !UserSettings.shared.showUnknownEvents) {
+    if entry.isUnknownEvent && !UserSettings.shared.showUnknownEvents {
       return
     }
 
-    if inputEventsCapturing {
-      // Capture values from all devices that EventViewer can open.
-    } else if rawInputEventsCapturing,
-      entry.deviceId == rawInputEventsSelectedDeviceId
-    {
-      // Capture values from the selected raw device.
-    } else {
+    if !CaptureCoordinator.shared.acceptsInputEvent(deviceId: entry.deviceId) {
       return
     }
 
@@ -434,35 +344,12 @@ public class EventHistory: ObservableObject {
     pboard.writeObjects([string as NSString])
   }
 
-  private func startRawInputEventsKeyDownMonitor() {
-    stopRawInputEventsKeyDownMonitor()
-
-    rawInputEventsKeyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) {
-      (event: NSEvent) -> NSEvent? in
-      if event.keyCode == 53 {  // Escape
-        Task { @MainActor in
-          EventHistory.shared.stopRawInputEventsCapture()
-        }
-        return nil
-      }
-
-      return event
-    }
-  }
-
-  private func stopRawInputEventsKeyDownMonitor() {
-    if let rawInputEventsKeyDownMonitor {
-      NSEvent.removeMonitor(rawInputEventsKeyDownMonitor)
-      self.rawInputEventsKeyDownMonitor = nil
-    }
-  }
-
   //
   // NSEvent modifier flags handling
   //
 
-  private func startPointingButtonModifierFlagsMonitors() {
-    stopPointingButtonModifierFlagsMonitors()
+  func startPointingButtonModifierFlagsMonitoring() {
+    stopPointingButtonModifierFlagsMonitoring()
 
     pointingButtonModifierFlagsLocalMonitor = NSEvent.addLocalMonitorForEvents(
       matching: .flagsChanged
@@ -482,7 +369,7 @@ public class EventHistory: ObservableObject {
     }
   }
 
-  private func stopPointingButtonModifierFlagsMonitors() {
+  func stopPointingButtonModifierFlagsMonitoring() {
     if let monitor = pointingButtonModifierFlagsLocalMonitor {
       NSEvent.removeMonitor(monitor)
       pointingButtonModifierFlagsLocalMonitor = nil

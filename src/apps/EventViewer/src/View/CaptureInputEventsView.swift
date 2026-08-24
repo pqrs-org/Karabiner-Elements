@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CaptureInputEventsView: View {
+  @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var eventHistory = EventHistory.shared
   @State private var testInput = ""
   @FocusState private var testInputFocused: Bool
@@ -9,9 +10,9 @@ struct CaptureInputEventsView: View {
     VStack(alignment: .leading, spacing: 0) {
       VStack(alignment: .leading, spacing: 12) {
         HStack(spacing: 12) {
-          if eventHistory.inputEventsCapturing {
+          if captureCoordinator.capturing {
             Button(role: .destructive) {
-              eventHistory.stopInputEventsCapture()
+              CaptureCoordinator.shared.stopCapture()
             } label: {
               Label("Stop capture", systemImage: "stop.fill")
             }
@@ -19,7 +20,7 @@ struct CaptureInputEventsView: View {
             CaptureActiveLabel(text: "Capturing input events")
           } else {
             Button {
-              eventHistory.startInputEventsCapture()
+              CaptureCoordinator.shared.startCapture()
               focusTestInput()
             } label: {
               Label("Start capture", systemImage: "record.circle")
@@ -36,17 +37,10 @@ struct CaptureInputEventsView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .task {
-      let session = CaptureSessionManager.shared.begin()
-      eventHistory.start()
-      eventHistory.pause(false)
-      eventHistory.stopInputEventsCapture()
-      eventHistory.startInputEventsCapture()
+      let session = CaptureCoordinator.shared.begin(.inputEvents)
       focusTestInput()
       defer {
-        if CaptureSessionManager.shared.end(session) {
-          eventHistory.stopInputEventsCapture()
-        }
-        eventHistory.stop()
+        CaptureCoordinator.shared.end(session)
       }
 
       do {
@@ -60,7 +54,7 @@ struct CaptureInputEventsView: View {
   }
 
   private var emptyMessage: String {
-    if eventHistory.inputEventsCapturing {
+    if captureCoordinator.capturing {
       return "Type in the test input field to inspect input events."
     }
     return "Press Start capture to begin capturing input events."

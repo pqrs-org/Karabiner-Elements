@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CaptureRawInputRecordsView: View {
+  @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var client = EVCoreServiceDaemonClient.shared
   @ObservedObject private var history = InputReportHistory.shared
   @State private var testInput = ""
@@ -36,7 +37,7 @@ struct CaptureRawInputRecordsView: View {
           .frame(minWidth: 300, maxWidth: 300)
 
         VStack(alignment: .leading, spacing: 0) {
-          if history.capturing {
+          if captureCoordinator.capturing {
             captureControls
             captureActions
           } else {
@@ -49,14 +50,9 @@ struct CaptureRawInputRecordsView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .task {
-      let session = CaptureSessionManager.shared.begin()
-      EventHistory.shared.stopInputEventsCapture()
-      EventHistory.shared.stopRawInputEventsCapture()
-      history.stopCapture()
+      let session = CaptureCoordinator.shared.begin(.rawInputRecords)
       defer {
-        if CaptureSessionManager.shared.end(session) {
-          history.stopCapture()
-        }
+        CaptureCoordinator.shared.end(session)
       }
 
       do {
@@ -70,8 +66,8 @@ struct CaptureRawInputRecordsView: View {
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification))
     {
       _ in
-      if history.capturing {
-        history.stopCapture()
+      if captureCoordinator.capturing {
+        CaptureCoordinator.shared.stopCapture()
       }
     }
   }
@@ -80,7 +76,7 @@ struct CaptureRawInputRecordsView: View {
     VStack(alignment: .leading, spacing: 12) {
       HStack(spacing: 12) {
         Button(role: .destructive) {
-          history.stopCapture()
+          CaptureCoordinator.shared.stopCapture()
         } label: {
           Label("Stop capture (Esc)", systemImage: "stop.fill")
         }
@@ -106,14 +102,14 @@ struct CaptureRawInputRecordsView: View {
   private var startCaptureControls: some View {
     VStack(alignment: .leading, spacing: 12) {
       Button {
-        history.startCapture()
+        CaptureCoordinator.shared.startCapture()
         focusTestInput()
       } label: {
         Label("Start capture", systemImage: "record.circle")
       }
-      .disabled(history.selectedDeviceId == nil)
+      .disabled(captureCoordinator.rawInputRecordsSelectedDeviceId == nil)
 
-      if history.selectedDeviceId == nil {
+      if captureCoordinator.rawInputRecordsSelectedDeviceId == nil {
         Text("Select a device to start capturing raw input records.")
           .foregroundStyle(.secondary)
       }
@@ -131,9 +127,9 @@ struct CaptureRawInputRecordsView: View {
   private var deviceSelector: some View {
     ConnectedDeviceSelector(
       selection: Binding(
-        get: { history.selectedDeviceId },
+        get: { captureCoordinator.rawInputRecordsSelectedDeviceId },
         set: { deviceId in
-          history.selectDevice(deviceId)
+          captureCoordinator.selectRawInputRecordsDevice(deviceId)
         }
       )
     )
@@ -148,7 +144,7 @@ struct CaptureRawInputRecordsView: View {
   }
 
   private var selectedDeviceIsOpen: Bool {
-    guard let deviceId = history.selectedDeviceId else {
+    guard let deviceId = captureCoordinator.rawInputRecordsSelectedDeviceId else {
       return false
     }
     return client.hidDeviceIsOpen(deviceId)
@@ -261,8 +257,8 @@ struct CaptureRawInputRecordsView: View {
 
   private var emptyMessage: String {
     RawInputCaptureEmptyMessage.make(
-      deviceSelected: history.selectedDeviceId != nil,
-      capturing: history.capturing,
+      deviceSelected: captureCoordinator.rawInputRecordsSelectedDeviceId != nil,
+      capturing: captureCoordinator.capturing,
       deviceIsOpen: selectedDeviceIsOpen,
       subject: "raw input records",
       capturingEmptyMessage: "No raw input records received."

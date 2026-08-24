@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CaptureRawInputEventsView: View {
-  @ObservedObject private var eventHistory = EventHistory.shared
+  @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var client = EVCoreServiceDaemonClient.shared
   @State private var testInput = ""
   @FocusState private var testInputFocused: Bool
@@ -14,9 +14,9 @@ struct CaptureRawInputEventsView: View {
       VStack(alignment: .leading, spacing: 0) {
         VStack(alignment: .leading, spacing: 12) {
           HStack(spacing: 12) {
-            if eventHistory.rawInputEventsCapturing {
+            if captureCoordinator.capturing {
               Button(role: .destructive) {
-                eventHistory.stopRawInputEventsCapture()
+                CaptureCoordinator.shared.stopCapture()
               } label: {
                 Label("Stop capture (Esc)", systemImage: "stop.fill")
               }
@@ -33,14 +33,14 @@ struct CaptureRawInputEventsView: View {
               }
             } else {
               Button {
-                eventHistory.startRawInputEventsCapture()
+                CaptureCoordinator.shared.startCapture()
                 focusTestInput()
               } label: {
                 Label("Start capture", systemImage: "record.circle")
               }
-              .disabled(eventHistory.rawInputEventsSelectedDeviceId == nil)
+              .disabled(captureCoordinator.rawInputEventsSelectedDeviceId == nil)
 
-              if eventHistory.rawInputEventsSelectedDeviceId == nil {
+              if captureCoordinator.rawInputEventsSelectedDeviceId == nil {
                 Text("Select a device to start capturing raw input events.")
                   .foregroundStyle(.secondary)
               }
@@ -59,23 +59,14 @@ struct CaptureRawInputEventsView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification))
     { _ in
-      if eventHistory.rawInputEventsCapturing {
-        eventHistory.stopRawInputEventsCapture()
+      if captureCoordinator.capturing {
+        CaptureCoordinator.shared.stopCapture()
       }
     }
     .task {
-      let session = CaptureSessionManager.shared.begin()
-      eventHistory.start()
-      eventHistory.pause(false)
-      eventHistory.stopInputEventsCapture()
-      eventHistory.stopRawInputEventsCapture()
-      InputReportHistory.shared.stopCapture()
-      eventHistory.clear()
+      let session = CaptureCoordinator.shared.begin(.rawInputEvents)
       defer {
-        if CaptureSessionManager.shared.end(session) {
-          eventHistory.stopRawInputEventsCapture()
-        }
-        eventHistory.stop()
+        CaptureCoordinator.shared.end(session)
       }
 
       do {
@@ -89,7 +80,7 @@ struct CaptureRawInputEventsView: View {
   }
 
   private var selectedDeviceIsOpen: Bool {
-    guard let deviceId = eventHistory.rawInputEventsSelectedDeviceId else {
+    guard let deviceId = captureCoordinator.rawInputEventsSelectedDeviceId else {
       return false
     }
     return client.hidDeviceIsOpen(deviceId)
@@ -97,8 +88,8 @@ struct CaptureRawInputEventsView: View {
 
   private var emptyMessage: String {
     RawInputCaptureEmptyMessage.make(
-      deviceSelected: eventHistory.rawInputEventsSelectedDeviceId != nil,
-      capturing: eventHistory.rawInputEventsCapturing,
+      deviceSelected: captureCoordinator.rawInputEventsSelectedDeviceId != nil,
+      capturing: captureCoordinator.capturing,
       deviceIsOpen: selectedDeviceIsOpen,
       subject: "raw input events",
       capturingEmptyMessage: "Type in the test input field to inspect raw input events."
@@ -108,9 +99,9 @@ struct CaptureRawInputEventsView: View {
   private var deviceSelector: some View {
     ConnectedDeviceSelector(
       selection: Binding(
-        get: { eventHistory.rawInputEventsSelectedDeviceId },
+        get: { captureCoordinator.rawInputEventsSelectedDeviceId },
         set: { deviceId in
-          eventHistory.selectRawInputEventsDevice(deviceId)
+          captureCoordinator.selectRawInputEventsDevice(deviceId)
         }
       )
     )
