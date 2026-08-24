@@ -310,19 +310,6 @@ public class EventHistory: ObservableObject {
     selectRawInputEventsDevice(nil)
   }
 
-  public func startUnknownEventsMonitoring() {
-    stopInputEventsCapture()
-    stopRawInputEventsCapture()
-    InputReportHistory.shared.stopCapture()
-    TemporarilyIgnoredDeviceManager.shared.activate(
-      owner: .unknownEvents,
-      deviceId: nil)
-  }
-
-  public func stopUnknownEventsMonitoring() {
-    TemporarilyIgnoredDeviceManager.shared.deactivate(owner: .unknownEvents)
-  }
-
   public func start() {
     startCount += 1
     if startCount == 1 {

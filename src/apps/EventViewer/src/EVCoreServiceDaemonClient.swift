@@ -34,7 +34,6 @@ final class TemporarilyIgnoredDeviceManager {
     case inputEvents
     case rawInputEvents
     case rawInputRecords
-    case unknownEvents
   }
 
   static let shared = TemporarilyIgnoredDeviceManager()

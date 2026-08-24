@@ -110,9 +110,9 @@ struct UnknownEventsView: View {
     .task {
       eventHistory.start()
       eventHistory.pause(false)
-      eventHistory.startUnknownEventsMonitoring()
+      eventHistory.startInputEventsCapture()
       defer {
-        eventHistory.stopUnknownEventsMonitoring()
+        eventHistory.stopInputEventsCapture()
         eventHistory.stop()
       }
 
