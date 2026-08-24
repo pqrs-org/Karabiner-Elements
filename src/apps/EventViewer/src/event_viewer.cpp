@@ -89,6 +89,11 @@ public:
           *device_ptr,
           *device_properties,
           krbn::hid_device_events_monitor::configuration{
+              // Some devices, such as ELECOM trackballs, produce additional input
+              // values through the input report handler. Capture Raw Input Events
+              // should observe only values delivered by IOHIDQueue, so disable the
+              // handler here. Raw Input Records remains available through
+              // input_report_observer.
               .enable_input_report_handler = false,
               .input_report_observer = [device_id](auto report_id, auto report) {
                 if (hid_input_report_capture_device_id.load() != type_safe::get(device_id)) {
@@ -171,6 +176,8 @@ public:
       capture_device_id_ = device_id;
       capture_target_ready_callback_ = std::move(ready_callback);
 
+      // A monitor stops asynchronously. Wait for every previous open request to
+      // finish stopping before notifying the caller and opening the new target.
       for (const auto& requested_device_id : requested_monitor_device_ids_) {
         if (auto it = hid_device_events_monitors_.find(requested_device_id);
             it != std::end(hid_device_events_monitors_)) {
@@ -203,9 +210,8 @@ private:
             *capture_device_id_ == device_id);
   }
 
-  void start_monitor_if_desired(
-      krbn::device_id device_id,
-      const pqrs::not_null_shared_ptr_t<krbn::hid_device_events_monitor>& monitor) {
+  void start_monitor_if_desired(krbn::device_id device_id,
+                                const pqrs::not_null_shared_ptr_t<krbn::hid_device_events_monitor>& monitor) {
     if (pending_stop_device_ids_.empty() &&
         monitor_is_desired(device_id) &&
         !requested_monitor_device_ids_.contains(device_id)) {
@@ -291,7 +297,10 @@ private:
   std::unordered_map<krbn::device_id,
                      pqrs::not_null_shared_ptr_t<krbn::hid_device_events_monitor>>
       hid_device_events_monitors_;
+  // Devices for which async_start has been requested, including monitors that
+  // are still retrying IOHIDDeviceOpen.
   std::unordered_set<krbn::device_id> requested_monitor_device_ids_;
+  // Devices whose stopped signal must arrive before the next target can start.
   std::unordered_set<krbn::device_id> pending_stop_device_ids_;
   bool capture_active_ = false;
   std::optional<krbn::device_id> capture_device_id_;
@@ -474,6 +483,8 @@ void krbn_core_service_async_clear_user_variables() {
 }
 
 void krbn_set_hid_capture_target(bool active, uint64_t device_id) {
+  // Close EventViewer's previous monitors before asking CoreService to change
+  // which device it ignores. This serializes the IOHIDDevice ownership handoff.
   auto update_core_service = [device_id] {
     if (auto client = std::atomic_load(&core_service_daemon_client)) {
       client->async_temporarily_ignore_device(
