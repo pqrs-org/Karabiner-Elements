@@ -16,29 +16,14 @@ struct DeviceSelectorView: View {
     let targets = [ConnectedDevice.zero] + filtered
 
     List(targets, selection: $selected) { device in
-      Label(
-        title: {
-          Text(deviceLabelTitle(device))
-            .lineLimit(nil)
-            .fixedSize(horizontal: false, vertical: true)
-        },
-        icon: {
-          if device.index < 0 {
-            Image(systemName: "circle.grid.2x2")
-          } else {
-            VStack {
-              if device.isKeyboard { Image(systemName: "keyboard") }
-              if device.isPointingDevice { Image(systemName: "computermouse") }
-              if device.isGamePad { Image(systemName: "gamecontroller") }
-              if device.isConsumer { Image(systemName: "headphones") }
-            }
-            .frame(width: 20.0)
-          }
-        }
+      ConnectedDeviceLabel(
+        title: deviceLabelTitle(device),
+        isKeyboard: device.isKeyboard,
+        isPointingDevice: device.isPointingDevice,
+        isGamePad: device.isGamePad,
+        isConsumer: device.isConsumer,
+        fallbackSystemImageName: device.index < 0 ? "circle.grid.2x2" : nil
       )
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.vertical, 8)
-      .listRowSeparator(.visible, edges: .bottom)
       .tag(device)
     }
     .listStyle(.sidebar)

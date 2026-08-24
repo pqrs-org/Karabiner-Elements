@@ -7,22 +7,13 @@ struct ConnectedDeviceSelector: View {
   var body: some View {
     List(selection: $selection) {
       ForEach(client.connectedDevices) { device in
-        Label {
-          Text(title(device))
-            .lineLimit(nil)
-            .fixedSize(horizontal: false, vertical: true)
-        } icon: {
-          VStack {
-            if device.isKeyboard { Image(systemName: "keyboard") }
-            if device.isPointingDevice { Image(systemName: "computermouse") }
-            if device.isGamePad { Image(systemName: "gamecontroller") }
-            if device.isConsumer { Image(systemName: "headphones") }
-          }
-          .frame(width: 20)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 8)
-        .listRowSeparator(.visible, edges: .bottom)
+        ConnectedDeviceLabel(
+          title: title(device),
+          isKeyboard: device.isKeyboard,
+          isPointingDevice: device.isPointingDevice,
+          isGamePad: device.isGamePad,
+          isConsumer: device.isConsumer
+        )
         .tag(device.id)
       }
     }
