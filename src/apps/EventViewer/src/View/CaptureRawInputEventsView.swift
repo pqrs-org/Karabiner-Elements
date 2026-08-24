@@ -56,8 +56,9 @@ struct CaptureRawInputEventsView: View {
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification))
-    { _ in
+    .onReceive(
+      NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification)
+    ) { _ in
       if captureCoordinator.capturing {
         CaptureCoordinator.shared.stopCapture()
       }
