@@ -48,8 +48,24 @@ struct CaptureRawInputRecordsView: View {
       }
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    .onDisappear {
+    .task {
+      let session = CaptureSessionManager.shared.begin()
+      EventHistory.shared.stopInputEventsCapture()
+      EventHistory.shared.stopRawInputEventsCapture()
       history.stopCapture()
+      defer {
+        if CaptureSessionManager.shared.end(session) {
+          history.stopCapture()
+        }
+      }
+
+      do {
+        while true {
+          try Task.checkCancellation()
+          try await Task.sleep(for: .seconds(1))
+        }
+      } catch {
+      }
     }
     .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification))
     {

@@ -108,11 +108,15 @@ struct UnknownEventsView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .task {
+      let session = CaptureSessionManager.shared.begin()
       eventHistory.start()
       eventHistory.pause(false)
+      eventHistory.stopInputEventsCapture()
       eventHistory.startInputEventsCapture()
       defer {
-        eventHistory.stopInputEventsCapture()
+        if CaptureSessionManager.shared.end(session) {
+          eventHistory.stopInputEventsCapture()
+        }
         eventHistory.stop()
       }
 

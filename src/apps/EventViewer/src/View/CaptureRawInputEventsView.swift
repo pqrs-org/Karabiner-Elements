@@ -64,11 +64,17 @@ struct CaptureRawInputEventsView: View {
       }
     }
     .task {
+      let session = CaptureSessionManager.shared.begin()
       eventHistory.start()
       eventHistory.pause(false)
+      eventHistory.stopInputEventsCapture()
+      eventHistory.stopRawInputEventsCapture()
+      InputReportHistory.shared.stopCapture()
       eventHistory.clear()
       defer {
-        eventHistory.stopRawInputEventsCapture()
+        if CaptureSessionManager.shared.end(session) {
+          eventHistory.stopRawInputEventsCapture()
+        }
         eventHistory.stop()
       }
 
