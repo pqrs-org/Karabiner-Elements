@@ -61,6 +61,7 @@ struct CaptureInputEventsView: View {
 
   private func focusTestInput() {
     Task { @MainActor in
+      // Give SwiftUI a chance to install the text field before requesting focus.
       await Task.yield()
       testInputFocused = true
     }

@@ -117,8 +117,8 @@ final class CaptureCoordinator: ObservableObject {
   }
 
   func end(_ session: Session) {
-    // SwiftUI may start the replacement view's task before running the old
-    // task's defer. Only the latest view is allowed to stop the capture.
+    // SwiftUI may call the replacement view's onAppear before the old view's
+    // onDisappear. Only the latest view is allowed to stop the capture.
     guard currentSession == session else {
       return
     }
