@@ -23,7 +23,7 @@ struct KarabinerEventViewerApp: App {
       hidDeviceOpenStateChanged: hidDeviceOpenStateChangedCallback,
       terminationCompleted: completePendingApplicationTermination)
 
-    let userSettings = UserSettings()
+    let userSettings = UserSettings.shared
     _userSettings = StateObject(wrappedValue: userSettings)
 
     if !IOHIDRequestAccess(kIOHIDRequestTypeListenEvent) {
