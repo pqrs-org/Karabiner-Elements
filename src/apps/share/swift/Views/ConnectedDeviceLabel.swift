@@ -1,5 +1,26 @@
 import SwiftUI
 
+func connectedDeviceLabelTitle(
+  productName: String,
+  manufacturerName: String,
+  vendorId: UInt64,
+  productId: UInt64,
+  deviceAddress: String
+) -> String {
+  var title = productName
+  if !manufacturerName.isEmpty {
+    title += " (\(manufacturerName))"
+  }
+
+  if vendorId != 0 || productId != 0 {
+    title += "\n  [VID: \(vendorId), PID: \(productId)]"
+  } else if !deviceAddress.isEmpty {
+    title += "\n  \(deviceAddress)"
+  }
+
+  return title
+}
+
 struct ConnectedDeviceLabel: View {
   let title: String
   let isKeyboard: Bool

@@ -17,7 +17,15 @@ struct DeviceSelectorView: View {
 
     List(targets, selection: $selected) { device in
       ConnectedDeviceLabel(
-        title: deviceLabelTitle(device),
+        title: device.index < 0
+          ? "For all devices"
+          : connectedDeviceLabelTitle(
+            productName: device.productName,
+            manufacturerName: device.manufacturerName,
+            vendorId: device.vendorId,
+            productId: device.productId,
+            deviceAddress: device.deviceAddress
+          ),
         isKeyboard: device.isKeyboard,
         isPointingDevice: device.isPointingDevice,
         isGamePad: device.isGamePad,
@@ -40,24 +48,6 @@ struct DeviceSelectorView: View {
       } else {
         selectedDevice = newValue
       }
-    }
-  }
-
-  private func deviceLabelTitle(_ device: ConnectedDevice) -> String {
-    if device.index < 0 {
-      return "For all devices"
-    } else {
-      var title = "\(device.productName) (\(device.manufacturerName))"
-
-      if device.vendorId == 0 && device.productId == 0 {
-        if !device.deviceAddress.isEmpty {
-          title += "\n  \(device.deviceAddress)"
-        }
-      } else {
-        title += "\n  [VID: \(device.vendorId), PID: \(device.productId)]"
-      }
-
-      return title
     }
   }
 }

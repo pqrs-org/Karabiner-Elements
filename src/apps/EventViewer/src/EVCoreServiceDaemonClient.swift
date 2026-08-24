@@ -90,6 +90,7 @@ final class EVCoreServiceDaemonClient: ObservableObject {
     let product: String
     let vendorId: UInt64
     let productId: UInt64
+    let deviceAddress: String
     let isKeyboard: Bool
     let isPointingDevice: Bool
     let isGamePad: Bool
@@ -224,6 +225,7 @@ final class EVCoreServiceDaemonClient: ObservableObject {
           product: product,
           vendorId: (identifiers["vendor_id"] as? NSNumber)?.uint64Value ?? 0,
           productId: (identifiers["product_id"] as? NSNumber)?.uint64Value ?? 0,
+          deviceAddress: identifiers["device_address"] as? String ?? "",
           isKeyboard: identifiers["is_keyboard"] as? Bool ?? false,
           isPointingDevice: identifiers["is_pointing_device"] as? Bool ?? false,
           isGamePad: identifiers["is_game_pad"] as? Bool ?? false,

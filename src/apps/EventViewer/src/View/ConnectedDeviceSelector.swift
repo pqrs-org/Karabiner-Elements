@@ -8,7 +8,13 @@ struct ConnectedDeviceSelector: View {
     List(selection: $selection) {
       ForEach(client.connectedDevices) { device in
         ConnectedDeviceLabel(
-          title: title(device),
+          title: connectedDeviceLabelTitle(
+            productName: device.name,
+            manufacturerName: device.manufacturer,
+            vendorId: device.vendorId,
+            productId: device.productId,
+            deviceAddress: device.deviceAddress
+          ),
           isKeyboard: device.isKeyboard,
           isPointingDevice: device.isPointingDevice,
           isGamePad: device.isGamePad,
@@ -24,18 +30,5 @@ struct ConnectedDeviceSelector: View {
           .foregroundStyle(.secondary)
       }
     }
-  }
-
-  private func title(_ device: EVCoreServiceDaemonClient.ConnectedDevice) -> String {
-    var title = device.name
-    if !device.manufacturer.isEmpty {
-      title += " (\(device.manufacturer))"
-    }
-
-    if device.vendorId != 0 || device.productId != 0 {
-      title += "\n  [VID: \(device.vendorId), PID: \(device.productId)]"
-    }
-
-    return title
   }
 }
