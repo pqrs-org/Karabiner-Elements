@@ -42,6 +42,7 @@ targets:
           - '*.plist.in'
     dependencies:
       - package: AsyncAlgorithms
+      - sdk: Carbon.framework
       - sdk: CoreFoundation.framework
       - sdk: IOKit.framework
       - sdk: Security.framework

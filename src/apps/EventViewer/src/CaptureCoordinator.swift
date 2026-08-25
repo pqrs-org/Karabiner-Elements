@@ -83,9 +83,9 @@ final class CaptureCoordinator: ObservableObject {
 
   private var generation: UInt64 = 0
   private var currentSession: Session?
-  private var currentMode: Mode?
   private var emergencyStopMonitor: Any?
 
+  @Published private(set) var currentMode: Mode?
   @Published private(set) var capturing = false
   @Published private(set) var rawInputEventsSelectedDeviceId: UInt64?
   @Published private(set) var rawInputRecordsSelectedDeviceId: UInt64?

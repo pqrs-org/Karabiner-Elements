@@ -21,6 +21,7 @@ struct KarabinerEventViewerApp: App {
       hidValueArrived: hidValueArrivedCallback,
       hidInputReportArrived: hidInputReportArrivedCallback,
       hidDeviceOpenStateChanged: hidDeviceOpenStateChangedCallback,
+      secureEventInputEnabledChanged: secureEventInputEnabledChangedCallback,
       terminationCompleted: completePendingApplicationTermination)
 
     let userSettings = UserSettings.shared
