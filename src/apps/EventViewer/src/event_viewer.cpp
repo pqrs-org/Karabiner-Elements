@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <pqrs/gsl.hpp>
+#include <pqrs/osx/hitoolbox/secure_event_input_monitor.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
 #include <string>
 #include <unordered_map>
@@ -27,6 +28,7 @@ std::atomic<krbn_hid_value_monitor_stopped_callback> hid_value_monitor_stopped_c
 std::atomic<krbn_hid_value_arrived_callback> hid_value_arrived_callback;
 std::atomic<krbn_hid_input_report_arrived_callback> hid_input_report_arrived_callback;
 std::atomic<krbn_hid_device_open_state_changed_callback> hid_device_open_state_changed_callback;
+std::atomic<krbn_secure_event_input_enabled_changed_callback> secure_event_input_enabled_changed_callback;
 std::atomic<uint64_t> hid_input_report_capture_device_id{0};
 
 std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client;
@@ -385,6 +387,18 @@ public:
         krbn::logger::get_logger()->error("console_user_server_client received data is corrupted");
       }
     });
+
+    //
+    // secure_event_input_monitor_
+    //
+
+    secure_event_input_monitor_ = std::make_unique<pqrs::osx::hitoolbox::secure_event_input_monitor>(
+        pqrs::dispatcher::extra::get_shared_dispatcher());
+    secure_event_input_monitor_->secure_event_input_enabled_changed.connect([](auto&& enabled) {
+      if (auto callback = secure_event_input_enabled_changed_callback.load()) {
+        callback(enabled);
+      }
+    });
   }
 
   ~components_manager() override {
@@ -398,6 +412,7 @@ public:
       core_service_daemon_client_ = nullptr;
       console_user_server_client_ = nullptr;
       hid_value_monitor_ = nullptr;
+      secure_event_input_monitor_ = nullptr;
 
       if (auto callback = core_service_connection_changed_callback.load()) {
         callback(false);
@@ -411,12 +426,18 @@ public:
     hid_value_monitor_ = std::make_shared<hid_value_monitor>();
     std::atomic_store(&global_hid_value_monitor,
                       hid_value_monitor_);
+
+    if (auto callback = secure_event_input_enabled_changed_callback.load()) {
+      callback(IsSecureEventInputEnabled());
+    }
+    secure_event_input_monitor_->async_start();
   }
 
 private:
   std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client_;
   std::shared_ptr<krbn::console_user_server_client> console_user_server_client_;
   std::shared_ptr<hid_value_monitor> hid_value_monitor_;
+  std::unique_ptr<pqrs::osx::hitoolbox::secure_event_input_monitor> secure_event_input_monitor_;
 };
 
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager;
@@ -431,6 +452,7 @@ void krbn_initialize(krbn_core_service_connection_changed_callback core_connecti
                      krbn_hid_value_arrived_callback hid_callback,
                      krbn_hid_input_report_arrived_callback hid_input_report_callback,
                      krbn_hid_device_open_state_changed_callback hid_device_open_state_callback,
+                     krbn_secure_event_input_enabled_changed_callback secure_event_input_callback,
                      krbn_termination_completion_callback termination_completion_callback) {
   scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
@@ -447,6 +469,7 @@ void krbn_initialize(krbn_core_service_connection_changed_callback core_connecti
   hid_value_arrived_callback = hid_callback;
   hid_input_report_arrived_callback = hid_input_report_callback;
   hid_device_open_state_changed_callback = hid_device_open_state_callback;
+  secure_event_input_enabled_changed_callback = secure_event_input_callback;
 
   krbn::process_lifecycle_manager::initialize_shared_instance(
       krbn::process_lifecycle_manager::configuration{

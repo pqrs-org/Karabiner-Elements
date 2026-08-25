@@ -24,6 +24,7 @@ typedef void (*krbn_hid_input_report_arrived_callback)(uint64_t device_id,
                                                        size_t length);
 typedef void (*krbn_hid_device_open_state_changed_callback)(uint64_t device_id,
                                                             bool opened);
+typedef void (*krbn_secure_event_input_enabled_changed_callback)(bool enabled);
 
 void krbn_initialize(krbn_core_service_connection_changed_callback _Nonnull core_service_connection_changed_callback,
                      krbn_json_received_callback _Nonnull manipulator_environment_received_callback,
@@ -33,6 +34,7 @@ void krbn_initialize(krbn_core_service_connection_changed_callback _Nonnull core
                      krbn_hid_value_arrived_callback _Nonnull hid_value_arrived_callback,
                      krbn_hid_input_report_arrived_callback _Nonnull hid_input_report_arrived_callback,
                      krbn_hid_device_open_state_changed_callback _Nonnull hid_device_open_state_changed_callback,
+                     krbn_secure_event_input_enabled_changed_callback _Nonnull secure_event_input_enabled_changed_callback,
                      krbn_termination_completion_callback _Nonnull termination_completion_callback)
     __attribute__((swift_name(
         "krbn_initialize("
@@ -44,6 +46,7 @@ void krbn_initialize(krbn_core_service_connection_changed_callback _Nonnull core
         "hidValueArrived:"
         "hidInputReportArrived:"
         "hidDeviceOpenStateChanged:"
+        "secureEventInputEnabledChanged:"
         "terminationCompleted:"
         ")")));
 bool krbn_async_request_termination(void);
