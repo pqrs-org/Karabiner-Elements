@@ -11,7 +11,16 @@ import SwiftUI
 // This view is intended for use only when such constraints are problematic.
 
 struct OverlayAlertView<Content: View>: View {
+  let showsBorder: Bool
   let content: () -> Content
+
+  init(
+    showsBorder: Bool = true,
+    @ViewBuilder content: @escaping () -> Content
+  ) {
+    self.showsBorder = showsBorder
+    self.content = content
+  }
 
   var body: some View {
     ZStack {
@@ -21,10 +30,12 @@ struct OverlayAlertView<Content: View>: View {
       content()
         .padding()
         .background(Color(NSColor.controlBackgroundColor))
-        .overlay(
-          RoundedRectangle(cornerRadius: 16)
-            .stroke(Color(NSColor.controlTextColor), lineWidth: 2)
-        )
+        .overlay {
+          if showsBorder {
+            RoundedRectangle(cornerRadius: 16)
+              .stroke(Color(NSColor.controlTextColor), lineWidth: 2)
+          }
+        }
     )
   }
 }
