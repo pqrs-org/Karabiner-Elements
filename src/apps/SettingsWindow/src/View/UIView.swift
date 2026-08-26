@@ -130,15 +130,14 @@ struct UIView: View {
             VStack(alignment: .leading, spacing: 12.0) {
               Label(
                 "What is the Karabiner Notification Window?\n\n"
-                  + "Karabiner Notification Window is a window that displays messages."
-                  + " It is used for temporary alerts, displaying the status of sticky modifiers, and showing messages for some complex modifications.",
+                  + "The Karabiner Notification Window displays the status of sticky modifiers and messages from Complex Modifications.",
                 systemImage: InfoBorder.icon
               )
 
               Image(decorative: "notification-window")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(height: 100)
+                .frame(height: 50)
                 .background(
                   RoundedRectangle(cornerRadius: 9)
                     .stroke(
