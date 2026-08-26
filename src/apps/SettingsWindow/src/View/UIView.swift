@@ -138,13 +138,7 @@ struct UIView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 50)
-                .background(
-                  RoundedRectangle(cornerRadius: 9)
-                    .stroke(
-                      Color(NSColor.separatorColor),
-                      lineWidth: 4
-                    )
-                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .modifier(InfoBorder())
           }
