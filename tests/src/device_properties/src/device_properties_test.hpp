@@ -125,6 +125,13 @@ void run_device_properties_test() {
     }
     {
       auto device_properties = krbn::device_properties(krbn::device_properties::initialization_parameters{
+          .transport = "FIFO",
+          .is_pointing_device = true,
+      });
+      expect(true == device_properties.get_is_apple());
+    }
+    {
+      auto device_properties = krbn::device_properties(krbn::device_properties::initialization_parameters{
           .vendor_id = pqrs::hid::vendor_id::value_t(0x05ac),
           .product_id = pqrs::hid::product_id::value_t(0x024f),
           .manufacturer = pqrs::hid::manufacturer_string::value_t("pqrs.org"),
