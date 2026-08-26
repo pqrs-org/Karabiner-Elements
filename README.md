@@ -17,6 +17,8 @@ You can download previous versions of Karabiner-Elements from the [release notes
 
 ## Supported systems
 
+- macOS 27 Golden Gate
+    - Apple Silicon Macs
 - macOS 26 Tahoe
     - Both Intel-based Macs and Apple Silicon Macs
 - macOS 15 Sequoia
