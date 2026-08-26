@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core_configuration/core_configuration.hpp"
+#include "device_utility.hpp"
 #include "settings_remembered_device_identifiers.hpp"
 #include <nlohmann/json.hpp>
 
@@ -158,8 +159,14 @@ private:
     auto json = nlohmann::json::object();
     for (const auto& i : identifiers) {
       const auto& device = profile.get_device(i);
+      auto ignore = device->get_ignore();
+      if (auto device_properties = settings_remembered_device_identifiers::get_instance().find_device_properties(i)) {
+        ignore = krbn::device_utility::determine_should_ignore_device(core_configuration_,
+                                                                      *device_properties);
+      }
+
       json[i.to_normalized_json().dump()] = {
-          {"ignore", device->get_ignore()},
+          {"ignore", ignore},
           {"manipulate_caps_lock_led", device->get_manipulate_caps_lock_led()},
           {"swap_grave_accent_and_non_us_backslash", device->get_swap_grave_accent_and_non_us_backslash()},
           {"ignore_vendor_events", device->get_ignore_vendor_events()},

@@ -311,8 +311,8 @@ public:
       return true;
     }
 
-    auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
-    return !(d->get_ignore());
+    return !device_utility::determine_should_ignore_device(*core_configuration_,
+                                                           *device_properties_);
   }
 
 private:
