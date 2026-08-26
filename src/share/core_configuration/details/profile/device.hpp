@@ -353,6 +353,9 @@ cos(radian) * m;
   [[nodiscard]] const bool& get_ignore() const {
     return ignore_;
   }
+  [[nodiscard]] bool get_ignore_configured() const {
+    return ignore_configured_;
+  }
   void set_ignore(bool value) {
     ignore_ = value;
     ignore_configured_ = true;
