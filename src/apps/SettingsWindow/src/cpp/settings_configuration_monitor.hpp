@@ -5,7 +5,7 @@
 #include "monitor/configuration_monitor.hpp"
 #include "settings.hpp"
 #include "settings_configuration_snapshot.hpp"
-#include "settings_remembered_device_identifiers.hpp"
+#include "settings_remembered_device_properties.hpp"
 #include <mutex>
 
 class settings_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -79,7 +79,7 @@ public:
   void remember_connected_devices(const krbn::connected_devices& connected_devices) {
     // The process-wide singleton retains identifiers for disconnected devices
     // while this monitor is destroyed and recreated across sleep and wake.
-    if (settings_remembered_device_identifiers::get_instance().remember_connected_devices(connected_devices)) {
+    if (settings_remembered_device_properties::get_instance().remember_connected_devices(connected_devices)) {
       if (auto core_configuration = get_weak_core_configuration().lock()) {
         invoke_callback(*core_configuration);
       }

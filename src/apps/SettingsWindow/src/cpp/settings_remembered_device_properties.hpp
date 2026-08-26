@@ -8,13 +8,13 @@
 // Keeps properties for every device observed during this process, including
 // devices that are currently disconnected. Its process lifetime is independent
 // of settings_components_manager, which is recreated across sleep and wake.
-class settings_remembered_device_identifiers final {
+class settings_remembered_device_properties final {
 public:
-  settings_remembered_device_identifiers(const settings_remembered_device_identifiers&) = delete;
-  settings_remembered_device_identifiers& operator=(const settings_remembered_device_identifiers&) = delete;
+  settings_remembered_device_properties(const settings_remembered_device_properties&) = delete;
+  settings_remembered_device_properties& operator=(const settings_remembered_device_properties&) = delete;
 
-  [[nodiscard]] static settings_remembered_device_identifiers& get_instance() {
-    static settings_remembered_device_identifiers instance;
+  [[nodiscard]] static settings_remembered_device_properties& get_instance() {
+    static settings_remembered_device_properties instance;
     return instance;
   }
 
@@ -64,7 +64,7 @@ public:
   }
 
 private:
-  settings_remembered_device_identifiers() = default;
+  settings_remembered_device_properties() = default;
 
   mutable std::mutex mutex_;
   std::vector<pqrs::not_null_shared_ptr_t<krbn::device_properties>> device_properties_;

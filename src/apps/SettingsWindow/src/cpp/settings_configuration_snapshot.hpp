@@ -2,7 +2,7 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "device_utility.hpp"
-#include "settings_remembered_device_identifiers.hpp"
+#include "settings_remembered_device_properties.hpp"
 #include <nlohmann/json.hpp>
 
 class settings_configuration_snapshot final {
@@ -148,7 +148,7 @@ private:
   }
 
   [[nodiscard]] nlohmann::json make_devices_json(const krbn::core_configuration::details::profile& profile) const {
-    auto identifiers = settings_remembered_device_identifiers::get_instance().get_device_identifiers();
+    auto identifiers = settings_remembered_device_properties::get_instance().get_device_identifiers();
 
     for (const auto& device : profile.get_devices()) {
       if (!std::ranges::contains(identifiers, device->get_identifiers())) {
@@ -160,7 +160,7 @@ private:
     for (const auto& i : identifiers) {
       const auto& device = profile.get_device(i);
       auto ignore = device->get_ignore();
-      if (auto device_properties = settings_remembered_device_identifiers::get_instance().find_device_properties(i)) {
+      if (auto device_properties = settings_remembered_device_properties::get_instance().find_device_properties(i)) {
         ignore = krbn::device_utility::determine_should_ignore_device(core_configuration_,
                                                                       *device_properties);
       }
