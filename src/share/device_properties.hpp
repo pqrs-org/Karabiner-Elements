@@ -118,7 +118,8 @@ public:
     //
 
     if (!device_identifiers_.get_is_virtual_device()) {
-      is_apple_ = parameters.vendor_id == pqrs::hid::vendor_id::value_t(0x05ac) ||
+      is_apple_ = is_built_in_pointing_device_ ||
+                  parameters.vendor_id == pqrs::hid::vendor_id::value_t(0x05ac) ||
                   parameters.vendor_id == pqrs::hid::vendor_id::value_t(0x004c) ||
                   type_safe::get(product_).find("Apple Internal ") != std::string::npos ||
                   (manufacturer_ == pqrs::hid::manufacturer_string::value_t("Apple") &&
