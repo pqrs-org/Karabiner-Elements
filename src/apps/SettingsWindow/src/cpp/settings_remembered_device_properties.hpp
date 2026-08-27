@@ -38,29 +38,9 @@ public:
     return changed;
   }
 
-  [[nodiscard]] std::vector<krbn::device_identifiers> get_device_identifiers() const {
+  [[nodiscard]] std::vector<pqrs::not_null_shared_ptr_t<krbn::device_properties>> get_device_properties() const {
     std::lock_guard<std::mutex> lock(mutex_);
-
-    std::vector<krbn::device_identifiers> result;
-    for (const auto& device_properties : device_properties_) {
-      result.push_back(device_properties->get_device_identifiers());
-    }
-    return result;
-  }
-
-  [[nodiscard]] std::shared_ptr<krbn::device_properties> find_device_properties(const krbn::device_identifiers& identifiers) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    auto it = std::ranges::find_if(
-        device_properties_,
-        [&](const auto& p) {
-          return p->get_device_identifiers() == identifiers;
-        });
-    if (it != std::end(device_properties_)) {
-      return pqrs::unwrap_not_null(*it);
-    }
-
-    return nullptr;
+    return device_properties_;
   }
 
 private:

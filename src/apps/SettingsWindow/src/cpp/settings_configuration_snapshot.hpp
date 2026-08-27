@@ -4,6 +4,7 @@
 #include "device_utility.hpp"
 #include "settings_remembered_device_properties.hpp"
 #include <nlohmann/json.hpp>
+#include <utility>
 
 class settings_configuration_snapshot final {
 public:
@@ -148,19 +149,25 @@ private:
   }
 
   [[nodiscard]] nlohmann::json make_devices_json(const krbn::core_configuration::details::profile& profile) const {
-    auto identifiers = settings_remembered_device_properties::get_instance().get_device_identifiers();
+    std::vector<std::pair<krbn::device_identifiers, std::shared_ptr<krbn::device_properties>>> devices;
+    for (const auto& device_properties : settings_remembered_device_properties::get_instance().get_device_properties()) {
+      devices.emplace_back(device_properties->get_device_identifiers(),
+                           pqrs::unwrap_not_null(device_properties));
+    }
 
     for (const auto& device : profile.get_devices()) {
-      if (!std::ranges::contains(identifiers, device->get_identifiers())) {
-        identifiers.push_back(device->get_identifiers());
+      if (std::ranges::none_of(devices, [&](const auto& entry) {
+            return entry.first == device->get_identifiers();
+          })) {
+        devices.emplace_back(device->get_identifiers(), nullptr);
       }
     }
 
     auto json = nlohmann::json::object();
-    for (const auto& i : identifiers) {
+    for (const auto& [i, device_properties] : devices) {
       const auto& device = profile.get_device(i);
       auto ignore = device->get_ignore();
-      if (auto device_properties = settings_remembered_device_properties::get_instance().find_device_properties(i)) {
+      if (device_properties) {
         ignore = krbn::device_utility::determine_should_ignore_device(core_configuration_,
                                                                       *device_properties);
       }
