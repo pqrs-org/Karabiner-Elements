@@ -153,7 +153,7 @@ struct ContentMainView: View {
               },
               label: {
                 Label(
-                  "The unsafe configuration is enabled, so the foolproof feature is currently inactive.",
+                  "The unsafe configuration is enabled, so the safeguard feature is currently inactive.",
                   systemImage: "exclamationmark.triangle"
                 )
               }

@@ -14,7 +14,7 @@ struct ExpertView: View {
             .switchToggleStyle()
 
             Label(
-              "Unsafe configuration disables the foolproof feature on the configuration UI.\n"
+              "Unsafe configuration disables the safeguard feature on the configuration UI.\n"
                 + "You should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. (e.g., using Screen Sharing)\n"
                 + "\n" + "Unsafe configuration allows the following items:\n"
                 + "- Allow you to enable Apple pointing devices in the Devices tab.\n"
