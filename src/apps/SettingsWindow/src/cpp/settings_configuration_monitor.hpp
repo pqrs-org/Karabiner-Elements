@@ -77,7 +77,7 @@ public:
   }
 
   void remember_connected_devices(const krbn::connected_devices& connected_devices) {
-    // The process-wide singleton retains identifiers for disconnected devices
+    // The process-wide singleton retains device properties for disconnected devices
     // while this monitor is destroyed and recreated across sleep and wake.
     if (settings_remembered_device_properties::get_instance().remember_connected_devices(connected_devices)) {
       if (auto core_configuration = get_weak_core_configuration().lock()) {

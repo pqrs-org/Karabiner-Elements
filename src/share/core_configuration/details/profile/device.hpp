@@ -252,6 +252,10 @@ cos(radian) * m;
 
     helper_values_.update_value(json, error_handling);
 
+    // Handle `ignore` separately from `helper_values_`. Its default can change
+    // when `ignore_pointing_device_events_by_default` changes, and treating an
+    // explicit value that matches the current default as an inherited value would
+    // allow a later default change to overwrite the user's per-device setting.
     if (auto it = json.find("ignore");
         it != std::end(json)) {
       try {
