@@ -33,6 +33,19 @@ int main() {
     expect(krbn::device_utility::determine_should_ignore_device(core_configuration,
                                                                 apple_pointing_device));
 
+    // No actual Apple device is currently known to report both keyboard and
+    // pointing-device capabilities. This hypothetical case verifies that its
+    // pointing-device functionality would still be protected.
+    auto apple_composite_device = krbn::device_properties(
+        krbn::device_properties::initialization_parameters{
+            .vendor_id = pqrs::hid::vendor_id::value_t(0x05ac),
+            .product_id = pqrs::hid::product_id::value_t(4321),
+            .is_keyboard = true,
+            .is_pointing_device = true,
+        });
+    expect(krbn::device_utility::determine_should_ignore_device(core_configuration,
+                                                                apple_composite_device));
+
     auto fifo_pointing_device = krbn::device_properties(
         krbn::device_properties::initialization_parameters{
             .transport = "FIFO",
