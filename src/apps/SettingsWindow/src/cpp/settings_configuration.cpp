@@ -96,7 +96,7 @@ bool krbn_core_configuration_apply_settings_configuration_update(const char* jso
   if (json_string) {
     try {
       auto c = get_current_core_configuration();
-      return settings_configuration_updater::apply(
+      return settings_configuration_updater::apply_patch(
           nlohmann::json::parse(json_string),
           *c);
     } catch (const std::exception& e) {
