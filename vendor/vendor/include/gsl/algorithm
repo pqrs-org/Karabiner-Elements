@@ -48,9 +48,7 @@ void copy(span<SrcElementType, SrcExtent> src, span<DestElementType, DestExtent>
                   "Source range is longer than target range");
 
     Expects(dest.size() >= src.size());
-    // clang-format off
-    GSL_SUPPRESS(stl.1) // NO-FORMAT: attribute
-    // clang-format on
+    GSL_SUPPRESS(stl.1)
     std::copy_n(src.data(), src.size(), dest.data());
 }
 

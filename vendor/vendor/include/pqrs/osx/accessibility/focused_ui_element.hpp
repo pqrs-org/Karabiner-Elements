@@ -64,6 +64,15 @@ public:
     return *this;
   }
 
+  [[nodiscard]] const std::optional<std::string>& get_window_title() const noexcept {
+    return window_title_;
+  }
+
+  focused_ui_element& set_window_title(const std::optional<std::string>& value) {
+    window_title_ = value;
+    return *this;
+  }
+
   [[nodiscard]] const std::optional<double>& get_window_position_x() const noexcept {
     return window_position_x_;
   }
@@ -109,6 +118,7 @@ private:
   std::optional<std::string> title_;
   std::optional<std::string> description_;
   std::optional<std::string> identifier_;
+  std::optional<std::string> window_title_;
   std::optional<double> window_position_x_;
   std::optional<double> window_position_y_;
   std::optional<double> window_size_width_;

@@ -149,7 +149,7 @@ constexpr ElementType& at(span<ElementType, Extent> s, index i)
 template <class ElementType, std::size_t Extent>
 constexpr std::ptrdiff_t ssize(const span<ElementType, Extent>& s) noexcept
 {
-    return static_cast<std::ptrdiff_t>(s.size());
+    return gsl::narrow_cast<std::ptrdiff_t>(s.size());
 }
 
 // [span.iter] Free functions for begin/end functions

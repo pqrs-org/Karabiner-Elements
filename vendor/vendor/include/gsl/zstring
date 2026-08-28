@@ -19,7 +19,7 @@
 
 #include "./span_ext" // for dynamic_extent
 
-#include <cstddef>   // for size_t, nullptr_t
+#include <cstddef> // for size_t, nullptr_t
 
 namespace gsl
 {

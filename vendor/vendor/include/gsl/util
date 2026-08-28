@@ -1,3 +1,4 @@
+// -*- C++ -*-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2015 Microsoft Corporation. All rights reserved.
@@ -19,10 +20,10 @@
 
 #include "./assert" // for Expects
 
-#include <array>
 #include <cstddef>          // for ptrdiff_t, size_t
-#include <limits>           // for numeric_limits
 #include <initializer_list> // for initializer_list
+#include <iterator>         // for iterator_traits
+#include <limits>           // for numeric_limits
 #include <type_traits>      // for is_signed, integral_constant
 #include <utility>          // for exchange, forward
 
@@ -86,6 +87,13 @@
 #define GSL_DEPRECATED(msg)
 #endif // !defined(GSL_DEPRECATED)
 
+#if __cplusplus >= 202002L
+#define GSL_CONSTEXPR_SINCE_CPP20 constexpr
+#else // ^^^ since C++20 /// before C++20 vvv
+#define GSL_BEFORE_CPP20
+#define GSL_CONSTEXPR_SINCE_CPP20
+#endif // __cplusplus >= 202002L
+
 namespace gsl
 {
 //
@@ -95,28 +103,69 @@ namespace gsl
 // index type for all container indexes/subscripts/sizes
 using index = std::ptrdiff_t;
 
+namespace details
+{
+    template <typename...>
+    using void_t = void;
+
+    template <typename T, typename = void>
+    struct is_iterator : std::false_type
+    {
+    };
+
+    template <typename T>
+    struct is_iterator<T, void_t<typename std::iterator_traits<T>::value_type>> : std::true_type
+    {
+    };
+
+    template <typename T, typename = void>
+    struct is_fwd_iterator : std::false_type
+    {
+    };
+
+    template <typename T>
+    struct is_fwd_iterator<T, void_t<typename std::iterator_traits<T>::iterator_category>>
+        : std::integral_constant<
+              bool, std::is_base_of<std::forward_iterator_tag,
+                                    typename std::iterator_traits<T>::iterator_category>::value>
+    {
+    };
+} // namespace details
+
 // final_action allows you to ensure something gets run at the end of a scope
+// The bool member causes trailing padding when F has alignment > 1; suppress
+// -Wpadded since the padding is unavoidable for a generic callable wrapper.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpadded"
+#endif // defined(__clang__)
 template <class F>
 class final_action
 {
 public:
-    explicit final_action(const F& ff) noexcept : f{ff} { }
-    explicit final_action(F&& ff) noexcept : f{std::move(ff)} { }
+    explicit final_action(const F& ff) noexcept : f{ff} {}
+    explicit final_action(F&& ff) noexcept : f{std::move(ff)} {}
 
-    ~final_action() noexcept { if (invoke) f(); }
+    ~final_action() noexcept
+    {
+        if (invoke) f();
+    }
 
     final_action(final_action&& other) noexcept
         : f(std::move(other.f)), invoke(std::exchange(other.invoke, false))
-    { }
+    {}
 
-    final_action(const final_action&)   = delete;
+    final_action(const final_action&) = delete;
     void operator=(const final_action&) = delete;
-    void operator=(final_action&&)      = delete;
+    void operator=(final_action&&) = delete;
 
 private:
     F f;
     bool invoke = true;
 };
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif // defined(__clang__)
 
 // finally() - convenience function to generate a final_action
 template <class F>
@@ -127,35 +176,33 @@ GSL_NODISCARD auto finally(F&& f) noexcept
 
 // narrow_cast(): a searchable way to do narrowing casts of values
 template <class T, class U>
-// clang-format off
-GSL_SUPPRESS(type.1) // NO-FORMAT: attribute
-    // clang-format on
-    constexpr T narrow_cast(U&& u) noexcept
+GSL_SUPPRESS(type.1) constexpr T narrow_cast(U&& u) noexcept
 {
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
     return static_cast<T>(std::forward<U>(u));
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 }
 
 //
 // at() - Bounds-checked way of accessing builtin arrays, std::array, std::vector
 //
 template <class T, std::size_t N>
-// clang-format off
-GSL_SUPPRESS(bounds.4) // NO-FORMAT: attribute
-GSL_SUPPRESS(bounds.2) // NO-FORMAT: attribute
-    // clang-format on
-    constexpr T& at(T (&arr)[N], const index i)
+GSL_SUPPRESS(bounds.4) GSL_SUPPRESS(bounds.2) constexpr T& at(T (&arr)[N], const index i)
 {
-    static_assert(N <= static_cast<std::size_t>((std::numeric_limits<std::ptrdiff_t>::max)()), "We only support arrays up to PTRDIFF_MAX bytes.");
+    static_assert(N <= static_cast<std::size_t>((std::numeric_limits<std::ptrdiff_t>::max)()),
+                  "We only support arrays up to PTRDIFF_MAX bytes.");
     Expects(i >= 0 && i < narrow_cast<index>(N));
     return arr[narrow_cast<std::size_t>(i)];
 }
 
 template <class Cont>
-// clang-format off
-GSL_SUPPRESS(bounds.4) // NO-FORMAT: attribute
-GSL_SUPPRESS(bounds.2) // NO-FORMAT: attribute
-    // clang-format on
-    constexpr auto at(Cont& cont, const index i) -> decltype(cont[cont.size()])
+GSL_SUPPRESS(bounds.4) GSL_SUPPRESS(bounds.2) constexpr auto at(Cont& cont, const index i)
+    -> decltype(cont[cont.size()])
 {
     Expects(i >= 0 && i < narrow_cast<index>(cont.size()));
     using size_type = decltype(cont.size());
@@ -163,17 +210,18 @@ GSL_SUPPRESS(bounds.2) // NO-FORMAT: attribute
 }
 
 template <class T>
-// clang-format off
-GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-    // clang-format on
-    constexpr T at(const std::initializer_list<T> cont, const index i)
+GSL_SUPPRESS(bounds.1) constexpr T at(const std::initializer_list<T> cont, const index i)
 {
     Expects(i >= 0 && i < narrow_cast<index>(cont.size()));
     return *(cont.begin() + i);
 }
 
-template <class T, std::enable_if_t<std::is_move_assignable<T>::value && std::is_move_constructible<T>::value>>
-void swap(T& a, T& b) { std::swap(a, b); }
+template <class T, std::enable_if_t<std::is_move_assignable<T>::value &&
+                                    std::is_move_constructible<T>::value>>
+void swap(T& a, T& b)
+{
+    std::swap(a, b);
+}
 
 #if defined(__cpp_lib_span) && __cpp_lib_span >= 202002L
 template <class T, std::size_t extent = std::dynamic_extent>

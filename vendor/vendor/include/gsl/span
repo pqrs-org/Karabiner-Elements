@@ -1,3 +1,4 @@
+// -*- C++ -*-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2015 Microsoft Corporation. All rights reserved.
@@ -138,12 +139,6 @@ namespace details
 #endif // _MSC_VER
         constexpr span_iterator() = default;
 
-        constexpr span_iterator(pointer begin, pointer end, pointer current)
-            : begin_(begin), end_(end), current_(current)
-        {
-            Expects(begin_ <= current_ && current <= end_);
-        }
-
         constexpr operator span_iterator<const Type>() const noexcept
         {
             return {begin_, end_, current_};
@@ -163,9 +158,7 @@ namespace details
         constexpr span_iterator& operator++() noexcept
         {
             Expects(current_ != end_);
-            // clang-format off
-            GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-            // clang-format on
+            GSL_SUPPRESS(bounds.1)
             ++current_;
             return *this;
         }
@@ -196,9 +189,7 @@ namespace details
             if (n != 0) Expects(begin_ && current_ && end_);
             if (n > 0) Expects(end_ - current_ >= n);
             if (n < 0) Expects(current_ - begin_ >= -n);
-            // clang-format off
-            GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-            // clang-format on
+            GSL_SUPPRESS(bounds.1)
             current_ += n;
             return *this;
         }
@@ -221,7 +212,7 @@ namespace details
             if (n != 0) Expects(begin_ && current_ && end_);
             if (n > 0) Expects(current_ - begin_ >= n);
             if (n < 0) Expects(end_ - current_ >= -n);
-            GSL_SUPPRESS(bounds .1)
+            GSL_SUPPRESS(bounds.1)
             current_ -= n;
             return *this;
         }
@@ -315,9 +306,7 @@ namespace details
             if (n < 0) Expects(current_ - begin_ >= -n);
         }
 
-        // clang-format off
-        GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-        // clang-format on
+        GSL_SUPPRESS(bounds.1)
         constexpr pointer _Unwrapped() const noexcept
         { // after seeking *this to a high water mark, or using one of the
             // _Verify_xxx functions above, unwrap this span_iterator to a raw
@@ -332,9 +321,7 @@ namespace details
 #else
         static constexpr bool _Unwrap_when_unverified = false;
 #endif
-        // clang-format off
-        GSL_SUPPRESS(con.3) // NO-FORMAT: attribute // TODO: false positive
-        // clang-format on
+        GSL_SUPPRESS(con.3) // TODO: false positive
         constexpr void _Seek_to(const pointer p) noexcept
         { // adjust the position of *this to previously verified location p
             // after _Unwrapped
@@ -342,14 +329,26 @@ namespace details
         }
 #endif
 
+    private:
+        constexpr span_iterator(pointer begin, pointer end, pointer current)
+            : begin_(begin), end_(end), current_(current)
+        {
+            Expects(begin_ <= current_ && current <= end_);
+        }
+
         pointer begin_ = nullptr;
         pointer end_ = nullptr;
         pointer current_ = nullptr;
 
+        template <class>
+        friend class span_iterator;
+        template <class, std::size_t>
+        friend class ::gsl::span;
         template <typename Ptr>
         friend struct std::pointer_traits;
     };
-}} // namespace gsl::details
+} // namespace details
+} // namespace gsl
 
 namespace std
 {
@@ -364,7 +363,10 @@ struct pointer_traits<::gsl::details::span_iterator<Type>>
 };
 } // namespace std
 
-namespace gsl { namespace details {
+namespace gsl
+{
+namespace details
+{
     template <std::size_t Ext>
     class extent_type
     {
@@ -589,10 +591,7 @@ public:
     }
 
     template <std::size_t Count>
-    // clang-format off
-    GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-        // clang-format on
-        constexpr span<element_type, Count> last() const noexcept
+    GSL_SUPPRESS(bounds.1) constexpr span<element_type, Count> last() const noexcept
     {
         static_assert(Extent == dynamic_extent || Count <= Extent,
                       "last() cannot extract more elements from a span than it contains.");
@@ -601,10 +600,7 @@ public:
     }
 
     template <std::size_t Offset, std::size_t Count = dynamic_extent>
-    // clang-format off
-    GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-        // clang-format on
-        constexpr auto subspan() const noexcept ->
+    GSL_SUPPRESS(bounds.1) constexpr auto subspan() const noexcept ->
         typename details::calculate_subspan_type<ElementType, Extent, Offset, Count>::type
     {
         static_assert(Extent == dynamic_extent || (Extent >= Offset && (Count == dynamic_extent ||
@@ -642,9 +638,7 @@ public:
     constexpr bool empty() const noexcept { return size() == 0; }
 
     // [span.elem], span element access
-    // clang-format off
-    GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-    // clang-format on
+    GSL_SUPPRESS(bounds.1)
     constexpr reference operator[](size_type idx) const noexcept
     {
         Expects(idx < size());
@@ -669,18 +663,14 @@ public:
     constexpr iterator begin() const noexcept
     {
         const auto data = storage_.data();
-        // clang-format off
-        GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-        // clang-format on
+        GSL_SUPPRESS(bounds.1)
         return {data, data + size(), data};
     }
 
     constexpr iterator end() const noexcept
     {
         const auto data = storage_.data();
-        // clang-format off
-        GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-        // clang-format on
+        GSL_SUPPRESS(bounds.1)
         const auto endData = data + storage_.size();
         return {data, endData, endData};
     }
@@ -693,9 +683,7 @@ public:
     constexpr pointer _Unchecked_begin() const noexcept { return data(); }
     constexpr pointer _Unchecked_end() const noexcept
     {
-        // clang-format off
-        GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-        // clang-format on
+        GSL_SUPPRESS(bounds.1)
         return data() + size();
     }
 #endif // _MSC_VER
@@ -752,9 +740,7 @@ private:
         return tmp.subspan(offset, count);
     }
 
-    // clang-format off
-    GSL_SUPPRESS(bounds.1) // NO-FORMAT: attribute
-    // clang-format on
+    GSL_SUPPRESS(bounds.1)
     constexpr span<element_type, dynamic_extent>
     make_subspan(size_type offset, size_type count, subspan_selector<dynamic_extent>) const noexcept
     {
@@ -767,7 +753,7 @@ private:
     }
 };
 
-#if (defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L))
+#if defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201703L)
 
 // Deduction Guides
 template <class Type, std::size_t Extent>
@@ -787,12 +773,14 @@ template <class Container,
           class Element = std::remove_pointer_t<decltype(std::declval<const Container&>().data())>>
 span(const Container&) -> span<Element>;
 
-#endif // ( defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L) )
+#endif // defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201703L)
 
 #if defined(GSL_USE_STATIC_CONSTEXPR_WORKAROUND)
 #if defined(__clang__) && defined(_MSC_VER) && defined(__cplusplus) && (__cplusplus < 201703L)
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated" // Bug in clang-cl.exe which raises a C++17 -Wdeprecated warning about this static constexpr workaround in C++14 mode.
+#pragma clang diagnostic ignored                                                                   \
+    "-Wdeprecated" // Bug in clang-cl.exe which raises a C++17 -Wdeprecated warning about this
+                   // static constexpr workaround in C++14 mode.
 #endif // defined(__clang__) && defined(_MSC_VER) && defined(__cplusplus) && (__cplusplus < 201703L)
 template <class ElementType, std::size_t Extent>
 constexpr const typename span<ElementType, Extent>::size_type span<ElementType, Extent>::extent;
@@ -827,11 +815,10 @@ template <class ElementType, std::size_t Extent>
 span<const gsl::impl::byte, details::calculate_byte_size<ElementType, Extent>::value>
 as_bytes(span<ElementType, Extent> s) noexcept
 {
-    using type = span<const gsl::impl::byte, details::calculate_byte_size<ElementType, Extent>::value>;
+    using type =
+        span<const gsl::impl::byte, details::calculate_byte_size<ElementType, Extent>::value>;
 
-    // clang-format off
-    GSL_SUPPRESS(type.1) // NO-FORMAT: attribute
-    // clang-format on
+    GSL_SUPPRESS(type.1)
     return type{reinterpret_cast<const gsl::impl::byte*>(s.data()), s.size_bytes()};
 }
 
@@ -842,9 +829,7 @@ as_writable_bytes(span<ElementType, Extent> s) noexcept
 {
     using type = span<gsl::impl::byte, details::calculate_byte_size<ElementType, Extent>::value>;
 
-    // clang-format off
-    GSL_SUPPRESS(type.1) // NO-FORMAT: attribute
-    // clang-format on
+    GSL_SUPPRESS(type.1)
     return type{reinterpret_cast<gsl::impl::byte*>(s.data()), s.size_bytes()};
 }
 

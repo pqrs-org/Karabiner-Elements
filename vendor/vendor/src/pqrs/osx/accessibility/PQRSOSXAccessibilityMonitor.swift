@@ -5,7 +5,98 @@
 import AppKit
 import ApplicationServices
 
+// AX notifications for one UI change often arrive together. Delay their shared
+// refresh briefly so the whole burst can be handled by one snapshot.
+private let accessibilityNotificationRefreshCoalescingInterval = Duration.milliseconds(10)
+
+private func withOptionalCString<Result>(
+  _ value: String?,
+  _ body: (UnsafePointer<CChar>?) -> Result
+) -> Result {
+  guard let value else {
+    return body(nil)
+  }
+
+  return value.withCString { pointer in
+    body(pointer)
+  }
+}
+
+private enum SnapshotCStringField: Int, CaseIterable {
+  case applicationName
+  case bundleIdentifier
+  case bundlePath
+  case filePath
+  case role
+  case subrole
+  case roleDescription
+  case title
+  case description
+  case identifier
+  case windowTitle
+}
+
+private struct SnapshotCStringPointers {
+  let values: [UnsafePointer<CChar>?]
+
+  subscript(_ field: SnapshotCStringField) -> UnsafePointer<CChar>? {
+    values[field.rawValue]
+  }
+}
+
+private struct SnapshotCStringValues {
+  private var values = [String?](
+    repeating: nil,
+    count: SnapshotCStringField.allCases.count
+  )
+
+  func setting(_ field: SnapshotCStringField, to value: String?) -> Self {
+    var result = self
+    result.values[field.rawValue] = value
+    return result
+  }
+
+  func withUnsafePointers<Result>(
+    _ body: (SnapshotCStringPointers) -> Result
+  ) -> Result {
+    var pointers = [UnsafePointer<CChar>?](repeating: nil, count: values.count)
+
+    // Each recursive call remains inside the preceding withCString scope, so
+    // all pointers remain valid until body returns.
+    func invoke(_ index: Int) -> Result {
+      guard index < values.count else {
+        return body(SnapshotCStringPointers(values: pointers))
+      }
+
+      return withOptionalCString(values[index]) { pointer in
+        pointers[index] = pointer
+        return invoke(index + 1)
+      }
+    }
+
+    return invoke(0)
+  }
+}
+
 extension PQRSOSXAccessibility {
+  struct AccessibilityNotificationRefreshScheduleState {
+    private var scheduled = false
+
+    // Returns true only when the caller must create the delayed refresh task.
+    mutating func schedule() -> Bool {
+      guard !scheduled else {
+        return false
+      }
+
+      scheduled = true
+      return true
+    }
+
+    mutating func reset() {
+      scheduled = false
+    }
+  }
+
   // Serializes refresh requests and coalesces requests made while a refresh is
   // already in progress. The caller owns the actual snapshot evaluation loop.
   struct RefreshRequestState {
@@ -146,6 +237,9 @@ extension PQRSOSXAccessibility {
     static let shared = Monitor()
 
     private var callback: MonitorCallback?
+    private var accessibilityNotificationRefreshTask: Task<Void, Never>?
+    private var accessibilityNotificationRefreshScheduleState =
+      PQRSOSXAccessibility.AccessibilityNotificationRefreshScheduleState()
     private var fallbackPollingTask: Task<Void, Never>?
     private var staleProcessCleanupTask: Task<Void, Never>?
     private var observationController: ObservationController?
@@ -188,6 +282,7 @@ extension PQRSOSXAccessibility {
     func unsetCallback() {
       callbackGeneration += 1
       callback = nil
+      cancelScheduledAccessibilityNotificationRefresh()
       fallbackPollingTask?.cancel()
       fallbackPollingTask = nil
       staleProcessCleanupTask?.cancel()
@@ -247,6 +342,9 @@ extension PQRSOSXAccessibility {
         return
       }
 
+      // Any immediate refresh also covers pending AX notifications.
+      cancelScheduledAccessibilityNotificationRefresh()
+
       guard refreshRequestState.request(force: force) else {
         return
       }
@@ -254,7 +352,7 @@ extension PQRSOSXAccessibility {
       while let force = refreshRequestState.takePendingForce() {
         let cachedApplication = lastSnapshot.application
         let observationController = observationController
-        let snapshot = copySnapshot(
+        let result = copySnapshot(
           cachedApplication: cachedApplication,
           resolveProcessIdentifiers: { processIdentifiers in
             self.processIdentifierObservations.observe(processIdentifiers)
@@ -268,11 +366,12 @@ extension PQRSOSXAccessibility {
           }
         )
         observationController?.syncObservers(
-          frontmostProcessIdentifier: snapshot.application?.processIdentifier
+          frontmostProcessIdentifier: result.snapshot.application?.processIdentifier,
+          titleNotificationElements: result.titleNotificationElements
         )
 
-        if force || snapshot != lastSnapshot {
-          commitSnapshotAndEmit(snapshot, force: force)
+        if force || result.snapshot != lastSnapshot {
+          commitSnapshotAndEmit(result.snapshot, force: force)
         }
       }
 
@@ -286,8 +385,43 @@ extension PQRSOSXAccessibility {
       requestRefresh(force: force)
     }
 
+    func scheduleAccessibilityNotificationRefresh(callbackGeneration: Int) {
+      guard isCurrentCallbackGeneration(callbackGeneration) else {
+        return
+      }
+
+      guard accessibilityNotificationRefreshScheduleState.schedule() else {
+        return
+      }
+
+      accessibilityNotificationRefreshTask = Task { @MainActor [weak self] in
+        do {
+          try await Task.sleep(for: accessibilityNotificationRefreshCoalescingInterval)
+        } catch {
+          return
+        }
+
+        guard let self else {
+          return
+        }
+
+        self.accessibilityNotificationRefreshScheduleState.reset()
+        self.accessibilityNotificationRefreshTask = nil
+        self.requestRefresh(
+          force: false,
+          callbackGeneration: callbackGeneration
+        )
+      }
+    }
+
     private func isCurrentCallbackGeneration(_ callbackGeneration: Int) -> Bool {
       self.callbackGeneration == callbackGeneration && callback != nil
+    }
+
+    private func cancelScheduledAccessibilityNotificationRefresh() {
+      accessibilityNotificationRefreshScheduleState.reset()
+      accessibilityNotificationRefreshTask?.cancel()
+      accessibilityNotificationRefreshTask = nil
     }
 
     // In general, information about the currently focused application can be obtained through the following mechanisms:
@@ -311,29 +445,63 @@ extension PQRSOSXAccessibility {
     // In particular, Spotlight-style application switches can be missed unless polling runs at a fairly high frequency.
     // For that reason, polling is performed every 500 ms.
     //
-    // Because this polling needs to stay lightweight, requestRefresh is called only when necessary.
-    // More specifically, requestRefresh is triggered only in the following cases:
+    // Because this polling needs to stay lightweight, it updates state only when
+    // necessary. More specifically, an update is performed in the following cases:
     //
     // - When polling detects a change in either the Accessibility or NSWorkspace
     //   frontmost application. These sources are checked separately because an
     //   unbundled GUI application may update only NSWorkspace, whereas a transient
     //   system UI such as Spotlight may update only Accessibility.
-    // - When the current application's window position or size could not be obtained through the Accessibility API.
-    //   (requestRefresh is called in order to fetch the latest window position and size.)
+    // - When lightweight Core Graphics polling detects a geometry change for a
+    //   window whose position or size could not be obtained through Accessibility.
+    // - When lightweight title polling detects a change for a window that does not
+    //   support title-change notifications.
     private func refreshIfPollingNeedsSnapshot() {
       let processIdentifiers = PQRSOSXAccessibility.copyFrontmostProcessIdentifiers()
       // AX and NSWorkspace do not always change together. Observe both sources so
       // an application switch reported by either one schedules a full snapshot.
       let applicationChanged = processIdentifierObservations.observe(processIdentifiers).changed
+      if applicationChanged {
+        requestRefresh(force: false)
+        return
+      }
 
       // Some applications do not expose window geometry through Accessibility.
-      // Their geometry comes from Core Graphics, which has no corresponding AX
-      // move/resize notification, so it must be refreshed on every polling tick.
-      let needsGeometryPolling =
-        lastSnapshot.focusedUIElement?.windowGeometrySource == .coreGraphics
+      // Compare only the Core Graphics geometry on each polling tick and avoid
+      // querying the remaining snapshot fields when it actually changes.
+      var geometryUpdatedSnapshot: Snapshot?
+      if let applicationProcessIdentifier = lastSnapshot.application?.processIdentifier,
+        let focusedUIElement = lastSnapshot.focusedUIElement,
+        focusedUIElement.windowGeometrySource == .coreGraphics
+      {
+        let latestWindowGeometry = copyFrontmostWindowGeometry(applicationProcessIdentifier)
+        let currentWindowGeometry = WindowGeometry(
+          position: focusedUIElement.windowPosition,
+          size: focusedUIElement.windowSize
+        )
+        if latestWindowGeometry != currentWindowGeometry {
+          geometryUpdatedSnapshot = Snapshot(
+            application: lastSnapshot.application,
+            focusedUIElement: focusedUIElement.updatingCoreGraphicsWindowGeometry(
+              latestWindowGeometry
+            )
+          )
+        }
+      }
 
-      if applicationChanged || needsGeometryPolling {
+      // If title notifications are unavailable, compare only AXTitle here and
+      // avoid building a full snapshot until the value actually changes. If title
+      // and geometry change in the same tick, the full refresh also incorporates
+      // the new geometry from the Core Graphics cache.
+      if observationController?.windowTitleNeedsRefresh(
+        currentWindowTitle: lastSnapshot.focusedUIElement?.windowTitle
+      ) == true {
         requestRefresh(force: false)
+        return
+      }
+
+      if let geometryUpdatedSnapshot {
+        commitSnapshotAndEmit(geometryUpdatedSnapshot, force: false)
       }
     }
 
@@ -344,53 +512,48 @@ extension PQRSOSXAccessibility {
         return
       }
 
-      withOptionalCString(snapshot.application?.name) { applicationName in
-        withOptionalCString(snapshot.application?.bundleIdentifier) { bundleIdentifier in
-          withOptionalCString(snapshot.application?.bundlePath) { bundlePath in
-            withOptionalCString(snapshot.application?.filePath) { filePath in
-              withOptionalCString(snapshot.focusedUIElement?.role) { role in
-                withOptionalCString(snapshot.focusedUIElement?.subrole) { subrole in
-                  withOptionalCString(snapshot.focusedUIElement?.roleDescription) {
-                    roleDescription in
-                    withOptionalCString(snapshot.focusedUIElement?.title) { title in
-                      withOptionalCString(snapshot.focusedUIElement?.description) { description in
-                        withOptionalCString(snapshot.focusedUIElement?.identifier) { identifier in
-                          var cSnapshot = pqrs_osx_accessibility_snapshot(
-                            application_name: applicationName,
-                            bundle_identifier: bundleIdentifier,
-                            bundle_path: bundlePath,
-                            file_path: filePath,
-                            pid: snapshot.application?.processIdentifier ?? 0,
-                            application_detection_source: snapshot.application?.detectionSource
-                              .rawValue ?? 0,
-                            role: role,
-                            subrole: subrole,
-                            role_description: roleDescription,
-                            title: title,
-                            description: description,
-                            identifier: identifier,
-                            has_window_position: snapshot.focusedUIElement?.windowPosition == nil
-                              ? 0 : 1,
-                            window_position_x: snapshot.focusedUIElement?.windowPosition?.x ?? 0,
-                            window_position_y: snapshot.focusedUIElement?.windowPosition?.y ?? 0,
-                            has_window_size: snapshot.focusedUIElement?.windowSize == nil ? 0 : 1,
-                            window_size_width: snapshot.focusedUIElement?.windowSize?.width ?? 0,
-                            window_size_height: snapshot.focusedUIElement?.windowSize?.height ?? 0
-                          )
+      let application = snapshot.application
+      let element = snapshot.focusedUIElement
 
-                          withUnsafePointer(to: &cSnapshot) { cSnapshotPointer in
-                            callback(force ? 1 : 0, cSnapshotPointer)
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+      SnapshotCStringValues()
+        .setting(.applicationName, to: application?.name)
+        .setting(.bundleIdentifier, to: application?.bundleIdentifier)
+        .setting(.bundlePath, to: application?.bundlePath)
+        .setting(.filePath, to: application?.filePath)
+        .setting(.role, to: element?.role)
+        .setting(.subrole, to: element?.subrole)
+        .setting(.roleDescription, to: element?.roleDescription)
+        .setting(.title, to: element?.title)
+        .setting(.description, to: element?.description)
+        .setting(.identifier, to: element?.identifier)
+        .setting(.windowTitle, to: element?.windowTitle)
+        .withUnsafePointers { strings in
+          var cSnapshot = pqrs_osx_accessibility_snapshot(
+            application_name: strings[.applicationName],
+            bundle_identifier: strings[.bundleIdentifier],
+            bundle_path: strings[.bundlePath],
+            file_path: strings[.filePath],
+            pid: application?.processIdentifier ?? 0,
+            application_detection_source: application?.detectionSource.rawValue ?? 0,
+            role: strings[.role],
+            subrole: strings[.subrole],
+            role_description: strings[.roleDescription],
+            title: strings[.title],
+            description: strings[.description],
+            identifier: strings[.identifier],
+            window_title: strings[.windowTitle],
+            has_window_position: element?.windowPosition == nil ? 0 : 1,
+            window_position_x: element?.windowPosition?.x ?? 0,
+            window_position_y: element?.windowPosition?.y ?? 0,
+            has_window_size: element?.windowSize == nil ? 0 : 1,
+            window_size_width: element?.windowSize?.width ?? 0,
+            window_size_height: element?.windowSize?.height ?? 0
+          )
+
+          withUnsafePointer(to: &cSnapshot) { cSnapshot in
+            callback(force ? 1 : 0, cSnapshot)
           }
         }
-      }
     }
   }
 }

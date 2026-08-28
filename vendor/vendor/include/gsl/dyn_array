@@ -1,0 +1,446 @@
+// -*- C++ -*-
+///////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2026 Microsoft Corporation. All rights reserved.
+//
+// This code is licensed under the MIT License (MIT).
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef GSL_DYN_ARRAY_H
+#define GSL_DYN_ARRAY_H
+
+#include "./assert"
+#include "./narrow"
+#include "./util"
+
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <type_traits>
+#include <vector>
+
+#if defined(__cpp_lib_ranges) && (__cpp_lib_ranges >= 201911L)
+#include <ranges>
+#endif /* __cpp_lib_ranges >= 201911L */
+
+namespace gsl
+{
+template <typename T, typename Allocator = std::allocator<T>>
+class dyn_array;
+
+namespace details
+{
+    template <typename T, typename Allocator = std::allocator<T>>
+    class dyn_array_base : public Allocator
+    {
+        using pointer = T*;
+        using size_type = std::size_t;
+
+        template <typename... Args>
+        GSL_CONSTEXPR_SINCE_CPP20 void construct(pointer ptr, Args&&... args)
+        {
+            std::allocator_traits<Allocator>::construct(static_cast<Allocator&>(*this), ptr,
+                                                        std::forward<Args>(args)...);
+        }
+
+        GSL_CONSTEXPR_SINCE_CPP20 void destroy(pointer ptr)
+        {
+            std::allocator_traits<Allocator>::destroy(static_cast<Allocator&>(*this), ptr);
+        }
+
+        GSL_CONSTEXPR_SINCE_CPP20 void destroy_range(pointer first, pointer last)
+        {
+            for (; first != last; ++first) { destroy(first); }
+        }
+
+        GSL_CONSTEXPR_SINCE_CPP20 void rollback_construction(pointer first, pointer last)
+        {
+            destroy_range(first, last);
+            std::allocator_traits<Allocator>::deallocate(static_cast<Allocator&>(*this), _data,
+                                                         _count);
+            _data = nullptr;
+            _count = 0;
+        }
+
+    protected:
+        constexpr auto data() const { return _data; }
+
+        constexpr auto count() const { return _count; }
+
+        GSL_CONSTEXPR_SINCE_CPP20 void resize(size_type count)
+        {
+            // This should only be called when constructing a non-forward iterator.
+            // It neither frees nor copies `_data`.
+            Expects(_data == nullptr && _count == 0);
+            if (count != 0)
+            {
+                _data = std::allocator_traits<Allocator>::allocate(static_cast<Allocator&>(*this),
+                                                                   count);
+                _count = count;
+            }
+        }
+
+        GSL_CONSTEXPR_SINCE_CPP20 void fill(pointer first, size_type count, const T& value)
+        {
+            pointer current = first;
+            try
+            {
+                for (size_type i = 0; i < count; ++i, ++current) { construct(current, value); }
+            } catch (...)
+            {
+                rollback_construction(first, current);
+                throw;
+            }
+        }
+
+        template <typename InputIt>
+        GSL_CONSTEXPR_SINCE_CPP20 void copy(InputIt first, InputIt last, pointer output)
+        {
+            pointer current = output;
+            try
+            {
+                for (; first != last; ++first, ++current) { construct(current, *first); }
+            } catch (...)
+            {
+                rollback_construction(output, current);
+                throw;
+            }
+        }
+
+        GSL_CONSTEXPR_SINCE_CPP20 void default_construct(pointer first, size_type count)
+        {
+            pointer current = first;
+            try
+            {
+                for (size_type i = 0; i < count; ++i, ++current) { construct(current); }
+            } catch (...)
+            {
+                rollback_construction(first, current);
+                throw;
+            }
+        }
+
+    private:
+        pointer _data;
+        size_type _count;
+
+    public:
+        constexpr dyn_array_base(const Allocator& alloc)
+            : Allocator{alloc}, _data{nullptr}, _count{0}
+        {
+            Ensures((_count == 0 && _data == nullptr) || (_count > 0 && _data != nullptr));
+        }
+
+        constexpr dyn_array_base(size_type count, const Allocator& alloc)
+            : Allocator{alloc}
+            , _data{count == 0 ? nullptr
+                               : std::allocator_traits<Allocator>::allocate(
+                                     static_cast<Allocator&>(*this), count)}
+            , _count{count}
+        {
+            Ensures((_count == 0 && _data == nullptr) || (_count > 0 && _data != nullptr));
+        }
+
+        GSL_CONSTEXPR_SINCE_CPP20 ~dyn_array_base()
+        {
+            if (_data)
+            {
+                if (!std::is_trivially_destructible<T>::value)
+                {
+                    destroy_range(_data, _data + _count);
+                }
+                std::allocator_traits<Allocator>::deallocate(static_cast<Allocator&>(*this), _data,
+                                                             _count);
+            }
+        }
+    };
+
+    template <typename T>
+    class dyn_array_iterator
+    {
+        using size_type = std::size_t;
+
+    public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = T*;
+        using reference = T&;
+        using const_reference = const T&;
+        using iterator_category = std::random_access_iterator_tag;
+
+#if defined(__cpp_lib_ranges) && (__cpp_lib_ranges >= 201911L)
+        constexpr dyn_array_iterator() = default;
+#endif /* __cpp_lib_ranges >= 201911L */
+
+        constexpr operator dyn_array_iterator<const T>() const { return {_ptr, _pos, _end_pos}; }
+
+#if defined(_MSC_VER) && defined(__cpp_lib_ranges) && (__cpp_lib_ranges >= 201911L)
+        constexpr operator pointer() const { return _ptr + gsl::narrow<size_type>(_pos); }
+#endif /* defined(_MSC_VER) && __cpp_lib_ranges >= 201911L */
+
+        constexpr auto operator==(const dyn_array_iterator& other) const
+        {
+            Expects(_ptr == other._ptr);
+            Expects(_end_pos == other._end_pos);
+            return _pos == other._pos;
+        }
+
+        constexpr auto operator!=(const dyn_array_iterator& other) const
+        {
+            return !(*this == other);
+        }
+
+        constexpr auto operator*() const -> reference
+        {
+            Expects(_ptr != nullptr);
+            Expects(_pos < _end_pos);
+            return _ptr[_pos];
+        }
+
+        constexpr auto operator++() -> dyn_array_iterator&
+        {
+            Expects(_pos < _end_pos);
+            ++_pos;
+            return *this;
+        }
+
+        constexpr auto operator++(int)
+        {
+            ++(*this);
+            return dyn_array_iterator{_ptr, _pos - 1, _end_pos};
+        }
+
+        constexpr auto operator--() -> dyn_array_iterator&
+        {
+            Expects(_pos > 0);
+            --_pos;
+            return *this;
+        }
+
+        constexpr auto operator--(int)
+        {
+            --(*this);
+            return dyn_array_iterator{_ptr, _pos + 1, _end_pos};
+        }
+
+        constexpr auto operator+=(difference_type diff) -> dyn_array_iterator&
+        {
+            auto new_pos = gsl::narrow<difference_type>(_pos) + diff;
+            Expects(new_pos >= 0);
+            Expects(new_pos <= gsl::narrow<difference_type>(_end_pos));
+            _pos = gsl::narrow<size_type>(new_pos);
+            return *this;
+        }
+
+        constexpr auto operator-=(difference_type diff) -> dyn_array_iterator&
+        {
+            auto new_pos = gsl::narrow<difference_type>(_pos) - diff;
+            Expects(new_pos >= 0);
+            Expects(new_pos <= gsl::narrow<difference_type>(_end_pos));
+            _pos = gsl::narrow<size_type>(new_pos);
+            return *this;
+        }
+
+        constexpr auto operator+(difference_type diff) const
+        {
+            auto new_pos = gsl::narrow<difference_type>(_pos) + diff;
+            return dyn_array_iterator{_ptr, gsl::narrow<size_type>(new_pos), _end_pos};
+        }
+
+        constexpr auto operator-(difference_type diff) const { return *this + (-diff); }
+
+        constexpr auto operator-(const dyn_array_iterator& other) const
+        {
+            Expects(_ptr == other._ptr);
+            Expects(_end_pos == other._end_pos);
+            return gsl::narrow<difference_type>(_pos) - gsl::narrow<difference_type>(other._pos);
+        }
+
+        constexpr auto operator[](size_type pos) -> reference
+        {
+            Expects(_pos + pos < _end_pos);
+            return _ptr[_pos + pos];
+        }
+
+        constexpr auto operator[](size_type pos) const -> const_reference
+        {
+            return const_cast<dyn_array_iterator&>(*this).operator[](pos);
+        }
+
+    private:
+        constexpr dyn_array_iterator(pointer ptr, size_type pos, size_type end_pos)
+            : _ptr{ptr}, _pos{pos}, _end_pos{end_pos}
+        {
+            Ensures((_ptr != nullptr && _end_pos > 0) || (_ptr == nullptr && _end_pos == 0));
+            Ensures(_pos <= _end_pos);
+        }
+
+        pointer _ptr{};
+        size_type _pos{};
+        size_type _end_pos{};
+
+        template <typename, typename>
+        friend class ::gsl::dyn_array;
+    };
+} // namespace details
+
+template <typename T, typename Allocator>
+class dyn_array : private details::dyn_array_base<T, Allocator>
+{
+    using base = details::dyn_array_base<T, Allocator>;
+    using pointer = T*;
+
+public:
+    using value_type = T;
+    using reference = T&;
+    using const_reference = const T&;
+    using iterator = details::dyn_array_iterator<T>;
+    using const_iterator = details::dyn_array_iterator<const T>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    using difference_type = std::ptrdiff_t;
+    using size_type = std::size_t;
+
+    using allocator_type = Allocator;
+
+    explicit constexpr dyn_array(const Allocator& alloc = {}) : base{alloc} {}
+
+    constexpr dyn_array(size_type count, const T& value, const Allocator& alloc = {})
+        : base{count, alloc}
+    {
+        base::fill(data(), size(), value);
+    }
+
+    template <typename InputIt,
+              std::enable_if_t<details::is_fwd_iterator<InputIt>::value, bool> = true>
+    constexpr dyn_array(InputIt first, InputIt last, const Allocator& alloc = {})
+        : base{gsl::narrow<size_type>(std::distance(first, last)), alloc}
+    {
+        base::copy(first, last, data());
+    }
+
+    template <typename InputIt, std::enable_if_t<!details::is_fwd_iterator<InputIt>::value &&
+                                                     details::is_iterator<InputIt>::value,
+                                                 bool> = true>
+    constexpr dyn_array(InputIt first, InputIt last, const Allocator& alloc = {}) : dyn_array{alloc}
+    {
+        std::vector<T> tmp(first, last);
+        base::resize(tmp.size());
+        base::copy(std::begin(tmp), std::end(tmp), data());
+    }
+
+#if defined(__cpp_lib_containers_ranges) && (__cpp_lib_containers_ranges >= 202202L)
+    template <typename InputRg>
+        requires(std::ranges::input_range<InputRg>)
+    constexpr dyn_array(std::from_range_t, InputRg&& rg, const Allocator& alloc = {})
+        : base{gsl::narrow<size_type>(std::size(rg)), alloc}
+    {
+        base::copy(std::ranges::begin(rg), std::ranges::end(rg), data());
+    }
+#endif /* __cpp_lib_containers_ranges >= 202202L */
+
+    constexpr explicit dyn_array(size_type count, const Allocator& alloc = {}) : base{count, alloc}
+    {
+        base::default_construct(data(), size());
+    }
+
+    constexpr dyn_array(const dyn_array& other, const Allocator& alloc = {})
+        : dyn_array(other.begin(), other.end(), alloc)
+    {}
+
+    constexpr dyn_array(std::initializer_list<T> init, const Allocator& alloc = {})
+        : dyn_array(init.begin(), init.end(), alloc)
+    {}
+
+    constexpr dyn_array(dyn_array&&) = delete;
+    dyn_array& operator=(dyn_array&&) = delete;
+
+    constexpr auto operator==(const dyn_array& other) const
+    {
+        return size() == other.size() && std::equal(begin(), end(), other.begin(), other.end());
+    }
+
+    constexpr auto operator!=(const dyn_array& other) const { return !(*this == other); }
+
+    constexpr auto size() const { return base::count(); }
+
+    constexpr auto empty() const { return size() == 0; }
+
+    constexpr auto max_size() const { return static_cast<size_type>(-1); }
+
+    constexpr auto get_allocator() -> Allocator& { return *this; }
+
+    constexpr auto operator[](size_type pos) -> reference
+    {
+        Expects(pos < size());
+        return data()[pos];
+    }
+
+    constexpr auto operator[](size_type pos) const -> const_reference
+    {
+        return const_cast<dyn_array&>(*this)[pos];
+    }
+
+    constexpr auto data() { return base::data(); }
+    constexpr auto data() const -> const T* { return const_cast<dyn_array&>(*this).data(); }
+
+    constexpr auto begin() { return iterator{data(), 0, size()}; }
+    constexpr auto begin() const { return const_iterator{data(), 0, size()}; }
+    constexpr auto cbegin() const { return begin(); }
+
+    constexpr auto rbegin() { return reverse_iterator{end()}; }
+    constexpr auto rbegin() const { return const_reverse_iterator{end()}; }
+    constexpr auto crbegin() const { return rbegin(); }
+
+#ifdef _MSC_VER
+    constexpr auto _Unchecked_begin() { return data(); }
+    constexpr auto _Unchecked_begin() const -> const T*
+    {
+        return const_cast<dyn_array&>(*this)._Unchecked_begin();
+    }
+#endif /* _MSC_VER */
+
+    constexpr auto end() { return iterator{data(), size(), size()}; }
+    constexpr auto end() const { return const_iterator{data(), size(), size()}; }
+    constexpr auto cend() const { return end(); }
+
+    constexpr auto rend() { return reverse_iterator{begin()}; }
+    constexpr auto rend() const { return const_reverse_iterator{begin()}; }
+    constexpr auto crend() const { return rend(); }
+
+#ifdef _MSC_VER
+    constexpr auto _Unchecked_end() { return data() + size(); }
+    constexpr auto _Unchecked_end() const -> const T*
+    {
+        return const_cast<dyn_array&>(*this)._Unchecked_end();
+    }
+#endif /* _MSC_VER */
+};
+
+#if defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201703L)
+
+template <class InputIt,
+          class Alloc = std::allocator<typename std::iterator_traits<InputIt>::value_type>>
+dyn_array(InputIt, InputIt, Alloc = {})
+    -> dyn_array<typename std::iterator_traits<InputIt>::value_type, Alloc>;
+
+#if defined(__cpp_lib_containers_ranges) && (__cpp_lib_containers_ranges >= 202202L)
+template <std::ranges::input_range InputRg,
+          class Alloc = std::allocator<std::ranges::range_value_t<InputRg>>>
+dyn_array(std::from_range_t, InputRg&&, Alloc = {})
+    -> dyn_array<std::ranges::range_value_t<InputRg>, Alloc>;
+#endif /* __cpp_lib_containers_ranges >= 202202L */
+
+#endif /* __cpp_deduction_guides >= 201703L */
+} // namespace gsl
+
+#endif /* defined(GSL_DYN_ARRAY_H) */

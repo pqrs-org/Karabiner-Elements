@@ -1,3 +1,4 @@
+// -*- C++ -*-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2015 Microsoft Corporation. All rights reserved.
@@ -18,13 +19,13 @@
 #define GSL_POINTERS_H
 
 #include "./assert" // for Ensures, Expects
-#include "./util" // for GSL_DEPRECATED
+#include "./util"   // for GSL_DEPRECATED
 
-#include <cstddef>      // for ptrdiff_t, nullptr_t, size_t
-#include <functional>   // for less, greater
-#include <memory>       // for shared_ptr, unique_ptr, hash
-#include <type_traits>  // for enable_if_t, is_convertible, is_assignable
-#include <utility>      // for declval, forward
+#include <cstddef>     // for ptrdiff_t, nullptr_t, size_t
+#include <functional>  // for less, greater
+#include <memory>      // for shared_ptr, unique_ptr, hash
+#include <type_traits> // for enable_if_t, is_convertible, is_assignable
+#include <utility>     // for declval, forward
 
 #if !defined(GSL_NO_IOSTREAMS)
 #include <iosfwd> // for ostream
@@ -48,15 +49,16 @@ namespace details
     {
     };
 
-    // Resolves to the more efficient of `const T` or `const T&`, in the context of returning a const-qualified value
-    // of type T.
+    // Resolves to the more efficient of `const T` or `const T&`, in the context of returning a
+    // const-qualified value of type T.
     //
-    // Copied from cppfront's implementation of the CppCoreGuidelines F.16 (https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rf-in)
-    template<typename T>
-    using value_or_reference_return_t = std::conditional_t<
-                                            sizeof(T) < 2*sizeof(void*) && std::is_trivially_copy_constructible<T>::value,
-                                            const T,
-                                            const T&>;
+    // Copied from cppfront's implementation of the CppCoreGuidelines F.16
+    // (https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rf-in)
+    template <typename T>
+    using value_or_reference_return_t =
+        std::conditional_t<sizeof(T) <= 2 * sizeof(void*) &&
+                               std::is_trivially_copy_constructible<T>::value,
+                           const T, const T&>;
 
 } // namespace details
 
@@ -72,9 +74,10 @@ using unique_ptr GSL_DEPRECATED("Use std::unique_ptr instead") = std::unique_ptr
 //
 // owner
 //
-// `gsl::owner<T>` is designed as a safety mechanism for code that must deal directly with raw pointers that own memory.
-// Ideally such code should be restricted to the implementation of low-level abstractions. `gsl::owner` can also be used
-// as a stepping point in converting legacy code to use more modern RAII constructs, such as smart pointers.
+// `gsl::owner<T>` is designed as a safety mechanism for code that must deal directly with raw
+// pointers that own memory. Ideally such code should be restricted to the implementation of
+// low-level abstractions. `gsl::owner` can also be used as a stepping point in converting legacy
+// code to use more modern RAII constructs, such as smart pointers.
 //
 // T must be a pointer type
 // - disallow construction from any type other than pointer type
@@ -105,19 +108,23 @@ public:
     using element_type = T;
 
     template <typename U, typename = std::enable_if_t<std::is_convertible<U, T>::value>>
-    constexpr not_null(U&& u) noexcept(std::is_nothrow_move_constructible<T>::value) : ptr_(std::forward<U>(u))
+    constexpr not_null(U&& u) noexcept(std::is_nothrow_move_constructible<T>::value)
+        : ptr_(std::forward<U>(u))
     {
         Expects(ptr_ != nullptr);
     }
 
     template <typename = std::enable_if_t<!std::is_same<std::nullptr_t, T>::value>>
-    constexpr not_null(T u) noexcept(std::is_nothrow_move_constructible<T>::value) : ptr_(std::move(u))
+    constexpr not_null(T u) noexcept(std::is_nothrow_move_constructible<T>::value)
+        : ptr_(std::move(u))
     {
         Expects(ptr_ != nullptr);
     }
 
     template <typename U, typename = std::enable_if_t<std::is_convertible<U, T>::value>>
-    constexpr not_null(const not_null<U>& other) noexcept(std::is_nothrow_move_constructible<T>::value) : not_null(other.get())
+    constexpr not_null(const not_null<U>& other) noexcept(
+        std::is_nothrow_move_constructible<T>::value)
+        : not_null(other.get())
     {}
 
     not_null(const not_null& other) = default;
@@ -145,14 +152,16 @@ public:
     not_null& operator-=(std::ptrdiff_t) = delete;
     void operator[](std::ptrdiff_t) const = delete;
 
-    void swap(not_null<T>& other) { std::swap(ptr_, other.ptr_); }
+    void swap(not_null<T>& other) noexcept { std::swap(ptr_, other.ptr_); }
 
 private:
     T ptr_;
 };
 
-template <typename T, std::enable_if_t<std::is_move_assignable<T>::value && std::is_move_constructible<T>::value, bool> = true>
-void swap(not_null<T>& a, not_null<T>& b)
+template <typename T, std::enable_if_t<std::is_move_assignable<T>::value &&
+                                           std::is_move_constructible<T>::value,
+                                       bool> = true>
+void swap(not_null<T>& a, not_null<T>& b) noexcept
 {
     a.swap(b);
 }
@@ -173,48 +182,50 @@ std::ostream& operator<<(std::ostream& os, const not_null<T>& val)
 #endif // !defined(GSL_NO_IOSTREAMS)
 
 template <class T, class U>
-auto operator==(const not_null<T>& lhs,
-                const not_null<U>& rhs) noexcept(noexcept(lhs.get() == rhs.get()))
+constexpr auto operator==(const not_null<T>& lhs,
+                          const not_null<U>& rhs) noexcept(noexcept(lhs.get() == rhs.get()))
     -> decltype(lhs.get() == rhs.get())
 {
     return lhs.get() == rhs.get();
 }
 
 template <class T, class U>
-auto operator!=(const not_null<T>& lhs,
-                const not_null<U>& rhs) noexcept(noexcept(lhs.get() != rhs.get()))
+constexpr auto operator!=(const not_null<T>& lhs,
+                          const not_null<U>& rhs) noexcept(noexcept(lhs.get() != rhs.get()))
     -> decltype(lhs.get() != rhs.get())
 {
     return lhs.get() != rhs.get();
 }
 
 template <class T, class U>
-auto operator<(const not_null<T>& lhs,
-               const not_null<U>& rhs) noexcept(noexcept(std::less<>{}(lhs.get(), rhs.get())))
-    -> decltype(std::less<>{}(lhs.get(), rhs.get()))
+constexpr auto operator<(const not_null<T>& lhs, const not_null<U>& rhs) noexcept(
+    noexcept(std::less<>{}(lhs.get(), rhs.get()))) -> decltype(std::less<>{}(lhs.get(), rhs.get()))
 {
     return std::less<>{}(lhs.get(), rhs.get());
 }
 
 template <class T, class U>
-auto operator<=(const not_null<T>& lhs,
-                const not_null<U>& rhs) noexcept(noexcept(std::less_equal<>{}(lhs.get(), rhs.get())))
+constexpr auto
+operator<=(const not_null<T>& lhs,
+           const not_null<U>& rhs) noexcept(noexcept(std::less_equal<>{}(lhs.get(), rhs.get())))
     -> decltype(std::less_equal<>{}(lhs.get(), rhs.get()))
 {
     return std::less_equal<>{}(lhs.get(), rhs.get());
 }
 
 template <class T, class U>
-auto operator>(const not_null<T>& lhs,
-               const not_null<U>& rhs) noexcept(noexcept(std::greater<>{}(lhs.get(), rhs.get())))
+constexpr auto
+operator>(const not_null<T>& lhs,
+          const not_null<U>& rhs) noexcept(noexcept(std::greater<>{}(lhs.get(), rhs.get())))
     -> decltype(std::greater<>{}(lhs.get(), rhs.get()))
 {
     return std::greater<>{}(lhs.get(), rhs.get());
 }
 
 template <class T, class U>
-auto operator>=(const not_null<T>& lhs,
-                const not_null<U>& rhs) noexcept(noexcept(std::greater_equal<>{}(lhs.get(), rhs.get())))
+constexpr auto
+operator>=(const not_null<T>& lhs,
+           const not_null<U>& rhs) noexcept(noexcept(std::greater_equal<>{}(lhs.get(), rhs.get())))
     -> decltype(std::greater_equal<>{}(lhs.get(), rhs.get()))
 {
     return std::greater_equal<>{}(lhs.get(), rhs.get());
@@ -230,11 +241,13 @@ not_null<T> operator+(const not_null<T>&, std::ptrdiff_t) = delete;
 template <class T>
 not_null<T> operator+(std::ptrdiff_t, const not_null<T>&) = delete;
 
-
-template <class T, class U = decltype(std::declval<const T&>().get()), bool = std::is_default_constructible<std::hash<U>>::value>
+// T is conceptually a pointer so we don't have to worry about it being a reference and violating
+// std::hash requirements
+template <class T, class U = typename T::element_type,
+          bool = std::is_default_constructible<std::hash<U>>::value>
 struct not_null_hash
 {
-    std::size_t operator()(const T& value) const { return std::hash<U>{}(value.get()); }
+    std::size_t operator()(const T& value) const noexcept { return std::hash<U>{}(value.get()); }
 };
 
 template <class T, class U>
@@ -281,24 +294,32 @@ class strict_not_null : public not_null<T>
 {
 public:
     template <typename U, typename = std::enable_if_t<std::is_convertible<U, T>::value>>
-    constexpr explicit strict_not_null(U&& u) noexcept(std::is_nothrow_move_constructible<T>::value) : not_null<T>(std::forward<U>(u))
+    constexpr explicit strict_not_null(U&& u) noexcept(std::is_nothrow_move_constructible<T>::value)
+        : not_null<T>(std::forward<U>(u))
     {}
 
     template <typename = std::enable_if_t<!std::is_same<std::nullptr_t, T>::value>>
-    constexpr explicit strict_not_null(T u) noexcept(std::is_nothrow_move_constructible<T>::value) : not_null<T>(std::move(u))
+    constexpr explicit strict_not_null(T u) noexcept(std::is_nothrow_move_constructible<T>::value)
+        : not_null<T>(std::move(u))
     {}
 
     template <typename U, typename = std::enable_if_t<std::is_convertible<U, T>::value>>
-    constexpr strict_not_null(const not_null<U>& other) noexcept(std::is_nothrow_move_constructible<T>::value) : not_null<T>(other)
+    constexpr strict_not_null(const not_null<U>& other) noexcept(
+        std::is_nothrow_move_constructible<T>::value)
+        : not_null<T>(other)
     {}
 
     template <typename U, typename = std::enable_if_t<std::is_convertible<U, T>::value>>
-    constexpr strict_not_null(const strict_not_null<U>& other) noexcept(std::is_nothrow_move_constructible<T>::value) : not_null<T>(other)
+    constexpr strict_not_null(const strict_not_null<U>& other) noexcept(
+        std::is_nothrow_move_constructible<T>::value)
+        : not_null<T>(other)
     {}
 
     // To avoid invalidating the "not null" invariant, the contained pointer is actually copied
-    // instead of moved. If it is a custom pointer, its constructor could in theory throw exceptions.
-    strict_not_null(strict_not_null&& other) noexcept(std::is_nothrow_copy_constructible<T>::value) = default;
+    // instead of moved. If it is a custom pointer, its constructor could in theory throw
+    // exceptions.
+    strict_not_null(strict_not_null&& other) noexcept(
+        std::is_nothrow_copy_constructible<T>::value) = default;
     strict_not_null(const strict_not_null& other) = default;
     strict_not_null& operator=(const strict_not_null& other) = default;
     strict_not_null& operator=(const not_null<T>& other)
@@ -337,7 +358,7 @@ auto make_strict_not_null(T&& t) noexcept
     return strict_not_null<std::remove_cv_t<std::remove_reference_t<T>>>{std::forward<T>(t)};
 }
 
-#if (defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L))
+#if defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201703L)
 
 // deduction guides to prevent the ctad-maybe-unsupported warning
 template <class T>
@@ -345,7 +366,7 @@ not_null(T) -> not_null<T>;
 template <class T>
 strict_not_null(T) -> strict_not_null<T>;
 
-#endif // ( defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L) )
+#endif // defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201703L)
 
 } // namespace gsl
 

@@ -8,7 +8,7 @@
 #include <sstream>
 
 namespace pqrs::process {
-// Execute the command and wait for it to finish.
+// Execute the command and wait for it to finish​.
 class execute {
 public:
   execute(const std::vector<std::string>& argv)

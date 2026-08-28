@@ -151,7 +151,7 @@ namespace utf8
     utfchar32_t next(octet_iterator& it, octet_iterator end)
     {
         utfchar32_t cp = 0;
-        internal::utf_error err_code = utf8::internal::validate_next(it, end, cp);
+        internal::utf_error err_code = utf8::internal::decode_next(it, end, cp);
         switch (err_code) {
             case internal::UTF8_OK :
                 break;
@@ -174,6 +174,8 @@ namespace utf8
         internal::utf_error err_code = utf8::internal::validate_next16(it, end, cp);
         if (err_code == internal::NOT_ENOUGH_ROOM)
             throw not_enough_room();
+        else if (err_code != internal::UTF8_OK)
+            throw invalid_utf16(static_cast<utfchar16_t>(*it));
         return cp;
     }
 

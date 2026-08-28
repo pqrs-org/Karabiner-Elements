@@ -31,6 +31,9 @@
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-noreturn"
+#if __clang_major__ >= 22
+#pragma clang diagnostic ignored "-Wunique-object-duplication"
+#endif // __clang_major >= 22
 #endif // defined(__clang__)
 
 #else // defined(_MSC_VER) && (defined(_KERNEL_MODE) || (defined(_HAS_EXCEPTIONS) &&
@@ -93,9 +96,7 @@ namespace details
 
     typedef void(__cdecl* terminate_handler)();
 
-    // clang-format off
-    GSL_SUPPRESS(f.6) // NO-FORMAT: attribute
-    // clang-format on
+    GSL_SUPPRESS(f.6)
     [[noreturn]] inline void __cdecl default_terminate_handler()
     {
         __fastfail(RANGE_CHECKS_FAILURE);

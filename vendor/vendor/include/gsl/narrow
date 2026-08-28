@@ -16,11 +16,37 @@
 
 #ifndef GSL_NARROW_H
 #define GSL_NARROW_H
-#include "./assert"    // for GSL_SUPPRESS
-#include "./util"      // for narrow_cast
+#include "./assert"  // for GSL_SUPPRESS
+#include "./util"    // for narrow_cast
 #include <exception> // for std::exception
 namespace gsl
 {
+namespace details
+{
+    template <class T, class U>
+    constexpr bool static_cast_is_defined(U u, /*is_floating_point_to_integral=*/std::true_type)
+    {
+        if (std::is_same<typename std::remove_cv<T>::type, bool>::value) { return true; }
+
+        U upper_bound{1};
+        for (int i = 0; i < std::numeric_limits<T>::digits; i++)
+        {
+            upper_bound *= std::numeric_limits<T>::radix;
+        }
+
+        if (u >= U{}) { return u < upper_bound; }
+        if (!std::is_signed<T>::value) { return u > U{-1}; }
+
+        return u + upper_bound > U{-1};
+    }
+
+    template <class T, class U>
+    constexpr bool static_cast_is_defined(U, /*is_floating_point_to_integral=*/std::false_type)
+    {
+        return true;
+    }
+} // namespace details
+
 struct narrowing_error : public std::exception
 {
     const char* what() const noexcept override { return "narrowing_error"; }
@@ -28,28 +54,26 @@ struct narrowing_error : public std::exception
 
 // narrow() : a checked version of narrow_cast() that throws if the cast changed the value
 template <class T, class U, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
-// clang-format off
-GSL_SUPPRESS(type.1) // NO-FORMAT: attribute
-GSL_SUPPRESS(es.46) // NO-FORMAT: attribute // The warning suggests that a floating->unsigned conversion can occur
-                                            // in the static_cast below, and that gsl::narrow should be used instead.
-                                            // Suppress this warning, since gsl::narrow is defined in terms of
-                                            // static_cast
-    // clang-format on
-    constexpr T narrow(U u)
+GSL_SUPPRESS(type.1) constexpr T narrow(U u)
 {
     constexpr const bool is_different_signedness =
         (std::is_signed<T>::value != std::is_signed<U>::value);
 
-GSL_SUPPRESS(es.103) // NO-FORMAT: attribute // don't overflow
-GSL_SUPPRESS(es.104) // NO-FORMAT: attribute // don't underflow
-GSL_SUPPRESS(p.2) // NO-FORMAT: attribute // don't rely on undefined behavior
-    const T t = narrow_cast<T>(u); // While this is technically undefined behavior in some cases (i.e., if the source value is of floating-point type
-                                   // and cannot fit into the destination integral type), the resultant behavior is benign on the platforms
-                                   // that we target (i.e., no hardware trap representations are hit).
+    using is_floating_point_to_integral =
+        std::integral_constant<bool,
+                               std::is_integral<T>::value && std::is_floating_point<U>::value>;
+    if (!details::static_cast_is_defined<T, U>(u, is_floating_point_to_integral{}))
+    {
+        throw narrowing_error{};
+    }
+
+    GSL_SUPPRESS(es.103) // don't overflow
+    GSL_SUPPRESS(es.104) // don't underflow
+    const T t = narrow_cast<T>(u);
 
 #if defined(__clang__) || defined(__GNUC__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wfloat-equal"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
 #endif
     // Note: NaN will always throw, since NaN != NaN
     if (static_cast<U>(t) != u || (is_different_signedness && ((t < T{}) != (u < U{}))))
@@ -57,24 +81,18 @@ GSL_SUPPRESS(p.2) // NO-FORMAT: attribute // don't rely on undefined behavior
         throw narrowing_error{};
     }
 #if defined(__clang__) || defined(__GNUC__)
-    #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #endif
 
     return t;
 }
 
 template <class T, class U, typename std::enable_if<!std::is_arithmetic<T>::value>::type* = nullptr>
-// clang-format off
-GSL_SUPPRESS(type.1) // NO-FORMAT: attribute
-    // clang-format on
-    constexpr T narrow(U u)
+GSL_SUPPRESS(type.1) constexpr T narrow(U u)
 {
     const T t = narrow_cast<T>(u);
 
-    if (static_cast<U>(t) != u)
-    {
-        throw narrowing_error{};
-    }
+    if (static_cast<U>(t) != u) { throw narrowing_error{}; }
 
     return t;
 }

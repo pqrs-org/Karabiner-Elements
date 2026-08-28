@@ -27,6 +27,7 @@ typedef struct {
   const char* title;
   const char* description;
   const char* identifier;
+  const char* window_title;
 
   int32_t has_window_position;
   double window_position_x;
