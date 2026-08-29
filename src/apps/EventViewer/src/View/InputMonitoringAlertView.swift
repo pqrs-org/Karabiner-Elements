@@ -42,7 +42,7 @@ struct InputMonitoringAlertView: View {
 
         Image(decorative: inputMonitoringImage)
           .resizable()
-          .aspectRatio(contentMode: .fit)
+          .scaledToFit()
           .frame(height: 200.0)
           .border(Color.gray, width: 1)
       }
