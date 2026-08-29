@@ -137,6 +137,20 @@ console.log('✅🔥👍')
       expect("✅🔥👍"sv == result.log_messages);
     }
 
+    // CESU-8 conversion is bounded and tolerates malformed Duktape strings.
+    {
+      const std::string fire_cesu8("\xED\xA0\xBD\xED\xB4\xA5", 6);
+      const std::string fire_utf8("\xF0\x9F\x94\xA5", 4);
+      expect(fire_utf8 == pqrs::string::cesu8_to_utf8(fire_cesu8));
+      expect(fire_utf8 == pqrs::string::cesu8_to_utf8(fire_utf8));
+
+      const std::string truncated("\xF0\x9F", 2);
+      expect("�"sv == pqrs::string::cesu8_to_utf8(truncated));
+
+      const std::string unpaired_surrogate("\xED\xA0\xBD", 3);
+      expect("�"sv == pqrs::string::cesu8_to_utf8(unpaired_surrogate));
+    }
+
     // Return value that cannot be converted to JSON.
     {
       auto result = krbn::duktape_utility::eval_string_to_json("undefined");
