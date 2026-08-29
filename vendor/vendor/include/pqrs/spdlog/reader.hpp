@@ -10,8 +10,8 @@
 #include <deque>
 #include <fstream>
 #include <pqrs/gsl.hpp>
+#include <pqrs/string.hpp>
 #include <ranges>
-#include <utf8cpp/utf8.h>
 #include <vector>
 
 namespace pqrs::spdlog::impl {
@@ -33,7 +33,7 @@ public:
   void read_next_line() {
     if (stream_) {
       if (std::getline(stream_, line_)) {
-        line_ = utf8::replace_invalid(line_);
+        line_ = string::replace_invalid_utf8(line_);
 
         sort_key_ = spdlog::make_sort_key(line_);
 
@@ -59,9 +59,9 @@ private:
 } // namespace pqrs::spdlog::impl
 
 namespace pqrs::spdlog {
-[[nodiscard]] inline pqrs::not_null_shared_ptr_t<std::deque<std::string>> read_log_files(const std::vector<::spdlog::filename_t>& target_file_paths,
-                                                                                         size_t max_line_count) {
-  pqrs::not_null_shared_ptr_t<std::deque<std::string>> result(std::make_shared<std::deque<std::string>>());
+[[nodiscard]] inline not_null_shared_ptr_t<std::deque<std::string>> read_log_files(const std::vector<::spdlog::filename_t>& target_file_paths,
+                                                                                   size_t max_line_count) {
+  not_null_shared_ptr_t<std::deque<std::string>> result(std::make_shared<std::deque<std::string>>());
 
   std::vector<not_null_shared_ptr_t<impl::merge_log_file>> files;
   for (const auto& file_path : target_file_paths) {

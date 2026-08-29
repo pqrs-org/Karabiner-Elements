@@ -4,11 +4,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
+#include "impl/utf8.hpp"
 #include <algorithm>
 #include <cctype>
 #include <string>
 #include <string_view>
-#include <utf8cpp/utf8.h>
 
 namespace pqrs::string {
 
@@ -55,7 +55,7 @@ inline void trim(std::string& s) {
 }
 
 inline void trim_invalid_right(std::string& s) {
-  auto pos = utf8::find_invalid(s);
+  auto pos = impl::find_invalid_utf8(s);
   if (pos != std::string::npos) {
     s = s.substr(0, pos);
   }
