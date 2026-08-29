@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::application v2.0.0
+// pqrs::osx::application v2.1.0
 
 // (C) Copyright Takayama Fumihiko 2026.
 // Distributed under the Boost Software License, Version 1.0.
@@ -60,6 +60,9 @@ inline void stop() noexcept {
 
 // The callback is called from NSApplicationDelegate.applicationShouldTerminate.
 // Exceptions are not propagated across the AppKit/Swift boundary; they are treated as terminate_reply::now.
+// This function is not thread-safe. Call it serially from the main thread, and
+// do not call it from the callback itself. To unregister the callback, pass
+// nullptr after run() returns.
 inline void set_should_terminate_callback(std::function<terminate_reply(void)> callback) {
   impl::should_terminate_callback = std::move(callback);
 
