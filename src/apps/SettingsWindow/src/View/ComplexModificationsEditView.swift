@@ -22,9 +22,6 @@ struct ComplexModificationsEditView: View {
   @State private var evalErrorMessage: String?
   @State private var evalContinuation: AsyncStream<String>.Continuation?
   @State private var evalStreamTask: Task<Void, Never>?
-  @State private var hostingWindow: NSWindow?
-  @State private var parentWindow: NSWindow?
-  @State private var previousParentWindowLevel: NSWindow.Level?
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -38,11 +35,6 @@ struct ComplexModificationsEditView: View {
 
             if !disabled {
               HStack(alignment: .center) {
-                if previousParentWindowLevel != nil {
-                  Label(
-                    "This window is pinned after opening in an external editor", systemImage: "pin")
-                }
-
                 Spacer()
 
                 Button(
@@ -256,8 +248,6 @@ struct ComplexModificationsEditView: View {
     }
     .onChange(of: showing) { newValue in
       if !newValue {
-        restoreWindowLevelIfNeeded()
-
         externalEditorController.reset()
         evalContinuation?.finish()
         evalContinuation = nil
@@ -275,17 +265,6 @@ struct ComplexModificationsEditView: View {
     }
     .onChange(of: codeType) { _ in
       evalContinuation?.yield(codeString)
-    }
-    .background(
-      WindowAccessor { window in
-        if hostingWindow !== window {
-          hostingWindow = window
-          updateWindowLevelIfNeeded()
-        }
-      }
-    )
-    .onChange(of: didOpenExternalEditor) { _ in
-      updateWindowLevelIfNeeded()
     }
   }
 
@@ -349,46 +328,5 @@ struct ComplexModificationsEditView: View {
     let errorMessage = ok ? nil : String(utf8String: errorBuffer) ?? ""
 
     return (jsonString, logMessages, errorMessage?.isEmpty == true ? nil : errorMessage)
-  }
-
-  private func updateWindowLevelIfNeeded() {
-    guard didOpenExternalEditor, let window = hostingWindow else { return }
-
-    // This view is shown in a sheet, so prefer adjusting the sheet parent window level.
-    let target = window.sheetParent ?? window
-    if parentWindow !== target {
-      parentWindow = target
-      previousParentWindowLevel = target.level
-    } else if previousParentWindowLevel == nil {
-      previousParentWindowLevel = target.level
-    }
-
-    target.level = .floating
-  }
-
-  private func restoreWindowLevelIfNeeded() {
-    if let target = parentWindow, let previousParentWindowLevel = previousParentWindowLevel {
-      target.level = previousParentWindowLevel
-    }
-    parentWindow = nil
-    previousParentWindowLevel = nil
-  }
-}
-
-private struct WindowAccessor: NSViewRepresentable {
-  let onResolve: (NSWindow?) -> Void
-
-  func makeNSView(context _: Context) -> NSView {
-    let view = NSView()
-    Task { @MainActor in
-      onResolve(view.window)
-    }
-    return view
-  }
-
-  func updateNSView(_ nsView: NSView, context _: Context) {
-    Task { @MainActor in
-      onResolve(nsView.window)
-    }
   }
 }
