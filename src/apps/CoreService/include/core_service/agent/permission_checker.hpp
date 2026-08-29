@@ -7,6 +7,7 @@
 #include "types/core_service_permission_check_result.hpp"
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <fstream>
+#include <mutex>
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
 #include <optional>
@@ -148,25 +149,19 @@ private:
   }
 
   static void prompt_accessibility_permission_once() {
-    static bool prompted = false;
+    static std::once_flag once;
 
-    if (prompted) {
-      return;
-    }
-
-    prompted = true;
-    pqrs::osx::accessibility::is_process_trusted_with_prompt();
+    std::call_once(once, [] {
+      pqrs::osx::accessibility::is_process_trusted_with_prompt();
+    });
   }
 
   static void prompt_input_monitoring_permission_once() {
-    static bool prompted = false;
+    static std::once_flag once;
 
-    if (prompted) {
-      return;
-    }
-
-    prompted = true;
-    IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
+    std::call_once(once, [] {
+      IOHIDRequestAccess(kIOHIDRequestTypeListenEvent);
+    });
   }
 
   std::optional<bool> on_console_;
