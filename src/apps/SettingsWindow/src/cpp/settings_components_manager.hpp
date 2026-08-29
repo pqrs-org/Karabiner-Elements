@@ -7,6 +7,7 @@
 #include "settings_core_service_daemon_client.hpp"
 #include "settings_log_monitor.hpp"
 #include <atomic>
+#include <mutex>
 #include <unistd.h>
 
 class settings_components_manager {
@@ -34,6 +35,19 @@ public:
         console_user_server_client_(geteuid(),
                                     callbacks.console_user_server_client_status_changed,
                                     callbacks.settings_window_guidance_received) {
+  }
+
+  ~settings_components_manager() {
+    unregister_callbacks_and_detach();
+  }
+
+  void unregister_callbacks_and_detach() {
+    std::call_once(unregister_callbacks_and_detach_once_, [this] {
+      core_service_daemon_client_.unregister_callbacks_and_detach();
+      console_user_server_client_.unregister_callbacks_and_detach();
+      configuration_monitor_.unregister_callbacks_and_detach();
+      log_monitor_.unregister_callbacks_and_detach();
+    });
   }
 
   void async_start() {
@@ -105,4 +119,5 @@ private:
   settings_core_service_daemon_client core_service_daemon_client_;
   settings_console_user_server_client console_user_server_client_;
   std::atomic<bool> core_configuration_save_pending_{false};
+  std::once_flag unregister_callbacks_and_detach_once_;
 };

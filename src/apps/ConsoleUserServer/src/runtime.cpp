@@ -13,6 +13,7 @@
 #include "services_utility.hpp"
 #include "update_utility.hpp"
 #include <pqrs/filesystem.hpp>
+#include <utility>
 
 namespace {
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager;
@@ -128,8 +129,19 @@ void console_user_server_finalize(void) {
   // Cleanup
   //
 
+  // Stop new Swift C API calls from retrieving ui_bridge_instance while a
+  // local shared_ptr keeps it alive for explicit cleanup.
+  auto ui_bridge = std::move(ui_bridge_instance);
+
   krbn::process_lifecycle_manager::terminate_shared_instance();
-  ui_bridge_instance = nullptr;
+
+  if (ui_bridge) {
+    // The process_lifecycle_manager's component factory also owns a shared_ptr
+    // to ui_bridge. Stop Swift callbacks explicitly instead of relying on the
+    // last shared_ptr to run the destructor before the dispatchers are reset.
+    ui_bridge->unregister_callbacks_and_detach();
+  }
+
   scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;
   krbn::logger::get_logger()->info("karabiner_console_user_server is terminated.");

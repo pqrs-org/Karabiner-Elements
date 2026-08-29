@@ -8,6 +8,7 @@
 #include "types.hpp"
 #include <filesystem>
 #include <functional>
+#include <mutex>
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/iokit_types.hpp>
@@ -37,8 +38,24 @@ public:
   }
 
   ~core_service_daemon_client() override {
-    detach_from_dispatcher([this] {
-      stop();
+    unregister_callbacks_and_detach();
+  }
+
+  // Stop callbacks and dispatcher activity at the owner's lifecycle boundary.
+  //
+  // Do not rely only on the destructor for this cleanup. A caller can hold a
+  // temporary shared_ptr after the owner releases its reference, which would
+  // otherwise leave callbacks that capture the owner alive.
+  void unregister_callbacks_and_detach() {
+    std::call_once(unregister_callbacks_and_detach_once_, [this] {
+      detach_from_dispatcher([this] {
+        connected.disconnect_all_slots();
+        connect_failed.disconnect_all_slots();
+        closed.disconnect_all_slots();
+        received.disconnect_all_slots();
+
+        stop();
+      });
     });
   }
 
@@ -379,5 +396,6 @@ private:
   }
 
   std::unique_ptr<pqrs::unix_domain_stream::client> client_;
+  std::once_flag unregister_callbacks_and_detach_once_;
 };
 } // namespace krbn

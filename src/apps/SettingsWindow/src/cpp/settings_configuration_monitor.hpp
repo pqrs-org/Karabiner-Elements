@@ -21,8 +21,14 @@ public:
   }
 
   ~settings_configuration_monitor() override {
-    detach_from_dispatcher([this] {
-      stop();
+    unregister_callbacks_and_detach();
+  }
+
+  void unregister_callbacks_and_detach() {
+    std::call_once(unregister_callbacks_and_detach_once_, [this] {
+      detach_from_dispatcher([this] {
+        stop();
+      });
     });
   }
 
@@ -99,4 +105,5 @@ private:
   std::weak_ptr<krbn::core_configuration::core_configuration> weak_core_configuration_;
   const krbn_core_configuration_updated_t callback_;
   const krbn_core_configuration_load_state_changed_t load_state_changed_callback_;
+  std::once_flag unregister_callbacks_and_detach_once_;
 };

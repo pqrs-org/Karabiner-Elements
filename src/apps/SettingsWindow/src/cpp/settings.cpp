@@ -41,8 +41,14 @@ public:
 
   ~settings_process_lifecycle_components_manager() override {
     detach_from_dispatcher([this] {
-      components_manager_->sync_save_core_configuration_if_pending();
+      // Prevent new Swift C API calls from acquiring the manager, then perform
+      // lifecycle cleanup explicitly while this owner keeps it alive. A C API
+      // call that locked the weak_ptr just before this point may otherwise make
+      // its destructor run after components_manager_stopped_callback_.
       settings_cpp::set_components_manager(std::weak_ptr<settings_components_manager>());
+
+      components_manager_->sync_save_core_configuration_if_pending();
+      components_manager_->unregister_callbacks_and_detach();
       components_manager_ = nullptr;
       components_manager_stopped_callback_();
     });

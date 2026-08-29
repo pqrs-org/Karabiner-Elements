@@ -11,6 +11,7 @@
 #include <atomic>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/hitoolbox/secure_event_input_monitor.hpp>
@@ -194,14 +195,20 @@ public:
   }
 
   ~hid_value_monitor() override {
-    detach_from_dispatcher([this] {
-      hid_manager_ = nullptr;
+    unregister_callbacks_and_detach();
+  }
 
-      hid_device_events_monitors_.clear();
+  void unregister_callbacks_and_detach() {
+    std::call_once(unregister_callbacks_and_detach_once_, [this] {
+      detach_from_dispatcher([this] {
+        hid_manager_ = nullptr;
 
-      if (auto callback = hid_value_monitor_stopped_callback.load()) {
-        callback();
-      }
+        hid_device_events_monitors_.clear();
+
+        if (auto callback = hid_value_monitor_stopped_callback.load()) {
+          callback();
+        }
+      });
     });
   }
 
@@ -307,6 +314,7 @@ private:
   bool capture_active_ = false;
   std::optional<krbn::device_id> capture_device_id_;
   std::function<void()> capture_target_ready_callback_;
+  std::once_flag unregister_callbacks_and_detach_once_;
 };
 
 std::shared_ptr<hid_value_monitor> global_hid_value_monitor;
@@ -403,12 +411,26 @@ public:
 
   ~components_manager() override {
     detach_from_dispatcher([this] {
+      // Stop new C API calls from acquiring these objects first. Keep the
+      // member shared_ptr instances alive until their callbacks and dispatcher
+      // activity have been stopped explicitly.
       std::atomic_store(&core_service_daemon_client,
                         std::shared_ptr<krbn::core_service_daemon_client>());
       std::atomic_store(&console_user_server_client,
                         std::shared_ptr<krbn::console_user_server_client>());
       std::atomic_store(&global_hid_value_monitor,
                         std::shared_ptr<hid_value_monitor>());
+
+      if (core_service_daemon_client_) {
+        core_service_daemon_client_->unregister_callbacks_and_detach();
+      }
+      if (console_user_server_client_) {
+        console_user_server_client_->unregister_callbacks_and_detach();
+      }
+      if (hid_value_monitor_) {
+        hid_value_monitor_->unregister_callbacks_and_detach();
+      }
+
       core_service_daemon_client_ = nullptr;
       console_user_server_client_ = nullptr;
       hid_value_monitor_ = nullptr;

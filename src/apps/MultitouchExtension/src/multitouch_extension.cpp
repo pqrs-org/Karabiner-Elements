@@ -42,8 +42,15 @@ public:
 
   ~components_manager() override {
     detach_from_dispatcher([this] {
+      // Stop new C API calls from acquiring the client before disconnecting
+      // callbacks that capture this components_manager.
       std::atomic_store(&core_service_daemon_client,
                         std::shared_ptr<krbn::core_service_daemon_client>());
+
+      if (client_) {
+        client_->unregister_callbacks_and_detach();
+      }
+
       client_ = nullptr;
       notify_connected_changed(false);
     });

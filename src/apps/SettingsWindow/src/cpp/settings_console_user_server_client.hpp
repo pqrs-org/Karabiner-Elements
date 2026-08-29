@@ -5,6 +5,7 @@
 #include <atomic>
 #include <chrono>
 #include <memory>
+#include <mutex>
 
 class settings_console_user_server_client final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
@@ -23,8 +24,24 @@ public:
   }
 
   ~settings_console_user_server_client() override {
-    detach_from_dispatcher([this] {
-      stop();
+    unregister_callbacks_and_detach();
+  }
+
+  void unregister_callbacks_and_detach() {
+    std::call_once(unregister_callbacks_and_detach_once_, [this] {
+      detach_from_dispatcher([this] {
+        settings_window_guidance_timer_.stop();
+
+        auto client = std::atomic_load(&console_user_server_client_);
+        std::atomic_store(&console_user_server_client_,
+                          std::shared_ptr<krbn::console_user_server_client>());
+
+        if (client) {
+          client->unregister_callbacks_and_detach();
+        }
+
+        connected_.store(false);
+      });
     });
   }
 
@@ -112,4 +129,5 @@ private:
   const krbn_console_user_server_client_status_changed_t status_changed_callback_;
   const krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback_;
   pqrs::dispatcher::extra::timer settings_window_guidance_timer_;
+  std::once_flag unregister_callbacks_and_detach_once_;
 };

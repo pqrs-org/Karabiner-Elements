@@ -18,7 +18,19 @@ public:
   }
 
   ~ui_bridge() override {
-    detach_from_dispatcher();
+    unregister_callbacks_and_detach();
+  }
+
+  void unregister_callbacks_and_detach() {
+    std::call_once(unregister_callbacks_and_detach_once_, [this] {
+      detach_from_dispatcher([this] {
+        profile_selection_requested.disconnect_all_slots();
+
+        std::lock_guard<std::mutex> lock(mutex_);
+        ui_state_callback_ = nullptr;
+        notification_message_callback_ = nullptr;
+      });
+    });
   }
 
   void register_ui_state_callback(string_callback callback) {
@@ -73,5 +85,6 @@ private:
   std::string notification_message_;
   string_callback ui_state_callback_ = nullptr;
   string_callback notification_message_callback_ = nullptr;
+  std::once_flag unregister_callbacks_and_detach_once_;
 };
 } // namespace krbn::console_user_server

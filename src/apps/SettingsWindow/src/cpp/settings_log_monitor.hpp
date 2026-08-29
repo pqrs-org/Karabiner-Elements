@@ -4,6 +4,7 @@
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "settings.hpp"
+#include <mutex>
 #include <pqrs/spdlog.hpp>
 #include <set>
 #include <tuple>
@@ -19,8 +20,14 @@ public:
   }
 
   ~settings_log_monitor() override {
-    detach_from_dispatcher([this] {
-      stop();
+    unregister_callbacks_and_detach();
+  }
+
+  void unregister_callbacks_and_detach() {
+    std::call_once(unregister_callbacks_and_detach_once_, [this] {
+      detach_from_dispatcher([this] {
+        stop();
+      });
     });
   }
 
@@ -107,4 +114,5 @@ private:
   std::unique_ptr<pqrs::spdlog::monitor> monitor_;
   std::shared_ptr<std::deque<std::string>> lines_;
   const krbn_log_messages_updated_t callback_;
+  std::once_flag unregister_callbacks_and_detach_once_;
 };

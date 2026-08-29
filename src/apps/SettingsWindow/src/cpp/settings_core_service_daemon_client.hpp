@@ -6,6 +6,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <utility>
 
 class settings_core_service_daemon_client final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -24,8 +25,22 @@ public:
   }
 
   ~settings_core_service_daemon_client() override {
-    detach_from_dispatcher([this] {
-      stop();
+    unregister_callbacks_and_detach();
+  }
+
+  void unregister_callbacks_and_detach() {
+    std::call_once(unregister_callbacks_and_detach_once_, [this] {
+      detach_from_dispatcher([this] {
+        system_variables_timer_.stop();
+
+        auto client = std::atomic_load(&core_service_daemon_client_);
+        std::atomic_store(&core_service_daemon_client_,
+                          std::shared_ptr<krbn::core_service_daemon_client>());
+
+        if (client) {
+          client->unregister_callbacks_and_detach();
+        }
+      });
     });
   }
 
@@ -127,4 +142,5 @@ private:
   const krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received_callback_;
   const krbn_core_service_daemon_client_system_variables_received_t system_variables_received_callback_;
   pqrs::dispatcher::extra::timer system_variables_timer_;
+  std::once_flag unregister_callbacks_and_detach_once_;
 };
