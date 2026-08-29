@@ -41,7 +41,7 @@ struct SetupDriverExtensionView: View {
 
           Image(decorative: driverExtensionsImage)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .frame(height: 300)
             .border(Color.gray, width: 1)
 

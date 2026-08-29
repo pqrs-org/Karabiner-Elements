@@ -44,7 +44,7 @@ struct SetupServicesView: View {
 
           Image(decorative: loginItemsImage)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .border(Color.gray, width: 1)
 
           VStack(alignment: .leading, spacing: 0.0) {

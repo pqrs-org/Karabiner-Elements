@@ -34,7 +34,7 @@ struct SetupAccessibilityView: View {
 
       Image(decorative: accessibilityImage)
         .resizable()
-        .aspectRatio(contentMode: .fit)
+        .scaledToFit()
         .border(Color.gray, width: 1)
     }
   }

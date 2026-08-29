@@ -136,7 +136,7 @@ struct UIView: View {
 
               Image(decorative: "notification-window")
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .frame(height: 50)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
@@ -162,21 +162,21 @@ struct UIView: View {
                   if let image = appIcon.karabinerElementsThumbnailImage {
                     Image(nsImage: image)
                       .resizable()
-                      .aspectRatio(contentMode: .fit)
+                      .scaledToFit()
                       .frame(width: 64.0, height: 64.0)
                   }
 
                   if let image = appIcon.eventViewerThumbnailImage {
                     Image(nsImage: image)
                       .resizable()
-                      .aspectRatio(contentMode: .fit)
+                      .scaledToFit()
                       .frame(width: 64.0, height: 64.0)
                   }
 
                   if let image = appIcon.multitouchExtensionThumbnailImage {
                     Image(nsImage: image)
                       .resizable()
-                      .aspectRatio(contentMode: .fit)
+                      .scaledToFit()
                       .frame(width: 64.0, height: 64.0)
                   }
                 }

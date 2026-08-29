@@ -34,7 +34,7 @@ struct SetupInputMonitoringView: View {
 
       Image(decorative: inputMonitoringImage)
         .resizable()
-        .aspectRatio(contentMode: .fit)
+        .scaledToFit()
         .border(Color.gray, width: 1)
     }
   }

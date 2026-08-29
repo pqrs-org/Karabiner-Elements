@@ -16,7 +16,7 @@ struct NotificationView: View {
       if state.notificationWindowSettings.showIcon {
         Image(nsImage: applicationIcon)
           .resizable()
-          .aspectRatio(contentMode: .fit)
+          .scaledToFit()
           .frame(width: iconWidth, height: iconWidth)
       }
       Text(state.notificationMessage)

@@ -32,7 +32,7 @@ struct SetupDriverExtensionViewMacOS14: View {
 
           Image(decorative: "dext-allow-macos14")
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .frame(height: 300)
             .border(Color.gray, width: 1)
 
