@@ -4,6 +4,16 @@ import SwiftUI
 final class ContentViewStates: ObservableObject {
   static let shared = ContentViewStates()
 
+  @Published private(set) var toast: SettingsToast?
+
+  func showToast(_ message: String) {
+    toast = SettingsToast(message: message)
+  }
+
+  func dismissToast() {
+    toast = nil
+  }
+
   //
   // Alerts
   //

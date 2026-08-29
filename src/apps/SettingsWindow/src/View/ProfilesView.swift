@@ -140,7 +140,14 @@ struct ProfilesView: View {
       .background(Color(NSColor.textBackgroundColor))
     }
     .sheet(isPresented: $showingSheet) {
-      ProfileEditView(profile: $editingProfile, showing: $showingSheet)
+      ProfileEditView(
+        profile: $editingProfile,
+        showing: $showingSheet,
+        onEditingCancelledByExternalChange: {
+          ContentViewStates.shared.showToast(
+            "The editor was closed because the profile changed."
+          )
+        })
     }
   }
 }

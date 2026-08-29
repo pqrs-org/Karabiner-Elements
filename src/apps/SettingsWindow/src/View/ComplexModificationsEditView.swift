@@ -6,12 +6,14 @@ import SwiftUI
 struct ComplexModificationsEditView: View {
   @Binding var rule: SettingsConfiguration.ComplexModificationsRule?
   @Binding var showing: Bool
+  let onEditingCancelledByExternalChange: () -> Void
   @State private var description = ""
   @State private var disabled = true
   @State private var codeString = ""
   @State private var codeType = SettingsConfiguration.ComplexModificationsRule.CodeType.json
   @State private var errorMessage: String?
-  @State private var expectedConfigurationGeneration: UInt64?
+  @State private var expectedProfileIndex: Int?
+  @State private var expectedRules: [SettingsConfiguration.ComplexModificationsRule]?
   @StateObject private var externalEditorController = ExternalEditorController.shared
   @State private var didOpenExternalEditor = false
   @ObservedObject private var settings = Settings.shared
@@ -206,7 +208,8 @@ struct ComplexModificationsEditView: View {
       }
 
       codeType = rule?.codeType ?? .json
-      expectedConfigurationGeneration = settings.configurationGeneration
+      expectedProfileIndex = selectedProfileIndex
+      expectedRules = rules
 
       externalEditorController.reset()
 
@@ -266,11 +269,14 @@ struct ComplexModificationsEditView: View {
     .onChange(of: codeType) { _ in
       evalContinuation?.yield(codeString)
     }
+    .onChange(of: monitoredConfiguration) { _ in
+      cancelEditingIfTargetChangedExternally()
+    }
   }
 
   private func save() -> Bool {
-    guard expectedConfigurationGeneration == settings.configurationGeneration else {
-      errorMessage = "The configuration has changed. Close this editor and try again."
+    guard editingTargetIsCurrent() else {
+      cancelEditingIfTargetChangedExternally()
       return false
     }
 
@@ -279,11 +285,7 @@ struct ComplexModificationsEditView: View {
         codeString: codeString,
         codeType: codeType)
       if errorMessage == nil {
-        // Set index to call replaceComplexModificationsRule on the next save.
-        rule!.index = 0
-        // The Settings update synchronously reloads the snapshot and may advance its generation.
-        // Follow that generation so the next save from the external editor remains valid.
-        expectedConfigurationGeneration = settings.configurationGeneration
+        updateEditedRuleAfterSave(index: 0)
         return true
       }
     } else {
@@ -292,14 +294,71 @@ struct ComplexModificationsEditView: View {
         codeString: codeString,
         codeType: codeType)
       if errorMessage == nil {
-        // The Settings update synchronously reloads the snapshot and may advance its generation.
-        // Follow that generation so the next save from the external editor remains valid.
-        expectedConfigurationGeneration = settings.configurationGeneration
+        updateEditedRuleAfterSave(index: rule!.index)
         return true
       }
     }
 
     return false
+  }
+
+  private var selectedProfileIndex: Int? {
+    settings.configuration.profiles.first { $0.selected }?.index
+  }
+
+  private var rules: [SettingsConfiguration.ComplexModificationsRule] {
+    settings.configuration.selectedProfile.complexModifications.rules
+  }
+
+  private var monitoredConfiguration: MonitoredComplexModificationsConfiguration {
+    MonitoredComplexModificationsConfiguration(
+      selectedProfileIndex: selectedProfileIndex,
+      rules: rules)
+  }
+
+  // A rule index is scoped to the selected profile and may become stale if the profile is changed
+  // from the menu while this editor is open. The rule may also be moved, replaced, or removed by
+  // directly editing karabiner.json. Dismiss the editor as soon as one of those changes is detected
+  // so it cannot overwrite a different rule. Unrelated configuration changes remain safe.
+  private func editingTargetIsCurrent() -> Bool {
+    guard
+      let expectedProfileIndex,
+      expectedProfileIndex == selectedProfileIndex,
+      let editedRule = rule
+    else {
+      return false
+    }
+
+    if editedRule.index < 0 {
+      return expectedRules == rules
+    }
+
+    guard
+      rules.indices.contains(editedRule.index),
+      rules[editedRule.index] == editedRule
+    else {
+      return false
+    }
+
+    return true
+  }
+
+  private func cancelEditingIfTargetChangedExternally() {
+    guard showing, !editingTargetIsCurrent() else {
+      return
+    }
+
+    showing = false
+    onEditingCancelledByExternalChange()
+  }
+
+  private func updateEditedRuleAfterSave(index: Int) {
+    if rules.indices.contains(index) {
+      rule = rules[index]
+    } else {
+      rule?.index = index
+    }
+    expectedRules = rules
   }
 
   private func evaluateJavascript(code: String) -> (
@@ -329,4 +388,9 @@ struct ComplexModificationsEditView: View {
 
     return (jsonString, logMessages, errorMessage?.isEmpty == true ? nil : errorMessage)
   }
+}
+
+private struct MonitoredComplexModificationsConfiguration: Equatable {
+  let selectedProfileIndex: Int?
+  let rules: [SettingsConfiguration.ComplexModificationsRule]
 }

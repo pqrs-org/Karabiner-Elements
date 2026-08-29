@@ -106,7 +106,7 @@ struct SettingsConfiguration: Decodable {
     }
   }
 
-  struct ComplexModificationsRule: Decodable, Identifiable {
+  struct ComplexModificationsRule: Decodable, Identifiable, Equatable {
     enum CodeType: String, Decodable {
       case json
       case javascript

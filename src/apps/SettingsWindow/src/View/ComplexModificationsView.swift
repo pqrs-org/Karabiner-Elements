@@ -259,7 +259,14 @@ struct ComplexModificationsView: View {
       }
     }
     .sheet(isPresented: $showingEditSheet) {
-      ComplexModificationsEditView(rule: $editingRule, showing: $showingEditSheet)
+      ComplexModificationsEditView(
+        rule: $editingRule,
+        showing: $showingEditSheet,
+        onEditingCancelledByExternalChange: {
+          contentViewStates.showToast(
+            "The editor was closed because the selected profile or Complex Modifications rules changed."
+          )
+        })
     }
   }
 }

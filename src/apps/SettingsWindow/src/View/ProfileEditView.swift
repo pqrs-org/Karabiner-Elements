@@ -3,9 +3,8 @@ import SwiftUI
 struct ProfileEditView: View {
   @Binding var profile: SettingsConfiguration.Profile?
   @Binding var showing: Bool
+  let onEditingCancelledByExternalChange: () -> Void
   @State private var name = ""
-  @State private var expectedConfigurationGeneration: UInt64?
-  @State private var errorMessage: String?
   @ObservedObject private var settings = Settings.shared
 
   var body: some View {
@@ -18,11 +17,6 @@ struct ProfileEditView: View {
               .onSubmit {
                 save()
               }
-          }
-
-          if let errorMessage {
-            Label(errorMessage, systemImage: ErrorBorder.icon)
-              .modifier(ErrorBorder())
           }
 
           HStack(alignment: .center) {
@@ -56,17 +50,62 @@ struct ProfileEditView: View {
     .frame(width: 400)
     .onAppear {
       name = profile?.name ?? ""
-      expectedConfigurationGeneration = settings.configurationGeneration
+    }
+    .onChange(of: monitoredProfiles) { _ in
+      cancelEditingIfProfileChangedExternally()
     }
   }
 
   private func save() {
-    guard expectedConfigurationGeneration == settings.configurationGeneration else {
-      errorMessage = "The configuration has changed. Close this editor and try again."
+    guard profileIsCurrent() else {
+      cancelEditingIfProfileChangedExternally()
       return
     }
 
     settings.updateProfileName(profile!, name)
     showing = false
+  }
+
+  private var monitoredProfiles: [MonitoredProfile] {
+    settings.configuration.profiles.map { MonitoredProfile($0) }
+  }
+
+  // A profile index may point to a different profile after karabiner.json is edited directly.
+  // Compare the profile captured when this editor opened with the current profile at that index so
+  // the editor can be dismissed before renaming a different profile. A selection change is also
+  // detected when it affects the profile being edited.
+  private func profileIsCurrent() -> Bool {
+    guard
+      let editedProfile = profile,
+      settings.configuration.profiles.indices.contains(editedProfile.index)
+    else {
+      return false
+    }
+
+    let currentProfile = settings.configuration.profiles[editedProfile.index]
+    return currentProfile.index == editedProfile.index
+      && currentProfile.name == editedProfile.name
+      && currentProfile.selected == editedProfile.selected
+  }
+
+  private func cancelEditingIfProfileChangedExternally() {
+    guard showing, !profileIsCurrent() else {
+      return
+    }
+
+    showing = false
+    onEditingCancelledByExternalChange()
+  }
+}
+
+private struct MonitoredProfile: Equatable {
+  let index: Int
+  let name: String
+  let selected: Bool
+
+  init(_ profile: SettingsConfiguration.Profile) {
+    index = profile.index
+    name = profile.name
+    selected = profile.selected
   }
 }

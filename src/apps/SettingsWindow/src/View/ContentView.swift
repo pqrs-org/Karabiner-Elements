@@ -12,7 +12,7 @@ struct ContentView: View {
   }
 
   var body: some View {
-    ZStack {
+    ZStack(alignment: .top) {
       if karabinerJsonPermissionError {
         KarabinerJsonPermissionErrorView()
       } else if settings.configurationLoaded {
@@ -50,7 +50,17 @@ struct ContentView: View {
       } else {
         ProgressView()
       }
+
+      if let toast = contentViewStates.toast {
+        ToastView(toast: toast) {
+          contentViewStates.dismissToast()
+        }
+        .padding(.top, 16)
+        .transition(.move(edge: .top).combined(with: .opacity))
+        .zIndex(1)
+      }
     }
+    .animation(.easeInOut(duration: 0.2), value: contentViewStates.toast)
     .frame(
       minWidth: 1100,
       maxWidth: .infinity,
