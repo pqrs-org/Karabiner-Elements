@@ -724,6 +724,14 @@ private:
 
       device_grabber_->async_post_set_variable_event(
           manipulator_environment_variable_set_variable(
+              "accessibility.focused_ui_element.window_title_string",
+              manipulator_environment_variable_value(focused_ui_element_.get_window_title().value_or("")),
+              nullptr,
+              std::nullopt,
+              nullptr));
+
+      device_grabber_->async_post_set_variable_event(
+          manipulator_environment_variable_set_variable(
               "accessibility.focused_ui_element.window_position_x",
               manipulator_environment_variable_value(
                   static_cast<int64_t>(focused_ui_element_.get_window_position_x().value_or(0))),

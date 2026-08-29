@@ -1,5 +1,6 @@
 #include "device_identifiers_test.hpp"
 #include "errors_test.hpp"
+#include "focused_ui_element_test.hpp"
 #include "grabbable_state_test.hpp"
 #include "manipulator_environment_variable_set_variable_test.hpp"
 #include "manipulator_environment_variable_value_test.hpp"
@@ -15,6 +16,7 @@
 int main() {
   run_device_identifiers_test();
   run_errors_test();
+  run_focused_ui_element_test();
   run_grabbable_state_test();
   run_manipulator_environment_variable_set_variable_test();
   run_manipulator_environment_variable_value_test();

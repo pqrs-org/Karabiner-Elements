@@ -37,6 +37,15 @@ public:
     return *this;
   }
 
+  [[nodiscard]] const std::optional<std::string>& get_window_title() const {
+    return window_title_;
+  }
+
+  focused_ui_element& set_window_title(const std::optional<std::string>& value) {
+    window_title_ = value;
+    return *this;
+  }
+
   [[nodiscard]] const std::optional<double>& get_window_position_x() const {
     return window_position_x_;
   }
@@ -79,6 +88,7 @@ private:
   std::optional<std::string> role_;
   std::optional<std::string> subrole_;
   std::optional<std::string> title_;
+  std::optional<std::string> window_title_;
   std::optional<double> window_position_x_;
   std::optional<double> window_position_y_;
   std::optional<double> window_size_width_;
@@ -98,6 +108,10 @@ inline void to_json(nlohmann::json& j, const focused_ui_element& s) {
 
   if (auto& v = s.get_title()) {
     j["title"] = *v;
+  }
+
+  if (auto& v = s.get_window_title()) {
+    j["window_title"] = *v;
   }
 
   if (auto& v = s.get_window_position_x()) {
@@ -137,6 +151,11 @@ inline void from_json(const nlohmann::json& j, focused_ui_element& s) {
       pqrs::json::requires_string(value, "`"s + key + "`");
 
       s.set_title(value.get<std::string>());
+
+    } else if (key == "window_title") {
+      pqrs::json::requires_string(value, "`"s + key + "`");
+
+      s.set_window_title(value.get<std::string>());
 
     } else if (key == "window_position_x") {
       pqrs::json::requires_number(value, "`"s + key + "`");
