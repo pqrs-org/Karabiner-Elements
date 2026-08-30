@@ -10,6 +10,9 @@ struct ContentView: View {
   var body: some View {
     ZStack {
       ContentMainView()
+        // Disable the underlying controls to remove focus from the test input field while the Input
+        // Monitoring alert is shown. Keep them enabled for the Secure Keyboard Entry warning so the
+        // current focus is preserved.
         .disabled(inputMonitoringAlertData.showing)
 
       if inputMonitoringAlertData.showing {
