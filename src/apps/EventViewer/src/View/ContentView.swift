@@ -10,6 +10,7 @@ struct ContentView: View {
   var body: some View {
     ZStack {
       ContentMainView()
+        .disabled(inputMonitoringAlertData.showing)
 
       if inputMonitoringAlertData.showing {
         OverlayAlertView {

@@ -3,7 +3,6 @@ import SwiftUI
 struct CaptureInputEventsView: View {
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var eventHistory = EventHistory.shared
-  @ObservedObject private var inputMonitoringAlertData = InputMonitoringAlertData.shared
   @State private var captureSession: CaptureCoordinator.Session?
   @State private var testInput = ""
   @FocusState private var testInputFocused: Bool
@@ -51,13 +50,6 @@ struct CaptureInputEventsView: View {
         self.captureSession = nil
       }
     }
-    .onChange(of: inputMonitoringAlertData.showing) { showing in
-      if showing {
-        testInputFocused = false
-      } else {
-        focusTestInput()
-      }
-    }
   }
 
   private var emptyMessage: String {
@@ -71,9 +63,6 @@ struct CaptureInputEventsView: View {
     Task { @MainActor in
       // Give SwiftUI a chance to install the text field before requesting focus.
       await Task.yield()
-      guard !inputMonitoringAlertData.showing else {
-        return
-      }
       testInputFocused = true
     }
   }
