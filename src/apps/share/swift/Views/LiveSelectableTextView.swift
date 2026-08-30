@@ -275,6 +275,34 @@ private struct AppKitTextView: NSViewRepresentable {
 }
 
 private final class AppKitLiveSelectableTextView: NSTextView {
+  // Opening the find bar requires an NSTextView that is attached to a window. Use the AppKit
+  // lifecycle instead of SwiftUI's onAppear so that the window is available without bridging the
+  // NSTextView back into SwiftUI.
+  override func viewDidMoveToWindow() {
+    super.viewDidMoveToWindow()
+
+    guard window != nil else {
+      return
+    }
+
+    DispatchQueue.main.async { [weak self] in
+      guard let self, self.window != nil else {
+        return
+      }
+
+      // The find bar is opened automatically rather than by an explicit user action, so it should
+      // not inherit the previous query from the shared Find pasteboard. Clear it before showing the
+      // bar so that the search field starts empty.
+      let findPasteboard = NSPasteboard(name: .find)
+      findPasteboard.clearContents()
+      findPasteboard.setString("", forType: .string)
+
+      let menuItem = NSMenuItem()
+      menuItem.tag = Int(NSFindPanelAction.showFindPanel.rawValue)
+      self.performFindPanelAction(menuItem)
+    }
+  }
+
   override func keyDown(with event: NSEvent) {
     let modifiers = event.modifierFlags
       .intersection(.deviceIndependentFlagsMask)
