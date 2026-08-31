@@ -66,6 +66,7 @@ namespace details {
     pqrs::hid::product_id::value_t product_id) noexcept {
   return vendor_id == pqrs::hid::vendor_id::value_t(0x056e) &&    // Elecom Co., Ltd.
          (product_id == pqrs::hid::product_id::value_t(0x00fe) || // M-DT1URBK or M-DT2URBK DEFT TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x010c) || // Elecom TrackBall Mouse (Wired)
           product_id == pqrs::hid::product_id::value_t(0x01aa) || // M-HT1MRBK HUGE PLUS TrackBall
           product_id == pqrs::hid::product_id::value_t(0x01ab) || // M-HT1MRBK HUGE PLUS TrackBall
           product_id == pqrs::hid::product_id::value_t(0x01ac));  // M-HT1MRBK HUGE PLUS TrackBall
