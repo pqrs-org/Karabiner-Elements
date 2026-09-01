@@ -113,6 +113,9 @@ int main() {
   "identify target devices"_test = [] {
     for (auto product_id : {
              pqrs::hid::product_id::value_t(0x00fe),
+             pqrs::hid::product_id::value_t(0x010c),
+             pqrs::hid::product_id::value_t(0x010d),
+             pqrs::hid::product_id::value_t(0x011c),
              pqrs::hid::product_id::value_t(0x01aa),
              pqrs::hid::product_id::value_t(0x01ab),
              pqrs::hid::product_id::value_t(0x01ac),

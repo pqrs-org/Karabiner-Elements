@@ -1,5 +1,10 @@
 # Changelog
 
+## Beta
+
+- ⚡️ Improvements
+    - Added support for buttons 6–8 on the ELECOM HUGE trackballs. (Thanks to @BenjaminVanRyseghem)
+
 ## Karabiner-Elements 16.2.0
 
 - [📦 Download](https://github.com/pqrs-org/Karabiner-Elements/releases/download/v16.2.0/Karabiner-Elements-16.2.0.dmg)
