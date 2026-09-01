@@ -9,6 +9,62 @@
 #include <pqrs/osx/cg_event.hpp>
 
 namespace krbn {
+namespace event_tap_utility_details {
+[[nodiscard]] inline std::optional<event_type> get_modifier_event_type(const event_queue::event& event,
+                                                                       CGEventFlags flags) {
+  auto m = event.get_if<momentary_switch_event>();
+  if (!m) {
+    return std::nullopt;
+  }
+
+  auto usage_pair = m->get_usage_pair();
+  auto usage_page = usage_pair.get_usage_page();
+  auto usage = usage_pair.get_usage();
+
+  if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad) {
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift) {
+      return (flags & NX_DEVICELSHIFTKEYMASK) ? event_type::key_down : event_type::key_up;
+    }
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_shift) {
+      return (flags & NX_DEVICERSHIFTKEYMASK) ? event_type::key_down : event_type::key_up;
+    }
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control) {
+      return (flags & NX_DEVICELCTLKEYMASK) ? event_type::key_down : event_type::key_up;
+    }
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_control) {
+      return (flags & NX_DEVICERCTLKEYMASK) ? event_type::key_down : event_type::key_up;
+    }
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_alt) {
+      return (flags & NX_DEVICELALTKEYMASK) ? event_type::key_down : event_type::key_up;
+    }
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt) {
+      return (flags & NX_DEVICERALTKEYMASK) ? event_type::key_down : event_type::key_up;
+    }
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui) {
+      return (flags & NX_DEVICELCMDKEYMASK) ? event_type::key_down : event_type::key_up;
+    }
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_gui) {
+      return (flags & NX_DEVICERCMDKEYMASK) ? event_type::key_down : event_type::key_up;
+    }
+    if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock) {
+      return (flags & kCGEventFlagMaskAlphaShift) ? event_type::key_down : event_type::key_up;
+    }
+  }
+
+  if (usage_page == pqrs::hid::usage_page::apple_vendor_top_case &&
+      usage == pqrs::hid::usage::apple_vendor_top_case::keyboard_fn) {
+    return (flags & kCGEventFlagMaskSecondaryFn) ? event_type::key_down : event_type::key_up;
+  }
+
+  if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard &&
+      usage == pqrs::hid::usage::apple_vendor_keyboard::function) {
+    return (flags & kCGEventFlagMaskSecondaryFn) ? event_type::key_down : event_type::key_up;
+  }
+
+  return std::nullopt;
+}
+} // namespace event_tap_utility_details
+
 class event_tap_utility final {
 public:
   [[nodiscard]] static std::optional<event_queue::event> make_momentary_switch_event(CGEventRef event) {
@@ -57,7 +113,7 @@ public:
       case kCGEventFlagsChanged:
         if (auto e = make_momentary_switch_event(event)) {
           auto flags = CGEventGetFlags(event);
-          auto event_type = get_modifier_event_type(*e, flags);
+          auto event_type = event_tap_utility_details::get_modifier_event_type(*e, flags);
           if (event_type) {
             return std::make_pair(*event_type, *e);
           }
@@ -115,53 +171,6 @@ public:
       case kCGEventTapDisabledByTimeout:
       case kCGEventTapDisabledByUserInput:
         break;
-    }
-
-    return std::nullopt;
-  }
-
-private:
-  [[nodiscard]] static std::optional<event_type> get_modifier_event_type(const event_queue::event& event,
-                                                                         CGEventFlags flags) {
-    auto m = event.get_if<momentary_switch_event>();
-    if (!m) {
-      return std::nullopt;
-    }
-
-    auto usage_pair = m->get_usage_pair();
-    auto usage_page = usage_pair.get_usage_page();
-    auto usage = usage_pair.get_usage();
-
-    if (usage_page == pqrs::hid::usage_page::keyboard_or_keypad) {
-      if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_shift ||
-          usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_shift) {
-        return (flags & kCGEventFlagMaskShift) ? event_type::key_down : event_type::key_up;
-      }
-      if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_control ||
-          usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_control) {
-        return (flags & kCGEventFlagMaskControl) ? event_type::key_down : event_type::key_up;
-      }
-      if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_alt ||
-          usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_alt) {
-        return (flags & kCGEventFlagMaskAlternate) ? event_type::key_down : event_type::key_up;
-      }
-      if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_left_gui ||
-          usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_right_gui) {
-        return (flags & kCGEventFlagMaskCommand) ? event_type::key_down : event_type::key_up;
-      }
-      if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_caps_lock) {
-        return (flags & kCGEventFlagMaskAlphaShift) ? event_type::key_down : event_type::key_up;
-      }
-    }
-
-    if (usage_page == pqrs::hid::usage_page::apple_vendor_top_case &&
-        usage == pqrs::hid::usage::apple_vendor_top_case::keyboard_fn) {
-      return (flags & kCGEventFlagMaskSecondaryFn) ? event_type::key_down : event_type::key_up;
-    }
-
-    if (usage_page == pqrs::hid::usage_page::apple_vendor_keyboard &&
-        usage == pqrs::hid::usage::apple_vendor_keyboard::function) {
-      return (flags & kCGEventFlagMaskSecondaryFn) ? event_type::key_down : event_type::key_up;
     }
 
     return std::nullopt;
