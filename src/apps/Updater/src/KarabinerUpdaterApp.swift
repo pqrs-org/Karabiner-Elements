@@ -19,30 +19,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     case checkForUpdatesWithBetaVersion
   }
 
-  private static let command = Command(
-    rawValue: CommandLine.arguments.dropFirst().first ?? ""
-  )
-
-  public func applicationWillFinishLaunching(_: Notification) {
-    switch Self.command {
-    case .checkForUpdatesStableOnly, .checkForUpdatesWithBetaVersion:
-      NSApp.setActivationPolicy(.regular)
-
-    case .checkForUpdatesInBackground, nil:
-      break
-    }
-  }
-
   public func applicationDidFinishLaunching(_: Notification) {
     Task { @MainActor in
-      switch Self.command {
+      let command = Command(
+        rawValue: CommandLine.arguments.dropFirst().first ?? ""
+      )
+
+      switch command {
       case .checkForUpdatesInBackground:
         Updater.shared.checkForUpdatesInBackground()
 
       case .checkForUpdatesStableOnly:
+        // Changing the activation policy does not bring the application to the front, and activation
+        // before applicationDidFinishLaunching may be unreliable. Perform both operations here.
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
         Updater.shared.checkForUpdatesStableOnly()
 
       case .checkForUpdatesWithBetaVersion:
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
         Updater.shared.checkForUpdatesWithBetaVersion()
 
       case nil:
