@@ -4,6 +4,7 @@
 
 - 🐛 Bug Fixes
     - Fixed an issue where modifier keys could become stuck when both the left and right Command or Shift keys were pressed while CGEventTap fallback was enabled.
+    - Fixed an issue where updates were checked every time the system woke from sleep.
 - ⚡️ Improvements
     - Added support for buttons 6–8 on the ELECOM HUGE trackballs. (Thanks to @BenjaminVanRyseghem)
 
