@@ -14,6 +14,7 @@
 #include "services_utility.hpp"
 #include "settings_window_guidance_manager.hpp"
 #include "software_function_handler.hpp"
+#include "update_check_scheduler.hpp"
 #include <filesystem>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
@@ -30,7 +31,8 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager(std::shared_ptr<ui_bridge> ui_bridge)
+  components_manager(std::shared_ptr<ui_bridge> ui_bridge,
+                     std::weak_ptr<update_check_scheduler> weak_update_check_scheduler)
       : dispatcher_client(),
         console_user_id_changed_client_(std::make_shared<console_user_id_changed_client>()),
         session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
@@ -42,6 +44,7 @@ public:
         settings_window_guidance_manager_(std::make_shared<settings_window_guidance_manager>(settings_window_guidance_manager_dispatcher_,
                                                                                              settings_window_guidance_manager::make_default_guidance_context_maker())),
         software_function_handler_(std::make_shared<software_function_handler>()),
+        weak_update_check_scheduler_(weak_update_check_scheduler),
         ui_bridge_(std::move(ui_bridge)) {
     configuration_monitor_->core_configuration_updated.connect([this](auto&& weak_core_configuration) {
       if (auto core_configuration = weak_core_configuration.lock()) {
@@ -144,7 +147,8 @@ public:
       configuration_monitor_->async_start();
       settings_window_guidance_manager_->async_start();
       receiver_ = std::make_unique<receiver>(settings_window_guidance_manager_,
-                                             software_function_handler_);
+                                             software_function_handler_,
+                                             weak_update_check_scheduler_);
     });
   }
 
@@ -327,6 +331,7 @@ private:
 
   std::shared_ptr<software_function_handler> software_function_handler_;
   std::shared_ptr<core_service_daemon_client> core_service_daemon_client_;
+  std::weak_ptr<update_check_scheduler> weak_update_check_scheduler_;
 
   //
   // Child components

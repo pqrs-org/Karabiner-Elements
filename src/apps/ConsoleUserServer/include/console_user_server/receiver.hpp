@@ -9,12 +9,11 @@
 #include "shell_command_handler.hpp"
 #include "software_function_handler.hpp"
 #include "types.hpp"
-#include "update_utility.hpp"
+#include "update_check_scheduler.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/input_source_selector.hpp>
 #include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
 #include <pqrs/unix_domain_stream.hpp>
-#include <random>
 
 namespace krbn::console_user_server {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -22,14 +21,15 @@ public:
   receiver(const receiver&) = delete;
 
   receiver(std::weak_ptr<settings_window_guidance_manager> weak_settings_window_guidance_manager,
-           std::weak_ptr<software_function_handler> weak_software_function_handler)
+           std::weak_ptr<software_function_handler> weak_software_function_handler,
+           std::weak_ptr<update_check_scheduler> weak_update_check_scheduler)
       : dispatcher_client(),
         weak_settings_window_guidance_manager_(weak_settings_window_guidance_manager),
         weak_software_function_handler_(weak_software_function_handler),
+        weak_update_check_scheduler_(weak_update_check_scheduler),
         input_source_selector_(std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_)),
         shell_command_handler_(std::make_unique<shell_command_handler>()),
-        send_user_command_handler_(std::make_unique<send_user_command_handler>()),
-        check_for_updates_task_(*this) {
+        send_user_command_handler_(std::make_unique<send_user_command_handler>()) {
     auto socket_file_path = console_user_server_socket_file_path();
 
     server_ = std::make_unique<pqrs::unix_domain_stream::server>(
@@ -111,7 +111,9 @@ public:
           break;
 
         case operation_type::check_for_updates:
-          set_check_for_updates_enabled(json.at("enabled").get<bool>());
+          if (auto scheduler = weak_update_check_scheduler_.lock()) {
+            scheduler->async_set_enabled(json.at("enabled").get<bool>());
+          }
           break;
 
         case operation_type::frontmost_application_changed:
@@ -237,63 +239,12 @@ private:
     }
   }
 
-  void set_check_for_updates_enabled(bool enabled) {
-    if (check_for_updates_enabled_ == enabled) {
-      return;
-    }
-
-    check_for_updates_enabled_ = enabled;
-
-    if (enabled) {
-      logger::get_logger()->info("Check for updates is enabled; waiting 30 seconds before checking for updates.");
-
-      // Note:
-      //
-      // During the updates, Karabiner-Updater.app and console_user_server binaries are overwritten asynchronous.
-      // And console_user_server will be restarted via version check.
-      // If console_user_server is restarted before Karabiner-Updater.app overwritten,
-      // checking for updates runs with the old version of Karabiner-Updater.app,
-      // and the update dialog is shown again even though the update was just completed.
-      //
-      // Wait before checking for updates to avoid it.
-
-      schedule_check_for_updates(std::chrono::seconds(30));
-    } else {
-      check_for_updates_task_.cancel();
-    }
-  }
-
-  void schedule_check_for_updates(std::chrono::milliseconds delay) {
-    check_for_updates_task_.debounce_after(
-        [this] {
-          if (!check_for_updates_enabled_) {
-            return;
-          }
-
-          logger::get_logger()->info("Check for updates...");
-          update_utility::check_for_updates_in_background();
-
-          schedule_check_for_updates(make_next_check_for_updates_interval());
-        },
-        delay);
-  }
-
-  static std::chrono::milliseconds make_next_check_for_updates_interval() {
-    static std::random_device random_device;
-    static std::mt19937 engine(random_device());
-    static std::uniform_int_distribution<int> jitter_minutes(0, 60);
-
-    return std::chrono::hours(24) +
-           std::chrono::minutes(jitter_minutes(engine));
-  }
-
   std::weak_ptr<settings_window_guidance_manager> weak_settings_window_guidance_manager_;
   std::weak_ptr<software_function_handler> weak_software_function_handler_;
+  std::weak_ptr<update_check_scheduler> weak_update_check_scheduler_;
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::unique_ptr<shell_command_handler> shell_command_handler_;
   std::unique_ptr<send_user_command_handler> send_user_command_handler_;
   std::unique_ptr<pqrs::unix_domain_stream::server> server_;
-  pqrs::dispatcher::extra::debounced_task check_for_updates_task_;
-  bool check_for_updates_enabled_ = false;
 };
 } // namespace krbn::console_user_server

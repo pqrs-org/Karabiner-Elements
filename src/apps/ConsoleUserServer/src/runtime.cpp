@@ -2,6 +2,7 @@
 #include "console_user_server/components_manager.hpp"
 #include "console_user_server/ui_bridge.h"
 #include "console_user_server/ui_bridge.hpp"
+#include "console_user_server/update_check_scheduler.hpp"
 #include "constants.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
@@ -19,6 +20,7 @@ namespace {
 std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_dispatcher_manager;
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager;
 std::shared_ptr<krbn::console_user_server::ui_bridge> ui_bridge_instance;
+std::shared_ptr<krbn::console_user_server::update_check_scheduler> update_check_scheduler_instance;
 bool started = false;
 } // namespace
 
@@ -36,6 +38,9 @@ void console_user_server_start(console_user_server_terminated_callback callback)
   scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::exit);
   ui_bridge_instance = std::make_shared<krbn::console_user_server::ui_bridge>();
+  // Keep update_check_scheduler outside components_manager because managing
+  // update_check_scheduler in components_manager would reset the schedule every time the system sleeps.
+  update_check_scheduler_instance = std::make_shared<krbn::console_user_server::update_check_scheduler>();
 
   signal(SIGUSR1, SIG_IGN);
   signal(SIGUSR2, SIG_IGN);
@@ -103,8 +108,10 @@ void console_user_server_start(console_user_server_terminated_callback callback)
   krbn::process_lifecycle_manager::initialize_shared_instance(
       krbn::process_lifecycle_manager::configuration{
           .components_manager_maker =
-              [ui_bridge = ui_bridge_instance] {
-                return std::make_unique<krbn::console_user_server::components_manager>(ui_bridge);
+              [ui_bridge = ui_bridge_instance,
+               update_check_scheduler = update_check_scheduler_instance] {
+                return std::make_unique<krbn::console_user_server::components_manager>(ui_bridge,
+                                                                                       update_check_scheduler);
               },
           .termination_completion_handler =
               [callback] {
@@ -132,6 +139,7 @@ void console_user_server_finalize(void) {
   // Stop new Swift C API calls from retrieving ui_bridge_instance while a
   // local shared_ptr keeps it alive for explicit cleanup.
   auto ui_bridge = std::move(ui_bridge_instance);
+  auto update_check_scheduler = std::move(update_check_scheduler_instance);
 
   krbn::process_lifecycle_manager::terminate_shared_instance();
 
@@ -141,6 +149,8 @@ void console_user_server_finalize(void) {
     // last shared_ptr to run the destructor before the dispatchers are reset.
     ui_bridge->unregister_callbacks_and_detach();
   }
+
+  update_check_scheduler = nullptr;
 
   scoped_run_loop_thread_manager = nullptr;
   scoped_dispatcher_manager = nullptr;
