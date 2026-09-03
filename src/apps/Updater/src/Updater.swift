@@ -67,6 +67,11 @@ final class Updater: ObservableObject {
     }
 
     func updater(_: SPUUpdater, didFindValidUpdate _: SUAppcastItem) {
+      // Change the activation policy before returning to Sparkle.
+      // Sparkle checks the policy immediately after this callback and activates
+      // background applications, which would steal focus from the current app.
+      NSApp.setActivationPolicy(.regular)
+
       Task { @MainActor in
         // Just in case, wait until the update notification window is shown.
         try await Task.sleep(for: .seconds(1))

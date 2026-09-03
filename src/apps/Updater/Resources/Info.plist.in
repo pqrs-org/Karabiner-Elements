@@ -25,11 +25,11 @@
     <key>NSSupportsSuddenTermination</key>
     <true/>
     <!--
-      When the menu is hidden, other applications may come to the front instead of the updater when the installer is launched.
-      To prevent this, LSUIElement must be set to false.
+      Start without a Dock icon for background update checks.
+      The activation policy is changed to regular for user-initiated checks and when an update is found.
     -->
     <key>LSUIElement</key>
-    <false/>
+    <true/>
     <key>SUFeedURL</key>
     <string>https://appcast.pqrs.org/karabiner-elements-appcast.xml</string>
     <key>SUEnableAutomaticChecks</key>

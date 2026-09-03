@@ -13,24 +13,39 @@ struct KarabinerUpdaterApp: App {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+  private enum Command: String {
+    case checkForUpdatesInBackground
+    case checkForUpdatesStableOnly
+    case checkForUpdatesWithBetaVersion
+  }
+
+  private static let command = Command(
+    rawValue: CommandLine.arguments.dropFirst().first ?? ""
+  )
+
+  public func applicationWillFinishLaunching(_: Notification) {
+    switch Self.command {
+    case .checkForUpdatesStableOnly, .checkForUpdatesWithBetaVersion:
+      NSApp.setActivationPolicy(.regular)
+
+    case .checkForUpdatesInBackground, nil:
+      break
+    }
+  }
+
   public func applicationDidFinishLaunching(_: Notification) {
     Task { @MainActor in
-      var command = ""
-      if CommandLine.arguments.count > 1 {
-        command = CommandLine.arguments[1]
-      }
-
-      switch command {
-      case "checkForUpdatesInBackground":
+      switch Self.command {
+      case .checkForUpdatesInBackground:
         Updater.shared.checkForUpdatesInBackground()
 
-      case "checkForUpdatesStableOnly":
+      case .checkForUpdatesStableOnly:
         Updater.shared.checkForUpdatesStableOnly()
 
-      case "checkForUpdatesWithBetaVersion":
+      case .checkForUpdatesWithBetaVersion:
         Updater.shared.checkForUpdatesWithBetaVersion()
 
-      default:
+      case nil:
         NSApplication.shared.terminate(nil)
       }
     }
