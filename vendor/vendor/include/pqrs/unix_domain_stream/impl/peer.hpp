@@ -52,6 +52,16 @@ public:
     detach_from_dispatcher();
   }
 
+  void disconnect_all_signal_slots() {
+    ready.disconnect_all_slots();
+    received.disconnect_all_slots();
+    request_received.disconnect_all_slots();
+    response_received.disconnect_all_slots();
+    health_check_response_received.disconnect_all_slots();
+    error_occurred.disconnect_all_slots();
+    closed.disconnect_all_slots();
+  }
+
   void async_start() {
     asio::post(
         socket_.get_executor(),
