@@ -765,6 +765,89 @@ public:
                                                    event_queue::queue& output_event_queue) override {
     unset_alone_if_needed(front_input_event.get_original_event(),
                           front_input_event.get_event_type());
+
+    // ------------------------------------------------------------------
+    // Pointer buttons that arrive from a non-grabbed pointing device (e.g. the
+    // pointing interface of a composite gaming mouse) are delivered as
+    // `pointing_device_event_from_event_tap` (see device_grabber), NOT as a
+    // `momentary_switch_event`. Because `manipulate()` is only invoked for
+    // `momentary_switch_event`, the configured `from_` -> `to_` transformation
+    // (e.g. a mouse side button mapped to a keyboard key) was never applied for
+    // these devices. Apply the same key transformation here.
+    //
+    // Note: `front_input_event` is const in this handler, so we cannot consume
+    // (invalidate) the original button event here; the button also keeps its
+    // default behavior. Emitting the `to_` events is the essential part.
+    // ------------------------------------------------------------------
+
+    if (front_input_event.get_validity() != validity::valid) {
+      return;
+    }
+
+    const auto& event = front_input_event.get_event();
+    if (!event.get_if<momentary_switch_event>()) {
+      return;
+    }
+
+    if (!from_event_definition::test_event(event, from_)) {
+      return;
+    }
+
+    manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
+                                                      event,
+                                                      front_input_event.get_original_event());
+
+    switch (front_input_event.get_event_type()) {
+      case event_type::key_down: {
+        auto current_manipulated_original_event =
+            std::make_shared<manipulated_original_event::manipulated_original_event>(
+                std::vector<manipulated_original_event::from_event>{from_event},
+                std::unordered_set<modifier_flag>{},
+                front_input_event.get_event_time_stamp().get_time_stamp(),
+                output_event_queue.get_modifier_flag_manager().make_modifier_flags());
+
+        manipulated_original_events_.push_back(current_manipulated_original_event);
+
+        absolute_time_duration time_stamp_delay(0);
+
+        event_sender::post_events_at_key_down(to_,
+                                              *current_manipulated_original_event,
+                                              manipulator::conditions::condition_context{
+                                                  .device_id = front_input_event.get_device_id(),
+                                                  .state = front_input_event.get_state(),
+                                              },
+                                              front_input_event.get_device_id(),
+                                              front_input_event.get_event_time_stamp(),
+                                              time_stamp_delay,
+                                              front_input_event.get_original_event(),
+                                              output_event_queue);
+        break;
+      }
+
+      case event_type::key_up: {
+        auto it = std::find_if(std::begin(manipulated_original_events_),
+                               std::end(manipulated_original_events_),
+                               [&](const auto& e) {
+                                 return e->from_event_exists(from_event);
+                               });
+
+        if (it != std::end(manipulated_original_events_)) {
+          absolute_time_duration time_stamp_delay(0);
+
+          event_sender::post_events_at_key_up(**it,
+                                              front_input_event.get_event_time_stamp(),
+                                              time_stamp_delay,
+                                              output_event_queue);
+
+          manipulated_original_events_.erase(it);
+        }
+        break;
+      }
+
+      case event_type::single:
+      default:
+        break;
+    }
   }
 
   [[nodiscard]] const from_event_definition& get_from() const {
