@@ -55,12 +55,65 @@ int main() {
     suppression.enqueue(key, krbn::event_type::key_down, now);
     suppression.enqueue(key, krbn::event_type::key_up, released);
 
-    // Neither output produces a CGEvent. Each stale entry must stop suppressing
-    // subsequent input when its own 200 ms lifetime ends.
-    auto down_expired = now + pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(200));
-    auto up_expired = released + pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(200));
-    expect(!suppression.consume(key, krbn::event_type::key_down, down_expired));
-    expect(!suppression.consume(key, krbn::event_type::key_up, up_expired));
+    // No CGEvent arrives. The key_up must neither register another entry nor
+    // extend the original key_down's lifetime.
+    auto expired = now + pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(200));
+    expect(!suppression.consume(key, krbn::event_type::key_down, expired));
+    expect(!suppression.consume(key, krbn::event_type::key_up, expired));
+  };
+
+  "caps_lock_state_changes_match_either_direction_once_per_press"_test = [] {
+    // Cover both state changes, arriving before or after the physical release.
+    for (auto notification : {krbn::event_type::key_down, krbn::event_type::key_up}) {
+      for (bool released_first : {false, true}) {
+        krbn::keyboard_suppression suppression;
+        auto now = krbn::absolute_time_point(100);
+        auto key = krbn::momentary_switch_event(krbn::modifier_flag::caps_lock);
+        auto later = now + pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(10));
+
+        suppression.enqueue(key, krbn::event_type::key_down, now);
+        if (released_first) {
+          suppression.enqueue(key, krbn::event_type::key_up, now);
+        }
+        expect(suppression.consume(key, notification, later));
+        if (!released_first) {
+          suppression.enqueue(key, krbn::event_type::key_up, later);
+        }
+        expect(!suppression.consume(key, krbn::event_type::key_down, later));
+        expect(!suppression.consume(key, krbn::event_type::key_up, later));
+      }
+    }
+  };
+
+  "caps_lock_does_not_match_single_or_other_keys"_test = [] {
+    krbn::keyboard_suppression suppression;
+    auto now = krbn::absolute_time_point(100);
+    auto caps_lock = krbn::momentary_switch_event(krbn::modifier_flag::caps_lock);
+    auto shift = krbn::momentary_switch_event(krbn::modifier_flag::left_shift);
+
+    suppression.enqueue(caps_lock, krbn::event_type::key_up, now);
+    suppression.enqueue(caps_lock, krbn::event_type::single, now);
+    expect(!suppression.consume(caps_lock, krbn::event_type::key_up, now));
+    expect(!suppression.consume(caps_lock, krbn::event_type::single, now));
+
+    suppression.enqueue(caps_lock, krbn::event_type::key_down, now);
+    expect(!suppression.consume(caps_lock, krbn::event_type::single, now));
+    expect(!suppression.consume(shift, krbn::event_type::key_up, now));
+    expect(suppression.consume(caps_lock, krbn::event_type::key_up, now));
+  };
+
+  "successive_caps_lock_presses_each_suppress_one_notification"_test = [] {
+    krbn::keyboard_suppression suppression;
+    auto now = krbn::absolute_time_point(100);
+    auto key = krbn::momentary_switch_event(krbn::modifier_flag::caps_lock);
+
+    for (auto notification : {krbn::event_type::key_down, krbn::event_type::key_up, krbn::event_type::key_down}) {
+      suppression.enqueue(key, krbn::event_type::key_down, now);
+      expect(suppression.consume(key, notification, now));
+      suppression.enqueue(key, krbn::event_type::key_up, now);
+      expect(!suppression.consume(key, notification, now));
+      now += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(20));
+    }
   };
 
   "expired_entry_is_not_matched"_test = [] {

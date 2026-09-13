@@ -22,8 +22,10 @@ namespace krbn {
 // - enqueue(event, event_type, now):
 //   Registers a keyboard event to suppress for a short TTL window.
 //   Invalid events and pointing-button events are ignored.
+//   Caps Lock registers only key_down, representing one lock state change.
 // - consume(event, event_type, now):
 //   Returns true when a matching queued entry exists (and removes it).
+//   Caps Lock matches either key_down or key_up; other keys require the same event type.
 //   Returns false if not found.
 // - purge_expired(now):
 //   Drops expired entries.
@@ -45,12 +47,14 @@ public:
   // 200 ms provides headroom above the observed delay; it is an empirical margin,
   // not a guaranteed upper bound on macOS event delivery. Keep the wait bounded:
   // brief presses may produce no CGEvent, and Caps Lock flagsChanged events encode
-  // the lock state rather than physical down/up, so some entries never match.
+  // the lock state rather than physical down/up. Caps Lock therefore registers
+  // one entry on key_down, consumed by either a key_down or key_up notification;
+  // its physical key_up registers nothing. Brief presses can leave that entry unmatched.
   // A longer TTL also increases the window in which an unrelated event with the
-  // same key and event type can consume a stale entry and bypass remapping.
+  // same key (and event type for ordinary keys) can consume a stale entry and bypass remapping.
   // Matching entries are consumed once, so this is not a key-repeat debounce.
   //
-  // This changes only suppression lifetime, not the separate fallback loop guard
+  // Suppression is independent of the separate fallback loop guard
   // implemented in keyboard_fallback_loop_guard.hpp and called from
   // monitor/event_tap_monitor.hpp to suspend fallback processing during rapid loops.
   keyboard_suppression(std::chrono::milliseconds ttl = std::chrono::milliseconds(200),
@@ -72,6 +76,15 @@ public:
                event_type event_type,
                absolute_time_point now) {
     if (!event.valid() || event.pointing_button()) {
+      return;
+    }
+
+    // Register at key_down because macOS may report the lock state change before
+    // the physical key_up. One press produces at most one state notification.
+    // Caps Lock's physical key_up does not produce a corresponding CGEventTap event:
+    // a key_up observed there represents the lock state turning off, not key release.
+    // Therefore, do not register a separate suppression entry for the physical key_up.
+    if (event.caps_lock() && event_type != krbn::event_type::key_down) {
       return;
     }
 
@@ -100,8 +113,20 @@ public:
 
     auto it = std::ranges::find_if(entries_,
                                    [&](const auto& entry) {
-                                     return entry.event == event &&
-                                            entry.event_type == event_type;
+                                     if (entry.event != event) {
+                                       return false;
+                                     }
+
+                                     if (event.caps_lock()) {
+                                       // event_type describes the incoming CGEventTap event, not the queued entry.
+                                       // Turning Caps Lock off posts a virtual HID key_down, but CGEventTap reports
+                                       // key_up because the lock state is now off. Match that incoming key_up against
+                                       // the queued key_down, just as an incoming key_down matches when turning it on.
+                                       return event_type == krbn::event_type::key_down ||
+                                              event_type == krbn::event_type::key_up;
+                                     }
+
+                                     return entry.event_type == event_type;
                                    });
 
     if (it != std::end(entries_)) {
