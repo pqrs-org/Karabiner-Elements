@@ -34,7 +34,26 @@ namespace krbn {
 // - This class is thread-safe.
 class keyboard_suppression final {
 public:
-  keyboard_suppression(std::chrono::milliseconds ttl = std::chrono::milliseconds(50),
+  // Use 200 ms to accommodate delayed Caps Lock CGEvents.
+  // macOS filters brief Caps Lock presses, so a virtual HID key_down does not
+  // necessarily produce a CGEvent immediately, or at all. With CGEventTap fallback
+  // enabled, we observed Caps Lock activation returning after 80-87 ms. A short TTL,
+  // such as 50 ms, can expire before that event arrives, allowing our own output to enter
+  // the manipulation pipeline again as device_id(0). A global caps_lock -> delete
+  // mapping then generated an unwanted delete key_down and continuous deletion.
+  //
+  // 200 ms provides headroom above the observed delay; it is an empirical margin,
+  // not a guaranteed upper bound on macOS event delivery. Keep the wait bounded:
+  // brief presses may produce no CGEvent, and Caps Lock flagsChanged events encode
+  // the lock state rather than physical down/up, so some entries never match.
+  // A longer TTL also increases the window in which an unrelated event with the
+  // same key and event type can consume a stale entry and bypass remapping.
+  // Matching entries are consumed once, so this is not a key-repeat debounce.
+  //
+  // This changes only suppression lifetime, not the separate fallback loop guard
+  // implemented in keyboard_fallback_loop_guard.hpp and called from
+  // monitor/event_tap_monitor.hpp to suspend fallback processing during rapid loops.
+  keyboard_suppression(std::chrono::milliseconds ttl = std::chrono::milliseconds(200),
                        size_t max_size = 1024)
       : ttl_(ttl),
         max_size_(max_size) {
