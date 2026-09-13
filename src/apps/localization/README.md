@@ -60,9 +60,6 @@ file replacements are supported. Reload parses and validates the entire file
 before publishing it; invalid JSON leaves the previous translations intact, and
 a later valid save updates them. Automatic reload failures are logged.
 
-If the file is missing at startup or deleted, its later creation is not monitored:
-install the file and restart the applications to resume monitoring.
-
 ## Using a translation in code
 
 SwiftUI views use `AppLocalizedText(key)` or `AppLocalizedLabel(key, systemImage: ...)`.
