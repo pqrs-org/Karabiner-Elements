@@ -2,6 +2,7 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "device_utility.hpp"
+#include "settings_configuration_summary.hpp"
 #include "settings_remembered_device_properties.hpp"
 #include <nlohmann/json.hpp>
 #include <utility>
@@ -13,6 +14,29 @@ public:
   }
 
   [[nodiscard]] nlohmann::json to_json() const {
+    auto snapshot = make_json();
+    krbn::core_configuration::core_configuration default_configuration;
+    auto& default_profile = default_configuration.get_selected_profile();
+    const auto default_ignore_pointing = default_profile.get_ignore_pointing_device_events_by_default();
+    const auto& profile = core_configuration_.get_selected_profile();
+
+    // Device defaults depend on identifiers and the current profile's inherited
+    // ignore setting. Compare the same devices without counting inherited values
+    // as per-device changes. The profile setting itself still uses its factory default.
+    default_profile.set_ignore_pointing_device_events_by_default(profile.get_ignore_pointing_device_events_by_default());
+    for (const auto& device : profile.get_devices()) {
+      static_cast<void>(default_profile.get_device(device->get_identifiers()));
+    }
+    auto defaults = settings_configuration_snapshot(default_configuration).make_json();
+    defaults["selected_profile"]["ignore_pointing_device_events_by_default"] = default_ignore_pointing;
+    snapshot["changed_settings_json"] = settings_configuration_summary::make(snapshot, defaults).dump(2);
+    return snapshot;
+  }
+
+private:
+  // Shared schema for current and default values. Never use configuration.to_json()
+  // here: it preserves unknown keys, which are not Settings fields.
+  [[nodiscard]] nlohmann::json make_json() const {
     const auto& global = core_configuration_.get_global_configuration();
     const auto& machine_specific = core_configuration_.get_machine_specific().get_entry();
     const auto& selected_profile = core_configuration_.get_selected_profile();
@@ -34,6 +58,7 @@ public:
         {"device_defaults", make_device_defaults_json()},
         {"global_configuration",
          {
+             {"ui_language", global.get_ui_language()},
              {"check_for_updates", global.get_check_for_updates()},
              {"show_in_menu_bar", global.get_show_in_menu_bar()},
              {"show_profile_name_in_menu_bar", global.get_show_profile_name_in_menu_bar()},
@@ -101,7 +126,6 @@ public:
     };
   }
 
-private:
   [[nodiscard]] static nlohmann::json make_device_defaults_json() {
     krbn::core_configuration::details::device device;
 

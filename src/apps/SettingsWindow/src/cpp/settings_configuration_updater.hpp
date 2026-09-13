@@ -14,6 +14,9 @@ public:
     if (const auto it = patch.find("global_configuration"); it != patch.end()) {
       auto& global = core_configuration.get_global_configuration();
       const auto& global_json = *it;
+      changed |= apply_value<std::string>(global_json,
+                                          "ui_language",
+                                          [&](const auto& value) { global.set_ui_language(value); });
       changed |= apply_value<bool>(global_json,
                                    "check_for_updates",
                                    [&](auto value) { global.set_check_for_updates(value); });
