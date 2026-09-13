@@ -46,13 +46,19 @@ notarize:
 staple:
 	xcrun stapler staple Karabiner-Elements-$(VERSION).dmg
 
-format: clang-format swift-format
+format: clang-format swift-format ruff-format xcstrings-format
 
 clang-format:
 	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
 
 swift-format:
 	find src/apps -name '*.swift' -print0 | xargs -0 swift-format -i
+
+ruff-format:
+	git ls-files -z -- '*.py' ':(exclude)vendor/**' ':(exclude)docs/vendor/**' | xargs -0 ruff format
+
+xcstrings-format:
+	/usr/bin/python3 scripts/format_xcstrings.py
 
 swiftlint:
 	swiftlint
