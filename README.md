@@ -36,6 +36,10 @@ Documentation can be found here: <https://karabiner-elements.pqrs.org/docs/>
 
 If you would like to support Karabiner-Elements development financially, donations can be made at <https://karabiner-elements.pqrs.org/docs/pricing/>.
 
+## Localization
+
+To edit translations or add a language, see the [localization guide](src/apps/localization/README.md).
+
 ---
 
 ## For developers

@@ -46,7 +46,7 @@ notarize:
 staple:
 	xcrun stapler staple Karabiner-Elements-$(VERSION).dmg
 
-format: clang-format swift-format ruff-format xcstrings-format
+format: clang-format swift-format ruff-format localization-format
 
 clang-format:
 	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
@@ -57,8 +57,8 @@ swift-format:
 ruff-format:
 	git ls-files -z -- '*.py' ':(exclude)vendor/**' ':(exclude)docs/vendor/**' | xargs -0 ruff format
 
-xcstrings-format:
-	/usr/bin/python3 scripts/format_xcstrings.py
+localization-format:
+	$(MAKE) -C src/apps/localization format
 
 swiftlint:
 	swiftlint

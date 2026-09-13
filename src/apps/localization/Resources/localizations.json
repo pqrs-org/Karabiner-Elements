@@ -1,0 +1,518 @@
+{
+    "changed_settings.copied": {
+        "en": "Changed settings copied",
+        "ja": "変更済み設定をコピーしました"
+    },
+    "changed_settings.empty": {
+        "en": "No changed settings in this report.",
+        "ja": "このレポートに表示する変更済み設定はありません。"
+    },
+    "changed_settings.error": {
+        "en": "Unable to display the changed settings report.",
+        "ja": "変更済み設定のレポートを表示できません。"
+    },
+    "changed_settings.title": {
+        "en": "Changed Settings",
+        "ja": "変更済み設定"
+    },
+    "console.menu.check_for_beta_updates": {
+        "en": "Check for beta updates…",
+        "ja": "ベータ版のアップデートを確認…"
+    },
+    "console.menu.check_for_updates": {
+        "en": "Check for updates…",
+        "ja": "アップデートを確認…"
+    },
+    "console.menu.launch_event_viewer": {
+        "en": "Launch EventViewer…",
+        "ja": "EventViewer を起動…"
+    },
+    "console.menu.multitouch_settings": {
+        "en": "Multitouch Extension Settings…",
+        "ja": "Multitouch Extension の設定…"
+    },
+    "console.menu.profiles": {
+        "en": "Profiles",
+        "ja": "プロファイル"
+    },
+    "console.menu.quit": {
+        "en": "Quit Karabiner-Elements",
+        "ja": "Karabiner-Elements を終了"
+    },
+    "console.menu.quit_confirmation": {
+        "en": "Are you sure you want to quit?",
+        "ja": "終了してもよろしいですか？"
+    },
+    "console.menu.restart": {
+        "en": "Restart Karabiner-Elements",
+        "ja": "Karabiner-Elements を再起動"
+    },
+    "console.menu.settings": {
+        "en": "Settings…",
+        "ja": "設定…"
+    },
+    "section.complex_modifications": {
+        "en": "Complex Modifications",
+        "ja": "高度なキー変換"
+    },
+    "section.dark": {
+        "en": "Dark appearance",
+        "ja": "ダークモード"
+    },
+    "section.devices": {
+        "en": "Devices",
+        "ja": "デバイス"
+    },
+    "section.global": {
+        "en": "Global settings",
+        "ja": "全体設定"
+    },
+    "section.identifiers": {
+        "en": "Device identifiers",
+        "ja": "デバイス識別情報"
+    },
+    "section.light": {
+        "en": "Light appearance",
+        "ja": "ライトモード"
+    },
+    "section.machine_specific": {
+        "en": "Settings specific to this machine",
+        "ja": "このマシン固有の設定"
+    },
+    "section.notification_window_colors": {
+        "en": "Notification colors",
+        "ja": "通知の配色"
+    },
+    "section.parameters": {
+        "en": "Parameters",
+        "ja": "パラメータ"
+    },
+    "section.selected_profile": {
+        "en": "Selected profile",
+        "ja": "選択中のプロファイル"
+    },
+    "section.virtual_hid_keyboard": {
+        "en": "Virtual keyboard",
+        "ja": "仮想キーボード"
+    },
+    "setting.background_color": {
+        "en": "Background color",
+        "ja": "背景色"
+    },
+    "setting.basic.simultaneous_threshold_milliseconds": {
+        "en": "Simultaneous key threshold (ms)",
+        "ja": "同時押しの判定時間（ms）"
+    },
+    "setting.basic.to_delayed_action_delay_milliseconds": {
+        "en": "Delayed action delay (ms)",
+        "ja": "遅延アクションの待機時間（ms）"
+    },
+    "setting.basic.to_if_alone_timeout_milliseconds": {
+        "en": "Alone key timeout (ms)",
+        "ja": "単独押しのタイムアウト（ms）"
+    },
+    "setting.basic.to_if_held_down_threshold_milliseconds": {
+        "en": "Held key threshold (ms)",
+        "ja": "長押しの判定時間（ms）"
+    },
+    "setting.check_for_updates": {
+        "en": "Check for updates",
+        "ja": "アップデートを確認"
+    },
+    "setting.configured_devices_count": {
+        "en": "Configured device count",
+        "ja": "個別設定のあるデバイス数"
+    },
+    "setting.delay_milliseconds_before_open_device": {
+        "en": "Delay before opening a device (ms)",
+        "ja": "デバイスを開くまでの遅延（ms）"
+    },
+    "setting.delay_milliseconds_before_sleep_shortcut": {
+        "en": "Delay before sleep shortcut (ms)",
+        "ja": "スリープショートカットの遅延（ms）"
+    },
+    "setting.device_address": {
+        "en": "Device address",
+        "ja": "デバイスアドレス"
+    },
+    "setting.disable_built_in_keyboard_if_exists": {
+        "en": "Disable built-in keyboard while connected",
+        "ja": "接続中は内蔵キーボードを無効にする"
+    },
+    "setting.enable_cgeventtap_fallback": {
+        "en": "Enable CGEventTap fallback",
+        "ja": "CGEventTap fallback を有効にする"
+    },
+    "setting.enable_multitouch_extension": {
+        "en": "Enable Multitouch Extension",
+        "ja": "Multitouch Extension を有効にする"
+    },
+    "setting.enable_notification_window": {
+        "en": "Enable notification window",
+        "ja": "通知ウインドウを有効にする"
+    },
+    "setting.enabled_rules_count": {
+        "en": "Enabled rule count",
+        "ja": "有効なルール数"
+    },
+    "setting.external_editor_path": {
+        "en": "External editor",
+        "ja": "外部エディタ"
+    },
+    "setting.filter_useless_events_from_specific_devices": {
+        "en": "Filter unnecessary device events",
+        "ja": "特定のデバイスの不要なイベントを除外"
+    },
+    "setting.fn_function_keys_count": {
+        "en": "Changed Function Keys count",
+        "ja": "変更した Function Keys の件数"
+    },
+    "setting.game_pad_stick_horizontal_wheel_formula": {
+        "en": "Horizontal scroll formula",
+        "ja": "横スクロールの計算式"
+    },
+    "setting.game_pad_stick_vertical_wheel_formula": {
+        "en": "Vertical scroll formula",
+        "ja": "縦スクロールの計算式"
+    },
+    "setting.game_pad_stick_x_formula": {
+        "en": "Horizontal pointer formula",
+        "ja": "ポインターの横方向の計算式"
+    },
+    "setting.game_pad_stick_y_formula": {
+        "en": "Vertical pointer formula",
+        "ja": "ポインターの縦方向の計算式"
+    },
+    "setting.game_pad_swap_sticks": {
+        "en": "Swap gamepad sticks",
+        "ja": "ゲームパッドのスティックを交換"
+    },
+    "setting.game_pad_wheels_stick_continued_movement_absolute_magnitude_threshold": {
+        "en": "Scroll stick continuous movement threshold",
+        "ja": "スクロール用スティックの連続移動のしきい値"
+    },
+    "setting.game_pad_wheels_stick_continued_movement_interval_milliseconds": {
+        "en": "Scroll stick continuous movement interval (ms)",
+        "ja": "スクロール用スティックの連続移動間隔（ms）"
+    },
+    "setting.game_pad_wheels_stick_deadzone": {
+        "en": "Scroll stick dead zone",
+        "ja": "スクロール用スティックのデッドゾーン"
+    },
+    "setting.game_pad_wheels_stick_delta_magnitude_detection_threshold": {
+        "en": "Scroll stick change threshold",
+        "ja": "スクロール用スティックの変化量のしきい値"
+    },
+    "setting.game_pad_xy_stick_continued_movement_absolute_magnitude_threshold": {
+        "en": "Pointer stick continuous movement threshold",
+        "ja": "ポインター用スティックの連続移動のしきい値"
+    },
+    "setting.game_pad_xy_stick_continued_movement_interval_milliseconds": {
+        "en": "Pointer stick continuous movement interval (ms)",
+        "ja": "ポインター用スティックの連続移動間隔（ms）"
+    },
+    "setting.game_pad_xy_stick_deadzone": {
+        "en": "Pointer stick dead zone",
+        "ja": "ポインター用スティックのデッドゾーン"
+    },
+    "setting.game_pad_xy_stick_delta_magnitude_detection_threshold": {
+        "en": "Pointer stick change threshold",
+        "ja": "ポインター用スティックの変化量のしきい値"
+    },
+    "setting.ignore": {
+        "en": "Ignore this device",
+        "ja": "このデバイスを無視する"
+    },
+    "setting.ignore_pointing_device_events_by_default": {
+        "en": "Ignore pointing devices by default",
+        "ja": "ポインティングデバイスを既定で無視する"
+    },
+    "setting.ignore_vendor_events": {
+        "en": "Ignore vendor events",
+        "ja": "ベンダー固有のイベントを無視"
+    },
+    "setting.indicate_sticky_modifier_keys_state": {
+        "en": "Indicate sticky modifier key state",
+        "ja": "固定された修飾キーの状態を表示"
+    },
+    "setting.is_consumer": {
+        "en": "Consumer device",
+        "ja": "コンシューマーデバイス"
+    },
+    "setting.is_game_pad": {
+        "en": "Gamepad",
+        "ja": "ゲームパッド"
+    },
+    "setting.is_keyboard": {
+        "en": "Keyboard",
+        "ja": "キーボード"
+    },
+    "setting.is_pointing_device": {
+        "en": "Pointing device",
+        "ja": "ポインティングデバイス"
+    },
+    "setting.is_touch_bar": {
+        "en": "Touch Bar",
+        "ja": "Touch Bar"
+    },
+    "setting.is_virtual_device": {
+        "en": "Virtual device",
+        "ja": "仮想デバイス"
+    },
+    "setting.keyboard_type_v2": {
+        "en": "Keyboard type",
+        "ja": "キーボードの種類"
+    },
+    "setting.language": {
+        "en": "Language",
+        "ja": "言語"
+    },
+    "setting.manipulate_caps_lock_led": {
+        "en": "Control Caps Lock LED",
+        "ja": "Caps Lock LED を制御"
+    },
+    "setting.mouse_discard_horizontal_wheel": {
+        "en": "Discard horizontal scrolling",
+        "ja": "横スクロールを無視"
+    },
+    "setting.mouse_discard_vertical_wheel": {
+        "en": "Discard vertical scrolling",
+        "ja": "縦スクロールを無視"
+    },
+    "setting.mouse_discard_x": {
+        "en": "Discard horizontal pointer movement",
+        "ja": "ポインターの左右移動を無視"
+    },
+    "setting.mouse_discard_y": {
+        "en": "Discard vertical pointer movement",
+        "ja": "ポインターの上下移動を無視"
+    },
+    "setting.mouse_flip_horizontal_wheel": {
+        "en": "Reverse horizontal scrolling",
+        "ja": "横スクロールを反転"
+    },
+    "setting.mouse_flip_vertical_wheel": {
+        "en": "Reverse vertical scrolling",
+        "ja": "縦スクロールを反転"
+    },
+    "setting.mouse_flip_x": {
+        "en": "Reverse horizontal pointer movement",
+        "ja": "ポインターの左右移動を反転"
+    },
+    "setting.mouse_flip_y": {
+        "en": "Reverse vertical pointer movement",
+        "ja": "ポインターの上下移動を反転"
+    },
+    "setting.mouse_key_xy_scale": {
+        "en": "Mouse key movement scale",
+        "ja": "マウスキーの移動倍率"
+    },
+    "setting.mouse_motion_to_scroll.speed": {
+        "en": "Mouse motion to scroll speed",
+        "ja": "マウス移動によるスクロール速度"
+    },
+    "setting.mouse_swap_wheels": {
+        "en": "Swap scroll axes",
+        "ja": "スクロールの縦横軸を交換"
+    },
+    "setting.mouse_swap_xy": {
+        "en": "Swap pointer axes",
+        "ja": "ポインターの縦横軸を交換"
+    },
+    "setting.notification_window_font_size": {
+        "en": "Notification font size",
+        "ja": "通知の文字サイズ"
+    },
+    "setting.notification_window_position": {
+        "en": "Notification position",
+        "ja": "通知の表示位置"
+    },
+    "setting.notification_window_respect_screen_visible_frame": {
+        "en": "Keep notifications within the visible screen",
+        "ja": "通知を画面の表示領域内に収める"
+    },
+    "setting.notification_window_show_icon": {
+        "en": "Show notification icon",
+        "ja": "通知にアイコンを表示"
+    },
+    "setting.pointing_motion_wheels_multiplier": {
+        "en": "Scroll multiplier",
+        "ja": "スクロールの倍率"
+    },
+    "setting.pointing_motion_xy_multiplier": {
+        "en": "Pointer movement multiplier",
+        "ja": "ポインター移動の倍率"
+    },
+    "setting.product_id": {
+        "en": "Product ID",
+        "ja": "プロダクト ID"
+    },
+    "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers": {
+        "en": "Prioritize modifiers with the same timestamp",
+        "ja": "同じ時刻の修飾キーを優先"
+    },
+    "setting.rules_count": {
+        "en": "Complex Modifications rule count",
+        "ja": "高度なキー変換のルール数"
+    },
+    "setting.show_additional_menu_items": {
+        "en": "Show additional menu items",
+        "ja": "追加のメニュー項目を表示"
+    },
+    "setting.show_in_menu_bar": {
+        "en": "Show in menu bar",
+        "ja": "メニューバーに表示"
+    },
+    "setting.show_profile_name_in_menu_bar": {
+        "en": "Show profile name in menu bar",
+        "ja": "メニューバーにプロファイル名を表示"
+    },
+    "setting.show_quit_confirmation_menu": {
+        "en": "Confirm before quitting",
+        "ja": "終了前に確認"
+    },
+    "setting.simple_modifications_count": {
+        "en": "Simple Modifications count",
+        "ja": "単純なキー変換の件数"
+    },
+    "setting.swap_grave_accent_and_non_us_backslash": {
+        "en": "Swap grave accent and non-US backslash",
+        "ja": "グレイヴアクセントと非 US バックスラッシュを交換"
+    },
+    "setting.text_color": {
+        "en": "Text color",
+        "ja": "文字色"
+    },
+    "setting.treat_as_built_in_keyboard": {
+        "en": "Treat as built-in keyboard",
+        "ja": "内蔵キーボードとして扱う"
+    },
+    "setting.unsafe_ui": {
+        "en": "Allow unsafe configuration",
+        "ja": "安全保護を無効にした設定を許可"
+    },
+    "setting.vendor_id": {
+        "en": "Vendor ID",
+        "ja": "ベンダー ID"
+    },
+    "settings.complex_modifications.editor.log": {
+        "en": "Log",
+        "ja": "ログ"
+    },
+    "settings.sidebar.item.changed_settings": {
+        "en": "Changed Settings",
+        "ja": "変更済み設定"
+    },
+    "settings.sidebar.item.complex_modifications": {
+        "en": "Complex Modifications",
+        "ja": "高度なキー変換"
+    },
+    "settings.sidebar.item.devices": {
+        "en": "Devices",
+        "ja": "デバイス"
+    },
+    "settings.sidebar.item.expert": {
+        "en": "Expert",
+        "ja": "エキスパート向け設定"
+    },
+    "settings.sidebar.item.function_keys": {
+        "en": "Function Keys",
+        "ja": "ファンクションキー"
+    },
+    "settings.sidebar.item.log": {
+        "en": "Log",
+        "ja": "ログ"
+    },
+    "settings.sidebar.item.misc": {
+        "en": "Misc",
+        "ja": "その他"
+    },
+    "settings.sidebar.item.parameters": {
+        "en": "Parameters",
+        "ja": "パラメータ"
+    },
+    "settings.sidebar.item.profiles": {
+        "en": "Profiles",
+        "ja": "プロファイル"
+    },
+    "settings.sidebar.item.quit_restart": {
+        "en": "Quit, Restart",
+        "ja": "終了・再起動"
+    },
+    "settings.sidebar.item.setup": {
+        "en": "Setup",
+        "ja": "セットアップ"
+    },
+    "settings.sidebar.item.simple_modifications": {
+        "en": "Simple Modifications",
+        "ja": "単純なキー変換"
+    },
+    "settings.sidebar.item.system_extensions": {
+        "en": "System Extensions",
+        "ja": "システム拡張"
+    },
+    "settings.sidebar.item.ui": {
+        "en": "UI",
+        "ja": "UI"
+    },
+    "settings.sidebar.item.uninstall": {
+        "en": "Uninstall",
+        "ja": "アンインストール"
+    },
+    "settings.sidebar.item.update": {
+        "en": "Update",
+        "ja": "アップデート"
+    },
+    "settings.sidebar.item.virtual_keyboard": {
+        "en": "Virtual Keyboard",
+        "ja": "仮想キーボード"
+    },
+    "settings.sidebar.section.configurations": {
+        "en": "Configurations",
+        "ja": "設定"
+    },
+    "settings.sidebar.section.diagnostic": {
+        "en": "Diagnostic",
+        "ja": "診断"
+    },
+    "settings.sidebar.section.maintenance": {
+        "en": "Maintenance",
+        "ja": "メンテナンス"
+    },
+    "settings.sidebar.section.modifications": {
+        "en": "Modifications",
+        "ja": "キー変換"
+    },
+    "settings.toolbar.language": {
+        "en": "Language",
+        "ja": "言語"
+    },
+    "settings.toolbar.reload_localizations": {
+        "en": "Reload translations",
+        "ja": "翻訳をリロード"
+    },
+    "settings.toolbar.reload_localizations_failed": {
+        "en": "Unable to reload translations. Check the installed localizations.json file.",
+        "ja": "翻訳をリロードできませんでした。インストール済みの localizations.json を確認してください。"
+    },
+    "settings.uninstall.title": {
+        "en": "Uninstall",
+        "ja": "アンインストール"
+    },
+    "settings.update.title": {
+        "en": "Update",
+        "ja": "アップデート"
+    },
+    "shared.action.copy_to_pasteboard": {
+        "en": "Copy to pasteboard",
+        "ja": "クリップボードにコピー"
+    },
+    "value.off": {
+        "en": "Off",
+        "ja": "無効"
+    },
+    "value.on": {
+        "en": "On",
+        "ja": "有効"
+    }
+}
