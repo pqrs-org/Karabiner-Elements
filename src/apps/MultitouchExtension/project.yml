@@ -20,6 +20,9 @@ targets:
         - ../../../vendor/vendor/include
       HEADER_SEARCH_PATHS:
         - ../../share
+      CLANG_CXX_LANGUAGE_STANDARD: 'c++23'
+      OTHER_CFLAGS: '$(inherited) -Wall -Werror'
+      OTHER_CPLUSPLUSFLAGS: '$(inherited) -Wall -Werror'
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       DEAD_CODE_STRIPPING: 'YES'
@@ -29,14 +32,7 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: src
-        compilerFlags:
-          - -Wall
-          - -Werror
-          - '-std=c++23'
       - path: ../share/swift/Views
-        compilerFlags:
-          - -Wall
-          - -Werror
       - path: ../share/swift/ApplicationTermination.swift
       - path: Resources
         excludes:

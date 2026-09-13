@@ -15,6 +15,9 @@ targets:
         - ../../../vendor/duktape-2.7.0/extras/module-node
       OTHER_LDFLAGS:
         - ../../../vendor/duktape-src/build/Release/libduktape.a
+      CLANG_CXX_LANGUAGE_STANDARD: 'c++23'
+      OTHER_CFLAGS: '$(inherited) -Wall -Werror'
+      OTHER_CPLUSPLUSFLAGS: '$(inherited) -Wall -Werror'
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: swift/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
@@ -27,10 +30,6 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: src
-        compilerFlags:
-          - -Wall
-          - -Werror
-          - '-std=c++23'
       - path: ../../../vendor/vendor/src/pqrs/osx/accessibility
       - path: ../../../vendor/vendor/src/pqrs/osx/application
       - path: ../../../vendor/vendor/src/pqrs/osx/cg_event

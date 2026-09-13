@@ -13,6 +13,8 @@ targets:
         CODE_SIGN_ENTITLEMENTS: ''
         CODE_SIGN_IDENTITY: '-'
         CODE_SIGN_STYLE: Manual
+        OTHER_CFLAGS: '$(inherited) -Wall -Werror'
+        OTHER_CPLUSPLUSFLAGS: '$(inherited) -Wall -Werror'
         OTHER_SWIFT_FLAGS: '-warnings-as-errors'
         DEAD_CODE_STRIPPING: 'YES'
         SWIFT_VERSION: '6.0'
@@ -21,9 +23,6 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: src
-        compilerFlags:
-          - -Wall
-          - -Werror
       - path: Resources
         excludes:
           - .gitignore

@@ -12,6 +12,9 @@ targets:
       CODE_SIGN_IDENTITY[sdk=macosx*]: '-'
       HEADER_SEARCH_PATHS:
         - ../../share
+      CLANG_CXX_LANGUAGE_STANDARD: 'c++23'
+      OTHER_CFLAGS: '$(inherited) -Wall -Werror'
+      OTHER_CPLUSPLUSFLAGS: '$(inherited) -Wall -Werror'
       OTHER_SWIFT_FLAGS: '-warnings-as-errors'
       SWIFT_OBJC_BRIDGING_HEADER: src/Bridging-Header.h
       SYSTEM_HEADER_SEARCH_PATHS:
@@ -23,10 +26,6 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: src
-        compilerFlags:
-          - -Wall
-          - -Werror
-          - '-std=c++23'
       - path: Resources
         excludes:
           - Info.plist.in
