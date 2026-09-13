@@ -35,7 +35,7 @@ struct LocalizationCatalog: Equatable, Sendable {
 }
 
 @MainActor
-final class AppLocalization: NSObject, ObservableObject {
+final class AppLocalization: ObservableObject {
   static let shared = AppLocalization()
 
   @Published private(set) var catalog = LocalizationCatalog.empty
@@ -44,47 +44,38 @@ final class AppLocalization: NSObject, ObservableObject {
   private var reloadTask: Task<Void, Never>?
   private let automaticallyReload: Bool
   private let source: URL
-  private let sender = UUID().uuidString
-  private let reloadNotification: Notification.Name
 
   init(
     source: URL = URL(
       fileURLWithPath:
         "/Library/Application Support/org.pqrs/Karabiner-Elements/localizations.json"),
-    observeNotifications: Bool = true,
-    automaticallyReload: Bool = true,
-    reloadNotification: Notification.Name = Notification.Name(
-      "org.pqrs.Karabiner-Elements.localizations.reload")
+    automaticallyReload: Bool = true
   ) {
     self.source = source
     self.automaticallyReload = automaticallyReload
-    self.reloadNotification = reloadNotification
-    super.init()
     do {
       try reload()
     } catch {
       NSLog("Unable to load localizations: %@", error.localizedDescription)
-    }
-    if observeNotifications {
-      DistributedNotificationCenter.default().addObserver(
-        self, selector: #selector(receiveReload(_:)), name: reloadNotification,
-        object: nil, suspensionBehavior: .deliverImmediately)
     }
   }
 
   deinit {
     fileMonitor?.cancel()
     reloadTask?.cancel()
-    DistributedNotificationCenter.default().removeObserver(self)
   }
 
   func reload() throws {
     // Reopen the path to follow an editor/installer replacing the file. If it is
-    // absent, a later manual reload can start monitoring again.
-    if automaticallyReload { startMonitoring() }
+    // absent, monitoring resumes after the file is restored and the app restarts.
+    if automaticallyReload {
+      startMonitoring()
+    }
     // Decode and validate the entire file before replacing the current translations.
     let updated = try LocalizationCatalog(data: Data(contentsOf: source))
-    if updated != catalog { catalog = updated }
+    if updated != catalog {
+      catalog = updated
+    }
   }
 
   private func startMonitoring() {
@@ -94,7 +85,9 @@ final class AppLocalization: NSObject, ObservableObject {
     guard descriptor >= 0 else { return }
     let monitor = DispatchSource.makeFileSystemObjectSource(
       fileDescriptor: descriptor, eventMask: [.write, .rename, .delete], queue: .main)
-    monitor.setCancelHandler { close(descriptor) }
+    monitor.setCancelHandler {
+      close(descriptor)
+    }
     monitor.setEventHandler { [weak self] in
       Task { @MainActor [weak self] in
         self?.scheduleReload()
@@ -116,23 +109,6 @@ final class AppLocalization: NSObject, ObservableObject {
       } catch {
         NSLog("Unable to automatically reload localizations: %@", error.localizedDescription)
       }
-    }
-  }
-
-  func reloadAndNotify() throws {
-    try reload()
-    DistributedNotificationCenter.default().postNotificationName(
-      reloadNotification, object: sender, userInfo: nil, deliverImmediately: true)
-  }
-
-  // Distributed notifications arrive on the main thread. The notification only
-  // requests a reload: never accept a resource path from another process.
-  @objc private func receiveReload(_ notification: Notification) {
-    guard notification.object as? String != sender else { return }
-    do {
-      try reload()
-    } catch {
-      NSLog("Unable to reload localizations: %@", error.localizedDescription)
     }
   }
 }

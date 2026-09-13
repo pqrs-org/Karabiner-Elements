@@ -48,7 +48,7 @@ source changes and run `make -C src/apps/localization install` again afterward.
 ## Language selection and reload
 
 `Auto` uses the system's preferred languages; other choices show each language's
-native name. `global.language` stores the selection, including region/script variants.
+native name. `global.ui_language` stores the selection, including region/script variants.
 A saved language is retained if it disappears from a replacement JSON file.
 Unsupported languages and missing translations fall back to English. Unknown keys
 are displayed as-is. Values are plain strings, with no automatic plural or format
@@ -60,10 +60,8 @@ file replacements are supported. Reload parses and validates the entire file
 before publishing it; invalid JSON leaves the previous translations intact, and
 a later valid save updates them. Automatic reload failures are logged.
 
-You can also click **Reload translations** in Settings to reload both applications
-manually. Manual reload failures in Settings display an error. If the file is
-missing at startup or deleted, its later creation is not monitored: install the
-file and use manual reload (or restart) to resume monitoring.
+If the file is missing at startup or deleted, its later creation is not monitored:
+install the file and restart the applications to resume monitoring.
 
 ## Using a translation in code
 
@@ -81,4 +79,4 @@ continue to use the system's language.
 
 Run `make -C tests/src/changed_settings_localization` to verify JSON validation,
 language discovery, regional variants, fallback, report labels, reload failure
-recovery, file monitoring, and notifications between processes. These Swift tests require Xcode.
+recovery, file monitoring in separate processes. These Swift tests require Xcode.
