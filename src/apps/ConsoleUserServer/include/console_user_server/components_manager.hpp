@@ -183,6 +183,10 @@ private:
                     configuration_loaded,
                 },
                 {
+                    "uiLanguage",
+                    global_configuration.get_ui_language(),
+                },
+                {
                     "appIconNumber",
                     app_icon(constants::get_system_app_icon_configuration_file_path()).get_number(),
                 },

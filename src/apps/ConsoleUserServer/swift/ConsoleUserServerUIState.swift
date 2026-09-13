@@ -42,6 +42,7 @@ struct UIStatePayload: Decodable {
     let selected: Bool
   }
 
+  let uiLanguage: String
   let configurationLoaded: Bool
   let appIconNumber: Int
   let menuSettings: MenuSettings
@@ -72,6 +73,7 @@ private func notificationMessageUpdated(_ value: UnsafePointer<CChar>?) {
 final class ConsoleUserServerUIState: ObservableObject {
   static let shared = ConsoleUserServerUIState()
 
+  @Published private(set) var uiLanguage = "auto"
   @Published private(set) var configurationLoaded = false
   @Published private(set) var appIconNumber = 0
   @Published private(set) var menuSettings = UIStatePayload.MenuSettings()
@@ -98,6 +100,7 @@ final class ConsoleUserServerUIState: ObservableObject {
   }
 
   fileprivate func apply(_ payload: UIStatePayload) {
+    uiLanguage = payload.uiLanguage
     appIconNumber = payload.appIconNumber
     menuSettings = payload.menuSettings
     notificationWindowSettings = payload.notificationWindowSettings

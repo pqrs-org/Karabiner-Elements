@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct NotificationView: View {
+  @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var state = ConsoleUserServerUIState.shared
   @Environment(\.colorScheme) private var colorScheme
   @State private var opacity = 1.0
@@ -33,6 +34,7 @@ struct NotificationView: View {
       RoundedRectangle(cornerRadius: 12)
         .fill(backgroundColor)
     )
+    .environment(\.locale, AppLanguage.locale(for: state.uiLanguage))
     .opacity(opacity)
     .whenHovered { hover in
       opacity = hover ? 0.2 : 1.0

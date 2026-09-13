@@ -2,14 +2,19 @@ import SwiftUI
 
 @main
 struct KarabinerConsoleUserServerApp: App {
+  @ObservedObject private var localization = AppLocalization.shared
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
   @ObservedObject private var state = ConsoleUserServerUIState.shared
 
   private let version =
     Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
 
+  private func localized(_ key: String) -> String {
+    AppLanguage.text(key, locale: AppLanguage.locale(for: state.uiLanguage))
+  }
+
   private var quitLabel: some View {
-    Label("Quit Karabiner-Elements", systemImage: "xmark.rectangle")
+    Label(localized("menu_bar_extra.quit"), systemImage: "xmark.rectangle")
       .labelStyle(.titleAndIcon)
   }
 
@@ -28,7 +33,7 @@ struct KarabinerConsoleUserServerApp: App {
 
         Divider()
 
-        Label("Profiles", systemImage: "person.3")
+        Label(localized("menu_bar_extra.profiles"), systemImage: "person.3")
           .labelStyle(.titleAndIcon)
 
         ForEach(state.profiles) { profile in
@@ -55,7 +60,7 @@ struct KarabinerConsoleUserServerApp: App {
             console_user_server_launch_settings()
           },
           label: {
-            Label("Settings…", systemImage: "gear")
+            Label(localized("menu_bar_extra.settings"), systemImage: "gear")
               .labelStyle(.titleAndIcon)
           }
         )
@@ -67,7 +72,7 @@ struct KarabinerConsoleUserServerApp: App {
             },
             label: {
               Label(
-                "Multitouch Extension Settings…",
+                localized("menu_bar_extra.multitouch_settings"),
                 systemImage: "rectangle.and.hand.point.up.left.filled"
               )
               .labelStyle(.titleAndIcon)
@@ -80,7 +85,7 @@ struct KarabinerConsoleUserServerApp: App {
             console_user_server_check_for_updates(false)
           },
           label: {
-            Label("Check for updates…", systemImage: "network")
+            Label(localized("menu_bar_extra.check_for_updates"), systemImage: "network")
               .labelStyle(.titleAndIcon)
           }
         )
@@ -91,7 +96,7 @@ struct KarabinerConsoleUserServerApp: App {
               console_user_server_check_for_updates(true)
             },
             label: {
-              Label("Check for beta updates…", systemImage: "hare")
+              Label(localized("menu_bar_extra.check_for_beta_updates"), systemImage: "hare")
                 .labelStyle(.titleAndIcon)
             }
           )
@@ -102,7 +107,7 @@ struct KarabinerConsoleUserServerApp: App {
             console_user_server_launch_event_viewer()
           },
           label: {
-            Label("Launch EventViewer…", systemImage: "magnifyingglass")
+            Label(localized("menu_bar_extra.launch_event_viewer"), systemImage: "magnifyingglass")
               .labelStyle(.titleAndIcon)
           }
         )
@@ -114,7 +119,7 @@ struct KarabinerConsoleUserServerApp: App {
             console_user_server_restart()
           },
           label: {
-            Label("Restart Karabiner-Elements", systemImage: "arrow.clockwise")
+            Label(localized("menu_bar_extra.restart"), systemImage: "arrow.clockwise")
               .labelStyle(.titleAndIcon)
           }
         )
@@ -122,7 +127,7 @@ struct KarabinerConsoleUserServerApp: App {
         if state.menuSettings.showQuitConfirmationMenu {
           Menu(
             content: {
-              Text("Are you sure you want to quit?")
+              Text(verbatim: localized("menu_bar_extra.quit_confirmation"))
 
               Divider()
 
