@@ -31,7 +31,17 @@ if __name__ == "__main__":
     strings = json.loads(args.file.read_text(encoding="utf-8"))
     validate(strings)
     if args.format:
+        # Sort translation keys alphabetically, but keep English first within each key.
+        strings = {
+            key: {
+                language: translations[language]
+                for language in sorted(
+                    translations, key=lambda language: (language != "en", language)
+                )
+            }
+            for key, translations in sorted(strings.items())
+        }
         args.file.write_text(
-            json.dumps(strings, ensure_ascii=False, indent=4, sort_keys=True) + "\n",
+            json.dumps(strings, ensure_ascii=False, indent=4) + "\n",
             encoding="utf-8",
         )
