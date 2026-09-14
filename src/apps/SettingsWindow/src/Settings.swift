@@ -158,7 +158,7 @@ final class Settings: ObservableObject {
     var snapshot: SettingsConfiguration
     do {
       snapshot = try settingsJSONDecoder.decode(SettingsConfiguration.self, from: data)
-      snapshot.changedSettingsJson = try ChangedSettingsSummary.makeJSON(snapshotData: data)
+      snapshot.changedSettingsJson = try ChangedSettings.makeJSON(snapshotData: data)
     } catch {
       print("Failed to decode settings configuration snapshot JSON: \(error)")
       return
