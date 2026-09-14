@@ -15,6 +15,7 @@ struct SettingsConfiguration: Decodable {
   }
 
   struct GlobalConfiguration: Codable {
+    var uiLanguage: String
     enum NotificationWindowPosition: String, Codable {
       case topLeft = "top_left"
       case topRight = "top_right"
@@ -231,6 +232,12 @@ struct SettingsConfiguration: Decodable {
     var virtualHidKeyboard: VirtualHidKeyboard
   }
 
+  private enum CodingKeys: String, CodingKey {
+    case deviceDefaults, globalConfiguration, machineSpecific, profiles, selectedProfile
+  }
+
+  // Computed from the raw current/default snapshots when loading configuration.
+  var changedSettingsJson: String = "{}"
   let deviceDefaults: DeviceDefaults
   var globalConfiguration: GlobalConfiguration
   var machineSpecific: MachineSpecific

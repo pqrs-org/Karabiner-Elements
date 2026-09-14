@@ -155,9 +155,10 @@ final class Settings: ObservableObject {
   }
 
   fileprivate func applyConfigurationSnapshot(_ data: Data) {
-    let snapshot: SettingsConfiguration
+    var snapshot: SettingsConfiguration
     do {
       snapshot = try settingsJSONDecoder.decode(SettingsConfiguration.self, from: data)
+      snapshot.changedSettingsJson = try ChangedSettingsSummary.makeJSON(snapshotData: data)
     } catch {
       print("Failed to decode settings configuration snapshot JSON: \(error)")
       return
@@ -533,7 +534,7 @@ final class Settings: ObservableObject {
       let oldJSON = try JSONSerialization.jsonObject(with: oldData)
       let newJSON = try JSONSerialization.jsonObject(with: newData)
 
-      guard let patch = makeJSONMergePatch(from: oldJSON, to: newJSON) else {
+      guard let patch = SettingsJSONDiff.make(from: oldJSON, to: newJSON) else {
         return
       }
 
@@ -547,37 +548,6 @@ final class Settings: ObservableObject {
     } catch {
       print("Failed to make settings configuration update JSON: \(error)")
     }
-  }
-
-  // Returns a JSON Merge Patch that contains only values changed in `newValue`.
-  // SettingsConfigurationUpdate does not contain null values, so recursively comparing JSON
-  // objects and treating arrays and primitive values as leaves is sufficient here.
-  private func makeJSONMergePatch(from oldValue: Any, to newValue: Any) -> Any? {
-    if let oldObject = oldValue as? [String: Any],
-      let newObject = newValue as? [String: Any]
-    {
-      var patch: [String: Any] = [:]
-
-      for (key, newChild) in newObject {
-        if let oldChild = oldObject[key] {
-          if let childPatch = makeJSONMergePatch(from: oldChild, to: newChild) {
-            patch[key] = childPatch
-          }
-        } else {
-          patch[key] = newChild
-        }
-      }
-
-      return patch.isEmpty ? nil : patch
-    }
-
-    if let oldObject = oldValue as? NSObject,
-      oldObject.isEqual(newValue)
-    {
-      return nil
-    }
-
-    return newValue
   }
 
   @Published var systemDefaultProfileExists: Bool = false
