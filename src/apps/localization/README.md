@@ -68,6 +68,6 @@ Strings for reports and menu items use `AppLanguage.text(key, locale: ...)`; vie
 using this directly also observe `AppLocalization.shared` to refresh on reload.
 Write localization keys as complete string literals so their usages are searchable;
 do not construct them from prefixes or configuration keys. Changed Settings uses
-explicit mappings in `ChangedSettingsReport.swift`.
+explicit mappings in `ChangedSettings.swift`.
 User-provided names and messages are displayed verbatim. System-provided panels
 continue to use the system's language.
