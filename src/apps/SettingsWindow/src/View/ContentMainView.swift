@@ -15,6 +15,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case expert
   case action
   case log
+  case changedSettings
   case systemExtensions
   case setup
 
@@ -22,22 +23,23 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 
   var title: String {
     switch self {
-    case .simpleModifications: return "Simple Modifications"
-    case .functionKeys: return "Function Keys"
-    case .complexModifications: return "Complex Modifications"
-    case .complexModificationsAdvanced: return "Parameters"
-    case .devices: return "Devices"
-    case .virtualKeyboard: return "Virtual Keyboard"
-    case .profiles: return "Profiles"
-    case .ui: return "UI"
-    case .update: return "Update"
-    case .misc: return "Misc"
-    case .uninstall: return "Uninstall"
-    case .expert: return "Expert"
-    case .action: return "Quit, Restart"
-    case .log: return "Log"
-    case .systemExtensions: return "System Extensions"
-    case .setup: return "Setup"
+    case .simpleModifications: return "settings.sidebar.item.simple_modifications"
+    case .functionKeys: return "settings.sidebar.item.function_keys"
+    case .complexModifications: return "settings.sidebar.item.complex_modifications"
+    case .complexModificationsAdvanced: return "settings.sidebar.item.parameters"
+    case .devices: return "settings.sidebar.item.devices"
+    case .virtualKeyboard: return "settings.sidebar.item.virtual_keyboard"
+    case .profiles: return "settings.sidebar.item.profiles"
+    case .ui: return "settings.sidebar.item.ui"
+    case .update: return "settings.sidebar.item.update"
+    case .misc: return "settings.sidebar.item.misc"
+    case .uninstall: return "settings.sidebar.item.uninstall"
+    case .expert: return "settings.sidebar.item.expert"
+    case .action: return "settings.sidebar.item.quit_restart"
+    case .changedSettings: return "settings.sidebar.item.changed_settings"
+    case .log: return "settings.sidebar.item.log"
+    case .systemExtensions: return "settings.sidebar.item.system_extensions"
+    case .setup: return "settings.sidebar.item.setup"
     }
   }
 
@@ -56,6 +58,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .uninstall: return "trash"
     case .expert: return "flame"
     case .action: return "xmark.rectangle"
+    case .changedSettings: return "slider.horizontal.3"
     case .log: return "list.bullet.rectangle"
     case .systemExtensions: return "puzzlepiece.extension"
     case .setup: return "checklist"
@@ -64,6 +67,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 }
 
 struct ContentMainView: View {
+  @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared
@@ -77,7 +81,7 @@ struct ContentMainView: View {
 
   let sections: [SidebarSection] = [
     SidebarSection(
-      title: "Modifications",
+      title: "settings.sidebar.section.modifications",
       items: [
         .simpleModifications,
         .functionKeys,
@@ -86,7 +90,7 @@ struct ContentMainView: View {
       ]
     ),
     SidebarSection(
-      title: "Configurations",
+      title: "settings.sidebar.section.configurations",
       items: [
         .devices,
         .virtualKeyboard,
@@ -95,7 +99,7 @@ struct ContentMainView: View {
       ]
     ),
     SidebarSection(
-      title: "Maintenance",
+      title: "settings.sidebar.section.maintenance",
       items: [
         .update,
         .misc,
@@ -105,9 +109,10 @@ struct ContentMainView: View {
       ]
     ),
     SidebarSection(
-      title: "Diagnostic",
+      title: "settings.sidebar.section.diagnostic",
       items: [
         .log,
+        .changedSettings,
         .systemExtensions,
         .setup,
       ]
@@ -124,7 +129,7 @@ struct ContentMainView: View {
                 sidebarRow(item)
               }
             } header: {
-              Text(sections[section].title)
+              AppLocalizedText(sections[section].title)
             }
           }
         }
@@ -233,6 +238,8 @@ struct ContentMainView: View {
             ExpertView()
           case .action:
             ActionView()
+          case .changedSettings:
+            ChangedSettingsView()
           case .log:
             LogView()
           case .systemExtensions:
@@ -243,6 +250,26 @@ struct ContentMainView: View {
         }
       }
     )
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        Picker(selection: $settings.configuration.globalConfiguration.uiLanguage) {
+          Text(verbatim: "Auto").tag("auto")
+          ForEach(AppLanguage.availableLanguages(), id: \.self) { language in
+            Text(verbatim: AppLanguage.displayName(for: language)).tag(language)
+          }
+          // Keep a saved selection visible if a replacement JSON lacks it.
+          let selected = settings.configuration.globalConfiguration.uiLanguage
+          if selected != "auto" && !AppLanguage.availableLanguages().contains(selected) {
+            Text(verbatim: AppLanguage.displayName(for: selected)).tag(selected)
+          }
+        } label: {
+          AppLocalizedText("settings.toolbar.language")
+        }
+        .pickerStyle(.menu)
+        .fixedSize()
+      }
+
+    }
   }
 
   @ViewBuilder
@@ -251,7 +278,7 @@ struct ContentMainView: View {
       Image(systemName: item.systemImage)
         .frame(width: 18.0)
 
-      Text(item.title)
+      AppLocalizedText(item.title)
     }
     .padding(.vertical, 2.0)
     .tag(item)

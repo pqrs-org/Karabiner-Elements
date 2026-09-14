@@ -20,6 +20,7 @@ codesign: all
 	bash ../../../scripts/codesign.sh build/Release
 
 install: codesign
+	$(MAKE) -C ../localization install
 	sudo rsync -a --delete \
 		build/Release/Karabiner-Elements.app \
 		/Applications

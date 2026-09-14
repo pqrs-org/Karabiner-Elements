@@ -50,7 +50,8 @@ struct LogView: View {
             pboard.writeObjects([text as NSString])
           },
           label: {
-            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+            AppLocalizedLabel(
+              "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
           })
 
         Spacer()

@@ -8,7 +8,7 @@ struct UpdateView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
-        GroupBox(label: Text("Update")) {
+        GroupBox(label: AppLocalizedText("settings.update.title")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Text("Karabiner-Elements version \(version)")
 

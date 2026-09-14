@@ -16,7 +16,8 @@ struct SystemExtensionsView: View {
                 pboard.writeObjects([systemExtensionsStreamer.text as NSString])
               },
               label: {
-                Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                AppLocalizedLabel(
+                  "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
               })
 
             Button(
@@ -53,7 +54,8 @@ struct SystemExtensionsView: View {
                 pboard.writeObjects([sysextdLogStreamer.text as NSString])
               },
               label: {
-                Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                AppLocalizedLabel(
+                  "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
               })
 
             Button(

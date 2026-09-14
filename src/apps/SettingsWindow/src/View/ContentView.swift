@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+  @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
 
@@ -60,6 +61,12 @@ struct ContentView: View {
         .zIndex(1)
       }
     }
+    .environment(
+      \.locale,
+      AppLanguage.locale(
+        for: settings.configurationLoaded
+          ? settings.configuration.globalConfiguration.uiLanguage : "auto")
+    )
     .animation(.easeInOut(duration: 0.2), value: contentViewStates.toast)
     .frame(
       minWidth: 1100,

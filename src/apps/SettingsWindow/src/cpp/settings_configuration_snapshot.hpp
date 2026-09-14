@@ -2,7 +2,6 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "device_utility.hpp"
-#include "settings_configuration_summary.hpp"
 #include "settings_remembered_device_properties.hpp"
 #include <nlohmann/json.hpp>
 #include <utility>
@@ -29,7 +28,7 @@ public:
     }
     auto defaults = settings_configuration_snapshot(default_configuration).make_json();
     defaults["selected_profile"]["ignore_pointing_device_events_by_default"] = default_ignore_pointing;
-    snapshot["changed_settings_json"] = settings_configuration_summary::make(snapshot, defaults).dump(2);
+    snapshot["default_configuration"] = std::move(defaults);
     return snapshot;
   }
 

@@ -170,7 +170,7 @@ struct ComplexModificationsEditView: View {
               }
 
               VStack(alignment: .leading, spacing: 6) {
-                Text("Log")
+                AppLocalizedText("settings.complex_modifications.editor.log")
                   .font(.headline)
 
                 ScrollView {
