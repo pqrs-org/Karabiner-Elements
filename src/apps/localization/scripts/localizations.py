@@ -41,7 +41,21 @@ if __name__ == "__main__":
             }
             for key, translations in sorted(strings.items())
         }
+        # Keep commas before additional languages so English-only edits do not
+        # depend on whether another translation follows.
+        entries = []
+        for key, translations in strings.items():
+            languages = [
+                f"{json.dumps(language)}: {json.dumps(value, ensure_ascii=False)}"
+                for language, value in translations.items()
+            ]
+            entries.append(
+                f"    {json.dumps(key, ensure_ascii=False)}: {{\n"
+                + "        "
+                + "\n        ,".join(languages)
+                + "\n    }"
+            )
         args.file.write_text(
-            json.dumps(strings, ensure_ascii=False, indent=4) + "\n",
+            "{\n" + ",\n".join(entries) + "\n}\n",
             encoding="utf-8",
         )

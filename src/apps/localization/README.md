@@ -12,8 +12,8 @@ key maps language tags directly to translated strings:
 ```json
 {
     "settings.toolbar.language": {
-        "en": "Language",
-        "ja": "言語"
+        "en": "Language"
+        ,"ja": "言語"
     }
 }
 ```
@@ -33,7 +33,8 @@ Run these commands from the repository root:
     update the strings or add a language under the keys you want to translate.
 3.  Run `make -C src/apps/localization install`. This validates and formats the
     JSON with sorted keys and four-space indentation, then copies it using `sudo`.
-    Each language's string stays on one line; embedded newlines use JSON escapes.
+    Each language's string stays on one line; languages after `en` have a leading
+    comma. Embedded newlines use JSON escapes.
     No Xcode, resource compilation, application build, code signing, or application
     restart is needed to update translations.
 4.  Settings and ConsoleUserServer automatically reload the installed JSON and
