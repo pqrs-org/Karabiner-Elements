@@ -44,6 +44,7 @@ int main() {
     // and machine-specific settings.
     auto patch = nlohmann::json::object();
     auto& global_patch = patch["global_configuration"];
+    global_patch["ui_language"] = "en";
     global_patch["check_for_updates"] = false;
     global_patch["show_in_menu_bar"] = false;
     global_patch["show_profile_name_in_menu_bar"] = true;
@@ -73,6 +74,7 @@ int main() {
 
     // Verify the updated global settings and normalized color values.
     const auto& global = core_configuration.get_global_configuration();
+    expect(global.get_ui_language() == "en");
     expect(!global.get_check_for_updates());
     expect(!global.get_show_in_menu_bar());
     expect(global.get_show_profile_name_in_menu_bar());
