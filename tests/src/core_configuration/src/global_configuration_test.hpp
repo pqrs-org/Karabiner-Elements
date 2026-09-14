@@ -11,6 +11,8 @@ void run_global_configuration_test() {
       auto json = nlohmann::json::object();
       krbn::core_configuration::details::global_configuration global_configuration(json,
                                                                                    krbn::core_configuration::error_handling::strict);
+      expect(global_configuration.get_ui_language() == "auto");
+      expect(!global_configuration.to_json().contains("ui_language"));
       expect(global_configuration.get_check_for_updates() == true);
       expect(global_configuration.get_show_in_menu_bar() == true);
       expect(global_configuration.get_show_profile_name_in_menu_bar() == false);
@@ -30,6 +32,20 @@ void run_global_configuration_test() {
       expect(global_configuration.get_reorder_same_timestamp_input_events_to_prioritize_modifiers() == true);
       expect(global_configuration.get_enable_cgeventtap_fallback() == false);
       expect(global_configuration.get_delay_milliseconds_before_sleep_shortcut() == 500);
+    }
+
+    // Preserve language selections without depending on the installed translations.
+    {
+      krbn::core_configuration::details::global_configuration global_configuration(
+          nlohmann::json({{"ui_language", "unsupported"}}),
+          krbn::core_configuration::error_handling::strict);
+      expect(global_configuration.get_ui_language() == "unsupported");
+      expect(global_configuration.to_json().at("ui_language") == "unsupported");
+
+      // An empty selection restores automatic language selection and is not saved.
+      global_configuration.set_ui_language("");
+      expect(global_configuration.get_ui_language() == "auto");
+      expect(!global_configuration.to_json().contains("ui_language"));
     }
 
     // load values from json
