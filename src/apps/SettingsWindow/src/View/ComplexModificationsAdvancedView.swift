@@ -9,7 +9,7 @@ struct ComplexModificationsAdvancedView: View {
         GroupBox(label: Text("type:basic parameters")) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
-              Text("to_if_alone_timeout_milliseconds:")
+              AppLocalizedText("setting.basic.to_if_alone_timeout_milliseconds")
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
@@ -24,7 +24,7 @@ struct ComplexModificationsAdvancedView: View {
             Divider()
 
             HStack {
-              Text("to_if_held_down_threshold_milliseconds:")
+              AppLocalizedText("setting.basic.to_if_held_down_threshold_milliseconds")
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
@@ -39,7 +39,7 @@ struct ComplexModificationsAdvancedView: View {
             Divider()
 
             HStack {
-              Text("to_delayed_action_delay_milliseconds:")
+              AppLocalizedText("setting.basic.to_delayed_action_delay_milliseconds")
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
@@ -54,7 +54,7 @@ struct ComplexModificationsAdvancedView: View {
             Divider()
 
             HStack {
-              Text("simultaneous_threshold_milliseconds:")
+              AppLocalizedText("setting.basic.simultaneous_threshold_milliseconds")
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
@@ -73,7 +73,7 @@ struct ComplexModificationsAdvancedView: View {
         GroupBox(label: Text("type:mouse_motion_to_scroll parameters")) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
-              Text("speed:")
+              AppLocalizedText("setting.mouse_motion_to_scroll.speed")
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters

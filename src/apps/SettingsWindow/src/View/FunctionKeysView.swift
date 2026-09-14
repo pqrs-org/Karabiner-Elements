@@ -18,9 +18,9 @@ struct FunctionKeysView: View {
           Text("Use all F1, F2, etc. keys as standard function keys:")
 
           if settingsCoreServiceDaemonClient.useFkeysAsStandardFunctionKeys {
-            Text("On").foregroundColor(.accentColor).bold()
+            AppLocalizedText("value.on").foregroundColor(.accentColor).bold()
           } else {
-            Text("Off")
+            AppLocalizedText("value.off")
           }
         }
 

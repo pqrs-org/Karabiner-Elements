@@ -6,7 +6,7 @@ struct VirtualKeyboardView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
-        GroupBox(label: Text("Keyboard Type")) {
+        GroupBox(label: AppLocalizedText("setting.keyboard_type_v2")) {
           VStack(alignment: .leading, spacing: 6.0) {
             KeyboardTypeSelectorView()
           }
@@ -17,7 +17,7 @@ struct VirtualKeyboardView: View {
         GroupBox(label: Text("Mouse key")) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
-              Text("Cursor speed:")
+              AppLocalizedText("setting.mouse_key_xy_scale")
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.virtualHidKeyboard.mouseKeyXyScale,

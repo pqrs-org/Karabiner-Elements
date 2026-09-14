@@ -12,7 +12,7 @@ struct ActionView: View {
                 Relauncher.relaunch()
               },
               label: {
-                Label("Restart Karabiner-Elements", systemImage: "arrow.clockwise")
+                AppLocalizedLabel("menu_bar_extra.restart", systemImage: "arrow.clockwise")
               })
 
             Button(
@@ -21,7 +21,7 @@ struct ActionView: View {
                 krbn_killall_settings()
               },
               label: {
-                Label("Quit Karabiner-Elements", systemImage: "xmark.rectangle")
+                AppLocalizedLabel("menu_bar_extra.quit", systemImage: "xmark.rectangle")
               })
           }
           .padding()

@@ -10,22 +10,34 @@ struct UIView: View {
         GroupBox(label: Text("Menu bar")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.showInMenuBar) {
-              Text("Show icon in menu bar (Default: on)")
+              HStack {
+                AppLocalizedText("setting.show_in_menu_bar")
+                Text("(Default: on)")
+              }
             }
             .switchToggleStyle()
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showProfileNameInMenuBar) {
-              Text("Show profile name in menu bar (Default: off)")
+              HStack {
+                AppLocalizedText("setting.show_profile_name_in_menu_bar")
+                Text("(Default: off)")
+              }
             }
             .switchToggleStyle()
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showAdditionalMenuItems) {
-              Text("Show additional menu items (Default: off)")
+              HStack {
+                AppLocalizedText("setting.show_additional_menu_items")
+                Text("(Default: off)")
+              }
             }
             .switchToggleStyle()
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showQuitConfirmationMenu) {
-              Text("Show confirmation submenu for Quit Karabiner-Elements (Default: on)")
+              HStack {
+                AppLocalizedText("setting.show_quit_confirmation_menu")
+                Text("(Default: on)")
+              }
             }
             .switchToggleStyle()
           }
@@ -36,7 +48,10 @@ struct UIView: View {
         GroupBox(label: Text("Karabiner Notification Window")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.enableNotificationWindow) {
-              Text("Enable Karabiner Notification Window (Default: on)")
+              HStack {
+                AppLocalizedText("setting.enable_notification_window")
+                Text("(Default: on)")
+              }
             }
             .switchToggleStyle()
 
@@ -45,7 +60,10 @@ struct UIView: View {
                 isOn: $settings.configuration.selectedProfile.virtualHidKeyboard
                   .indicateStickyModifierKeysState
               ) {
-                Text("Indicate sticky modifier keys state (Default: on)")
+                HStack {
+                  AppLocalizedText("setting.indicate_sticky_modifier_keys_state")
+                  Text("(Default: on)")
+                }
               }
               .switchToggleStyle()
 
@@ -55,7 +73,7 @@ struct UIView: View {
                     Picker(
                       selection: $settings.configuration.globalConfiguration
                         .notificationWindowPosition,
-                      label: Text("Position")
+                      label: AppLocalizedText("setting.notification_window_position")
                     ) {
                       Text("Top left").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition.topLeft
@@ -78,7 +96,10 @@ struct UIView: View {
                       isOn: $settings.configuration.globalConfiguration
                         .notificationWindowRespectScreenVisibleFrame
                     ) {
-                      Text("Keep the window outside the Dock area (Default: on)")
+                      HStack {
+                        AppLocalizedText("setting.notification_window_respect_screen_visible_frame")
+                        Text("(Default: on)")
+                      }
                     }
                     .switchToggleStyle()
                   }
@@ -86,12 +107,15 @@ struct UIView: View {
                   Toggle(
                     isOn: $settings.configuration.globalConfiguration.notificationWindowShowIcon
                   ) {
-                    Text("Show application icon (Default: on)")
+                    HStack {
+                      AppLocalizedText("setting.notification_window_show_icon")
+                      Text("(Default: on)")
+                    }
                   }
                   .switchToggleStyle()
 
                   HStack {
-                    Text("Font size:")
+                    AppLocalizedText("setting.notification_window_font_size")
                     IntTextField(
                       value: $settings.configuration.globalConfiguration.notificationWindowFontSize,
                       range: 8...64,
@@ -102,7 +126,7 @@ struct UIView: View {
 
                   Grid(alignment: .leading, horizontalSpacing: 12.0, verticalSpacing: 12.0) {
                     notificationWindowColorSettings(
-                      title: "Light appearance",
+                      title: "section.light",
                       background: $settings.configuration.globalConfiguration
                         .notificationWindowColors
                         .light.backgroundColor,
@@ -114,7 +138,7 @@ struct UIView: View {
                         appearance: .aqua),
                       textSystemColor: resolvedSystemColor(.labelColor, appearance: .aqua))
                     notificationWindowColorSettings(
-                      title: "Dark appearance",
+                      title: "section.dark",
                       background: $settings.configuration.globalConfiguration
                         .notificationWindowColors
                         .dark.backgroundColor,
@@ -215,15 +239,15 @@ struct UIView: View {
     textSystemColor: NSColor
   ) -> some View {
     GridRow(alignment: .center) {
-      Text(title)
+      AppLocalizedText(title)
         .bold()
         .fixedSize(horizontal: true, vertical: false)
       notificationWindowColorPicker(
-        title: "Background color",
+        title: "setting.background_color",
         value: background,
         systemColor: backgroundSystemColor)
       notificationWindowColorPicker(
-        title: "Text color",
+        title: "setting.text_color",
         value: text,
         systemColor: textSystemColor)
     }
@@ -251,7 +275,6 @@ struct UIView: View {
   ) -> some View {
     HStack {
       ColorPicker(
-        title,
         selection: Binding(
           get: {
             value.wrappedValue == "system"
@@ -261,7 +284,10 @@ struct UIView: View {
           set: { color in
             value.wrappedValue = NSColor(color).notificationWindowColorString ?? "system"
           }),
-        supportsOpacity: true)
+        supportsOpacity: true
+      ) {
+        AppLocalizedText(title)
+      }
 
       Button {
         value.wrappedValue = "system"

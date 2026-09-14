@@ -23,7 +23,7 @@ struct UpdateView: View {
                   krbn_updater_check_for_updates_stable_only()
                 },
                 label: {
-                  Label("Check for updates", systemImage: "network")
+                  AppLocalizedLabel("menu_bar_extra.check_for_updates", systemImage: "network")
                 }
               )
 
@@ -34,7 +34,7 @@ struct UpdateView: View {
                   krbn_updater_check_for_updates_with_beta_version()
                 },
                 label: {
-                  Label("Check for beta updates", systemImage: "hare")
+                  AppLocalizedLabel("menu_bar_extra.check_for_beta_updates", systemImage: "hare")
                 }
               )
             }

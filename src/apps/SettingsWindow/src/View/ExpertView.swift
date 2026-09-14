@@ -9,7 +9,10 @@ struct ExpertView: View {
         GroupBox(label: Text("Expert mode")) {
           VStack(alignment: .leading, spacing: 4.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.unsafeUi) {
-              Text("Enable unsafe configuration (Default: off)")
+              HStack {
+                AppLocalizedText("setting.unsafe_ui")
+                Text("(Default: off)")
+              }
             }
             .switchToggleStyle()
 
@@ -43,7 +46,10 @@ struct ExpertView: View {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(isOn: $settings.configuration.globalConfiguration.enableCgeventtapFallback) {
-                Text("Enable CGEventTap fallback (Default: off)")
+                HStack {
+                  AppLocalizedText("setting.enable_cgeventtap_fallback")
+                  Text("(Default: off)")
+                }
               }
               .switchToggleStyle()
 
@@ -66,7 +72,10 @@ struct ExpertView: View {
                 isOn: $settings.configuration.globalConfiguration
                   .filterUselessEventsFromSpecificDevices
               ) {
-                Text("Filter useless events from specific devices (Default: on)")
+                HStack {
+                  AppLocalizedText("setting.filter_useless_events_from_specific_devices")
+                  Text("(Default: on)")
+                }
               }
               .switchToggleStyle()
 
@@ -86,7 +95,11 @@ struct ExpertView: View {
                 isOn: $settings.configuration.globalConfiguration
                   .reorderSameTimestampInputEventsToPrioritizeModifiers
               ) {
-                Text("Reorder same timestamp input events to prioritize modifiers (Default: on)")
+                HStack {
+                  AppLocalizedText(
+                    "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers")
+                  Text("(Default: on)")
+                }
               }
               .switchToggleStyle()
 
@@ -101,7 +114,7 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Delay to grab device")) {
+        GroupBox(label: AppLocalizedText("setting.delay_milliseconds_before_open_device")) {
           VStack(alignment: .leading, spacing: 4.0) {
             HStack {
               IntTextField(
@@ -125,7 +138,7 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Delay before sending sleep shortcut key-down events")) {
+        GroupBox(label: AppLocalizedText("setting.delay_milliseconds_before_sleep_shortcut")) {
           VStack(alignment: .leading, spacing: 4.0) {
             HStack {
               IntTextField(
