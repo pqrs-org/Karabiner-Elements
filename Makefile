@@ -52,7 +52,7 @@ clang-format:
 	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
 
 swift-format:
-	find src/apps -name '*.swift' -print0 | xargs -0 swift-format -i
+	find src/apps tests -name '*.swift' -print0 | xargs -0 swift-format -i
 
 ruff-format:
 	git ls-files -z -- '*.py' ':(exclude)vendor/**' ':(exclude)docs/vendor/**' | xargs -0 ruff format
