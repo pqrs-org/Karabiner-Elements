@@ -71,9 +71,3 @@ do not construct them from prefixes or configuration keys. Changed Settings uses
 explicit mappings in `ChangedSettingsReport.swift`.
 User-provided names and messages are displayed verbatim. System-provided panels
 continue to use the system's language.
-
-## Checks
-
-Run `make -C tests/src/changed_settings_localization` to verify JSON validation,
-language discovery, regional variants, fallback, report labels, reload failure
-recovery, file monitoring in separate processes. These Swift tests require Xcode.
