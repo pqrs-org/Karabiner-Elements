@@ -9,25 +9,22 @@ struct SetupAccessibilityView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 20.0) {
-      Label(
-        "Please allow access to accessibility features",
+      AppLocalizedLabel(
+        "settings.setup.accessibility.permission",
         systemImage: "lightbulb"
       )
       .font(.system(size: 24))
 
-      Text(
-        """
-        Karabiner-Core-Service uses accessibility features.
-        Please allow it on Privacy & Security System Settings.
-        """
+      AppLocalizedText(
+        "settings.setup.accessibility.description"
       )
       .fixedSize(horizontal: false, vertical: true)
 
       OpenSystemSettingsButton(
         url: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
         label: {
-          Label(
-            "Open Privacy & Security System Settings…",
+          AppLocalizedLabel(
+            "settings.system_settings.open_privacy",
             systemImage: "arrow.forward.circle.fill")
         }
       )

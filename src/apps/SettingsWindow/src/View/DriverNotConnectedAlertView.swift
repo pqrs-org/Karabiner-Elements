@@ -6,8 +6,8 @@ struct DriverNotConnectedAlertView: View {
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center) {
-        Label(
-          "Waiting for a connection to the IOKit service",
+        AppLocalizedLabel(
+          "settings.connection.iokit_waiting",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))

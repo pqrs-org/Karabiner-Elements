@@ -1,0 +1,38 @@
+{
+    "menu_bar_extra.check_for_beta_updates": {
+        "en": "Check for beta updates…"
+        ,"ja": "ベータ版のアップデートを確認…"
+    },
+    "menu_bar_extra.check_for_updates": {
+        "en": "Check for updates…"
+        ,"ja": "アップデートを確認…"
+    },
+    "menu_bar_extra.launch_event_viewer": {
+        "en": "Launch EventViewer…"
+        ,"ja": "イベントビューアを起動…"
+    },
+    "menu_bar_extra.multitouch_settings": {
+        "en": "Multitouch Extension Settings…"
+        ,"ja": "マルチタッチ拡張の設定…"
+    },
+    "menu_bar_extra.profiles": {
+        "en": "Profiles"
+        ,"ja": "プロファイル"
+    },
+    "menu_bar_extra.quit": {
+        "en": "Quit Karabiner-Elements"
+        ,"ja": "Karabiner-Elements を終了"
+    },
+    "menu_bar_extra.quit_confirmation": {
+        "en": "Are you sure you want to quit?"
+        ,"ja": "終了してもよろしいですか？"
+    },
+    "menu_bar_extra.restart": {
+        "en": "Restart Karabiner-Elements"
+        ,"ja": "Karabiner-Elements を再起動"
+    },
+    "menu_bar_extra.settings": {
+        "en": "Settings…"
+        ,"ja": "設定…"
+    }
+}

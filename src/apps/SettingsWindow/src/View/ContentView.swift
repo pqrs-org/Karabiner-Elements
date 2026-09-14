@@ -63,9 +63,7 @@ struct ContentView: View {
     }
     .environment(
       \.locale,
-      AppLanguage.locale(
-        for: settings.configurationLoaded
-          ? settings.configuration.globalConfiguration.uiLanguage : "auto")
+      settings.uiLocale
     )
     .animation(.easeInOut(duration: 0.2), value: contentViewStates.toast)
     .frame(

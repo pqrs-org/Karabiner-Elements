@@ -7,10 +7,15 @@ struct AppLocalizedText: View {
   @Environment(\.locale) private var locale
   let key: String
 
-  init(_ key: String) { self.key = key }
+  let arguments: [String: String]
+
+  init(_ key: String, arguments: [String: String] = [:]) {
+    self.key = key
+    self.arguments = arguments
+  }
 
   var body: some View {
-    Text(verbatim: AppLanguage.text(key, locale: locale))
+    Text(verbatim: AppLanguage.text(key, locale: locale, arguments: arguments))
   }
 }
 
@@ -18,16 +23,40 @@ struct AppLocalizedLabel: View {
   let key: String
   let systemImage: String
 
-  init(_ key: String, systemImage: String) {
+  let arguments: [String: String]
+
+  init(_ key: String, systemImage: String, arguments: [String: String] = [:]) {
     self.key = key
     self.systemImage = systemImage
+    self.arguments = arguments
   }
 
   var body: some View {
     Label {
-      AppLocalizedText(key)
+      AppLocalizedText(key, arguments: arguments)
     } icon: {
       Image(systemName: systemImage)
+    }
+  }
+}
+
+// For APIs that require a String (search fields, tooltips, and custom controls).
+// Keeping locale and catalog as dynamic properties refreshes these strings too.
+@MainActor
+@propertyWrapper
+struct AppLocalizationContext: DynamicProperty {
+  @ObservedObject private var localization = AppLocalization.shared
+  @Environment(\.locale) private var locale
+
+  var wrappedValue: Lookup { Lookup(locale: locale, catalog: localization.catalog) }
+
+  @MainActor
+  struct Lookup {
+    let locale: Locale
+    let catalog: LocalizationCatalog
+
+    func callAsFunction(_ key: String, arguments: [String: String] = [:]) -> String {
+      AppLanguage.text(key, locale: locale, catalog: catalog, arguments: arguments)
     }
   }
 }

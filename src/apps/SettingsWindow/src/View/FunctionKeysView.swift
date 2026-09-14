@@ -15,7 +15,7 @@ struct FunctionKeysView: View {
         // Therefore, instead of changing it directly here, providing a button to open the System Settings.
 
         HStack {
-          Text("Use all F1, F2, etc. keys as standard function keys:")
+          AppLocalizedText("settings.function_keys.system_setting")
 
           if settingsCoreServiceDaemonClient.useFkeysAsStandardFunctionKeys {
             AppLocalizedText("value.on").foregroundColor(.accentColor).bold()
@@ -27,8 +27,8 @@ struct FunctionKeysView: View {
         OpenSystemSettingsButton(
           url: "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?FunctionKeys",
           label: {
-            Label(
-              "Open System Settings > Function Keys…",
+            AppLocalizedLabel(
+              "settings.system_settings.open_function_keys",
               systemImage: "arrow.up.forward.app")
           }
         )

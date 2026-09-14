@@ -1,0 +1,366 @@
+{
+    "settings.action.title": {
+        "en": "Action"
+        ,"ja": "操作"
+    },
+    "settings.defaults.font_size": {
+        "en": "pt (Default: 13)"
+        ,"ja": "pt（デフォルト：13）"
+    },
+    "settings.defaults.milliseconds_1000": {
+        "en": "milliseconds (Default value is 1000)"
+        ,"ja": "ミリ秒（デフォルト値：1000）"
+    },
+    "settings.defaults.off": {
+        "en": "(Default: off)"
+        ,"ja": "（デフォルト：無効）"
+    },
+    "settings.defaults.on": {
+        "en": "(Default: on)"
+        ,"ja": "（デフォルト：有効）"
+    },
+    "settings.defaults.percent_100": {
+        "en": "% (Default value is 100)"
+        ,"ja": "%（デフォルト値：100）"
+    },
+    "settings.defaults.sleep_delay": {
+        "en": "milliseconds (Default value is 500; 0 disables delay)"
+        ,"ja": "ミリ秒（デフォルト値：500、0 で遅延を無効化）"
+    },
+    "settings.defaults.value": {
+        "en": "(Default: {value})"
+        ,"ja": "（デフォルト：{value}）"
+    },
+    "settings.defaults.value_1000": {
+        "en": "(Default value is 1000)"
+        ,"ja": "（デフォルト値：1000）"
+    },
+    "settings.defaults.value_50": {
+        "en": "(Default value is 50)"
+        ,"ja": "（デフォルト値：50）"
+    },
+    "settings.defaults.value_500": {
+        "en": "(Default value is 500)"
+        ,"ja": "（デフォルト値：500）"
+    },
+    "settings.expert.cgeventtap_fallback": {
+        "en": "CGEventTap fallback"
+        ,"ja": "CGEventTap fallback"
+    },
+    "settings.expert.device_delay_warning": {
+        "en": "Setting insufficient delay (e.g., 0) will result in a device becoming unusable after Karabiner-Elements is quit.\n(This is a macOS problem and can be solved by unplugging the device and plugging it again.)"
+        ,"ja": "遅延が短すぎる場合（例：0）、Karabiner-Elements の終了後にデバイスが使用できなくなります。\n（macOS の問題です。デバイスを抜き差しすると解消します。）"
+    },
+    "settings.expert.fallback_description": {
+        "en": "If this setting is enabled, Karabiner-Core-Service uses CGEventTap as a fallback for devices that cannot be handled via HID input capture."
+        ,"ja": "この設定を有効にすると、HID 入力の取得で処理できないデバイスに対して、Karabiner-Core-Service が CGEventTap を代替手段として使用します。"
+    },
+    "settings.expert.filter_description": {
+        "en": "If this setting is enabled, the following events will be ignored:\n- Nintendo's Pro Controller (USB connected):\n    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed.\n    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all."
+        ,"ja": "この設定を有効にすると、次のイベントが無視されます：\n- Nintendo Switch Pro コントローラー（USB 接続）：\n    - 何も押していなくても高頻度でオン・オフが送信され続けるボタンのイベント。\n    - スティックを動かしていなくてもランダムな方向の傾きが送信され続けるスティックのイベント。"
+    },
+    "settings.expert.modifier_order_hint": {
+        "en": "If your keyboard supports hardware macros and sends multiple keys at once, and you notice that modifier key order is changing, try turning this setting off."
+        ,"ja": "ハードウェアマクロに対応したキーボードで複数のキーを同時に送信したとき、修飾キーの順序が変わる場合は、この設定をオフにしてみてください。"
+    },
+    "settings.expert.modify_pointing_by_default": {
+        "en": "Modify events for pointing devices by default (Default: off)"
+        ,"ja": "ポインティングデバイスのイベントをデフォルトで変更する（デフォルト：無効）"
+    },
+    "settings.expert.options": {
+        "en": "Options"
+        ,"ja": "オプション"
+    },
+    "settings.expert.pointing_devices": {
+        "en": "Pointing devices"
+        ,"ja": "ポインティングデバイス"
+    },
+    "settings.expert.sleep_delay_description": {
+        "en": "Karabiner-Elements delays the key-down event of the macOS sleep shortcut (command+option+power, command+option+eject, or escape at the login window). This prevents the shortcut's release events from waking the Mac immediately after sleep."
+        ,"ja": "Karabiner-Elements は、macOS のスリープショートカット（command+option+power、command+option+eject、またはログイン画面での escape）のキー押下イベントを遅延させます。これにより、キーを離したイベントで Mac がすぐにスリープから復帰することを防ぎます。"
+    },
+    "settings.expert.title": {
+        "en": "Expert mode"
+        ,"ja": "上級者向けモード"
+    },
+    "settings.expert.unsafe_banner": {
+        "en": "The unsafe configuration is enabled, so the safeguard feature is currently inactive."
+        ,"ja": "安全でない設定が有効になっているため、保護機能は現在無効です。"
+    },
+    "settings.expert.unsafe_description": {
+        "en": "Unsafe configuration disables the safeguard feature on the configuration UI.\nYou should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. (e.g., using Screen Sharing)\n\nUnsafe configuration allows the following items:\n- Allow you to enable Apple pointing devices in the Devices tab.\n- Allow you to change left-click in Simple Modifications tab."
+        ,"ja": "安全でない設定を有効にすると、設定画面の保護機能が無効になります。\n別のマシンから Karabiner-Elements を停止できる準備ができている場合にのみ有効にしてください（画面共有など）。\n\n次の操作が可能になります：\n- デバイスタブで Apple 製ポインティングデバイスを有効にする。\n- 単純なキー変換タブで左クリックを変更する。"
+    },
+    "settings.function_keys.system_setting": {
+        "en": "Use all F1, F2, etc. keys as standard function keys:"
+        ,"ja": "F1、F2 などのキーを標準のファンクションキーとして使用："
+    },
+    "settings.log.add_divider": {
+        "en": "Add divider"
+        ,"ja": "区切りを追加"
+    },
+    "settings.log.current_time": {
+        "en": "Current time: {time}"
+        ,"ja": "現在時刻：{time}"
+    },
+    "settings.misc.backup_hint": {
+        "en": "You can back up your settings or migrate them to another machine by copying karabiner.json. There are also backups under the automatic_backups folder, so you can restore a previous state by overwriting karabiner.json with one of those backups."
+        ,"ja": "karabiner.json をコピーすると、設定をバックアップしたり別のマシンへ移行したりできます。automatic_backups フォルダーにもバックアップが保存されており、そのファイルで karabiner.json を上書きすると以前の状態に戻せます。"
+    },
+    "settings.misc.export_import": {
+        "en": "Export & Import"
+        ,"ja": "書き出しと読み込み"
+    },
+    "settings.misc.install_system_default": {
+        "en": "Copy the current configuration to the system default configuration"
+        ,"ja": "現在の設定をシステムのデフォルト設定にコピー"
+    },
+    "settings.misc.multitouch_machine_specific": {
+        "en": "This setting is hardware-specific. When you import Karabiner-Elements settings to another Mac, the enabled state of the Multitouch Extension is not carried over."
+        ,"ja": "この設定はハードウェア固有です。別の Mac に Karabiner-Elements の設定を移行しても、Multitouch Extension の有効・無効の状態は引き継がれません。"
+    },
+    "settings.misc.multitouch_menu_hint": {
+        "en": "You can also open the Multitouch Extension settings from the menu."
+        ,"ja": "Multitouch Extension の設定はメニューからも開けます。"
+    },
+    "settings.misc.multitouch_title": {
+        "en": "Extra tool: Multitouch Extension"
+        ,"ja": "追加ツール：Multitouch Extension"
+    },
+    "settings.misc.no_system_default": {
+        "en": "System default configuration is not set."
+        ,"ja": "システムのデフォルト設定は設定されていません。"
+    },
+    "settings.misc.open_config_folder": {
+        "en": "Open config folder"
+        ,"ja": "設定フォルダーを開く"
+    },
+    "settings.misc.remove_system_default": {
+        "en": "Remove the system default configuration"
+        ,"ja": "システムのデフォルト設定を削除"
+    },
+    "settings.misc.system_default": {
+        "en": "System default configuration"
+        ,"ja": "システムのデフォルト設定"
+    },
+    "settings.misc.system_default_hint": {
+        "en": "You can use Karabiner-Elements even before login by setting the system default configuration. (This operation requires the administrator privilege.)"
+        ,"ja": "システムのデフォルト設定を設定すると、ログイン前でも Karabiner-Elements を使用できます。（管理者権限が必要です。）"
+    },
+    "settings.modifier_mappings.reset_hint": {
+        "en": "macOS also remaps modifier keys. It's recommended to restore defaults and configure them via Karabiner-Elements.\n\nYou can reset the macOS setting by following steps:\n1. Open System Settings and go to Keyboard Shortcuts… > Modifier Keys.\n2. Choose Karabiner DriverKit VirtualHIDKeyboard.\n3. Click the Restore Defaults button."
+        ,"ja": "macOS 側でも修飾キーが変更されています。デフォルトに戻し、Karabiner-Elements で設定することをおすすめします。\n\n次の手順で macOS の設定をリセットできます：\n1. システム設定を開き、キーボードショートカット… > 修飾キーに進みます。\n2. Karabiner DriverKit VirtualHIDKeyboard を選択します。\n3.「デフォルトに戻す」をクリックします。"
+    },
+    "settings.parameters.basic": {
+        "en": "type:basic parameters"
+        ,"ja": "basic のパラメーター"
+    },
+    "settings.parameters.mouse_motion_to_scroll": {
+        "en": "type:mouse_motion_to_scroll parameters"
+        ,"ja": "mouse_motion_to_scroll のパラメーター"
+    },
+    "settings.profiles.add": {
+        "en": "Add new profile"
+        ,"ja": "新しいプロファイルを追加"
+    },
+    "settings.profiles.name": {
+        "en": "Profile name:"
+        ,"ja": "プロファイル名："
+    },
+    "settings.profiles.name_placeholder": {
+        "en": "Profile name"
+        ,"ja": "プロファイル名"
+    },
+    "settings.save.failed": {
+        "en": "Save failed:\n{error}"
+        ,"ja": "保存に失敗しました：\n{error}"
+    },
+    "settings.shared.reorder_hint": {
+        "en": "Drag this icon to reorder the list"
+        ,"ja": "アイコンをドラッグしてリストを並べ替えられます"
+    },
+    "settings.sidebar.item.changed_settings": {
+        "en": "Changed Settings"
+        ,"ja": "変更済み設定"
+    },
+    "settings.sidebar.item.complex_modifications": {
+        "en": "Complex Modifications"
+        ,"ja": "高度なキー変換"
+    },
+    "settings.sidebar.item.devices": {
+        "en": "Devices"
+        ,"ja": "デバイス"
+    },
+    "settings.sidebar.item.expert": {
+        "en": "Expert"
+        ,"ja": "エキスパート向け設定"
+    },
+    "settings.sidebar.item.function_keys": {
+        "en": "Function Keys"
+        ,"ja": "ファンクションキー"
+    },
+    "settings.sidebar.item.log": {
+        "en": "Log"
+        ,"ja": "ログ"
+    },
+    "settings.sidebar.item.misc": {
+        "en": "Misc"
+        ,"ja": "その他"
+    },
+    "settings.sidebar.item.parameters": {
+        "en": "Parameters"
+        ,"ja": "パラメータ"
+    },
+    "settings.sidebar.item.profiles": {
+        "en": "Profiles"
+        ,"ja": "プロファイル"
+    },
+    "settings.sidebar.item.quit_restart": {
+        "en": "Quit, Restart"
+        ,"ja": "終了・再起動"
+    },
+    "settings.sidebar.item.setup": {
+        "en": "Setup"
+        ,"ja": "セットアップ"
+    },
+    "settings.sidebar.item.simple_modifications": {
+        "en": "Simple Modifications"
+        ,"ja": "単純なキー変換"
+    },
+    "settings.sidebar.item.system_extensions": {
+        "en": "System Extensions"
+        ,"ja": "システム拡張"
+    },
+    "settings.sidebar.item.ui": {
+        "en": "UI"
+        ,"ja": "UI"
+    },
+    "settings.sidebar.item.uninstall": {
+        "en": "Uninstall"
+        ,"ja": "アンインストール"
+    },
+    "settings.sidebar.item.update": {
+        "en": "Update"
+        ,"ja": "アップデート"
+    },
+    "settings.sidebar.item.virtual_keyboard": {
+        "en": "Virtual Keyboard"
+        ,"ja": "仮想キーボード"
+    },
+    "settings.sidebar.section.configurations": {
+        "en": "Configurations"
+        ,"ja": "設定"
+    },
+    "settings.sidebar.section.diagnostic": {
+        "en": "Diagnostic"
+        ,"ja": "診断"
+    },
+    "settings.sidebar.section.maintenance": {
+        "en": "Maintenance"
+        ,"ja": "メンテナンス"
+    },
+    "settings.sidebar.section.modifications": {
+        "en": "Modifications"
+        ,"ja": "キー変換"
+    },
+    "settings.system_extensions.logs": {
+        "en": "macOS log messages"
+        ,"ja": "macOS のログメッセージ"
+    },
+    "settings.system_extensions.states": {
+        "en": "States"
+        ,"ja": "状態"
+    },
+    "settings.toolbar.auto": {
+        "en": "Auto"
+        ,"ja": "自動"
+    },
+    "settings.toolbar.language": {
+        "en": "Language"
+        ,"ja": "言語"
+    },
+    "settings.ui.app_icon": {
+        "en": "App icon"
+        ,"ja": "アプリアイコン"
+    },
+    "settings.ui.app_icon_hint": {
+        "en": "It takes a few seconds for changes to the application icon to take effect.\nAnd to update the Dock icon, you need to close and reopen the application."
+        ,"ja": "アプリアイコンの変更が反映されるまで数秒かかります。\nDock のアイコンを更新するには、アプリをいったん終了してから開き直してください。"
+    },
+    "settings.ui.appearance": {
+        "en": "Appearance"
+        ,"ja": "外観"
+    },
+    "settings.ui.menu_bar": {
+        "en": "Menu bar"
+        ,"ja": "メニューバー"
+    },
+    "settings.ui.notification_description": {
+        "en": "What is the Karabiner Notification Window?\n\nThe Karabiner Notification Window displays the status of sticky modifiers and messages from Complex Modifications."
+        ,"ja": "Karabiner 通知ウィンドウとは？\n\nKarabiner 通知ウィンドウには、固定修飾キーの状態や、高度なキー変換からのメッセージが表示されます。"
+    },
+    "settings.ui.notification_window": {
+        "en": "Karabiner Notification Window"
+        ,"ja": "Karabiner 通知ウィンドウ"
+    },
+    "settings.ui.position.bottom_left": {
+        "en": "Bottom left"
+        ,"ja": "左下"
+    },
+    "settings.ui.position.bottom_right": {
+        "en": "Bottom right"
+        ,"ja": "右下"
+    },
+    "settings.ui.position.top_left": {
+        "en": "Top left"
+        ,"ja": "左上"
+    },
+    "settings.ui.position.top_right": {
+        "en": "Top right"
+        ,"ja": "右上"
+    },
+    "settings.ui.use_system_color": {
+        "en": "Use the system color"
+        ,"ja": "システムの色を使用"
+    },
+    "settings.uninstall.launch": {
+        "en": "Launch uninstaller"
+        ,"ja": "アンインストーラーを起動"
+    },
+    "settings.uninstall.title": {
+        "en": "Uninstall"
+        ,"ja": "アンインストール"
+    },
+    "settings.update.automatic": {
+        "en": "Check for updates automatically (Default: on)"
+        ,"ja": "アップデートを自動的に確認（デフォルト：有効）"
+    },
+    "settings.update.github": {
+        "en": "Open GitHub (source code)"
+        ,"ja": "GitHub（ソースコード）を開く"
+    },
+    "settings.update.official_website": {
+        "en": "Open official website"
+        ,"ja": "公式サイトを開く"
+    },
+    "settings.update.title": {
+        "en": "Update"
+        ,"ja": "アップデート"
+    },
+    "settings.update.version": {
+        "en": "Karabiner-Elements version {version}"
+        ,"ja": "Karabiner-Elements バージョン {version}"
+    },
+    "settings.update.websites": {
+        "en": "Web sites"
+        ,"ja": "Web サイト"
+    },
+    "settings.virtual_keyboard.mouse_key": {
+        "en": "Mouse key"
+        ,"ja": "マウスキー"
+    },
+    "settings.window.title": {
+        "en": "Karabiner-Elements Settings"
+        ,"ja": "Karabiner-Elements 設定"
+    }
+}

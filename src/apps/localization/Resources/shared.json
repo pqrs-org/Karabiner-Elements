@@ -1,52 +1,4 @@
 {
-    "changed_settings.empty": {
-        "en": "No settings have been changed from their default values."
-        ,"ja": "デフォルト値から変更されている設定はありません。"
-    },
-    "changed_settings.error": {
-        "en": "An error occurred."
-        ,"ja": "エラーが発生しました。"
-    },
-    "changed_settings.title": {
-        "en": "Changed Settings"
-        ,"ja": "変更済み設定"
-    },
-    "menu_bar_extra.check_for_beta_updates": {
-        "en": "Check for beta updates…"
-        ,"ja": "ベータ版のアップデートを確認…"
-    },
-    "menu_bar_extra.check_for_updates": {
-        "en": "Check for updates…"
-        ,"ja": "アップデートを確認…"
-    },
-    "menu_bar_extra.launch_event_viewer": {
-        "en": "Launch EventViewer…"
-        ,"ja": "イベントビューアを起動…"
-    },
-    "menu_bar_extra.multitouch_settings": {
-        "en": "Multitouch Extension Settings…"
-        ,"ja": "マルチタッチ拡張の設定…"
-    },
-    "menu_bar_extra.profiles": {
-        "en": "Profiles"
-        ,"ja": "プロファイル"
-    },
-    "menu_bar_extra.quit": {
-        "en": "Quit Karabiner-Elements"
-        ,"ja": "Karabiner-Elements を終了"
-    },
-    "menu_bar_extra.quit_confirmation": {
-        "en": "Are you sure you want to quit?"
-        ,"ja": "終了してもよろしいですか？"
-    },
-    "menu_bar_extra.restart": {
-        "en": "Restart Karabiner-Elements"
-        ,"ja": "Karabiner-Elements を再起動"
-    },
-    "menu_bar_extra.settings": {
-        "en": "Settings…"
-        ,"ja": "設定…"
-    },
     "section.complex_modifications": {
         "en": "Complex Modifications"
         ,"ja": "高度なキー変換"
@@ -223,109 +175,69 @@
         "en": "Allow unsafe configuration"
         ,"ja": "安全保護を無効にした設定を許可"
     },
-    "settings.complex_modifications.editor.log": {
-        "en": "Log"
-        ,"ja": "ログ"
+    "shared.action.add_item": {
+        "en": "Add item"
+        ,"ja": "項目を追加"
     },
-    "settings.sidebar.item.changed_settings": {
-        "en": "Changed Settings"
-        ,"ja": "変更済み設定"
-    },
-    "settings.sidebar.item.complex_modifications": {
-        "en": "Complex Modifications"
-        ,"ja": "高度なキー変換"
-    },
-    "settings.sidebar.item.devices": {
-        "en": "Devices"
-        ,"ja": "デバイス"
-    },
-    "settings.sidebar.item.expert": {
-        "en": "Expert"
-        ,"ja": "エキスパート向け設定"
-    },
-    "settings.sidebar.item.function_keys": {
-        "en": "Function Keys"
-        ,"ja": "ファンクションキー"
-    },
-    "settings.sidebar.item.log": {
-        "en": "Log"
-        ,"ja": "ログ"
-    },
-    "settings.sidebar.item.misc": {
-        "en": "Misc"
-        ,"ja": "その他"
-    },
-    "settings.sidebar.item.parameters": {
-        "en": "Parameters"
-        ,"ja": "パラメータ"
-    },
-    "settings.sidebar.item.profiles": {
-        "en": "Profiles"
-        ,"ja": "プロファイル"
-    },
-    "settings.sidebar.item.quit_restart": {
-        "en": "Quit, Restart"
-        ,"ja": "終了・再起動"
-    },
-    "settings.sidebar.item.setup": {
-        "en": "Setup"
-        ,"ja": "セットアップ"
-    },
-    "settings.sidebar.item.simple_modifications": {
-        "en": "Simple Modifications"
-        ,"ja": "単純なキー変換"
-    },
-    "settings.sidebar.item.system_extensions": {
-        "en": "System Extensions"
-        ,"ja": "システム拡張"
-    },
-    "settings.sidebar.item.ui": {
-        "en": "UI"
-        ,"ja": "UI"
-    },
-    "settings.sidebar.item.uninstall": {
-        "en": "Uninstall"
-        ,"ja": "アンインストール"
-    },
-    "settings.sidebar.item.update": {
-        "en": "Update"
-        ,"ja": "アップデート"
-    },
-    "settings.sidebar.item.virtual_keyboard": {
-        "en": "Virtual Keyboard"
-        ,"ja": "仮想キーボード"
-    },
-    "settings.sidebar.section.configurations": {
-        "en": "Configurations"
-        ,"ja": "設定"
-    },
-    "settings.sidebar.section.diagnostic": {
-        "en": "Diagnostic"
-        ,"ja": "診断"
-    },
-    "settings.sidebar.section.maintenance": {
-        "en": "Maintenance"
-        ,"ja": "メンテナンス"
-    },
-    "settings.sidebar.section.modifications": {
-        "en": "Modifications"
-        ,"ja": "キー変換"
-    },
-    "settings.toolbar.language": {
-        "en": "Language"
-        ,"ja": "言語"
-    },
-    "settings.uninstall.title": {
-        "en": "Uninstall"
-        ,"ja": "アンインストール"
-    },
-    "settings.update.title": {
-        "en": "Update"
-        ,"ja": "アップデート"
+    "shared.action.cancel": {
+        "en": "Cancel"
+        ,"ja": "キャンセル"
     },
     "shared.action.copy_to_pasteboard": {
         "en": "Copy to pasteboard"
         ,"ja": "クリップボードにコピー"
+    },
+    "shared.action.dismiss": {
+        "en": "Dismiss"
+        ,"ja": "閉じる"
+    },
+    "shared.action.duplicate": {
+        "en": "Duplicate"
+        ,"ja": "複製"
+    },
+    "shared.action.edit": {
+        "en": "Edit"
+        ,"ja": "編集"
+    },
+    "shared.action.enable": {
+        "en": "Enable"
+        ,"ja": "有効にする"
+    },
+    "shared.action.enable_all": {
+        "en": "Enable All"
+        ,"ja": "すべて有効にする"
+    },
+    "shared.action.import": {
+        "en": "Import"
+        ,"ja": "読み込む"
+    },
+    "shared.action.refresh": {
+        "en": "Refresh"
+        ,"ja": "更新"
+    },
+    "shared.action.rename": {
+        "en": "Rename"
+        ,"ja": "名前を変更"
+    },
+    "shared.action.save": {
+        "en": "Save"
+        ,"ja": "保存"
+    },
+    "shared.filter": {
+        "en": "Filter"
+        ,"ja": "絞り込み"
+    },
+    "shared.search": {
+        "en": "Search"
+        ,"ja": "検索"
+    },
+    "shared.section.advanced": {
+        "en": "Advanced"
+        ,"ja": "詳細"
+    },
+    "shared.status.loading": {
+        "en": "Loading..."
+        ,"ja": "読み込み中…"
     },
     "value.off": {
         "en": "Off"

@@ -4,6 +4,8 @@ import CodeEditor
 import SwiftUI
 
 struct ComplexModificationsEditView: View {
+  @ObservedObject private var localization = AppLocalization.shared
+  @Environment(\.locale) private var locale
   @Binding var rule: SettingsConfiguration.ComplexModificationsRule?
   @Binding var showing: Bool
   let onEditingCancelledByExternalChange: () -> Void
@@ -58,7 +60,8 @@ struct ComplexModificationsEditView: View {
                   },
                   label: {
                     Label(
-                      externalEditorController.openTitle(), systemImage: "arrow.up.right.square"
+                      externalEditorController.openTitle(locale: locale),
+                      systemImage: "arrow.up.right.square"
                     )
                     .buttonLabelStyle()
                   }
@@ -69,7 +72,7 @@ struct ComplexModificationsEditView: View {
                     externalEditorController.chooseEditor()
                   },
                   label: {
-                    Label("Choose editor", systemImage: "gear")
+                    AppLocalizedLabel("settings.editor.choose_editor", systemImage: "gear")
                       .buttonLabelStyle()
                   }
                 )
@@ -81,7 +84,7 @@ struct ComplexModificationsEditView: View {
                     }
                   },
                   label: {
-                    Label("Save", systemImage: "checkmark")
+                    AppLocalizedLabel("shared.action.save", systemImage: "checkmark")
                       .buttonLabelStyle()
                   }
                 )
@@ -94,8 +97,8 @@ struct ComplexModificationsEditView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
 
           if disabled {
-            Label(
-              "Content is too large to edit. Please edit karabiner.json directly with your favorite editor.",
+            AppLocalizedLabel(
+              "settings.editor.content_too_large",
               systemImage: ErrorBorder.icon
             )
             .modifier(ErrorBorder())
@@ -116,8 +119,8 @@ struct ComplexModificationsEditView: View {
             if didOpenExternalEditor {
               Label(
                 title: {
-                  Text(
-                    "Changes saved in the external editor are automatically reflected while this window is open."
+                  AppLocalizedText(
+                    "settings.editor.external_sync_hint"
                   )
                   .textSelection(.enabled)
                 },
@@ -153,7 +156,7 @@ struct ComplexModificationsEditView: View {
               }
 
               VStack(alignment: .leading, spacing: 6) {
-                Text("Result")
+                AppLocalizedText("settings.editor.result")
                   .font(.headline)
 
                 ScrollView {
@@ -174,12 +177,18 @@ struct ComplexModificationsEditView: View {
                   .font(.headline)
 
                 ScrollView {
-                  Text(evalLogMessages.isEmpty ? "(no log output)" : evalLogMessages)
-                    .font(.callout)
-                    .monospaced()
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
-                    .padding(8)
+                  Group {
+                    if evalLogMessages.isEmpty {
+                      AppLocalizedText("settings.editor.no_log")
+                    } else {
+                      Text(verbatim: evalLogMessages)
+                    }
+                  }
+                  .font(.callout)
+                  .monospaced()
+                  .textSelection(.enabled)
+                  .frame(maxWidth: .infinity, alignment: .topLeading)
+                  .padding(8)
                 }
                 .frame(maxWidth: .infinity, minHeight: 60, maxHeight: 60)
                 .background(Color(NSColor.textBackgroundColor))

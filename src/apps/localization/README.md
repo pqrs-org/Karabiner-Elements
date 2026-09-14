@@ -1,14 +1,32 @@
 # Editing translations
 
-Settings and ConsoleUserServer share a plain UTF-8 JSON file at:
+Settings and ConsoleUserServer share UTF-8 JSON translation files under:
 
+```text
+/Library/Application Support/org.pqrs/Karabiner-Elements/localizations/
 ```
-/Library/Application Support/org.pqrs/Karabiner-Elements/localizations.json
+
+Sources are grouped by feature under `src/apps/localization/Resources/`:
+
+```text
+Resources/
+  shared.json
+  menu_bar_extra.json
+  changed_settings.json
+  settings/
+    general.json
+    devices.json
+    key_picker.json
+    complex_modifications.json
+    setup.json
 ```
 
-The source is `src/apps/localization/Resources/localizations.json`. Each top-level
-key maps language tags directly to translated strings:
+All JSON files are loaded recursively into one catalog. A translation key must
+appear in only one file, even when adding a language. Hidden files and symbolic
+links are ignored. Each top-level key maps language tags directly to translated
+strings:
 
+<!-- prettier-ignore -->
 ```json
 {
     "settings.toolbar.language": {
@@ -24,51 +42,29 @@ for fallback. Other languages may have translations for only some keys. Use lang
 tags such as `ja`, `fr`, `pt-BR`, or `zh-Hant` (lowercase primary language, hyphens
 for subtags). `auto` is reserved for the system language selection.
 
+Some strings contain placeholders such as `{count}` or `{name}`. Keep these names
+unchanged in translations; you may move them to fit the sentence.
+
 ## Change or add a translation
 
 Run these commands from the repository root:
 
-1.  Install an application version that supports this JSON format.
-2.  Edit `src/apps/localization/Resources/localizations.json`. Keep existing keys;
-    update the strings or add a language under the keys you want to translate.
-3.  Run `make -C src/apps/localization install`. This validates and formats the
-    JSON with sorted keys and four-space indentation, then copies it using `sudo`.
+1.  Install an application version that supports this resource directory.
+2.  Edit the relevant JSON file under `src/apps/localization/Resources/`. Keep
+    existing keys; update the strings or add a language under those keys.
+3.  Run `make -C src/apps/localization install`. This validates the entire
+    directory, rejects duplicate keys, and formats JSON with sorted keys and
+    four-space indentation. It then synchronizes the files using `sudo`, removing
+    installed translation files that no longer exist in the source directory.
     Each language's string stays on one line; languages after `en` have a leading
     comma. Embedded newlines use JSON escapes.
     No Xcode, resource compilation, application build, code signing, or application
     restart is needed to update translations.
-4.  Settings and ConsoleUserServer automatically reload the installed JSON and
+4.  Settings and ConsoleUserServer automatically reload the installed translations and
     update their translations and language lists. Select the added language and
     check the result, then submit the JSON changes in your pull request.
 
-`make -C src/apps/localization` validates the file without installing it.
+`make -C src/apps/localization` validates all files without installing them.
 `make format` includes localization formatting. The scripts require Python 3.
 An application/package installation may replace local translation edits; keep your
 source changes and run `make -C src/apps/localization install` again afterward.
-
-## Language selection and reload
-
-`Auto` uses the system's preferred languages; other choices show each language's
-native name. `global.ui_language` stores the selection, including region/script variants.
-A saved language is retained if it disappears from a replacement JSON file.
-Unsupported languages and missing translations fall back to English. Unknown keys
-are displayed as-is. Values are plain strings, with no automatic plural or format
-specifier processing.
-
-Each application monitors the installed file with `DispatchSource`. Consecutive
-file events are coalesced for 100 ms before reloading. In-place writes and atomic
-file replacements are supported. Reload parses and validates the entire file
-before publishing it; invalid JSON leaves the previous translations intact, and
-a later valid save updates them. Automatic reload failures are logged.
-
-## Using a translation in code
-
-SwiftUI views use `AppLocalizedText(key)` or `AppLocalizedLabel(key, systemImage: ...)`.
-These observe localization reloads and read the selected locale from the environment.
-Strings for reports and menu items use `AppLanguage.text(key, locale: ...)`; views
-using this directly also observe `AppLocalization.shared` to refresh on reload.
-Write localization keys as complete string literals so their usages are searchable;
-do not construct them from prefixes or configuration keys. Changed Settings uses
-explicit mappings in `ChangedSettings.swift`.
-User-provided names and messages are displayed verbatim. System-provided panels
-continue to use the system's language.

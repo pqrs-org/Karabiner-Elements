@@ -1,0 +1,298 @@
+{
+    "settings.configuration.parse_error": {
+        "en": "karabiner.json couldn't be loaded due to a parse error"
+        ,"ja": "構文エラーのため karabiner.json を読み込めませんでした"
+    },
+    "settings.configuration.parse_error_hint": {
+        "en": "It looks like the file was edited manually and now contains invalid JSON."
+        ,"ja": "手動で編集されたファイルに、無効な JSON が含まれているようです。"
+    },
+    "settings.configuration.permission_error": {
+        "en": "karabiner.json couldn't be loaded because access was denied"
+        ,"ja": "アクセスが拒否されたため karabiner.json を読み込めませんでした"
+    },
+    "settings.configuration.permission_error_hint": {
+        "en": "Move karabiner.json to a location that Karabiner-Elements can access, or grant Full Disk Access to Karabiner-Elements and its background services. Then restart Karabiner-Elements."
+        ,"ja": "Karabiner-Elements がアクセスできる場所に karabiner.json を移動するか、Karabiner-Elements とそのバックグラウンドサービスにフルディスクアクセスを許可してください。その後、Karabiner-Elements を再起動してください。"
+    },
+    "settings.connection.agent_retry": {
+        "en": "The connection could not be established. Open System Settings and turn Karabiner-Elements Non-Privileged Agents v2 off and on again."
+        ,"ja": "接続できませんでした。システム設定を開き、Karabiner-Elements Non-Privileged Agents v2 をいったんオフにしてから、再度オンにしてください。"
+    },
+    "settings.connection.agent_waiting": {
+        "en": "Waiting to connect to the agent process (Karabiner-Console-User-Server)"
+        ,"ja": "エージェントプロセス（Karabiner-Console-User-Server）への接続を待っています"
+    },
+    "settings.connection.iokit_waiting": {
+        "en": "Waiting for a connection to the IOKit service"
+        ,"ja": "IOKit サービスへの接続を待っています"
+    },
+    "settings.connection.virtual_hid_hint": {
+        "en": "If the message remains visible, third-party security software may be blocking communication with Karabiner-VirtualHIDDevice-Daemon."
+        ,"ja": "このメッセージが表示され続ける場合、他社製セキュリティソフトウェアが Karabiner-VirtualHIDDevice-Daemon との通信を妨げている可能性があります。"
+    },
+    "settings.connection.virtual_hid_waiting": {
+        "en": "Waiting for a connection from Karabiner-Core-Service to Karabiner-VirtualHIDDevice-Daemon"
+        ,"ja": "Karabiner-Core-Service から Karabiner-VirtualHIDDevice-Daemon への接続を待っています"
+    },
+    "settings.driver.activate": {
+        "en": "Activate driver"
+        ,"ja": "ドライバーを有効化"
+    },
+    "settings.driver.activated": {
+        "en": "Driver was successfully activated."
+        ,"ja": "ドライバーを有効化しました。"
+    },
+    "settings.driver.activating": {
+        "en": "Activating ..."
+        ,"ja": "有効化中…"
+    },
+    "settings.driver.activation_failed": {
+        "en": "Activation failed. (error: {status})"
+        ,"ja": "有効化に失敗しました。（エラー：{status}）"
+    },
+    "settings.driver.deactivate": {
+        "en": "Deactivate driver"
+        ,"ja": "ドライバーを無効化"
+    },
+    "settings.driver.deactivate_hint": {
+        "en": "If you continue to get this message after restarting macOS, try deactivating the virtual driver once by the following steps."
+        ,"ja": "macOS を再起動してもこのメッセージが表示される場合は、次の手順で仮想ドライバーをいったん無効にしてみてください。"
+    },
+    "settings.driver.deactivated": {
+        "en": "Driver was successfully deactivated."
+        ,"ja": "ドライバーを無効化しました。"
+    },
+    "settings.driver.deactivating": {
+        "en": "Deactivating ..."
+        ,"ja": "無効化中…"
+    },
+    "settings.driver.deactivation_failed": {
+        "en": "Deactivation failed. (error: {status})"
+        ,"ja": "無効化に失敗しました。（エラー：{status}）"
+    },
+    "settings.driver.outdated": {
+        "en": "The current virtual keyboard and mouse driver is outdated."
+        ,"ja": "現在の仮想キーボード・マウスドライバーは古いバージョンです。"
+    },
+    "settings.driver.restart_did_not_help": {
+        "en": "If this message still appears after restarting macOS."
+        ,"ja": "macOS を再起動してもこのメッセージが表示される場合"
+    },
+    "settings.driver.restart_required": {
+        "en": "macOS restart required"
+        ,"ja": "macOS の再起動が必要です"
+    },
+    "settings.driver.restart_to_upgrade": {
+        "en": "Please restart macOS to upgrade the driver."
+        ,"ja": "ドライバーを更新するため、macOS を再起動してください。"
+    },
+    "settings.driver.step_deactivate": {
+        "en": "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"
+        ,"ja": "1. 次のボタンを押してドライバーを無効にします。\n（管理者パスワードが必要です。）"
+    },
+    "settings.driver.step_restart": {
+        "en": "2. Restart macOS."
+        ,"ja": "2. macOS を再起動します。"
+    },
+    "settings.keyboard_type.ansi": {
+        "en": "ANSI (North America, most of Asia and others)"
+        ,"ja": "ANSI（北米、アジアの大部分など）"
+    },
+    "settings.keyboard_type.change_later": {
+        "en": "Note: You can change it later from the Virtual Keyboard settings."
+        ,"ja": "後から「仮想キーボード」の設定で変更できます。"
+    },
+    "settings.keyboard_type.description": {
+        "en": "The keyboard type selected here will be used in Karabiner-Elements, regardless of the physical keyboard you're using."
+        ,"ja": "ここで選択したキーボードの種類は、実際に使用しているキーボードに関係なく Karabiner-Elements で使用されます。"
+    },
+    "settings.keyboard_type.iso": {
+        "en": "ISO (Europe, Latin America, Middle-East and others)"
+        ,"ja": "ISO（ヨーロッパ、中南米、中東など）"
+    },
+    "settings.keyboard_type.jis": {
+        "en": "JIS (Japanese)"
+        ,"ja": "JIS（日本語）"
+    },
+    "settings.keyboard_type.label": {
+        "en": "Keyboard type:"
+        ,"ja": "キーボードの種類："
+    },
+    "settings.keyboard_type.select_prompt": {
+        "en": "Please select the keyboard type you'd like to use"
+        ,"ja": "使用するキーボードの種類を選択してください"
+    },
+    "settings.services.not_running": {
+        "en": "Some background services are not running"
+        ,"ja": "一部のバックグラウンドサービスが実行されていません"
+    },
+    "settings.services.restart_hint": {
+        "en": "Although the background services are enabled, some of them are not running.\nTry disabling the background services once, then enable them again."
+        ,"ja": "バックグラウンドサービスは有効になっていますが、一部が実行されていません。\nバックグラウンドサービスをいったん無効にしてから、再度有効にしてみてください。"
+    },
+    "settings.setup.accessibility.description": {
+        "en": "Karabiner-Core-Service uses accessibility features.\nPlease allow it on Privacy & Security System Settings."
+        ,"ja": "Karabiner-Core-Service はアクセシビリティ機能を使用します。\nシステム設定の「プライバシーとセキュリティ」で許可してください。"
+    },
+    "settings.setup.accessibility.permission": {
+        "en": "Please allow access to accessibility features"
+        ,"ja": "アクセシビリティ機能へのアクセスを許可してください"
+    },
+    "settings.setup.accessibility_required": {
+        "en": "Please configure Accessibility first"
+        ,"ja": "先にアクセシビリティを設定してください"
+    },
+    "settings.setup.completed.accessibility": {
+        "en": "Accessibility access is allowed."
+        ,"ja": "アクセシビリティへのアクセスは許可されています。"
+    },
+    "settings.setup.completed.driver": {
+        "en": "Driver Extension is allowed."
+        ,"ja": "ドライバー機能拡張は許可されています。"
+    },
+    "settings.setup.completed.input_monitoring": {
+        "en": "Input event capture is allowed.\n(It may be granted via Accessibility permission.)"
+        ,"ja": "入力イベントの取得は許可されています。\n（アクセシビリティの許可により、取得が許可されている場合もあります。）"
+    },
+    "settings.setup.completed.services": {
+        "en": "Background services are enabled."
+        ,"ja": "バックグラウンドサービスは有効です。"
+    },
+    "settings.setup.driver.allow": {
+        "en": "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Driver Extensions."
+        ,"ja": "「ドライバ機能拡張」で「.Karabiner-VirtualHIDDevice-Manager」を許可してください。"
+    },
+    "settings.setup.driver.missing_extensions": {
+        "en": "If the Driver Extensions is not displayed on Extensions."
+        ,"ja": "機能拡張に「ドライバ機能拡張」が表示されない場合"
+    },
+    "settings.setup.driver.missing_extensions_description": {
+        "en": "If macOS failed to load the driver in the early stage, the Driver Extensions might be not shown on Login Items & Extensions System Settings."
+        ,"ja": "macOS が起動の初期段階でドライバーを読み込めなかった場合、システム設定の「ログイン項目と機能拡張」に「ドライバ機能拡張」が表示されないことがあります。"
+    },
+    "settings.setup.driver.not_loaded": {
+        "en": "The virtual keyboard and mouse driver is not loaded."
+        ,"ja": "仮想キーボード・マウスドライバーが読み込まれていません。"
+    },
+    "settings.setup.driver.permission": {
+        "en": "Please grant permission for a Driver Extension"
+        ,"ja": "ドライバー機能拡張を許可してください"
+    },
+    "settings.setup.driver.reactivate_hint": {
+        "en": "In such cases, reactivating the driver may increase the chances of it loading successfully."
+        ,"ja": "この場合は、ドライバーを再度有効にすると正常に読み込まれる可能性があります。"
+    },
+    "settings.setup.driver.reactivate_steps": {
+        "en": "How to reactivate driver:"
+        ,"ja": "ドライバーを再度有効にする手順："
+    },
+    "settings.setup.driver.step_automatic_load": {
+        "en": "3. After restarting, the driver will be automatically loaded, and the Driver Extensions settings will appear."
+        ,"ja": "3. 再起動後、ドライバーが自動的に読み込まれ、「ドライバ機能拡張」の設定が表示されます。"
+    },
+    "settings.setup.driver_legacy.allow": {
+        "en": "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Privacy & Security System Settings."
+        ,"ja": "システム設定の「プライバシーとセキュリティ」で「.Karabiner-VirtualHIDDevice-Manager」を許可してください。"
+    },
+    "settings.setup.driver_legacy.missing_allow": {
+        "en": "If the Allow button is not displayed on Privacy & Security."
+        ,"ja": "「プライバシーとセキュリティ」に「許可」ボタンが表示されない場合"
+    },
+    "settings.setup.driver_legacy.missing_allow_description": {
+        "en": "If macOS failed to load the driver in the early stage, the allow button might be not shown on Privacy & Security System Settings."
+        ,"ja": "macOS が起動の初期段階でドライバーを読み込めなかった場合、システム設定の「プライバシーとセキュリティ」に「許可」ボタンが表示されないことがあります。"
+    },
+    "settings.setup.driver_legacy.permission": {
+        "en": "Please allow Karabiner-VirtualHIDDevice-Manager system software"
+        ,"ja": "Karabiner-VirtualHIDDevice-Manager のシステムソフトウェアを許可してください"
+    },
+    "settings.setup.driver_legacy.reinstall_hint": {
+        "en": "In this case, you need to reinstall the driver in order for the button to appear."
+        ,"ja": "この場合は、ボタンを表示するためにドライバーを再インストールする必要があります。"
+    },
+    "settings.setup.driver_legacy.reinstall_steps": {
+        "en": "How to reinstall driver:"
+        ,"ja": "ドライバーを再インストールする手順："
+    },
+    "settings.setup.driver_legacy.step_activate": {
+        "en": "3. Press the following button to activate driver."
+        ,"ja": "3. 次のボタンを押してドライバーを有効にします。"
+    },
+    "settings.setup.driver_legacy.step_allow": {
+        "en": "5. Open Privacy & Security System Settings and press the allow button."
+        ,"ja": "5. システム設定の「プライバシーとセキュリティ」を開き、「許可」ボタンを押します。"
+    },
+    "settings.setup.driver_legacy.step_blocked": {
+        "en": "4. \"System Extension Blocked\" alert is shown."
+        ,"ja": "4.「機能拡張がブロックされました」という警告が表示されます。"
+    },
+    "settings.setup.input_monitoring.description": {
+        "en": "Karabiner-Core-Service requires Input Monitoring permission.\nPlease allow them on Privacy & Security System Settings."
+        ,"ja": "Karabiner-Core-Service には入力監視の権限が必要です。\nシステム設定の「プライバシーとセキュリティ」で許可してください。"
+    },
+    "settings.setup.input_monitoring.permission": {
+        "en": "Please allow to monitor input events"
+        ,"ja": "入力イベントの監視を許可してください"
+    },
+    "settings.setup.item.accessibility": {
+        "en": "Accessibility"
+        ,"ja": "アクセシビリティ"
+    },
+    "settings.setup.item.driver": {
+        "en": "Driver Extension"
+        ,"ja": "ドライバー機能拡張"
+    },
+    "settings.setup.item.input_monitoring": {
+        "en": "Capture Input Events"
+        ,"ja": "入力イベントの取得"
+    },
+    "settings.setup.item.services": {
+        "en": "Background Services"
+        ,"ja": "バックグラウンドサービス"
+    },
+    "settings.setup.open_accessibility": {
+        "en": "Go to Accessibility Setup"
+        ,"ja": "アクセシビリティの設定に進む"
+    },
+    "settings.setup.open_services": {
+        "en": "Go to Background Services Setup"
+        ,"ja": "バックグラウンドサービスの設定に進む"
+    },
+    "settings.setup.services.description": {
+        "en": "You need to permit the background services to use Karabiner-Elements."
+        ,"ja": "Karabiner-Elements を使用するには、バックグラウンドサービスの実行を許可する必要があります。"
+    },
+    "settings.setup.services.enable_hint": {
+        "en": "Please enable the following items from System Settings > General > Login Items & Extensions."
+        ,"ja": "システム設定 > 一般 > ログイン項目と機能拡張で、次の項目を有効にしてください。"
+    },
+    "settings.setup.services.permission": {
+        "en": "Please enable background services"
+        ,"ja": "バックグラウンドサービスを有効にしてください"
+    },
+    "settings.setup.services_required": {
+        "en": "Please configure Background Services first"
+        ,"ja": "先にバックグラウンドサービスを設定してください"
+    },
+    "settings.system_settings.open": {
+        "en": "Open System Settings…"
+        ,"ja": "システム設定を開く…"
+    },
+    "settings.system_settings.open_extensions": {
+        "en": "Open Login Items & Extensions Settings…"
+        ,"ja": "「ログイン項目と機能拡張」の設定を開く…"
+    },
+    "settings.system_settings.open_function_keys": {
+        "en": "Open System Settings > Function Keys…"
+        ,"ja": "システム設定 > ファンクションキーを開く…"
+    },
+    "settings.system_settings.open_login_items": {
+        "en": "Open System Settings > General > Login Items & Extensions"
+        ,"ja": "システム設定 > 一般 > ログイン項目と機能拡張を開く"
+    },
+    "settings.system_settings.open_privacy": {
+        "en": "Open Privacy & Security System Settings…"
+        ,"ja": "システム設定の「プライバシーとセキュリティ」を開く…"
+    }
+}

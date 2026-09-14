@@ -6,7 +6,7 @@ struct ComplexModificationsAdvancedView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
-        GroupBox(label: Text("type:basic parameters")) {
+        GroupBox(label: AppLocalizedText("settings.parameters.basic")) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
               AppLocalizedText("setting.basic.to_if_alone_timeout_milliseconds")
@@ -18,7 +18,7 @@ struct ComplexModificationsAdvancedView: View {
                 step: 100,
                 width: 50)
 
-              Text("(Default value is 1000)")
+              AppLocalizedText("settings.defaults.value_1000")
             }
 
             Divider()
@@ -33,7 +33,7 @@ struct ComplexModificationsAdvancedView: View {
                 step: 100,
                 width: 50)
 
-              Text("(Default value is 500)")
+              AppLocalizedText("settings.defaults.value_500")
             }
 
             Divider()
@@ -48,7 +48,7 @@ struct ComplexModificationsAdvancedView: View {
                 step: 100,
                 width: 50)
 
-              Text("(Default value is 500)")
+              AppLocalizedText("settings.defaults.value_500")
             }
 
             Divider()
@@ -63,14 +63,14 @@ struct ComplexModificationsAdvancedView: View {
                 step: 20,
                 width: 50)
 
-              Text("(Default value is 50)")
+              AppLocalizedText("settings.defaults.value_50")
             }
           }
           .padding()
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("type:mouse_motion_to_scroll parameters")) {
+        GroupBox(label: AppLocalizedText("settings.parameters.mouse_motion_to_scroll")) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
               AppLocalizedText("setting.mouse_motion_to_scroll.speed")
@@ -82,7 +82,7 @@ struct ComplexModificationsAdvancedView: View {
                 step: 10,
                 width: 50)
 
-              Text("% (Default value is 100)")
+              AppLocalizedText("settings.defaults.percent_100")
             }
           }
           .padding()

@@ -6,20 +6,18 @@ struct MiscView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
-        GroupBox(label: Text("Extra tool: Multitouch Extension")) {
+        GroupBox(label: AppLocalizedText("settings.misc.multitouch_title")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.machineSpecific.enableMultitouchExtension) {
               HStack {
                 AppLocalizedText("setting.enable_multitouch_extension")
-                Text("(Default: off)")
+                AppLocalizedText("settings.defaults.off")
               }
             }
             .switchToggleStyle()
 
-            Label(
-              "This setting is hardware-specific. "
-                + "When you import Karabiner-Elements settings to another Mac, "
-                + "the enabled state of the Multitouch Extension is not carried over.",
+            AppLocalizedLabel(
+              "settings.misc.multitouch_machine_specific",
               systemImage: InfoBorder.icon
             )
             .modifier(InfoBorder())
@@ -37,8 +35,8 @@ struct MiscView: View {
               )
               .disabled(!settings.configuration.machineSpecific.enableMultitouchExtension)
 
-              Label(
-                "You can also open the Multitouch Extension settings from the menu.",
+              AppLocalizedLabel(
+                "settings.misc.multitouch_menu_hint",
                 systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())
@@ -48,7 +46,7 @@ struct MiscView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Export & Import")) {
+        GroupBox(label: AppLocalizedText("settings.misc.export_import")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Button(
               action: {
@@ -60,13 +58,12 @@ struct MiscView: View {
                 NSWorkspace.shared.open(url)
               },
               label: {
-                Label(
-                  "Open config folder", systemImage: "arrow.up.forward.app")
+                AppLocalizedLabel(
+                  "settings.misc.open_config_folder", systemImage: "arrow.up.forward.app")
               })
 
-            Label(
-              "You can back up your settings or migrate them to another machine by copying karabiner.json. "
-                + "There are also backups under the automatic_backups folder, so you can restore a previous state by overwriting karabiner.json with one of those backups.",
+            AppLocalizedLabel(
+              "settings.misc.backup_hint",
               systemImage: InfoBorder.icon
             )
             .modifier(InfoBorder())
@@ -75,21 +72,20 @@ struct MiscView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("System default configuration")) {
+        GroupBox(label: AppLocalizedText("settings.misc.system_default")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Button(
               action: {
                 settings.installSystemDefaultProfile()
               },
               label: {
-                Label(
-                  "Copy the current configuration to the system default configuration",
+                AppLocalizedLabel(
+                  "settings.misc.install_system_default",
                   systemImage: "square.and.arrow.down")
               })
 
-            Label(
-              "You can use Karabiner-Elements even before login by setting the system default configuration. "
-                + "(This operation requires the administrator privilege.)",
+            AppLocalizedLabel(
+              "settings.misc.system_default_hint",
               systemImage: InfoBorder.icon
             )
             .modifier(InfoBorder())
@@ -101,13 +97,13 @@ struct MiscView: View {
                   settings.removeSystemDefaultProfile()
                 },
                 label: {
-                  Label("Remove the system default configuration", systemImage: "trash")
+                  AppLocalizedLabel("settings.misc.remove_system_default", systemImage: "trash")
                     .buttonLabelStyle()
                 }
               )
               .deleteButtonStyle()
             } else {
-              Text("System default configuration is not set.").foregroundColor(
+              AppLocalizedText("settings.misc.no_system_default").foregroundColor(
                 Color.primary.opacity(0.5))
             }
           }

@@ -6,6 +6,7 @@ struct SettingsToast: Identifiable, Equatable {
 }
 
 struct ToastView: View {
+  @AppLocalizationContext private var localized
   let toast: SettingsToast
   let onDismiss: () -> Void
 
@@ -23,7 +24,7 @@ struct ToastView: View {
         Image(systemName: "xmark")
       }
       .buttonStyle(.plain)
-      .accessibilityLabel("Dismiss")
+      .accessibilityLabel(localized("shared.action.dismiss"))
     }
     .foregroundStyle(Color.warningForeground)
     .modifier(WarningBorder(padding: 20))

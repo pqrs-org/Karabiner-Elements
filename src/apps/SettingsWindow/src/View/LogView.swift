@@ -68,14 +68,15 @@ struct LogView: View {
       .border(Color(NSColor.separatorColor), width: 2)
 
       HStack {
-        Text("Current time: \(logMessages.currentTimeString)")
+        AppLocalizedText(
+          "settings.log.current_time", arguments: ["time": logMessages.currentTimeString])
 
         Button(
           action: {
             logMessages.addDivider()
           },
           label: {
-            Label("Add divider", systemImage: "scissors")
+            AppLocalizedLabel("settings.log.add_divider", systemImage: "scissors")
           })
       }
       .padding()

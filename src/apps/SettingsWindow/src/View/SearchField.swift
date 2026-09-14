@@ -3,8 +3,9 @@ import SwiftUI
 
 @MainActor
 struct SearchField: NSViewRepresentable {
+  @AppLocalizationContext private var localized
   @Binding var text: String
-  var placeholderString = "Filter"
+  var placeholderKey = "shared.filter"
   var debounceInterval: TimeInterval = 0.2
 
   func makeCoordinator() -> Coordinator {
@@ -13,7 +14,7 @@ struct SearchField: NSViewRepresentable {
 
   func makeNSView(context: Context) -> NSSearchField {
     let searchField = NSSearchField()
-    searchField.placeholderString = placeholderString
+    searchField.placeholderString = localized(placeholderKey)
     searchField.delegate = context.coordinator
     context.coordinator.installKeyDownMonitor(for: searchField)
     return searchField
@@ -25,7 +26,7 @@ struct SearchField: NSViewRepresentable {
 
   func updateNSView(_ searchField: NSSearchField, context: Context) {
     context.coordinator.update(text: $text, debounceInterval: debounceInterval)
-    searchField.placeholderString = placeholderString
+    searchField.placeholderString = localized(placeholderKey)
     if !context.coordinator.isDebouncing && searchField.stringValue != text {
       searchField.stringValue = text
     }

@@ -10,10 +10,10 @@ struct UpdateView: View {
       VStack(alignment: .leading, spacing: 24.0) {
         GroupBox(label: AppLocalizedText("settings.update.title")) {
           VStack(alignment: .leading, spacing: 12.0) {
-            Text("Karabiner-Elements version \(version)")
+            AppLocalizedText("settings.update.version", arguments: ["version": version])
 
             Toggle(isOn: $settings.configuration.globalConfiguration.checkForUpdates) {
-              Text("Check for updates automatically (Default: on)")
+              AppLocalizedText("settings.update.automatic")
             }
             .switchToggleStyle()
 
@@ -43,7 +43,7 @@ struct UpdateView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Web sites")) {
+        GroupBox(label: AppLocalizedText("settings.update.websites")) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
               Button(
@@ -51,7 +51,7 @@ struct UpdateView: View {
                   NSWorkspace.shared.open(URL(string: "https://karabiner-elements.pqrs.org/")!)
                 },
                 label: {
-                  Label("Open official website", systemImage: "house")
+                  AppLocalizedLabel("settings.update.official_website", systemImage: "house")
                 })
 
               Button(
@@ -60,7 +60,7 @@ struct UpdateView: View {
                     URL(string: "https://github.com/pqrs-org/Karabiner-Elements")!)
                 },
                 label: {
-                  Label("Open GitHub (source code)", systemImage: "hammer")
+                  AppLocalizedLabel("settings.update.github", systemImage: "hammer")
                 })
             }
           }

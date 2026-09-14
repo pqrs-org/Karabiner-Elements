@@ -10,12 +10,14 @@ struct ComplexModificationsFileImportView: View {
         HStack(alignment: .center, spacing: 8.0) {
           ProgressView()
 
-          Text("Loading...")
+          AppLocalizedText("shared.status.loading")
         }
         .frame(maxWidth: .infinity, alignment: .center)
 
       } else {
-        Text("Import file from \(complexModificationsFileImport.url?.absoluteString ?? "")")
+        AppLocalizedText(
+          "settings.import.source",
+          arguments: ["url": complexModificationsFileImport.url?.absoluteString ?? ""])
 
         if let error = complexModificationsFileImport.error {
           Label(error, systemImage: "exclamationmark.circle.fill")
@@ -46,7 +48,7 @@ struct ComplexModificationsFileImportView: View {
             contentViewStates.complexModificationsViewSheetPresented = false
           },
           label: {
-            Label("Cancel", systemImage: "xmark")
+            AppLocalizedLabel("shared.action.cancel", systemImage: "xmark")
           })
 
         Button(
@@ -58,7 +60,7 @@ struct ComplexModificationsFileImportView: View {
               ComplexModificationsSheetView.assets
           },
           label: {
-            Label("Import", systemImage: "tray.and.arrow.down.fill")
+            AppLocalizedLabel("shared.action.import", systemImage: "tray.and.arrow.down.fill")
               .buttonLabelStyle()
           }
         )

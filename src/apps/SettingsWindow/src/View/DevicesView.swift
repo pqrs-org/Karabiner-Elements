@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DevicesView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var settings = Settings.shared
   @ObservedObject private var connectedDevices = ConnectedDevices.shared
   @State private var showEraseNotConnectedDeviceSettingsButton = false
@@ -69,7 +70,9 @@ struct DevicesView: View {
       if connectedDevices.notConnectedConfiguredDevicesCount > 0 {
         HStack {
           Label(
-            "There are \(connectedDevices.notConnectedConfiguredDevicesCount) other settings for devices that are not currently connected",
+            localized(
+              "settings.devices.disconnected_count",
+              arguments: ["count": String(connectedDevices.notConnectedConfiguredDevicesCount)]),
             systemImage: InfoBorder.icon
           )
           .frame(maxWidth: .infinity, alignment: .leading)
@@ -92,7 +95,11 @@ struct DevicesView: View {
               },
               label: {
                 Label(
-                  "Remove settings for \(connectedDevices.notConnectedConfiguredDevicesCount) devices",
+                  localized(
+                    "settings.devices.remove_disconnected",
+                    arguments: [
+                      "count": String(connectedDevices.notConnectedConfiguredDevicesCount)
+                    ]),
                   systemImage: "trash"
                 )
                 .buttonLabelStyle()
@@ -108,6 +115,7 @@ struct DevicesView: View {
   }
 
   struct DeviceName: View {
+    @AppLocalizationContext private var localized
     let connectedDevice: ConnectedDevice
 
     var body: some View {
@@ -135,25 +143,26 @@ struct DevicesView: View {
         if connectedDevice.transport != "FIFO" {
           VStack(alignment: .trailing, spacing: 4.0) {
             if connectedDevice.vendorId != 0 {
-              Text(
-                String(
-                  format: "Vendor ID: %5d (0x%04x)",
-                  connectedDevice.vendorId,
-                  connectedDevice.vendorId)
-              )
+              AppLocalizedText(
+                "settings.devices.vendor_id",
+                arguments: [
+                  "decimal": String(format: "%5d", connectedDevice.vendorId),
+                  "hex": String(format: "0x%04x", connectedDevice.vendorId),
+                ])
             }
 
             if connectedDevice.productId != 0 {
-              Text(
-                String(
-                  format: "Product ID: %5d (0x%04x)",
-                  connectedDevice.productId,
-                  connectedDevice.productId)
-              )
+              AppLocalizedText(
+                "settings.devices.product_id",
+                arguments: [
+                  "decimal": String(format: "%5d", connectedDevice.productId),
+                  "hex": String(format: "0x%04x", connectedDevice.productId),
+                ])
             }
 
             if !connectedDevice.deviceAddress.isEmpty {
-              Text("Device Address: \(connectedDevice.deviceAddress)")
+              AppLocalizedText(
+                "settings.devices.address", arguments: ["address": connectedDevice.deviceAddress])
             }
           }
           .font(.callout)
@@ -164,6 +173,7 @@ struct DevicesView: View {
   }
 
   struct ModifyEventsSetting: View {
+    @AppLocalizationContext private var localized
     let connectedDevice: ConnectedDevice
     @Binding var deviceConfiguration: SettingsConfiguration.Device
 
@@ -176,13 +186,13 @@ struct DevicesView: View {
           connectedDevice.isPointingDevice,
           !settings.configuration.globalConfiguration.unsafeUi
         {
-          Text("Apple pointing devices are not supported")
+          AppLocalizedText("settings.devices.apple_pointing_unsupported")
             .foregroundColor(Color(NSColor.placeholderTextColor))
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
           VStack(alignment: .leading) {
             Toggle(isOn: $deviceConfiguration.modifyEvents) {
-              Text("Modify events")
+              AppLocalizedText("settings.devices.modify_events")
             }
             .switchToggleStyle()
             .frame(width: 140.0)
@@ -193,8 +203,8 @@ struct DevicesView: View {
             {
               Label(
                 title: {
-                  Text(
-                    "Key events from this device are handled via the CGEventTap fallback"
+                  AppLocalizedText(
+                    "settings.devices.fallback_hint"
                   )
                   .textSelection(.enabled)
                 },
@@ -211,6 +221,7 @@ struct DevicesView: View {
   }
 
   struct KeyboardSettings: View {
+    @AppLocalizationContext private var localized
     let connectedDevice: ConnectedDevice
     @Binding var deviceConfiguration: SettingsConfiguration.Device
 
@@ -224,7 +235,7 @@ struct DevicesView: View {
               && !deviceConfiguration.disableBuiltInKeyboardIfExists
             {
               Toggle(isOn: $deviceConfiguration.treatAsBuiltInKeyboard) {
-                Text("Treat as a built-in keyboard")
+                AppLocalizedText("settings.devices.treat_as_built_in")
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
@@ -235,7 +246,7 @@ struct DevicesView: View {
               && !deviceConfiguration.treatAsBuiltInKeyboard
             {
               Toggle(isOn: $deviceConfiguration.disableBuiltInKeyboardIfExists) {
-                Text("Disable the built-in keyboard while this device is connected")
+                AppLocalizedText("settings.devices.disable_built_in")
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
@@ -244,14 +255,14 @@ struct DevicesView: View {
 
             if deviceConfiguration.modifyEvents {
               Toggle(isOn: $deviceConfiguration.manipulateCapsLockLed) {
-                Text("Manipulate caps lock LED")
+                AppLocalizedText("settings.devices.caps_lock_led")
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
               .frame(width: detailedSettingWidth)
 
               Toggle(isOn: $deviceConfiguration.swapGraveAccentAndNonUsBackslash) {
-                Text("Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)")
+                AppLocalizedText("settings.devices.swap_iso_keys")
                   .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
@@ -264,6 +275,7 @@ struct DevicesView: View {
   }
 
   struct MouseSettings: View {
+    @AppLocalizationContext private var localized
     let connectedDevice: ConnectedDevice
     @Binding var deviceConfiguration: SettingsConfiguration.Device
     @State var showing = false
@@ -277,7 +289,7 @@ struct DevicesView: View {
             showing = true
           },
           label: {
-            Label("Open mouse settings", systemImage: "computermouse")
+            AppLocalizedLabel("settings.devices.open_mouse_settings", systemImage: "computermouse")
               .buttonLabelStyle()
           }
         )
@@ -295,6 +307,7 @@ struct DevicesView: View {
   }
 
   struct GamePadSettings: View {
+    @AppLocalizationContext private var localized
     let connectedDevice: ConnectedDevice
     @Binding var deviceConfiguration: SettingsConfiguration.Device
     @State var showing = false
@@ -306,8 +319,10 @@ struct DevicesView: View {
             showing = true
           },
           label: {
-            Label("Open game pad settings", systemImage: "gamecontroller")
-              .buttonLabelStyle()
+            AppLocalizedLabel(
+              "settings.devices.open_gamepad_settings", systemImage: "gamecontroller"
+            )
+            .buttonLabelStyle()
           }
         )
         .sheet(isPresented: $showing) {
@@ -324,6 +339,7 @@ struct DevicesView: View {
   }
 
   struct ExtraSettings: View {
+    @AppLocalizationContext private var localized
     let connectedDevice: ConnectedDevice
     @Binding var deviceConfiguration: SettingsConfiguration.Device
 
@@ -333,16 +349,16 @@ struct DevicesView: View {
           if !connectedDevice.isAppleDevice {
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(isOn: $deviceConfiguration.ignoreVendorEvents) {
-                Text(
-                  "Ignore vendor events"
+                AppLocalizedText(
+                  "settings.devices.ignore_vendor_events"
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
               }
               .switchToggleStyle(controlSize: .mini, font: .callout)
               .frame(width: detailedSettingWidth)
 
-              Label(
-                #"It is recommended to enable "Ignore vendor events" for non-Apple devices"#,
+              AppLocalizedLabel(
+                "settings.devices.vendor_events_hint",
                 systemImage: "lightbulb"
               )
               .foregroundColor(Color(NSColor.textColor))

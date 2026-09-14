@@ -3,6 +3,8 @@ import SwiftUI
 
 @main
 struct KarabinerSettingsApp: App {
+  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var localization = AppLocalization.shared
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
   init() {
@@ -47,7 +49,7 @@ struct KarabinerSettingsApp: App {
 
   var body: some Scene {
     Window(
-      "Karabiner-Elements Settings",
+      AppLanguage.text("settings.window.title", locale: settings.uiLocale),
       id: "main",
       content: {
         ContentView()

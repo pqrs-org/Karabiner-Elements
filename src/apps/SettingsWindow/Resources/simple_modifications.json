@@ -1,6 +1,6 @@
 [
     {
-        "category": "Disable this key"
+        "category_localization_key": "settings.key_picker.disable"
     },
     {
         "label": "vk_none",
@@ -12,7 +12,7 @@
         ]
     },
     {
-        "category": "Modifier keys"
+        "category_localization_key": "settings.key_picker.modifiers"
     },
     {
         "label": "caps_lock",
@@ -87,7 +87,7 @@
         ]
     },
     {
-        "label": "fn (globe)",
+        "label_localization_key": "settings.key_picker.fn_globe",
         "data": [
             {
                 "apple_vendor_top_case_key_code": "keyboard_fn"
@@ -95,7 +95,7 @@
         ]
     },
     {
-        "category": "Controls and symbols"
+        "category_localization_key": "settings.key_picker.controls_symbols"
     },
     {
         "label": "return_or_enter",
@@ -250,7 +250,7 @@
         ]
     },
     {
-        "category": "Arrow keys"
+        "category_localization_key": "settings.key_picker.arrows"
     },
     {
         "label": "up_arrow",
@@ -317,7 +317,7 @@
         ]
     },
     {
-        "category": "Letter keys"
+        "category_localization_key": "settings.key_picker.letters"
     },
     {
         "label": "a",
@@ -528,7 +528,7 @@
         ]
     },
     {
-        "category": "Number keys"
+        "category_localization_key": "settings.key_picker.numbers"
     },
     {
         "label": "1",
@@ -611,7 +611,7 @@
         ]
     },
     {
-        "category": "Function keys"
+        "category_localization_key": "settings.key_picker.function"
     },
     {
         "label": "f1",
@@ -810,7 +810,7 @@
         ]
     },
     {
-        "category": "Media controls"
+        "category_localization_key": "settings.key_picker.media"
     },
     {
         "not_from": true,
@@ -859,7 +859,7 @@
     },
     {
         "not_from": true,
-        "label": "do_not_disturb (available on macOS 14 and later)",
+        "label_localization_key": "settings.key_picker.do_not_disturb",
         "data": [
             {
                 "generic_desktop": "do_not_disturb"
@@ -952,7 +952,7 @@
     },
     {
         "not_to": true,
-        "label": "Touch ID on Magic Keyboard",
+        "label_localization_key": "settings.key_picker.touch_id",
         "data": [
             {
                 "consumer_key_code": "menu"
@@ -960,7 +960,7 @@
         ]
     },
     {
-        "label": "Lock key on Magic Keyboard without Touch ID",
+        "label_localization_key": "settings.key_picker.lock_key",
         "data": [
             {
                 "consumer_key_code": "al_terminal_lock_or_screensaver"
@@ -1073,7 +1073,7 @@
         ]
     },
     {
-        "category": "Keypad keys"
+        "category_localization_key": "settings.key_picker.keypad"
     },
     {
         "label": "keypad_num_lock",
@@ -1228,7 +1228,7 @@
         ]
     },
     {
-        "category": "Keys in pc keyboards"
+        "category_localization_key": "settings.key_picker.pc"
     },
     {
         "label": "print_screen",
@@ -1377,7 +1377,7 @@
         ]
     },
     {
-        "category": "International keys"
+        "category_localization_key": "settings.key_picker.international"
     },
     {
         "label": "international1",
@@ -1538,7 +1538,7 @@
         ]
     },
     {
-        "category": "Japanese"
+        "category_localization_key": "settings.key_picker.japanese"
     },
     {
         "label": "ABCキー（英数キー）",
@@ -1584,7 +1584,7 @@
         ]
     },
     {
-        "category": "Mouse buttons"
+        "category_localization_key": "settings.key_picker.mouse_buttons"
     },
     {
         "unsafe_from": true,
@@ -1846,11 +1846,11 @@
     { "label": "button254", "data": [{ "pointing_button": "button254" }] },
     { "label": "button255", "data": [{ "pointing_button": "button255" }] },
     {
-        "category": "D-pad"
+        "category_localization_key": "settings.key_picker.dpad"
     },
     {
         "not_to": true,
-        "label": "dpad up",
+        "label_localization_key": "settings.key_picker.dpad_up",
         "data": [
             {
                 "generic_desktop": "dpad_up"
@@ -1859,7 +1859,7 @@
     },
     {
         "not_to": true,
-        "label": "dpad down",
+        "label_localization_key": "settings.key_picker.dpad_down",
         "data": [
             {
                 "generic_desktop": "dpad_down"
@@ -1868,7 +1868,7 @@
     },
     {
         "not_to": true,
-        "label": "dpad left",
+        "label_localization_key": "settings.key_picker.dpad_left",
         "data": [
             {
                 "generic_desktop": "dpad_left"
@@ -1877,7 +1877,7 @@
     },
     {
         "not_to": true,
-        "label": "dpad right",
+        "label_localization_key": "settings.key_picker.dpad_right",
         "data": [
             {
                 "generic_desktop": "dpad_right"
@@ -1885,11 +1885,11 @@
         ]
     },
     {
-        "category": "Mouse keys"
+        "category_localization_key": "settings.key_picker.mouse_keys"
     },
     {
         "not_from": true,
-        "label": "mouse up",
+        "label_localization_key": "settings.key_picker.mouse_up",
         "data": [
             {
                 "mouse_key": {
@@ -1900,7 +1900,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse up (fast)",
+        "label_localization_key": "settings.key_picker.mouse_up_fast",
         "data": [
             {
                 "mouse_key": {
@@ -1911,7 +1911,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse up (slow)",
+        "label_localization_key": "settings.key_picker.mouse_up_slow",
         "data": [
             {
                 "mouse_key": {
@@ -1922,7 +1922,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse down",
+        "label_localization_key": "settings.key_picker.mouse_down",
         "data": [
             {
                 "mouse_key": {
@@ -1933,7 +1933,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse down (fast)",
+        "label_localization_key": "settings.key_picker.mouse_down_fast",
         "data": [
             {
                 "mouse_key": {
@@ -1944,7 +1944,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse down (slow)",
+        "label_localization_key": "settings.key_picker.mouse_down_slow",
         "data": [
             {
                 "mouse_key": {
@@ -1955,7 +1955,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse left",
+        "label_localization_key": "settings.key_picker.mouse_left",
         "data": [
             {
                 "mouse_key": {
@@ -1966,7 +1966,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse left (fast)",
+        "label_localization_key": "settings.key_picker.mouse_left_fast",
         "data": [
             {
                 "mouse_key": {
@@ -1977,7 +1977,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse left (slow)",
+        "label_localization_key": "settings.key_picker.mouse_left_slow",
         "data": [
             {
                 "mouse_key": {
@@ -1988,7 +1988,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse right",
+        "label_localization_key": "settings.key_picker.mouse_right",
         "data": [
             {
                 "mouse_key": {
@@ -1999,7 +1999,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse right (fast)",
+        "label_localization_key": "settings.key_picker.mouse_right_fast",
         "data": [
             {
                 "mouse_key": {
@@ -2010,7 +2010,7 @@
     },
     {
         "not_from": true,
-        "label": "mouse right (slow)",
+        "label_localization_key": "settings.key_picker.mouse_right_slow",
         "data": [
             {
                 "mouse_key": {
@@ -2021,7 +2021,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll up",
+        "label_localization_key": "settings.key_picker.scroll_up",
         "data": [
             {
                 "mouse_key": {
@@ -2032,7 +2032,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll up (fast)",
+        "label_localization_key": "settings.key_picker.scroll_up_fast",
         "data": [
             {
                 "mouse_key": {
@@ -2043,7 +2043,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll up (slow)",
+        "label_localization_key": "settings.key_picker.scroll_up_slow",
         "data": [
             {
                 "mouse_key": {
@@ -2054,7 +2054,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll down",
+        "label_localization_key": "settings.key_picker.scroll_down",
         "data": [
             {
                 "mouse_key": {
@@ -2065,7 +2065,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll down (fast)",
+        "label_localization_key": "settings.key_picker.scroll_down_fast",
         "data": [
             {
                 "mouse_key": {
@@ -2076,7 +2076,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll down (slow)",
+        "label_localization_key": "settings.key_picker.scroll_down_slow",
         "data": [
             {
                 "mouse_key": {
@@ -2087,7 +2087,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll left",
+        "label_localization_key": "settings.key_picker.scroll_left",
         "data": [
             {
                 "mouse_key": {
@@ -2098,7 +2098,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll left (fast)",
+        "label_localization_key": "settings.key_picker.scroll_left_fast",
         "data": [
             {
                 "mouse_key": {
@@ -2109,7 +2109,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll left (slow)",
+        "label_localization_key": "settings.key_picker.scroll_left_slow",
         "data": [
             {
                 "mouse_key": {
@@ -2120,7 +2120,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll right",
+        "label_localization_key": "settings.key_picker.scroll_right",
         "data": [
             {
                 "mouse_key": {
@@ -2131,7 +2131,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll right (fast)",
+        "label_localization_key": "settings.key_picker.scroll_right_fast",
         "data": [
             {
                 "mouse_key": {
@@ -2142,7 +2142,7 @@
     },
     {
         "not_from": true,
-        "label": "scroll right (slow)",
+        "label_localization_key": "settings.key_picker.scroll_right_slow",
         "data": [
             {
                 "mouse_key": {
@@ -2153,7 +2153,7 @@
     },
     {
         "not_from": true,
-        "label": "speed multiplier (2.0)",
+        "label_localization_key": "settings.key_picker.speed_2_0",
         "data": [
             {
                 "mouse_key": {
@@ -2164,7 +2164,7 @@
     },
     {
         "not_from": true,
-        "label": "speed multiplier (0.5)",
+        "label_localization_key": "settings.key_picker.speed_0_5",
         "data": [
             {
                 "mouse_key": {
@@ -2175,7 +2175,7 @@
     },
     {
         "not_from": true,
-        "label": "speed multiplier (0.25)",
+        "label_localization_key": "settings.key_picker.speed_0_25",
         "data": [
             {
                 "mouse_key": {
@@ -2186,7 +2186,7 @@
     },
     {
         "not_from": true,
-        "label": "speed multiplier (0.125)",
+        "label_localization_key": "settings.key_picker.speed_0_125",
         "data": [
             {
                 "mouse_key": {
@@ -2196,11 +2196,11 @@
         ]
     },
     {
-        "category": "Sticky modifier keys"
+        "category_localization_key": "settings.key_picker.sticky"
     },
     {
         "not_from": true,
-        "label": "sticky left_control",
+        "label_localization_key": "settings.key_picker.sticky_left_control",
         "data": [
             {
                 "sticky_modifier": {
@@ -2214,7 +2214,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky left_shift",
+        "label_localization_key": "settings.key_picker.sticky_left_shift",
         "data": [
             {
                 "sticky_modifier": {
@@ -2228,7 +2228,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky left_option",
+        "label_localization_key": "settings.key_picker.sticky_left_option",
         "data": [
             {
                 "sticky_modifier": {
@@ -2242,7 +2242,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky left_command",
+        "label_localization_key": "settings.key_picker.sticky_left_command",
         "data": [
             {
                 "sticky_modifier": {
@@ -2256,7 +2256,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky right_control",
+        "label_localization_key": "settings.key_picker.sticky_right_control",
         "data": [
             {
                 "sticky_modifier": {
@@ -2270,7 +2270,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky right_shift",
+        "label_localization_key": "settings.key_picker.sticky_right_shift",
         "data": [
             {
                 "sticky_modifier": {
@@ -2284,7 +2284,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky right_option",
+        "label_localization_key": "settings.key_picker.sticky_right_option",
         "data": [
             {
                 "sticky_modifier": {
@@ -2298,7 +2298,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky right_command",
+        "label_localization_key": "settings.key_picker.sticky_right_command",
         "data": [
             {
                 "sticky_modifier": {
@@ -2312,7 +2312,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky fn",
+        "label_localization_key": "settings.key_picker.sticky_fn",
         "data": [
             {
                 "sticky_modifier": {
@@ -2326,7 +2326,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky left_control (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_left_control_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2337,7 +2337,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky left_shift (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_left_shift_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2348,7 +2348,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky left_option (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_left_option_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2359,7 +2359,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky left_command (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_left_command_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2370,7 +2370,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky right_control (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_right_control_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2381,7 +2381,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky right_shift (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_right_shift_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2392,7 +2392,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky right_option (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_right_option_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2403,7 +2403,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky right_command (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_right_command_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2414,7 +2414,7 @@
     },
     {
         "not_from": true,
-        "label": "sticky fn (pressing and holding down is disabled)",
+        "label_localization_key": "settings.key_picker.sticky_fn_no_hold",
         "data": [
             {
                 "sticky_modifier": {
@@ -2424,11 +2424,11 @@
         ]
     },
     {
-        "category": "Software function"
+        "category_localization_key": "settings.key_picker.software"
     },
     {
         "not_from": true,
-        "label": "CGEvent double click (left button)",
+        "label_localization_key": "settings.key_picker.double_click_left",
         "data": [
             {
                 "software_function": {
@@ -2441,7 +2441,7 @@
     },
     {
         "not_from": true,
-        "label": "CGEvent double click (right button)",
+        "label_localization_key": "settings.key_picker.double_click_right",
         "data": [
             {
                 "software_function": {
@@ -2454,7 +2454,7 @@
     },
     {
         "not_from": true,
-        "label": "CGEvent double click (center button)",
+        "label_localization_key": "settings.key_picker.double_click_center",
         "data": [
             {
                 "software_function": {
@@ -2467,7 +2467,7 @@
     },
     {
         "not_from": true,
-        "label": "Set mouse cursor position to (0,0) of the first screen",
+        "label_localization_key": "settings.key_picker.cursor_first_origin",
         "data": [
             {
                 "software_function": {
@@ -2482,7 +2482,7 @@
     },
     {
         "not_from": true,
-        "label": "Set mouse cursor position to the center of the first screen",
+        "label_localization_key": "settings.key_picker.cursor_first_center",
         "data": [
             {
                 "software_function": {
@@ -2497,7 +2497,7 @@
     },
     {
         "not_from": true,
-        "label": "Set mouse cursor position to (0,0) of the second screen",
+        "label_localization_key": "settings.key_picker.cursor_second_origin",
         "data": [
             {
                 "software_function": {
@@ -2512,7 +2512,7 @@
     },
     {
         "not_from": true,
-        "label": "Set mouse cursor position to the center of the second screen",
+        "label_localization_key": "settings.key_picker.cursor_second_center",
         "data": [
             {
                 "software_function": {
@@ -2527,7 +2527,7 @@
     },
     {
         "not_from": true,
-        "label": "Set mouse cursor position to the center of the focused window",
+        "label_localization_key": "settings.key_picker.cursor_window_center",
         "data": [
             {
                 "software_function": {
@@ -2543,7 +2543,7 @@
     },
     {
         "not_from": true,
-        "label": "Sleep (IOKit Power Management Sleep System)",
+        "label_localization_key": "settings.key_picker.sleep",
         "data": [
             {
                 "software_function": {
@@ -2553,7 +2553,7 @@
         ]
     },
     {
-        "category": "Application launch keys"
+        "category_localization_key": "settings.key_picker.launch"
     },
     {
         "label": "al_consumer_control_configuration (Music)",
@@ -2907,7 +2907,7 @@
         "data": [{ "consumer_key_code": "al_contextaware_desktop_assistant" }]
     },
     {
-        "category": "Generic GUI application control keys"
+        "category_localization_key": "settings.key_picker.gui"
     },
     {
         "not_to": true,
@@ -2967,7 +2967,7 @@
         "data": [{ "consumer_key_code": "ac_desktop_show_all_applications" }]
     },
     {
-        "category": "Remote control buttons"
+        "category_localization_key": "settings.key_picker.remote"
     },
     {
         "not_to": true,
@@ -3100,7 +3100,7 @@
         "data": [{ "generic_desktop": "system_app_menu" }]
     },
     {
-        "category": "Generic desktop keys"
+        "category_localization_key": "settings.key_picker.desktop"
     },
     {
         "not_to": true,
@@ -3112,7 +3112,7 @@
         ]
     },
     {
-        "category": "Others"
+        "category_localization_key": "settings.key_picker.others"
     },
     {
         "not_to": true,
@@ -3196,7 +3196,7 @@
         ]
     },
     {
-        "label": "rarely used return (HID usage 0x9e)",
+        "label_localization_key": "settings.key_picker.rare_return",
         "not_to": true,
         "data": [
             {
@@ -3259,7 +3259,7 @@
         ]
     },
     {
-        "label": "left_alt (equal to `left_option`)",
+        "label_localization_key": "settings.key_picker.alias_left_alt",
         "data": [
             {
                 "key_code": "left_alt"
@@ -3267,7 +3267,7 @@
         ]
     },
     {
-        "label": "left_gui (equal to `left_command`)",
+        "label_localization_key": "settings.key_picker.alias_left_gui",
         "data": [
             {
                 "key_code": "left_gui"
@@ -3275,7 +3275,7 @@
         ]
     },
     {
-        "label": "right_alt (equal to `right_option`)",
+        "label_localization_key": "settings.key_picker.alias_right_alt",
         "data": [
             {
                 "key_code": "right_alt"
@@ -3283,7 +3283,7 @@
         ]
     },
     {
-        "label": "right_gui (equal to `right_command`)",
+        "label_localization_key": "settings.key_picker.alias_right_gui",
         "data": [
             {
                 "key_code": "right_gui"
@@ -3291,7 +3291,7 @@
         ]
     },
     {
-        "label": "vk_consumer_brightness_down (equal to `display_brightness_decrement`)",
+        "label_localization_key": "settings.key_picker.alias_vk_consumer_brightness_down",
         "not_from": true,
         "data": [
             {
@@ -3300,7 +3300,7 @@
         ]
     },
     {
-        "label": "vk_consumer_brightness_up (equal to `display_brightness_increment`)",
+        "label_localization_key": "settings.key_picker.alias_vk_consumer_brightness_up",
         "not_from": true,
         "data": [
             {
@@ -3309,7 +3309,7 @@
         ]
     },
     {
-        "label": "vk_mission_control (equal to `mission_control`)",
+        "label_localization_key": "settings.key_picker.alias_vk_mission_control",
         "not_from": true,
         "data": [
             {
@@ -3318,7 +3318,7 @@
         ]
     },
     {
-        "label": "vk_launchpad (equal to `launchpad`)",
+        "label_localization_key": "settings.key_picker.alias_vk_launchpad",
         "not_from": true,
         "data": [
             {
@@ -3327,7 +3327,7 @@
         ]
     },
     {
-        "label": "vk_dashboard (equal to `dashboard`)",
+        "label_localization_key": "settings.key_picker.alias_vk_dashboard",
         "not_from": true,
         "data": [
             {
@@ -3336,7 +3336,7 @@
         ]
     },
     {
-        "label": "vk_consumer_illumination_down (equal to `illumination_decrement`)",
+        "label_localization_key": "settings.key_picker.alias_vk_consumer_illumination_down",
         "not_from": true,
         "data": [
             {
@@ -3345,7 +3345,7 @@
         ]
     },
     {
-        "label": "vk_consumer_illumination_up (equal to `illumination_increment`)",
+        "label_localization_key": "settings.key_picker.alias_vk_consumer_illumination_up",
         "not_from": true,
         "data": [
             {
@@ -3354,7 +3354,7 @@
         ]
     },
     {
-        "label": "vk_consumer_previous (equal to `rewind`)",
+        "label_localization_key": "settings.key_picker.alias_vk_consumer_previous",
         "not_from": true,
         "data": [
             {
@@ -3363,7 +3363,7 @@
         ]
     },
     {
-        "label": "vk_consumer_play (equal to `play`)",
+        "label_localization_key": "settings.key_picker.alias_vk_consumer_play",
         "not_from": true,
         "data": [
             {
@@ -3372,7 +3372,7 @@
         ]
     },
     {
-        "label": "vk_consumer_next (equal to `fast_forward`)",
+        "label_localization_key": "settings.key_picker.alias_vk_consumer_next",
         "not_from": true,
         "data": [
             {
@@ -3381,7 +3381,7 @@
         ]
     },
     {
-        "label": "volume_down (equal to `volume_decrement`)",
+        "label_localization_key": "settings.key_picker.alias_volume_down",
         "data": [
             {
                 "key_code": "volume_down"
@@ -3389,7 +3389,7 @@
         ]
     },
     {
-        "label": "volume_up (equal to `volume_increment`)",
+        "label_localization_key": "settings.key_picker.alias_volume_up",
         "data": [
             {
                 "key_code": "volume_up"

@@ -10,15 +10,15 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
 
   var title: String {
     switch self {
-    case .services: return "Background Services"
-    case .accessibility: return "Accessibility"
+    case .services: return "settings.setup.item.services"
+    case .accessibility: return "settings.setup.item.accessibility"
     // Depending on the macOS version, granting Accessibility permission may also allow Input Monitoring.
     // In that case, both requirements are considered completed once Accessibility is granted, so if we call it
     // "Input Monitoring", users may wonder why it is marked as completed even though they did not explicitly
     // allow Input Monitoring.
     // To avoid that confusion, the displayed label is changed to "Capture Input Events".
-    case .inputMonitoring: return "Capture Input Events"
-    case .driverExtension: return "Driver Extension"
+    case .inputMonitoring: return "settings.setup.item.input_monitoring"
+    case .driverExtension: return "settings.setup.item.driver"
     }
   }
 
@@ -48,7 +48,7 @@ struct SetupView: View {
       List(SetupItem.allCases, selection: $selectedItem) { item in
         Label(
           title: {
-            Text(item.title)
+            AppLocalizedText(item.title)
               .lineLimit(nil)
               .fixedSize(horizontal: false, vertical: true)
           },
@@ -132,7 +132,7 @@ struct SetupView: View {
   @ViewBuilder
   private func setupCompletedMessageView(_ item: SetupItem) -> some View {
     VStack(alignment: .leading, spacing: 16.0) {
-      Label(
+      AppLocalizedLabel(
         setupCompletedTitle(item),
         systemImage: "checkmark.circle.fill"
       )
@@ -143,16 +143,13 @@ struct SetupView: View {
   private func setupCompletedTitle(_ item: SetupItem) -> String {
     switch item {
     case .services:
-      return "Background services are enabled."
+      return "settings.setup.completed.services"
     case .accessibility:
-      return "Accessibility access is allowed."
+      return "settings.setup.completed.accessibility"
     case .inputMonitoring:
-      return """
-        Input event capture is allowed.
-        (It may be granted via Accessibility permission.)
-        """
+      return "settings.setup.completed.input_monitoring"
     case .driverExtension:
-      return "Driver Extension is allowed."
+      return "settings.setup.completed.driver"
     }
   }
 
@@ -172,8 +169,8 @@ struct SetupView: View {
   @ViewBuilder
   private func setupServicesFirstView() -> some View {
     VStack(alignment: .leading, spacing: 20.0) {
-      Label(
-        "Please configure Background Services first",
+      AppLocalizedLabel(
+        "settings.setup.services_required",
         systemImage: "lightbulb"
       )
       .font(.system(size: 24))
@@ -181,8 +178,8 @@ struct SetupView: View {
       Button {
         selectedItem = .services
       } label: {
-        Label(
-          "Go to Background Services Setup",
+        AppLocalizedLabel(
+          "settings.setup.open_services",
           systemImage: "arrow.left.circle.fill"
         )
       }
@@ -193,8 +190,8 @@ struct SetupView: View {
   @ViewBuilder
   private func setupAccessibilityFirstView() -> some View {
     VStack(alignment: .leading, spacing: 20.0) {
-      Label(
-        "Please configure Accessibility first",
+      AppLocalizedLabel(
+        "settings.setup.accessibility_required",
         systemImage: "lightbulb"
       )
       .font(.system(size: 24))
@@ -202,8 +199,8 @@ struct SetupView: View {
       Button {
         selectedItem = .accessibility
       } label: {
-        Label(
-          "Go to Accessibility Setup",
+        AppLocalizedLabel(
+          "settings.setup.open_accessibility",
           systemImage: "arrow.left.circle.fill"
         )
       }

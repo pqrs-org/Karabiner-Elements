@@ -28,10 +28,23 @@ enum AppLanguage {
   }
 
   static func text(
-    _ key: String, locale: Locale, catalog: LocalizationCatalog = AppLanguage.catalog
+    _ key: String, locale: Locale, catalog: LocalizationCatalog = AppLanguage.catalog,
+    arguments: [String: String] = [:]
   ) -> String {
     let selected = Self.locale(for: locale.identifier, catalog: catalog).identifier
     guard let translations = catalog.strings[key] else { return key }
-    return translations[selected] ?? translations["en"] ?? key
+    let template = translations[selected] ?? translations["en"] ?? key
+    // Substitute named placeholders once. Values are literal text, never format
+    // specifiers, localization keys, or additional placeholders to expand.
+    guard !arguments.isEmpty else { return template }
+    let result = NSMutableString(string: template)
+    let pattern = try! NSRegularExpression(pattern: #"\{([A-Za-z][A-Za-z0-9_]*)\}"#)
+    for match in pattern.matches(in: template, range: NSRange(template.startIndex..., in: template))
+      .reversed()
+    {
+      let name = (template as NSString).substring(with: match.range(at: 1))
+      if let value = arguments[name] { result.replaceCharacters(in: match.range, with: value) }
+    }
+    return result as String
   }
 }

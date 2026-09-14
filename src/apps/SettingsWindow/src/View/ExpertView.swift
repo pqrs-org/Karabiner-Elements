@@ -6,22 +6,18 @@ struct ExpertView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
-        GroupBox(label: Text("Expert mode")) {
+        GroupBox(label: AppLocalizedText("settings.expert.title")) {
           VStack(alignment: .leading, spacing: 4.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.unsafeUi) {
               HStack {
                 AppLocalizedText("setting.unsafe_ui")
-                Text("(Default: off)")
+                AppLocalizedText("settings.defaults.off")
               }
             }
             .switchToggleStyle()
 
-            Label(
-              "Unsafe configuration disables the safeguard feature on the configuration UI.\n"
-                + "You should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. (e.g., using Screen Sharing)\n"
-                + "\n" + "Unsafe configuration allows the following items:\n"
-                + "- Allow you to enable Apple pointing devices in the Devices tab.\n"
-                + "- Allow you to change left-click in Simple Modifications tab.",
+            AppLocalizedLabel(
+              "settings.expert.unsafe_description",
               systemImage: WarningBorder.icon
             )
             .modifier(WarningBorder())
@@ -30,31 +26,31 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Pointing devices")) {
+        GroupBox(label: AppLocalizedText("settings.expert.pointing_devices")) {
           Toggle(
             isOn: $settings.configuration.selectedProfile
               .modifyPointingDeviceEventsByDefault
           ) {
-            Text("Modify events for pointing devices by default (Default: off)")
+            AppLocalizedText("settings.expert.modify_pointing_by_default")
           }
           .switchToggleStyle()
           .padding()
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("CGEventTap fallback")) {
+        GroupBox(label: AppLocalizedText("settings.expert.cgeventtap_fallback")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(isOn: $settings.configuration.globalConfiguration.enableCgeventtapFallback) {
                 HStack {
                   AppLocalizedText("setting.enable_cgeventtap_fallback")
-                  Text("(Default: off)")
+                  AppLocalizedText("settings.defaults.off")
                 }
               }
               .switchToggleStyle()
 
-              Label(
-                "If this setting is enabled, Karabiner-Core-Service uses CGEventTap as a fallback for devices that cannot be handled via HID input capture.",
+              AppLocalizedLabel(
+                "settings.expert.fallback_description",
                 systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())
@@ -65,7 +61,7 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Options")) {
+        GroupBox(label: AppLocalizedText("settings.expert.options")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(
@@ -74,16 +70,13 @@ struct ExpertView: View {
               ) {
                 HStack {
                   AppLocalizedText("setting.filter_useless_events_from_specific_devices")
-                  Text("(Default: on)")
+                  AppLocalizedText("settings.defaults.on")
                 }
               }
               .switchToggleStyle()
 
-              Label(
-                "If this setting is enabled, the following events will be ignored:\n"
-                  + "- Nintendo's Pro Controller (USB connected):\n"
-                  + "    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed.\n"
-                  + "    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all.",
+              AppLocalizedLabel(
+                "settings.expert.filter_description",
                 systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())
@@ -98,13 +91,13 @@ struct ExpertView: View {
                 HStack {
                   AppLocalizedText(
                     "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers")
-                  Text("(Default: on)")
+                  AppLocalizedText("settings.defaults.on")
                 }
               }
               .switchToggleStyle()
 
-              Label(
-                "If your keyboard supports hardware macros and sends multiple keys at once, and you notice that modifier key order is changing, try turning this setting off.",
+              AppLocalizedLabel(
+                "settings.expert.modifier_order_hint",
                 systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())
@@ -124,12 +117,11 @@ struct ExpertView: View {
                 step: 100,
                 width: 50)
 
-              Text("milliseconds (Default value is 1000)")
+              AppLocalizedText("settings.defaults.milliseconds_1000")
             }
 
-            Label(
-              "Setting insufficient delay (e.g., 0) will result in a device becoming unusable after Karabiner-Elements is quit.\n"
-                + "(This is a macOS problem and can be solved by unplugging the device and plugging it again.)",
+            AppLocalizedLabel(
+              "settings.expert.device_delay_warning",
               systemImage: WarningBorder.icon
             )
             .modifier(WarningBorder())
@@ -148,11 +140,11 @@ struct ExpertView: View {
                 step: 100,
                 width: 50)
 
-              Text("milliseconds (Default value is 500; 0 disables delay)")
+              AppLocalizedText("settings.defaults.sleep_delay")
             }
 
-            Label(
-              "Karabiner-Elements delays the key-down event of the macOS sleep shortcut (command+option+power, command+option+eject, or escape at the login window). This prevents the shortcut's release events from waking the Mac immediately after sleep.",
+            AppLocalizedLabel(
+              "settings.expert.sleep_delay_description",
               systemImage: InfoBorder.icon
             )
             .modifier(InfoBorder())

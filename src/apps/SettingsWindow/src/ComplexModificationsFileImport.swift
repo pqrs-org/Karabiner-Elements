@@ -89,7 +89,8 @@ final class ComplexModificationsFileImport: ObservableObject {
             return String(validatingCString: baseAddress)
           })
         else {
-          self.error = "The downloaded file is not valid UTF-8."
+          self.error = AppLanguage.text(
+            "settings.import.invalid_utf8", locale: Settings.shared.uiLocale)
           return
         }
 
@@ -117,7 +118,9 @@ final class ComplexModificationsFileImport: ObservableObject {
           }
         }
 
-        self.error = self.parseResult?.error ?? "The downloaded file is not supported."
+        self.error =
+          self.parseResult?.error
+          ?? AppLanguage.text("settings.import.unsupported", locale: Settings.shared.uiLocale)
       }
     }
 

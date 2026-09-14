@@ -25,7 +25,7 @@ struct LocalizationTests {
       preconditionFailure("Cross-process localization reload timed out")
     }
     let source = URL(fileURLWithPath: CommandLine.arguments[1])
-    let catalog = try LocalizationCatalog(data: Data(contentsOf: source))
+    let catalog = try LocalizationCatalog(directory: source)
     precondition(AppLanguage.availableLanguages(catalog: catalog) == ["en", "ja"])
     let en = AppLanguage.locale(for: "en", catalog: catalog)
     let ja = AppLanguage.locale(for: "ja", catalog: catalog)
@@ -42,10 +42,46 @@ struct LocalizationTests {
     precondition(
       AppLanguage.text("menu_bar_extra.settings", locale: en, catalog: catalog) == "Settings…")
 
+    // Named placeholders can move with the translation. This synthetic catalog
+    // tests substitution behavior independently of the application's wording.
+    let templates = try LocalizationCatalog(
+      data: Data(
+        #"""
+        {
+            "test.arguments": {
+                "en": "{name}: {count} ({name})",
+                "fr": "{count} : {name} ({name})"
+            },
+            "test.fallback": {"en": "Value: {value}"}
+        }
+        """#.utf8))
+    let arguments = ["name": "😀 %@ {count}", "count": "2"]
+    // Inserted text is literal: percent signs and placeholder-like contents are
+    // never interpreted again, including when a placeholder occurs twice.
+    precondition(
+      AppLanguage.text("test.arguments", locale: en, catalog: templates, arguments: arguments)
+        == "😀 %@ {count}: 2 (😀 %@ {count})")
+    precondition(
+      AppLanguage.text(
+        "test.arguments", locale: Locale(identifier: "fr"), catalog: templates, arguments: arguments
+      )
+        == "2 : 😀 %@ {count} (😀 %@ {count})")
+    // English fallback still substitutes arguments for a partial language.
+    precondition(
+      AppLanguage.text(
+        "test.fallback", locale: Locale(identifier: "fr"), catalog: templates,
+        arguments: ["value": "100%"])
+        == "Value: 100%")
+    // Missing arguments remain visible instead of being silently discarded.
+    precondition(
+      AppLanguage.text("test.fallback", locale: en, catalog: templates) == "Value: {value}")
+
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    let extendedURL = directory.appendingPathComponent("localizations.json")
+    let extendedSource = directory.appendingPathComponent("extended", isDirectory: true)
+    try FileManager.default.createDirectory(at: extendedSource, withIntermediateDirectories: true)
+    let extendedURL = extendedSource.appendingPathComponent("general.json")
     var strings = catalog.strings
     // A language can appear under any key, and need not have every translation.
     strings["test.literal"] = ["en": "100% %@ \n \"quoted\"", "fr": "Texte"]
@@ -53,7 +89,7 @@ struct LocalizationTests {
       strings["menu_bar_extra.settings"]![language] = translation
     }
     try write(strings, to: extendedURL)
-    let extended = try LocalizationCatalog(data: Data(contentsOf: extendedURL))
+    let extended = try LocalizationCatalog(directory: extendedSource)
     precondition(
       AppLanguage.availableLanguages(catalog: extended) == ["en", "fr", "ja", "pt-BR", "zh-Hant"])
     for (language, translation) in [("pt-BR", "Ajustes…"), ("zh-Hant", "設定（繁體）")] {
@@ -84,9 +120,11 @@ struct LocalizationTests {
     precondition(AppLanguage.displayName(for: "pt-PT") == "português (Portugal)")
     precondition(AppLanguage.displayName(for: "zh-Hant") == "繁體中文")
 
-    // Both processes independently monitor the same test file.
-    let watchedSource = directory.appendingPathComponent("watched.json")
-    try write(catalog.strings, to: watchedSource)
+    // Both processes independently monitor the same resource directory.
+    let watchedSource = directory.appendingPathComponent("watched", isDirectory: true)
+    try FileManager.default.createDirectory(at: watchedSource, withIntermediateDirectories: true)
+    let watchedFile = watchedSource.appendingPathComponent("general.json")
+    try write(catalog.strings, to: watchedFile)
     let watching = AppLocalization(source: watchedSource)
     let ready = directory.appendingPathComponent(UUID().uuidString)
     let observer = Process()
@@ -104,7 +142,7 @@ struct LocalizationTests {
     precondition(FileManager.default.fileExists(atPath: ready.path))
     var updatedStrings = catalog.strings
     updatedStrings["menu_bar_extra.settings"]!["ja"] = "監視で更新…"
-    try write(updatedStrings, to: watchedSource)
+    try write(updatedStrings, to: watchedFile)
     let deliveryDeadline = Date().addingTimeInterval(10)
     while observer.isRunning && Date() < deliveryDeadline {
       RunLoop.current.run(until: Date().addingTimeInterval(0.01))
@@ -118,7 +156,7 @@ struct LocalizationTests {
 
     // Replacing the file only takes effect on reload, including the language list.
     let reloading = AppLocalization(
-      source: extendedURL, automaticallyReload: false)
+      source: extendedSource, automaticallyReload: false)
     precondition(
       AppLanguage.text("menu_bar_extra.settings", locale: ja, catalog: reloading.catalog) == "設定…")
     strings["menu_bar_extra.settings"]!["ja"] = "更新した設定…"
@@ -160,7 +198,7 @@ struct LocalizationTests {
     precondition(reloading.catalog == good)
     // A process started before the JSON was installed can recover without restart.
     let initiallyMissing = AppLocalization(
-      source: extendedURL, automaticallyReload: false)
+      source: extendedSource, automaticallyReload: false)
     precondition(AppLanguage.availableLanguages(catalog: initiallyMissing.catalog) == ["en"])
     precondition(
       AppLanguage.text("unknown.key", locale: ja, catalog: initiallyMissing.catalog)
@@ -172,7 +210,7 @@ struct LocalizationTests {
     precondition(reloading.catalog == catalog)
     // Observe in-place writes and atomic replacement, and continue after invalid JSON.
     var automatic: AppLocalization? = AppLocalization(
-      source: extendedURL)
+      source: extendedSource)
     var autoStrings = catalog.strings
     autoStrings["menu_bar_extra.settings"]!["ja"] = "自動更新…"
     autoStrings["menu_bar_extra.settings"]!["de"] = "Einstellungen…"
@@ -190,6 +228,45 @@ struct LocalizationTests {
     // A second replacement verifies that monitoring follows the new file.
     try write(catalog.strings, to: extendedURL)
     waitUntil { automatic!.catalog == catalog }
+    // New nested files add both translations and languages without restarting.
+    let nested = extendedSource.appendingPathComponent("settings", isDirectory: true)
+    try FileManager.default.createDirectory(at: nested, withIntermediateDirectories: true)
+    let addedFile = nested.appendingPathComponent("added.json")
+    try write(["test.added": ["en": "Added", "de": "Neu"]], to: addedFile)
+    waitUntil { automatic!.catalog.strings["test.added"]?["de"] == "Neu" }
+    precondition(automatic!.catalog.languages.contains("de"))
+    let withAddition = automatic!.catalog
+
+    // Reject duplicates across files, preserving the entire last valid catalog.
+    let duplicateFile = nested.appendingPathComponent("duplicate.json")
+    try write(["test.added": ["en": "Duplicate"]], to: duplicateFile)
+    do {
+      _ = try LocalizationCatalog(directory: extendedSource)
+      preconditionFailure("Duplicate translation key accepted")
+    } catch {}
+    RunLoop.current.run(until: Date().addingTimeInterval(0.3))
+    precondition(automatic!.catalog == withAddition)
+
+    // The invalid file is still watched: correcting it in place recovers.
+    try JSONEncoder().encode(["test.corrected": ["en": "Corrected"]]).write(to: duplicateFile)
+    waitUntil { automatic!.catalog.strings["test.corrected"]?["en"] == "Corrected" }
+    // Removing a resource removes its translations and otherwise unused languages.
+    try FileManager.default.removeItem(at: addedFile)
+    waitUntil { automatic!.catalog.strings["test.added"] == nil }
+    precondition(!automatic!.catalog.languages.contains("de"))
+    try FileManager.default.moveItem(
+      at: duplicateFile, to: nested.appendingPathComponent("renamed.json"))
+    RunLoop.current.run(until: Date().addingTimeInterval(0.3))
+    precondition(automatic!.catalog.strings["test.corrected"]?["en"] == "Corrected")
+    try FileManager.default.removeItem(at: nested)
+    waitUntil { automatic!.catalog == catalog }
+
+    // Editor temporary files and non-JSON files are not translation resources.
+    try Data("invalid".utf8).write(to: extendedSource.appendingPathComponent(".temporary.json"))
+    try Data("invalid".utf8).write(to: extendedSource.appendingPathComponent("notes.txt"))
+    let ignoringTemporaryFiles = try LocalizationCatalog(directory: extendedSource)
+    precondition(ignoringTemporaryFiles == catalog)
+
     weak let released = automatic
     automatic = nil
     precondition(released == nil)

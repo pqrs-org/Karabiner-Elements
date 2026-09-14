@@ -1,18 +1,19 @@
 import SwiftUI
 
 struct UIView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var settings = Settings.shared
   @ObservedObject private var appIcons = AppIcons.shared
 
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
-        GroupBox(label: Text("Menu bar")) {
+        GroupBox(label: AppLocalizedText("settings.ui.menu_bar")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.showInMenuBar) {
               HStack {
                 AppLocalizedText("setting.show_in_menu_bar")
-                Text("(Default: on)")
+                AppLocalizedText("settings.defaults.on")
               }
             }
             .switchToggleStyle()
@@ -20,7 +21,7 @@ struct UIView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.showProfileNameInMenuBar) {
               HStack {
                 AppLocalizedText("setting.show_profile_name_in_menu_bar")
-                Text("(Default: off)")
+                AppLocalizedText("settings.defaults.off")
               }
             }
             .switchToggleStyle()
@@ -28,7 +29,7 @@ struct UIView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.showAdditionalMenuItems) {
               HStack {
                 AppLocalizedText("setting.show_additional_menu_items")
-                Text("(Default: off)")
+                AppLocalizedText("settings.defaults.off")
               }
             }
             .switchToggleStyle()
@@ -36,7 +37,7 @@ struct UIView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.showQuitConfirmationMenu) {
               HStack {
                 AppLocalizedText("setting.show_quit_confirmation_menu")
-                Text("(Default: on)")
+                AppLocalizedText("settings.defaults.on")
               }
             }
             .switchToggleStyle()
@@ -45,12 +46,12 @@ struct UIView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Karabiner Notification Window")) {
+        GroupBox(label: AppLocalizedText("settings.ui.notification_window")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.enableNotificationWindow) {
               HStack {
                 AppLocalizedText("setting.enable_notification_window")
-                Text("(Default: on)")
+                AppLocalizedText("settings.defaults.on")
               }
             }
             .switchToggleStyle()
@@ -62,12 +63,12 @@ struct UIView: View {
               ) {
                 HStack {
                   AppLocalizedText("setting.indicate_sticky_modifier_keys_state")
-                  Text("(Default: on)")
+                  AppLocalizedText("settings.defaults.on")
                 }
               }
               .switchToggleStyle()
 
-              GroupBox(label: Text("Appearance")) {
+              GroupBox(label: AppLocalizedText("settings.ui.appearance")) {
                 VStack(alignment: .leading, spacing: 12.0) {
                   HStack(spacing: 24.0) {
                     Picker(
@@ -75,16 +76,16 @@ struct UIView: View {
                         .notificationWindowPosition,
                       label: AppLocalizedText("setting.notification_window_position")
                     ) {
-                      Text("Top left").tag(
+                      AppLocalizedText("settings.ui.position.top_left").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition.topLeft
                       )
-                      Text("Top right").tag(
+                      AppLocalizedText("settings.ui.position.top_right").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition
                           .topRight)
-                      Text("Bottom left").tag(
+                      AppLocalizedText("settings.ui.position.bottom_left").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition
                           .bottomLeft)
-                      Text("Bottom right").tag(
+                      AppLocalizedText("settings.ui.position.bottom_right").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition
                           .bottomRight
                       )
@@ -98,7 +99,7 @@ struct UIView: View {
                     ) {
                       HStack {
                         AppLocalizedText("setting.notification_window_respect_screen_visible_frame")
-                        Text("(Default: on)")
+                        AppLocalizedText("settings.defaults.on")
                       }
                     }
                     .switchToggleStyle()
@@ -109,7 +110,7 @@ struct UIView: View {
                   ) {
                     HStack {
                       AppLocalizedText("setting.notification_window_show_icon")
-                      Text("(Default: on)")
+                      AppLocalizedText("settings.defaults.on")
                     }
                   }
                   .switchToggleStyle()
@@ -121,7 +122,7 @@ struct UIView: View {
                       range: 8...64,
                       step: 1,
                       width: 40)
-                    Text("pt (Default: 13)")
+                    AppLocalizedText("settings.defaults.font_size")
                   }
 
                   Grid(alignment: .leading, horizontalSpacing: 12.0, verticalSpacing: 12.0) {
@@ -157,9 +158,8 @@ struct UIView: View {
             }
 
             VStack(alignment: .leading, spacing: 12.0) {
-              Label(
-                "What is the Karabiner Notification Window?\n\n"
-                  + "The Karabiner Notification Window displays the status of sticky modifiers and messages from Complex Modifications.",
+              AppLocalizedLabel(
+                "settings.ui.notification_description",
                 systemImage: InfoBorder.icon
               )
 
@@ -175,11 +175,11 @@ struct UIView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("App icon")) {
+        GroupBox(label: AppLocalizedText("settings.ui.app_icon")) {
           VStack(alignment: .leading, spacing: 12.0) {
             VStack {
-              Label(
-                "It takes a few seconds for changes to the application icon to take effect.\nAnd to update the Dock icon, you need to close and reopen the application.",
+              AppLocalizedLabel(
+                "settings.ui.app_icon_hint",
                 systemImage: InfoBorder.icon
               )
               .modifier(InfoBorder())
@@ -296,7 +296,7 @@ struct UIView: View {
       }
       .buttonStyle(.borderless)
       .disabled(value.wrappedValue == "system")
-      .help("Use the system color")
+      .help(localized("settings.ui.use_system_color"))
     }
   }
 }

@@ -1,13 +1,14 @@
 import SwiftUI
 
 struct SimpleModificationPickerView: View {
+  @AppLocalizationContext private var localized
   private(set) var categories: SimpleModificationDefinitionCategories
   private(set) var label: String
   private(set) var action: (_ json: String) -> Void
   private(set) var showUnsafe: Bool
 
   var body: some View {
-    Menu(label) {
+    Menu(localizedLabel(label)) {
       ForEach(categories.categories) { category in
         Menu {
           ForEach(category.entries) { e in
@@ -24,7 +25,7 @@ struct SimpleModificationPickerView: View {
                     Image(systemName: "circle")
                   }
 
-                  Text(e.label)
+                  Text(verbatim: localizedLabel(e.label))
                 })
             }
           }
@@ -36,10 +37,16 @@ struct SimpleModificationPickerView: View {
             Image(systemName: "circle")
           }
 
-          Text(category.name)
+          Text(verbatim: localizedLabel(category.name))
         }
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  // Definitions contain either an explicit localization key or a literal key name.
+  // Unknown strings (including custom JSON) are displayed verbatim by the lookup.
+  private func localizedLabel(_ label: String) -> String {
+    localized(label)
   }
 }

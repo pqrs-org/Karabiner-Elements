@@ -21,24 +21,26 @@ struct DeactivateDriverButton: View {
           })
         },
         label: {
-          Label(
-            "Deactivate driver",
+          AppLocalizedLabel(
+            "settings.driver.deactivate",
             systemImage: "star.fill")
         })
 
       if self.showingProgress {
-        Text("Deactivating ...")
+        AppLocalizedText("settings.driver.deactivating")
           .padding(.bottom, 20)
       }
 
       if self.showingResult {
         VStack(alignment: .leading) {
           if self.status == 0 {
-            Text("Driver was successfully deactivated.")
+            AppLocalizedText("settings.driver.deactivated")
               .bold()
           } else {
-            Text("Deactivation was failed. (error: \(self.status))")
-              .bold()
+            AppLocalizedText(
+              "settings.driver.deactivation_failed", arguments: ["status": String(self.status)]
+            )
+            .bold()
           }
         }.padding(.bottom, 20)
       }

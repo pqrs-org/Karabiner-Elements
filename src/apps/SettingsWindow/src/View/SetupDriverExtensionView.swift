@@ -15,8 +15,8 @@ struct SetupDriverExtensionView: View {
 
   var body: some View {
     VStack(alignment: .center) {
-      Label(
-        "Please grant permission for a Driver Extension",
+      AppLocalizedLabel(
+        "settings.setup.driver.permission",
         systemImage: "lightbulb"
       )
       .font(.system(size: 24))
@@ -24,17 +24,17 @@ struct SetupDriverExtensionView: View {
       GroupBox {
         VStack(alignment: .center, spacing: 20.0) {
           VStack(alignment: .center, spacing: 0) {
-            Text("The virtual keyboard and mouse driver is not loaded.")
-            Text(
-              "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Driver Extensions."
+            AppLocalizedText("settings.setup.driver.not_loaded")
+            AppLocalizedText(
+              "settings.setup.driver.allow"
             )
           }
 
           OpenSystemSettingsButton(
             url: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension",
             label: {
-              Label(
-                "Open Login Items & Extensions Settings…",
+              AppLocalizedLabel(
+                "settings.system_settings.open_extensions",
                 systemImage: "arrow.forward.circle.fill")
             }
           )
@@ -49,8 +49,8 @@ struct SetupDriverExtensionView: View {
             Button(
               action: { showingAdvanced = true },
               label: {
-                Label(
-                  "If the Driver Extensions is not displayed on Extensions.",
+                AppLocalizedLabel(
+                  "settings.setup.driver.missing_extensions",
                   systemImage: "questionmark.circle")
               })
           }
@@ -58,22 +58,22 @@ struct SetupDriverExtensionView: View {
       }
 
       if showingAdvanced {
-        GroupBox(label: Text("Advanced")) {
+        GroupBox(label: AppLocalizedText("shared.section.advanced")) {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 0) {
-              Text(
-                "If macOS failed to load the driver in the early stage, the Driver Extensions might be not shown on Login Items & Extensions System Settings."
+              AppLocalizedText(
+                "settings.setup.driver.missing_extensions_description"
               )
-              Text(
-                "In such cases, reactivating the driver may increase the chances of it loading successfully."
+              AppLocalizedText(
+                "settings.setup.driver.reactivate_hint"
               )
             }
 
-            Text("How to reactivate driver:")
+            AppLocalizedText("settings.setup.driver.reactivate_steps")
 
             VStack(alignment: .leading, spacing: 10.0) {
-              Text(
-                "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"
+              AppLocalizedText(
+                "settings.driver.step_deactivate"
               )
               .fixedSize(horizontal: false, vertical: true)
 
@@ -81,12 +81,12 @@ struct SetupDriverExtensionView: View {
                 .padding(.vertical, 10)
                 .padding(.leading, 20)
 
-              Text("2. Restart macOS.")
+              AppLocalizedText("settings.driver.step_restart")
                 .fontWeight(.bold)
                 .fixedSize(horizontal: false, vertical: true)
 
-              Text(
-                "3. After restarting, the driver will be automatically loaded, and the Driver Extensions settings will appear."
+              AppLocalizedText(
+                "settings.setup.driver.step_automatic_load"
               )
               .fixedSize(horizontal: false, vertical: true)
             }

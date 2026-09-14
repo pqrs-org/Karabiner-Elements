@@ -19,43 +19,80 @@ def validate(strings):
                 raise ValueError(f"{key!r}: invalid translation for {language!r}")
 
 
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"Duplicate JSON key: {key!r}")
+        result[key] = value
+    return result
+
+
+def load_resources(directory):
+    resources = {}
+    owners = {}
+    for path in sorted(directory.rglob("*.json")):
+        if any(part.startswith(".") for part in path.relative_to(directory).parts):
+            continue
+        if path.is_symlink() or not path.is_file():
+            continue
+        strings = json.loads(
+            path.read_text(encoding="utf-8"), object_pairs_hook=unique_object
+        )
+        validate(strings)
+        for key in strings:
+            if key in owners:
+                raise ValueError(
+                    f"Duplicate translation key {key!r}: {owners[key]} and {path}"
+                )
+            owners[key] = path
+        resources[path] = strings
+    if not resources:
+        raise ValueError(f"No translation JSON files in {directory}")
+    return resources
+
+
+def format_strings(strings):
+    # Sort translation keys alphabetically, but keep English first within each key.
+    strings = {
+        key: {
+            language: translations[language]
+            for language in sorted(
+                translations, key=lambda language: (language != "en", language)
+            )
+        }
+        for key, translations in sorted(strings.items())
+    }
+    # Keep commas before additional languages so English-only edits do not
+    # depend on whether another translation follows.
+    entries = []
+    for key, translations in strings.items():
+        languages = [
+            f"{json.dumps(language)}: {json.dumps(value, ensure_ascii=False)}"
+            for language, value in translations.items()
+        ]
+        entries.append(
+            f"    {json.dumps(key, ensure_ascii=False)}: {{\n"
+            + "        "
+            + "\n        ,".join(languages)
+            + "\n    }"
+        )
+    return "{\n" + ",\n".join(entries) + "\n}\n"
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Validate or format translations")
+    parser = argparse.ArgumentParser(
+        description="Validate or format translation resources"
+    )
     parser.add_argument(
-        "--file",
+        "--directory",
         type=Path,
-        default=Path(__file__).resolve().parents[1] / "Resources/localizations.json",
+        default=Path(__file__).resolve().parents[1] / "Resources",
     )
     parser.add_argument("--format", action="store_true")
     args = parser.parse_args()
-    strings = json.loads(args.file.read_text(encoding="utf-8"))
-    validate(strings)
+    # Validate every file and detect duplicates before rewriting any file.
+    resources = load_resources(args.directory)
     if args.format:
-        # Sort translation keys alphabetically, but keep English first within each key.
-        strings = {
-            key: {
-                language: translations[language]
-                for language in sorted(
-                    translations, key=lambda language: (language != "en", language)
-                )
-            }
-            for key, translations in sorted(strings.items())
-        }
-        # Keep commas before additional languages so English-only edits do not
-        # depend on whether another translation follows.
-        entries = []
-        for key, translations in strings.items():
-            languages = [
-                f"{json.dumps(language)}: {json.dumps(value, ensure_ascii=False)}"
-                for language, value in translations.items()
-            ]
-            entries.append(
-                f"    {json.dumps(key, ensure_ascii=False)}: {{\n"
-                + "        "
-                + "\n        ,".join(languages)
-                + "\n    }"
-            )
-        args.file.write_text(
-            "{\n" + ",\n".join(entries) + "\n}\n",
-            encoding="utf-8",
-        )
+        for path, strings in resources.items():
+            path.write_text(format_strings(strings), encoding="utf-8")

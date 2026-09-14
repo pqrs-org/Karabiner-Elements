@@ -7,6 +7,7 @@ enum ComplexModificationsSheetView: String {
 }
 
 struct ComplexModificationsView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
   @State private var moveDisabled: Bool = true
@@ -42,7 +43,9 @@ struct ComplexModificationsView: View {
             contentViewStates.complexModificationsViewSheetPresented = true
           },
           label: {
-            AccentColorIconLabel(title: "Add predefined rule", systemImage: "plus.circle.fill")
+            AccentColorIconLabel(
+              title: localized("settings.complex_modifications.add_predefined"),
+              systemImage: "plus.circle.fill")
           })
 
         Button(
@@ -53,7 +56,7 @@ struct ComplexModificationsView: View {
 
             editingRule = SettingsConfiguration.ComplexModificationsRule(
               index: -1,
-              description: "Edit the following setting and press the Save button.",
+              description: localized("settings.editor.new_rule_hint"),
               descriptionNotes: [],
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
@@ -63,12 +66,13 @@ struct ComplexModificationsView: View {
             showingEditSheet = true
           },
           label: {
-            AccentColorIconLabel(title: "Add your own rule", systemImage: "sparkles")
+            AccentColorIconLabel(
+              title: localized("settings.complex_modifications.add_rule"), systemImage: "sparkles")
           })
 
         Spacer()
 
-        Label("For expert", systemImage: "flame")
+        AppLocalizedLabel("settings.complex_modifications.for_experts", systemImage: "flame")
 
         Button(
           action: {
@@ -78,7 +82,7 @@ struct ComplexModificationsView: View {
 
             editingRule = SettingsConfiguration.ComplexModificationsRule(
               index: -1,
-              description: "Edit the following script and press the Save button.",
+              description: localized("settings.editor.new_script_hint"),
               descriptionNotes: [],
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
@@ -89,7 +93,8 @@ struct ComplexModificationsView: View {
           },
           label: {
             AccentColorIconLabel(
-              title: "Add your own rule using JavaScript", systemImage: "wand.and.rays")
+              title: localized("settings.complex_modifications.add_script"),
+              systemImage: "wand.and.rays")
           }
         )
       }
@@ -100,19 +105,16 @@ struct ComplexModificationsView: View {
 
       HStack {
         if normalizedFilterKeyword.isEmpty && rules.count > 1 {
-          HStack {
-            Text("You can reorder list by dragging")
-            Image(systemName: "arrow.up.arrow.down.square.fill")
-              .resizable(resizingMode: .stretch)
-              .frame(width: 16.0, height: 16.0)
-            Text("icon")
-          }
+          AppLocalizedLabel(
+            "settings.shared.reorder_hint",
+            systemImage: "arrow.up.arrow.down.square.fill"
+          )
         }
 
         Spacer()
 
         SearchField(
-          text: $filterKeyword, placeholderString: "Filter by description or rule content"
+          text: $filterKeyword, placeholderKey: "settings.complex_modifications.filter"
         )
         .frame(width: 300)
       }
@@ -139,18 +141,22 @@ struct ComplexModificationsView: View {
                     }
                   }
                   .contextMenu {
-                    Section(header: Text("Position")) {
+                    Section(header: AppLocalizedText("settings.complex_modifications.position")) {
                       Button {
                         settings.moveComplexModificationsRule(complexModificationRule.index, 0)
                       } label: {
-                        Label("Move item to top", systemImage: "arrow.up.to.line")
+                        AppLocalizedLabel(
+                          "settings.complex_modifications.move_to_top",
+                          systemImage: "arrow.up.to.line")
                       }
 
                       Button {
                         settings.moveComplexModificationsRule(
                           complexModificationRule.index, rules.count)
                       } label: {
-                        Label("Move item to bottom", systemImage: "arrow.down.to.line")
+                        AppLocalizedLabel(
+                          "settings.complex_modifications.move_to_bottom",
+                          systemImage: "arrow.down.to.line")
                       }
                     }
                   }
@@ -172,7 +178,7 @@ struct ComplexModificationsView: View {
                 }
 
                 if !complexModificationRule.enabled {
-                  Text("disabled")
+                  AppLocalizedText("settings.complex_modifications.disabled")
                     .foregroundColor(.gray)
                 }
               }
@@ -209,7 +215,7 @@ struct ComplexModificationsView: View {
                     showingEditSheet = true
                   },
                   label: {
-                    Label("Edit", systemImage: "pencil.circle.fill")
+                    AppLocalizedLabel("shared.action.edit", systemImage: "pencil.circle.fill")
                   })
 
                 Button(
@@ -264,7 +270,7 @@ struct ComplexModificationsView: View {
         showing: $showingEditSheet,
         onEditingCancelledByExternalChange: {
           contentViewStates.showToast(
-            "The editor was closed because the selected profile or Complex Modifications rules changed."
+            localized("settings.editor.rules_changed")
           )
         })
     }

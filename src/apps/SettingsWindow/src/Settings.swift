@@ -62,6 +62,11 @@ private let settingsJSONEncoder: JSONEncoder = {
 final class Settings: ObservableObject {
   static let shared = Settings()
 
+  var uiLocale: Locale {
+    AppLanguage.locale(
+      for: configurationLoaded ? configuration.globalConfiguration.uiLanguage : "auto")
+  }
+
   static let didConfigurationLoad = Notification.Name("didConfigurationLoad")
 
   private var didSetEnabled = false

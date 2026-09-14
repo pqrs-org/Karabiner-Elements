@@ -14,7 +14,7 @@ struct VirtualKeyboardView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: Text("Mouse key")) {
+        GroupBox(label: AppLocalizedText("settings.virtual_keyboard.mouse_key")) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
               AppLocalizedText("setting.mouse_key_xy_scale")

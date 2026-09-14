@@ -105,7 +105,7 @@ struct SimpleModificationsView: View {
             label: {
               // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
               Image(systemName: "plus.circle.fill").foregroundColor(.blue)
-              Text("Add item")
+              AppLocalizedText("shared.action.add_item")
             }
           )
           .buttonStyle(.automatic)

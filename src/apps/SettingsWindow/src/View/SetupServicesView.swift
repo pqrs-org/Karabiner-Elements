@@ -16,8 +16,8 @@ struct SetupServicesView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 20.0) {
-      Label(
-        "Please enable background services",
+      AppLocalizedLabel(
+        "settings.setup.services.permission",
         systemImage: "lightbulb"
       )
       .font(.system(size: 24))
@@ -25,9 +25,9 @@ struct SetupServicesView: View {
       GroupBox {
         VStack(alignment: .leading, spacing: 20.0) {
           VStack(alignment: .leading, spacing: 0.0) {
-            Text("You need to permit the background services to use Karabiner-Elements.")
-            Text(
-              "Please enable the following items from System Settings > General > Login Items & Extensions."
+            AppLocalizedText("settings.setup.services.description")
+            AppLocalizedText(
+              "settings.setup.services.enable_hint"
             )
           }
 
@@ -36,8 +36,8 @@ struct SetupServicesView: View {
               SMAppService.openSystemSettingsLoginItems()
             },
             label: {
-              Label(
-                "Open System Settings > General > Login Items & Extensions",
+              AppLocalizedLabel(
+                "settings.system_settings.open_login_items",
                 systemImage: "arrow.forward.circle.fill")
             }
           )

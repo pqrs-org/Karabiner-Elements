@@ -6,8 +6,8 @@ struct VirtualHidDeviceServiceClientNotConnectedAlertView: View {
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center) {
-        Label(
-          "Waiting for a connection from Karabiner-Core-Service to Karabiner-VirtualHIDDevice-Daemon",
+        AppLocalizedLabel(
+          "settings.connection.virtual_hid_waiting",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))
@@ -15,8 +15,8 @@ struct VirtualHidDeviceServiceClientNotConnectedAlertView: View {
 
         ProgressView()
 
-        Label(
-          "If the message remains visible, third-party security software may be blocking communication with Karabiner-VirtualHIDDevice-Daemon.",
+        AppLocalizedLabel(
+          "settings.connection.virtual_hid_hint",
           systemImage: "lightbulb"
         )
         .fixedSize(horizontal: false, vertical: true)

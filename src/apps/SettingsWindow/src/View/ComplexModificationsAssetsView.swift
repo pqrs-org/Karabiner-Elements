@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ComplexModificationsAssetsView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var assetFiles = ComplexModificationsAssetFiles.shared
   @State private var search = ""
@@ -22,7 +23,7 @@ struct ComplexModificationsAssetsView: View {
           },
           label: {
             AccentColorIconLabel(
-              title: "Import more rules from the Internet (Open a web browser)",
+              title: localized("settings.assets.more_rules"),
               systemImage: "icloud.and.arrow.down.fill")
           }
         )
@@ -32,7 +33,7 @@ struct ComplexModificationsAssetsView: View {
           Image(systemName: "magnifyingglass")
             .foregroundColor(.gray)
 
-          TextField("Search", text: $search)
+          TextField(localized("shared.search"), text: $search)
         }
 
         List {
@@ -70,7 +71,7 @@ struct ComplexModificationsAssetsView: View {
                         label: {
                           // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
                           Image(systemName: "plus.circle.fill").foregroundColor(.blue)
-                          Text("Enable")
+                          AppLocalizedText("shared.action.enable")
                         }
                       )
                       .onHover { hovering in
@@ -89,8 +90,9 @@ struct ComplexModificationsAssetsView: View {
 
                   HStack {
                     if assetFile.userFile {
-                      Text(
-                        "Imported at \(formatter.string(from: assetFile.importedAt))"
+                      AppLocalizedText(
+                        "settings.assets.imported_at",
+                        arguments: ["date": formatter.string(from: assetFile.importedAt)]
                       )
                       .font(.caption)
                     }
@@ -101,7 +103,7 @@ struct ComplexModificationsAssetsView: View {
                         contentViewStates.complexModificationsViewSheetPresented = false
                       },
                       label: {
-                        Text("Enable All")
+                        AppLocalizedText("shared.action.enable_all")
                           .font(.caption)
                       })
 

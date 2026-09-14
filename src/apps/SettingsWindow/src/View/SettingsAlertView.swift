@@ -8,14 +8,14 @@ struct SettingsAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 6.0) {
         VStack(alignment: .leading, spacing: 20.0) {
-          Label(
-            "Please select the keyboard type you'd like to use",
+          AppLocalizedLabel(
+            "settings.keyboard_type.select_prompt",
             systemImage: "gear"
           )
           .font(.system(size: 24))
 
-          Text(
-            "The keyboard type selected here will be used in Karabiner-Elements, regardless of the physical keyboard you're using."
+          AppLocalizedText(
+            "settings.keyboard_type.description"
           )
 
           VStack {
@@ -32,8 +32,8 @@ struct SettingsAlertView: View {
               )
               .padding(2))
 
-          Text(
-            "Note: You can change it later from the Virtual Keyboard settings."
+          AppLocalizedText(
+            "settings.keyboard_type.change_later"
           )
         }
       }

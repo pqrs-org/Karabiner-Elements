@@ -8,7 +8,7 @@ all:
 		../../../src/apps/SettingsWindow/src/SettingsJSONDiff.swift \
 		../../../src/apps/SettingsWindow/src/ChangedSettings.swift \
 		test.swift -o "$(BUILD_DIR)/changed_settings_test"
-	"$(BUILD_DIR)/changed_settings_test" ../../../src/apps/localization/Resources/localizations.json
+	"$(BUILD_DIR)/changed_settings_test" ../../../src/apps/localization/Resources
 
 clean:
 	rm -rf "$(BUILD_DIR)"

@@ -8,18 +8,15 @@ struct ServicesNotRunningAlertView: View {
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
-        Label(
-          "Some background services are not running",
+        AppLocalizedLabel(
+          "settings.services.not_running",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))
 
         VStack(alignment: .leading, spacing: 0.0) {
-          Text(
-            """
-            Although the background services are enabled, some of them are not running.
-            Try disabling the background services once, then enable them again.
-            """
+          AppLocalizedText(
+            "settings.services.restart_hint"
           )
         }
 
@@ -45,8 +42,8 @@ struct ServicesNotRunningAlertView: View {
                 SMAppService.openSystemSettingsLoginItems()
               },
               label: {
-                Label(
-                  "Open System Settings > General > Login Items & Extensions",
+                AppLocalizedLabel(
+                  "settings.system_settings.open_login_items",
                   systemImage: "arrow.forward.circle.fill")
               }
             )

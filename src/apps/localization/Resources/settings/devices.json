@@ -1,0 +1,182 @@
+{
+    "settings.devices.address": {
+        "en": "Device Address: {address}"
+        ,"ja": "デバイスアドレス：{address}"
+    },
+    "settings.devices.all": {
+        "en": "For all devices"
+        ,"ja": "すべてのデバイス"
+    },
+    "settings.devices.apple_pointing_unsupported": {
+        "en": "Apple pointing devices are not supported"
+        ,"ja": "Apple 製ポインティングデバイスはサポートされていません"
+    },
+    "settings.devices.caps_lock_led": {
+        "en": "Manipulate caps lock LED"
+        ,"ja": "caps lock LED を制御"
+    },
+    "settings.devices.disable_built_in": {
+        "en": "Disable the built-in keyboard while this device is connected"
+        ,"ja": "このデバイスの接続中は内蔵キーボードを無効にする"
+    },
+    "settings.devices.disconnected_count": {
+        "en": "Settings for disconnected devices: {count}"
+        ,"ja": "未接続のデバイスの設定：{count} 件"
+    },
+    "settings.devices.fallback_hint": {
+        "en": "Key events from this device are handled via the CGEventTap fallback"
+        ,"ja": "このデバイスのキーイベントは CGEventTap fallback で処理されます"
+    },
+    "settings.devices.ignore_vendor_events": {
+        "en": "Ignore vendor events"
+        ,"ja": "ベンダー固有のイベントを無視"
+    },
+    "settings.devices.modify_events": {
+        "en": "Modify events"
+        ,"ja": "イベントを変更"
+    },
+    "settings.devices.open_gamepad_settings": {
+        "en": "Open game pad settings"
+        ,"ja": "ゲームパッド設定を開く"
+    },
+    "settings.devices.open_mouse_settings": {
+        "en": "Open mouse settings"
+        ,"ja": "マウス設定を開く"
+    },
+    "settings.devices.product_id": {
+        "en": "Product ID: {decimal} ({hex})"
+        ,"ja": "製品 ID：{decimal}（{hex}）"
+    },
+    "settings.devices.remove_disconnected": {
+        "en": "Remove settings for devices: {count}"
+        ,"ja": "デバイスの設定を削除：{count} 件"
+    },
+    "settings.devices.swap_iso_keys": {
+        "en": "Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)"
+        ,"ja": "ISO 配列固有のキーを入れ替える（例：`~ / §± / ^° / ² ↔ \\| / <>）"
+    },
+    "settings.devices.treat_as_built_in": {
+        "en": "Treat as a built-in keyboard"
+        ,"ja": "内蔵キーボードとして扱う"
+    },
+    "settings.devices.vendor_events_hint": {
+        "en": "It is recommended to enable \"Ignore vendor events\" for non-Apple devices"
+        ,"ja": "Apple 製以外のデバイスでは「ベンダー固有のイベントを無視」を有効にすることをおすすめします。"
+    },
+    "settings.devices.vendor_id": {
+        "en": "Vendor ID: {decimal} ({hex})"
+        ,"ja": "ベンダー ID：{decimal}（{hex}）"
+    },
+    "settings.gamepad.continued_interval": {
+        "en": "Continued movement interval milliseconds:"
+        ,"ja": "移動を継続する間隔（ミリ秒）："
+    },
+    "settings.gamepad.continued_threshold": {
+        "en": "Continued movement absolute magnitude threshold:"
+        ,"ja": "移動を継続する絶対値のしきい値："
+    },
+    "settings.gamepad.deadzone": {
+        "en": "deadzone:"
+        ,"ja": "デッドゾーン："
+    },
+    "settings.gamepad.delta_threshold": {
+        "en": "Delta magnitude detection threshold:"
+        ,"ja": "変化量の検出しきい値："
+    },
+    "settings.gamepad.horizontal_formula": {
+        "en": "horizontal wheel formula"
+        ,"ja": "横ホイールの式"
+    },
+    "settings.gamepad.invalid_formula": {
+        "en": "Invalid formula"
+        ,"ja": "無効な式"
+    },
+    "settings.gamepad.others": {
+        "en": "Others"
+        ,"ja": "その他"
+    },
+    "settings.gamepad.reset_formula": {
+        "en": "Reset to the default formula"
+        ,"ja": "デフォルトの式に戻す"
+    },
+    "settings.gamepad.swap_sticks": {
+        "en": "Swap gamepad XY and wheels sticks"
+        ,"ja": "ゲームパッドの XY スティックとホイール用スティックを入れ替える"
+    },
+    "settings.gamepad.vertical_formula": {
+        "en": "vertical wheel formula"
+        ,"ja": "縦ホイールの式"
+    },
+    "settings.gamepad.wheels_stick": {
+        "en": "Wheels stick"
+        ,"ja": "ホイール用スティック"
+    },
+    "settings.gamepad.x_formula": {
+        "en": "X formula"
+        ,"ja": "X 軸の式"
+    },
+    "settings.gamepad.xy_stick": {
+        "en": "XY stick"
+        ,"ja": "XY スティック"
+    },
+    "settings.gamepad.y_formula": {
+        "en": "Y formula"
+        ,"ja": "Y 軸の式"
+    },
+    "settings.mouse.discard_horizontal_wheel": {
+        "en": "Discard mouse horizontal wheel"
+        ,"ja": "マウスの横ホイールを無視"
+    },
+    "settings.mouse.discard_vertical_wheel": {
+        "en": "Discard mouse vertical wheel"
+        ,"ja": "マウスの縦ホイールを無視"
+    },
+    "settings.mouse.discard_x": {
+        "en": "Discard mouse X"
+        ,"ja": "マウスの X 軸の移動を無視"
+    },
+    "settings.mouse.discard_y": {
+        "en": "Discard mouse Y"
+        ,"ja": "マウスの Y 軸の移動を無視"
+    },
+    "settings.mouse.flags": {
+        "en": "Mouse Flags"
+        ,"ja": "マウスの動作設定"
+    },
+    "settings.mouse.flip_horizontal_wheel": {
+        "en": "Flip mouse horizontal wheel"
+        ,"ja": "マウスの横ホイールを反転"
+    },
+    "settings.mouse.flip_vertical_wheel": {
+        "en": "Flip mouse vertical wheel"
+        ,"ja": "マウスの縦ホイールを反転"
+    },
+    "settings.mouse.flip_x": {
+        "en": "Flip mouse X"
+        ,"ja": "マウスの X 軸を反転"
+    },
+    "settings.mouse.flip_y": {
+        "en": "Flip mouse Y"
+        ,"ja": "マウスの Y 軸を反転"
+    },
+    "settings.mouse.multiplier": {
+        "en": "Multiplier"
+        ,"ja": "倍率"
+    },
+    "settings.mouse.swap_wheels": {
+        "en": "Swap mouse wheels"
+        ,"ja": "マウスの縦ホイールと横ホイールを入れ替える"
+    },
+    "settings.mouse.swap_xy": {
+        "en": "Swap mouse X and Y"
+        ,"ja": "マウスの X 軸と Y 軸を入れ替える"
+    },
+    "settings.mouse.wheels_multiplier": {
+        "en": "Wheels multiplier:"
+        ,"ja": "ホイールの倍率："
+    },
+    "settings.mouse.xy_multiplier": {
+        "en": "XY movement multiplier:"
+        ,"ja": "XY 移動の倍率："
+    }
+}

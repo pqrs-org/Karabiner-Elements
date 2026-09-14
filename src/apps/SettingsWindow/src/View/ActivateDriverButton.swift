@@ -21,24 +21,26 @@ struct ActivateDriverButton: View {
           })
         },
         label: {
-          Label(
-            "Activate driver",
+          AppLocalizedLabel(
+            "settings.driver.activate",
             systemImage: "star.fill")
         })
 
       if self.showingProgress {
-        Text("Activating ...")
+        AppLocalizedText("settings.driver.activating")
           .padding(.bottom, 20)
       }
 
       if self.showingResult {
         VStack(alignment: .leading) {
           if self.status == 0 {
-            Text("Driver was successfully activated.")
+            AppLocalizedText("settings.driver.activated")
               .bold()
           } else {
-            Text("Activation was failed. (error: \(self.status))")
-              .bold()
+            AppLocalizedText(
+              "settings.driver.activation_failed", arguments: ["status": String(self.status)]
+            )
+            .bold()
           }
         }.padding(.bottom, 20)
       }

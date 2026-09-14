@@ -9,7 +9,7 @@ import Foundation
 struct ChangedSettingsTests {
   static func main() throws {
     let source = URL(fileURLWithPath: CommandLine.arguments[1])
-    let catalog = try LocalizationCatalog(data: Data(contentsOf: source))
+    let catalog = try LocalizationCatalog(directory: source)
     let en = AppLanguage.locale(for: "en", catalog: catalog)
 
     let json = #"""

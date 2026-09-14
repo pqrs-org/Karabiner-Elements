@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ProfileEditView: View {
+  @AppLocalizationContext private var localized
   @Binding var profile: SettingsConfiguration.Profile?
   @Binding var showing: Bool
   let onEditingCancelledByExternalChange: () -> Void
@@ -12,8 +13,8 @@ struct ProfileEditView: View {
       if profile != nil {
         VStack(alignment: .leading, spacing: 12.0) {
           HStack {
-            Text("Profile name:")
-            TextField("Profile name", text: $name)
+            AppLocalizedText("settings.profiles.name")
+            TextField(localized("settings.profiles.name_placeholder"), text: $name)
               .onSubmit {
                 save()
               }
@@ -25,7 +26,7 @@ struct ProfileEditView: View {
                 showing = false
               },
               label: {
-                Label("Cancel", systemImage: "xmark")
+                AppLocalizedLabel("shared.action.cancel", systemImage: "xmark")
               })
 
             Button(
@@ -33,7 +34,7 @@ struct ProfileEditView: View {
                 save()
               },
               label: {
-                Label("Save", systemImage: "checkmark")
+                AppLocalizedLabel("shared.action.save", systemImage: "checkmark")
                   .buttonLabelStyle()
               }
             )

@@ -67,6 +67,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 }
 
 struct ContentMainView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
@@ -157,8 +158,8 @@ struct ContentMainView: View {
                 selectedSidebarItem = .expert
               },
               label: {
-                Label(
-                  "The unsafe configuration is enabled, so the safeguard feature is currently inactive.",
+                AppLocalizedLabel(
+                  "settings.expert.unsafe_banner",
                   systemImage: "exclamationmark.triangle"
                 )
               }
@@ -172,23 +173,16 @@ struct ContentMainView: View {
 
           if systemPreferences.virtualHIDKeyboardModifierMappingsExists {
             VStack(alignment: .leading) {
-              Label(
-                """
-                macOS also remaps modifier keys. It's recommended to restore defaults and configure them via Karabiner-Elements.
-
-                You can reset the macOS setting by following steps:
-                1. Open System Settings and go to Keyboard Shortcuts… > Modifier Keys.
-                2. Choose Karabiner DriverKit VirtualHIDKeyboard.
-                3. Click the Restore Defaults button.
-                """,
+              AppLocalizedLabel(
+                "settings.modifier_mappings.reset_hint",
                 systemImage: WarningBorder.icon
               )
 
               OpenSystemSettingsButton(
                 url: "x-apple.systempreferences:com.apple.preference.keyboard",
                 label: {
-                  Label(
-                    "Open System Settings…",
+                  AppLocalizedLabel(
+                    "settings.system_settings.open",
                     systemImage: "arrow.up.forward.app"
                   )
                 }
@@ -201,9 +195,10 @@ struct ContentMainView: View {
 
           if settings.saveErrorMessage != "" {
             VStack(alignment: .leading) {
-              Label(
-                "Save failed:\n\(settings.saveErrorMessage)",
-                systemImage: ErrorBorder.icon
+              AppLocalizedLabel(
+                "settings.save.failed",
+                systemImage: ErrorBorder.icon,
+                arguments: ["error": settings.saveErrorMessage]
               )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -253,22 +248,45 @@ struct ContentMainView: View {
     .toolbar {
       ToolbarItem(placement: .primaryAction) {
         Picker(selection: $settings.configuration.globalConfiguration.uiLanguage) {
-          Text(verbatim: "Auto").tag("auto")
-          ForEach(AppLanguage.availableLanguages(), id: \.self) { language in
-            Text(verbatim: AppLanguage.displayName(for: language)).tag(language)
+          Label {
+            Text(verbatim: localized("settings.toolbar.auto") + " ")
+          } icon: {
+            Image(systemName: "globe")
           }
-          // Keep a saved selection visible if a replacement JSON lacks it.
-          let selected = settings.configuration.globalConfiguration.uiLanguage
-          if selected != "auto" && !AppLanguage.availableLanguages().contains(selected) {
-            Text(verbatim: AppLanguage.displayName(for: selected)).tag(selected)
+          .labelStyle(.titleAndIcon)
+          .tag("auto")
+
+          ForEach(AppLanguage.availableLanguages(), id: \.self) { language in
+            Label {
+              Text(verbatim: AppLanguage.displayName(for: language) + " ")
+            } icon: {
+              Image(systemName: "globe")
+            }
+            .labelStyle(.titleAndIcon)
+            .tag(language)
           }
         } label: {
           AppLocalizedText("settings.toolbar.language")
         }
         .pickerStyle(.menu)
         .fixedSize()
+        .onAppear { resetUnavailableLanguage() }
+        .onChange(of: settings.configurationLoaded) { _ in resetUnavailableLanguage() }
+        .onChange(of: settings.configuration.globalConfiguration.uiLanguage) { _ in
+          resetUnavailableLanguage()
+        }
+        .onChange(of: localization.catalog.languages) { _ in resetUnavailableLanguage() }
       }
 
+    }
+  }
+
+  private func resetUnavailableLanguage() {
+    // Wait for both settings and translations before validating the saved selection.
+    guard settings.configurationLoaded, !localization.catalog.strings.isEmpty else { return }
+    let selected = settings.configuration.globalConfiguration.uiLanguage
+    if selected != "auto" && !AppLanguage.availableLanguages().contains(selected) {
+      settings.configuration.globalConfiguration.uiLanguage = "auto"
     }
   }
 

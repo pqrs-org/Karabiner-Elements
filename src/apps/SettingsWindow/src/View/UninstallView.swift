@@ -14,7 +14,7 @@ struct UninstallView: View {
                 NSApplication.shared.terminate(nil)
               },
               label: {
-                Label("Launch uninstaller", systemImage: "trash")
+                AppLocalizedLabel("settings.uninstall.launch", systemImage: "trash")
                   .buttonLabelStyle()
               }
             )

@@ -1,0 +1,418 @@
+{
+    "settings.key_picker.alias_left_alt": {
+        "en": "left_alt (equal to `left_option`)"
+        ,"ja": "left_alt（`left_option` と同じ）"
+    },
+    "settings.key_picker.alias_left_gui": {
+        "en": "left_gui (equal to `left_command`)"
+        ,"ja": "left_gui（`left_command` と同じ）"
+    },
+    "settings.key_picker.alias_right_alt": {
+        "en": "right_alt (equal to `right_option`)"
+        ,"ja": "right_alt（`right_option` と同じ）"
+    },
+    "settings.key_picker.alias_right_gui": {
+        "en": "right_gui (equal to `right_command`)"
+        ,"ja": "right_gui（`right_command` と同じ）"
+    },
+    "settings.key_picker.alias_vk_consumer_brightness_down": {
+        "en": "vk_consumer_brightness_down (equal to `display_brightness_decrement`)"
+        ,"ja": "vk_consumer_brightness_down（`display_brightness_decrement` と同じ）"
+    },
+    "settings.key_picker.alias_vk_consumer_brightness_up": {
+        "en": "vk_consumer_brightness_up (equal to `display_brightness_increment`)"
+        ,"ja": "vk_consumer_brightness_up（`display_brightness_increment` と同じ）"
+    },
+    "settings.key_picker.alias_vk_consumer_illumination_down": {
+        "en": "vk_consumer_illumination_down (equal to `illumination_decrement`)"
+        ,"ja": "vk_consumer_illumination_down（`illumination_decrement` と同じ）"
+    },
+    "settings.key_picker.alias_vk_consumer_illumination_up": {
+        "en": "vk_consumer_illumination_up (equal to `illumination_increment`)"
+        ,"ja": "vk_consumer_illumination_up（`illumination_increment` と同じ）"
+    },
+    "settings.key_picker.alias_vk_consumer_next": {
+        "en": "vk_consumer_next (equal to `fast_forward`)"
+        ,"ja": "vk_consumer_next（`fast_forward` と同じ）"
+    },
+    "settings.key_picker.alias_vk_consumer_play": {
+        "en": "vk_consumer_play (equal to `play`)"
+        ,"ja": "vk_consumer_play（`play` と同じ）"
+    },
+    "settings.key_picker.alias_vk_consumer_previous": {
+        "en": "vk_consumer_previous (equal to `rewind`)"
+        ,"ja": "vk_consumer_previous（`rewind` と同じ）"
+    },
+    "settings.key_picker.alias_vk_dashboard": {
+        "en": "vk_dashboard (equal to `dashboard`)"
+        ,"ja": "vk_dashboard（`dashboard` と同じ）"
+    },
+    "settings.key_picker.alias_vk_launchpad": {
+        "en": "vk_launchpad (equal to `launchpad`)"
+        ,"ja": "vk_launchpad（`launchpad` と同じ）"
+    },
+    "settings.key_picker.alias_vk_mission_control": {
+        "en": "vk_mission_control (equal to `mission_control`)"
+        ,"ja": "vk_mission_control（`mission_control` と同じ）"
+    },
+    "settings.key_picker.alias_volume_down": {
+        "en": "volume_down (equal to `volume_decrement`)"
+        ,"ja": "volume_down（`volume_decrement` と同じ）"
+    },
+    "settings.key_picker.alias_volume_up": {
+        "en": "volume_up (equal to `volume_increment`)"
+        ,"ja": "volume_up（`volume_increment` と同じ）"
+    },
+    "settings.key_picker.arrows": {
+        "en": "Arrow keys"
+        ,"ja": "矢印キー"
+    },
+    "settings.key_picker.controls_symbols": {
+        "en": "Controls and symbols"
+        ,"ja": "制御キーと記号"
+    },
+    "settings.key_picker.cursor_first_center": {
+        "en": "Set mouse cursor position to the center of the first screen"
+        ,"ja": "マウスカーソルを1番目の画面中央に移動"
+    },
+    "settings.key_picker.cursor_first_origin": {
+        "en": "Set mouse cursor position to (0,0) of the first screen"
+        ,"ja": "マウスカーソルを1番目の画面の (0,0) に移動"
+    },
+    "settings.key_picker.cursor_second_center": {
+        "en": "Set mouse cursor position to the center of the second screen"
+        ,"ja": "マウスカーソルを2番目の画面中央に移動"
+    },
+    "settings.key_picker.cursor_second_origin": {
+        "en": "Set mouse cursor position to (0,0) of the second screen"
+        ,"ja": "マウスカーソルを2番目の画面の (0,0) に移動"
+    },
+    "settings.key_picker.cursor_window_center": {
+        "en": "Set mouse cursor position to the center of the focused window"
+        ,"ja": "マウスカーソルをフォーカス中のウィンドウの中央に移動"
+    },
+    "settings.key_picker.desktop": {
+        "en": "Generic desktop keys"
+        ,"ja": "汎用デスクトップキー"
+    },
+    "settings.key_picker.disable": {
+        "en": "Disable this key"
+        ,"ja": "このキーを無効にする"
+    },
+    "settings.key_picker.do_not_disturb": {
+        "en": "do_not_disturb (available on macOS 14 and later)"
+        ,"ja": "do_not_disturb（macOS 14 以降で使用可能）"
+    },
+    "settings.key_picker.double_click_center": {
+        "en": "CGEvent double click (center button)"
+        ,"ja": "CGEvent のダブルクリック（中央ボタン）"
+    },
+    "settings.key_picker.double_click_left": {
+        "en": "CGEvent double click (left button)"
+        ,"ja": "CGEvent のダブルクリック（左ボタン）"
+    },
+    "settings.key_picker.double_click_right": {
+        "en": "CGEvent double click (right button)"
+        ,"ja": "CGEvent のダブルクリック（右ボタン）"
+    },
+    "settings.key_picker.dpad": {
+        "en": "D-pad"
+        ,"ja": "方向パッド"
+    },
+    "settings.key_picker.dpad_down": {
+        "en": "dpad down"
+        ,"ja": "方向パッド：下"
+    },
+    "settings.key_picker.dpad_left": {
+        "en": "dpad left"
+        ,"ja": "方向パッド：左"
+    },
+    "settings.key_picker.dpad_right": {
+        "en": "dpad right"
+        ,"ja": "方向パッド：右"
+    },
+    "settings.key_picker.dpad_up": {
+        "en": "dpad up"
+        ,"ja": "方向パッド：上"
+    },
+    "settings.key_picker.fn_globe": {
+        "en": "fn (globe)"
+        ,"ja": "fn（地球儀）"
+    },
+    "settings.key_picker.function": {
+        "en": "Function keys"
+        ,"ja": "ファンクションキー"
+    },
+    "settings.key_picker.gui": {
+        "en": "Generic GUI application control keys"
+        ,"ja": "汎用 GUI アプリ操作キー"
+    },
+    "settings.key_picker.inherit": {
+        "en": "--- (Use the \"For all devices\" setting)"
+        ,"ja": "---（「すべてのデバイス」の設定を使用）"
+    },
+    "settings.key_picker.inherit_category": {
+        "en": "Use the \"For all devices\" setting"
+        ,"ja": "「すべてのデバイス」の設定を使用"
+    },
+    "settings.key_picker.international": {
+        "en": "International keys"
+        ,"ja": "各国語のキー"
+    },
+    "settings.key_picker.japanese": {
+        "en": "Japanese"
+        ,"ja": "日本語"
+    },
+    "settings.key_picker.keypad": {
+        "en": "Keypad keys"
+        ,"ja": "テンキー"
+    },
+    "settings.key_picker.launch": {
+        "en": "Application launch keys"
+        ,"ja": "アプリ起動キー"
+    },
+    "settings.key_picker.letters": {
+        "en": "Letter keys"
+        ,"ja": "英字キー"
+    },
+    "settings.key_picker.lock_key": {
+        "en": "Lock key on Magic Keyboard without Touch ID"
+        ,"ja": "Touch ID 非搭載 Magic Keyboard のロックキー"
+    },
+    "settings.key_picker.media": {
+        "en": "Media controls"
+        ,"ja": "メディア操作"
+    },
+    "settings.key_picker.modifiers": {
+        "en": "Modifier keys"
+        ,"ja": "修飾キー"
+    },
+    "settings.key_picker.mouse_buttons": {
+        "en": "Mouse buttons"
+        ,"ja": "マウスボタン"
+    },
+    "settings.key_picker.mouse_down": {
+        "en": "mouse down"
+        ,"ja": "マウス移動：下"
+    },
+    "settings.key_picker.mouse_down_fast": {
+        "en": "mouse down (fast)"
+        ,"ja": "マウス移動：下（速い）"
+    },
+    "settings.key_picker.mouse_down_slow": {
+        "en": "mouse down (slow)"
+        ,"ja": "マウス移動：下（遅い）"
+    },
+    "settings.key_picker.mouse_keys": {
+        "en": "Mouse keys"
+        ,"ja": "マウスキー"
+    },
+    "settings.key_picker.mouse_left": {
+        "en": "mouse left"
+        ,"ja": "マウス移動：左"
+    },
+    "settings.key_picker.mouse_left_fast": {
+        "en": "mouse left (fast)"
+        ,"ja": "マウス移動：左（速い）"
+    },
+    "settings.key_picker.mouse_left_slow": {
+        "en": "mouse left (slow)"
+        ,"ja": "マウス移動：左（遅い）"
+    },
+    "settings.key_picker.mouse_right": {
+        "en": "mouse right"
+        ,"ja": "マウス移動：右"
+    },
+    "settings.key_picker.mouse_right_fast": {
+        "en": "mouse right (fast)"
+        ,"ja": "マウス移動：右（速い）"
+    },
+    "settings.key_picker.mouse_right_slow": {
+        "en": "mouse right (slow)"
+        ,"ja": "マウス移動：右（遅い）"
+    },
+    "settings.key_picker.mouse_up": {
+        "en": "mouse up"
+        ,"ja": "マウス移動：上"
+    },
+    "settings.key_picker.mouse_up_fast": {
+        "en": "mouse up (fast)"
+        ,"ja": "マウス移動：上（速い）"
+    },
+    "settings.key_picker.mouse_up_slow": {
+        "en": "mouse up (slow)"
+        ,"ja": "マウス移動：上（遅い）"
+    },
+    "settings.key_picker.numbers": {
+        "en": "Number keys"
+        ,"ja": "数字キー"
+    },
+    "settings.key_picker.others": {
+        "en": "Others"
+        ,"ja": "その他"
+    },
+    "settings.key_picker.pc": {
+        "en": "Keys in pc keyboards"
+        ,"ja": "PC キーボードのキー"
+    },
+    "settings.key_picker.rare_return": {
+        "en": "rarely used return (HID usage 0x9e)"
+        ,"ja": "まれに使われる return（HID usage 0x9e）"
+    },
+    "settings.key_picker.remote": {
+        "en": "Remote control buttons"
+        ,"ja": "リモコンボタン"
+    },
+    "settings.key_picker.scroll_down": {
+        "en": "scroll down"
+        ,"ja": "スクロール：下"
+    },
+    "settings.key_picker.scroll_down_fast": {
+        "en": "scroll down (fast)"
+        ,"ja": "スクロール：下（速い）"
+    },
+    "settings.key_picker.scroll_down_slow": {
+        "en": "scroll down (slow)"
+        ,"ja": "スクロール：下（遅い）"
+    },
+    "settings.key_picker.scroll_left": {
+        "en": "scroll left"
+        ,"ja": "スクロール：左"
+    },
+    "settings.key_picker.scroll_left_fast": {
+        "en": "scroll left (fast)"
+        ,"ja": "スクロール：左（速い）"
+    },
+    "settings.key_picker.scroll_left_slow": {
+        "en": "scroll left (slow)"
+        ,"ja": "スクロール：左（遅い）"
+    },
+    "settings.key_picker.scroll_right": {
+        "en": "scroll right"
+        ,"ja": "スクロール：右"
+    },
+    "settings.key_picker.scroll_right_fast": {
+        "en": "scroll right (fast)"
+        ,"ja": "スクロール：右（速い）"
+    },
+    "settings.key_picker.scroll_right_slow": {
+        "en": "scroll right (slow)"
+        ,"ja": "スクロール：右（遅い）"
+    },
+    "settings.key_picker.scroll_up": {
+        "en": "scroll up"
+        ,"ja": "スクロール：上"
+    },
+    "settings.key_picker.scroll_up_fast": {
+        "en": "scroll up (fast)"
+        ,"ja": "スクロール：上（速い）"
+    },
+    "settings.key_picker.scroll_up_slow": {
+        "en": "scroll up (slow)"
+        ,"ja": "スクロール：上（遅い）"
+    },
+    "settings.key_picker.sleep": {
+        "en": "Sleep (IOKit Power Management Sleep System)"
+        ,"ja": "スリープ（IOKit Power Management Sleep System）"
+    },
+    "settings.key_picker.software": {
+        "en": "Software function"
+        ,"ja": "ソフトウェア機能"
+    },
+    "settings.key_picker.speed_0_125": {
+        "en": "speed multiplier (0.125)"
+        ,"ja": "速度の倍率（0.125）"
+    },
+    "settings.key_picker.speed_0_25": {
+        "en": "speed multiplier (0.25)"
+        ,"ja": "速度の倍率（0.25）"
+    },
+    "settings.key_picker.speed_0_5": {
+        "en": "speed multiplier (0.5)"
+        ,"ja": "速度の倍率（0.5）"
+    },
+    "settings.key_picker.speed_2_0": {
+        "en": "speed multiplier (2.0)"
+        ,"ja": "速度の倍率（2.0）"
+    },
+    "settings.key_picker.sticky": {
+        "en": "Sticky modifier keys"
+        ,"ja": "固定修飾キー"
+    },
+    "settings.key_picker.sticky_fn": {
+        "en": "sticky fn"
+        ,"ja": "fn を固定"
+    },
+    "settings.key_picker.sticky_fn_no_hold": {
+        "en": "sticky fn (pressing and holding down is disabled)"
+        ,"ja": "fn を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.sticky_left_command": {
+        "en": "sticky left_command"
+        ,"ja": "left_command を固定"
+    },
+    "settings.key_picker.sticky_left_command_no_hold": {
+        "en": "sticky left_command (pressing and holding down is disabled)"
+        ,"ja": "left_command を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.sticky_left_control": {
+        "en": "sticky left_control"
+        ,"ja": "left_control を固定"
+    },
+    "settings.key_picker.sticky_left_control_no_hold": {
+        "en": "sticky left_control (pressing and holding down is disabled)"
+        ,"ja": "left_control を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.sticky_left_option": {
+        "en": "sticky left_option"
+        ,"ja": "left_option を固定"
+    },
+    "settings.key_picker.sticky_left_option_no_hold": {
+        "en": "sticky left_option (pressing and holding down is disabled)"
+        ,"ja": "left_option を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.sticky_left_shift": {
+        "en": "sticky left_shift"
+        ,"ja": "left_shift を固定"
+    },
+    "settings.key_picker.sticky_left_shift_no_hold": {
+        "en": "sticky left_shift (pressing and holding down is disabled)"
+        ,"ja": "left_shift を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.sticky_right_command": {
+        "en": "sticky right_command"
+        ,"ja": "right_command を固定"
+    },
+    "settings.key_picker.sticky_right_command_no_hold": {
+        "en": "sticky right_command (pressing and holding down is disabled)"
+        ,"ja": "right_command を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.sticky_right_control": {
+        "en": "sticky right_control"
+        ,"ja": "right_control を固定"
+    },
+    "settings.key_picker.sticky_right_control_no_hold": {
+        "en": "sticky right_control (pressing and holding down is disabled)"
+        ,"ja": "right_control を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.sticky_right_option": {
+        "en": "sticky right_option"
+        ,"ja": "right_option を固定"
+    },
+    "settings.key_picker.sticky_right_option_no_hold": {
+        "en": "sticky right_option (pressing and holding down is disabled)"
+        ,"ja": "right_option を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.sticky_right_shift": {
+        "en": "sticky right_shift"
+        ,"ja": "right_shift を固定"
+    },
+    "settings.key_picker.sticky_right_shift_no_hold": {
+        "en": "sticky right_shift (pressing and holding down is disabled)"
+        ,"ja": "right_shift を固定（押したままにする操作は無効）"
+    },
+    "settings.key_picker.touch_id": {
+        "en": "Touch ID on Magic Keyboard"
+        ,"ja": "Magic Keyboard の Touch ID"
+    }
+}

@@ -1,0 +1,114 @@
+{
+    "settings.assets.imported_at": {
+        "en": "Imported at {date}"
+        ,"ja": "読み込み日時：{date}"
+    },
+    "settings.assets.more_rules": {
+        "en": "Import more rules from the Internet (Open a web browser)"
+        ,"ja": "インターネットからほかのルールを読み込む（Web ブラウザーを開く）"
+    },
+    "settings.complex_modifications.add_predefined": {
+        "en": "Add predefined rule"
+        ,"ja": "定義済みのルールを追加"
+    },
+    "settings.complex_modifications.add_rule": {
+        "en": "Add your own rule"
+        ,"ja": "自分でルールを作成"
+    },
+    "settings.complex_modifications.add_script": {
+        "en": "Add your own rule using JavaScript"
+        ,"ja": "JavaScript でルールを作成"
+    },
+    "settings.complex_modifications.disabled": {
+        "en": "disabled"
+        ,"ja": "無効"
+    },
+    "settings.complex_modifications.editor.log": {
+        "en": "Log"
+        ,"ja": "ログ"
+    },
+    "settings.complex_modifications.filter": {
+        "en": "Filter by description or rule content"
+        ,"ja": "説明やルールの内容で絞り込み"
+    },
+    "settings.complex_modifications.for_experts": {
+        "en": "For expert"
+        ,"ja": "上級者向け"
+    },
+    "settings.complex_modifications.move_to_bottom": {
+        "en": "Move item to bottom"
+        ,"ja": "末尾に移動"
+    },
+    "settings.complex_modifications.move_to_top": {
+        "en": "Move item to top"
+        ,"ja": "先頭に移動"
+    },
+    "settings.complex_modifications.position": {
+        "en": "Position"
+        ,"ja": "位置"
+    },
+    "settings.editor.choose": {
+        "en": "Choose"
+        ,"ja": "選択"
+    },
+    "settings.editor.choose_editor": {
+        "en": "Choose editor"
+        ,"ja": "エディターを選択"
+    },
+    "settings.editor.content_too_large": {
+        "en": "Content is too large to edit. Please edit karabiner.json directly with your favorite editor."
+        ,"ja": "内容が大きすぎるため編集できません。お好みのエディターで karabiner.json を直接編集してください。"
+    },
+    "settings.editor.external_sync_hint": {
+        "en": "Changes saved in the external editor are automatically reflected while this window is open."
+        ,"ja": "このウィンドウを開いている間は、外部エディターで保存した変更が自動的に反映されます。"
+    },
+    "settings.editor.new_rule_hint": {
+        "en": "Edit the following setting and press the Save button."
+        ,"ja": "次の設定を編集して保存ボタンを押してください。"
+    },
+    "settings.editor.new_script_hint": {
+        "en": "Edit the following script and press the Save button."
+        ,"ja": "次のスクリプトを編集して保存ボタンを押してください。"
+    },
+    "settings.editor.no_log": {
+        "en": "(no log output)"
+        ,"ja": "（ログ出力なし）"
+    },
+    "settings.editor.open_external": {
+        "en": "Open in external editor"
+        ,"ja": "外部エディターで開く"
+    },
+    "settings.editor.open_named": {
+        "en": "Open in {name}"
+        ,"ja": "{name} で開く"
+    },
+    "settings.editor.profile_changed": {
+        "en": "The editor was closed because the profile changed."
+        ,"ja": "プロファイルが変更されたため、エディターを閉じました。"
+    },
+    "settings.editor.result": {
+        "en": "Result"
+        ,"ja": "結果"
+    },
+    "settings.editor.rules_changed": {
+        "en": "The editor was closed because the selected profile or Complex Modifications rules changed."
+        ,"ja": "選択中のプロファイルまたは高度なキー変換のルールが変更されたため、エディターを閉じました。"
+    },
+    "settings.editor.tmp_directory_error": {
+        "en": "Failed to get user tmp directory."
+        ,"ja": "ユーザーの一時ディレクトリを取得できませんでした。"
+    },
+    "settings.import.invalid_utf8": {
+        "en": "The downloaded file is not valid UTF-8."
+        ,"ja": "ダウンロードしたファイルは有効な UTF-8 ではありません。"
+    },
+    "settings.import.source": {
+        "en": "Import file from {url}"
+        ,"ja": "{url} からファイルを読み込む"
+    },
+    "settings.import.unsupported": {
+        "en": "The downloaded file is not supported."
+        ,"ja": "ダウンロードしたファイルはサポートされていません。"
+    }
+}
