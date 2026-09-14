@@ -1,0 +1,14 @@
+[
+    {
+        "description": "button30 to a",
+        "type": "basic",
+        "from": { "pointing_button": "button30" },
+        "to": [{ "key_code": "a" }]
+    },
+    {
+        "description": "button31 to b",
+        "type": "basic",
+        "from": { "pointing_button": "button31" },
+        "to": [{ "key_code": "b" }]
+    }
+]

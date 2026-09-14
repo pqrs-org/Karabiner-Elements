@@ -900,6 +900,15 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_basic_1.json"
     },
     {
+        "description": "mouse_basic_to_buttons",
+        "rules": [
+            "json/rules/mouse_basic_to_buttons.jsonc",
+            "json/rules/mouse_basic_to_buttons_remap.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_basic_to_buttons.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_basic_to_buttons.json"
+    },
+    {
         "description": "specify modifiers order",
         "rules": ["json/rules/vk_none.jsonc"],
         "input_event_queue": "json/input_event_queue/vk_none_1.jsonc",

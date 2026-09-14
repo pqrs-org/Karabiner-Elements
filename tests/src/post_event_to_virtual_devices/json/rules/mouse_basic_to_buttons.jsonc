@@ -1,0 +1,7 @@
+[
+    {
+        "description": "convert horizontal wheel to buttons",
+        "type": "mouse_basic",
+        "to_buttons": ["horizontal_wheel"]
+    }
+]
