@@ -3,45 +3,9 @@
         "en": "Action"
         ,"ja": "操作"
     },
-    "settings.defaults.font_size": {
-        "en": "pt (Default: 13)"
-        ,"ja": "pt（デフォルト：13）"
-    },
-    "settings.defaults.milliseconds_1000": {
-        "en": "milliseconds (Default value is 1000)"
-        ,"ja": "ミリ秒（デフォルト値：1000）"
-    },
-    "settings.defaults.off": {
-        "en": "(Default: off)"
-        ,"ja": "（デフォルト：無効）"
-    },
-    "settings.defaults.on": {
-        "en": "(Default: on)"
-        ,"ja": "（デフォルト：有効）"
-    },
-    "settings.defaults.percent_100": {
-        "en": "% (Default value is 100)"
-        ,"ja": "%（デフォルト値：100）"
-    },
-    "settings.defaults.sleep_delay": {
-        "en": "milliseconds (Default value is 500; 0 disables delay)"
-        ,"ja": "ミリ秒（デフォルト値：500、0 で遅延を無効化）"
-    },
     "settings.defaults.value": {
-        "en": "(Default: {value})"
-        ,"ja": "（デフォルト：{value}）"
-    },
-    "settings.defaults.value_1000": {
-        "en": "(Default value is 1000)"
-        ,"ja": "（デフォルト値：1000）"
-    },
-    "settings.defaults.value_50": {
-        "en": "(Default value is 50)"
-        ,"ja": "（デフォルト値：50）"
-    },
-    "settings.defaults.value_500": {
-        "en": "(Default value is 500)"
-        ,"ja": "（デフォルト値：500）"
+        "en": "Default: {value}"
+        ,"ja": "デフォルト: {value}"
     },
     "settings.expert.cgeventtap_fallback": {
         "en": "CGEventTap fallback"
@@ -64,8 +28,8 @@
         ,"ja": "ハードウェアマクロに対応したキーボードで複数のキーを同時に送信したとき、修飾キーの順序が変わる場合は、この設定をオフにしてみてください。"
     },
     "settings.expert.modify_pointing_by_default": {
-        "en": "Modify events for pointing devices by default (Default: off)"
-        ,"ja": "ポインティングデバイスのイベントをデフォルトで変更する（デフォルト：無効）"
+        "en": "Modify events for pointing devices by default"
+        ,"ja": "ポインティングデバイスのイベントをデフォルトで変更する"
     },
     "settings.expert.options": {
         "en": "Options"
@@ -78,6 +42,10 @@
     "settings.expert.sleep_delay_description": {
         "en": "Karabiner-Elements delays the key-down event of the macOS sleep shortcut (command+option+power, command+option+eject, or escape at the login window). This prevents the shortcut's release events from waking the Mac immediately after sleep."
         ,"ja": "Karabiner-Elements は、macOS のスリープショートカット（command+option+power、command+option+eject、またはログイン画面での escape）のキー押下イベントを遅延させます。これにより、キーを離したイベントで Mac がすぐにスリープから復帰することを防ぎます。"
+    },
+    "settings.expert.sleep_delay_disabled_hint": {
+        "en": "0 disables delay."
+        ,"ja": "0 で遅延を無効化します。"
     },
     "settings.expert.title": {
         "en": "Expert mode"
@@ -331,9 +299,21 @@
         "en": "Uninstall"
         ,"ja": "アンインストール"
     },
+    "settings.units.milliseconds": {
+        "en": "milliseconds"
+        ,"ja": "ミリ秒"
+    },
+    "settings.units.percent": {
+        "en": "%"
+        ,"ja": "%"
+    },
+    "settings.units.points": {
+        "en": "pt"
+        ,"ja": "pt"
+    },
     "settings.update.automatic": {
-        "en": "Check for updates automatically (Default: on)"
-        ,"ja": "アップデートを自動的に確認（デフォルト：有効）"
+        "en": "Check for updates automatically"
+        ,"ja": "アップデートを自動的に確認"
     },
     "settings.update.github": {
         "en": "Open GitHub (source code)"

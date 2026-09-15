@@ -5,6 +5,10 @@ struct UIView: View {
   @ObservedObject private var settings = Settings.shared
   @ObservedObject private var appIcons = AppIcons.shared
 
+  private var defaults: SettingsConfiguration.Defaults {
+    settings.configuration.defaultConfiguration
+  }
+
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
@@ -13,7 +17,12 @@ struct UIView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.showInMenuBar) {
               HStack {
                 AppLocalizedText("setting.show_in_menu_bar")
-                AppLocalizedText("settings.defaults.on")
+                AppLocalizedText(
+                  "settings.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.showInMenuBar ? "value.on" : "value.off")
+                  ])
               }
             }
             .switchToggleStyle()
@@ -21,7 +30,13 @@ struct UIView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.showProfileNameInMenuBar) {
               HStack {
                 AppLocalizedText("setting.show_profile_name_in_menu_bar")
-                AppLocalizedText("settings.defaults.off")
+                AppLocalizedText(
+                  "settings.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.showProfileNameInMenuBar
+                        ? "value.on" : "value.off")
+                  ])
               }
             }
             .switchToggleStyle()
@@ -29,7 +44,13 @@ struct UIView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.showAdditionalMenuItems) {
               HStack {
                 AppLocalizedText("setting.show_additional_menu_items")
-                AppLocalizedText("settings.defaults.off")
+                AppLocalizedText(
+                  "settings.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.showAdditionalMenuItems
+                        ? "value.on" : "value.off")
+                  ])
               }
             }
             .switchToggleStyle()
@@ -37,7 +58,13 @@ struct UIView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.showQuitConfirmationMenu) {
               HStack {
                 AppLocalizedText("setting.show_quit_confirmation_menu")
-                AppLocalizedText("settings.defaults.on")
+                AppLocalizedText(
+                  "settings.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.showQuitConfirmationMenu
+                        ? "value.on" : "value.off")
+                  ])
               }
             }
             .switchToggleStyle()
@@ -51,7 +78,13 @@ struct UIView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.enableNotificationWindow) {
               HStack {
                 AppLocalizedText("setting.enable_notification_window")
-                AppLocalizedText("settings.defaults.on")
+                AppLocalizedText(
+                  "settings.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.enableNotificationWindow
+                        ? "value.on" : "value.off")
+                  ])
               }
             }
             .switchToggleStyle()
@@ -63,7 +96,13 @@ struct UIView: View {
               ) {
                 HStack {
                   AppLocalizedText("setting.indicate_sticky_modifier_keys_state")
-                  AppLocalizedText("settings.defaults.on")
+                  AppLocalizedText(
+                    "settings.defaults.value",
+                    arguments: [
+                      "value": localized(
+                        defaults.selectedProfile.virtualHidKeyboard.indicateStickyModifierKeysState
+                          ? "value.on" : "value.off")
+                    ])
                 }
               }
               .switchToggleStyle()
@@ -99,7 +138,14 @@ struct UIView: View {
                     ) {
                       HStack {
                         AppLocalizedText("setting.notification_window_respect_screen_visible_frame")
-                        AppLocalizedText("settings.defaults.on")
+                        AppLocalizedText(
+                          "settings.defaults.value",
+                          arguments: [
+                            "value": localized(
+                              defaults.globalConfiguration
+                                .notificationWindowRespectScreenVisibleFrame
+                                ? "value.on" : "value.off")
+                          ])
                       }
                     }
                     .switchToggleStyle()
@@ -110,7 +156,13 @@ struct UIView: View {
                   ) {
                     HStack {
                       AppLocalizedText("setting.notification_window_show_icon")
-                      AppLocalizedText("settings.defaults.on")
+                      AppLocalizedText(
+                        "settings.defaults.value",
+                        arguments: [
+                          "value": localized(
+                            defaults.globalConfiguration.notificationWindowShowIcon
+                              ? "value.on" : "value.off")
+                        ])
                     }
                   }
                   .switchToggleStyle()
@@ -122,7 +174,12 @@ struct UIView: View {
                       range: 8...64,
                       step: 1,
                       width: 40)
-                    AppLocalizedText("settings.defaults.font_size")
+                    AppLocalizedText("settings.units.points")
+                    AppLocalizedText(
+                      "settings.defaults.value",
+                      arguments: [
+                        "value": String(defaults.globalConfiguration.notificationWindowFontSize)
+                      ])
                   }
 
                   Grid(alignment: .leading, horizontalSpacing: 12.0, verticalSpacing: 12.0) {

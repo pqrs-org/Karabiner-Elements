@@ -247,28 +247,10 @@ struct ContentMainView: View {
     )
     .toolbar {
       ToolbarItem(placement: .primaryAction) {
-        Picker(selection: $settings.configuration.globalConfiguration.uiLanguage) {
-          Label {
-            Text(verbatim: localized("settings.toolbar.auto") + " ")
-          } icon: {
-            Image(systemName: "globe")
-          }
-          .labelStyle(.titleAndIcon)
-          .tag("auto")
-
-          ForEach(AppLanguage.availableLanguages(), id: \.self) { language in
-            Label {
-              Text(verbatim: AppLanguage.displayName(for: language) + " ")
-            } icon: {
-              Image(systemName: "globe")
-            }
-            .labelStyle(.titleAndIcon)
-            .tag(language)
-          }
-        } label: {
-          AppLocalizedText("settings.toolbar.language")
-        }
-        .pickerStyle(.menu)
+        LanguagePicker(
+          selection: $settings.configuration.globalConfiguration.uiLanguage,
+          languages: AppLanguage.availableLanguages()
+        )
         .fixedSize()
         .onAppear { resetUnavailableLanguage() }
         .onChange(of: settings.configurationLoaded) { _ in resetUnavailableLanguage() }
@@ -300,5 +282,69 @@ struct ContentMainView: View {
     }
     .padding(.vertical, 2.0)
     .tag(item)
+  }
+}
+
+// Use AppKit's native text rendering: SwiftUI's toolbar menu Picker can render
+// the selected text white on a light background on macOS 27.
+@MainActor
+private struct LanguagePicker: NSViewRepresentable {
+  @AppLocalizationContext private var localized
+  @Binding var selection: String
+  let languages: [String]
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(selection: $selection)
+  }
+
+  func makeNSView(context: Context) -> NSPopUpButton {
+    let button = NSPopUpButton(frame: .zero, pullsDown: false)
+    button.target = context.coordinator
+    button.action = #selector(Coordinator.selectionChanged(_:))
+    button.imagePosition = .imageLeft
+    button.setContentCompressionResistancePriority(.required, for: .horizontal)
+    return button
+  }
+
+  func updateNSView(_ button: NSPopUpButton, context: Context) {
+    context.coordinator.selection = $selection
+    let identifiers = ["auto"] + languages
+    let titles = identifiers.map {
+      $0 == "auto" ? localized("settings.toolbar.auto") : AppLanguage.displayName(for: $0)
+    }
+    if button.itemArray.map({ $0.representedObject as? String }) != identifiers.map(Optional.some)
+      || button.itemTitles != titles
+    {
+      button.removeAllItems()
+      for (identifier, title) in zip(identifiers, titles) {
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        item.representedObject = identifier
+        item.image = NSImage(systemSymbolName: "globe", accessibilityDescription: nil)
+        button.menu?.addItem(item)
+      }
+    }
+    button.selectItem(at: identifiers.firstIndex(of: selection) ?? 0)
+    button.setAccessibilityLabel(localized("settings.toolbar.language"))
+    button.invalidateIntrinsicContentSize()
+  }
+
+  func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSPopUpButton, context: Context)
+    -> CGSize?
+  {
+    nsView.intrinsicContentSize
+  }
+
+  @MainActor
+  final class Coordinator: NSObject {
+    var selection: Binding<String>
+
+    init(selection: Binding<String>) {
+      self.selection = selection
+    }
+
+    @objc func selectionChanged(_ sender: NSPopUpButton) {
+      guard let language = sender.selectedItem?.representedObject as? String else { return }
+      selection.wrappedValue = language
+    }
   }
 }

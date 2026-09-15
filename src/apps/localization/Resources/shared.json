@@ -40,20 +40,20 @@
         ,"ja": "背景色"
     },
     "setting.basic.simultaneous_threshold_milliseconds": {
-        "en": "Simultaneous key threshold (ms)"
-        ,"ja": "同時押しの判定時間（ms）"
+        "en": "simultaneous_threshold_milliseconds:"
+        ,"ja": "simultaneous_threshold_milliseconds:"
     },
     "setting.basic.to_delayed_action_delay_milliseconds": {
-        "en": "Delayed action delay (ms)"
-        ,"ja": "遅延アクションの待機時間（ms）"
+        "en": "to_delayed_action_delay_milliseconds:"
+        ,"ja": "to_delayed_action_delay_milliseconds:"
     },
     "setting.basic.to_if_alone_timeout_milliseconds": {
-        "en": "Alone key timeout (ms)"
-        ,"ja": "単独押しのタイムアウト（ms）"
+        "en": "to_if_alone_timeout_milliseconds:"
+        ,"ja": "to_if_alone_timeout_milliseconds:"
     },
     "setting.basic.to_if_held_down_threshold_milliseconds": {
-        "en": "Held key threshold (ms)"
-        ,"ja": "長押しの判定時間（ms）"
+        "en": "to_if_held_down_threshold_milliseconds:"
+        ,"ja": "to_if_held_down_threshold_milliseconds:"
     },
     "setting.check_for_updates": {
         "en": "Check for updates"
@@ -64,12 +64,12 @@
         ,"ja": "個別設定のあるデバイス数"
     },
     "setting.delay_milliseconds_before_open_device": {
-        "en": "Delay before opening a device (ms)"
-        ,"ja": "デバイスを開くまでの遅延（ms）"
+        "en": "Delay to grab device"
+        ,"ja": "デバイスを占有するまでの遅延"
     },
     "setting.delay_milliseconds_before_sleep_shortcut": {
-        "en": "Delay before sleep shortcut (ms)"
-        ,"ja": "スリープショートカットの遅延（ms）"
+        "en": "Delay before sending sleep shortcut key-down events"
+        ,"ja": "スリープショートカットのキー押下イベントを送信するまでの遅延"
     },
     "setting.enable_cgeventtap_fallback": {
         "en": "Enable CGEventTap fallback"
@@ -92,8 +92,8 @@
         ,"ja": "外部エディタ"
     },
     "setting.filter_useless_events_from_specific_devices": {
-        "en": "Filter unnecessary device events"
-        ,"ja": "特定のデバイスの不要なイベントを除外"
+        "en": "Filter useless events from specific devices"
+        ,"ja": "特定のデバイスからの不要なイベントを除外"
     },
     "setting.fn_function_keys_count": {
         "en": "Changed Function Keys count"
@@ -112,32 +112,32 @@
         ,"ja": "キーボードの種類"
     },
     "setting.mouse_key_xy_scale": {
-        "en": "Mouse key movement scale"
-        ,"ja": "マウスキーの移動倍率"
+        "en": "Cursor speed:"
+        ,"ja": "カーソル速度："
     },
     "setting.mouse_motion_to_scroll.speed": {
-        "en": "Mouse motion to scroll speed"
-        ,"ja": "マウス移動によるスクロール速度"
+        "en": "speed:"
+        ,"ja": "speed:"
     },
     "setting.notification_window_font_size": {
-        "en": "Notification font size"
-        ,"ja": "通知の文字サイズ"
+        "en": "Font size:"
+        ,"ja": "文字サイズ："
     },
     "setting.notification_window_position": {
-        "en": "Notification position"
-        ,"ja": "通知の表示位置"
+        "en": "Position"
+        ,"ja": "表示位置"
     },
     "setting.notification_window_respect_screen_visible_frame": {
-        "en": "Keep notifications within the visible screen"
-        ,"ja": "通知を画面の表示領域内に収める"
+        "en": "Keep the window outside the Dock area"
+        ,"ja": "ウィンドウを Dock の領域外に表示"
     },
     "setting.notification_window_show_icon": {
-        "en": "Show notification icon"
-        ,"ja": "通知にアイコンを表示"
+        "en": "Show application icon"
+        ,"ja": "アプリケーションのアイコンを表示"
     },
     "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers": {
-        "en": "Prioritize modifiers with the same timestamp"
-        ,"ja": "同じ時刻の修飾キーを優先"
+        "en": "Reorder same timestamp input events to prioritize modifiers"
+        ,"ja": "同じタイムスタンプの入力イベントを並べ替えて修飾キーを優先"
     },
     "setting.rules_count": {
         "en": "Complex Modifications rule count"
@@ -148,16 +148,16 @@
         ,"ja": "追加のメニュー項目を表示"
     },
     "setting.show_in_menu_bar": {
-        "en": "Show in menu bar"
-        ,"ja": "メニューバーに表示"
+        "en": "Show icon in menu bar"
+        ,"ja": "メニューバーにアイコンを表示"
     },
     "setting.show_profile_name_in_menu_bar": {
         "en": "Show profile name in menu bar"
         ,"ja": "メニューバーにプロファイル名を表示"
     },
     "setting.show_quit_confirmation_menu": {
-        "en": "Confirm before quitting"
-        ,"ja": "終了前に確認"
+        "en": "Show confirmation submenu for Quit Karabiner-Elements"
+        ,"ja": "「Karabiner-Elements を終了」に確認用のサブメニューを表示"
     },
     "setting.simple_modifications_count": {
         "en": "Simple Modifications count"

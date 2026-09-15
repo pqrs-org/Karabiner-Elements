@@ -1,9 +1,14 @@
 import SwiftUI
 
 struct UpdateView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var settings = Settings.shared
   let version =
     Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+
+  private var defaults: SettingsConfiguration.Defaults {
+    settings.configuration.defaultConfiguration
+  }
 
   var body: some View {
     ScrollView {
@@ -13,7 +18,15 @@ struct UpdateView: View {
             AppLocalizedText("settings.update.version", arguments: ["version": version])
 
             Toggle(isOn: $settings.configuration.globalConfiguration.checkForUpdates) {
-              AppLocalizedText("settings.update.automatic")
+              HStack {
+                AppLocalizedText("settings.update.automatic")
+                AppLocalizedText(
+                  "settings.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.checkForUpdates ? "value.on" : "value.off")
+                  ])
+              }
             }
             .switchToggleStyle()
 

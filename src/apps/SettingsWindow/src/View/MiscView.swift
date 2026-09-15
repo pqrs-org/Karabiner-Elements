@@ -1,7 +1,12 @@
 import SwiftUI
 
 struct MiscView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var settings = Settings.shared
+
+  private var defaults: SettingsConfiguration.Defaults {
+    settings.configuration.defaultConfiguration
+  }
 
   var body: some View {
     ScrollView {
@@ -11,7 +16,12 @@ struct MiscView: View {
             Toggle(isOn: $settings.configuration.machineSpecific.enableMultitouchExtension) {
               HStack {
                 AppLocalizedText("setting.enable_multitouch_extension")
-                AppLocalizedText("settings.defaults.off")
+                AppLocalizedText(
+                  "settings.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.machineSpecific.enableMultitouchExtension ? "value.on" : "value.off")
+                  ])
               }
             }
             .switchToggleStyle()

@@ -232,9 +232,19 @@ struct SettingsConfiguration: Decodable {
     var virtualHidKeyboard: VirtualHidKeyboard
   }
 
-  private enum CodingKeys: String, CodingKey {
-    case deviceDefaults, globalConfiguration, machineSpecific, profiles, selectedProfile
+  // Read-only defaults supplied by the C++ configuration snapshot.
+  struct Defaults: Decodable {
+    let globalConfiguration: GlobalConfiguration
+    let machineSpecific: MachineSpecific
+    let selectedProfile: SelectedProfile
   }
+
+  private enum CodingKeys: String, CodingKey {
+    case defaultConfiguration, deviceDefaults, globalConfiguration, machineSpecific, profiles,
+      selectedProfile
+  }
+
+  let defaultConfiguration: Defaults
 
   // Computed from the raw current/default snapshots when loading configuration.
   var changedSettingsJson: String = "{}"

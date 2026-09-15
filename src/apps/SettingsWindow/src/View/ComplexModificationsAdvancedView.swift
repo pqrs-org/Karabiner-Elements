@@ -3,6 +3,10 @@ import SwiftUI
 struct ComplexModificationsAdvancedView: View {
   @ObservedObject private var settings = Settings.shared
 
+  private var defaults: SettingsConfiguration.Defaults {
+    settings.configuration.defaultConfiguration
+  }
+
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
@@ -18,7 +22,13 @@ struct ComplexModificationsAdvancedView: View {
                 step: 100,
                 width: 50)
 
-              AppLocalizedText("settings.defaults.value_1000")
+              AppLocalizedText(
+                "settings.defaults.value",
+                arguments: [
+                  "value": String(
+                    defaults.selectedProfile.complexModifications.parameters
+                      .basicToIfAloneTimeoutMilliseconds)
+                ])
             }
 
             Divider()
@@ -33,7 +43,13 @@ struct ComplexModificationsAdvancedView: View {
                 step: 100,
                 width: 50)
 
-              AppLocalizedText("settings.defaults.value_500")
+              AppLocalizedText(
+                "settings.defaults.value",
+                arguments: [
+                  "value": String(
+                    defaults.selectedProfile.complexModifications.parameters
+                      .basicToIfHeldDownThresholdMilliseconds)
+                ])
             }
 
             Divider()
@@ -48,7 +64,13 @@ struct ComplexModificationsAdvancedView: View {
                 step: 100,
                 width: 50)
 
-              AppLocalizedText("settings.defaults.value_500")
+              AppLocalizedText(
+                "settings.defaults.value",
+                arguments: [
+                  "value": String(
+                    defaults.selectedProfile.complexModifications.parameters
+                      .basicToDelayedActionDelayMilliseconds)
+                ])
             }
 
             Divider()
@@ -63,7 +85,13 @@ struct ComplexModificationsAdvancedView: View {
                 step: 20,
                 width: 50)
 
-              AppLocalizedText("settings.defaults.value_50")
+              AppLocalizedText(
+                "settings.defaults.value",
+                arguments: [
+                  "value": String(
+                    defaults.selectedProfile.complexModifications.parameters
+                      .basicSimultaneousThresholdMilliseconds)
+                ])
             }
           }
           .padding()
@@ -82,7 +110,14 @@ struct ComplexModificationsAdvancedView: View {
                 step: 10,
                 width: 50)
 
-              AppLocalizedText("settings.defaults.percent_100")
+              AppLocalizedText("settings.units.percent")
+              AppLocalizedText(
+                "settings.defaults.value",
+                arguments: [
+                  "value": String(
+                    defaults.selectedProfile.complexModifications.parameters
+                      .mouseMotionToScrollSpeed)
+                ])
             }
           }
           .padding()

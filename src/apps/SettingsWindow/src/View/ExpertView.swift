@@ -1,7 +1,12 @@
 import SwiftUI
 
 struct ExpertView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var settings = Settings.shared
+
+  private var defaults: SettingsConfiguration.Defaults {
+    settings.configuration.defaultConfiguration
+  }
 
   var body: some View {
     ScrollView {
@@ -11,7 +16,12 @@ struct ExpertView: View {
             Toggle(isOn: $settings.configuration.globalConfiguration.unsafeUi) {
               HStack {
                 AppLocalizedText("setting.unsafe_ui")
-                AppLocalizedText("settings.defaults.off")
+                AppLocalizedText(
+                  "settings.defaults.value",
+                  arguments: [
+                    "value": localized(
+                      defaults.globalConfiguration.unsafeUi ? "value.on" : "value.off")
+                  ])
               }
             }
             .switchToggleStyle()
@@ -31,7 +41,16 @@ struct ExpertView: View {
             isOn: $settings.configuration.selectedProfile
               .modifyPointingDeviceEventsByDefault
           ) {
-            AppLocalizedText("settings.expert.modify_pointing_by_default")
+            HStack {
+              AppLocalizedText("settings.expert.modify_pointing_by_default")
+              AppLocalizedText(
+                "settings.defaults.value",
+                arguments: [
+                  "value": localized(
+                    defaults.selectedProfile.modifyPointingDeviceEventsByDefault
+                      ? "value.on" : "value.off")
+                ])
+            }
           }
           .switchToggleStyle()
           .padding()
@@ -44,7 +63,13 @@ struct ExpertView: View {
               Toggle(isOn: $settings.configuration.globalConfiguration.enableCgeventtapFallback) {
                 HStack {
                   AppLocalizedText("setting.enable_cgeventtap_fallback")
-                  AppLocalizedText("settings.defaults.off")
+                  AppLocalizedText(
+                    "settings.defaults.value",
+                    arguments: [
+                      "value": localized(
+                        defaults.globalConfiguration.enableCgeventtapFallback
+                          ? "value.on" : "value.off")
+                    ])
                 }
               }
               .switchToggleStyle()
@@ -70,7 +95,13 @@ struct ExpertView: View {
               ) {
                 HStack {
                   AppLocalizedText("setting.filter_useless_events_from_specific_devices")
-                  AppLocalizedText("settings.defaults.on")
+                  AppLocalizedText(
+                    "settings.defaults.value",
+                    arguments: [
+                      "value": localized(
+                        defaults.globalConfiguration.filterUselessEventsFromSpecificDevices
+                          ? "value.on" : "value.off")
+                    ])
                 }
               }
               .switchToggleStyle()
@@ -91,7 +122,14 @@ struct ExpertView: View {
                 HStack {
                   AppLocalizedText(
                     "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers")
-                  AppLocalizedText("settings.defaults.on")
+                  AppLocalizedText(
+                    "settings.defaults.value",
+                    arguments: [
+                      "value": localized(
+                        defaults.globalConfiguration
+                          .reorderSameTimestampInputEventsToPrioritizeModifiers
+                          ? "value.on" : "value.off")
+                    ])
                 }
               }
               .switchToggleStyle()
@@ -117,7 +155,13 @@ struct ExpertView: View {
                 step: 100,
                 width: 50)
 
-              AppLocalizedText("settings.defaults.milliseconds_1000")
+              AppLocalizedText("settings.units.milliseconds")
+              AppLocalizedText(
+                "settings.defaults.value",
+                arguments: [
+                  "value": String(
+                    defaults.selectedProfile.parameters.delayMillisecondsBeforeOpenDevice)
+                ])
             }
 
             AppLocalizedLabel(
@@ -140,8 +184,15 @@ struct ExpertView: View {
                 step: 100,
                 width: 50)
 
-              AppLocalizedText("settings.defaults.sleep_delay")
+              AppLocalizedText("settings.units.milliseconds")
+              AppLocalizedText(
+                "settings.defaults.value",
+                arguments: [
+                  "value": String(defaults.globalConfiguration.delayMillisecondsBeforeSleepShortcut)
+                ])
             }
+
+            AppLocalizedText("settings.expert.sleep_delay_disabled_hint")
 
             AppLocalizedLabel(
               "settings.expert.sleep_delay_description",

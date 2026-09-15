@@ -20,8 +20,8 @@
         ,"ja": "このデバイスの接続中は内蔵キーボードを無効にする"
     },
     "settings.devices.disconnected_count": {
-        "en": "Settings for disconnected devices: {count}"
-        ,"ja": "未接続のデバイスの設定：{count} 件"
+        "en": "There are {count} other settings for devices that are not currently connected"
+        ,"ja": "現在接続されていないデバイスの設定がほかに {count} 件あります"
     },
     "settings.devices.fallback_hint": {
         "en": "Key events from this device are handled via the CGEventTap fallback"
@@ -48,8 +48,8 @@
         ,"ja": "製品 ID：{decimal}（{hex}）"
     },
     "settings.devices.remove_disconnected": {
-        "en": "Remove settings for devices: {count}"
-        ,"ja": "デバイスの設定を削除：{count} 件"
+        "en": "Remove settings for currently disconnected devices ({count})"
+        ,"ja": "現在接続されていないデバイスの設定を削除（{count}件）"
     },
     "settings.devices.swap_iso_keys": {
         "en": "Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)"
