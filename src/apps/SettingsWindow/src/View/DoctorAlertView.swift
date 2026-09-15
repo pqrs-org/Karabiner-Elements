@@ -3,10 +3,17 @@ import SwiftUI
 struct DoctorAlertView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
+  var parseErrorMessageOverride: String? = nil
+
+  private var parseErrorMessage: String {
+    parseErrorMessageOverride
+      ?? contentViewStates.coreServiceDaemonState.karabinerJsonParseErrorMessage
+  }
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
-        if !contentViewStates.coreServiceDaemonState.karabinerJsonParseErrorMessage.isEmpty {
+        if !parseErrorMessage.isEmpty {
           AppLocalizedLabel(
             "settings.configuration.parse_error",
             systemImage: ErrorBorder.icon
@@ -15,7 +22,7 @@ struct DoctorAlertView: View {
 
           AppLocalizedText("settings.configuration.parse_error_hint")
 
-          Text(contentViewStates.coreServiceDaemonState.karabinerJsonParseErrorMessage)
+          Text(parseErrorMessage)
             .modifier(ErrorBorder())
         }
       }

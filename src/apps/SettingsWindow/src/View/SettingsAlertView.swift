@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsAlertView: View {
+  @Environment(\.isLocalizationPreview) private var isLocalizationPreview
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @FocusState var focus: Bool
 
@@ -46,7 +47,9 @@ struct SettingsAlertView: View {
     }
     .onAppear {
       focus = true
-      contentViewStates.navigationSelection = .virtualKeyboard
+      if !isLocalizationPreview {
+        contentViewStates.navigationSelection = .virtualKeyboard
+      }
     }
   }
 }

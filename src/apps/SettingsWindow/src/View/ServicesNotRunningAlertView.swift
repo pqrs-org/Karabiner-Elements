@@ -4,6 +4,11 @@ import SwiftUI
 struct ServicesNotRunningAlertView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @FocusState var focus: Bool
+  var guidanceContextOverride: SettingsWindowGuidanceContext? = nil
+
+  private var guidanceContext: SettingsWindowGuidanceContext {
+    guidanceContextOverride ?? contentViewStates.guidanceContext
+  }
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -28,12 +33,12 @@ struct ServicesNotRunningAlertView: View {
               Label(
                 "Karabiner-Elements Non-Privileged Agents v2",
                 systemImage:
-                  contentViewStates.guidanceContext.coreAgentsRunning != false
+                  guidanceContext.coreAgentsRunning != false
                   ? "checkmark.circle.fill" : "circle")
               Label(
                 "Karabiner-Elements Privileged Daemons v2",
                 systemImage:
-                  contentViewStates.guidanceContext.coreDaemonsRunning != false
+                  guidanceContext.coreDaemonsRunning != false
                   ? "checkmark.circle.fill" : "circle")
             }
 

@@ -84,3 +84,17 @@ and EventViewer place it in the toolbar; MultitouchExtension places it at the
 top right of each tab’s content to avoid interfering with the toolbar tabs. Changes
 apply immediately, including catalog updates. If a saved language is no longer
 available in a successfully loaded catalog, the selection returns to `auto`.
+
+## Alert previews
+
+In Settings or EventViewer, hold Option to reveal the Debug sidebar item.
+Select Debug, then release Option to use the preview buttons. The sidebar item
+remains visible while Debug is selected. It is hidden when another page is
+selected unless Option is held.
+
+Each preview uses the application's normal alert presentation with sample data
+where needed, including borderless and full-page variants. The current app
+language is used. Click anywhere in the preview or press Escape to close it.
+Mouse and keyboard actions are intercepted without changing the alert's enabled
+appearance, and automatic navigation is suppressed. Settings includes the
+connection retry and advanced driver guidance variants.

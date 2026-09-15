@@ -8,6 +8,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case variables
   case devices
   case settings
+  case debug
 
   var id: Self { self }
 
@@ -20,6 +21,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .variables: return "event_viewer.sidebar.variables"
     case .devices: return "event_viewer.sidebar.devices"
     case .settings: return "event_viewer.sidebar.settings"
+    case .debug: return "shared.debug.title"
     }
   }
 
@@ -32,19 +34,29 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .variables: return "cube"
     case .devices: return "keyboard"
     case .settings: return "gear"
+    case .debug: return "ladybug"
     }
   }
 }
 
 struct ContentMainView: View {
+  @State private var optionPressed = false
   @State private var selection: SidebarItem = .inputEvents
 
   var body: some View {
     NavigationSplitView(
       sidebar: {
-        List(SidebarItem.allCases, selection: $selection) { item in
-          AppLocalizedLabel(item.title, systemImage: item.systemImage)
-            .padding(.vertical, 8)
+        List(selection: $selection) {
+          ForEach(SidebarItem.allCases.filter { $0 != .debug }) { item in
+            sidebarRow(item)
+          }
+          if optionPressed || selection == .debug {
+            Section {
+              sidebarRow(.debug)
+            } header: {
+              AppLocalizedText("shared.debug.section")
+            }
+          }
         }
         .navigationSplitViewColumnWidth(250)
         .listStyle(.sidebar)
@@ -65,8 +77,17 @@ struct ContentMainView: View {
           DevicesView()
         case .settings:
           SettingsView()
+        case .debug:
+          DebugAlertsView()
         }
       }
     )
+    .background(OptionKeyObserver(isPressed: $optionPressed).frame(width: 0, height: 0))
+  }
+
+  private func sidebarRow(_ item: SidebarItem) -> some View {
+    AppLocalizedLabel(item.title, systemImage: item.systemImage)
+      .padding(.vertical, 8)
+      .tag(item)
   }
 }

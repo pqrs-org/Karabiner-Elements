@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+  @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
   @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
@@ -50,6 +51,16 @@ struct ContentView: View {
         }
       } else {
         ProgressView()
+      }
+
+      if let alert = debugPreview.alert {
+        DebugAlertsView.previewView(alert)
+          .modifier(
+            LocalizationPreviewInteraction {
+              debugPreview.alert = nil
+            }
+          )
+          .zIndex(2)
       }
 
       if let toast = contentViewStates.toast {

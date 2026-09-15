@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+  @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
   @EnvironmentObject private var userSettings: UserSettings
 
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
@@ -23,6 +24,13 @@ struct ContentView: View {
         OverlayAlertView(showsBorder: false) {
           SecureEventInputWarningView()
         }
+      }
+      if let alert = debugPreview.alert {
+        DebugAlertsView.previewView(alert)
+          .modifier(
+            LocalizationPreviewInteraction {
+              debugPreview.alert = nil
+            })
       }
     }
     .onAppear {

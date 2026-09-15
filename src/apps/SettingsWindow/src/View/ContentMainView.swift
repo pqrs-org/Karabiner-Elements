@@ -18,6 +18,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
   case changedSettings
   case systemExtensions
   case setup
+  case debug
 
   var id: Self { self }
 
@@ -40,6 +41,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .log: return "settings.sidebar.item.log"
     case .systemExtensions: return "settings.sidebar.item.system_extensions"
     case .setup: return "settings.sidebar.item.setup"
+    case .debug: return "shared.debug.title"
     }
   }
 
@@ -62,6 +64,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .log: return "list.bullet.rectangle"
     case .systemExtensions: return "puzzlepiece.extension"
     case .setup: return "checklist"
+    case .debug: return "ladybug"
     }
   }
 }
@@ -73,6 +76,7 @@ struct ContentMainView: View {
   @ObservedObject private var settings = Settings.shared
   @ObservedObject private var systemPreferences = SystemPreferences.shared
 
+  @State private var optionPressed = false
   @State private var selectedSidebarItem: SidebarItem = .simpleModifications
 
   struct SidebarSection {
@@ -131,6 +135,13 @@ struct ContentMainView: View {
               }
             } header: {
               AppLocalizedText(sections[section].title)
+            }
+          }
+          if optionPressed || selectedSidebarItem == .debug {
+            Section {
+              sidebarRow(.debug)
+            } header: {
+              AppLocalizedText("shared.debug.section")
             }
           }
         }
@@ -241,10 +252,13 @@ struct ContentMainView: View {
             SystemExtensionsView()
           case .setup:
             SetupView()
+          case .debug:
+            DebugAlertsView()
           }
         }
       }
     )
+    .background(OptionKeyObserver(isPressed: $optionPressed).frame(width: 0, height: 0))
     .toolbar {
       ToolbarItem(placement: .primaryAction) {
         LanguagePicker(

@@ -4,6 +4,7 @@ import SwiftUI
 struct ConsoleUserServerNotConnectedAlertView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @FocusState var focus: Bool
+  var disconnectedForAWhileOverride: Bool? = nil
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -17,7 +18,9 @@ struct ConsoleUserServerNotConnectedAlertView: View {
 
         ProgressView()
 
-        if contentViewStates.consoleUserServerClientDisconnectedForAWhile {
+        if disconnectedForAWhileOverride
+          ?? contentViewStates.consoleUserServerClientDisconnectedForAWhile
+        {
           GroupBox {
             VStack(alignment: .center, spacing: 20.0) {
               AppLocalizedText(

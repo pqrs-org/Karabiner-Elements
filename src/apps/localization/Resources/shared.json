@@ -227,6 +227,46 @@
         "en": "Save"
         ,"ja": "保存"
     },
+    "shared.debug.agent_retry": {
+        "en": "ConsoleUserServer connection: retry guidance"
+        ,"ja": "ConsoleUserServerへの接続：再試行の案内"
+    },
+    "shared.debug.agents_stopped": {
+        "en": "Services stopped: agents only"
+        ,"ja": "サービス停止：エージェントのみ"
+    },
+    "shared.debug.alerts": {
+        "en": "Alert previews"
+        ,"ja": "アラートのプレビュー"
+    },
+    "shared.debug.daemons_stopped": {
+        "en": "Services stopped: daemons only"
+        ,"ja": "サービス停止：デーモンのみ"
+    },
+    "shared.debug.driver_advanced": {
+        "en": "Driver restart required: advanced guidance"
+        ,"ja": "ドライバーの再起動が必要：詳細な案内"
+    },
+    "shared.debug.instructions": {
+        "en": "Hold Option to reveal Debug in the sidebar. After selecting it, you can release Option and preview alerts."
+        ,"ja": "Optionキーを押すとサイドバーに「デバッグ」が表示されます。選択後はキーを離してアラートをプレビューできます。"
+    },
+    "shared.debug.preview_hint": {
+        "en": "Alerts use the current app language and sample states. Click anywhere in the preview or press Escape to close it. Preview actions do not change settings."
+        ,"ja": "アプリの現在の言語とサンプルの状態でアラートを表示します。プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。"
+    },
+    "shared.debug.section": {
+        "en": "For Developer"
+        ,"ja": "開発者向け"
+    },
+    "shared.debug.services_stopped": {
+        "en": "Services stopped: agents and daemons"
+        ,"ja": "サービス停止：エージェントとデーモン"
+    },
+    "shared.debug.title": {
+        "en": "Debug"
+        ,"ja": "デバッグ"
+    },
     "shared.filter": {
         "en": "Filter"
         ,"ja": "絞り込み"

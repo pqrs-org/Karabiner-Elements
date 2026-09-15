@@ -34,13 +34,13 @@ class LocalizationResourcesTests(unittest.TestCase):
                 if "build" in source.parts:
                     continue
                 for key in re.findall(
-                    r'"((?:event_viewer|multitouch|shared\.language|settings\.toolbar)\.[A-Za-z0-9_.]+)"',
+                    r'"((?:event_viewer|multitouch|shared\.language|shared\.debug|settings\.toolbar)\.[A-Za-z0-9_.]+)"',
                     source.read_text(),
                 ):
                     if not key.endswith("."):
                         self.assertIn(key, catalog, str(source))
         for key, translations in catalog.items():
-            if key.startswith(("event_viewer.", "multitouch.")):
+            if key.startswith(("event_viewer.", "multitouch.", "shared.debug.")):
                 self.assertIn("ja", translations, key)
                 self.assertEqual(
                     set(re.findall(r"\{\w+\}", translations["en"])),

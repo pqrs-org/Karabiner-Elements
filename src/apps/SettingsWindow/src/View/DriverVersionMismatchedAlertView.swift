@@ -4,6 +4,10 @@ struct DriverVersionMismatchedAlertView: View {
   @State private var showingAdvanced = false
   @FocusState var focus: Bool
 
+  init(showingAdvanced: Bool = false) {
+    _showingAdvanced = State(initialValue: showingAdvanced)
+  }
+
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 20.0) {
