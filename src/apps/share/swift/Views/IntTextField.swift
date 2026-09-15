@@ -20,7 +20,7 @@ struct IntTextField: View {
     width: CGFloat
   ) {
     _value = value
-    text = String(value.wrappedValue)
+    _text = State(initialValue: String(value.wrappedValue))
 
     self.step = step
     self.range = range
