@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-latest
     env:
       PQRS_ORG_CODE_SIGN_IDENTITY: dummy
       PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY: dummy
@@ -20,10 +20,6 @@ jobs:
         with:
           fetch-depth: 1
           submodules: recursive
-
-      - name: Xcode 26
-        run: sudo xcode-select -s /Applications/Xcode_26.0.app
-
       - name: brew install
         run: brew install xcodegen
       - name: package
