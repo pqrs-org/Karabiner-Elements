@@ -3,7 +3,7 @@ name: Karabiner-MultitouchExtension
 packages:
   AsyncAlgorithms:
     url: https://github.com/apple/swift-async-algorithms
-    from: 1.1.1
+    from: 1.1.5
   SettingsAccess:
     url: https://github.com/orchetect/SettingsAccess
     from: 2.1.0
@@ -32,6 +32,7 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: src
+      - path: ../localization/swift
       - path: ../share/swift/Views
       - path: ../share/swift/ApplicationTermination.swift
       - path: Resources

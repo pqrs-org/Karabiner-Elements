@@ -1,40 +1,39 @@
 import SwiftUI
 
 struct SettingsPowerView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var userSettings = UserSettings.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 25.0) {
-      GroupBox(label: Text("Power")) {
+      GroupBox(label: AppLocalizedText("multitouch.tab.power")) {
         VStack(alignment: .leading, spacing: 10.0) {
           HStack {
             Toggle(isOn: $userSettings.allowUserInteractiveActivity) {
-              Text(
-                "Enable user-interactive activity for better responsiveness to user input"
-              )
+              AppLocalizedText("multitouch.power.enable")
             }
             .switchToggleStyle()
 
-            Text("(Default: off)")
+            AppLocalizedText(
+              "settings.defaults.value", arguments: ["value": localized("value.off")])
           }
 
-          Text(
-            "(This setting consumes battery power and may prevent the system from sleeping)",
-          )
+          AppLocalizedText("multitouch.power.warning")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
       }
 
-      GroupBox(label: Text("User-interactive activity options")) {
+      GroupBox(label: AppLocalizedText("multitouch.power.options")) {
         VStack(alignment: .leading, spacing: 10.0) {
           HStack {
             Toggle(isOn: $userSettings.keepUserInteractiveActivityDuringDisplaySleep) {
-              Text("Keep user-interactive activity running while the display sleeps")
+              AppLocalizedText("multitouch.power.display_sleep")
             }
             .switchToggleStyle()
 
-            Text("(Default: off)")
+            AppLocalizedText(
+              "settings.defaults.value", arguments: ["value": localized("value.off")])
           }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

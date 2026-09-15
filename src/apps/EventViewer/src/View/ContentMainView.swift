@@ -13,13 +13,13 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 
   var title: String {
     switch self {
-    case .inputEvents: return "Capture Input Events"
-    case .rawInputEvents: return "Capture Raw Input Events"
-    case .rawInputRecords: return "Capture Raw Input Records"
-    case .frontmostApplication: return "Frontmost Application"
-    case .variables: return "Variables"
-    case .devices: return "Devices"
-    case .settings: return "Settings"
+    case .inputEvents: return "event_viewer.sidebar.input_events"
+    case .rawInputEvents: return "event_viewer.sidebar.raw_input_events"
+    case .rawInputRecords: return "event_viewer.sidebar.raw_input_records"
+    case .frontmostApplication: return "event_viewer.sidebar.frontmost_application"
+    case .variables: return "event_viewer.sidebar.variables"
+    case .devices: return "event_viewer.sidebar.devices"
+    case .settings: return "event_viewer.sidebar.settings"
     }
   }
 
@@ -43,7 +43,7 @@ struct ContentMainView: View {
     NavigationSplitView(
       sidebar: {
         List(SidebarItem.allCases, selection: $selection) { item in
-          Label(item.title, systemImage: item.systemImage)
+          AppLocalizedLabel(item.title, systemImage: item.systemImage)
             .padding(.vertical, 8)
         }
         .navigationSplitViewColumnWidth(250)

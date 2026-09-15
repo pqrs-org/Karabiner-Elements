@@ -1,0 +1,214 @@
+{
+    "event_viewer.capture.active": {
+        "en": "Capturing input events"
+        ,"ja": "入力イベントを取得中"
+    },
+    "event_viewer.capture.input_hint": {
+        "en": "Type in the test input field to inspect input events."
+        ,"ja": "入力イベントを確認するには、テスト用の入力欄に入力してください。"
+    },
+    "event_viewer.capture.input_start_hint": {
+        "en": "Press Start capture to begin capturing input events."
+        ,"ja": "「取得を開始」を押すと、入力イベントの取得が始まります。"
+    },
+    "event_viewer.capture.raw_events": {
+        "en": "raw input events"
+        ,"ja": "未加工の入力イベント"
+    },
+    "event_viewer.capture.raw_events_active": {
+        "en": "Capturing raw input events without Karabiner-Elements modifications."
+        ,"ja": "Karabiner-Elementsによる変更を適用せずに入力イベントを取得中。"
+    },
+    "event_viewer.capture.raw_events_hint": {
+        "en": "Type in the test input field to inspect raw input events."
+        ,"ja": "未加工の入力イベントを確認するには、テスト用の入力欄に入力してください。"
+    },
+    "event_viewer.capture.raw_events_select": {
+        "en": "Select a device to start capturing raw input events."
+        ,"ja": "未加工の入力イベントを取得するデバイスを選択してください。"
+    },
+    "event_viewer.capture.raw_records": {
+        "en": "raw input records"
+        ,"ja": "未加工の入力レコード"
+    },
+    "event_viewer.capture.raw_records_active": {
+        "en": "Capturing raw input records without Karabiner-Elements modifications."
+        ,"ja": "Karabiner-Elementsによる変更を適用せずに入力レコードを取得中。"
+    },
+    "event_viewer.capture.raw_records_empty": {
+        "en": "No raw input records received."
+        ,"ja": "未加工の入力レコードはまだ受信していません。"
+    },
+    "event_viewer.capture.raw_records_select": {
+        "en": "Select a device to start capturing raw input records."
+        ,"ja": "未加工の入力レコードを取得するデバイスを選択してください。"
+    },
+    "event_viewer.capture.reports_description": {
+        "en": "Input reports let you observe signals sent directly by HID hardware. They may reveal events that are omitted from the input values normally used by Karabiner-Elements."
+        ,"ja": "入力レポートでは、HIDハードウェアが直接送信する信号を確認できます。Karabiner-Elementsが通常使用する入力値には含まれないイベントが見つかる場合があります。"
+    },
+    "event_viewer.capture.reports_hint": {
+        "en": "If pressing a key produces a detectable change here, Karabiner-Elements may be able to support that key."
+        ,"ja": "キーを押してここに変化が現れる場合、そのキーをKarabiner-Elementsでサポートできる可能性があります。"
+    },
+    "event_viewer.capture.select_device": {
+        "en": "Select the device whose {subject} you want to inspect."
+        ,"ja": "{subject}を確認するデバイスを選択してください。"
+    },
+    "event_viewer.capture.start": {
+        "en": "Start capture"
+        ,"ja": "取得を開始"
+    },
+    "event_viewer.capture.start_hint": {
+        "en": "Press Start capture to begin capturing {subject}."
+        ,"ja": "「取得を開始」を押すと、{subject}の取得が始まります。"
+    },
+    "event_viewer.capture.stop": {
+        "en": "Stop capture"
+        ,"ja": "取得を停止"
+    },
+    "event_viewer.capture.stop_escape": {
+        "en": "Stop capture (Esc)"
+        ,"ja": "取得を停止（Esc）"
+    },
+    "event_viewer.capture.test_input": {
+        "en": "Type here to test input"
+        ,"ja": "ここに入力して動作を確認"
+    },
+    "event_viewer.capture.unknown_events": {
+        "en": "Capture unknown events"
+        ,"ja": "未知のイベントを取得"
+    },
+    "event_viewer.capture.waiting": {
+        "en": "Waiting for device access..."
+        ,"ja": "デバイスへのアクセスを待機中…"
+    },
+    "event_viewer.devices.empty": {
+        "en": "No devices connected."
+        ,"ja": "デバイスが接続されていません。"
+    },
+    "event_viewer.events.from": {
+        "en": "from {product}"
+        ,"ja": "入力元：{product}"
+    },
+    "event_viewer.events.integer_value": {
+        "en": "integer value: "
+        ,"ja": "整数値："
+    },
+    "event_viewer.events.unsupported_usage": {
+        "en": "Unsupported HID usage"
+        ,"ja": "未対応のHID usage"
+    },
+    "event_viewer.events.usage": {
+        "en": "usage: "
+        ,"ja": "usage："
+    },
+    "event_viewer.events.usage_page": {
+        "en": "usage page: "
+        ,"ja": "usage page："
+    },
+    "event_viewer.frontmost.bundle_identifier": {
+        "en": "Bundle Identifier: "
+        ,"ja": "バンドル識別子："
+    },
+    "event_viewer.frontmost.detection_source": {
+        "en": "Detection Source: "
+        ,"ja": "検出元："
+    },
+    "event_viewer.frontmost.file_path": {
+        "en": "File Path: "
+        ,"ja": "ファイルパス："
+    },
+    "event_viewer.frontmost.hint": {
+        "en": "Switch to the app whose bundle identifier you want to check."
+        ,"ja": "バンドル識別子を確認したいアプリケーションに切り替えてください。"
+    },
+    "event_viewer.input_monitoring.description": {
+        "en": "Karabiner-EventViewer requires Input Monitoring permission to show input events."
+        ,"ja": "Karabiner-EventViewerで入力イベントを表示するには、入力監視の許可が必要です。"
+    },
+    "event_viewer.input_monitoring.hint": {
+        "en": "Please allow on Privacy & Security System Settings."
+        ,"ja": "システム設定の「プライバシーとセキュリティ」で許可してください。"
+    },
+    "event_viewer.input_monitoring.open_settings": {
+        "en": "Open Privacy & Security System Settings…"
+        ,"ja": "「プライバシーとセキュリティ」を開く…"
+    },
+    "event_viewer.input_monitoring.title": {
+        "en": "Please allow Karabiner-EventViewer to monitor input events"
+        ,"ja": "Karabiner-EventViewerによる入力イベントの監視を許可してください"
+    },
+    "event_viewer.records.data": {
+        "en": "Data"
+        ,"ja": "データ"
+    },
+    "event_viewer.records.report_id": {
+        "en": "Report ID"
+        ,"ja": "レポートID"
+    },
+    "event_viewer.records.timestamp": {
+        "en": "Timestamp"
+        ,"ja": "時刻"
+    },
+    "event_viewer.secure_input.cannot_capture": {
+        "en": "Keyboard events cannot be captured while Secure Keyboard Entry is enabled by another application."
+        ,"ja": "他のアプリケーションで「セキュアなキーボード入力」が有効な間は、キーボードイベントを取得できません。"
+    },
+    "event_viewer.secure_input.resume": {
+        "en": "Switch to or quit that application to resume capturing."
+        ,"ja": "取得を再開するには、そのアプリケーションに切り替えるか終了してください。"
+    },
+    "event_viewer.secure_input.stopped": {
+        "en": "Raw input capture is stopped for safety."
+        ,"ja": "安全のため、未加工の入力の取得を停止しました。"
+    },
+    "event_viewer.secure_input.title": {
+        "en": "Secure Keyboard Entry is enabled"
+        ,"ja": "セキュアなキーボード入力が有効です"
+    },
+    "event_viewer.settings.all_spaces": {
+        "en": "Show EventViewer in all spaces"
+        ,"ja": "EventViewerをすべての操作スペースに表示"
+    },
+    "event_viewer.settings.stay_on_top": {
+        "en": "Force EventViewer to stay on top of other windows"
+        ,"ja": "EventViewerを他のウィンドウより手前に表示"
+    },
+    "event_viewer.settings.window_behavior": {
+        "en": "Window behavior"
+        ,"ja": "ウィンドウの動作"
+    },
+    "event_viewer.sidebar.devices": {
+        "en": "Devices"
+        ,"ja": "デバイス"
+    },
+    "event_viewer.sidebar.frontmost_application": {
+        "en": "Frontmost App History"
+        ,"ja": "最前面のアプリの履歴"
+    },
+    "event_viewer.sidebar.input_events": {
+        "en": "Capture Input Events"
+        ,"ja": "入力イベントの取得"
+    },
+    "event_viewer.sidebar.raw_input_events": {
+        "en": "Capture Raw Input Events"
+        ,"ja": "未加工の入力イベントの取得"
+    },
+    "event_viewer.sidebar.raw_input_records": {
+        "en": "Capture Raw Input Records"
+        ,"ja": "未加工の入力レコードの取得"
+    },
+    "event_viewer.sidebar.settings": {
+        "en": "Settings"
+        ,"ja": "設定"
+    },
+    "event_viewer.sidebar.variables": {
+        "en": "Variables"
+        ,"ja": "変数"
+    },
+    "event_viewer.variables.clear": {
+        "en": "Clear user variables"
+        ,"ja": "ユーザー変数を消去"
+    }
+}

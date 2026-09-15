@@ -1,6 +1,6 @@
 # Editing translations
 
-Settings and ConsoleUserServer share UTF-8 JSON translation files under:
+Settings, ConsoleUserServer, EventViewer, and MultitouchExtension share UTF-8 JSON translation files under:
 
 ```text
 /Library/Application Support/org.pqrs/Karabiner-Elements/localizations/
@@ -13,6 +13,8 @@ Resources/
   shared.json
   menu_bar_extra.json
   changed_settings.json
+  event_viewer.json
+  multitouch_extension.json
   settings/
     general.json
     devices.json
@@ -60,7 +62,7 @@ Run these commands from the repository root:
     comma. Embedded newlines use JSON escapes.
     No Xcode, resource compilation, application build, code signing, or application
     restart is needed to update translations.
-4.  Settings and ConsoleUserServer automatically reload the installed translations and
+4.  All four applications automatically reload the installed translations and
     update their translations and language lists. Select the added language and
     check the result, then submit the JSON changes in your pull request.
 
@@ -68,3 +70,17 @@ Run these commands from the repository root:
 `make format` includes localization formatting. The scripts require Python 3.
 An application/package installation may replace local translation edits; keep your
 source changes and run `make -C src/apps/localization install` again afterward.
+
+## Language preferences
+
+Settings stores the selected language in `karabiner.json`. EventViewer and
+MultitouchExtension each store `uiLanguage` using SwiftUI `AppStorage` in their
+own application's UserDefaults domain. Neither application reads or writes
+`karabiner.json` to select a language. The initial selection is `auto`, which
+follows the system's preferred languages and falls back to English.
+
+All three language selectors use the shared AppKit `LanguagePicker`. Settings
+and EventViewer place it in the toolbar; MultitouchExtension places it at the
+top right of each tab’s content to avoid interfering with the toolbar tabs. Changes
+apply immediately, including catalog updates. If a saved language is no longer
+available in a successfully loaded catalog, the selection returns to `auto`.

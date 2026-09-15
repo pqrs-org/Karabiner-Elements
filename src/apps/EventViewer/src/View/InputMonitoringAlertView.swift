@@ -19,22 +19,22 @@ struct InputMonitoringAlertView: View {
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
-        Label(
-          "Please allow Karabiner-EventViewer to monitor input events",
+        AppLocalizedLabel(
+          "event_viewer.input_monitoring.title",
           systemImage: "lightbulb"
         )
         .font(.system(size: 24))
 
         VStack(spacing: 0) {
-          Text("Karabiner-EventViewer requires Input Monitoring permission to show input events.")
-          Text("Please allow on Privacy & Security System Settings.")
+          AppLocalizedText("event_viewer.input_monitoring.description")
+          AppLocalizedText("event_viewer.input_monitoring.hint")
         }
 
         OpenSystemSettingsButton(
           url: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent",
           label: {
-            Label(
-              "Open Privacy & Security System Settings…",
+            AppLocalizedLabel(
+              "event_viewer.input_monitoring.open_settings",
               systemImage: "arrow.forward.circle.fill")
           }
         )

@@ -14,32 +14,37 @@ struct SettingsView: View {
   var body: some View {
     TabView(selection: $selection) {
       SettingsMainView()
+        .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          Label("Main", systemImage: "gearshape")
+          AppLocalizedLabel("multitouch.tab.main", systemImage: "gearshape")
         }
         .tag(TabTag.main)
 
       SettingsPowerView()
+        .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          Label("Power", systemImage: "power")
+          AppLocalizedLabel("multitouch.tab.power", systemImage: "power")
         }
         .tag(TabTag.power)
 
       SettingsAdvancedView()
+        .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          Label("Advanced", systemImage: "hammer")
+          AppLocalizedLabel("multitouch.tab.advanced", systemImage: "hammer")
         }
         .tag(TabTag.advanced)
 
       SettingsActionView()
+        .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          Label("Restart", systemImage: "arrow.clockwise")
+          AppLocalizedLabel("multitouch.tab.restart", systemImage: "arrow.clockwise")
         }
         .tag(TabTag.action)
 
       SettingsLogView()
+        .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          Label("Log", systemImage: "list.bullet.rectangle")
+          AppLocalizedLabel("multitouch.tab.log", systemImage: "list.bullet.rectangle")
         }
         .tag(TabTag.log)
     }

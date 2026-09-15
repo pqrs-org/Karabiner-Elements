@@ -183,6 +183,10 @@
         "en": "Cancel"
         ,"ja": "キャンセル"
     },
+    "shared.action.clear": {
+        "en": "Clear"
+        ,"ja": "消去"
+    },
     "shared.action.copy_to_pasteboard": {
         "en": "Copy to pasteboard"
         ,"ja": "クリップボードにコピー"
@@ -226,6 +230,14 @@
     "shared.filter": {
         "en": "Filter"
         ,"ja": "絞り込み"
+    },
+    "shared.language.auto": {
+        "en": "Auto"
+        ,"ja": "自動"
+    },
+    "shared.language.title": {
+        "en": "Language"
+        ,"ja": "言語"
     },
     "shared.search": {
         "en": "Search"

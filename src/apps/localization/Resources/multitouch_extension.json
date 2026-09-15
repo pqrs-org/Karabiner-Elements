@@ -1,0 +1,194 @@
+{
+    "multitouch.action.disable_hint": {
+        "en": "To disable the Multitouch Extension, configure it in the Misc tab of the Karabiner-Elements settings."
+        ,"ja": "Multitouch Extensionを無効にするには、Karabiner-Elements設定の「その他」タブで設定してください。"
+    },
+    "multitouch.action.restart": {
+        "en": "Restart app"
+        ,"ja": "アプリを再起動"
+    },
+    "multitouch.action.title": {
+        "en": "Action"
+        ,"ja": "操作"
+    },
+    "multitouch.advanced.delay": {
+        "en": "Delay"
+        ,"ja": "遅延"
+    },
+    "multitouch.advanced.palm": {
+        "en": "Palm detection"
+        ,"ja": "手のひらの検出"
+    },
+    "multitouch.advanced.palm_hint": {
+        "en": "(Increasing this value allows you to ignore unintended palm touches)"
+        ,"ja": "この値を大きくすると、意図しない手のひらとしての検出を無視できます。"
+    },
+    "multitouch.advanced.relaunch": {
+        "en": "Relaunch after wake from sleep"
+        ,"ja": "スリープから復帰したら再起動"
+    },
+    "multitouch.advanced.relaunch_wait": {
+        "en": "Wait before relaunch:"
+        ,"ja": "再起動までの待ち時間："
+    },
+    "multitouch.advanced.release_delay": {
+        "en": "Release detection delay:"
+        ,"ja": "離れたことを検出する遅延："
+    },
+    "multitouch.advanced.release_hint": {
+        "en": "(Increasing this value allows you to ignore unintended release)"
+        ,"ja": "この値を大きくすると、意図せず指が離れた場合の検出を無視できます。"
+    },
+    "multitouch.advanced.sleep": {
+        "en": "Sleep handling"
+        ,"ja": "スリープ時の動作"
+    },
+    "multitouch.advanced.threshold": {
+        "en": "Threshold:"
+        ,"ja": "しきい値："
+    },
+    "multitouch.advanced.touch_delay": {
+        "en": "Touch detection delay:"
+        ,"ja": "接触検出の遅延："
+    },
+    "multitouch.advanced.touch_hint": {
+        "en": "(Increasing this value allows you to ignore unintended touch)"
+        ,"ja": "この値を大きくすると、意図しない接触を無視できます。"
+    },
+    "multitouch.advanced.touch_size": {
+        "en": "touch size threshold"
+        ,"ja": "接触サイズのしきい値"
+    },
+    "multitouch.area.bottom": {
+        "en": "Ignored Area (Bottom)"
+        ,"ja": "無視する範囲（下）"
+    },
+    "multitouch.area.left": {
+        "en": "Ignored\nArea\n(Left)"
+        ,"ja": "無視する範囲\n（左）"
+    },
+    "multitouch.area.right": {
+        "en": "Ignored\nArea\n(Right)"
+        ,"ja": "無視する範囲\n（右）"
+    },
+    "multitouch.area.title": {
+        "en": "Area"
+        ,"ja": "範囲"
+    },
+    "multitouch.area.top": {
+        "en": "Ignored Area (Top)"
+        ,"ja": "無視する範囲（上）"
+    },
+    "multitouch.count.finger": {
+        "en": "Finger"
+        ,"ja": "指"
+    },
+    "multitouch.count.half": {
+        "en": "half"
+        ,"ja": "1/2領域"
+    },
+    "multitouch.count.left": {
+        "en": "left: {count}"
+        ,"ja": "左：{count}"
+    },
+    "multitouch.count.lower": {
+        "en": "lower: {count}"
+        ,"ja": "下：{count}"
+    },
+    "multitouch.count.palm": {
+        "en": "Palm"
+        ,"ja": "手のひら"
+    },
+    "multitouch.count.palm_half": {
+        "en": "palm-half"
+        ,"ja": "手のひら1/2領域"
+    },
+    "multitouch.count.palm_total": {
+        "en": "palm-total"
+        ,"ja": "手のひら合計"
+    },
+    "multitouch.count.quarter": {
+        "en": "quarter"
+        ,"ja": "1/4領域"
+    },
+    "multitouch.count.right": {
+        "en": "right: {count}"
+        ,"ja": "右：{count}"
+    },
+    "multitouch.count.total": {
+        "en": "total"
+        ,"ja": "合計"
+    },
+    "multitouch.count.upper": {
+        "en": "upper: {count}"
+        ,"ja": "上：{count}"
+    },
+    "multitouch.direction.left": {
+        "en": "left"
+        ,"ja": "左"
+    },
+    "multitouch.direction.lower": {
+        "en": "lower"
+        ,"ja": "下"
+    },
+    "multitouch.direction.right": {
+        "en": "right"
+        ,"ja": "右"
+    },
+    "multitouch.direction.upper": {
+        "en": "upper"
+        ,"ja": "上"
+    },
+    "multitouch.log.empty": {
+        "en": "No variable updates"
+        ,"ja": "変数の更新はありません"
+    },
+    "multitouch.log.time": {
+        "en": "Time"
+        ,"ja": "時刻"
+    },
+    "multitouch.log.title": {
+        "en": "Variable update requests"
+        ,"ja": "変数の更新要求"
+    },
+    "multitouch.power.display_sleep": {
+        "en": "Keep user-interactive activity running while the display sleeps"
+        ,"ja": "ディスプレイのスリープ中も高優先度アクティビティを維持する"
+    },
+    "multitouch.power.enable": {
+        "en": "Enable user-interactive activity for better responsiveness to user input"
+        ,"ja": "ユーザー操作への応答性を高めるため、高優先度のアクティビティを有効にする"
+    },
+    "multitouch.power.options": {
+        "en": "User-interactive activity options"
+        ,"ja": "高優先度アクティビティのオプション"
+    },
+    "multitouch.power.warning": {
+        "en": "(This setting consumes battery power and may prevent the system from sleeping)"
+        ,"ja": "この設定はバッテリーを消費し、システムのスリープを妨げる場合があります。"
+    },
+    "multitouch.tab.advanced": {
+        "en": "Advanced"
+        ,"ja": "詳細"
+    },
+    "multitouch.tab.log": {
+        "en": "Log"
+        ,"ja": "ログ"
+    },
+    "multitouch.tab.main": {
+        "en": "Main"
+        ,"ja": "基本"
+    },
+    "multitouch.tab.power": {
+        "en": "Power"
+        ,"ja": "電力"
+    },
+    "multitouch.tab.restart": {
+        "en": "Restart"
+        ,"ja": "再起動"
+    },
+    "multitouch.units.seconds": {
+        "en": "seconds"
+        ,"ja": "秒"
+    }
+}

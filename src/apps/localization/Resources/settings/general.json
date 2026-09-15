@@ -4,8 +4,8 @@
         ,"ja": "操作"
     },
     "settings.defaults.value": {
-        "en": "Default: {value}"
-        ,"ja": "デフォルト: {value}"
+        "en": "(Default: {value})"
+        ,"ja": "（デフォルト: {value}）"
     },
     "settings.expert.cgeventtap_fallback": {
         "en": "CGEventTap fallback"
@@ -238,14 +238,6 @@
     "settings.system_extensions.states": {
         "en": "States"
         ,"ja": "状態"
-    },
-    "settings.toolbar.auto": {
-        "en": "Auto"
-        ,"ja": "自動"
-    },
-    "settings.toolbar.language": {
-        "en": "Language"
-        ,"ja": "言語"
     },
     "settings.ui.app_icon": {
         "en": "App icon"

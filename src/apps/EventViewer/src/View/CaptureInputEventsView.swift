@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CaptureInputEventsView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var eventHistory = EventHistory.shared
   @State private var captureSession: CaptureCoordinator.Session?
@@ -15,16 +16,16 @@ struct CaptureInputEventsView: View {
             Button(role: .destructive) {
               CaptureCoordinator.shared.stopCapture()
             } label: {
-              Label("Stop capture", systemImage: "stop.fill")
+              AppLocalizedLabel("event_viewer.capture.stop", systemImage: "stop.fill")
             }
 
-            CaptureActiveLabel(text: "Capturing input events")
+            CaptureActiveLabel(text: localized("event_viewer.capture.active"))
           } else {
             Button {
               CaptureCoordinator.shared.startCapture()
               focusTestInput()
             } label: {
-              Label("Start capture", systemImage: "record.circle")
+              AppLocalizedLabel("event_viewer.capture.start", systemImage: "record.circle")
             }
           }
         }
@@ -54,9 +55,9 @@ struct CaptureInputEventsView: View {
 
   private var emptyMessage: String {
     if captureCoordinator.capturing {
-      return "Type in the test input field to inspect input events."
+      return localized("event_viewer.capture.input_hint")
     }
-    return "Press Start capture to begin capturing input events."
+    return localized("event_viewer.capture.input_start_hint")
   }
 
   private func focusTestInput() {

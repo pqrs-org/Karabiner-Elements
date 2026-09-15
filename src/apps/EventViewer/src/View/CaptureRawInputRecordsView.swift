@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CaptureRawInputRecordsView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var client = EVCoreServiceDaemonClient.shared
   @State private var captureSession: CaptureCoordinator.Session?
@@ -10,18 +11,14 @@ struct CaptureRawInputRecordsView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
       VStack(alignment: .leading, spacing: 12) {
-        Text("Capture Raw Input Records")
+        AppLocalizedText("event_viewer.sidebar.raw_input_records")
           .font(.title)
 
         Label {
           VStack(alignment: .leading, spacing: 8) {
-            Text(
-              "Input reports let you observe signals sent directly by HID hardware. They may reveal events that are omitted from the input values normally used by Karabiner-Elements."
-            )
+            AppLocalizedText("event_viewer.capture.reports_description")
 
-            Text(
-              "If pressing a key produces a detectable change here, Karabiner-Elements may be able to support that key."
-            )
+            AppLocalizedText("event_viewer.capture.reports_hint")
           }
         } icon: {
           Image(systemName: InfoBorder.icon)
@@ -43,13 +40,13 @@ struct CaptureRawInputRecordsView: View {
                 Button(role: .destructive) {
                   CaptureCoordinator.shared.stopCapture()
                 } label: {
-                  Label("Stop capture (Esc)", systemImage: "stop.fill")
+                  AppLocalizedLabel("event_viewer.capture.stop_escape", systemImage: "stop.fill")
                 }
                 .keyboardShortcut(.escape, modifiers: [])
 
                 if selectedDeviceIsOpen {
                   CaptureActiveLabel(
-                    text: "Capturing raw input records without Karabiner-Elements modifications."
+                    text: localized("event_viewer.capture.raw_records_active")
                   )
                 } else {
                   CaptureWaitingForDeviceAccessLabel()
@@ -59,12 +56,12 @@ struct CaptureRawInputRecordsView: View {
                   CaptureCoordinator.shared.startCapture()
                   focusTestInput()
                 } label: {
-                  Label("Start capture", systemImage: "record.circle")
+                  AppLocalizedLabel("event_viewer.capture.start", systemImage: "record.circle")
                 }
                 .disabled(captureCoordinator.rawInputRecordsSelectedDeviceId == nil)
 
                 if captureCoordinator.rawInputRecordsSelectedDeviceId == nil {
-                  Text("Select a device to start capturing raw input records.")
+                  AppLocalizedText("event_viewer.capture.raw_records_select")
                     .foregroundStyle(.secondary)
                 }
               }
@@ -114,8 +111,9 @@ struct CaptureRawInputRecordsView: View {
       deviceSelected: captureCoordinator.rawInputRecordsSelectedDeviceId != nil,
       capturing: captureCoordinator.capturing,
       deviceIsOpen: selectedDeviceIsOpen,
-      subject: "raw input records",
-      capturingEmptyMessage: "No raw input records received."
+      subject: localized("event_viewer.capture.raw_records"),
+      capturingEmptyMessage: localized("event_viewer.capture.raw_records_empty"),
+      localized: localized
     )
   }
 

@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import re
 import subprocess
 import tempfile
 import unittest
@@ -15,6 +16,38 @@ spec.loader.exec_module(localizations)
 
 
 class LocalizationResourcesTests(unittest.TestCase):
+    def test_application_translation_references(self):
+        apps = SCRIPT.parents[2]
+        resources = localizations.load_resources(apps / "localization" / "Resources")
+        catalog = {
+            key: value
+            for entries in resources.values()
+            for key, value in entries.items()
+        }
+        for app in (
+            "EventViewer",
+            "MultitouchExtension",
+            "SettingsWindow",
+            "localization",
+        ):
+            for source in (apps / app).rglob("*.swift"):
+                if "build" in source.parts:
+                    continue
+                for key in re.findall(
+                    r'"((?:event_viewer|multitouch|shared\.language|settings\.toolbar)\.[A-Za-z0-9_.]+)"',
+                    source.read_text(),
+                ):
+                    if not key.endswith("."):
+                        self.assertIn(key, catalog, str(source))
+        for key, translations in catalog.items():
+            if key.startswith(("event_viewer.", "multitouch.")):
+                self.assertIn("ja", translations, key)
+                self.assertEqual(
+                    set(re.findall(r"\{\w+\}", translations["en"])),
+                    set(re.findall(r"\{\w+\}", translations["ja"])),
+                    key,
+                )
+
     def test_nested_resources_and_format(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)

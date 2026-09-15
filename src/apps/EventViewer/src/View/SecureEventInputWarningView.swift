@@ -2,15 +2,15 @@ import SwiftUI
 
 struct SecureEventInputWarningView: View {
   private let messages = [
-    "Keyboard events cannot be captured while Secure Keyboard Entry is enabled by another application.",
-    "Raw input capture is stopped for safety.",
-    "Switch to or quit that application to resume capturing.",
+    "event_viewer.secure_input.cannot_capture",
+    "event_viewer.secure_input.stopped",
+    "event_viewer.secure_input.resume",
   ]
 
   var body: some View {
     VStack(spacing: 20) {
-      Label(
-        "Secure Keyboard Entry is enabled",
+      AppLocalizedLabel(
+        "event_viewer.secure_input.title",
         systemImage: WarningBorder.icon
       )
       .font(.system(size: 24))
@@ -19,7 +19,7 @@ struct SecureEventInputWarningView: View {
         ForEach(messages, id: \.self) { message in
           GridRow(alignment: .firstTextBaseline) {
             Text("•")
-            Text(message)
+            AppLocalizedText(message)
           }
         }
       }

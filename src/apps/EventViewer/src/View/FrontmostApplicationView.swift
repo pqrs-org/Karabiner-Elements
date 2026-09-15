@@ -6,8 +6,8 @@ struct FrontmostApplicationView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
       VStack(alignment: .leading, spacing: 12.0) {
-        Label(
-          "Switch to the app whose bundle identifier you want to check.",
+        AppLocalizedLabel(
+          "event_viewer.frontmost.hint",
           systemImage: InfoBorder.icon
         )
         .modifier(InfoBorder())
@@ -22,7 +22,7 @@ struct FrontmostApplicationView: View {
               HStack {
                 VStack(alignment: .leading, spacing: 0.0) {
                   HStack(alignment: .center, spacing: 0) {
-                    Text("Bundle Identifier: ")
+                    AppLocalizedText("event_viewer.frontmost.bundle_identifier")
                       .font(.caption)
 
                     Text(entry.bundleIdentifier)
@@ -30,7 +30,7 @@ struct FrontmostApplicationView: View {
                   }
 
                   HStack(alignment: .center, spacing: 0) {
-                    Text("File Path: ")
+                    AppLocalizedText("event_viewer.frontmost.file_path")
                       .font(.caption)
 
                     Text(entry.filePath)
@@ -38,7 +38,7 @@ struct FrontmostApplicationView: View {
                   }
 
                   HStack(alignment: .center, spacing: 0) {
-                    Text("Detection Source: ")
+                    AppLocalizedText("event_viewer.frontmost.detection_source")
                       .font(.caption)
                       .foregroundStyle(.secondary)
 
@@ -60,7 +60,9 @@ struct FrontmostApplicationView: View {
                     pboard.writeObjects([string as NSString])
                   },
                   label: {
-                    Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+                    AppLocalizedLabel(
+                      "shared.action.copy_to_pasteboard",
+                      systemImage: "arrow.right.doc.on.clipboard")
                   })
               }
               .if(entry == frontmostApplicationHistory.entries.last) {

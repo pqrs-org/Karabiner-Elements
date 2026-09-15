@@ -3,7 +3,7 @@ name: Karabiner-EventViewer
 packages:
   AsyncAlgorithms:
     url: https://github.com/apple/swift-async-algorithms
-    from: 1.1.1
+    from: 1.1.5
 
 targets:
   Karabiner-EventViewer:
@@ -29,6 +29,7 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: src
+      - path: ../localization/swift
       - path: ../share/swift/Views
       - path: ../share/swift/ApplicationTermination.swift
       - path: Resources

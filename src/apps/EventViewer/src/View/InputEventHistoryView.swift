@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct InputEventHistoryActions: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var eventHistory = EventHistory.shared
   @EnvironmentObject private var userSettings: UserSettings
 
@@ -21,26 +22,30 @@ struct InputEventHistoryActions: View {
             showUnknownEvents: userSettings.captureUnknownEvents)
         }
       } label: {
-        Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+        AppLocalizedLabel(
+          "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
       }
       .disabled(visibleEntries.isEmpty)
 
       Button {
         eventHistory.clear()
       } label: {
-        Label("Clear", systemImage: "clear")
+        AppLocalizedLabel("shared.action.clear", systemImage: "clear")
       }
       .disabled(visibleEntries.isEmpty)
 
       Spacer()
 
-      Toggle("Capture unknown events", isOn: $userSettings.captureUnknownEvents)
-        .toggleStyle(.checkbox)
+      Toggle(
+        localized("event_viewer.capture.unknown_events"), isOn: $userSettings.captureUnknownEvents
+      )
+      .toggleStyle(.checkbox)
     }
   }
 }
 
 struct InputEventHistoryList: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var eventHistory = EventHistory.shared
   @EnvironmentObject private var userSettings: UserSettings
   let emptyMessage: String
@@ -72,16 +77,20 @@ struct InputEventHistoryList: View {
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                  Text(entry.isUnknownEvent ? "Unsupported HID usage" : entry.name)
+                  Text(
+                    entry.isUnknownEvent
+                      ? localized("event_viewer.events.unsupported_usage") : entry.name)
 
                   if !entry.misc.isEmpty {
                     Text(entry.misc)
                       .font(.caption)
                   }
 
-                  Text("from \(entry.product)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                  AppLocalizedText(
+                    "event_viewer.events.from", arguments: ["product": entry.product]
+                  )
+                  .font(.caption)
+                  .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -89,7 +98,7 @@ struct InputEventHistoryList: View {
 
                 VStack(alignment: .trailing, spacing: 0) {
                   HStack(alignment: .bottom, spacing: 0) {
-                    Text("integer value: ")
+                    AppLocalizedText("event_viewer.events.integer_value")
                       .font(.caption)
                     Text(entry.integerValue)
                       .font(.callout)
@@ -107,7 +116,7 @@ struct InputEventHistoryList: View {
                 VStack(alignment: .trailing, spacing: 0) {
                   if !entry.usagePage.isEmpty {
                     HStack(alignment: .bottom, spacing: 0) {
-                      Text("usage page: ")
+                      AppLocalizedText("event_viewer.events.usage_page")
                         .font(.caption)
                       Text(entry.usagePage)
                         .font(.callout)
@@ -116,7 +125,7 @@ struct InputEventHistoryList: View {
                   }
                   if !entry.usage.isEmpty {
                     HStack(alignment: .bottom, spacing: 0) {
-                      Text("usage: ")
+                      AppLocalizedText("event_viewer.events.usage")
                         .font(.caption)
                       Text(entry.usage)
                         .font(.callout)

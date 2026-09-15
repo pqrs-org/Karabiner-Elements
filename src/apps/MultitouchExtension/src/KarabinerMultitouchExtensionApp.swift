@@ -23,6 +23,7 @@ struct KarabinerMultitouchExtensionApp: App {
   var body: some Scene {
     Settings {
       SettingsView()
+        .modifier(StoredAppLanguage(pickerPlacement: .none))
     }
   }
 }

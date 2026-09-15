@@ -9,40 +9,64 @@ struct FingerCountView: View {
       let font = Font.callout.monospaced()
 
       VStack(alignment: .trailing) {
-        Text("total")
+        AppLocalizedText("multitouch.count.total")
         Text("\(fingerCount.totalCount)").font(font)
       }
       .padding(.horizontal, 10.0)
 
       VStack(alignment: .trailing) {
-        Text("half")
-        Text("upper: \(fingerCount.upperHalfAreaCount)").font(font)
-        Text("lower: \(fingerCount.lowerHalfAreaCount)").font(font)
-        Text("left: \(fingerCount.leftHalfAreaCount)").font(font)
-        Text("right: \(fingerCount.rightHalfAreaCount)").font(font)
+        AppLocalizedText("multitouch.count.half")
+        AppLocalizedText(
+          "multitouch.count.upper", arguments: ["count": String(fingerCount.upperHalfAreaCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.lower", arguments: ["count": String(fingerCount.lowerHalfAreaCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.left", arguments: ["count": String(fingerCount.leftHalfAreaCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.right", arguments: ["count": String(fingerCount.rightHalfAreaCount)]
+        ).font(font)
       }
       .padding(.horizontal, 10.0)
 
       VStack(alignment: .trailing) {
-        Text("quarter")
-        Text("upper: \(fingerCount.upperQuarterAreaCount)").font(font)
-        Text("lower: \(fingerCount.lowerQuarterAreaCount)").font(font)
-        Text("left: \(fingerCount.leftQuarterAreaCount)").font(font)
-        Text("right: \(fingerCount.rightQuarterAreaCount)").font(font)
+        AppLocalizedText("multitouch.count.quarter")
+        AppLocalizedText(
+          "multitouch.count.upper", arguments: ["count": String(fingerCount.upperQuarterAreaCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.lower", arguments: ["count": String(fingerCount.lowerQuarterAreaCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.left", arguments: ["count": String(fingerCount.leftQuarterAreaCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.right", arguments: ["count": String(fingerCount.rightQuarterAreaCount)]
+        ).font(font)
       }
       .padding(.horizontal, 10.0)
 
       VStack(alignment: .trailing) {
-        Text("palm-total")
+        AppLocalizedText("multitouch.count.palm_total")
         Text("\(fingerCount.totalPalmCount)").font(font)
       }
 
       VStack(alignment: .trailing) {
-        Text("palm-half")
-        Text("upper: \(fingerCount.upperHalfAreaPalmCount)").font(font)
-        Text("lower: \(fingerCount.lowerHalfAreaPalmCount)").font(font)
-        Text("left: \(fingerCount.leftHalfAreaPalmCount)").font(font)
-        Text("right: \(fingerCount.rightHalfAreaPalmCount)").font(font)
+        AppLocalizedText("multitouch.count.palm_half")
+        AppLocalizedText(
+          "multitouch.count.upper", arguments: ["count": String(fingerCount.upperHalfAreaPalmCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.lower", arguments: ["count": String(fingerCount.lowerHalfAreaPalmCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.left", arguments: ["count": String(fingerCount.leftHalfAreaPalmCount)]
+        ).font(font)
+        AppLocalizedText(
+          "multitouch.count.right", arguments: ["count": String(fingerCount.rightHalfAreaPalmCount)]
+        ).font(font)
       }
       .padding(.horizontal, 10.0)
     }

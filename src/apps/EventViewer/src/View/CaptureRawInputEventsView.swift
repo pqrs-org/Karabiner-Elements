@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CaptureRawInputEventsView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var captureCoordinator = CaptureCoordinator.shared
   @ObservedObject private var client = EVCoreServiceDaemonClient.shared
   @State private var captureSession: CaptureCoordinator.Session?
@@ -19,13 +20,13 @@ struct CaptureRawInputEventsView: View {
               Button(role: .destructive) {
                 CaptureCoordinator.shared.stopCapture()
               } label: {
-                Label("Stop capture (Esc)", systemImage: "stop.fill")
+                AppLocalizedLabel("event_viewer.capture.stop_escape", systemImage: "stop.fill")
               }
               .keyboardShortcut(.escape, modifiers: [])
 
               if selectedDeviceIsOpen {
                 CaptureActiveLabel(
-                  text: "Capturing raw input events without Karabiner-Elements modifications."
+                  text: localized("event_viewer.capture.raw_events_active")
                 )
               } else {
                 CaptureWaitingForDeviceAccessLabel()
@@ -35,12 +36,12 @@ struct CaptureRawInputEventsView: View {
                 CaptureCoordinator.shared.startCapture()
                 focusTestInput()
               } label: {
-                Label("Start capture", systemImage: "record.circle")
+                AppLocalizedLabel("event_viewer.capture.start", systemImage: "record.circle")
               }
               .disabled(captureCoordinator.rawInputEventsSelectedDeviceId == nil)
 
               if captureCoordinator.rawInputEventsSelectedDeviceId == nil {
-                Text("Select a device to start capturing raw input events.")
+                AppLocalizedText("event_viewer.capture.raw_events_select")
                   .foregroundStyle(.secondary)
               }
             }
@@ -89,8 +90,9 @@ struct CaptureRawInputEventsView: View {
       deviceSelected: captureCoordinator.rawInputEventsSelectedDeviceId != nil,
       capturing: captureCoordinator.capturing,
       deviceIsOpen: selectedDeviceIsOpen,
-      subject: "raw input events",
-      capturingEmptyMessage: "Type in the test input field to inspect raw input events."
+      subject: localized("event_viewer.capture.raw_events"),
+      capturingEmptyMessage: localized("event_viewer.capture.raw_events_hint"),
+      localized: localized
     )
   }
 

@@ -13,7 +13,8 @@ struct DevicesView: View {
             pboard.writeObjects([evCoreServiceDaemonClient.connectedDevicesText as NSString])
           },
           label: {
-            Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+            AppLocalizedLabel(
+              "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
           })
       }
       .padding()

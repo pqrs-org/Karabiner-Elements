@@ -118,7 +118,9 @@ struct ComplexModificationsView: View {
         )
         .frame(width: 300)
       }
-      .padding()
+      .padding(.horizontal)
+      .padding(.top)
+      .padding(.bottom, 4.0)
 
       List {
         ForEach(rules) { complexModificationRule in

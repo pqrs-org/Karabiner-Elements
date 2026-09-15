@@ -14,14 +14,15 @@ struct InputReportHistoryActions: View {
           history.copyToPasteboardTSV()
         }
       } label: {
-        Label("Copy to pasteboard", systemImage: "arrow.right.doc.on.clipboard")
+        AppLocalizedLabel(
+          "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
       }
       .disabled(history.entries.isEmpty)
 
       Button {
         history.clear()
       } label: {
-        Label("Clear", systemImage: "clear")
+        AppLocalizedLabel("shared.action.clear", systemImage: "clear")
       }
       .disabled(history.entries.isEmpty)
     }
@@ -71,17 +72,17 @@ struct InputReportHistoryList: View {
             } header: {
               VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center, spacing: 12) {
-                  Text("Timestamp")
+                  AppLocalizedText("event_viewer.records.timestamp")
                     .frame(width: 90, alignment: .leading)
 
                   Divider()
 
-                  Text("Report ID")
+                  AppLocalizedText("event_viewer.records.report_id")
                     .frame(width: 70, alignment: .leading)
 
                   Divider()
 
-                  Text("Data")
+                  AppLocalizedText("event_viewer.records.data")
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .font(.caption)

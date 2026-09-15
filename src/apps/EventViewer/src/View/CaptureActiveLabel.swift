@@ -41,7 +41,7 @@ struct CaptureWaitingForDeviceAccessLabel: View {
       ProgressView()
         .controlSize(.small)
 
-      Text("Waiting for device access...")
+      AppLocalizedText("event_viewer.capture.waiting")
     }
     .foregroundStyle(.secondary)
   }

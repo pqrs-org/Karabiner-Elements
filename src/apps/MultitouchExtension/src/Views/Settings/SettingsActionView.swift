@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsActionView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 25.0) {
-      GroupBox(label: Text("Action")) {
+      GroupBox(label: AppLocalizedText("multitouch.action.title")) {
         VStack(alignment: .leading, spacing: 16) {
           Button(
             action: {
@@ -11,11 +11,11 @@ struct SettingsActionView: View {
               NSApplication.shared.terminate(self)
             },
             label: {
-              Label("Restart app", systemImage: "arrow.clockwise")
+              AppLocalizedLabel("multitouch.action.restart", systemImage: "arrow.clockwise")
             })
 
-          Label(
-            "To disable the Multitouch Extension, configure it in the Misc tab of the Karabiner-Elements settings.",
+          AppLocalizedLabel(
+            "multitouch.action.disable_hint",
             systemImage: InfoBorder.icon
           )
           .modifier(InfoBorder())

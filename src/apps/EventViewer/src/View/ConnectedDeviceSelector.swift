@@ -26,7 +26,7 @@ struct ConnectedDeviceSelector: View {
     .listStyle(.sidebar)
     .overlay {
       if client.connectedDevices.isEmpty {
-        Text("No devices connected.")
+        AppLocalizedText("event_viewer.devices.empty")
           .foregroundStyle(.secondary)
       }
     }
