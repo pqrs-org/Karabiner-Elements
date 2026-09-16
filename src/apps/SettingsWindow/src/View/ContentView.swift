@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
   @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
@@ -53,7 +54,17 @@ struct ContentView: View {
         ProgressView()
       }
 
-      if let alert = debugPreview.alert, alert.setup == nil {
+      if let alert = debugPreview.alert, alert.isToast {
+        DebugToastPreview(message: localized(alert.title)) {
+          if debugPreview.alert == alert {
+            debugPreview.alert = nil
+          }
+        }
+        .id(alert)
+        .padding(.top, 16)
+        .transition(.move(edge: .top).combined(with: .opacity))
+        .zIndex(2)
+      } else if let alert = debugPreview.alert, alert.setup == nil {
         DebugAlertsView.previewView(alert)
           .modifier(
             LocalizationPreviewInteraction {
@@ -63,7 +74,7 @@ struct ContentView: View {
           .zIndex(2)
       }
 
-      if let toast = contentViewStates.toast {
+      if let toast = contentViewStates.toast, debugPreview.alert?.isToast != true {
         ToastView(toast: toast) {
           contentViewStates.dismissToast()
         }
@@ -77,6 +88,7 @@ struct ContentView: View {
       settings.uiLocale
     )
     .animation(.easeInOut(duration: 0.2), value: contentViewStates.toast)
+    .animation(.easeInOut(duration: 0.2), value: debugPreview.alert?.isToast)
     .frame(
       minWidth: 1100,
       maxWidth: .infinity,

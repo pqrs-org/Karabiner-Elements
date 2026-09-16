@@ -247,6 +247,10 @@
         "en": "Driver"
         ,"ja": "ドライバー"
     },
+    "shared.debug.category.notifications": {
+        "en": "Notifications"
+        ,"ja": "通知"
+    },
     "shared.debug.category.services": {
         "en": "Services and Connections"
         ,"ja": "サービス・接続"
@@ -279,6 +283,14 @@
         "en": "Services stopped: agents and daemons"
         ,"ja": "サービス停止：エージェントとデーモン"
     },
+    "shared.debug.setup_agents_only": {
+        "en": "Services: only non-privileged agents enabled"
+        ,"ja": "サービス：非特権エージェントのみ有効"
+    },
+    "shared.debug.setup_daemons_only": {
+        "en": "Services: only privileged daemons enabled"
+        ,"ja": "サービス：特権デーモンのみ有効"
+    },
     "shared.debug.setup_driver_advanced": {
         "en": "Driver extension permission: advanced guidance"
         ,"ja": "ドライバー拡張機能の許可：詳細な案内"
@@ -286,6 +298,18 @@
     "shared.debug.setup_driver_legacy_advanced": {
         "en": "Driver permission (macOS 13/14): advanced guidance"
         ,"ja": "ドライバーの許可（macOS 13/14）：詳細な案内"
+    },
+    "shared.debug.setup_driver_macos15": {
+        "en": "Driver extension permission (macOS 15)"
+        ,"ja": "ドライバー拡張機能の許可（macOS 15）"
+    },
+    "shared.debug.setup_driver_macos15_advanced": {
+        "en": "Driver extension permission (macOS 15): advanced guidance"
+        ,"ja": "ドライバー拡張機能の許可（macOS 15）：詳細な案内"
+    },
+    "shared.debug.setup_services_macos15": {
+        "en": "Service permission (macOS 15)"
+        ,"ja": "サービスの許可（macOS 15）"
     },
     "shared.debug.title": {
         "en": "Debug"

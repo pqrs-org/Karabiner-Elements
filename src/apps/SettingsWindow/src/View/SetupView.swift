@@ -42,6 +42,10 @@ struct SetupPreview {
   let item: SetupItem
   var showingAdvanced = false
   var legacyDriver = false
+  var waitingForPrerequisite = false
+  var agentsEnabled = false
+  var daemonsEnabled = false
+  var macOS15Images = false
 }
 
 struct SetupView: View {
@@ -95,7 +99,10 @@ struct SetupView: View {
                 guidanceContextOverride: preview == nil
                   ? nil
                   : SettingsWindowGuidanceContext(
-                    coreDaemonsEnabled: false, coreAgentsEnabled: false))
+                    coreDaemonsEnabled: preview?.daemonsEnabled,
+                    coreAgentsEnabled: preview?.agentsEnabled),
+                loginItemsImageOverride: preview?.macOS15Images == true
+                  ? "login-items-macos15" : nil)
             case .accessibility:
               if setupItemWaitingForAnotherSetup(.accessibility) {
                 setupServicesFirstView()
@@ -116,9 +123,13 @@ struct SetupView: View {
                   SetupDriverExtensionViewMacOS14(
                     showingAdvanced: preview?.showingAdvanced ?? false)
                 } else if #available(macOS 15.0, *) {
-                  SetupDriverExtensionView(showingAdvanced: preview?.showingAdvanced ?? false)
+                  SetupDriverExtensionView(
+                    showingAdvanced: preview?.showingAdvanced ?? false,
+                    driverExtensionsImageOverride: preview?.macOS15Images == true
+                      ? "driver-extensions-macos15" : nil)
                 } else {
-                  SetupDriverExtensionViewMacOS14(showingAdvanced: preview?.showingAdvanced ?? false)
+                  SetupDriverExtensionViewMacOS14(
+                    showingAdvanced: preview?.showingAdvanced ?? false)
                 }
               }
             }
@@ -181,7 +192,7 @@ struct SetupView: View {
   }
 
   private func setupItemWaitingForAnotherSetup(_ item: SetupItem) -> Bool {
-    if preview != nil { return false }
+    if let preview { return preview.waitingForPrerequisite && item == preview.item }
     switch item {
     case .services:
       return false

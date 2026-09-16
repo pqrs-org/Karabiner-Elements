@@ -103,3 +103,8 @@ Setup previews use the same inline Setup layout and show instructions even when
 permissions have already been granted. Driver previews include advanced guidance
 and the macOS 13/14 variant. Long instructions can be scrolled; clicking or Escape
 returns to the Debug list without changing the actual setup state.
+
+Setup previews also cover prerequisite instructions, partially enabled services,
+and macOS 15 screenshots. The Notifications tab previews both external-change
+editing cancellation toasts in their normal position with the normal four-second
+auto-dismiss timer. Setup completion messages are intentionally omitted.

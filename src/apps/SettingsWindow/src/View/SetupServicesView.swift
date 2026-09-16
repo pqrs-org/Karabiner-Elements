@@ -12,9 +12,14 @@ struct SetupServicesView: View {
 
   private let loginItemsImage: String
 
-  init(guidanceContextOverride: SettingsWindowGuidanceContext? = nil) {
+  init(
+    guidanceContextOverride: SettingsWindowGuidanceContext? = nil,
+    loginItemsImageOverride: String? = nil
+  ) {
     self.guidanceContextOverride = guidanceContextOverride
-    if #available(macOS 26.0, *) {
+    if let loginItemsImageOverride {
+      loginItemsImage = loginItemsImageOverride
+    } else if #available(macOS 26.0, *) {
       loginItemsImage = "login-items-macos26"
     } else {
       loginItemsImage = "login-items-macos15"
