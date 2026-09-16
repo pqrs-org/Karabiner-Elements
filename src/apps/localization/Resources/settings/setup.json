@@ -117,7 +117,7 @@
     },
     "settings.keyboard_type.label": {
         "en": "Keyboard type:"
-        ,"ja": "キーボードの種類："
+        ,"ja": "キーボードの種類:"
     },
     "settings.keyboard_type.select_prompt": {
         "en": "Please select the keyboard type you'd like to use"
@@ -185,7 +185,7 @@
     },
     "settings.setup.driver.reactivate_steps": {
         "en": "How to reactivate driver:"
-        ,"ja": "ドライバーを再度有効にする手順："
+        ,"ja": "ドライバーを再度有効にする手順:"
     },
     "settings.setup.driver.step_automatic_load": {
         "en": "3. After restarting, the driver will be automatically loaded, and the Driver Extensions settings will appear."
@@ -213,7 +213,7 @@
     },
     "settings.setup.driver_legacy.reinstall_steps": {
         "en": "How to reinstall driver:"
-        ,"ja": "ドライバーを再インストールする手順："
+        ,"ja": "ドライバーを再インストールする手順:"
     },
     "settings.setup.driver_legacy.step_activate": {
         "en": "3. Press the following button to activate driver."

@@ -81,19 +81,19 @@
     },
     "settings.gamepad.continued_interval": {
         "en": "Continued movement interval milliseconds:"
-        ,"ja": "移動を継続する間隔（ミリ秒）："
+        ,"ja": "移動を継続する間隔（ミリ秒）:"
     },
     "settings.gamepad.continued_threshold": {
         "en": "Continued movement absolute magnitude threshold:"
-        ,"ja": "移動を継続する絶対値のしきい値："
+        ,"ja": "移動を継続する絶対値のしきい値:"
     },
     "settings.gamepad.deadzone": {
         "en": "deadzone:"
-        ,"ja": "デッドゾーン："
+        ,"ja": "デッドゾーン:"
     },
     "settings.gamepad.delta_threshold": {
         "en": "Delta magnitude detection threshold:"
-        ,"ja": "変化量の検出しきい値："
+        ,"ja": "変化量の検出しきい値:"
     },
     "settings.gamepad.horizontal_formula": {
         "en": "horizontal wheel formula"
@@ -185,10 +185,10 @@
     },
     "settings.mouse.wheels_multiplier": {
         "en": "Wheels multiplier:"
-        ,"ja": "ホイールの倍率："
+        ,"ja": "ホイールの倍率:"
     },
     "settings.mouse.xy_multiplier": {
         "en": "XY movement multiplier:"
-        ,"ja": "XY 移動の倍率："
+        ,"ja": "XY 移動の倍率:"
     }
 }

@@ -93,7 +93,7 @@
     },
     "event_viewer.events.integer_value": {
         "en": "integer value: "
-        ,"ja": "整数値："
+        ,"ja": "整数値: "
     },
     "event_viewer.events.unsupported_usage": {
         "en": "Unsupported HID usage"
@@ -101,23 +101,23 @@
     },
     "event_viewer.events.usage": {
         "en": "usage: "
-        ,"ja": "usage："
+        ,"ja": "usage: "
     },
     "event_viewer.events.usage_page": {
         "en": "usage page: "
-        ,"ja": "usage page："
+        ,"ja": "usage page: "
     },
     "event_viewer.frontmost.bundle_identifier": {
         "en": "Bundle Identifier: "
-        ,"ja": "バンドル識別子："
+        ,"ja": "バンドル識別子: "
     },
     "event_viewer.frontmost.detection_source": {
         "en": "Detection Source: "
-        ,"ja": "検出元："
+        ,"ja": "検出元: "
     },
     "event_viewer.frontmost.file_path": {
         "en": "File Path: "
-        ,"ja": "ファイルパス："
+        ,"ja": "ファイルパス: "
     },
     "event_viewer.frontmost.hint": {
         "en": "Switch to the app whose bundle identifier you want to check."

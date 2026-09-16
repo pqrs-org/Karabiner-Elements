@@ -83,7 +83,7 @@ struct SettingsAdvancedView: View {
         VStack(alignment: .leading, spacing: 30.0) {
           VStack(alignment: .leading) {
             HStack {
-              AppLocalizedText("multitouch.advanced.threshold")
+              AppLocalizedText("multitouch.advanced.touch_size_threshold")
 
               DoubleTextField(
                 value: $userSettings.palmThreshold,
@@ -92,7 +92,6 @@ struct SettingsAdvancedView: View {
                 maximumFractionDigits: 3,
                 width: 80)
 
-              AppLocalizedText("multitouch.advanced.touch_size")
               AppLocalizedText("settings.defaults.value", arguments: ["value": "2"])
             }
 

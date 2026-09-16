@@ -113,7 +113,7 @@
     },
     "setting.mouse_key_xy_scale": {
         "en": "Cursor speed:"
-        ,"ja": "カーソル速度："
+        ,"ja": "カーソル速度:"
     },
     "setting.mouse_motion_to_scroll.speed": {
         "en": "speed:"
@@ -121,7 +121,7 @@
     },
     "setting.notification_window_font_size": {
         "en": "Font size:"
-        ,"ja": "文字サイズ："
+        ,"ja": "文字サイズ:"
     },
     "setting.notification_window_position": {
         "en": "Position"

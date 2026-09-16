@@ -61,7 +61,7 @@
     },
     "settings.function_keys.system_setting": {
         "en": "Use all F1, F2, etc. keys as standard function keys:"
-        ,"ja": "F1、F2 などのキーを標準のファンクションキーとして使用："
+        ,"ja": "F1、F2 などのキーを標準のファンクションキーとして使用:"
     },
     "settings.log.add_divider": {
         "en": "Add divider"
@@ -133,7 +133,7 @@
     },
     "settings.profiles.name": {
         "en": "Profile name:"
-        ,"ja": "プロファイル名："
+        ,"ja": "プロファイル名:"
     },
     "settings.profiles.name_placeholder": {
         "en": "Profile name"
