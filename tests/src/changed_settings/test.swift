@@ -52,7 +52,7 @@ struct ChangedSettingsTests {
     // Dotted parameter keys inside nested sections resolve to their explicit labels.
     precondition(
       englishRows.first { $0.id.hasSuffix("basic.to_if_alone_timeout_milliseconds") }?.label
-        == "Alone key timeout (ms)")
+        == "to_if_alone_timeout_milliseconds:")
     // Flattening nested sections must not produce duplicate row IDs.
     precondition(Set(englishRows.map(\.id)).count == englishRows.count)
     // Copied text retains full configuration keys even when labels are translated.
