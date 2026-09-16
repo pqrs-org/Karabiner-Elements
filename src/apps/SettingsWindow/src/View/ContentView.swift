@@ -53,7 +53,7 @@ struct ContentView: View {
         ProgressView()
       }
 
-      if let alert = debugPreview.alert {
+      if let alert = debugPreview.alert, alert.setup == nil {
         DebugAlertsView.previewView(alert)
           .modifier(
             LocalizationPreviewInteraction {

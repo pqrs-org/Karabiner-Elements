@@ -4,9 +4,16 @@ import SwiftUI
 struct SetupServicesView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
+  var guidanceContextOverride: SettingsWindowGuidanceContext?
+
+  private var guidanceContext: SettingsWindowGuidanceContext {
+    guidanceContextOverride ?? contentViewStates.guidanceContext
+  }
+
   private let loginItemsImage: String
 
-  init() {
+  init(guidanceContextOverride: SettingsWindowGuidanceContext? = nil) {
+    self.guidanceContextOverride = guidanceContextOverride
     if #available(macOS 26.0, *) {
       loginItemsImage = "login-items-macos26"
     } else {
@@ -51,12 +58,12 @@ struct SetupServicesView: View {
             Label(
               "Karabiner-Elements Non-Privileged Agents v2",
               systemImage:
-                contentViewStates.guidanceContext.coreAgentsEnabled != false
+                guidanceContext.coreAgentsEnabled != false
                 ? "checkmark.circle.fill" : "circle")
             Label(
               "Karabiner-Elements Privileged Daemons v2",
               systemImage:
-                contentViewStates.guidanceContext.coreDaemonsEnabled != false
+                guidanceContext.coreDaemonsEnabled != false
                 ? "checkmark.circle.fill" : "circle")
           }
         }

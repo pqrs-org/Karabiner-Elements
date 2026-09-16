@@ -38,10 +38,27 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
   }
 }
 
+struct SetupPreview {
+  let item: SetupItem
+  var showingAdvanced = false
+  var legacyDriver = false
+}
+
 struct SetupView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   @State private var selectedItem: SetupItem = .services
+
+  let preview: SetupPreview?
+
+  init(preview: SetupPreview? = nil) {
+    self.preview = preview
+    _selectedItem = State(initialValue: preview?.item ?? .services)
+  }
+
+  private func itemCompleted(_ item: SetupItem) -> Bool {
+    preview == nil && contentViewStates.setupItemCompleted(item)
+  }
 
   var body: some View {
     HStack(spacing: 0) {
@@ -69,12 +86,16 @@ struct SetupView: View {
 
       ScrollView {
         Group {
-          if contentViewStates.setupItemCompleted(selectedItem) {
+          if itemCompleted(selectedItem) {
             setupCompletedMessageView(selectedItem)
           } else {
             switch selectedItem {
             case .services:
-              SetupServicesView()
+              SetupServicesView(
+                guidanceContextOverride: preview == nil
+                  ? nil
+                  : SettingsWindowGuidanceContext(
+                    coreDaemonsEnabled: false, coreAgentsEnabled: false))
             case .accessibility:
               if setupItemWaitingForAnotherSetup(.accessibility) {
                 setupServicesFirstView()
@@ -91,10 +112,13 @@ struct SetupView: View {
               if setupItemWaitingForAnotherSetup(.driverExtension) {
                 setupServicesFirstView()
               } else {
-                if #available(macOS 15.0, *) {
-                  SetupDriverExtensionView()
+                if preview?.legacyDriver == true {
+                  SetupDriverExtensionViewMacOS14(
+                    showingAdvanced: preview?.showingAdvanced ?? false)
+                } else if #available(macOS 15.0, *) {
+                  SetupDriverExtensionView(showingAdvanced: preview?.showingAdvanced ?? false)
                 } else {
-                  SetupDriverExtensionViewMacOS14()
+                  SetupDriverExtensionViewMacOS14(showingAdvanced: preview?.showingAdvanced ?? false)
                 }
               }
             }
@@ -105,12 +129,15 @@ struct SetupView: View {
       }
     }
     .onAppear {
+      guard preview == nil else { return }
       selectedItem = contentViewStates.setupSelection
     }
     .onChange(of: selectedItem) { newValue in
+      guard preview == nil else { return }
       contentViewStates.userSelectedSetupItem(newValue)
     }
     .onChange(of: contentViewStates.setupSelection) { newValue in
+      guard preview == nil else { return }
       if selectedItem != newValue {
         selectedItem = newValue
       }
@@ -118,7 +145,7 @@ struct SetupView: View {
   }
 
   private func setupStatusSystemImage(_ item: SetupItem) -> String {
-    if contentViewStates.setupItemCompleted(item) {
+    if itemCompleted(item) {
       return "checkmark.circle.fill"
     }
 
@@ -154,15 +181,16 @@ struct SetupView: View {
   }
 
   private func setupItemWaitingForAnotherSetup(_ item: SetupItem) -> Bool {
+    if preview != nil { return false }
     switch item {
     case .services:
       return false
     case .accessibility:
-      return !contentViewStates.setupItemCompleted(.services)
+      return !itemCompleted(.services)
     case .inputMonitoring:
-      return !contentViewStates.setupItemCompleted(.accessibility)
+      return !itemCompleted(.accessibility)
     case .driverExtension:
-      return !contentViewStates.setupItemCompleted(.services)
+      return !itemCompleted(.services)
     }
   }
 

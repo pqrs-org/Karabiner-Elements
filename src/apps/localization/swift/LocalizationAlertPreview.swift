@@ -18,18 +18,12 @@ struct LocalizationPreviewInteraction: ViewModifier {
   func body(content: Content) -> some View {
     content
       .environment(\.isLocalizationPreview, true)
-      .allowsHitTesting(false)
-      .overlay {
-        Color.clear
-          .contentShape(Rectangle())
-          .onTapGesture(perform: dismiss)
-      }
-      .background(PreviewKeyboardObserver(dismiss: dismiss).frame(width: 0, height: 0))
+      .background(PreviewInputObserver(dismiss: dismiss).frame(width: 0, height: 0))
   }
 }
 
-// Focused alert buttons must not perform actions via Return or Space either.
-private struct PreviewKeyboardObserver: NSViewRepresentable {
+// Intercept actions without blocking scrolling through long setup instructions.
+private struct PreviewInputObserver: NSViewRepresentable {
   let dismiss: () -> Void
 
   func makeCoordinator() -> Coordinator { Coordinator(dismiss: dismiss) }
@@ -57,13 +51,18 @@ private struct PreviewKeyboardObserver: NSViewRepresentable {
 
     func start(view: NSView) {
       guard monitor == nil else { return }
-      monitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) {
+      monitor = NSEvent.addLocalMonitorForEvents(matching: [
+        .keyDown, .keyUp, .leftMouseDown, .rightMouseDown, .otherMouseDown,
+      ]) {
         [weak self, weak view] event in
         let intercepted = MainActor.assumeIsolated {
           guard let self, let window = view?.window, event.window === window else {
             return false
           }
-          if event.type == .keyDown && event.keyCode == 53 {
+          if event.type == .leftMouseDown || event.type == .rightMouseDown
+            || event.type == .otherMouseDown
+            || (event.type == .keyDown && event.keyCode == 53)
+          {
             self.dismiss()
           }
           return true

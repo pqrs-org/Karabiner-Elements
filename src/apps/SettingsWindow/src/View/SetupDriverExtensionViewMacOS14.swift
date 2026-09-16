@@ -4,6 +4,10 @@ import SwiftUI
 struct SetupDriverExtensionViewMacOS14: View {
   @State private var showingAdvanced = false
 
+  init(showingAdvanced: Bool = false) {
+    _showingAdvanced = State(initialValue: showingAdvanced)
+  }
+
   var body: some View {
     VStack(alignment: .center) {
       AppLocalizedLabel(

@@ -98,3 +98,8 @@ language is used. Click anywhere in the preview or press Escape to close it.
 Mouse and keyboard actions are intercepted without changing the alert's enabled
 appearance, and automatic navigation is suppressed. Settings includes the
 connection retry and advanced driver guidance variants.
+
+Setup previews use the same inline Setup layout and show instructions even when
+permissions have already been granted. Driver previews include advanced guidance
+and the macOS 13/14 variant. Long instructions can be scrolled; clicking or Escape
+returns to the Debug list without changing the actual setup state.

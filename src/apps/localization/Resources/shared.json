@@ -239,6 +239,22 @@
         "en": "Alert previews"
         ,"ja": "アラートのプレビュー"
     },
+    "shared.debug.category.configuration": {
+        "en": "Configuration"
+        ,"ja": "設定"
+    },
+    "shared.debug.category.driver": {
+        "en": "Driver"
+        ,"ja": "ドライバー"
+    },
+    "shared.debug.category.services": {
+        "en": "Services and Connections"
+        ,"ja": "サービス・接続"
+    },
+    "shared.debug.category.setup": {
+        "en": "Setup"
+        ,"ja": "セットアップ"
+    },
     "shared.debug.daemons_stopped": {
         "en": "Services stopped: daemons only"
         ,"ja": "サービス停止：デーモンのみ"
@@ -263,9 +279,21 @@
         "en": "Services stopped: agents and daemons"
         ,"ja": "サービス停止：エージェントとデーモン"
     },
+    "shared.debug.setup_driver_advanced": {
+        "en": "Driver extension permission: advanced guidance"
+        ,"ja": "ドライバー拡張機能の許可：詳細な案内"
+    },
+    "shared.debug.setup_driver_legacy_advanced": {
+        "en": "Driver permission (macOS 13/14): advanced guidance"
+        ,"ja": "ドライバーの許可（macOS 13/14）：詳細な案内"
+    },
     "shared.debug.title": {
         "en": "Debug"
         ,"ja": "デバッグ"
+    },
+    "shared.debug.viewed": {
+        "en": "Viewed"
+        ,"ja": "閲覧済み"
     },
     "shared.filter": {
         "en": "Filter"

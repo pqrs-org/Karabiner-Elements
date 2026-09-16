@@ -7,7 +7,9 @@ final class DebugAlertPreviewState: ObservableObject {
 }
 
 struct DebugAlertsView: View {
+  @AppLocalizationContext private var localized
   @ObservedObject private var preview = DebugAlertPreviewState.shared
+  @State private var viewedAlerts: Set<PreviewAlert> = []
 
   enum PreviewAlert: String, CaseIterable, Identifiable {
     case inputMonitoring, secureInput
@@ -30,17 +32,43 @@ struct DebugAlertsView: View {
       AppLocalizedText("shared.debug.preview_hint")
         .foregroundStyle(.secondary)
       ForEach(PreviewAlert.allCases) { alert in
-        Button {
-          preview.alert = alert
-        } label: {
-          AppLocalizedText(alert.title)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
+        previewRow(alert)
       }
       Spacer()
     }
     .buttonStyle(.bordered)
     .padding()
+  }
+
+  private func previewRow(_ alert: PreviewAlert) -> some View {
+    HStack(spacing: 8) {
+      Toggle(
+        isOn: Binding(
+          get: { viewedAlerts.contains(alert) },
+          set: { viewed in
+            if viewed {
+              viewedAlerts.insert(alert)
+            } else {
+              viewedAlerts.remove(alert)
+            }
+          }
+        )
+      ) {
+        AppLocalizedText("shared.debug.viewed")
+        AppLocalizedText(alert.title)
+      }
+      .toggleStyle(.checkbox)
+      .labelsHidden()
+      .help(localized("shared.debug.viewed"))
+
+      Button {
+        viewedAlerts.insert(alert)
+        preview.alert = alert
+      } label: {
+        AppLocalizedText(alert.title)
+          .frame(maxWidth: .infinity, alignment: .leading)
+      }
+    }
   }
 
   @ViewBuilder
