@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DevicesGamePadSettingsView: View {
+  @AppLocalizationContext private var localized
   let connectedDevice: ConnectedDevice
   @Binding var deviceConfiguration: SettingsConfiguration.Device
   @Binding var showing: Bool
@@ -38,7 +39,7 @@ struct DevicesGamePadSettingsView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 12.0) {
         Text(
-          "\(connectedDevice.productName) (\(connectedDevice.manufacturerName))"
+          "\(connectedDevice.localizedProductName(localized)) (\(connectedDevice.localizedManufacturerName(localized)))"
         )
         .padding(.leading, 40)
         .padding(.top, 20)

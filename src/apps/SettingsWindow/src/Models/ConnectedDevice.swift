@@ -18,6 +18,17 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
   let isBuiltInKeyboard: Bool
   let isAppleDevice: Bool
 
+  func localizedProductName(_ localized: AppLocalizationContext.Lookup) -> String {
+    guard productName.isEmpty else { return productName }
+    return localized(
+      transport == "FIFO"
+        ? "settings.devices.internal_keyboard_trackpad" : "settings.devices.no_product_name")
+  }
+
+  func localizedManufacturerName(_ localized: AppLocalizationContext.Lookup) -> String {
+    manufacturerName.isEmpty ? localized("settings.devices.no_manufacturer_name") : manufacturerName
+  }
+
   static var zero: ConnectedDevice {
     return ConnectedDevice(
       id: "",

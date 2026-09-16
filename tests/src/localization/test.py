@@ -29,18 +29,31 @@ class LocalizationResourcesTests(unittest.TestCase):
             "MultitouchExtension",
             "SettingsWindow",
             "localization",
+            "share/swift/Views",
         ):
             for source in (apps / app).rglob("*.swift"):
                 if "build" in source.parts:
                     continue
                 for key in re.findall(
-                    r'"((?:event_viewer|multitouch|shared\.language|shared\.debug|settings\.toolbar)\.[A-Za-z0-9_.]+)"',
+                    r'"((?:event_viewer|multitouch|shared|settings|setting|section|value|changed_settings|menu_bar_extra)\.[A-Za-z0-9_.]+)"',
                     source.read_text(),
                 ):
                     if not key.endswith("."):
                         self.assertIn(key, catalog, str(source))
         for key, translations in catalog.items():
-            if key.startswith(("event_viewer.", "multitouch.", "shared.debug.")):
+            if key.startswith(
+                (
+                    "event_viewer.",
+                    "multitouch.",
+                    "shared.",
+                    "settings.",
+                    "setting.",
+                    "section.",
+                    "value.",
+                    "changed_settings.",
+                    "menu_bar_extra.",
+                )
+            ):
                 self.assertIn("ja", translations, key)
                 self.assertEqual(
                     set(re.findall(r"\{\w+\}", translations["en"])),

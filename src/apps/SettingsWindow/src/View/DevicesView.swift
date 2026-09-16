@@ -136,9 +136,11 @@ struct DevicesView: View {
         }
         .frame(width: 50.0, alignment: .trailing)
 
-        Text("\(connectedDevice.productName) (\(connectedDevice.manufacturerName))")
-          .padding(.leading, 12.0)
-          .frame(maxWidth: .infinity, alignment: .leading)
+        Text(
+          "\(connectedDevice.localizedProductName(localized)) (\(connectedDevice.localizedManufacturerName(localized)))"
+        )
+        .padding(.leading, 12.0)
+        .frame(maxWidth: .infinity, alignment: .leading)
 
         if connectedDevice.transport != "FIFO" {
           VStack(alignment: .trailing, spacing: 4.0) {
@@ -299,6 +301,7 @@ struct DevicesView: View {
             deviceConfiguration: $deviceConfiguration,
             showing: $showing
           )
+          .modifier(SettingsLanguage())
         }
       } else {
         EmptyView()
@@ -331,6 +334,7 @@ struct DevicesView: View {
             deviceConfiguration: $deviceConfiguration,
             showing: $showing
           )
+          .modifier(SettingsLanguage())
         }
       } else {
         EmptyView()

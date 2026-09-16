@@ -256,14 +256,17 @@ struct ComplexModificationsView: View {
       .background(Color(NSColor.textBackgroundColor))
     }
     .sheet(isPresented: $contentViewStates.complexModificationsViewSheetPresented) {
-      if let sheetView = contentViewStates.complexModificationsViewSheetView {
-        switch sheetView {
-        case ComplexModificationsSheetView.assets:
-          ComplexModificationsAssetsView()
-        case ComplexModificationsSheetView.fileImport:
-          ComplexModificationsFileImportView()
+      Group {
+        if let sheetView = contentViewStates.complexModificationsViewSheetView {
+          switch sheetView {
+          case ComplexModificationsSheetView.assets:
+            ComplexModificationsAssetsView()
+          case ComplexModificationsSheetView.fileImport:
+            ComplexModificationsFileImportView()
+          }
         }
       }
+      .modifier(SettingsLanguage())
     }
     .sheet(isPresented: $showingEditSheet) {
       ComplexModificationsEditView(
@@ -273,7 +276,9 @@ struct ComplexModificationsView: View {
           contentViewStates.showToast(
             localized("settings.editor.rules_changed")
           )
-        })
+        }
+      )
+      .modifier(SettingsLanguage())
     }
   }
 }

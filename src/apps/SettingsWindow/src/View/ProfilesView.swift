@@ -150,7 +150,9 @@ struct ProfilesView: View {
           ContentViewStates.shared.showToast(
             localized("settings.editor.profile_changed")
           )
-        })
+        }
+      )
+      .modifier(SettingsLanguage())
     }
   }
 }

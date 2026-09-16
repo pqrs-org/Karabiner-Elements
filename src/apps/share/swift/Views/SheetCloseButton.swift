@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SheetCloseButton: View {
+  @AppLocalizationContext private var localized
   let onCloseButtonPressed: () -> Void
 
   var body: some View {
@@ -12,5 +13,6 @@ struct SheetCloseButton: View {
         .frame(width: 24.0, height: 24.0)
     }
     .buttonStyle(PlainButtonStyle())
+    .accessibilityLabel(localized("shared.action.dismiss"))
   }
 }

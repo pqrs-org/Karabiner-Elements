@@ -3,7 +3,6 @@ import SwiftUI
 struct ContentView: View {
   @AppLocalizationContext private var localized
   @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
-  @ObservedObject private var localization = AppLocalization.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
 
@@ -83,10 +82,7 @@ struct ContentView: View {
         .zIndex(1)
       }
     }
-    .environment(
-      \.locale,
-      settings.uiLocale
-    )
+    .modifier(SettingsLanguage())
     .animation(.easeInOut(duration: 0.2), value: contentViewStates.toast)
     .animation(.easeInOut(duration: 0.2), value: debugPreview.alert?.isToast)
     .frame(
@@ -95,5 +91,16 @@ struct ContentView: View {
       minHeight: 680,
       maxHeight: .infinity
     )
+  }
+}
+
+// macOS sheets can reset the locale instead of inheriting it from their presenter.
+// Apply this inside each sheet and observe settings for changes while it is open.
+struct SettingsLanguage: ViewModifier {
+  @ObservedObject private var settings = Settings.shared
+  @ObservedObject private var localization = AppLocalization.shared
+
+  func body(content: Content) -> some View {
+    content.environment(\.locale, settings.uiLocale)
   }
 }

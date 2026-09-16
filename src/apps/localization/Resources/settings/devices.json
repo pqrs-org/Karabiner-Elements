@@ -31,9 +31,21 @@
         "en": "Ignore vendor events"
         ,"ja": "ベンダー固有のイベントを無視"
     },
+    "settings.devices.internal_keyboard_trackpad": {
+        "en": "Apple Internal Keyboard / Trackpad"
+        ,"ja": "Apple 内蔵キーボード / トラックパッド"
+    },
     "settings.devices.modify_events": {
         "en": "Modify events"
         ,"ja": "イベントを変更"
+    },
+    "settings.devices.no_manufacturer_name": {
+        "en": "No manufacturer name"
+        ,"ja": "メーカー名なし"
+    },
+    "settings.devices.no_product_name": {
+        "en": "No product name"
+        ,"ja": "製品名なし"
     },
     "settings.devices.open_gamepad_settings": {
         "en": "Open game pad settings"

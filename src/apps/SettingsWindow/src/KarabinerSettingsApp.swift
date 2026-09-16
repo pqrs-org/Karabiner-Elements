@@ -56,7 +56,7 @@ struct KarabinerSettingsApp: App {
       }
     )
     .commands {
-      FindCommands()
+      FindCommands(locale: settings.uiLocale)
     }
   }
 }

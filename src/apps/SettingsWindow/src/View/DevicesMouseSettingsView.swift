@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DevicesMouseSettingsView: View {
+  @AppLocalizationContext private var localized
   let connectedDevice: ConnectedDevice
   @Binding var deviceConfiguration: SettingsConfiguration.Device
   @Binding var showing: Bool
@@ -11,7 +12,7 @@ struct DevicesMouseSettingsView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 40.0) {
         Text(
-          "\(connectedDevice.productName) (\(connectedDevice.manufacturerName))"
+          "\(connectedDevice.localizedProductName(localized)) (\(connectedDevice.localizedManufacturerName(localized)))"
         )
         .font(.title)
         .padding(.leading, 40)

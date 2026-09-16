@@ -23,7 +23,7 @@ struct ChangedSettingsView: View {
         Button {
           let version =
             Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? "Unknown"
+            ?? text("shared.value.unknown")
           var content = report.text(
             version: version, systemVersion: ProcessInfo.processInfo.operatingSystemVersionString)
           if report.sections.isEmpty { content += "\n\n" + text("changed_settings.empty") }

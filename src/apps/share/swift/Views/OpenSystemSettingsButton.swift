@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 
 struct OpenSystemSettingsButton<LabelView: View>: View {
+  @AppLocalizationContext private var localized
   let url: String
   let label: () -> LabelView
 
@@ -49,7 +50,7 @@ struct OpenSystemSettingsButton<LabelView: View>: View {
           if isProcessing {
             ProgressView()
               .controlSize(.small)
-              .accessibilityLabel("Opening System Settings")
+              .accessibilityLabel(localized("shared.system_settings.opening"))
           }
         }
       }

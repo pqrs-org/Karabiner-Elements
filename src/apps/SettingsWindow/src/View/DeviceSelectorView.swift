@@ -21,8 +21,8 @@ struct DeviceSelectorView: View {
         title: device.index < 0
           ? localized("settings.devices.all")
           : connectedDeviceLabelTitle(
-            productName: device.productName,
-            manufacturerName: device.manufacturerName,
+            productName: device.localizedProductName(localized),
+            manufacturerName: device.localizedManufacturerName(localized),
             vendorId: device.vendorId,
             productId: device.productId,
             deviceAddress: device.deviceAddress

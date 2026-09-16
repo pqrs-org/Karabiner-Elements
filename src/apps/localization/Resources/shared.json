@@ -323,6 +323,22 @@
         "en": "Filter"
         ,"ja": "絞り込み"
     },
+    "shared.find.menu": {
+        "en": "Find"
+        ,"ja": "検索"
+    },
+    "shared.find.next": {
+        "en": "Find Next"
+        ,"ja": "次を検索"
+    },
+    "shared.find.previous": {
+        "en": "Find Previous"
+        ,"ja": "前を検索"
+    },
+    "shared.find.show": {
+        "en": "Find…"
+        ,"ja": "検索…"
+    },
     "shared.language.auto": {
         "en": "Auto"
         ,"ja": "自動"
@@ -342,6 +358,18 @@
     "shared.status.loading": {
         "en": "Loading..."
         ,"ja": "読み込み中…"
+    },
+    "shared.system_settings.opening": {
+        "en": "Opening System Settings"
+        ,"ja": "システム設定を開いています"
+    },
+    "shared.validation.number_range": {
+        "en": "must be between {lower} and {upper}"
+        ,"ja": "{lower} から {upper} の範囲で入力してください"
+    },
+    "shared.value.unknown": {
+        "en": "Unknown"
+        ,"ja": "不明"
     },
     "value.off": {
         "en": "Off"
