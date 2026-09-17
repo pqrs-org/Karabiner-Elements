@@ -74,7 +74,11 @@ final class Updater: ObservableObject {
 
       Task { @MainActor in
         // Just in case, wait until the update notification window is shown.
-        try await Task.sleep(for: .seconds(1))
+        do {
+          try await Task.sleep(for: .seconds(1))
+        } catch {
+          return
+        }
 
         if userAttentionRequestIdentifier == nil {
           userAttentionRequestIdentifier = NSApp.requestUserAttention(.criticalRequest)
