@@ -37,6 +37,8 @@ struct LocalizedTextTests {
       AppLocalizedText("default", arguments: ["value": "10"])
         .localizedString(locale: en, catalog: catalog) == "(Default: 10)")
 
-    print("Localized text arrays, arguments, literal spaces/newlines, fallback and locale switching passed")
+    print(
+      "Localized text arrays, arguments, literal spaces/newlines, fallback and locale switching passed"
+    )
   }
 }

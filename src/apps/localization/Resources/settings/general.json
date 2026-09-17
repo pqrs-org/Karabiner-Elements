@@ -44,8 +44,8 @@
         ,"ja": "Karabiner-Elements は、macOS のスリープショートカット（command+option+power、command+option+eject、またはログイン画面での escape）のキー押下イベントを遅延させます。これにより、キーを離したイベントで Mac がすぐにスリープから復帰することを防ぎます。"
     },
     "settings.expert.sleep_delay_disabled_hint": {
-        "en": "0 disables delay."
-        ,"ja": "0 で遅延を無効化します。"
+        "en": "0 disables delay"
+        ,"ja": "0 で遅延を無効化します"
     },
     "settings.expert.title": {
         "en": "Expert mode"
@@ -260,8 +260,8 @@
         ,"ja": "Karabiner 通知ウィンドウとは？\n\nKarabiner 通知ウィンドウには、固定修飾キーの状態や、高度なキー変換からのメッセージが表示されます。"
     },
     "settings.ui.notification_window": {
-        "en": "Karabiner Notification Window"
-        ,"ja": "Karabiner 通知ウィンドウ"
+        "en": "Notification window"
+        ,"ja": "通知ウィンドウ"
     },
     "settings.ui.position.bottom_left": {
         "en": "Bottom left"

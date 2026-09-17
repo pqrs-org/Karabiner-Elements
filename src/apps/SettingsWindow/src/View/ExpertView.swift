@@ -194,9 +194,8 @@ struct ExpertView: View {
                 arguments: [
                   "value": String(defaults.globalConfiguration.delayMillisecondsBeforeSleepShortcut)
                 ])
+              AppLocalizedText("settings.expert.sleep_delay_disabled_hint")
             }
-
-            AppLocalizedText("settings.expert.sleep_delay_disabled_hint")
 
             AppLocalizedLabel(
               "settings.expert.sleep_delay_description",
