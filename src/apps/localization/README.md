@@ -108,3 +108,32 @@ Setup previews also cover prerequisite instructions, partially enabled services,
 and macOS 15 screenshots. The Notifications tab previews both external-change
 editing cancellation toasts in their normal position with the normal four-second
 auto-dismiss timer. Setup completion messages are intentionally omitted.
+
+## Joining translated text
+
+Use an array when independent translated labels should flow as one text, such as
+a setting name followed by its default value:
+
+```swift
+AppLocalizedText([
+  "setting.enable_cgeventtap_fallback",
+  " ",
+  .init("settings.defaults.value", arguments: ["value": localized("value.off")]),
+])
+```
+
+Segments are translated with the current locale and joined without an automatic
+separator. Put `" "` or `"\n"` directly in the array wherever spacing is needed:
+
+```swift
+AppLocalizedText([
+  "setting.enable_cgeventtap_fallback",
+  "\n",
+  .init("settings.defaults.value", arguments: ["value": localized("value.off")]),
+])
+```
+
+As with a single key, text that is not in the catalog is displayed verbatim. The
+result is one verbatim `Text`, so it wraps as a single text block. Existing
+single-key calls are unchanged. For sentences whose word order varies by language,
+use one translation with placeholders instead of joining fragments.

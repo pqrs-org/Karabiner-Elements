@@ -14,15 +14,16 @@ struct MiscView: View {
         GroupBox(label: AppLocalizedText("settings.misc.multitouch_title")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.machineSpecific.enableMultitouchExtension) {
-              HStack {
-                AppLocalizedText("setting.enable_multitouch_extension")
-                AppLocalizedText(
+              AppLocalizedText([
+                "setting.enable_multitouch_extension",
+                " ",
+                .init(
                   "settings.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.machineSpecific.enableMultitouchExtension ? "value.on" : "value.off")
-                  ])
-              }
+                  ]),
+              ])
             }
             .switchToggleStyle()
 

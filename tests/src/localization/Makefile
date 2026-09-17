@@ -14,5 +14,12 @@ all:
 		option_key_observer_test.swift -o "$(BUILD_DIR)/option_key_observer_test"
 	"$(BUILD_DIR)/option_key_observer_test"
 
+	xcrun swiftc -module-cache-path "$(BUILD_DIR)/ModuleCache" -swift-version 6 -warnings-as-errors \
+		../../../src/apps/localization/swift/AppLanguage.swift \
+		../../../src/apps/localization/swift/AppLocalization.swift \
+		../../../src/apps/localization/swift/AppLocalizedText.swift \
+		localized_text_test.swift -o "$(BUILD_DIR)/localized_text_test"
+	"$(BUILD_DIR)/localized_text_test"
+
 clean:
 	rm -rf "$(BUILD_DIR)"

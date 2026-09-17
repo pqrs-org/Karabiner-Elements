@@ -15,57 +15,61 @@ struct UIView: View {
         GroupBox(label: AppLocalizedText("settings.ui.menu_bar")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.showInMenuBar) {
-              HStack {
-                AppLocalizedText("setting.show_in_menu_bar")
-                AppLocalizedText(
+              AppLocalizedText([
+                "setting.show_in_menu_bar",
+                " ",
+                .init(
                   "settings.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.showInMenuBar ? "value.on" : "value.off")
-                  ])
-              }
+                  ]),
+              ])
             }
             .switchToggleStyle()
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showProfileNameInMenuBar) {
-              HStack {
-                AppLocalizedText("setting.show_profile_name_in_menu_bar")
-                AppLocalizedText(
+              AppLocalizedText([
+                "setting.show_profile_name_in_menu_bar",
+                " ",
+                .init(
                   "settings.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.showProfileNameInMenuBar
                         ? "value.on" : "value.off")
-                  ])
-              }
+                  ]),
+              ])
             }
             .switchToggleStyle()
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showAdditionalMenuItems) {
-              HStack {
-                AppLocalizedText("setting.show_additional_menu_items")
-                AppLocalizedText(
+              AppLocalizedText([
+                "setting.show_additional_menu_items",
+                " ",
+                .init(
                   "settings.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.showAdditionalMenuItems
                         ? "value.on" : "value.off")
-                  ])
-              }
+                  ]),
+              ])
             }
             .switchToggleStyle()
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showQuitConfirmationMenu) {
-              HStack {
-                AppLocalizedText("setting.show_quit_confirmation_menu")
-                AppLocalizedText(
+              AppLocalizedText([
+                "setting.show_quit_confirmation_menu",
+                " ",
+                .init(
                   "settings.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.showQuitConfirmationMenu
                         ? "value.on" : "value.off")
-                  ])
-              }
+                  ]),
+              ])
             }
             .switchToggleStyle()
           }
@@ -76,16 +80,17 @@ struct UIView: View {
         GroupBox(label: AppLocalizedText("settings.ui.notification_window")) {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.enableNotificationWindow) {
-              HStack {
-                AppLocalizedText("setting.enable_notification_window")
-                AppLocalizedText(
+              AppLocalizedText([
+                "setting.enable_notification_window",
+                " ",
+                .init(
                   "settings.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.enableNotificationWindow
                         ? "value.on" : "value.off")
-                  ])
-              }
+                  ]),
+              ])
             }
             .switchToggleStyle()
 
@@ -94,16 +99,17 @@ struct UIView: View {
                 isOn: $settings.configuration.selectedProfile.virtualHidKeyboard
                   .indicateStickyModifierKeysState
               ) {
-                HStack {
-                  AppLocalizedText("setting.indicate_sticky_modifier_keys_state")
-                  AppLocalizedText(
+                AppLocalizedText([
+                  "setting.indicate_sticky_modifier_keys_state",
+                  " ",
+                  .init(
                     "settings.defaults.value",
                     arguments: [
                       "value": localized(
                         defaults.selectedProfile.virtualHidKeyboard.indicateStickyModifierKeysState
                           ? "value.on" : "value.off")
-                    ])
-                }
+                    ]),
+                ])
               }
               .switchToggleStyle()
 
@@ -136,17 +142,18 @@ struct UIView: View {
                       isOn: $settings.configuration.globalConfiguration
                         .notificationWindowRespectScreenVisibleFrame
                     ) {
-                      HStack {
-                        AppLocalizedText("setting.notification_window_respect_screen_visible_frame")
-                        AppLocalizedText(
+                      AppLocalizedText([
+                        "setting.notification_window_respect_screen_visible_frame",
+                        " ",
+                        .init(
                           "settings.defaults.value",
                           arguments: [
                             "value": localized(
                               defaults.globalConfiguration
                                 .notificationWindowRespectScreenVisibleFrame
                                 ? "value.on" : "value.off")
-                          ])
-                      }
+                          ]),
+                      ])
                     }
                     .switchToggleStyle()
                   }
@@ -154,16 +161,17 @@ struct UIView: View {
                   Toggle(
                     isOn: $settings.configuration.globalConfiguration.notificationWindowShowIcon
                   ) {
-                    HStack {
-                      AppLocalizedText("setting.notification_window_show_icon")
-                      AppLocalizedText(
+                    AppLocalizedText([
+                      "setting.notification_window_show_icon",
+                      " ",
+                      .init(
                         "settings.defaults.value",
                         arguments: [
                           "value": localized(
                             defaults.globalConfiguration.notificationWindowShowIcon
                               ? "value.on" : "value.off")
-                        ])
-                    }
+                        ]),
+                    ])
                   }
                   .switchToggleStyle()
 

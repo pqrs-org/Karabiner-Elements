@@ -5,17 +5,38 @@ import SwiftUI
 struct AppLocalizedText: View {
   @ObservedObject private var localization = AppLocalization.shared
   @Environment(\.locale) private var locale
-  let key: String
+  struct Segment: ExpressibleByStringLiteral {
+    let key: String
+    let arguments: [String: String]
 
-  let arguments: [String: String]
+    init(_ key: String, arguments: [String: String] = [:]) {
+      self.key = key
+      self.arguments = arguments
+    }
+
+    init(stringLiteral value: String) {
+      self.init(value)
+    }
+  }
+
+  private let segments: [Segment]
 
   init(_ key: String, arguments: [String: String] = [:]) {
-    self.key = key
-    self.arguments = arguments
+    self.init([Segment(key, arguments: arguments)])
+  }
+
+  init(_ segments: [Segment]) {
+    self.segments = segments
+  }
+
+  func localizedString(locale: Locale, catalog: LocalizationCatalog) -> String {
+    segments.map {
+      AppLanguage.text($0.key, locale: locale, catalog: catalog, arguments: $0.arguments)
+    }.joined()
   }
 
   var body: some View {
-    Text(verbatim: AppLanguage.text(key, locale: locale, arguments: arguments))
+    Text(verbatim: localizedString(locale: locale, catalog: localization.catalog))
   }
 }
 

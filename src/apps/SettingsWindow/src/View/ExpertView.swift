@@ -14,15 +14,16 @@ struct ExpertView: View {
         GroupBox(label: AppLocalizedText("settings.expert.title")) {
           VStack(alignment: .leading, spacing: 4.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.unsafeUi) {
-              HStack {
-                AppLocalizedText("setting.unsafe_ui")
-                AppLocalizedText(
+              AppLocalizedText([
+                "setting.unsafe_ui",
+                " ",
+                .init(
                   "settings.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.unsafeUi ? "value.on" : "value.off")
-                  ])
-              }
+                  ]),
+              ])
             }
             .switchToggleStyle()
 
@@ -41,16 +42,17 @@ struct ExpertView: View {
             isOn: $settings.configuration.selectedProfile
               .modifyPointingDeviceEventsByDefault
           ) {
-            HStack {
-              AppLocalizedText("settings.expert.modify_pointing_by_default")
-              AppLocalizedText(
+            AppLocalizedText([
+              "settings.expert.modify_pointing_by_default",
+              " ",
+              .init(
                 "settings.defaults.value",
                 arguments: [
                   "value": localized(
                     defaults.selectedProfile.modifyPointingDeviceEventsByDefault
                       ? "value.on" : "value.off")
-                ])
-            }
+                ]),
+            ])
           }
           .switchToggleStyle()
           .padding()
@@ -61,16 +63,17 @@ struct ExpertView: View {
           VStack(alignment: .leading, spacing: 20.0) {
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(isOn: $settings.configuration.globalConfiguration.enableCgeventtapFallback) {
-                HStack {
-                  AppLocalizedText("setting.enable_cgeventtap_fallback")
-                  AppLocalizedText(
+                AppLocalizedText([
+                  "setting.enable_cgeventtap_fallback",
+                  " ",
+                  .init(
                     "settings.defaults.value",
                     arguments: [
                       "value": localized(
                         defaults.globalConfiguration.enableCgeventtapFallback
                           ? "value.on" : "value.off")
-                    ])
-                }
+                    ]),
+                ])
               }
               .switchToggleStyle()
 
@@ -93,16 +96,17 @@ struct ExpertView: View {
                 isOn: $settings.configuration.globalConfiguration
                   .filterUselessEventsFromSpecificDevices
               ) {
-                HStack {
-                  AppLocalizedText("setting.filter_useless_events_from_specific_devices")
-                  AppLocalizedText(
+                AppLocalizedText([
+                  "setting.filter_useless_events_from_specific_devices",
+                  " ",
+                  .init(
                     "settings.defaults.value",
                     arguments: [
                       "value": localized(
                         defaults.globalConfiguration.filterUselessEventsFromSpecificDevices
                           ? "value.on" : "value.off")
-                    ])
-                }
+                    ]),
+                ])
               }
               .switchToggleStyle()
 
@@ -119,18 +123,18 @@ struct ExpertView: View {
                 isOn: $settings.configuration.globalConfiguration
                   .reorderSameTimestampInputEventsToPrioritizeModifiers
               ) {
-                HStack {
-                  AppLocalizedText(
-                    "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers")
-                  AppLocalizedText(
+                AppLocalizedText([
+                  "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers",
+                  " ",
+                  .init(
                     "settings.defaults.value",
                     arguments: [
                       "value": localized(
                         defaults.globalConfiguration
                           .reorderSameTimestampInputEventsToPrioritizeModifiers
                           ? "value.on" : "value.off")
-                    ])
-                }
+                    ]),
+                ])
               }
               .switchToggleStyle()
 

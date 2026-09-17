@@ -18,15 +18,16 @@ struct UpdateView: View {
             AppLocalizedText("settings.update.version", arguments: ["version": version])
 
             Toggle(isOn: $settings.configuration.globalConfiguration.checkForUpdates) {
-              HStack {
-                AppLocalizedText("settings.update.automatic")
-                AppLocalizedText(
+              AppLocalizedText([
+                "settings.update.automatic",
+                " ",
+                .init(
                   "settings.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.checkForUpdates ? "value.on" : "value.off")
-                  ])
-              }
+                  ]),
+              ])
             }
             .switchToggleStyle()
 
