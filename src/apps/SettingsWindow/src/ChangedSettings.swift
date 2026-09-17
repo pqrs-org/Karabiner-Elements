@@ -18,15 +18,15 @@ struct ChangedSettings {
 
   // Keep localization keys explicit so their usages can be found by searching.
   private static let sectionLocalizationKeys: [String: String] = [
-    "complex_modifications": "section.complex_modifications",
+    "complex_modifications": "settings.changed_settings.section.complex_modifications",
     "dark": "section.dark",
-    "global": "section.global",
+    "global": "settings.changed_settings.section.global",
     "light": "section.light",
-    "machine_specific": "section.machine_specific",
-    "notification_window_colors": "section.notification_window_colors",
-    "parameters": "section.parameters",
-    "selected_profile": "section.selected_profile",
-    "virtual_hid_keyboard": "section.virtual_hid_keyboard",
+    "machine_specific": "settings.changed_settings.section.machine_specific",
+    "notification_window_colors": "settings.changed_settings.section.notification_window_colors",
+    "parameters": "settings.changed_settings.section.parameters",
+    "selected_profile": "settings.changed_settings.section.selected_profile",
+    "virtual_hid_keyboard": "settings.changed_settings.section.virtual_hid_keyboard",
   ]
 
   private static let settingLocalizationKeys: [String: String] = [

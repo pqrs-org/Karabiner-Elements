@@ -1,0 +1,42 @@
+{
+    "settings.changed_settings.empty": {
+        "en": "No settings have been changed from their default values."
+        ,"ja": "デフォルト値から変更されている設定はありません。"
+    },
+    "settings.changed_settings.error": {
+        "en": "An error occurred."
+        ,"ja": "エラーが発生しました。"
+    },
+    "settings.changed_settings.section.complex_modifications": {
+        "en": "Complex Modifications"
+        ,"ja": "高度なキー変換"
+    },
+    "settings.changed_settings.section.global": {
+        "en": "Global settings"
+        ,"ja": "全体設定"
+    },
+    "settings.changed_settings.section.machine_specific": {
+        "en": "Settings specific to this machine"
+        ,"ja": "このマシン固有の設定"
+    },
+    "settings.changed_settings.section.notification_window_colors": {
+        "en": "Notification colors"
+        ,"ja": "通知の配色"
+    },
+    "settings.changed_settings.section.parameters": {
+        "en": "Parameters"
+        ,"ja": "パラメータ"
+    },
+    "settings.changed_settings.section.selected_profile": {
+        "en": "Selected profile"
+        ,"ja": "選択中のプロファイル"
+    },
+    "settings.changed_settings.section.virtual_hid_keyboard": {
+        "en": "Virtual keyboard"
+        ,"ja": "仮想キーボード"
+    },
+    "settings.changed_settings.title": {
+        "en": "Changed Settings"
+        ,"ja": "変更済み設定"
+    }
+}

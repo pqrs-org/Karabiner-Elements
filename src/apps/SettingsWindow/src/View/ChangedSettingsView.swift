@@ -15,7 +15,7 @@ struct ChangedSettingsView: View {
       try ChangedSettings(json: settings.configuration.changedSettingsJson, locale: locale)
     }
     VStack(alignment: .leading, spacing: 12) {
-      AppLocalizedText("changed_settings.title")
+      AppLocalizedText("settings.changed_settings.title")
         .font(.title2)
 
       switch result {
@@ -26,7 +26,7 @@ struct ChangedSettingsView: View {
             ?? text("shared.value.unknown")
           var content = report.text(
             version: version, systemVersion: ProcessInfo.processInfo.operatingSystemVersionString)
-          if report.sections.isEmpty { content += "\n\n" + text("changed_settings.empty") }
+          if report.sections.isEmpty { content += "\n\n" + text("settings.changed_settings.empty") }
           let pasteboard = NSPasteboard.general
           pasteboard.clearContents()
           pasteboard.writeObjects([content as NSString])
@@ -36,7 +36,7 @@ struct ChangedSettingsView: View {
         }
 
         if report.sections.isEmpty {
-          AppLocalizedText("changed_settings.empty")
+          AppLocalizedText("settings.changed_settings.empty")
             .foregroundColor(.secondary)
         }
         ScrollView {
@@ -63,7 +63,7 @@ struct ChangedSettingsView: View {
           }
         }
       case .failure:
-        AppLocalizedText("changed_settings.error")
+        AppLocalizedText("settings.changed_settings.error")
           .foregroundColor(.red)
       }
     }

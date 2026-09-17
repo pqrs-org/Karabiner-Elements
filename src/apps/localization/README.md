@@ -12,10 +12,10 @@ Sources are grouped by feature under `src/apps/localization/Resources/`:
 Resources/
   shared.json
   menu_bar_extra.json
-  changed_settings.json
   event_viewer.json
   multitouch_extension.json
   settings/
+    changed_settings.json
     general.json
     devices.json
     key_picker.json
