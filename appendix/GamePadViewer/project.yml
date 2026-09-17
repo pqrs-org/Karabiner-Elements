@@ -29,6 +29,9 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: src
+      - path: ../../src/apps/localization/swift/AppLanguage.swift
+      - path: ../../src/apps/localization/swift/AppLocalization.swift
+      - path: ../../src/apps/localization/swift/AppLocalizedText.swift
       - path: ../../src/apps/share/swift/Views/OverlayAlertView.swift
       - path: ../../src/apps/share/swift/Views/OpenSystemSettingsButton.swift
       - path: ../../src/apps/share/swift/Views/SheetCloseButton.swift
