@@ -26,14 +26,17 @@ Resources/
 All JSON files are loaded recursively into one catalog. A translation key must
 appear in only one file, even when adding a language. Hidden files and symbolic
 links are ignored. Each top-level key maps language tags directly to translated
-strings:
+strings. For example, adding French and German to an entry that already has English
+and Japanese would look like this (using a fictional key):
 
 <!-- prettier-ignore -->
 ```json
 {
-    "settings.toolbar.language": {
-        "en": "Language"
-        ,"ja": "言語"
+    "example.save_button": {
+        "en": "Save"
+        ,"de": "Speichern"
+        ,"fr": "Enregistrer"
+        ,"ja": "保存"
     }
 }
 ```
@@ -46,14 +49,6 @@ for subtags). `auto` is reserved for the system language selection.
 
 Some strings contain placeholders such as `{count}` or `{name}`. Keep these names
 unchanged in translations; you may move them to fit the sentence.
-
-For separate entries describing numbered steps, include a purpose-specific group
-prefix followed by a three-digit step number in the key, such as `settings.driver.manual_driver_load_step_001_deactivate` and
-`settings.driver.manual_driver_load_step_002_restart`, so alphabetical sorting preserves their order.
-Use the number shown in the instructions. Keep each procedure complete within its
-own group. Screens that show only the initial steps of the same procedure can
-reference that subset; distinct procedures keep their own groups even when some
-steps have identical wording.
 
 ## Change or add a translation
 
@@ -79,69 +74,11 @@ Run these commands from the repository root:
 An application/package installation may replace local translation edits; keep your
 source changes and run `make -C src/apps/localization install` again afterward.
 
-## Language preferences
-
-Settings stores the selected language in `karabiner.json`. EventViewer and
-MultitouchExtension each store `uiLanguage` using SwiftUI `AppStorage` in their
-own application's UserDefaults domain. Neither application reads or writes
-`karabiner.json` to select a language. The initial selection is `auto`, which
-follows the system's preferred languages and falls back to English.
-
-All three language selectors use the shared AppKit `LanguagePicker`. Settings
-and EventViewer place it in the toolbar; MultitouchExtension places it at the
-top right of each tab’s content to avoid interfering with the toolbar tabs. Changes
-apply immediately, including catalog updates. If a saved language is no longer
-available in a successfully loaded catalog, the selection returns to `auto`.
-
 ## Alert previews
 
-In Settings or EventViewer, hold Option to reveal the Debug sidebar item.
-Select Debug, then release Option to use the preview buttons. The sidebar item
-remains visible while Debug is selected. It is hidden when another page is
-selected unless Option is held.
+In Settings or EventViewer, hold Option and select Debug in the sidebar.
+You can then release Option and use the preview buttons to check alerts in the
+selected language without changing your settings.
 
-Each preview uses the application's normal alert presentation with sample data
-where needed, including borderless and full-page variants. The current app
-language is used. Click anywhere in the preview or press Escape to close it.
-Mouse and keyboard actions are intercepted without changing the alert's enabled
-appearance, and automatic navigation is suppressed. Settings includes the
-connection retry and advanced driver guidance variants.
-
-Setup previews use the same inline Setup layout and show instructions even when
-permissions have already been granted. Driver previews include advanced guidance
-and the macOS 13/14 variant. Long instructions can be scrolled; clicking or Escape
-returns to the Debug list without changing the actual setup state.
-
-Setup previews also cover prerequisite instructions, partially enabled services,
-and macOS 15 screenshots. The Notifications tab previews both external-change
-editing cancellation toasts in their normal position with the normal four-second
-auto-dismiss timer. Setup completion messages are intentionally omitted.
-
-## Joining translated text
-
-Use an array when independent translated labels should flow as one text, such as
-a setting name followed by its default value:
-
-```swift
-AppLocalizedText([
-  "setting.enable_cgeventtap_fallback",
-  " ",
-  .init("settings.defaults.value", arguments: ["value": localized("value.off")]),
-])
-```
-
-Segments are translated with the current locale and joined without an automatic
-separator. Put `" "` or `"\n"` directly in the array wherever spacing is needed:
-
-```swift
-AppLocalizedText([
-  "setting.enable_cgeventtap_fallback",
-  "\n",
-  .init("settings.defaults.value", arguments: ["value": localized("value.off")]),
-])
-```
-
-As with a single key, text that is not in the catalog is displayed verbatim. The
-result is one verbatim `Text`, so it wraps as a single text block. Existing
-single-key calls are unchanged. For sentences whose word order varies by language,
-use one translation with placeholders instead of joining fragments.
+Click a preview or press Escape to close it. Long instructions can be scrolled;
+notification toasts close automatically.
