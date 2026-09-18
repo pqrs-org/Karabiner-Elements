@@ -12,7 +12,9 @@ struct DebugAlertsView: View {
   @State private var viewedAlerts: Set<PreviewAlert> = []
 
   enum PreviewAlert: String, CaseIterable, Identifiable {
-    case inputMonitoring, secureInput
+    case inputMonitoring
+    case secureInput
+
     var id: Self { self }
 
     var title: String {
