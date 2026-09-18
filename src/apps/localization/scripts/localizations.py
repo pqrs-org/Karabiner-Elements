@@ -1,6 +1,7 @@
 import argparse
 import json
 import re
+from collections import Counter
 from pathlib import Path
 
 
@@ -80,6 +81,21 @@ def format_strings(strings):
     return "{\n" + ",\n".join(entries) + "\n}\n"
 
 
+def print_coverage(resources):
+    total = sum(len(strings) for strings in resources.values())
+    counts = Counter(
+        language
+        for strings in resources.values()
+        for translations in strings.values()
+        for language in translations
+    )
+    print(f"Translation keys: {total}")
+    print("Language  Translated / Total  Coverage")
+    for language in sorted(counts, key=lambda language: (language != "en", language)):
+        count = counts[language]
+        print(f"{language:<8}  {count} / {total}  {count / total:.1%}")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Validate or format translation resources"
@@ -96,3 +112,5 @@ if __name__ == "__main__":
     if args.format:
         for path, strings in resources.items():
             path.write_text(format_strings(strings), encoding="utf-8")
+    else:
+        print_coverage(resources)

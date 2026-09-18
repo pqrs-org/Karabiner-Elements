@@ -82,6 +82,24 @@ class LocalizationResourcesTests(unittest.TestCase):
             self.assertEqual(
                 localizations.format_strings(json.loads(formatted)), formatted
             )
+            # Count all files, including nested ones, without counting English
+            # fallback as a translation for a partially supported language.
+            result = subprocess.run(
+                ["/usr/bin/python3", str(SCRIPT), "--directory", temporary],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            self.assertEqual(
+                [line.split() for line in result.stdout.splitlines()],
+                [
+                    ["Translation", "keys:", "2"],
+                    ["Language", "Translated", "/", "Total", "Coverage"],
+                    ["en", "2", "/", "2", "100.0%"],
+                    ["fr", "1", "/", "2", "50.0%"],
+                    ["ja", "1", "/", "2", "50.0%"],
+                ],
+            )
 
     def test_duplicates_prevent_any_formatting(self):
         with tempfile.TemporaryDirectory() as temporary:
