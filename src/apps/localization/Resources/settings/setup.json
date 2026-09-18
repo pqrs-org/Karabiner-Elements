@@ -49,7 +49,7 @@
     },
     "settings.driver.activation_failed": {
         "en": "Activation failed. (error: {status})"
-        ,"ja": "有効化に失敗しました。（エラー：{status}）"
+        ,"ja": "有効化に失敗しました。（エラー: {status}）"
     },
     "settings.driver.deactivate": {
         "en": "Deactivate driver"
@@ -69,7 +69,7 @@
     },
     "settings.driver.deactivation_failed": {
         "en": "Deactivation failed. (error: {status})"
-        ,"ja": "無効化に失敗しました。（エラー：{status}）"
+        ,"ja": "無効化に失敗しました。（エラー: {status}）"
     },
     "settings.driver.manual_driver_load_step_001_deactivate": {
         "en": "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"

@@ -89,7 +89,7 @@
     },
     "event_viewer.events.from": {
         "en": "from {product}"
-        ,"ja": "入力元：{product}"
+        ,"ja": "入力元 {product}"
     },
     "event_viewer.events.integer_value": {
         "en": "integer value: "
@@ -153,7 +153,7 @@
     },
     "event_viewer.secure_input.cannot_capture": {
         "en": "Secure Keyboard Entry is enabled in another application (for example, when a password field is open).\nEventViewer cannot capture events while this protection is active."
-        ,"ja": "他のアプリでキーボード入力のセキュリティが保護されています。（パスワード入力欄が開いているなど）\n保護されている間は、EventViewerではイベントを取得できません。"
+        ,"ja": "他のアプリでキーボード入力のセキュリティが保護されています。（パスワード入力欄が開いているなど）\n保護されている間は、イベントビューアではイベントを取得できません。"
     },
     "event_viewer.secure_input.title": {
         "en": "Secure Keyboard Entry is enabled in another application"
@@ -161,11 +161,11 @@
     },
     "event_viewer.settings.all_spaces": {
         "en": "Show EventViewer in all spaces"
-        ,"ja": "EventViewerをすべての操作スペースに表示"
+        ,"ja": "イベントビューアをすべての操作スペースに表示"
     },
     "event_viewer.settings.stay_on_top": {
         "en": "Force EventViewer to stay on top of other windows"
-        ,"ja": "EventViewerを他のウィンドウより手前に表示"
+        ,"ja": "イベントビューアを他のウィンドウより手前に表示"
     },
     "event_viewer.settings.window_behavior": {
         "en": "Window behavior"

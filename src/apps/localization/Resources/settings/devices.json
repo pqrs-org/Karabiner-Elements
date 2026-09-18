@@ -1,7 +1,7 @@
 {
     "settings.devices.address": {
         "en": "Device Address: {address}"
-        ,"ja": "デバイスアドレス：{address}"
+        ,"ja": "デバイスアドレス: {address}"
     },
     "settings.devices.all": {
         "en": "For all devices"
@@ -57,7 +57,7 @@
     },
     "settings.devices.product_id": {
         "en": "Product ID: {decimal} ({hex})"
-        ,"ja": "製品 ID：{decimal}（{hex}）"
+        ,"ja": "製品 ID: {decimal}({hex})"
     },
     "settings.devices.remove_disconnected": {
         "en": "Remove settings for currently disconnected devices ({count})"
@@ -65,7 +65,7 @@
     },
     "settings.devices.swap_iso_keys": {
         "en": "Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)"
-        ,"ja": "ISO 配列固有のキーを入れ替える（例：`~ / §± / ^° / ² ↔ \\| / <>）"
+        ,"ja": "ISO 配列固有のキーを入れ替える（例: `~ / §± / ^° / ² ↔ \\| / <>）"
     },
     "settings.devices.treat_as_built_in": {
         "en": "Treat as a built-in keyboard"
@@ -77,7 +77,7 @@
     },
     "settings.devices.vendor_id": {
         "en": "Vendor ID: {decimal} ({hex})"
-        ,"ja": "ベンダー ID：{decimal}（{hex}）"
+        ,"ja": "ベンダー ID: {decimal}({hex})"
     },
     "settings.gamepad.continued_interval": {
         "en": "Continued movement interval milliseconds:"

@@ -85,11 +85,11 @@
     },
     "multitouch.count.left": {
         "en": "left: {count}"
-        ,"ja": "左：{count}"
+        ,"ja": "左: {count}"
     },
     "multitouch.count.lower": {
         "en": "lower: {count}"
-        ,"ja": "下：{count}"
+        ,"ja": "下: {count}"
     },
     "multitouch.count.palm": {
         "en": "Palm"
@@ -109,7 +109,7 @@
     },
     "multitouch.count.right": {
         "en": "right: {count}"
-        ,"ja": "右：{count}"
+        ,"ja": "右: {count}"
     },
     "multitouch.count.total": {
         "en": "total"
@@ -117,7 +117,7 @@
     },
     "multitouch.count.upper": {
         "en": "upper: {count}"
-        ,"ja": "上：{count}"
+        ,"ja": "上: {count}"
     },
     "multitouch.direction.left": {
         "en": "left"

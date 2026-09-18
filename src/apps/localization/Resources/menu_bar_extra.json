@@ -21,7 +21,7 @@
     },
     "menu_bar_extra.quit": {
         "en": "Quit Karabiner-Elements"
-        ,"ja": "Karabiner-Elements を終了"
+        ,"ja": "Karabiner-Elementsを終了"
     },
     "menu_bar_extra.quit_confirmation": {
         "en": "Are you sure you want to quit?"
@@ -29,7 +29,7 @@
     },
     "menu_bar_extra.restart": {
         "en": "Restart Karabiner-Elements"
-        ,"ja": "Karabiner-Elements を再起動"
+        ,"ja": "Karabiner-Elementsを再起動"
     },
     "menu_bar_extra.settings": {
         "en": "Settings…"

@@ -1,7 +1,7 @@
 {
     "settings.assets.imported_at": {
         "en": "Imported at {date}"
-        ,"ja": "読み込み日時：{date}"
+        ,"ja": "読み込み日時 {date}"
     },
     "settings.assets.more_rules": {
         "en": "Import more rules from the Internet (Open a web browser)"
