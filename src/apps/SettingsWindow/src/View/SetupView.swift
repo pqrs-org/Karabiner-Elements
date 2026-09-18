@@ -39,13 +39,31 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
 }
 
 struct SetupPreview {
-  let item: SetupItem
-  var showingAdvanced = false
-  var legacyDriver = false
-  var waitingForPrerequisite = false
-  var agentsEnabled = false
-  var daemonsEnabled = false
-  var macOS15Images = false
+  let debugItem: SetupItem
+  let debugShowingAdvanced: Bool
+  let debugLegacyDriver: Bool
+  let debugWaitingForPrerequisite: Bool
+  let debugAgentsEnabled: Bool
+  let debugDaemonsEnabled: Bool
+  let debugMacOS15Images: Bool
+
+  init(
+    debugItem: SetupItem,
+    debugShowingAdvanced: Bool = false,
+    debugLegacyDriver: Bool = false,
+    debugWaitingForPrerequisite: Bool = false,
+    debugAgentsEnabled: Bool = false,
+    debugDaemonsEnabled: Bool = false,
+    debugMacOS15Images: Bool = false
+  ) {
+    self.debugItem = debugItem
+    self.debugShowingAdvanced = debugShowingAdvanced
+    self.debugLegacyDriver = debugLegacyDriver
+    self.debugWaitingForPrerequisite = debugWaitingForPrerequisite
+    self.debugAgentsEnabled = debugAgentsEnabled
+    self.debugDaemonsEnabled = debugDaemonsEnabled
+    self.debugMacOS15Images = debugMacOS15Images
+  }
 }
 
 struct SetupView: View {
@@ -53,15 +71,15 @@ struct SetupView: View {
 
   @State private var selectedItem: SetupItem = .services
 
-  let preview: SetupPreview?
+  let debugPreview: SetupPreview?
 
-  init(preview: SetupPreview? = nil) {
-    self.preview = preview
-    _selectedItem = State(initialValue: preview?.item ?? .services)
+  init(debugPreview: SetupPreview? = nil) {
+    self.debugPreview = debugPreview
+    _selectedItem = State(initialValue: debugPreview?.debugItem ?? .services)
   }
 
   private func itemCompleted(_ item: SetupItem) -> Bool {
-    preview == nil && contentViewStates.setupItemCompleted(item)
+    debugPreview == nil && contentViewStates.setupItemCompleted(item)
   }
 
   var body: some View {
@@ -96,12 +114,12 @@ struct SetupView: View {
             switch selectedItem {
             case .services:
               SetupServicesView(
-                guidanceContextOverride: preview == nil
+                debugGuidanceContextOverride: debugPreview == nil
                   ? nil
                   : SettingsWindowGuidanceContext(
-                    coreDaemonsEnabled: preview?.daemonsEnabled,
-                    coreAgentsEnabled: preview?.agentsEnabled),
-                loginItemsImageOverride: preview?.macOS15Images == true
+                    coreDaemonsEnabled: debugPreview?.debugDaemonsEnabled,
+                    coreAgentsEnabled: debugPreview?.debugAgentsEnabled),
+                debugLoginItemsImageOverride: debugPreview?.debugMacOS15Images == true
                   ? "login-items-macos15" : nil)
             case .accessibility:
               if setupItemWaitingForAnotherSetup(.accessibility) {
@@ -119,17 +137,17 @@ struct SetupView: View {
               if setupItemWaitingForAnotherSetup(.driverExtension) {
                 setupServicesFirstView()
               } else {
-                if preview?.legacyDriver == true {
+                if debugPreview?.debugLegacyDriver == true {
                   SetupDriverExtensionViewMacOS14(
-                    showingAdvanced: preview?.showingAdvanced ?? false)
+                    showingAdvanced: debugPreview?.debugShowingAdvanced ?? false)
                 } else if #available(macOS 15.0, *) {
                   SetupDriverExtensionView(
-                    showingAdvanced: preview?.showingAdvanced ?? false,
-                    driverExtensionsImageOverride: preview?.macOS15Images == true
+                    showingAdvanced: debugPreview?.debugShowingAdvanced ?? false,
+                    debugDriverExtensionsImageOverride: debugPreview?.debugMacOS15Images == true
                       ? "driver-extensions-macos15" : nil)
                 } else {
                   SetupDriverExtensionViewMacOS14(
-                    showingAdvanced: preview?.showingAdvanced ?? false)
+                    showingAdvanced: debugPreview?.debugShowingAdvanced ?? false)
                 }
               }
             }
@@ -140,15 +158,15 @@ struct SetupView: View {
       }
     }
     .onAppear {
-      guard preview == nil else { return }
+      guard debugPreview == nil else { return }
       selectedItem = contentViewStates.setupSelection
     }
     .onChange(of: selectedItem) { newValue in
-      guard preview == nil else { return }
+      guard debugPreview == nil else { return }
       contentViewStates.userSelectedSetupItem(newValue)
     }
     .onChange(of: contentViewStates.setupSelection) { newValue in
-      guard preview == nil else { return }
+      guard debugPreview == nil else { return }
       if selectedItem != newValue {
         selectedItem = newValue
       }
@@ -192,7 +210,9 @@ struct SetupView: View {
   }
 
   private func setupItemWaitingForAnotherSetup(_ item: SetupItem) -> Bool {
-    if let preview { return preview.waitingForPrerequisite && item == preview.item }
+    if let debugPreview {
+      return debugPreview.debugWaitingForPrerequisite && item == debugPreview.debugItem
+    }
     switch item {
     case .services:
       return false

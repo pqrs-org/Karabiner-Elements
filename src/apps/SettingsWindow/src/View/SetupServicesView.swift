@@ -4,21 +4,21 @@ import SwiftUI
 struct SetupServicesView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
-  var guidanceContextOverride: SettingsWindowGuidanceContext?
+  let debugGuidanceContextOverride: SettingsWindowGuidanceContext?
 
   private var guidanceContext: SettingsWindowGuidanceContext {
-    guidanceContextOverride ?? contentViewStates.guidanceContext
+    debugGuidanceContextOverride ?? contentViewStates.guidanceContext
   }
 
   private let loginItemsImage: String
 
   init(
-    guidanceContextOverride: SettingsWindowGuidanceContext? = nil,
-    loginItemsImageOverride: String? = nil
+    debugGuidanceContextOverride: SettingsWindowGuidanceContext? = nil,
+    debugLoginItemsImageOverride: String? = nil
   ) {
-    self.guidanceContextOverride = guidanceContextOverride
-    if let loginItemsImageOverride {
-      loginItemsImage = loginItemsImageOverride
+    self.debugGuidanceContextOverride = debugGuidanceContextOverride
+    if let debugLoginItemsImageOverride {
+      loginItemsImage = debugLoginItemsImageOverride
     } else if #available(macOS 26.0, *) {
       loginItemsImage = "login-items-macos26"
     } else {

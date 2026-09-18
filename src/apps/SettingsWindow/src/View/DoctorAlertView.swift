@@ -3,10 +3,14 @@ import SwiftUI
 struct DoctorAlertView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
-  var parseErrorMessageOverride: String? = nil
+  let debugParseErrorMessageOverride: String?
+
+  init(debugParseErrorMessageOverride: String? = nil) {
+    self.debugParseErrorMessageOverride = debugParseErrorMessageOverride
+  }
 
   private var parseErrorMessage: String {
-    parseErrorMessageOverride
+    debugParseErrorMessageOverride
       ?? contentViewStates.coreServiceDaemonState.karabinerJsonParseErrorMessage
   }
 

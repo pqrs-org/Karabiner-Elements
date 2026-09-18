@@ -4,10 +4,14 @@ import SwiftUI
 struct ServicesNotRunningAlertView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @FocusState var focus: Bool
-  var guidanceContextOverride: SettingsWindowGuidanceContext? = nil
+  let debugGuidanceContextOverride: SettingsWindowGuidanceContext?
+
+  init(debugGuidanceContextOverride: SettingsWindowGuidanceContext? = nil) {
+    self.debugGuidanceContextOverride = debugGuidanceContextOverride
+  }
 
   private var guidanceContext: SettingsWindowGuidanceContext {
-    guidanceContextOverride ?? contentViewStates.guidanceContext
+    debugGuidanceContextOverride ?? contentViewStates.guidanceContext
   }
 
   var body: some View {

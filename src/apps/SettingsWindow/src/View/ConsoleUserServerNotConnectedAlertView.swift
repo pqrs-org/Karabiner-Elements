@@ -4,7 +4,11 @@ import SwiftUI
 struct ConsoleUserServerNotConnectedAlertView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @FocusState var focus: Bool
-  var disconnectedForAWhileOverride: Bool? = nil
+  let debugDisconnectedForAWhileOverride: Bool?
+
+  init(debugDisconnectedForAWhileOverride: Bool? = nil) {
+    self.debugDisconnectedForAWhileOverride = debugDisconnectedForAWhileOverride
+  }
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -18,7 +22,7 @@ struct ConsoleUserServerNotConnectedAlertView: View {
 
         ProgressView()
 
-        if disconnectedForAWhileOverride
+        if debugDisconnectedForAWhileOverride
           ?? contentViewStates.consoleUserServerClientDisconnectedForAWhile
         {
           GroupBox {

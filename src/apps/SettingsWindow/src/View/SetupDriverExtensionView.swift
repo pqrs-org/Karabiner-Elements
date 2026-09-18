@@ -5,10 +5,10 @@ struct SetupDriverExtensionView: View {
 
   private let driverExtensionsImage: String
 
-  init(showingAdvanced: Bool = false, driverExtensionsImageOverride: String? = nil) {
+  init(showingAdvanced: Bool = false, debugDriverExtensionsImageOverride: String? = nil) {
     _showingAdvanced = State(initialValue: showingAdvanced)
-    if let driverExtensionsImageOverride {
-      driverExtensionsImage = driverExtensionsImageOverride
+    if let debugDriverExtensionsImageOverride {
+      driverExtensionsImage = debugDriverExtensionsImageOverride
     } else if #available(macOS 26.0, *) {
       driverExtensionsImage = "driver-extensions-macos26"
     } else {

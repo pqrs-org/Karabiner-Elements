@@ -103,30 +103,32 @@ struct DebugAlertsView: View {
 
     var setup: SetupPreview? {
       switch self {
-      case .setupServices: return SetupPreview(item: .services)
-      case .setupAccessibility: return SetupPreview(item: .accessibility)
-      case .setupInputMonitoring: return SetupPreview(item: .inputMonitoring)
-      case .setupDriver: return SetupPreview(item: .driverExtension)
+      case .setupServices: return SetupPreview(debugItem: .services)
+      case .setupAccessibility: return SetupPreview(debugItem: .accessibility)
+      case .setupInputMonitoring: return SetupPreview(debugItem: .inputMonitoring)
+      case .setupDriver: return SetupPreview(debugItem: .driverExtension)
       case .setupDriverAdvanced:
-        return SetupPreview(item: .driverExtension, showingAdvanced: true)
+        return SetupPreview(debugItem: .driverExtension, debugShowingAdvanced: true)
       case .setupDriverLegacy:
-        return SetupPreview(item: .driverExtension, legacyDriver: true)
+        return SetupPreview(debugItem: .driverExtension, debugLegacyDriver: true)
       case .setupDriverLegacyAdvanced:
-        return SetupPreview(item: .driverExtension, showingAdvanced: true, legacyDriver: true)
+        return SetupPreview(
+          debugItem: .driverExtension, debugShowingAdvanced: true, debugLegacyDriver: true)
       case .setupServicesRequired:
-        return SetupPreview(item: .accessibility, waitingForPrerequisite: true)
+        return SetupPreview(debugItem: .accessibility, debugWaitingForPrerequisite: true)
       case .setupAccessibilityRequired:
-        return SetupPreview(item: .inputMonitoring, waitingForPrerequisite: true)
+        return SetupPreview(debugItem: .inputMonitoring, debugWaitingForPrerequisite: true)
       case .setupAgentsOnly:
-        return SetupPreview(item: .services, agentsEnabled: true)
+        return SetupPreview(debugItem: .services, debugAgentsEnabled: true)
       case .setupDaemonsOnly:
-        return SetupPreview(item: .services, daemonsEnabled: true)
+        return SetupPreview(debugItem: .services, debugDaemonsEnabled: true)
       case .setupServicesMacOS15:
-        return SetupPreview(item: .services, macOS15Images: true)
+        return SetupPreview(debugItem: .services, debugMacOS15Images: true)
       case .setupDriverMacOS15:
-        return SetupPreview(item: .driverExtension, macOS15Images: true)
+        return SetupPreview(debugItem: .driverExtension, debugMacOS15Images: true)
       case .setupDriverMacOS15Advanced:
-        return SetupPreview(item: .driverExtension, showingAdvanced: true, macOS15Images: true)
+        return SetupPreview(
+          debugItem: .driverExtension, debugShowingAdvanced: true, debugMacOS15Images: true)
       default: return nil
       }
     }
@@ -174,7 +176,7 @@ struct DebugAlertsView: View {
         .accessibilityHidden(preview.alert?.setup != nil)
 
       if let setup = preview.alert?.setup {
-        SetupView(preview: setup)
+        SetupView(debugPreview: setup)
           .modifier(LocalizationPreviewInteraction { preview.alert = nil })
       }
     }
@@ -260,7 +262,7 @@ struct DebugAlertsView: View {
     switch alert {
     case .parseError:
       DoctorAlertView(
-        parseErrorMessageOverride:
+        debugParseErrorMessageOverride:
           "karabiner.json: parse error at line 12, column 3: unexpected '}'; expected a value.")
     case .permissionError:
       KarabinerJsonPermissionErrorView()
@@ -268,13 +270,13 @@ struct DebugAlertsView: View {
       SettingsAlertView()
     case .servicesStopped, .agentsStopped, .daemonsStopped:
       ServicesNotRunningAlertView(
-        guidanceContextOverride: SettingsWindowGuidanceContext(
+        debugGuidanceContextOverride: SettingsWindowGuidanceContext(
           coreDaemonsRunning: alert == .agentsStopped,
           coreAgentsRunning: alert == .daemonsStopped))
     case .agentWaiting:
-      ConsoleUserServerNotConnectedAlertView(disconnectedForAWhileOverride: false)
+      ConsoleUserServerNotConnectedAlertView(debugDisconnectedForAWhileOverride: false)
     case .agentRetry:
-      ConsoleUserServerNotConnectedAlertView(disconnectedForAWhileOverride: true)
+      ConsoleUserServerNotConnectedAlertView(debugDisconnectedForAWhileOverride: true)
     case .virtualHidWaiting:
       VirtualHidDeviceServiceClientNotConnectedAlertView()
     case .driverWaiting:
