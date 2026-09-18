@@ -13,7 +13,11 @@ struct DebugAlertsView: View {
   @State private var selectedCategory: PreviewCategory = .configuration
 
   fileprivate enum PreviewCategory: String, CaseIterable, Identifiable {
-    case configuration, services, driver, setup, notifications
+    case configuration
+    case services
+    case driver
+    case setup
+    case notifications
 
     var id: Self { self }
 
@@ -29,16 +33,49 @@ struct DebugAlertsView: View {
   }
 
   enum PreviewAlert: String, CaseIterable, Identifiable {
-    case parseError, permissionError, keyboardType
-    case servicesStopped, agentsStopped, daemonsStopped
-    case agentWaiting, agentRetry, virtualHidWaiting, driverWaiting
-    case driverVersion, driverVersionAdvanced
-    case setupServices, setupAccessibility, setupInputMonitoring
-    case setupDriver, setupDriverAdvanced, setupDriverLegacy, setupDriverLegacyAdvanced
-    case setupServicesRequired, setupAccessibilityRequired
-    case setupAgentsOnly, setupDaemonsOnly, setupServicesMacOS15
-    case setupDriverMacOS15, setupDriverMacOS15Advanced
-    case profileChangedToast, rulesChangedToast
+    //
+    // .configuration
+    //
+    case parseError
+    case permissionError
+    case keyboardType
+    //
+    // .services
+    //
+    case servicesStopped
+    case agentsStopped
+    case daemonsStopped
+    case agentWaiting
+    case agentRetry
+    //
+    // .driver
+    //
+    case virtualHidWaiting
+    case driverWaiting
+    case driverVersion
+    case driverVersionAdvanced
+    //
+    // .setup
+    //
+    case setupServices
+    case setupAccessibility
+    case setupInputMonitoring
+    case setupDriver
+    case setupDriverAdvanced
+    case setupDriverLegacy
+    case setupDriverLegacyAdvanced
+    case setupServicesRequired
+    case setupAccessibilityRequired
+    case setupAgentsOnly
+    case setupDaemonsOnly
+    case setupServicesMacOS15
+    case setupDriverMacOS15
+    case setupDriverMacOS15Advanced
+    //
+    // .notifications
+    //
+    case profileChangedToast
+    case rulesChangedToast
 
     var id: Self { self }
 

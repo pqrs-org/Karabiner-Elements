@@ -77,7 +77,7 @@ struct ChangedSettings {
       "setting.fn_function_keys_count"
     ],
     "ignore_pointing_device_events_by_default": [
-      "setting.ignore_pointing_device_events_by_default"
+      "settings.expert.modify_pointing_by_default"
     ],
     "indicate_sticky_modifier_keys_state": [
       "settings.changed_settings.notification_window_prefix",
@@ -175,10 +175,15 @@ struct ChangedSettings {
       let translated = text(localizationKey)
       return translated == localizationKey ? key : translated
     }
-    func valueText(_ value: Any) -> String {
+    func valueText(_ value: Any, key: String? = nil) -> String {
       if let number = value as? NSNumber {
         if CFGetTypeID(number) == CFBooleanGetTypeID() {
-          return text(number.boolValue ? "value.on" : "value.off")
+          // The UI describes modifying events, the inverse of the stored ignore flag.
+          let enabled =
+            (key == "ignore_pointing_device_events_by_default")
+            ? !number.boolValue
+            : number.boolValue
+          return text(enabled ? "value.on" : "value.off")
         }
         return number.stringValue
       }
@@ -217,7 +222,7 @@ struct ChangedSettings {
               Row(
                 id: path.isEmpty ? key : path + "." + key,
                 label: settingLabel,
-                value: valueText(child)))
+                value: valueText(child, key: key)))
           }
         }
         rows.sort {

@@ -152,6 +152,27 @@ struct ChangedSettingsTests {
     // Changing locale back must not leave Japanese strings cached in the report.
     let again = try ChangedSettings(json: json, locale: en, catalog: catalog)
     precondition(again.sections.flatMap(\.rows).map(\.label) == englishRows.map(\.label))
+    // The stored ignore flag is presented as the inverse modify-events option used by the UI.
+    for locale in [en, ja] {
+      for ignore in [false, true] {
+        let report = try ChangedSettings(
+          json: "{\"selected_profile\":{\"ignore_pointing_device_events_by_default\":\(ignore)}}",
+          locale: locale, catalog: catalog)
+        let row = report.sections[0].rows[0]
+        precondition(row.id == "selected_profile.ignore_pointing_device_events_by_default")
+        precondition(
+          row.label
+            == AppLanguage.text(
+              "settings.expert.modify_pointing_by_default", locale: locale, catalog: catalog))
+        precondition(
+          row.value
+            == AppLanguage.text(
+              ignore ? "value.off" : "value.on", locale: locale, catalog: catalog))
+        precondition(
+          report.text(version: "test", systemVersion: "test").contains(
+            "\(row.label): \(row.value) [\(row.id)]"))
+      }
+    }
     print("Changed Settings report tests passed")
   }
 }

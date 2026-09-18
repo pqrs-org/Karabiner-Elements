@@ -71,10 +71,6 @@
         "en": "Changed Function Keys count"
         ,"ja": "変更した Function Keys の件数"
     },
-    "setting.ignore_pointing_device_events_by_default": {
-        "en": "Ignore pointing devices by default"
-        ,"ja": "ポインティングデバイスを既定で無視する"
-    },
     "setting.indicate_sticky_modifier_keys_state": {
         "en": "Indicate sticky modifier key state"
         ,"ja": "固定された修飾キーの状態を表示"
