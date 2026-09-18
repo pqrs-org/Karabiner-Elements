@@ -81,7 +81,7 @@
     },
     "event_viewer.capture.waiting": {
         "en": "Waiting for device access..."
-        ,"ja": "デバイスへのアクセスを待機中…"
+        ,"ja": "デバイスへのアクセスを待機中..."
     },
     "event_viewer.devices.empty": {
         "en": "No devices connected."
@@ -121,7 +121,7 @@
     },
     "event_viewer.frontmost.hint": {
         "en": "Switch to the app whose bundle identifier you want to check."
-        ,"ja": "バンドル識別子を確認したいアプリケーションに切り替えてください。"
+        ,"ja": "バンドル識別子を確認したいアプリに切り替えてください。"
     },
     "event_viewer.input_monitoring.description": {
         "en": "Karabiner-EventViewer requires Input Monitoring permission to show input events."
@@ -152,20 +152,12 @@
         ,"ja": "時刻"
     },
     "event_viewer.secure_input.cannot_capture": {
-        "en": "Keyboard events cannot be captured while Secure Keyboard Entry is enabled by another application."
-        ,"ja": "他のアプリケーションで「セキュアなキーボード入力」が有効な間は、キーボードイベントを取得できません。"
-    },
-    "event_viewer.secure_input.resume": {
-        "en": "Switch to or quit that application to resume capturing."
-        ,"ja": "取得を再開するには、そのアプリケーションに切り替えるか終了してください。"
-    },
-    "event_viewer.secure_input.stopped": {
-        "en": "Raw input capture is stopped for safety."
-        ,"ja": "安全のため、未加工の入力の取得を停止しました。"
+        "en": "Secure Keyboard Entry is enabled in another application (for example, when a password field is open).\nEventViewer cannot capture events while this protection is active."
+        ,"ja": "他のアプリでキーボード入力のセキュリティが保護されています。（パスワード入力欄が開いているなど）\n保護されている間は、EventViewerではイベントを取得できません。"
     },
     "event_viewer.secure_input.title": {
-        "en": "Secure Keyboard Entry is enabled"
-        ,"ja": "セキュアなキーボード入力が有効です"
+        "en": "Secure Keyboard Entry is enabled in another application"
+        ,"ja": "他のアプリでキーボード入力のセキュリティが保護されています。"
     },
     "event_viewer.settings.all_spaces": {
         "en": "Show EventViewer in all spaces"

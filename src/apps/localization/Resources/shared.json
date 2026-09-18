@@ -101,7 +101,7 @@
     },
     "setting.notification_window_show_icon": {
         "en": "Show application icon"
-        ,"ja": "アプリケーションのアイコンを表示"
+        ,"ja": "アプリのアイコンを表示"
     },
     "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers": {
         "en": "Reorder same timestamp input events to prioritize modifiers"
