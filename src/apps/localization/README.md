@@ -47,6 +47,14 @@ for subtags). `auto` is reserved for the system language selection.
 Some strings contain placeholders such as `{count}` or `{name}`. Keep these names
 unchanged in translations; you may move them to fit the sentence.
 
+For separate entries describing numbered steps, include a purpose-specific group
+prefix followed by a three-digit step number in the key, such as `settings.driver.manual_driver_load_step_001_deactivate` and
+`settings.driver.manual_driver_load_step_002_restart`, so alphabetical sorting preserves their order.
+Use the number shown in the instructions. Keep each procedure complete within its
+own group. Screens that show only the initial steps of the same procedure can
+reference that subset; distinct procedures keep their own groups even when some
+steps have identical wording.
+
 ## Change or add a translation
 
 Run these commands from the repository root:

@@ -49,7 +49,7 @@ struct DriverVersionMismatchedAlertView: View {
 
               VStack(alignment: .leading, spacing: 10.0) {
                 AppLocalizedText(
-                  "settings.driver.step_deactivate"
+                  "settings.driver.manual_driver_load_step_001_deactivate"
                 )
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -57,7 +57,7 @@ struct DriverVersionMismatchedAlertView: View {
                   .padding(.vertical, 10)
                   .padding(.leading, 20)
 
-                AppLocalizedText("settings.driver.step_restart")
+                AppLocalizedText("settings.driver.manual_driver_load_step_002_restart")
                   .fontWeight(.bold)
               }
             }

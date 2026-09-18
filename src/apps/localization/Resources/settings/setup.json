@@ -71,6 +71,18 @@
         "en": "Deactivation failed. (error: {status})"
         ,"ja": "無効化に失敗しました。（エラー：{status}）"
     },
+    "settings.driver.manual_driver_load_step_001_deactivate": {
+        "en": "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"
+        ,"ja": "1. 次のボタンを押してドライバーを無効にします。\n（管理者パスワードが必要です。）"
+    },
+    "settings.driver.manual_driver_load_step_002_restart": {
+        "en": "2. Restart macOS."
+        ,"ja": "2. macOS を再起動します。"
+    },
+    "settings.driver.manual_driver_load_step_003_automatic_load": {
+        "en": "3. After restarting, the driver will be automatically loaded, and the Driver Extensions settings will appear."
+        ,"ja": "3. 再起動後、ドライバーが自動的に読み込まれ、「ドライバ機能拡張」の設定が表示されます。"
+    },
     "settings.driver.outdated": {
         "en": "The current virtual keyboard and mouse driver is outdated."
         ,"ja": "現在の仮想キーボード・マウスドライバーは古いバージョンです。"
@@ -86,14 +98,6 @@
     "settings.driver.restart_to_upgrade": {
         "en": "Please restart macOS to upgrade the driver."
         ,"ja": "ドライバーを更新するため、macOS を再起動してください。"
-    },
-    "settings.driver.step_deactivate": {
-        "en": "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"
-        ,"ja": "1. 次のボタンを押してドライバーを無効にします。\n（管理者パスワードが必要です。）"
-    },
-    "settings.driver.step_restart": {
-        "en": "2. Restart macOS."
-        ,"ja": "2. macOS を再起動します。"
     },
     "settings.keyboard_type.ansi": {
         "en": "ANSI (North America, most of Asia and others)"
@@ -187,10 +191,6 @@
         "en": "How to reactivate driver:"
         ,"ja": "ドライバーを再度有効にする手順:"
     },
-    "settings.setup.driver.step_automatic_load": {
-        "en": "3. After restarting, the driver will be automatically loaded, and the Driver Extensions settings will appear."
-        ,"ja": "3. 再起動後、ドライバーが自動的に読み込まれ、「ドライバ機能拡張」の設定が表示されます。"
-    },
     "settings.setup.driver_legacy.allow": {
         "en": "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Privacy & Security System Settings."
         ,"ja": "システム設定の「プライバシーとセキュリティ」で「.Karabiner-VirtualHIDDevice-Manager」を許可してください。"
@@ -215,17 +215,25 @@
         "en": "How to reinstall driver:"
         ,"ja": "ドライバーを再インストールする手順:"
     },
-    "settings.setup.driver_legacy.step_activate": {
+    "settings.setup.driver_legacy.reinstallation_step_001_deactivate": {
+        "en": "1. Press the following button to deactivate driver.\n(The administrator password will be required.)"
+        ,"ja": "1. 次のボタンを押してドライバーを無効にします。\n（管理者パスワードが必要です。）"
+    },
+    "settings.setup.driver_legacy.reinstallation_step_002_restart": {
+        "en": "2. Restart macOS."
+        ,"ja": "2. macOS を再起動します。"
+    },
+    "settings.setup.driver_legacy.reinstallation_step_003_activate": {
         "en": "3. Press the following button to activate driver."
         ,"ja": "3. 次のボタンを押してドライバーを有効にします。"
     },
-    "settings.setup.driver_legacy.step_allow": {
-        "en": "5. Open Privacy & Security System Settings and press the allow button."
-        ,"ja": "5. システム設定の「プライバシーとセキュリティ」を開き、「許可」ボタンを押します。"
-    },
-    "settings.setup.driver_legacy.step_blocked": {
+    "settings.setup.driver_legacy.reinstallation_step_004_blocked": {
         "en": "4. \"System Extension Blocked\" alert is shown."
         ,"ja": "4.「機能拡張がブロックされました」という警告が表示されます。"
+    },
+    "settings.setup.driver_legacy.reinstallation_step_005_allow": {
+        "en": "5. Open Privacy & Security System Settings and press the allow button."
+        ,"ja": "5. システム設定の「プライバシーとセキュリティ」を開き、「許可」ボタンを押します。"
     },
     "settings.setup.input_monitoring.description": {
         "en": "Karabiner-Core-Service requires Input Monitoring permission.\nPlease allow them on Privacy & Security System Settings."

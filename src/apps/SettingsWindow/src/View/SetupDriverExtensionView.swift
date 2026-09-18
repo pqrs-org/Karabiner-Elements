@@ -76,7 +76,7 @@ struct SetupDriverExtensionView: View {
 
             VStack(alignment: .leading, spacing: 10.0) {
               AppLocalizedText(
-                "settings.driver.step_deactivate"
+                "settings.driver.manual_driver_load_step_001_deactivate"
               )
               .fixedSize(horizontal: false, vertical: true)
 
@@ -84,12 +84,12 @@ struct SetupDriverExtensionView: View {
                 .padding(.vertical, 10)
                 .padding(.leading, 20)
 
-              AppLocalizedText("settings.driver.step_restart")
+              AppLocalizedText("settings.driver.manual_driver_load_step_002_restart")
                 .fontWeight(.bold)
                 .fixedSize(horizontal: false, vertical: true)
 
               AppLocalizedText(
-                "settings.setup.driver.step_automatic_load"
+                "settings.driver.manual_driver_load_step_003_automatic_load"
               )
               .fixedSize(horizontal: false, vertical: true)
             }

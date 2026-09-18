@@ -30,6 +30,7 @@ struct ConsoleUserServerNotConnectedAlertView: View {
               AppLocalizedText(
                 "settings.connection.agent_retry"
               )
+              .fixedSize(horizontal: false, vertical: true)
 
               Button(
                 action: {

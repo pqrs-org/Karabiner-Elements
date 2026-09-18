@@ -196,8 +196,8 @@
         ,"ja": "保存"
     },
     "shared.debug.agent_retry": {
-        "en": "ConsoleUserServer connection: retry guidance"
-        ,"ja": "ConsoleUserServerへの接続：再試行の案内"
+        "en": "Karabiner-Console-User-Server connection: retry guidance"
+        ,"ja": "Karabiner-Console-User-Serverへの接続：再試行の案内"
     },
     "shared.debug.agents_stopped": {
         "en": "Services stopped: agents only"
