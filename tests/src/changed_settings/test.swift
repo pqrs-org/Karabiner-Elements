@@ -59,6 +59,62 @@ struct ChangedSettingsTests {
     precondition(
       english.text(version: "test", systemVersion: "test").contains(
         "[global.enable_cgeventtap_fallback]"))
+    // Notification rows stay adjacent in Global, with a shared label prefix and original keys.
+    let notifications = try ChangedSettings(
+      json: #"""
+        {"global": {
+          "enable_notification_window": false,
+          "indicate_sticky_modifier_keys_state": false,
+          "notification_window_font_size": 18,
+          "notification_window_show_icon": false,
+          "notification_window_colors": {
+            "dark": {"background_color": "#112233", "text_color": "#ffffff"},
+            "light": {"background_color": "#445566", "text_color": "#000000"}
+          },
+          "filter_useless_events_from_specific_devices": false,
+          "show_in_menu_bar": false
+        }}
+        """#,
+      locale: en, catalog: catalog)
+    precondition(notifications.sections.map(\.id) == ["global"])
+    let notificationRows = notifications.sections[0].rows
+    let prefixedIndexes = notificationRows.indices.filter {
+      notificationRows[$0].label.hasPrefix("Notification Window / ")
+    }
+    precondition(prefixedIndexes.count == 8)
+    precondition(prefixedIndexes.last! - prefixedIndexes.first! == 7)
+    let colorRows = notificationRows.filter {
+      $0.id.hasPrefix("global.notification_window_colors.")
+    }
+    precondition(colorRows.count == 4)
+    precondition(Set(colorRows.map(\.label)).count == 4)
+    precondition(
+      colorRows.first {
+        $0.id == "global.notification_window_colors.dark.background_color"
+      }?.value == "#112233")
+    precondition(
+      notifications.text(version: "test", systemVersion: "test").contains(
+        "[global.notification_window_colors.dark.background_color]"))
+    let colorsOnly = try ChangedSettings(
+      json: ##"{"global":{"notification_window_colors":{"light":{"text_color":"#000000"}}}}"##,
+      locale: en, catalog: catalog)
+    precondition(colorsOnly.sections.map(\.id) == ["global"])
+    precondition(colorsOnly.sections[0].rows.count == 1)
+    // Verify display order in both languages; IDs remain stable even when order changes.
+    func checkDisplayOrder(_ report: ChangedSettings, locale: Locale) {
+      for section in report.sections {
+        for (first, second) in zip(section.rows, section.rows.dropFirst()) {
+          precondition(
+            first.label.compare(
+              second.label, options: [.caseInsensitive, .numeric], locale: locale
+            ) != .orderedDescending)
+        }
+      }
+    }
+    checkDisplayOrder(notifications, locale: en)
+    precondition(
+      notifications.text(version: "test", systemVersion: "test").contains(
+        "[global.enable_notification_window]"))
     let machine = try ChangedSettings(
       json:
         #"{"machine_specific":{"enable_multitouch_extension":true},"future_section":{"future_option":false}}"#,
@@ -82,12 +138,17 @@ struct ChangedSettingsTests {
     let ja = AppLanguage.locale(for: "ja", catalog: catalog)
     let japanese = try ChangedSettings(json: json, locale: ja, catalog: catalog)
     let japaneseRows = japanese.sections.flatMap(\.rows)
-    // Changing the display language must preserve row identities and ordering.
-    precondition(englishRows.map(\.id) == japaneseRows.map(\.id))
+    // Changing the display language preserves row identities, but may change ordering.
+    precondition(Set(englishRows.map(\.id)) == Set(japaneseRows.map(\.id)))
+    checkDisplayOrder(english, locale: en)
+    checkDisplayOrder(japanese, locale: ja)
     // The same setting resolves to its Japanese label when Japanese is selected.
     precondition(
       japaneseRows.first { $0.id == "global.enable_cgeventtap_fallback" }?.label
         == "CGEventTap fallback を有効にする")
+    precondition(
+      japaneseRows.first { $0.id == "global.notification_window_font_size" }?.label.hasPrefix(
+        "通知ウインドウ / ") == true)
     // Changing locale back must not leave Japanese strings cached in the report.
     let again = try ChangedSettings(json: json, locale: en, catalog: catalog)
     precondition(again.sections.flatMap(\.rows).map(\.label) == englishRows.map(\.label))

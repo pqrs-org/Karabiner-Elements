@@ -7,6 +7,10 @@
         "en": "An error occurred."
         ,"ja": "エラーが発生しました。"
     },
+    "settings.changed_settings.notification_window_prefix": {
+        "en": "Notification Window"
+        ,"ja": "通知ウインドウ"
+    },
     "settings.changed_settings.section.complex_modifications": {
         "en": "Complex Modifications"
         ,"ja": "高度なキー変換"
@@ -18,10 +22,6 @@
     "settings.changed_settings.section.machine_specific": {
         "en": "Settings specific to this machine"
         ,"ja": "このマシン固有の設定"
-    },
-    "settings.changed_settings.section.notification_window_colors": {
-        "en": "Notification colors"
-        ,"ja": "通知の配色"
     },
     "settings.changed_settings.section.parameters": {
         "en": "Parameters"

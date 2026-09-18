@@ -19,58 +19,145 @@ struct ChangedSettings {
   // Keep localization keys explicit so their usages can be found by searching.
   private static let sectionLocalizationKeys: [String: String] = [
     "complex_modifications": "settings.changed_settings.section.complex_modifications",
-    "dark": "section.dark",
     "global": "settings.changed_settings.section.global",
-    "light": "section.light",
     "machine_specific": "settings.changed_settings.section.machine_specific",
-    "notification_window_colors": "settings.changed_settings.section.notification_window_colors",
     "parameters": "settings.changed_settings.section.parameters",
     "selected_profile": "settings.changed_settings.section.selected_profile",
     "virtual_hid_keyboard": "settings.changed_settings.section.virtual_hid_keyboard",
   ]
 
-  private static let settingLocalizationKeys: [String: String] = [
-    "background_color": "setting.background_color",
-    "basic.simultaneous_threshold_milliseconds":
-      "setting.basic.simultaneous_threshold_milliseconds",
-    "basic.to_delayed_action_delay_milliseconds":
-      "setting.basic.to_delayed_action_delay_milliseconds",
-    "basic.to_if_alone_timeout_milliseconds": "setting.basic.to_if_alone_timeout_milliseconds",
-    "basic.to_if_held_down_threshold_milliseconds":
-      "setting.basic.to_if_held_down_threshold_milliseconds",
-    "check_for_updates": "setting.check_for_updates",
-    "configured_devices_count": "setting.configured_devices_count",
-    "delay_milliseconds_before_open_device": "setting.delay_milliseconds_before_open_device",
-    "delay_milliseconds_before_sleep_shortcut": "setting.delay_milliseconds_before_sleep_shortcut",
-    "enable_cgeventtap_fallback": "setting.enable_cgeventtap_fallback",
-    "enable_multitouch_extension": "setting.enable_multitouch_extension",
-    "enable_notification_window": "setting.enable_notification_window",
-    "enabled_rules_count": "setting.enabled_rules_count",
-    "external_editor_path": "setting.external_editor_path",
-    "filter_useless_events_from_specific_devices":
-      "setting.filter_useless_events_from_specific_devices",
-    "fn_function_keys_count": "setting.fn_function_keys_count",
-    "ignore_pointing_device_events_by_default": "setting.ignore_pointing_device_events_by_default",
-    "indicate_sticky_modifier_keys_state": "setting.indicate_sticky_modifier_keys_state",
-    "keyboard_type_v2": "setting.keyboard_type_v2",
-    "mouse_key_xy_scale": "setting.mouse_key_xy_scale",
-    "mouse_motion_to_scroll.speed": "setting.mouse_motion_to_scroll.speed",
-    "notification_window_font_size": "setting.notification_window_font_size",
-    "notification_window_position": "setting.notification_window_position",
-    "notification_window_respect_screen_visible_frame":
+  static let settingLocalizationKeys: [String: [String]] = [
+    "background_color": [
+      "setting.background_color"
+    ],
+    "basic.simultaneous_threshold_milliseconds": [
+      "setting.basic.simultaneous_threshold_milliseconds"
+    ],
+    "basic.to_delayed_action_delay_milliseconds": [
+      "setting.basic.to_delayed_action_delay_milliseconds"
+    ],
+    "basic.to_if_alone_timeout_milliseconds": [
+      "setting.basic.to_if_alone_timeout_milliseconds"
+    ],
+    "basic.to_if_held_down_threshold_milliseconds": [
+      "setting.basic.to_if_held_down_threshold_milliseconds"
+    ],
+    "check_for_updates": [
+      "setting.check_for_updates"
+    ],
+    "configured_devices_count": [
+      "setting.configured_devices_count"
+    ],
+    "delay_milliseconds_before_open_device": [
+      "setting.delay_milliseconds_before_open_device"
+    ],
+    "delay_milliseconds_before_sleep_shortcut": [
+      "setting.delay_milliseconds_before_sleep_shortcut"
+    ],
+    "enable_cgeventtap_fallback": [
+      "setting.enable_cgeventtap_fallback"
+    ],
+    "enable_multitouch_extension": [
+      "setting.enable_multitouch_extension"
+    ],
+    "enable_notification_window": [
+      "settings.changed_settings.notification_window_prefix",
+      "setting.enable_notification_window",
+    ],
+    "enabled_rules_count": [
+      "setting.enabled_rules_count"
+    ],
+    "external_editor_path": [
+      "setting.external_editor_path"
+    ],
+    "filter_useless_events_from_specific_devices": [
+      "setting.filter_useless_events_from_specific_devices"
+    ],
+    "fn_function_keys_count": [
+      "setting.fn_function_keys_count"
+    ],
+    "ignore_pointing_device_events_by_default": [
+      "setting.ignore_pointing_device_events_by_default"
+    ],
+    "indicate_sticky_modifier_keys_state": [
+      "settings.changed_settings.notification_window_prefix",
+      "setting.indicate_sticky_modifier_keys_state",
+    ],
+    "keyboard_type_v2": [
+      "setting.keyboard_type_v2"
+    ],
+    "mouse_key_xy_scale": [
+      "setting.mouse_key_xy_scale"
+    ],
+    "mouse_motion_to_scroll.speed": [
+      "setting.mouse_motion_to_scroll.speed"
+    ],
+    "notification_window_colors.dark.background_color": [
+      "settings.changed_settings.notification_window_prefix",
+      "section.dark",
+      "setting.background_color",
+    ],
+    "notification_window_colors.dark.text_color": [
+      "settings.changed_settings.notification_window_prefix",
+      "section.dark",
+      "setting.text_color",
+    ],
+    "notification_window_colors.light.background_color": [
+      "settings.changed_settings.notification_window_prefix",
+      "section.light",
+      "setting.background_color",
+    ],
+    "notification_window_colors.light.text_color": [
+      "settings.changed_settings.notification_window_prefix",
+      "section.light",
+      "setting.text_color",
+    ],
+    "notification_window_font_size": [
+      "settings.changed_settings.notification_window_prefix",
+      "setting.notification_window_font_size",
+    ],
+    "notification_window_position": [
+      "settings.changed_settings.notification_window_prefix",
+      "setting.notification_window_position",
+    ],
+    "notification_window_respect_screen_visible_frame": [
+      "settings.changed_settings.notification_window_prefix",
       "setting.notification_window_respect_screen_visible_frame",
-    "notification_window_show_icon": "setting.notification_window_show_icon",
-    "reorder_same_timestamp_input_events_to_prioritize_modifiers":
-      "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers",
-    "rules_count": "setting.rules_count",
-    "show_additional_menu_items": "setting.show_additional_menu_items",
-    "show_in_menu_bar": "setting.show_in_menu_bar",
-    "show_profile_name_in_menu_bar": "setting.show_profile_name_in_menu_bar",
-    "show_quit_confirmation_menu": "setting.show_quit_confirmation_menu",
-    "simple_modifications_count": "setting.simple_modifications_count",
-    "text_color": "setting.text_color",
-    "ui_language": "setting.ui_language",
-    "unsafe_ui": "setting.unsafe_ui",
+    ],
+    "notification_window_show_icon": [
+      "settings.changed_settings.notification_window_prefix",
+      "setting.notification_window_show_icon",
+    ],
+    "reorder_same_timestamp_input_events_to_prioritize_modifiers": [
+      "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers"
+    ],
+    "rules_count": [
+      "setting.rules_count"
+    ],
+    "show_additional_menu_items": [
+      "setting.show_additional_menu_items"
+    ],
+    "show_in_menu_bar": [
+      "setting.show_in_menu_bar"
+    ],
+    "show_profile_name_in_menu_bar": [
+      "setting.show_profile_name_in_menu_bar"
+    ],
+    "show_quit_confirmation_menu": [
+      "setting.show_quit_confirmation_menu"
+    ],
+    "simple_modifications_count": [
+      "setting.simple_modifications_count"
+    ],
+    "text_color": [
+      "setting.text_color"
+    ],
+    "ui_language": [
+      "setting.ui_language"
+    ],
+    "unsafe_ui": [
+      "setting.unsafe_ui"
+    ],
   ]
 
   let sections: [Section]
@@ -102,7 +189,19 @@ struct ChangedSettings {
 
     var sections: [Section] = []
     func walk(_ value: Any, path: String, titles: [String]) {
-      if let dictionary = value as? [String: Any] {
+      if var dictionary = value as? [String: Any] {
+        // Display color settings alongside the other global notification settings.
+        // Dotted keys preserve the original configuration paths in row IDs.
+        if path == "global",
+          let colors = dictionary["notification_window_colors"] as? [String: [String: Any]]
+        {
+          dictionary.removeValue(forKey: "notification_window_colors")
+          for (theme, settings) in colors {
+            for (key, value) in settings {
+              dictionary["notification_window_colors.\(theme).\(key)"] = value
+            }
+          }
+        }
         var rows: [Row] = []
         var children: [(String, Any)] = []
         for key in dictionary.keys.sorted() {
@@ -110,12 +209,21 @@ struct ChangedSettings {
           if child is [String: Any] || child is [Any] {
             children.append((key, child))
           } else {
+            let settingLabel =
+              Self.settingLocalizationKeys[key]?.map {
+                label(key, localizationKey: $0)
+              }.joined(separator: " / ") ?? key
             rows.append(
               Row(
                 id: path.isEmpty ? key : path + "." + key,
-                label: label(key, localizationKey: Self.settingLocalizationKeys[key]),
+                label: settingLabel,
                 value: valueText(child)))
           }
+        }
+        rows.sort {
+          let order = $0.label.compare(
+            $1.label, options: [.caseInsensitive, .numeric], locale: locale)
+          return order == .orderedSame ? $0.id < $1.id : order == .orderedAscending
         }
         if !rows.isEmpty {
           sections.append(Section(id: path, title: titles.joined(separator: " / "), rows: rows))
@@ -234,7 +342,7 @@ struct ChangedSettings {
     return device
   }
 
-  private static func summarize(_ snapshot: [String: Any], defaults: [String: Any]) throws
+  static func summarize(_ snapshot: [String: Any], defaults: [String: Any]) throws
     -> [String: Any]
   {
     var profile = try object(snapshot["selected_profile"])
@@ -244,6 +352,7 @@ struct ChangedSettings {
         profile[key], defaults: defaultProfile[key])
       profile.removeValue(forKey: key)
     }
+
     let devices = try object(profile["devices"])
     let defaultDevices = try object(defaultProfile["devices"])
     profile["configured_devices_count"] = try devices.filter { identifiers, device in
@@ -271,6 +380,7 @@ struct ChangedSettings {
     }
     complex["parameters"] = parameters
     profile["complex_modifications"] = complex
+
     return [
       "global": try object(snapshot["global_configuration"]),
       "machine_specific": try object(snapshot["machine_specific"]),
