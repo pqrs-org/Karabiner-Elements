@@ -44,12 +44,16 @@
         ,"ja": "未加工の入力レコードを取得するデバイスを選択してください。"
     },
     "event_viewer.capture.reports_description": {
-        "en": "Input reports let you observe signals sent directly by HID hardware. They may reveal events that are omitted from the input values normally used by Karabiner-Elements."
-        ,"ja": "入力レポートでは、HIDハードウェアが直接送信する信号を確認できます。Karabiner-Elementsが通常使用する入力値には含まれないイベントが見つかる場合があります。"
-    },
-    "event_viewer.capture.reports_hint": {
-        "en": "If pressing a key produces a detectable change here, Karabiner-Elements may be able to support that key."
-        ,"ja": "キーを押してここに変化が現れる場合、そのキーをKarabiner-Elementsでサポートできる可能性があります。"
+        "en": [
+            "Input reports let you observe signals sent directly by HID hardware. ",
+            "They may reveal events that are omitted from the input values normally used by Karabiner-Elements.\n",
+            "If pressing a key produces a detectable change here, Karabiner-Elements may be able to support that key."
+        ]
+        ,"ja": [
+            "入力レポートでは、HIDハードウェアが直接送信する信号を確認できます。",
+            "Karabiner-Elementsが通常使用する入力値には含まれないイベントが見つかる場合があります。\n",
+            "キーを押してここに変化が現れる場合、そのキーをKarabiner-Elementsでサポートできる可能性があります。"
+        ]
     },
     "event_viewer.capture.select_device": {
         "en": "Select the device whose {subject} you want to inspect."
@@ -152,8 +156,14 @@
         ,"ja": "時刻"
     },
     "event_viewer.secure_input.cannot_capture": {
-        "en": "Secure Keyboard Entry is enabled in another application (for example, when a password field is open).\nEventViewer cannot capture events while this protection is active."
-        ,"ja": "他のアプリでキーボード入力のセキュリティが保護されています。（パスワード入力欄が開いているなど）\n保護されている間は、イベントビューアではイベントを取得できません。"
+        "en": [
+            "Secure Keyboard Entry is enabled in another application (for example, when a password field is open).\n",
+            "EventViewer cannot capture events while this protection is active."
+        ]
+        ,"ja": [
+            "他のアプリでキーボード入力のセキュリティが保護されています。（パスワード入力欄が開いているなど）\n",
+            "保護されている間はイベントビューアではイベントを取得できません。"
+        ]
     },
     "event_viewer.secure_input.title": {
         "en": "Secure Keyboard Entry is enabled in another application"

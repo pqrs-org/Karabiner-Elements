@@ -76,6 +76,34 @@ struct LocalizationTests {
     precondition(
       AppLanguage.text("test.fallback", locale: en, catalog: templates) == "Value: {value}")
 
+    // Arrays join verbatim before placeholder substitution, with no implicit separator.
+    let arrayCatalog = try LocalizationCatalog(
+      data: Data(
+        #"""
+        {
+          "message": {"en": ["Hello", " ", "{na", "me}", "\n", "Next line"], "ja": "日本語"},
+          "empty": {"en": []},
+          "fallback": {"en": ["Fall", "back"]}
+        }
+        """#.utf8))
+    precondition(
+      AppLanguage.text(
+        "message", locale: en, catalog: arrayCatalog, arguments: ["name": "World"]
+      ) == "Hello World\nNext line")
+    precondition(AppLanguage.text("message", locale: ja, catalog: arrayCatalog) == "日本語")
+    precondition(AppLanguage.text("fallback", locale: ja, catalog: arrayCatalog) == "Fallback")
+    precondition(AppLanguage.text("empty", locale: en, catalog: arrayCatalog).isEmpty)
+    let flatCatalog = try LocalizationCatalog(
+      data: Data(
+        #"""
+        {
+          "message": {"en": "Hello {name}\nNext line", "ja": "日本語"},
+          "empty": {"en": ""},
+          "fallback": {"en": "Fallback"}
+        }
+        """#.utf8))
+    precondition(arrayCatalog == flatCatalog)
+
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -178,6 +206,8 @@ struct LocalizationTests {
     for invalid in [
       "invalid JSON", "[]", "{}", "null",
       #"{"key":"value"}"#, #"{"key":{"en":42}}"#, #"{"key":{"en":true}}"#,
+      #"{"key":{"en":["text",42]}}"#, #"{"key":{"en":[null]}}"#,
+      #"{"key":{"en":[["nested"]]}}"#, #"{"key":{"en":{"text":"value"}}}"#,
       #"{"key":{"en":null}}"#, #"{"key":{"ja":"日本語"}}"#,
       #"{"":{"en":"empty key"}}"#, #"{"key":{"en":"English","":"invalid language"}}"#,
       #"{"key":{"en":"English","auto":"reserved language"}}"#,

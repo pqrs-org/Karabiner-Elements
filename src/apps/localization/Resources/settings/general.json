@@ -12,8 +12,15 @@
         ,"ja": "CGEventTap fallback"
     },
     "settings.expert.device_delay_warning": {
-        "en": "Setting insufficient delay (e.g., 0) will result in a device becoming unusable after Karabiner-Elements is quit.\n(This is a macOS problem and can be solved by unplugging the device and plugging it again.)"
-        ,"ja": "遅延が短すぎる場合（例：0）、Karabiner-Elements の終了後にデバイスが使用できなくなります。\n（macOS の問題です。デバイスを抜き差しすると解消します。）"
+        "en": [
+            "Setting insufficient delay (e.g., 0) will result in a device becoming unusable after Karabiner-Elements is quit.",
+            "\n",
+            "(This is a macOS problem and can be solved by unplugging the device and plugging it again.)"
+        ]
+        ,"ja": [
+            "遅延が短すぎる場合（例：0）、Karabiner-Elements の終了後にデバイスが使用できなくなります。\n",
+            "（macOS の問題です。デバイスを抜き差しすると解消します。）"
+        ]
     },
     "settings.expert.fallback_description": {
         "en": "If this setting is enabled, Karabiner-Core-Service uses CGEventTap as a fallback for devices that cannot be handled via HID input capture."

@@ -56,8 +56,8 @@ class LocalizationResourcesTests(unittest.TestCase):
             ):
                 self.assertIn("ja", translations, key)
                 self.assertEqual(
-                    set(re.findall(r"\{\w+\}", translations["en"])),
-                    set(re.findall(r"\{\w+\}", translations["ja"])),
+                    set(re.findall(r"\{\w+\}", "".join(translations["en"]))),
+                    set(re.findall(r"\{\w+\}", "".join(translations["ja"]))),
                     key,
                 )
 
@@ -100,6 +100,24 @@ class LocalizationResourcesTests(unittest.TestCase):
                     ["ja", "1", "/", "2", "50.0%"],
                 ],
             )
+
+    def test_translation_arrays(self):
+        strings = {
+            "example": {
+                "en": ["Hello", " ", "{name}", "\n", "Next line"],
+                "ja": "日本語",
+            },
+            "empty": {"en": []},
+        }
+        localizations.validate(strings)
+        formatted = localizations.format_strings(strings)
+        self.assertEqual(json.loads(formatted), strings)
+        self.assertEqual(localizations.format_strings(json.loads(formatted)), formatted)
+        self.assertIn('"en": [\n            "Hello",', formatted)
+        for value in [["text", 1], [None], [["nested"]], {"text": "value"}]:
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    localizations.validate({"key": {"en": value}})
 
     def test_duplicates_prevent_any_formatting(self):
         with tempfile.TemporaryDirectory() as temporary:

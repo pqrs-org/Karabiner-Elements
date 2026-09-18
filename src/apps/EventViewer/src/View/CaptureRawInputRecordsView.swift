@@ -15,11 +15,7 @@ struct CaptureRawInputRecordsView: View {
           .font(.title)
 
         Label {
-          VStack(alignment: .leading, spacing: 8) {
-            AppLocalizedText("event_viewer.capture.reports_description")
-
-            AppLocalizedText("event_viewer.capture.reports_hint")
-          }
+          AppLocalizedText("event_viewer.capture.reports_description")
         } icon: {
           Image(systemName: InfoBorder.icon)
         }

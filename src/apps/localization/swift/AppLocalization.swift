@@ -3,6 +3,19 @@ import Darwin
 import Foundation
 
 struct LocalizationCatalog: Equatable, Sendable {
+  private struct Translation: Decodable {
+    let text: String
+
+    init(from decoder: Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      if let string = try? container.decode(String.self) {
+        text = string
+      } else {
+        text = try container.decode([String].self).joined()
+      }
+    }
+  }
+
   let strings: [String: [String: String]]
   let languages: [String]
 
@@ -66,7 +79,8 @@ struct LocalizationCatalog: Equatable, Sendable {
   }
 
   init(data: Data) throws {
-    let strings = try JSONDecoder().decode([String: [String: String]].self, from: data)
+    let strings = try JSONDecoder().decode([String: [String: Translation]].self, from: data)
+      .mapValues { $0.mapValues(\.text) }
     guard !strings.isEmpty else { throw CocoaError(.fileReadCorruptFile) }
     var languages: Set<String> = []
     for (key, translations) in strings {

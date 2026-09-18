@@ -15,7 +15,13 @@ def validate(strings):
             if (
                 not re.fullmatch(r"[a-z]{2,8}(?:-[A-Za-z0-9]{1,8})*", language)
                 or language == "auto"
-                or not isinstance(value, str)
+                or not (
+                    isinstance(value, str)
+                    or (
+                        isinstance(value, list)
+                        and all(isinstance(segment, str) for segment in value)
+                    )
+                )
             ):
                 raise ValueError(f"{key!r}: invalid translation for {language!r}")
 
@@ -54,6 +60,18 @@ def load_resources(directory):
 
 
 def format_strings(strings):
+    def format_value(value):
+        if isinstance(value, list) and value:
+            return (
+                "[\n"
+                + ",\n".join(
+                    "            " + json.dumps(segment, ensure_ascii=False)
+                    for segment in value
+                )
+                + "\n        ]"
+            )
+        return json.dumps(value, ensure_ascii=False)
+
     # Sort translation keys alphabetically, but keep English first within each key.
     strings = {
         key: {
@@ -69,7 +87,7 @@ def format_strings(strings):
     entries = []
     for key, translations in strings.items():
         languages = [
-            f"{json.dumps(language)}: {json.dumps(value, ensure_ascii=False)}"
+            f"{json.dumps(language)}: {format_value(value)}"
             for language, value in translations.items()
         ]
         entries.append(
