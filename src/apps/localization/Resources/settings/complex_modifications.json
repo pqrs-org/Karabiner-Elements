@@ -9,7 +9,7 @@
     },
     "settings.complex_modifications.add_script": {
         "en": "Add your own rule using JavaScript"
-        ,"ja": "JavaScript でルールを作成"
+        ,"ja": "JavaScriptでルールを作成"
     },
     "settings.complex_modifications.assets.imported_at": {
         "en": "Imported at {date}"
@@ -17,7 +17,7 @@
     },
     "settings.complex_modifications.assets.more_rules": {
         "en": "Import more rules from the Internet (Open a web browser)"
-        ,"ja": "インターネットからほかのルールを取り込む（Web ブラウザーを開く）"
+        ,"ja": "インターネットからほかのルールを取り込む（Webブラウザーを開く）"
     },
     "settings.complex_modifications.disabled": {
         "en": "disabled"
@@ -33,7 +33,7 @@
     },
     "settings.complex_modifications.editor.content_too_large": {
         "en": "Content is too large to edit. Please edit karabiner.json directly with your favorite editor."
-        ,"ja": "内容が大きすぎるため編集できません。お好みのエディターで karabiner.json を直接編集してください。"
+        ,"ja": "内容が大きすぎるため編集できません。お好みのエディターでkarabiner.jsonを直接編集してください。"
     },
     "settings.complex_modifications.editor.external_sync_hint": {
         "en": "Changes saved in the external editor are automatically reflected while this window is open."
@@ -89,7 +89,7 @@
     },
     "settings.complex_modifications.import.invalid_utf8": {
         "en": "The downloaded file is not valid UTF-8."
-        ,"ja": "ダウンロードしたファイルは有効な UTF-8 ではありません。"
+        ,"ja": "ダウンロードしたファイルは有効なUTF-8ではありません。"
     },
     "settings.complex_modifications.import.source": {
         "en": "Import file from {url}"
@@ -109,7 +109,7 @@
     },
     "settings.complex_modifications.parameters.basic": {
         "en": "type:basic parameters"
-        ,"ja": "basic のパラメーター"
+        ,"ja": "basicのパラメーター"
     },
     "settings.complex_modifications.parameters.basic.simultaneous_threshold_milliseconds": {
         "en": "simultaneous_threshold_milliseconds:"
@@ -129,7 +129,7 @@
     },
     "settings.complex_modifications.parameters.mouse_motion_to_scroll": {
         "en": "type:mouse_motion_to_scroll parameters"
-        ,"ja": "mouse_motion_to_scroll のパラメーター"
+        ,"ja": "mouse_motion_to_scrollのパラメーター"
     },
     "settings.complex_modifications.parameters.mouse_motion_to_scroll.speed": {
         "en": "speed:"

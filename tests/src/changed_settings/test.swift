@@ -145,7 +145,7 @@ struct ChangedSettingsTests {
     // The same setting resolves to its Japanese label when Japanese is selected.
     precondition(
       japaneseRows.first { $0.id == "global.enable_cgeventtap_fallback" }?.label
-        == "CGEventTap fallback を有効にする")
+        == "CGEventTap fallbackを有効にする")
     precondition(
       japaneseRows.first { $0.id == "global.notification_window_font_size" }?.label.hasPrefix(
         "通知ウインドウ / ") == true)

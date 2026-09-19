@@ -1,7 +1,7 @@
 {
     "settings.system_extensions.logs": {
         "en": "macOS log messages"
-        ,"ja": "macOS のログメッセージ"
+        ,"ja": "macOSのログメッセージ"
     },
     "settings.system_extensions.states": {
         "en": "States"

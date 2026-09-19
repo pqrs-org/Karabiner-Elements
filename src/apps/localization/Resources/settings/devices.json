@@ -9,11 +9,11 @@
     },
     "settings.devices.apple_pointing_unsupported": {
         "en": "Apple pointing devices are not supported"
-        ,"ja": "Apple 製ポインティングデバイスはサポートされていません"
+        ,"ja": "Apple製ポインティングデバイスはサポートされていません"
     },
     "settings.devices.caps_lock_led": {
         "en": "Manipulate caps lock LED"
-        ,"ja": "caps lock LED を制御"
+        ,"ja": "caps lock LEDを制御"
     },
     "settings.devices.disable_built_in": {
         "en": "Disable the built-in keyboard while this device is connected"
@@ -25,7 +25,7 @@
     },
     "settings.devices.fallback_hint": {
         "en": "Key events from this device are handled via the CGEventTap fallback"
-        ,"ja": "このデバイスのキーイベントは CGEventTap fallback で処理されます"
+        ,"ja": "このデバイスのキーイベントはCGEventTap fallbackで処理されます"
     },
     "settings.devices.ignore_vendor_events": {
         "en": "Ignore vendor events"
@@ -33,7 +33,7 @@
     },
     "settings.devices.internal_keyboard_trackpad": {
         "en": "Apple Internal Keyboard / Trackpad"
-        ,"ja": "Apple 内蔵キーボード / トラックパッド"
+        ,"ja": "Apple内蔵キーボード / トラックパッド"
     },
     "settings.devices.modify_events": {
         "en": "Modify events"
@@ -57,7 +57,7 @@
     },
     "settings.devices.product_id": {
         "en": "Product ID: {decimal} ({hex})"
-        ,"ja": "製品 ID: {decimal}({hex})"
+        ,"ja": "製品ID: {decimal}({hex})"
     },
     "settings.devices.remove_disconnected": {
         "en": "Remove settings for currently disconnected devices ({count})"
@@ -65,7 +65,7 @@
     },
     "settings.devices.swap_iso_keys": {
         "en": "Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)"
-        ,"ja": "ISO 配列固有のキーを入れ替える（例: `~ / §± / ^° / ² ↔ \\| / <>）"
+        ,"ja": "ISO配列固有のキーを入れ替える（例: `~ / §± / ^° / ² ↔ \\| / <>）"
     },
     "settings.devices.treat_as_built_in": {
         "en": "Treat as a built-in keyboard"
@@ -73,11 +73,11 @@
     },
     "settings.devices.vendor_events_hint": {
         "en": "It is recommended to enable \"Ignore vendor events\" for non-Apple devices"
-        ,"ja": "Apple 製以外のデバイスでは「ベンダー固有のイベントを無視」を有効にすることをおすすめします。"
+        ,"ja": "Apple製以外のデバイスでは「ベンダー固有のイベントを無視」を有効にすることをおすすめします。"
     },
     "settings.devices.vendor_id": {
         "en": "Vendor ID: {decimal} ({hex})"
-        ,"ja": "ベンダー ID: {decimal}({hex})"
+        ,"ja": "ベンダーID: {decimal}({hex})"
     },
     "settings.gamepad.continued_interval": {
         "en": "Continued movement interval milliseconds:"
@@ -113,7 +113,7 @@
     },
     "settings.gamepad.swap_sticks": {
         "en": "Swap gamepad XY and wheels sticks"
-        ,"ja": "ゲームパッドの XY スティックとホイール用スティックを入れ替える"
+        ,"ja": "ゲームパッドのXYスティックとホイール用スティックを入れ替える"
     },
     "settings.gamepad.vertical_formula": {
         "en": "vertical wheel formula"
@@ -125,15 +125,15 @@
     },
     "settings.gamepad.x_formula": {
         "en": "X formula"
-        ,"ja": "X 軸の式"
+        ,"ja": "X軸の式"
     },
     "settings.gamepad.xy_stick": {
         "en": "XY stick"
-        ,"ja": "XY スティック"
+        ,"ja": "XYスティック"
     },
     "settings.gamepad.y_formula": {
         "en": "Y formula"
-        ,"ja": "Y 軸の式"
+        ,"ja": "Y軸の式"
     },
     "settings.mouse.discard_horizontal_wheel": {
         "en": "Discard mouse horizontal wheel"
@@ -145,11 +145,11 @@
     },
     "settings.mouse.discard_x": {
         "en": "Discard mouse X"
-        ,"ja": "マウスの X 軸の移動を無視"
+        ,"ja": "マウスのX軸の移動を無視"
     },
     "settings.mouse.discard_y": {
         "en": "Discard mouse Y"
-        ,"ja": "マウスの Y 軸の移動を無視"
+        ,"ja": "マウスのY軸の移動を無視"
     },
     "settings.mouse.flags": {
         "en": "Mouse Flags"
@@ -165,11 +165,11 @@
     },
     "settings.mouse.flip_x": {
         "en": "Flip mouse X"
-        ,"ja": "マウスの X 軸を反転"
+        ,"ja": "マウスのX軸を反転"
     },
     "settings.mouse.flip_y": {
         "en": "Flip mouse Y"
-        ,"ja": "マウスの Y 軸を反転"
+        ,"ja": "マウスのY軸を反転"
     },
     "settings.mouse.multiplier": {
         "en": "Multiplier"
@@ -181,7 +181,7 @@
     },
     "settings.mouse.swap_xy": {
         "en": "Swap mouse X and Y"
-        ,"ja": "マウスの X 軸と Y 軸を入れ替える"
+        ,"ja": "マウスのX軸とY軸を入れ替える"
     },
     "settings.mouse.wheels_multiplier": {
         "en": "Wheels multiplier:"
@@ -189,6 +189,6 @@
     },
     "settings.mouse.xy_multiplier": {
         "en": "XY movement multiplier:"
-        ,"ja": "XY 移動の倍率:"
+        ,"ja": "XY移動の倍率:"
     }
 }

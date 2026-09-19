@@ -101,19 +101,19 @@
     },
     "settings.key_picker.do_not_disturb": {
         "en": "do_not_disturb (available on macOS 14 and later)"
-        ,"ja": "do_not_disturb（macOS 14 以降で使用可能）"
+        ,"ja": "do_not_disturb（macOS 14以降で使用可能）"
     },
     "settings.key_picker.double_click_center": {
         "en": "CGEvent double click (center button)"
-        ,"ja": "CGEvent のダブルクリック（中央ボタン）"
+        ,"ja": "CGEventのダブルクリック（中央ボタン）"
     },
     "settings.key_picker.double_click_left": {
         "en": "CGEvent double click (left button)"
-        ,"ja": "CGEvent のダブルクリック（左ボタン）"
+        ,"ja": "CGEventのダブルクリック（左ボタン）"
     },
     "settings.key_picker.double_click_right": {
         "en": "CGEvent double click (right button)"
-        ,"ja": "CGEvent のダブルクリック（右ボタン）"
+        ,"ja": "CGEventのダブルクリック（右ボタン）"
     },
     "settings.key_picker.dpad": {
         "en": "D-pad"
@@ -145,7 +145,7 @@
     },
     "settings.key_picker.gui": {
         "en": "Generic GUI application control keys"
-        ,"ja": "汎用 GUI アプリ操作キー"
+        ,"ja": "汎用GUIアプリ操作キー"
     },
     "settings.key_picker.inherit": {
         "en": "--- (Use the \"For all devices\" setting)"
@@ -177,7 +177,7 @@
     },
     "settings.key_picker.lock_key": {
         "en": "Lock key on Magic Keyboard without Touch ID"
-        ,"ja": "Touch ID 非搭載 Magic Keyboard のロックキー"
+        ,"ja": "Touch ID非搭載Magic Keyboardのロックキー"
     },
     "settings.key_picker.media": {
         "en": "Media controls"
@@ -253,11 +253,11 @@
     },
     "settings.key_picker.pc": {
         "en": "Keys in pc keyboards"
-        ,"ja": "PC キーボードのキー"
+        ,"ja": "PCキーボードのキー"
     },
     "settings.key_picker.rare_return": {
         "en": "rarely used return (HID usage 0x9e)"
-        ,"ja": "まれに使われる return（HID usage 0x9e）"
+        ,"ja": "ごく稀に使われるreturn（HID usage 0x9e）"
     },
     "settings.key_picker.remote": {
         "en": "Remote control buttons"
@@ -341,78 +341,78 @@
     },
     "settings.key_picker.sticky_fn": {
         "en": "sticky fn"
-        ,"ja": "fn を固定"
+        ,"ja": "fnを固定"
     },
     "settings.key_picker.sticky_fn_no_hold": {
         "en": "sticky fn (pressing and holding down is disabled)"
-        ,"ja": "fn を固定（押したままにする操作は無効）"
+        ,"ja": "fnを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_left_command": {
         "en": "sticky left_command"
-        ,"ja": "left_command を固定"
+        ,"ja": "left_commandを固定"
     },
     "settings.key_picker.sticky_left_command_no_hold": {
         "en": "sticky left_command (pressing and holding down is disabled)"
-        ,"ja": "left_command を固定（押したままにする操作は無効）"
+        ,"ja": "left_commandを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_left_control": {
         "en": "sticky left_control"
-        ,"ja": "left_control を固定"
+        ,"ja": "left_controlを固定"
     },
     "settings.key_picker.sticky_left_control_no_hold": {
         "en": "sticky left_control (pressing and holding down is disabled)"
-        ,"ja": "left_control を固定（押したままにする操作は無効）"
+        ,"ja": "left_controlを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_left_option": {
         "en": "sticky left_option"
-        ,"ja": "left_option を固定"
+        ,"ja": "left_optionを固定"
     },
     "settings.key_picker.sticky_left_option_no_hold": {
         "en": "sticky left_option (pressing and holding down is disabled)"
-        ,"ja": "left_option を固定（押したままにする操作は無効）"
+        ,"ja": "left_optionを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_left_shift": {
         "en": "sticky left_shift"
-        ,"ja": "left_shift を固定"
+        ,"ja": "left_shiftを固定"
     },
     "settings.key_picker.sticky_left_shift_no_hold": {
         "en": "sticky left_shift (pressing and holding down is disabled)"
-        ,"ja": "left_shift を固定（押したままにする操作は無効）"
+        ,"ja": "left_shiftを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_right_command": {
         "en": "sticky right_command"
-        ,"ja": "right_command を固定"
+        ,"ja": "right_commandを固定"
     },
     "settings.key_picker.sticky_right_command_no_hold": {
         "en": "sticky right_command (pressing and holding down is disabled)"
-        ,"ja": "right_command を固定（押したままにする操作は無効）"
+        ,"ja": "right_commandを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_right_control": {
         "en": "sticky right_control"
-        ,"ja": "right_control を固定"
+        ,"ja": "right_controlを固定"
     },
     "settings.key_picker.sticky_right_control_no_hold": {
         "en": "sticky right_control (pressing and holding down is disabled)"
-        ,"ja": "right_control を固定（押したままにする操作は無効）"
+        ,"ja": "right_controlを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_right_option": {
         "en": "sticky right_option"
-        ,"ja": "right_option を固定"
+        ,"ja": "right_optionを固定"
     },
     "settings.key_picker.sticky_right_option_no_hold": {
         "en": "sticky right_option (pressing and holding down is disabled)"
-        ,"ja": "right_option を固定（押したままにする操作は無効）"
+        ,"ja": "right_optionを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_right_shift": {
         "en": "sticky right_shift"
-        ,"ja": "right_shift を固定"
+        ,"ja": "right_shiftを固定"
     },
     "settings.key_picker.sticky_right_shift_no_hold": {
         "en": "sticky right_shift (pressing and holding down is disabled)"
-        ,"ja": "right_shift を固定（押したままにする操作は無効）"
+        ,"ja": "right_shiftを固定（押したままにする操作は無効）"
     },
     "settings.key_picker.touch_id": {
         "en": "Touch ID on Magic Keyboard"
-        ,"ja": "Magic Keyboard の Touch ID"
+        ,"ja": "Magic KeyboardのTouch ID"
     }
 }
