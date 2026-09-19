@@ -2,7 +2,10 @@
 
 ## Beta
 
+- ✨ New Features
+    - Added Japanese localization.
 - ⚡️ Improvements
+    - Fixed an issue where selection indicators in the Simple Modifications key picker were not displayed on macOS 27.
     - EventViewer now displays caps lock LED state changes with an appropriate name instead of "Unsupported HID usage".
     - Add `Show confirmation submenu for Quit Karabiner-Elements` configuration.
 
