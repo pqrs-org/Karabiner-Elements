@@ -82,3 +82,7 @@ selected language without changing your settings.
 
 Click a preview or press Escape to close it. Long instructions can be scrolled;
 notification toasts close automatically.
+
+## Language-specific guidelines
+
+- [Japanese terminology and style](STYLE_GUIDE.ja.md)

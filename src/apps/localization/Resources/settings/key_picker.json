@@ -337,79 +337,79 @@
     },
     "settings.key_picker.sticky": {
         "en": "Sticky modifier keys"
-        ,"ja": "固定修飾キー"
+        ,"ja": "複合キー"
     },
     "settings.key_picker.sticky_fn": {
         "en": "sticky fn"
-        ,"ja": "fnを固定"
+        ,"ja": "fnを複合キーにする"
     },
     "settings.key_picker.sticky_fn_no_hold": {
         "en": "sticky fn (pressing and holding down is disabled)"
-        ,"ja": "fnを固定（押したままにする操作は無効）"
+        ,"ja": "fnを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_left_command": {
         "en": "sticky left_command"
-        ,"ja": "left_commandを固定"
+        ,"ja": "left_commandを複合キーにする"
     },
     "settings.key_picker.sticky_left_command_no_hold": {
         "en": "sticky left_command (pressing and holding down is disabled)"
-        ,"ja": "left_commandを固定（押したままにする操作は無効）"
+        ,"ja": "left_commandを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_left_control": {
         "en": "sticky left_control"
-        ,"ja": "left_controlを固定"
+        ,"ja": "left_controlを複合キーにする"
     },
     "settings.key_picker.sticky_left_control_no_hold": {
         "en": "sticky left_control (pressing and holding down is disabled)"
-        ,"ja": "left_controlを固定（押したままにする操作は無効）"
+        ,"ja": "left_controlを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_left_option": {
         "en": "sticky left_option"
-        ,"ja": "left_optionを固定"
+        ,"ja": "left_optionを複合キーにする"
     },
     "settings.key_picker.sticky_left_option_no_hold": {
         "en": "sticky left_option (pressing and holding down is disabled)"
-        ,"ja": "left_optionを固定（押したままにする操作は無効）"
+        ,"ja": "left_optionを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_left_shift": {
         "en": "sticky left_shift"
-        ,"ja": "left_shiftを固定"
+        ,"ja": "left_shiftを複合キーにする"
     },
     "settings.key_picker.sticky_left_shift_no_hold": {
         "en": "sticky left_shift (pressing and holding down is disabled)"
-        ,"ja": "left_shiftを固定（押したままにする操作は無効）"
+        ,"ja": "left_shiftを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_right_command": {
         "en": "sticky right_command"
-        ,"ja": "right_commandを固定"
+        ,"ja": "right_commandを複合キーにする"
     },
     "settings.key_picker.sticky_right_command_no_hold": {
         "en": "sticky right_command (pressing and holding down is disabled)"
-        ,"ja": "right_commandを固定（押したままにする操作は無効）"
+        ,"ja": "right_commandを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_right_control": {
         "en": "sticky right_control"
-        ,"ja": "right_controlを固定"
+        ,"ja": "right_controlを複合キーにする"
     },
     "settings.key_picker.sticky_right_control_no_hold": {
         "en": "sticky right_control (pressing and holding down is disabled)"
-        ,"ja": "right_controlを固定（押したままにする操作は無効）"
+        ,"ja": "right_controlを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_right_option": {
         "en": "sticky right_option"
-        ,"ja": "right_optionを固定"
+        ,"ja": "right_optionを複合キーにする"
     },
     "settings.key_picker.sticky_right_option_no_hold": {
         "en": "sticky right_option (pressing and holding down is disabled)"
-        ,"ja": "right_optionを固定（押したままにする操作は無効）"
+        ,"ja": "right_optionを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.sticky_right_shift": {
         "en": "sticky right_shift"
-        ,"ja": "right_shiftを固定"
+        ,"ja": "right_shiftを複合キーにする"
     },
     "settings.key_picker.sticky_right_shift_no_hold": {
         "en": "sticky right_shift (pressing and holding down is disabled)"
-        ,"ja": "right_shiftを固定（押したままにする操作は無効）"
+        ,"ja": "right_shiftを複合キーにする（押したままにする操作は無効）"
     },
     "settings.key_picker.touch_id": {
         "en": "Touch ID on Magic Keyboard"

@@ -17,15 +17,18 @@
     },
     "settings.misc.multitouch_machine_specific": {
         "en": "This setting is hardware-specific. When you import Karabiner-Elements settings to another Mac, the enabled state of the Multitouch Extension is not carried over."
-        ,"ja": "この設定はハードウェア固有です。別のMacにKarabiner-Elementsの設定を移行しても、Multitouch Extensionの有効・無効の状態は引き継がれません。"
+        ,"ja": [
+            "この設定はハードウェア固有です。",
+            "別のMacにKarabiner-Elementsの設定を移行しても、マルチタッチ拡張の有効・無効の状態は引き継がれません。"
+        ]
     },
     "settings.misc.multitouch_menu_hint": {
         "en": "You can also open the Multitouch Extension settings from the menu."
-        ,"ja": "Multitouch Extensionの設定はメニューからも開けます。"
+        ,"ja": "マルチタッチ拡張の設定はメニューからも開けます。"
     },
     "settings.misc.multitouch_title": {
         "en": "Extra tool: Multitouch Extension"
-        ,"ja": "追加ツール: Multitouch Extension"
+        ,"ja": "追加ツール: マルチタッチ拡張"
     },
     "settings.misc.no_system_default": {
         "en": "System default configuration is not set."

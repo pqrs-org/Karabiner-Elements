@@ -129,7 +129,7 @@
     },
     "event_viewer.input_monitoring.description": {
         "en": "Karabiner-EventViewer requires Input Monitoring permission to show input events."
-        ,"ja": "Karabiner-EventViewerで入力イベントを表示するには、入力監視の許可が必要です。"
+        ,"ja": "イベントビューアで入力イベントを表示するには、入力監視の許可が必要です。"
     },
     "event_viewer.input_monitoring.hint": {
         "en": "Please allow on Privacy & Security System Settings."
@@ -141,7 +141,7 @@
     },
     "event_viewer.input_monitoring.title": {
         "en": "Please allow Karabiner-EventViewer to monitor input events"
-        ,"ja": "Karabiner-EventViewerによる入力イベントの監視を許可してください"
+        ,"ja": "イベントビューアによる入力イベントの監視を許可してください"
     },
     "event_viewer.records.data": {
         "en": "Data"

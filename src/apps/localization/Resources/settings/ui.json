@@ -17,7 +17,7 @@
     },
     "setting.indicate_sticky_modifier_keys_state": {
         "en": "Indicate sticky modifier key state"
-        ,"ja": "固定された修飾キーの状態を表示"
+        ,"ja": "複合キーの状態を表示"
     },
     "setting.notification_window_font_size": {
         "en": "Font size:"
@@ -73,7 +73,7 @@
     },
     "settings.ui.notification_description": {
         "en": "What is the Karabiner Notification Window?\n\nThe Karabiner Notification Window displays the status of sticky modifiers and messages from Complex Modifications."
-        ,"ja": "Karabiner通知ウィンドウとは？\n\nKarabiner通知ウィンドウには、固定修飾キーの状態や、高度なキー変換からのメッセージが表示されます。"
+        ,"ja": "Karabiner通知ウィンドウとは？\n\nKarabiner通知ウィンドウには、複合キーの状態や、高度なキー変換からのメッセージが表示されます。"
     },
     "settings.ui.notification_window": {
         "en": "Notification window"
