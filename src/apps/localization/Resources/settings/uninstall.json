@@ -1,0 +1,10 @@
+{
+    "settings.uninstall.launch": {
+        "en": "Launch uninstaller"
+        ,"ja": "アンインストーラーを起動"
+    },
+    "settings.uninstall.title": {
+        "en": "Uninstall"
+        ,"ja": "アンインストール"
+    }
+}

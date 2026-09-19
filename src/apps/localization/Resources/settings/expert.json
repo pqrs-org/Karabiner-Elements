@@ -1,0 +1,85 @@
+{
+    "setting.delay_milliseconds_before_open_device": {
+        "en": "Delay to grab device"
+        ,"ja": "デバイスを占有するまでの遅延"
+    },
+    "setting.delay_milliseconds_before_sleep_shortcut": {
+        "en": "Delay before sending sleep shortcut key-down events"
+        ,"ja": "スリープショートカットのキー押下イベントを送信するまでの遅延"
+    },
+    "setting.enable_cgeventtap_fallback": {
+        "en": "Enable CGEventTap fallback"
+        ,"ja": "CGEventTap fallback を有効にする"
+    },
+    "setting.filter_useless_events_from_specific_devices": {
+        "en": "Filter useless events from specific devices"
+        ,"ja": "特定のデバイスからの不要なイベントを除外"
+    },
+    "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers": {
+        "en": "Reorder same timestamp input events to prioritize modifiers"
+        ,"ja": "同じタイムスタンプの入力イベントを並べ替えて修飾キーを優先"
+    },
+    "setting.unsafe_ui": {
+        "en": "Allow unsafe configuration"
+        ,"ja": "安全保護を無効にした設定を許可"
+    },
+    "settings.expert.cgeventtap_fallback": {
+        "en": "CGEventTap fallback"
+        ,"ja": "CGEventTap fallback"
+    },
+    "settings.expert.device_delay_warning": {
+        "en": [
+            "Setting insufficient delay (e.g., 0) will result in a device becoming unusable after Karabiner-Elements is quit.",
+            "\n",
+            "(This is a macOS problem and can be solved by unplugging the device and plugging it again.)"
+        ]
+        ,"ja": [
+            "遅延が短すぎる場合（例：0）、Karabiner-Elements の終了後にデバイスが使用できなくなります。\n",
+            "（macOS の問題です。デバイスを抜き差しすると解消します。）"
+        ]
+    },
+    "settings.expert.fallback_description": {
+        "en": "If this setting is enabled, Karabiner-Core-Service uses CGEventTap as a fallback for devices that cannot be handled via HID input capture."
+        ,"ja": "この設定を有効にすると、HID 入力の取得で処理できないデバイスに対して、Karabiner-Core-Service が CGEventTap を代替手段として使用します。"
+    },
+    "settings.expert.filter_description": {
+        "en": "If this setting is enabled, the following events will be ignored:\n- Nintendo's Pro Controller (USB connected):\n    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed.\n    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all."
+        ,"ja": "この設定を有効にすると、次のイベントが無視されます：\n- Nintendo Switch Pro コントローラー（USB 接続）：\n    - 何も押していなくても高頻度でオン・オフが送信され続けるボタンのイベント。\n    - スティックを動かしていなくてもランダムな方向の傾きが送信され続けるスティックのイベント。"
+    },
+    "settings.expert.modifier_order_hint": {
+        "en": "If your keyboard supports hardware macros and sends multiple keys at once, and you notice that modifier key order is changing, try turning this setting off."
+        ,"ja": "ハードウェアマクロに対応したキーボードで複数のキーを同時に送信したとき、修飾キーの順序が変わる場合は、この設定をオフにしてみてください。"
+    },
+    "settings.expert.modify_pointing_by_default": {
+        "en": "Modify events for pointing devices by default"
+        ,"ja": "ポインティングデバイスのイベントをデフォルトで変更する"
+    },
+    "settings.expert.options": {
+        "en": "Options"
+        ,"ja": "オプション"
+    },
+    "settings.expert.pointing_devices": {
+        "en": "Pointing devices"
+        ,"ja": "ポインティングデバイス"
+    },
+    "settings.expert.sleep_delay_description": {
+        "en": "Karabiner-Elements delays the key-down event of the macOS sleep shortcut (command+option+power, command+option+eject, or escape at the login window). This prevents the shortcut's release events from waking the Mac immediately after sleep."
+        ,"ja": "Karabiner-Elements は、macOS のスリープショートカット（command+option+power、command+option+eject、またはログイン画面での escape）のキー押下イベントを遅延させます。これにより、キーを離したイベントで Mac がすぐにスリープから復帰することを防ぎます。"
+    },
+    "settings.expert.sleep_delay_disabled_hint": {
+        "en": "0 disables delay"
+        ,"ja": "0 で遅延を無効化します"
+    },
+    "settings.expert.title": {
+        "en": "Expert mode"
+        ,"ja": "上級者向けモード"
+    },
+    "settings.expert.unsafe_banner": {
+        "en": "The unsafe configuration is enabled, so the safeguard feature is currently inactive."
+        ,"ja": "安全でない設定が有効になっているため、保護機能は現在無効です。"
+    },
+    "settings.expert.unsafe_description": {
+        "en": "Unsafe configuration disables the safeguard feature on the configuration UI.\nYou should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. (e.g., using Screen Sharing)\n\nUnsafe configuration allows the following items:\n- Allow you to enable Apple pointing devices in the Devices tab.\n- Allow you to change left-click in Simple Modifications tab."
+        ,"ja": "安全でない設定を有効にすると、設定画面の保護機能が無効になります。\n別のマシンから Karabiner-Elements を停止できる準備ができている場合にのみ有効にしてください（画面共有など）。\n\n次の操作が可能になります：\n- デバイスタブで Apple 製ポインティングデバイスを有効にする。\n- 単純なキー変換タブで左クリックを変更する。"
+    }
+}

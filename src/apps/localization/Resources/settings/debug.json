@@ -1,0 +1,94 @@
+{
+    "shared.debug.agent_retry": {
+        "en": "Karabiner-Console-User-Server connection: retry guidance"
+        ,"ja": "Karabiner-Console-User-Serverへの接続: 再試行の案内"
+    },
+    "shared.debug.agents_stopped": {
+        "en": "Services stopped: agents only"
+        ,"ja": "サービス停止: エージェントのみ"
+    },
+    "shared.debug.alerts": {
+        "en": "Alert previews"
+        ,"ja": "アラートのプレビュー"
+    },
+    "shared.debug.category.configuration": {
+        "en": "Configuration"
+        ,"ja": "設定"
+    },
+    "shared.debug.category.driver": {
+        "en": "Driver"
+        ,"ja": "ドライバー"
+    },
+    "shared.debug.category.notifications": {
+        "en": "Notifications"
+        ,"ja": "通知"
+    },
+    "shared.debug.category.services": {
+        "en": "Services and Connections"
+        ,"ja": "サービス・接続"
+    },
+    "shared.debug.category.setup": {
+        "en": "Setup"
+        ,"ja": "セットアップ"
+    },
+    "shared.debug.daemons_stopped": {
+        "en": "Services stopped: daemons only"
+        ,"ja": "サービス停止: デーモンのみ"
+    },
+    "shared.debug.driver_advanced": {
+        "en": "Driver restart required: advanced guidance"
+        ,"ja": "ドライバーの再起動が必要: 詳細な案内"
+    },
+    "shared.debug.instructions": {
+        "en": "Hold Option to reveal Debug in the sidebar. After selecting it, you can release Option and preview alerts."
+        ,"ja": "Optionキーを押すとサイドバーに「デバッグ」が表示されます。選択後はキーを離してアラートをプレビューできます。"
+    },
+    "shared.debug.preview_hint": {
+        "en": "Alerts use the current app language and sample states. Click anywhere in the preview or press Escape to close it. Preview actions do not change settings."
+        ,"ja": "アプリの現在の言語とサンプルの状態でアラートを表示します。プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。"
+    },
+    "shared.debug.section": {
+        "en": "For Developer"
+        ,"ja": "開発者向け"
+    },
+    "shared.debug.services_stopped": {
+        "en": "Services stopped: agents and daemons"
+        ,"ja": "サービス停止: エージェントとデーモン"
+    },
+    "shared.debug.setup_agents_only": {
+        "en": "Services: only non-privileged agents enabled"
+        ,"ja": "サービス: 非特権エージェントのみ有効"
+    },
+    "shared.debug.setup_daemons_only": {
+        "en": "Services: only privileged daemons enabled"
+        ,"ja": "サービス: 特権デーモンのみ有効"
+    },
+    "shared.debug.setup_driver_advanced": {
+        "en": "Driver extension permission: advanced guidance"
+        ,"ja": "ドライバー拡張機能の許可: 詳細な案内"
+    },
+    "shared.debug.setup_driver_legacy_advanced": {
+        "en": "Driver permission (macOS 13/14): advanced guidance"
+        ,"ja": "ドライバーの許可（macOS 13/14）: 詳細な案内"
+    },
+    "shared.debug.setup_driver_macos15": {
+        "en": "Driver extension permission (macOS 15)"
+        ,"ja": "ドライバー拡張機能の許可（macOS 15）"
+    },
+    "shared.debug.setup_driver_macos15_advanced": {
+        "en": "Driver extension permission (macOS 15): advanced guidance"
+        ,"ja": "ドライバー拡張機能の許可（macOS 15）: 詳細な案内"
+    },
+    "shared.debug.setup_services_macos15": {
+        "en": "Service permission (macOS 15)"
+        ,"ja": "サービスの許可（macOS 15）"
+    },
+    "shared.debug.title": {
+        "en": "Debug"
+        ,"ja": "デバッグ"
+    },
+    "shared.debug.viewed": {
+        "en": "Viewed"
+        ,"ja": "閲覧済み"
+    }
+}

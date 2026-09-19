@@ -35,7 +35,7 @@ class LocalizationResourcesTests(unittest.TestCase):
                 if "build" in source.parts:
                     continue
                 for key in re.findall(
-                    r'"((?:event_viewer|multitouch|shared|settings|setting|section|value|changed_settings|menu_bar_extra)\.[A-Za-z0-9_.]+)"',
+                    r'"((?:event_viewer|multitouch|shared|search|settings|setting|section|value|changed_settings|menu_bar_extra)\.[A-Za-z0-9_.]+)"',
                     source.read_text(),
                 ):
                     if not key.endswith("."):
@@ -46,6 +46,7 @@ class LocalizationResourcesTests(unittest.TestCase):
                     "event_viewer.",
                     "multitouch.",
                     "shared.",
+                    "search.",
                     "settings.",
                     "setting.",
                     "section.",

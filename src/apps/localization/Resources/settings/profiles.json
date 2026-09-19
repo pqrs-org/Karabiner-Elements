@@ -1,0 +1,14 @@
+{
+    "settings.profiles.add": {
+        "en": "Add new profile"
+        ,"ja": "新しいプロファイルを追加"
+    },
+    "settings.profiles.name": {
+        "en": "Profile name:"
+        ,"ja": "プロファイル名:"
+    },
+    "settings.profiles.name_placeholder": {
+        "en": "Profile name"
+        ,"ja": "プロファイル名"
+    }
+}

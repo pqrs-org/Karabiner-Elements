@@ -1,0 +1,10 @@
+{
+    "settings.log.add_divider": {
+        "en": "Add divider"
+        ,"ja": "区切りを追加"
+    },
+    "settings.log.current_time": {
+        "en": "Current time: {time}"
+        ,"ja": "現在時刻: {time}"
+    }
+}

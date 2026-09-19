@@ -1,0 +1,26 @@
+{
+    "settings.update.automatic": {
+        "en": "Check for updates automatically"
+        ,"ja": "アップデートを自動的に確認"
+    },
+    "settings.update.github": {
+        "en": "Open GitHub (source code)"
+        ,"ja": "GitHub（ソースコード）を開く"
+    },
+    "settings.update.official_website": {
+        "en": "Open official website"
+        ,"ja": "公式サイトを開く"
+    },
+    "settings.update.title": {
+        "en": "Update"
+        ,"ja": "アップデート"
+    },
+    "settings.update.version": {
+        "en": "Karabiner-Elements version {version}"
+        ,"ja": "Karabiner-Elements バージョン {version}"
+    },
+    "settings.update.websites": {
+        "en": "Web sites"
+        ,"ja": "Web サイト"
+    }
+}

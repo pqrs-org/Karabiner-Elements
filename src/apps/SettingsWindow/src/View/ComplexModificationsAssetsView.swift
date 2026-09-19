@@ -33,7 +33,7 @@ struct ComplexModificationsAssetsView: View {
           Image(systemName: "magnifyingglass")
             .foregroundColor(.gray)
 
-          TextField(localized("shared.search"), text: $search)
+          TextField(localized("shared.find"), text: $search)
         }
 
         List {

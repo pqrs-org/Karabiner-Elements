@@ -11,7 +11,7 @@ struct FindCommands: Commands {
 
   var body: some Commands {
     CommandGroup(replacing: .textEditing) {
-      Menu(text("shared.find.menu")) {
+      Menu(text("shared.find")) {
         Button(text("shared.find.show")) {
           FindCommand.perform(.showFindPanel)
         }

@@ -1,0 +1,50 @@
+{
+    "setting.enable_multitouch_extension": {
+        "en": "Enable Multitouch Extension"
+        ,"ja": "マルチタッチ拡張を有効にする"
+    },
+    "settings.misc.backup_hint": {
+        "en": "You can back up your settings or migrate them to another machine by copying karabiner.json. There are also backups under the automatic_backups folder, so you can restore a previous state by overwriting karabiner.json with one of those backups."
+        ,"ja": "karabiner.json をコピーすると、設定をバックアップしたり別のマシンへ移行したりできます。automatic_backups フォルダーにもバックアップが保存されており、そのファイルで karabiner.json を上書きすると以前の状態に戻せます。"
+    },
+    "settings.misc.export_import": {
+        "en": "Export & Import"
+        ,"ja": "書き出しと読み込み"
+    },
+    "settings.misc.install_system_default": {
+        "en": "Copy the current configuration to the system default configuration"
+        ,"ja": "現在の設定をシステムのデフォルト設定にコピー"
+    },
+    "settings.misc.multitouch_machine_specific": {
+        "en": "This setting is hardware-specific. When you import Karabiner-Elements settings to another Mac, the enabled state of the Multitouch Extension is not carried over."
+        ,"ja": "この設定はハードウェア固有です。別の Mac に Karabiner-Elements の設定を移行しても、Multitouch Extension の有効・無効の状態は引き継がれません。"
+    },
+    "settings.misc.multitouch_menu_hint": {
+        "en": "You can also open the Multitouch Extension settings from the menu."
+        ,"ja": "Multitouch Extension の設定はメニューからも開けます。"
+    },
+    "settings.misc.multitouch_title": {
+        "en": "Extra tool: Multitouch Extension"
+        ,"ja": "追加ツール: Multitouch Extension"
+    },
+    "settings.misc.no_system_default": {
+        "en": "System default configuration is not set."
+        ,"ja": "システムのデフォルト設定は設定されていません。"
+    },
+    "settings.misc.open_config_folder": {
+        "en": "Open config folder"
+        ,"ja": "設定フォルダーを開く"
+    },
+    "settings.misc.remove_system_default": {
+        "en": "Remove the system default configuration"
+        ,"ja": "システムのデフォルト設定を削除"
+    },
+    "settings.misc.system_default": {
+        "en": "System default configuration"
+        ,"ja": "システムのデフォルト設定"
+    },
+    "settings.misc.system_default_hint": {
+        "en": "You can use Karabiner-Elements even before login by setting the system default configuration. (This operation requires the administrator privilege.)"
+        ,"ja": "システムのデフォルト設定を設定すると、ログイン前でも Karabiner-Elements を使用できます。（管理者権限が必要です。）"
+    }
+}

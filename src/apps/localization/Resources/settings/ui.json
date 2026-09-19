@@ -1,0 +1,102 @@
+{
+    "section.dark": {
+        "en": "Dark appearance"
+        ,"ja": "ダークモード"
+    },
+    "section.light": {
+        "en": "Light appearance"
+        ,"ja": "ライトモード"
+    },
+    "setting.background_color": {
+        "en": "Background color"
+        ,"ja": "背景色"
+    },
+    "setting.enable_notification_window": {
+        "en": "Enable notification window"
+        ,"ja": "通知ウインドウを有効にする"
+    },
+    "setting.indicate_sticky_modifier_keys_state": {
+        "en": "Indicate sticky modifier key state"
+        ,"ja": "固定された修飾キーの状態を表示"
+    },
+    "setting.notification_window_font_size": {
+        "en": "Font size:"
+        ,"ja": "文字サイズ:"
+    },
+    "setting.notification_window_position": {
+        "en": "Position"
+        ,"ja": "表示位置"
+    },
+    "setting.notification_window_respect_screen_visible_frame": {
+        "en": "Keep the window outside the Dock area"
+        ,"ja": "ウィンドウを Dock の領域外に表示"
+    },
+    "setting.notification_window_show_icon": {
+        "en": "Show application icon"
+        ,"ja": "アプリのアイコンを表示"
+    },
+    "setting.show_additional_menu_items": {
+        "en": "Show additional menu items"
+        ,"ja": "追加のメニュー項目を表示"
+    },
+    "setting.show_in_menu_bar": {
+        "en": "Show icon in menu bar"
+        ,"ja": "メニューバーにアイコンを表示"
+    },
+    "setting.show_profile_name_in_menu_bar": {
+        "en": "Show profile name in menu bar"
+        ,"ja": "メニューバーにプロファイル名を表示"
+    },
+    "setting.show_quit_confirmation_menu": {
+        "en": "Show confirmation submenu for Quit Karabiner-Elements"
+        ,"ja": "「Karabiner-Elements を終了」に確認用のサブメニューを表示"
+    },
+    "setting.text_color": {
+        "en": "Text color"
+        ,"ja": "文字色"
+    },
+    "settings.ui.app_icon": {
+        "en": "App icon"
+        ,"ja": "アプリアイコン"
+    },
+    "settings.ui.app_icon_hint": {
+        "en": "It takes a few seconds for changes to the application icon to take effect.\nAnd to update the Dock icon, you need to close and reopen the application."
+        ,"ja": "アプリアイコンの変更が反映されるまで数秒かかります。\nDock のアイコンを更新するには、アプリをいったん終了してから開き直してください。"
+    },
+    "settings.ui.appearance": {
+        "en": "Appearance"
+        ,"ja": "外観"
+    },
+    "settings.ui.menu_bar": {
+        "en": "Menu bar"
+        ,"ja": "メニューバー"
+    },
+    "settings.ui.notification_description": {
+        "en": "What is the Karabiner Notification Window?\n\nThe Karabiner Notification Window displays the status of sticky modifiers and messages from Complex Modifications."
+        ,"ja": "Karabiner 通知ウィンドウとは？\n\nKarabiner 通知ウィンドウには、固定修飾キーの状態や、高度なキー変換からのメッセージが表示されます。"
+    },
+    "settings.ui.notification_window": {
+        "en": "Notification window"
+        ,"ja": "通知ウィンドウ"
+    },
+    "settings.ui.position.bottom_left": {
+        "en": "Bottom left"
+        ,"ja": "左下"
+    },
+    "settings.ui.position.bottom_right": {
+        "en": "Bottom right"
+        ,"ja": "右下"
+    },
+    "settings.ui.position.top_left": {
+        "en": "Top left"
+        ,"ja": "左上"
+    },
+    "settings.ui.position.top_right": {
+        "en": "Top right"
+        ,"ja": "右上"
+    },
+    "settings.ui.use_system_color": {
+        "en": "Use the system color"
+        ,"ja": "システムの色を使用"
+    }
+}

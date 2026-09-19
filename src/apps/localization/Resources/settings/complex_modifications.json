@@ -1,11 +1,31 @@
 {
+    "setting.basic.simultaneous_threshold_milliseconds": {
+        "en": "simultaneous_threshold_milliseconds:"
+        ,"ja": "simultaneous_threshold_milliseconds:"
+    },
+    "setting.basic.to_delayed_action_delay_milliseconds": {
+        "en": "to_delayed_action_delay_milliseconds:"
+        ,"ja": "to_delayed_action_delay_milliseconds:"
+    },
+    "setting.basic.to_if_alone_timeout_milliseconds": {
+        "en": "to_if_alone_timeout_milliseconds:"
+        ,"ja": "to_if_alone_timeout_milliseconds:"
+    },
+    "setting.basic.to_if_held_down_threshold_milliseconds": {
+        "en": "to_if_held_down_threshold_milliseconds:"
+        ,"ja": "to_if_held_down_threshold_milliseconds:"
+    },
+    "setting.mouse_motion_to_scroll.speed": {
+        "en": "speed:"
+        ,"ja": "speed:"
+    },
     "settings.assets.imported_at": {
         "en": "Imported at {date}"
         ,"ja": "読み込み日時 {date}"
     },
     "settings.assets.more_rules": {
         "en": "Import more rules from the Internet (Open a web browser)"
-        ,"ja": "インターネットからほかのルールを読み込む（Web ブラウザーを開く）"
+        ,"ja": "インターネットからほかのルールを取り込む（Web ブラウザーを開く）"
     },
     "settings.complex_modifications.add_predefined": {
         "en": "Add predefined rule"
@@ -105,10 +125,18 @@
     },
     "settings.import.source": {
         "en": "Import file from {url}"
-        ,"ja": "{url} からファイルを読み込む"
+        ,"ja": "{url} からファイルを取り込む"
     },
     "settings.import.unsupported": {
         "en": "The downloaded file is not supported."
         ,"ja": "ダウンロードしたファイルはサポートされていません。"
+    },
+    "settings.parameters.basic": {
+        "en": "type:basic parameters"
+        ,"ja": "basic のパラメーター"
+    },
+    "settings.parameters.mouse_motion_to_scroll": {
+        "en": "type:mouse_motion_to_scroll parameters"
+        ,"ja": "mouse_motion_to_scroll のパラメーター"
     }
 }

@@ -1,116 +1,4 @@
 {
-    "section.dark": {
-        "en": "Dark appearance"
-        ,"ja": "ダークモード"
-    },
-    "section.light": {
-        "en": "Light appearance"
-        ,"ja": "ライトモード"
-    },
-    "setting.background_color": {
-        "en": "Background color"
-        ,"ja": "背景色"
-    },
-    "setting.basic.simultaneous_threshold_milliseconds": {
-        "en": "simultaneous_threshold_milliseconds:"
-        ,"ja": "simultaneous_threshold_milliseconds:"
-    },
-    "setting.basic.to_delayed_action_delay_milliseconds": {
-        "en": "to_delayed_action_delay_milliseconds:"
-        ,"ja": "to_delayed_action_delay_milliseconds:"
-    },
-    "setting.basic.to_if_alone_timeout_milliseconds": {
-        "en": "to_if_alone_timeout_milliseconds:"
-        ,"ja": "to_if_alone_timeout_milliseconds:"
-    },
-    "setting.basic.to_if_held_down_threshold_milliseconds": {
-        "en": "to_if_held_down_threshold_milliseconds:"
-        ,"ja": "to_if_held_down_threshold_milliseconds:"
-    },
-    "setting.delay_milliseconds_before_open_device": {
-        "en": "Delay to grab device"
-        ,"ja": "デバイスを占有するまでの遅延"
-    },
-    "setting.delay_milliseconds_before_sleep_shortcut": {
-        "en": "Delay before sending sleep shortcut key-down events"
-        ,"ja": "スリープショートカットのキー押下イベントを送信するまでの遅延"
-    },
-    "setting.enable_cgeventtap_fallback": {
-        "en": "Enable CGEventTap fallback"
-        ,"ja": "CGEventTap fallback を有効にする"
-    },
-    "setting.enable_multitouch_extension": {
-        "en": "Enable Multitouch Extension"
-        ,"ja": "マルチタッチ拡張を有効にする"
-    },
-    "setting.enable_notification_window": {
-        "en": "Enable notification window"
-        ,"ja": "通知ウインドウを有効にする"
-    },
-    "setting.filter_useless_events_from_specific_devices": {
-        "en": "Filter useless events from specific devices"
-        ,"ja": "特定のデバイスからの不要なイベントを除外"
-    },
-    "setting.indicate_sticky_modifier_keys_state": {
-        "en": "Indicate sticky modifier key state"
-        ,"ja": "固定された修飾キーの状態を表示"
-    },
-    "setting.keyboard_type_v2": {
-        "en": "Keyboard type"
-        ,"ja": "キーボードの種類"
-    },
-    "setting.mouse_key_xy_scale": {
-        "en": "Cursor speed:"
-        ,"ja": "カーソル速度:"
-    },
-    "setting.mouse_motion_to_scroll.speed": {
-        "en": "speed:"
-        ,"ja": "speed:"
-    },
-    "setting.notification_window_font_size": {
-        "en": "Font size:"
-        ,"ja": "文字サイズ:"
-    },
-    "setting.notification_window_position": {
-        "en": "Position"
-        ,"ja": "表示位置"
-    },
-    "setting.notification_window_respect_screen_visible_frame": {
-        "en": "Keep the window outside the Dock area"
-        ,"ja": "ウィンドウを Dock の領域外に表示"
-    },
-    "setting.notification_window_show_icon": {
-        "en": "Show application icon"
-        ,"ja": "アプリのアイコンを表示"
-    },
-    "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers": {
-        "en": "Reorder same timestamp input events to prioritize modifiers"
-        ,"ja": "同じタイムスタンプの入力イベントを並べ替えて修飾キーを優先"
-    },
-    "setting.show_additional_menu_items": {
-        "en": "Show additional menu items"
-        ,"ja": "追加のメニュー項目を表示"
-    },
-    "setting.show_in_menu_bar": {
-        "en": "Show icon in menu bar"
-        ,"ja": "メニューバーにアイコンを表示"
-    },
-    "setting.show_profile_name_in_menu_bar": {
-        "en": "Show profile name in menu bar"
-        ,"ja": "メニューバーにプロファイル名を表示"
-    },
-    "setting.show_quit_confirmation_menu": {
-        "en": "Show confirmation submenu for Quit Karabiner-Elements"
-        ,"ja": "「Karabiner-Elements を終了」に確認用のサブメニューを表示"
-    },
-    "setting.text_color": {
-        "en": "Text color"
-        ,"ja": "文字色"
-    },
-    "setting.unsafe_ui": {
-        "en": "Allow unsafe configuration"
-        ,"ja": "安全保護を無効にした設定を許可"
-    },
     "shared.action.add_item": {
         "en": "Add item"
         ,"ja": "項目を追加"
@@ -149,7 +37,7 @@
     },
     "shared.action.import": {
         "en": "Import"
-        ,"ja": "読み込む"
+        ,"ja": "取り込む"
     },
     "shared.action.refresh": {
         "en": "Refresh"
@@ -163,103 +51,11 @@
         "en": "Save"
         ,"ja": "保存"
     },
-    "shared.debug.agent_retry": {
-        "en": "Karabiner-Console-User-Server connection: retry guidance"
-        ,"ja": "Karabiner-Console-User-Serverへの接続: 再試行の案内"
-    },
-    "shared.debug.agents_stopped": {
-        "en": "Services stopped: agents only"
-        ,"ja": "サービス停止: エージェントのみ"
-    },
-    "shared.debug.alerts": {
-        "en": "Alert previews"
-        ,"ja": "アラートのプレビュー"
-    },
-    "shared.debug.category.configuration": {
-        "en": "Configuration"
-        ,"ja": "設定"
-    },
-    "shared.debug.category.driver": {
-        "en": "Driver"
-        ,"ja": "ドライバー"
-    },
-    "shared.debug.category.notifications": {
-        "en": "Notifications"
-        ,"ja": "通知"
-    },
-    "shared.debug.category.services": {
-        "en": "Services and Connections"
-        ,"ja": "サービス・接続"
-    },
-    "shared.debug.category.setup": {
-        "en": "Setup"
-        ,"ja": "セットアップ"
-    },
-    "shared.debug.daemons_stopped": {
-        "en": "Services stopped: daemons only"
-        ,"ja": "サービス停止: デーモンのみ"
-    },
-    "shared.debug.driver_advanced": {
-        "en": "Driver restart required: advanced guidance"
-        ,"ja": "ドライバーの再起動が必要: 詳細な案内"
-    },
-    "shared.debug.instructions": {
-        "en": "Hold Option to reveal Debug in the sidebar. After selecting it, you can release Option and preview alerts."
-        ,"ja": "Optionキーを押すとサイドバーに「デバッグ」が表示されます。選択後はキーを離してアラートをプレビューできます。"
-    },
-    "shared.debug.preview_hint": {
-        "en": "Alerts use the current app language and sample states. Click anywhere in the preview or press Escape to close it. Preview actions do not change settings."
-        ,"ja": "アプリの現在の言語とサンプルの状態でアラートを表示します。プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。"
-    },
-    "shared.debug.section": {
-        "en": "For Developer"
-        ,"ja": "開発者向け"
-    },
-    "shared.debug.services_stopped": {
-        "en": "Services stopped: agents and daemons"
-        ,"ja": "サービス停止: エージェントとデーモン"
-    },
-    "shared.debug.setup_agents_only": {
-        "en": "Services: only non-privileged agents enabled"
-        ,"ja": "サービス: 非特権エージェントのみ有効"
-    },
-    "shared.debug.setup_daemons_only": {
-        "en": "Services: only privileged daemons enabled"
-        ,"ja": "サービス: 特権デーモンのみ有効"
-    },
-    "shared.debug.setup_driver_advanced": {
-        "en": "Driver extension permission: advanced guidance"
-        ,"ja": "ドライバー拡張機能の許可: 詳細な案内"
-    },
-    "shared.debug.setup_driver_legacy_advanced": {
-        "en": "Driver permission (macOS 13/14): advanced guidance"
-        ,"ja": "ドライバーの許可（macOS 13/14）: 詳細な案内"
-    },
-    "shared.debug.setup_driver_macos15": {
-        "en": "Driver extension permission (macOS 15)"
-        ,"ja": "ドライバー拡張機能の許可（macOS 15）"
-    },
-    "shared.debug.setup_driver_macos15_advanced": {
-        "en": "Driver extension permission (macOS 15): advanced guidance"
-        ,"ja": "ドライバー拡張機能の許可（macOS 15）: 詳細な案内"
-    },
-    "shared.debug.setup_services_macos15": {
-        "en": "Service permission (macOS 15)"
-        ,"ja": "サービスの許可（macOS 15）"
-    },
-    "shared.debug.title": {
-        "en": "Debug"
-        ,"ja": "デバッグ"
-    },
-    "shared.debug.viewed": {
-        "en": "Viewed"
-        ,"ja": "閲覧済み"
-    },
     "shared.filter": {
         "en": "Filter"
         ,"ja": "絞り込み"
     },
-    "shared.find.menu": {
+    "shared.find": {
         "en": "Find"
         ,"ja": "検索"
     },
@@ -282,10 +78,6 @@
     "shared.language.title": {
         "en": "Language"
         ,"ja": "言語"
-    },
-    "shared.search": {
-        "en": "Search"
-        ,"ja": "検索"
     },
     "shared.section.advanced": {
         "en": "Advanced"
