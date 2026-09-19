@@ -1,7 +1,12 @@
 {
     "multitouch.action.disable_hint": {
-        "en": "To disable the Multitouch Extension, configure it in the Misc tab of the Karabiner-Elements settings."
-        ,"ja": "Multitouch Extensionを無効にするには、Karabiner-Elements設定の「その他」タブで設定してください。"
+        "en": [
+            "To disable the Multitouch Extension, ",
+            "configure it in the Misc tab of the Karabiner-Elements settings."
+        ]
+        ,"ja": [
+            "Multitouch Extensionを無効にするには、Karabiner-Elements設定の「その他」タブで設定してください。"
+        ]
     },
     "multitouch.action.restart": {
         "en": "Restart app"
@@ -20,8 +25,8 @@
         ,"ja": "手のひらの検出"
     },
     "multitouch.advanced.palm_hint": {
-        "en": "(Increasing this value allows you to ignore unintended palm touches)"
-        ,"ja": "この値を大きくすると、意図しない手のひらとしての検出を無視できます。"
+        "en": "Increasing this value makes touches less likely to be detected as palm touches."
+        ,"ja": "この値を大きくすると、手のひらとして検出されにくくなります。"
     },
     "multitouch.advanced.relaunch": {
         "en": "Relaunch after wake from sleep"
@@ -36,8 +41,8 @@
         ,"ja": "離れたことを検出する遅延:"
     },
     "multitouch.advanced.release_hint": {
-        "en": "(Increasing this value allows you to ignore unintended release)"
-        ,"ja": "この値を大きくすると、意図せず指が離れた場合の検出を無視できます。"
+        "en": "Increasing this value keeps fingers registered as touching even if they are unintentionally lifted."
+        ,"ja": "この値を大きくすると、意図せず指が離れた場合も接触判定を継続します。"
     },
     "multitouch.advanced.sleep": {
         "en": "Sleep handling"
@@ -48,32 +53,32 @@
         ,"ja": "接触検出の遅延:"
     },
     "multitouch.advanced.touch_hint": {
-        "en": "(Increasing this value allows you to ignore unintended touch)"
+        "en": "Increasing this value allows you to ignore unintended touch."
         ,"ja": "この値を大きくすると、意図しない接触を無視できます。"
     },
     "multitouch.advanced.touch_size_threshold": {
         "en": "Touch size threshold:"
         ,"ja": "接触サイズのしきい値:"
     },
-    "multitouch.area.bottom": {
-        "en": "Ignored Area (Bottom)"
-        ,"ja": "無視する範囲（下）"
+    "multitouch.area.ignored_area_bottom": {
+        "en": "Ignored Area: Bottom"
+        ,"ja": "無視エリア: 下"
     },
-    "multitouch.area.left": {
-        "en": "Ignored\nArea\n(Left)"
-        ,"ja": "無視する範囲\n（左）"
+    "multitouch.area.ignored_area_left": {
+        "en": "Ignored\nArea:\nLeft"
+        ,"ja": "無視エリア:\n左"
     },
-    "multitouch.area.right": {
-        "en": "Ignored\nArea\n(Right)"
-        ,"ja": "無視する範囲\n（右）"
+    "multitouch.area.ignored_area_right": {
+        "en": "Ignored\nArea:\nRight"
+        ,"ja": "無視エリア:\n右"
+    },
+    "multitouch.area.ignored_area_top": {
+        "en": "Ignored Area: Top"
+        ,"ja": "無視エリア: 上"
     },
     "multitouch.area.title": {
         "en": "Area"
         ,"ja": "範囲"
-    },
-    "multitouch.area.top": {
-        "en": "Ignored Area (Top)"
-        ,"ja": "無視する範囲（上）"
     },
     "multitouch.count.finger": {
         "en": "Finger"
@@ -136,16 +141,16 @@
         ,"ja": "上"
     },
     "multitouch.log.empty": {
-        "en": "No variable updates"
-        ,"ja": "変数の更新はありません"
+        "en": "Nothing detected yet"
+        ,"ja": "まだ検出されていません"
     },
     "multitouch.log.time": {
         "en": "Time"
         ,"ja": "時刻"
     },
     "multitouch.log.title": {
-        "en": "Variable update requests"
-        ,"ja": "変数の更新要求"
+        "en": "Detection history"
+        ,"ja": "検出履歴"
     },
     "multitouch.power.display_sleep": {
         "en": "Keep user-interactive activity running while the display sleeps"
