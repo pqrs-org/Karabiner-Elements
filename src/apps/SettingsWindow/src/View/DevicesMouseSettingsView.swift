@@ -18,10 +18,10 @@ struct DevicesMouseSettingsView: View {
         .padding(.leading, 40)
         .padding(.top, 20)
 
-        GroupBox(label: AppLocalizedText("settings.mouse.multiplier")) {
+        GroupBox(label: AppLocalizedText("settings.devices.mouse.multiplier")) {
           Grid(alignment: .leadingFirstTextBaseline) {
             GridRow {
-              AppLocalizedText("settings.mouse.xy_multiplier")
+              AppLocalizedText("settings.devices.mouse.xy_multiplier")
 
               DoubleTextField(
                 value: $deviceConfiguration.pointingMotionXyMultiplier,
@@ -31,7 +31,7 @@ struct DevicesMouseSettingsView: View {
                 width: 60)
 
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(
                     format: "%.01f",
@@ -40,7 +40,7 @@ struct DevicesMouseSettingsView: View {
             }
 
             GridRow {
-              AppLocalizedText("settings.mouse.wheels_multiplier")
+              AppLocalizedText("settings.devices.mouse.wheels_multiplier")
 
               DoubleTextField(
                 value: $deviceConfiguration.pointingMotionWheelsMultiplier,
@@ -50,7 +50,7 @@ struct DevicesMouseSettingsView: View {
                 width: 60)
 
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(
                     format: "%.01f",

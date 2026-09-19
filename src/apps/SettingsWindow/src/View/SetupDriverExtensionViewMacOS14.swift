@@ -29,7 +29,7 @@ struct SetupDriverExtensionViewMacOS14: View {
             url: "x-apple.systempreferences:com.apple.preference.security?General",
             label: {
               AppLocalizedLabel(
-                "settings.system_settings.open_privacy",
+                "settings.setup.system_settings.open_privacy",
                 systemImage: "arrow.forward.circle.fill")
             }
           )

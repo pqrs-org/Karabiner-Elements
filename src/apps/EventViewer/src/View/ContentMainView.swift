@@ -21,7 +21,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .variables: return "event_viewer.sidebar.variables"
     case .devices: return "event_viewer.sidebar.devices"
     case .settings: return "event_viewer.sidebar.settings"
-    case .debug: return "shared.debug.title"
+    case .debug: return "settings.debug.title"
     }
   }
 
@@ -54,7 +54,7 @@ struct ContentMainView: View {
             Section {
               sidebarRow(.debug)
             } header: {
-              AppLocalizedText("shared.debug.section")
+              AppLocalizedText("settings.debug.section")
             }
           }
         }

@@ -5,7 +5,7 @@ struct SettingsMainView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 25.0) {
-      GroupBox(label: AppLocalizedText("multitouch.area.title")) {
+      GroupBox(label: AppLocalizedText("multitouch_extension.area.title")) {
         VStack(alignment: .center, spacing: 10.0) {
           IgnoredAreaView()
 

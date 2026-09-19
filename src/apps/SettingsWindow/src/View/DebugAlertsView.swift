@@ -23,11 +23,11 @@ struct DebugAlertsView: View {
 
     var title: String {
       switch self {
-      case .configuration: return "shared.debug.category.configuration"
-      case .services: return "shared.debug.category.services"
-      case .driver: return "shared.debug.category.driver"
-      case .setup: return "shared.debug.category.setup"
-      case .notifications: return "shared.debug.category.notifications"
+      case .configuration: return "settings.debug.category.configuration"
+      case .services: return "settings.debug.category.services"
+      case .driver: return "settings.debug.category.driver"
+      case .setup: return "settings.debug.category.setup"
+      case .notifications: return "settings.debug.category.notifications"
       }
     }
   }
@@ -135,32 +135,32 @@ struct DebugAlertsView: View {
 
     var title: String {
       switch self {
-      case .parseError: return "settings.configuration.parse_error"
-      case .permissionError: return "settings.configuration.permission_error"
-      case .keyboardType: return "settings.keyboard_type.select_prompt"
-      case .servicesStopped: return "shared.debug.services_stopped"
-      case .agentsStopped: return "shared.debug.agents_stopped"
-      case .daemonsStopped: return "shared.debug.daemons_stopped"
-      case .agentWaiting: return "settings.connection.agent_waiting"
-      case .agentRetry: return "shared.debug.agent_retry"
-      case .virtualHidWaiting: return "settings.connection.virtual_hid_waiting"
-      case .driverWaiting: return "settings.connection.iokit_waiting"
-      case .driverVersion: return "settings.driver.restart_required"
-      case .driverVersionAdvanced: return "shared.debug.driver_advanced"
+      case .parseError: return "settings.setup.configuration.parse_error"
+      case .permissionError: return "settings.setup.configuration.permission_error"
+      case .keyboardType: return "settings.setup.keyboard_type.select_prompt"
+      case .servicesStopped: return "settings.debug.services_stopped"
+      case .agentsStopped: return "settings.debug.agents_stopped"
+      case .daemonsStopped: return "settings.debug.daemons_stopped"
+      case .agentWaiting: return "settings.setup.connection.agent_waiting"
+      case .agentRetry: return "settings.debug.agent_retry"
+      case .virtualHidWaiting: return "settings.setup.connection.virtual_hid_waiting"
+      case .driverWaiting: return "settings.setup.connection.iokit_waiting"
+      case .driverVersion: return "settings.setup.driver.restart_required"
+      case .driverVersionAdvanced: return "settings.debug.driver_advanced"
       case .setupServices: return "settings.setup.services.permission"
       case .setupAccessibility: return "settings.setup.accessibility.permission"
       case .setupInputMonitoring: return "settings.setup.input_monitoring.permission"
       case .setupDriver: return "settings.setup.driver.permission"
-      case .setupDriverAdvanced: return "shared.debug.setup_driver_advanced"
+      case .setupDriverAdvanced: return "settings.debug.setup_driver_advanced"
       case .setupDriverLegacy: return "settings.setup.driver_legacy.permission"
-      case .setupDriverLegacyAdvanced: return "shared.debug.setup_driver_legacy_advanced"
+      case .setupDriverLegacyAdvanced: return "settings.debug.setup_driver_legacy_advanced"
       case .setupServicesRequired: return "settings.setup.services_required"
       case .setupAccessibilityRequired: return "settings.setup.accessibility_required"
-      case .setupAgentsOnly: return "shared.debug.setup_agents_only"
-      case .setupDaemonsOnly: return "shared.debug.setup_daemons_only"
-      case .setupServicesMacOS15: return "shared.debug.setup_services_macos15"
-      case .setupDriverMacOS15: return "shared.debug.setup_driver_macos15"
-      case .setupDriverMacOS15Advanced: return "shared.debug.setup_driver_macos15_advanced"
+      case .setupAgentsOnly: return "settings.debug.setup_agents_only"
+      case .setupDaemonsOnly: return "settings.debug.setup_daemons_only"
+      case .setupServicesMacOS15: return "settings.debug.setup_services_macos15"
+      case .setupDriverMacOS15: return "settings.debug.setup_driver_macos15"
+      case .setupDriverMacOS15Advanced: return "settings.debug.setup_driver_macos15_advanced"
       case .profileChangedToast: return "settings.complex_modifications.editor.profile_changed"
       case .rulesChangedToast: return "settings.complex_modifications.editor.rules_changed"
       }
@@ -184,11 +184,11 @@ struct DebugAlertsView: View {
 
   private var previewButtons: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppLocalizedText("shared.debug.alerts")
+      AppLocalizedText("settings.debug.alerts")
         .font(.title)
-      AppLocalizedText("shared.debug.instructions")
+      AppLocalizedText("settings.debug.instructions")
         .foregroundStyle(.secondary)
-      AppLocalizedText("shared.debug.preview_hint")
+      AppLocalizedText("settings.debug.preview_hint")
         .foregroundStyle(.secondary)
 
       TabView(selection: $selectedCategory) {
@@ -227,12 +227,12 @@ struct DebugAlertsView: View {
           }
         )
       ) {
-        AppLocalizedText("shared.debug.viewed")
+        AppLocalizedText("settings.debug.viewed")
         AppLocalizedText(alert.title)
       }
       .toggleStyle(.checkbox)
       .labelsHidden()
-      .help(localized("shared.debug.viewed"))
+      .help(localized("settings.debug.viewed"))
 
       Button {
         viewedAlerts.insert(alert)

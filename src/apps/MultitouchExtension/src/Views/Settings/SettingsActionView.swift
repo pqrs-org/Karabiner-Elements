@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsActionView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 25.0) {
-      GroupBox(label: AppLocalizedText("multitouch.action.title")) {
+      GroupBox(label: AppLocalizedText("multitouch_extension.action.title")) {
         VStack(alignment: .leading, spacing: 16) {
           Button(
             action: {
@@ -11,11 +11,11 @@ struct SettingsActionView: View {
               NSApplication.shared.terminate(self)
             },
             label: {
-              AppLocalizedLabel("multitouch.action.restart", systemImage: "arrow.clockwise")
+              AppLocalizedLabel("multitouch_extension.action.restart", systemImage: "arrow.clockwise")
             })
 
           AppLocalizedLabel(
-            "multitouch.action.disable_hint",
+            "multitouch_extension.action.disable_hint",
             systemImage: InfoBorder.icon
           )
           .modifier(InfoBorder())

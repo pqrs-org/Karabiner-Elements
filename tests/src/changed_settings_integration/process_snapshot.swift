@@ -11,7 +11,7 @@ struct ChangedSettingsSnapshotProcessor {
     configuration.changedSettingsJson = try ChangedSettings.makeJSON(snapshotData: input)
 
     // Exercise formatting from the same real snapshot, using a small isolated catalog.
-    let catalog = try LocalizationCatalog(data: Data(#"{"value.on":{"en":"On"}}"#.utf8))
+    let catalog = try LocalizationCatalog(data: Data(#"{"shared.value.on":{"en":"On"}}"#.utf8))
     let changes = try ChangedSettings(
       json: configuration.changedSettingsJson, locale: Locale(identifier: "en"), catalog: catalog)
     precondition(

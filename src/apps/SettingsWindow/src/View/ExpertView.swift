@@ -18,10 +18,10 @@ struct ExpertView: View {
                 "settings.expert.unsafe_ui",
                 " ",
                 .init(
-                  "settings.defaults.value",
+                  "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
-                      defaults.globalConfiguration.unsafeUi ? "value.on" : "value.off")
+                      defaults.globalConfiguration.unsafeUi ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }
@@ -46,11 +46,11 @@ struct ExpertView: View {
               "settings.expert.modify_pointing_by_default",
               " ",
               .init(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": localized(
                     defaults.selectedProfile.modifyPointingDeviceEventsByDefault
-                      ? "value.on" : "value.off")
+                      ? "shared.value.on" : "shared.value.off")
                 ]),
             ])
           }
@@ -67,11 +67,11 @@ struct ExpertView: View {
                   "settings.expert.enable_cgeventtap_fallback",
                   " ",
                   .init(
-                    "settings.defaults.value",
+                    "settings.general.defaults.value",
                     arguments: [
                       "value": localized(
                         defaults.globalConfiguration.enableCgeventtapFallback
-                          ? "value.on" : "value.off")
+                          ? "shared.value.on" : "shared.value.off")
                     ]),
                 ])
               }
@@ -100,11 +100,11 @@ struct ExpertView: View {
                   "settings.expert.filter_useless_events_from_specific_devices",
                   " ",
                   .init(
-                    "settings.defaults.value",
+                    "settings.general.defaults.value",
                     arguments: [
                       "value": localized(
                         defaults.globalConfiguration.filterUselessEventsFromSpecificDevices
-                          ? "value.on" : "value.off")
+                          ? "shared.value.on" : "shared.value.off")
                     ]),
                 ])
               }
@@ -127,12 +127,12 @@ struct ExpertView: View {
                   "settings.expert.reorder_same_timestamp_input_events_to_prioritize_modifiers",
                   " ",
                   .init(
-                    "settings.defaults.value",
+                    "settings.general.defaults.value",
                     arguments: [
                       "value": localized(
                         defaults.globalConfiguration
                           .reorderSameTimestampInputEventsToPrioritizeModifiers
-                          ? "value.on" : "value.off")
+                          ? "shared.value.on" : "shared.value.off")
                     ]),
                 ])
               }
@@ -159,9 +159,9 @@ struct ExpertView: View {
                 step: 100,
                 width: 50)
 
-              AppLocalizedText("settings.units.milliseconds")
+              AppLocalizedText("settings.general.units.milliseconds")
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(
                     defaults.selectedProfile.parameters.delayMillisecondsBeforeOpenDevice)
@@ -190,9 +190,9 @@ struct ExpertView: View {
                 step: 100,
                 width: 50)
 
-              AppLocalizedText("settings.units.milliseconds")
+              AppLocalizedText("settings.general.units.milliseconds")
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(defaults.globalConfiguration.delayMillisecondsBeforeSleepShortcut)
                 ])

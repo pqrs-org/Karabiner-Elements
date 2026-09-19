@@ -9,7 +9,7 @@ struct IgnoredAreaView: View {
   var body: some View {
     VStack(alignment: .center) {
       HStack {
-        AppLocalizedText("multitouch.area.ignored_area_top")
+        AppLocalizedText("multitouch_extension.area.ignored_area_top")
           .fixedSize(horizontal: false, vertical: true)
 
         IntTextField(
@@ -21,7 +21,7 @@ struct IgnoredAreaView: View {
 
       HStack {
         VStack {
-          AppLocalizedText("multitouch.area.ignored_area_left")
+          AppLocalizedText("multitouch_extension.area.ignored_area_left")
             .fixedSize(horizontal: false, vertical: true)
 
           IntTextField(
@@ -139,7 +139,7 @@ struct IgnoredAreaView: View {
         )
 
         VStack {
-          AppLocalizedText("multitouch.area.ignored_area_right")
+          AppLocalizedText("multitouch_extension.area.ignored_area_right")
             .fixedSize(horizontal: false, vertical: true)
 
           IntTextField(
@@ -151,7 +151,7 @@ struct IgnoredAreaView: View {
       }
 
       HStack {
-        AppLocalizedText("multitouch.area.ignored_area_bottom")
+        AppLocalizedText("multitouch_extension.area.ignored_area_bottom")
           .fixedSize(horizontal: false, vertical: true)
 
         IntTextField(

@@ -16,6 +16,13 @@ spec.loader.exec_module(localizations)
 
 
 class LocalizationResourcesTests(unittest.TestCase):
+    def test_key_prefixes_match_resource_paths(self):
+        directory = SCRIPT.parents[1] / "Resources"
+        for path, entries in localizations.load_resources(directory).items():
+            prefix = ".".join(path.relative_to(directory).with_suffix("").parts) + "."
+            for key in entries:
+                self.assertTrue(key.startswith(prefix), f"{path}: {key} must start with {prefix}")
+
     def test_application_translation_references(self):
         apps = SCRIPT.parents[2]
         resources = localizations.load_resources(apps / "localization" / "Resources")
@@ -35,7 +42,7 @@ class LocalizationResourcesTests(unittest.TestCase):
                 if "build" in source.parts:
                     continue
                 for key in re.findall(
-                    r'"((?:event_viewer|multitouch|shared|search|settings|setting|section|value|changed_settings|menu_bar_extra)\.[A-Za-z0-9_.]+)"',
+                    r'"((?:event_viewer|multitouch_extension|multitouch|shared|search|settings|setting|section|value|changed_settings|menu_bar_extra)\.[A-Za-z0-9_.]+)"',
                     source.read_text(),
                 ):
                     if not key.endswith("."):
@@ -45,6 +52,7 @@ class LocalizationResourcesTests(unittest.TestCase):
                 (
                     "event_viewer.",
                     "multitouch.",
+                    "multitouch_extension.",
                     "shared.",
                     "search.",
                     "settings.",

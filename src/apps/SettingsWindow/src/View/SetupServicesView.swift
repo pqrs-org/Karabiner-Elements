@@ -49,7 +49,7 @@ struct SetupServicesView: View {
             },
             label: {
               AppLocalizedLabel(
-                "settings.system_settings.open_login_items",
+                "settings.setup.system_settings.open_login_items",
                 systemImage: "arrow.forward.circle.fill")
             }
           )

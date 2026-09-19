@@ -4,7 +4,7 @@ struct ActionView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
-        GroupBox(label: AppLocalizedText("settings.action.title")) {
+        GroupBox(label: AppLocalizedText("settings.general.action.title")) {
           VStack(alignment: .leading, spacing: 16) {
             Button(
               action: {

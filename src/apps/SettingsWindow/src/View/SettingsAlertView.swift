@@ -10,13 +10,13 @@ struct SettingsAlertView: View {
       VStack(alignment: .leading, spacing: 6.0) {
         VStack(alignment: .leading, spacing: 20.0) {
           AppLocalizedLabel(
-            "settings.keyboard_type.select_prompt",
+            "settings.setup.keyboard_type.select_prompt",
             systemImage: "gear"
           )
           .font(.system(size: 24))
 
           AppLocalizedText(
-            "settings.keyboard_type.description"
+            "settings.setup.keyboard_type.description"
           )
 
           VStack {
@@ -34,7 +34,7 @@ struct SettingsAlertView: View {
               .padding(2))
 
           AppLocalizedText(
-            "settings.keyboard_type.change_later"
+            "settings.setup.keyboard_type.change_later"
           )
         }
       }

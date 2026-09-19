@@ -19,12 +19,12 @@ struct DoctorAlertView: View {
       VStack(alignment: .center, spacing: 20.0) {
         if !parseErrorMessage.isEmpty {
           AppLocalizedLabel(
-            "settings.configuration.parse_error",
+            "settings.setup.configuration.parse_error",
             systemImage: ErrorBorder.icon
           )
           .font(.title)
 
-          AppLocalizedText("settings.configuration.parse_error_hint")
+          AppLocalizedText("settings.setup.configuration.parse_error_hint")
 
           Text(parseErrorMessage)
             .modifier(ErrorBorder())

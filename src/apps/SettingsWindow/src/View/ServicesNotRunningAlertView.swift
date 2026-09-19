@@ -18,14 +18,14 @@ struct ServicesNotRunningAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
         AppLocalizedLabel(
-          "settings.services.not_running",
+          "settings.setup.services.not_running",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))
 
         VStack(alignment: .leading, spacing: 0.0) {
           AppLocalizedText(
-            "settings.services.restart_hint"
+            "settings.setup.services.restart_hint"
           )
         }
 
@@ -52,7 +52,7 @@ struct ServicesNotRunningAlertView: View {
               },
               label: {
                 AppLocalizedLabel(
-                  "settings.system_settings.open_login_items",
+                  "settings.setup.system_settings.open_login_items",
                   systemImage: "arrow.forward.circle.fill")
               }
             )

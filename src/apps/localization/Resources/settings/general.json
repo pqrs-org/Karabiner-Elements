@@ -1,13 +1,13 @@
 {
-    "settings.action.title": {
+    "settings.general.action.title": {
         "en": "Action"
         ,"ja": "操作"
     },
-    "settings.defaults.value": {
+    "settings.general.defaults.value": {
         "en": "(Default: {value})"
         ,"ja": "（デフォルト: {value}）"
     },
-    "settings.modifier_mappings.reset_hint": {
+    "settings.general.modifier_mappings.reset_hint": {
         "en": [
             "macOS also remaps modifier keys. ",
             "It's recommended to restore defaults and configure them via Karabiner-Elements.\n\n",
@@ -25,27 +25,27 @@
             "3.「デフォルトに戻す」をクリックします。"
         ]
     },
-    "settings.save.failed": {
+    "settings.general.save.failed": {
         "en": "Save failed:\n{error}"
         ,"ja": "保存に失敗しました:\n{error}"
     },
-    "settings.shared.reorder_hint": {
+    "settings.general.shared.reorder_hint": {
         "en": "Drag this icon to reorder the list"
         ,"ja": "アイコンをドラッグしてリストを並べ替えられます"
     },
-    "settings.units.milliseconds": {
+    "settings.general.units.milliseconds": {
         "en": "milliseconds"
         ,"ja": "ミリ秒"
     },
-    "settings.units.percent": {
+    "settings.general.units.percent": {
         "en": "%"
         ,"ja": "%"
     },
-    "settings.units.points": {
+    "settings.general.units.points": {
         "en": "pt"
         ,"ja": "pt"
     },
-    "settings.window.title": {
+    "settings.general.window.title": {
         "en": "Karabiner-Elements Settings"
         ,"ja": "Karabiner-Elementsの設定"
     }

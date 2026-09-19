@@ -38,7 +38,7 @@ struct SettingsLogView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       HStack {
-        AppLocalizedText("multitouch.log.title")
+        AppLocalizedText("multitouch_extension.log.title")
           .font(.headline)
 
         Spacer()
@@ -52,7 +52,7 @@ struct SettingsLogView: View {
       Divider()
 
       if variableUpdateLog.entries.isEmpty {
-        AppLocalizedText("multitouch.log.empty")
+        AppLocalizedText("multitouch_extension.log.empty")
           .foregroundStyle(.secondary)
           .frame(maxWidth: .infinity, maxHeight: .infinity)
       } else {
@@ -91,29 +91,29 @@ private struct VariableUpdateLogTableHeader: View {
   var body: some View {
     HStack(alignment: .top, spacing: 0) {
       textTableCell(
-        localized("multitouch.log.time"),
+        localized("multitouch_extension.log.time"),
         width: VariableUpdateLogTableLayout.timeWidth,
         height: VariableUpdateLogTableLayout.headerRowHeight * 3)
 
       VStack(spacing: 0) {
         HStack(spacing: 0) {
           textTableCell(
-            localized("multitouch.count.finger"), width: VariableUpdateLogTableLayout.fingerWidth)
+            localized("multitouch_extension.count.finger"), width: VariableUpdateLogTableLayout.fingerWidth)
           textTableCell(
-            localized("multitouch.count.palm"), width: VariableUpdateLogTableLayout.palmWidth)
+            localized("multitouch_extension.count.palm"), width: VariableUpdateLogTableLayout.palmWidth)
         }
 
         HStack(spacing: 0) {
           textTableCell(
-            localized("multitouch.count.total"), width: VariableUpdateLogTableLayout.totalWidth)
+            localized("multitouch_extension.count.total"), width: VariableUpdateLogTableLayout.totalWidth)
           textTableCell(
-            localized("multitouch.count.half"), width: VariableUpdateLogTableLayout.halfWidth)
+            localized("multitouch_extension.count.half"), width: VariableUpdateLogTableLayout.halfWidth)
           textTableCell(
-            localized("multitouch.count.quarter"), width: VariableUpdateLogTableLayout.quarterWidth)
+            localized("multitouch_extension.count.quarter"), width: VariableUpdateLogTableLayout.quarterWidth)
           textTableCell(
-            localized("multitouch.count.total"), width: VariableUpdateLogTableLayout.totalWidth)
+            localized("multitouch_extension.count.total"), width: VariableUpdateLogTableLayout.totalWidth)
           textTableCell(
-            localized("multitouch.count.half"), width: VariableUpdateLogTableLayout.halfWidth)
+            localized("multitouch_extension.count.half"), width: VariableUpdateLogTableLayout.halfWidth)
         }
 
         HStack(spacing: 0) {

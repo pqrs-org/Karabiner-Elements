@@ -12,18 +12,18 @@ struct DriverVersionMismatchedAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .leading, spacing: 20.0) {
         AppLocalizedLabel(
-          "settings.driver.restart_required",
+          "settings.setup.driver.restart_required",
           systemImage: "lightbulb"
         )
         .font(.system(size: 24))
 
         VStack(alignment: .leading, spacing: 0) {
           AppLocalizedText(
-            "settings.driver.outdated"
+            "settings.setup.driver.outdated"
           )
 
           AppLocalizedText(
-            "settings.driver.restart_to_upgrade"
+            "settings.setup.driver.restart_to_upgrade"
           )
           .fontWeight(.bold)
         }
@@ -33,7 +33,7 @@ struct DriverVersionMismatchedAlertView: View {
             action: { showingAdvanced = true },
             label: {
               AppLocalizedLabel(
-                "settings.driver.restart_did_not_help",
+                "settings.setup.driver.restart_did_not_help",
                 systemImage: "questionmark.circle")
             }
           )
@@ -44,12 +44,12 @@ struct DriverVersionMismatchedAlertView: View {
           GroupBox(label: AppLocalizedText("shared.section.advanced")) {
             VStack(alignment: .leading, spacing: 10.0) {
               AppLocalizedText(
-                "settings.driver.deactivate_hint"
+                "settings.setup.driver.deactivate_hint"
               )
 
               VStack(alignment: .leading, spacing: 10.0) {
                 AppLocalizedText(
-                  "settings.driver.manual_driver_load_step_001_deactivate"
+                  "settings.setup.driver.manual_driver_load_step_001_deactivate"
                 )
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -57,7 +57,7 @@ struct DriverVersionMismatchedAlertView: View {
                   .padding(.vertical, 10)
                   .padding(.leading, 20)
 
-                AppLocalizedText("settings.driver.manual_driver_load_step_002_restart")
+                AppLocalizedText("settings.setup.driver.manual_driver_load_step_002_restart")
                   .fontWeight(.bold)
               }
             }

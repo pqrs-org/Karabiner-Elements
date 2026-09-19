@@ -27,6 +27,62 @@
         "en": "Key events from this device are handled via the CGEventTap fallback"
         ,"ja": "このデバイスのキーイベントはCGEventTap fallbackで処理されます"
     },
+    "settings.devices.gamepad.continued_interval": {
+        "en": "Continued movement interval milliseconds:"
+        ,"ja": "移動を継続する間隔（ミリ秒）:"
+    },
+    "settings.devices.gamepad.continued_threshold": {
+        "en": "Continued movement absolute magnitude threshold:"
+        ,"ja": "移動を継続する絶対値のしきい値:"
+    },
+    "settings.devices.gamepad.deadzone": {
+        "en": "deadzone:"
+        ,"ja": "デッドゾーン:"
+    },
+    "settings.devices.gamepad.delta_threshold": {
+        "en": "Delta magnitude detection threshold:"
+        ,"ja": "変化量の検出しきい値:"
+    },
+    "settings.devices.gamepad.horizontal_formula": {
+        "en": "horizontal wheel formula"
+        ,"ja": "横ホイールの式"
+    },
+    "settings.devices.gamepad.invalid_formula": {
+        "en": "Invalid formula"
+        ,"ja": "無効な式"
+    },
+    "settings.devices.gamepad.others": {
+        "en": "Others"
+        ,"ja": "その他"
+    },
+    "settings.devices.gamepad.reset_formula": {
+        "en": "Reset to the default formula"
+        ,"ja": "デフォルトの式に戻す"
+    },
+    "settings.devices.gamepad.swap_sticks": {
+        "en": "Swap gamepad XY and wheels sticks"
+        ,"ja": "ゲームパッドのXYスティックとホイール用スティックを入れ替える"
+    },
+    "settings.devices.gamepad.vertical_formula": {
+        "en": "vertical wheel formula"
+        ,"ja": "縦ホイールの式"
+    },
+    "settings.devices.gamepad.wheels_stick": {
+        "en": "Wheels stick"
+        ,"ja": "ホイール用スティック"
+    },
+    "settings.devices.gamepad.x_formula": {
+        "en": "X formula"
+        ,"ja": "X軸の式"
+    },
+    "settings.devices.gamepad.xy_stick": {
+        "en": "XY stick"
+        ,"ja": "XYスティック"
+    },
+    "settings.devices.gamepad.y_formula": {
+        "en": "Y formula"
+        ,"ja": "Y軸の式"
+    },
     "settings.devices.ignore_vendor_events": {
         "en": "Ignore vendor events"
         ,"ja": "ベンダー固有のイベントを無視"
@@ -38,6 +94,62 @@
     "settings.devices.modify_events": {
         "en": "Modify events"
         ,"ja": "イベントを変更"
+    },
+    "settings.devices.mouse.discard_horizontal_wheel": {
+        "en": "Discard mouse horizontal wheel"
+        ,"ja": "マウスの横ホイールを無視"
+    },
+    "settings.devices.mouse.discard_vertical_wheel": {
+        "en": "Discard mouse vertical wheel"
+        ,"ja": "マウスの縦ホイールを無視"
+    },
+    "settings.devices.mouse.discard_x": {
+        "en": "Discard mouse X"
+        ,"ja": "マウスのX軸の移動を無視"
+    },
+    "settings.devices.mouse.discard_y": {
+        "en": "Discard mouse Y"
+        ,"ja": "マウスのY軸の移動を無視"
+    },
+    "settings.devices.mouse.flags": {
+        "en": "Mouse Flags"
+        ,"ja": "マウスの動作設定"
+    },
+    "settings.devices.mouse.flip_horizontal_wheel": {
+        "en": "Flip mouse horizontal wheel"
+        ,"ja": "マウスの横ホイールを反転"
+    },
+    "settings.devices.mouse.flip_vertical_wheel": {
+        "en": "Flip mouse vertical wheel"
+        ,"ja": "マウスの縦ホイールを反転"
+    },
+    "settings.devices.mouse.flip_x": {
+        "en": "Flip mouse X"
+        ,"ja": "マウスのX軸を反転"
+    },
+    "settings.devices.mouse.flip_y": {
+        "en": "Flip mouse Y"
+        ,"ja": "マウスのY軸を反転"
+    },
+    "settings.devices.mouse.multiplier": {
+        "en": "Multiplier"
+        ,"ja": "倍率"
+    },
+    "settings.devices.mouse.swap_wheels": {
+        "en": "Swap mouse wheels"
+        ,"ja": "マウスの縦ホイールと横ホイールを入れ替える"
+    },
+    "settings.devices.mouse.swap_xy": {
+        "en": "Swap mouse X and Y"
+        ,"ja": "マウスのX軸とY軸を入れ替える"
+    },
+    "settings.devices.mouse.wheels_multiplier": {
+        "en": "Wheels multiplier:"
+        ,"ja": "ホイールの倍率:"
+    },
+    "settings.devices.mouse.xy_multiplier": {
+        "en": "XY movement multiplier:"
+        ,"ja": "XY移動の倍率:"
     },
     "settings.devices.no_manufacturer_name": {
         "en": "No manufacturer name"
@@ -78,117 +190,5 @@
     "settings.devices.vendor_id": {
         "en": "Vendor ID: {decimal} ({hex})"
         ,"ja": "ベンダーID: {decimal}({hex})"
-    },
-    "settings.gamepad.continued_interval": {
-        "en": "Continued movement interval milliseconds:"
-        ,"ja": "移動を継続する間隔（ミリ秒）:"
-    },
-    "settings.gamepad.continued_threshold": {
-        "en": "Continued movement absolute magnitude threshold:"
-        ,"ja": "移動を継続する絶対値のしきい値:"
-    },
-    "settings.gamepad.deadzone": {
-        "en": "deadzone:"
-        ,"ja": "デッドゾーン:"
-    },
-    "settings.gamepad.delta_threshold": {
-        "en": "Delta magnitude detection threshold:"
-        ,"ja": "変化量の検出しきい値:"
-    },
-    "settings.gamepad.horizontal_formula": {
-        "en": "horizontal wheel formula"
-        ,"ja": "横ホイールの式"
-    },
-    "settings.gamepad.invalid_formula": {
-        "en": "Invalid formula"
-        ,"ja": "無効な式"
-    },
-    "settings.gamepad.others": {
-        "en": "Others"
-        ,"ja": "その他"
-    },
-    "settings.gamepad.reset_formula": {
-        "en": "Reset to the default formula"
-        ,"ja": "デフォルトの式に戻す"
-    },
-    "settings.gamepad.swap_sticks": {
-        "en": "Swap gamepad XY and wheels sticks"
-        ,"ja": "ゲームパッドのXYスティックとホイール用スティックを入れ替える"
-    },
-    "settings.gamepad.vertical_formula": {
-        "en": "vertical wheel formula"
-        ,"ja": "縦ホイールの式"
-    },
-    "settings.gamepad.wheels_stick": {
-        "en": "Wheels stick"
-        ,"ja": "ホイール用スティック"
-    },
-    "settings.gamepad.x_formula": {
-        "en": "X formula"
-        ,"ja": "X軸の式"
-    },
-    "settings.gamepad.xy_stick": {
-        "en": "XY stick"
-        ,"ja": "XYスティック"
-    },
-    "settings.gamepad.y_formula": {
-        "en": "Y formula"
-        ,"ja": "Y軸の式"
-    },
-    "settings.mouse.discard_horizontal_wheel": {
-        "en": "Discard mouse horizontal wheel"
-        ,"ja": "マウスの横ホイールを無視"
-    },
-    "settings.mouse.discard_vertical_wheel": {
-        "en": "Discard mouse vertical wheel"
-        ,"ja": "マウスの縦ホイールを無視"
-    },
-    "settings.mouse.discard_x": {
-        "en": "Discard mouse X"
-        ,"ja": "マウスのX軸の移動を無視"
-    },
-    "settings.mouse.discard_y": {
-        "en": "Discard mouse Y"
-        ,"ja": "マウスのY軸の移動を無視"
-    },
-    "settings.mouse.flags": {
-        "en": "Mouse Flags"
-        ,"ja": "マウスの動作設定"
-    },
-    "settings.mouse.flip_horizontal_wheel": {
-        "en": "Flip mouse horizontal wheel"
-        ,"ja": "マウスの横ホイールを反転"
-    },
-    "settings.mouse.flip_vertical_wheel": {
-        "en": "Flip mouse vertical wheel"
-        ,"ja": "マウスの縦ホイールを反転"
-    },
-    "settings.mouse.flip_x": {
-        "en": "Flip mouse X"
-        ,"ja": "マウスのX軸を反転"
-    },
-    "settings.mouse.flip_y": {
-        "en": "Flip mouse Y"
-        ,"ja": "マウスのY軸を反転"
-    },
-    "settings.mouse.multiplier": {
-        "en": "Multiplier"
-        ,"ja": "倍率"
-    },
-    "settings.mouse.swap_wheels": {
-        "en": "Swap mouse wheels"
-        ,"ja": "マウスの縦ホイールと横ホイールを入れ替える"
-    },
-    "settings.mouse.swap_xy": {
-        "en": "Swap mouse X and Y"
-        ,"ja": "マウスのX軸とY軸を入れ替える"
-    },
-    "settings.mouse.wheels_multiplier": {
-        "en": "Wheels multiplier:"
-        ,"ja": "ホイールの倍率:"
-    },
-    "settings.mouse.xy_multiplier": {
-        "en": "XY movement multiplier:"
-        ,"ja": "XY移動の倍率:"
     }
 }

@@ -106,7 +106,7 @@ struct ComplexModificationsView: View {
       HStack {
         if normalizedFilterKeyword.isEmpty && rules.count > 1 {
           AppLocalizedLabel(
-            "settings.shared.reorder_hint",
+            "settings.general.shared.reorder_hint",
             systemImage: "arrow.up.arrow.down.square.fill"
           )
         }

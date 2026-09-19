@@ -167,7 +167,7 @@ struct ChangedSettingsTests {
         precondition(
           row.value
             == AppLanguage.text(
-              ignore ? "value.off" : "value.on", locale: locale, catalog: catalog))
+              ignore ? "shared.value.off" : "shared.value.on", locale: locale, catalog: catalog))
         precondition(
           report.text(version: "test", systemVersion: "test").contains(
             "\(row.label): \(row.value) [\(row.id)]"))

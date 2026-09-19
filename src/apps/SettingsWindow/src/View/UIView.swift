@@ -19,10 +19,10 @@ struct UIView: View {
                 "settings.ui.show_in_menu_bar",
                 " ",
                 .init(
-                  "settings.defaults.value",
+                  "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
-                      defaults.globalConfiguration.showInMenuBar ? "value.on" : "value.off")
+                      defaults.globalConfiguration.showInMenuBar ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }
@@ -33,11 +33,11 @@ struct UIView: View {
                 "settings.ui.show_profile_name_in_menu_bar",
                 " ",
                 .init(
-                  "settings.defaults.value",
+                  "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.showProfileNameInMenuBar
-                        ? "value.on" : "value.off")
+                        ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }
@@ -48,11 +48,11 @@ struct UIView: View {
                 "settings.ui.show_additional_menu_items",
                 " ",
                 .init(
-                  "settings.defaults.value",
+                  "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.showAdditionalMenuItems
-                        ? "value.on" : "value.off")
+                        ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }
@@ -63,11 +63,11 @@ struct UIView: View {
                 "settings.ui.show_quit_confirmation_menu",
                 " ",
                 .init(
-                  "settings.defaults.value",
+                  "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.showQuitConfirmationMenu
-                        ? "value.on" : "value.off")
+                        ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }
@@ -84,11 +84,11 @@ struct UIView: View {
                 "settings.ui.enable_notification_window",
                 " ",
                 .init(
-                  "settings.defaults.value",
+                  "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
                       defaults.globalConfiguration.enableNotificationWindow
-                        ? "value.on" : "value.off")
+                        ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }
@@ -103,11 +103,11 @@ struct UIView: View {
                   "settings.ui.indicate_sticky_modifier_keys_state",
                   " ",
                   .init(
-                    "settings.defaults.value",
+                    "settings.general.defaults.value",
                     arguments: [
                       "value": localized(
                         defaults.selectedProfile.virtualHidKeyboard.indicateStickyModifierKeysState
-                          ? "value.on" : "value.off")
+                          ? "shared.value.on" : "shared.value.off")
                     ]),
                 ])
               }
@@ -146,12 +146,12 @@ struct UIView: View {
                         "settings.ui.notification_window_respect_screen_visible_frame",
                         " ",
                         .init(
-                          "settings.defaults.value",
+                          "settings.general.defaults.value",
                           arguments: [
                             "value": localized(
                               defaults.globalConfiguration
                                 .notificationWindowRespectScreenVisibleFrame
-                                ? "value.on" : "value.off")
+                                ? "shared.value.on" : "shared.value.off")
                           ]),
                       ])
                     }
@@ -165,11 +165,11 @@ struct UIView: View {
                       "settings.ui.notification_window_show_icon",
                       " ",
                       .init(
-                        "settings.defaults.value",
+                        "settings.general.defaults.value",
                         arguments: [
                           "value": localized(
                             defaults.globalConfiguration.notificationWindowShowIcon
-                              ? "value.on" : "value.off")
+                              ? "shared.value.on" : "shared.value.off")
                         ]),
                     ])
                   }
@@ -182,9 +182,9 @@ struct UIView: View {
                       range: 8...64,
                       step: 1,
                       width: 40)
-                    AppLocalizedText("settings.units.points")
+                    AppLocalizedText("settings.general.units.points")
                     AppLocalizedText(
-                      "settings.defaults.value",
+                      "settings.general.defaults.value",
                       arguments: [
                         "value": String(defaults.globalConfiguration.notificationWindowFontSize)
                       ])

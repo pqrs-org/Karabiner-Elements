@@ -37,7 +37,7 @@ struct SetupDriverExtensionView: View {
             url: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension",
             label: {
               AppLocalizedLabel(
-                "settings.system_settings.open_extensions",
+                "settings.setup.system_settings.open_extensions",
                 systemImage: "arrow.forward.circle.fill")
             }
           )
@@ -76,7 +76,7 @@ struct SetupDriverExtensionView: View {
 
             VStack(alignment: .leading, spacing: 10.0) {
               AppLocalizedText(
-                "settings.driver.manual_driver_load_step_001_deactivate"
+                "settings.setup.driver.manual_driver_load_step_001_deactivate"
               )
               .fixedSize(horizontal: false, vertical: true)
 
@@ -84,12 +84,12 @@ struct SetupDriverExtensionView: View {
                 .padding(.vertical, 10)
                 .padding(.leading, 20)
 
-              AppLocalizedText("settings.driver.manual_driver_load_step_002_restart")
+              AppLocalizedText("settings.setup.driver.manual_driver_load_step_002_restart")
                 .fontWeight(.bold)
                 .fixedSize(horizontal: false, vertical: true)
 
               AppLocalizedText(
-                "settings.driver.manual_driver_load_step_003_automatic_load"
+                "settings.setup.driver.manual_driver_load_step_003_automatic_load"
               )
               .fixedSize(horizontal: false, vertical: true)
             }

@@ -14,7 +14,7 @@ struct ConsoleUserServerNotConnectedAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center, spacing: 20.0) {
         AppLocalizedLabel(
-          "settings.connection.agent_waiting",
+          "settings.setup.connection.agent_waiting",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))
@@ -28,7 +28,7 @@ struct ConsoleUserServerNotConnectedAlertView: View {
           GroupBox {
             VStack(alignment: .center, spacing: 20.0) {
               AppLocalizedText(
-                "settings.connection.agent_retry"
+                "settings.setup.connection.agent_retry"
               )
               .fixedSize(horizontal: false, vertical: true)
 
@@ -38,7 +38,7 @@ struct ConsoleUserServerNotConnectedAlertView: View {
                 },
                 label: {
                   AppLocalizedLabel(
-                    "settings.system_settings.open_login_items",
+                    "settings.setup.system_settings.open_login_items",
                     systemImage: "arrow.forward.circle.fill")
                 }
               )

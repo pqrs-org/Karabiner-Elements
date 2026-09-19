@@ -27,11 +27,11 @@ struct DebugAlertsView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppLocalizedText("shared.debug.alerts")
+      AppLocalizedText("settings.debug.alerts")
         .font(.title)
-      AppLocalizedText("shared.debug.instructions")
+      AppLocalizedText("settings.debug.instructions")
         .foregroundStyle(.secondary)
-      AppLocalizedText("shared.debug.preview_hint")
+      AppLocalizedText("settings.debug.preview_hint")
         .foregroundStyle(.secondary)
       ForEach(PreviewAlert.allCases) { alert in
         previewRow(alert)
@@ -56,12 +56,12 @@ struct DebugAlertsView: View {
           }
         )
       ) {
-        AppLocalizedText("shared.debug.viewed")
+        AppLocalizedText("settings.debug.viewed")
         AppLocalizedText(alert.title)
       }
       .toggleStyle(.checkbox)
       .labelsHidden()
-      .help(localized("shared.debug.viewed"))
+      .help(localized("settings.debug.viewed"))
 
       Button {
         viewedAlerts.insert(alert)

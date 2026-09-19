@@ -24,7 +24,7 @@ struct ComplexModificationsAdvancedView: View {
                 width: 50)
 
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(
                     defaults.selectedProfile.complexModifications.parameters
@@ -47,7 +47,7 @@ struct ComplexModificationsAdvancedView: View {
                 width: 50)
 
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(
                     defaults.selectedProfile.complexModifications.parameters
@@ -70,7 +70,7 @@ struct ComplexModificationsAdvancedView: View {
                 width: 50)
 
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(
                     defaults.selectedProfile.complexModifications.parameters
@@ -93,7 +93,7 @@ struct ComplexModificationsAdvancedView: View {
                 width: 50)
 
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(
                     defaults.selectedProfile.complexModifications.parameters
@@ -121,9 +121,9 @@ struct ComplexModificationsAdvancedView: View {
                 step: 10,
                 width: 50)
 
-              AppLocalizedText("settings.units.percent")
+              AppLocalizedText("settings.general.units.percent")
               AppLocalizedText(
-                "settings.defaults.value",
+                "settings.general.defaults.value",
                 arguments: [
                   "value": String(
                     defaults.selectedProfile.complexModifications.parameters

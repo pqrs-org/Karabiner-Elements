@@ -60,7 +60,7 @@ struct DevicesGamePadSettingsView: View {
           .padding()
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
           .tabItem {
-            AppLocalizedText("settings.gamepad.xy_stick")
+            AppLocalizedText("settings.devices.gamepad.xy_stick")
           }
 
           WheelsStickTabView(
@@ -82,14 +82,14 @@ struct DevicesGamePadSettingsView: View {
           .padding()
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
           .tabItem {
-            AppLocalizedText("settings.gamepad.wheels_stick")
+            AppLocalizedText("settings.devices.gamepad.wheels_stick")
           }
 
           OthersTabView(deviceConfiguration: $deviceConfiguration)
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .tabItem {
-              AppLocalizedText("settings.gamepad.others")
+              AppLocalizedText("settings.devices.gamepad.others")
             }
         }
       }
@@ -194,14 +194,14 @@ struct DevicesGamePadSettingsView: View {
 
         HStack(spacing: 20.0) {
           FormulaView(
-            name: "settings.gamepad.x_formula",
+            name: "settings.devices.gamepad.x_formula",
             value: $xFormula,
             error: $xFormulaError,
             resetFunction: resetXFormula
           )
 
           FormulaView(
-            name: "settings.gamepad.y_formula",
+            name: "settings.devices.gamepad.y_formula",
             value: $yFormula,
             error: $yFormulaError,
             resetFunction: resetYFormula
@@ -246,14 +246,14 @@ struct DevicesGamePadSettingsView: View {
 
         HStack(spacing: 20.0) {
           FormulaView(
-            name: "settings.gamepad.vertical_formula",
+            name: "settings.devices.gamepad.vertical_formula",
             value: $verticalWheelFormula,
             error: $verticalWheelFormulaError,
             resetFunction: resetVerticalWheelFormula
           )
 
           FormulaView(
-            name: "settings.gamepad.horizontal_formula",
+            name: "settings.devices.gamepad.horizontal_formula",
             value: $horizontalWheelFormula,
             error: $horizontalWheelFormulaError,
             resetFunction: resetHorizontalWheelFormula
@@ -270,7 +270,7 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       VStack(alignment: .leading, spacing: 40.0) {
         Toggle(isOn: $deviceConfiguration.gamePadSwapSticks) {
-          AppLocalizedText("settings.gamepad.swap_sticks")
+          AppLocalizedText("settings.devices.gamepad.swap_sticks")
         }
         .switchToggleStyle(controlSize: .mini, font: .callout)
 
@@ -295,7 +295,7 @@ struct DevicesGamePadSettingsView: View {
     var body: some View {
       Grid(alignment: .leadingFirstTextBaseline) {
         GridRow {
-          AppLocalizedText("settings.gamepad.deadzone")
+          AppLocalizedText("settings.devices.gamepad.deadzone")
             .gridColumnAlignment(.trailing)
 
           DoubleTextField(
@@ -306,12 +306,12 @@ struct DevicesGamePadSettingsView: View {
             width: 60)
 
           AppLocalizedText(
-            "settings.defaults.value",
+            "settings.general.defaults.value",
             arguments: ["value": String(format: "%.2f", deadzoneDefaultValue)])
         }
 
         GridRow {
-          AppLocalizedText("settings.gamepad.delta_threshold")
+          AppLocalizedText("settings.devices.gamepad.delta_threshold")
 
           DoubleTextField(
             value: $deltaMagnitudeDetectionThreshold,
@@ -321,14 +321,14 @@ struct DevicesGamePadSettingsView: View {
             width: 60)
 
           AppLocalizedText(
-            "settings.defaults.value",
+            "settings.general.defaults.value",
             arguments: [
               "value": String(format: "%.2f", deltaMagnitudeDetectionThresholdDefaultValue)
             ])
         }
 
         GridRow {
-          AppLocalizedText("settings.gamepad.continued_threshold")
+          AppLocalizedText("settings.devices.gamepad.continued_threshold")
 
           DoubleTextField(
             value: $continuedMovementAbsoluteMagnitudeThreshold,
@@ -338,7 +338,7 @@ struct DevicesGamePadSettingsView: View {
             width: 60)
 
           AppLocalizedText(
-            "settings.defaults.value",
+            "settings.general.defaults.value",
             arguments: [
               "value": String(
                 format: "%.2f", continuedMovementAbsoluteMagnitudeThresholdDefaultValue)
@@ -346,7 +346,7 @@ struct DevicesGamePadSettingsView: View {
         }
 
         GridRow {
-          AppLocalizedText("settings.gamepad.continued_interval")
+          AppLocalizedText("settings.devices.gamepad.continued_interval")
 
           IntTextField(
             value: $continuedMovementIntervalMilliseconds,
@@ -355,7 +355,7 @@ struct DevicesGamePadSettingsView: View {
             width: 60)
 
           AppLocalizedText(
-            "settings.defaults.value",
+            "settings.general.defaults.value",
             arguments: ["value": String(continuedMovementIntervalMillisecondsDefaultValue)])
         }
       }
@@ -375,7 +375,7 @@ struct DevicesGamePadSettingsView: View {
 
           if error {
             AppLocalizedLabel(
-              "settings.gamepad.invalid_formula",
+              "settings.devices.gamepad.invalid_formula",
               systemImage: ErrorBorder.icon
             )
             .modifier(ErrorBorder(padding: 4.0))
@@ -389,7 +389,7 @@ struct DevicesGamePadSettingsView: View {
               resetFunction()
             },
             label: {
-              AppLocalizedLabel("settings.gamepad.reset_formula", systemImage: "trash")
+              AppLocalizedLabel("settings.devices.gamepad.reset_formula", systemImage: "trash")
                 .buttonLabelStyle()
             }
           )

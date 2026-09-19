@@ -91,16 +91,16 @@
         "en": "must be between {lower} and {upper}"
         ,"ja": "{lower}から{upper}の範囲で入力してください"
     },
-    "shared.value.unknown": {
-        "en": "Unknown"
-        ,"ja": "不明"
-    },
-    "value.off": {
+    "shared.value.off": {
         "en": "Off"
         ,"ja": "無効"
     },
-    "value.on": {
+    "shared.value.on": {
         "en": "On"
         ,"ja": "有効"
+    },
+    "shared.value.unknown": {
+        "en": "Unknown"
+        ,"ja": "不明"
     }
 }

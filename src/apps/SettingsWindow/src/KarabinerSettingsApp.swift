@@ -49,7 +49,7 @@ struct KarabinerSettingsApp: App {
 
   var body: some Scene {
     Window(
-      AppLanguage.text("settings.window.title", locale: settings.uiLocale),
+      AppLanguage.text("settings.general.window.title", locale: settings.uiLocale),
       id: "main",
       content: {
         ContentView()

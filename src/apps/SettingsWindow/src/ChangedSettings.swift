@@ -58,7 +58,7 @@ struct ChangedSettings {
       "settings.expert.enable_cgeventtap_fallback"
     ],
     "enable_multitouch_extension": [
-      "settings.enable_multitouch_extension"
+      "settings.misc.enable_multitouch_extension"
     ],
     "enable_notification_window": [
       "settings.changed_settings.notification_window_prefix",
@@ -84,10 +84,10 @@ struct ChangedSettings {
       "settings.ui.indicate_sticky_modifier_keys_state",
     ],
     "keyboard_type_v2": [
-      "settings.keyboard_type_v2"
+      "settings.virtual_keyboard.keyboard_type_v2"
     ],
     "mouse_key_xy_scale": [
-      "settings.mouse_key_xy_scale"
+      "settings.virtual_keyboard.mouse_key_xy_scale"
     ],
     "mouse_motion_to_scroll.speed": [
       "settings.complex_modifications.parameters.mouse_motion_to_scroll.speed"
@@ -183,7 +183,7 @@ struct ChangedSettings {
             (key == "ignore_pointing_device_events_by_default")
             ? !number.boolValue
             : number.boolValue
-          return text(enabled ? "value.on" : "value.off")
+          return text(enabled ? "shared.value.on" : "shared.value.off")
         }
         return number.stringValue
       }

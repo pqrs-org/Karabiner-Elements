@@ -7,7 +7,7 @@ struct DriverNotConnectedAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center) {
         AppLocalizedLabel(
-          "settings.connection.iokit_waiting",
+          "settings.setup.connection.iokit_waiting",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))

@@ -6,22 +6,22 @@ struct SettingsAdvancedView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 25.0) {
-      GroupBox(label: AppLocalizedText("multitouch.advanced.sleep")) {
+      GroupBox(label: AppLocalizedText("multitouch_extension.advanced.sleep")) {
         VStack(alignment: .leading, spacing: 30.0) {
           VStack(alignment: .leading) {
             HStack {
               Toggle(isOn: $userSettings.relaunchAfterWakeUpFromSleep) {
                 AppLocalizedText([
-                  "multitouch.advanced.relaunch",
+                  "multitouch_extension.advanced.relaunch",
                   " ",
-                  .init("settings.defaults.value", arguments: ["value": localized("value.on")]),
+                  .init("settings.general.defaults.value", arguments: ["value": localized("shared.value.on")]),
                 ])
               }
               .switchToggleStyle()
             }
 
             HStack {
-              AppLocalizedText("multitouch.advanced.relaunch_wait")
+              AppLocalizedText("multitouch_extension.advanced.relaunch_wait")
 
               IntTextField(
                 value: $userSettings.relaunchWait,
@@ -31,8 +31,8 @@ struct SettingsAdvancedView: View {
               )
               .disabled(!userSettings.relaunchAfterWakeUpFromSleep)
 
-              AppLocalizedText("multitouch.units.seconds")
-              AppLocalizedText("settings.defaults.value", arguments: ["value": "3"])
+              AppLocalizedText("multitouch_extension.units.seconds")
+              AppLocalizedText("settings.general.defaults.value", arguments: ["value": "3"])
             }
           }
         }
@@ -40,11 +40,11 @@ struct SettingsAdvancedView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       }
 
-      GroupBox(label: AppLocalizedText("multitouch.advanced.delay")) {
+      GroupBox(label: AppLocalizedText("multitouch_extension.advanced.delay")) {
         VStack(alignment: .leading, spacing: 30.0) {
           VStack(alignment: .leading) {
             HStack {
-              AppLocalizedText("multitouch.advanced.touch_delay")
+              AppLocalizedText("multitouch_extension.advanced.touch_delay")
 
               IntTextField(
                 value: $userSettings.delayBeforeTurnOn,
@@ -52,17 +52,17 @@ struct SettingsAdvancedView: View {
                 step: 100,
                 width: 80)
 
-              AppLocalizedText("settings.units.milliseconds")
-              AppLocalizedText("settings.defaults.value", arguments: ["value": "0"])
+              AppLocalizedText("settings.general.units.milliseconds")
+              AppLocalizedText("settings.general.defaults.value", arguments: ["value": "0"])
             }
 
-            AppLocalizedText("multitouch.advanced.touch_hint")
+            AppLocalizedText("multitouch_extension.advanced.touch_hint")
               .fixedSize(horizontal: false, vertical: true)
           }
 
           VStack(alignment: .leading) {
             HStack {
-              AppLocalizedText("multitouch.advanced.release_delay")
+              AppLocalizedText("multitouch_extension.advanced.release_delay")
 
               IntTextField(
                 value: $userSettings.delayBeforeTurnOff,
@@ -70,11 +70,11 @@ struct SettingsAdvancedView: View {
                 step: 100,
                 width: 80)
 
-              AppLocalizedText("settings.units.milliseconds")
-              AppLocalizedText("settings.defaults.value", arguments: ["value": "0"])
+              AppLocalizedText("settings.general.units.milliseconds")
+              AppLocalizedText("settings.general.defaults.value", arguments: ["value": "0"])
             }
 
-            AppLocalizedText("multitouch.advanced.release_hint")
+            AppLocalizedText("multitouch_extension.advanced.release_hint")
               .fixedSize(horizontal: false, vertical: true)
           }
         }
@@ -82,11 +82,11 @@ struct SettingsAdvancedView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       }
 
-      GroupBox(label: AppLocalizedText("multitouch.advanced.palm")) {
+      GroupBox(label: AppLocalizedText("multitouch_extension.advanced.palm")) {
         VStack(alignment: .leading, spacing: 30.0) {
           VStack(alignment: .leading) {
             HStack {
-              AppLocalizedText("multitouch.advanced.touch_size_threshold")
+              AppLocalizedText("multitouch_extension.advanced.touch_size_threshold")
 
               DoubleTextField(
                 value: $userSettings.palmThreshold,
@@ -95,10 +95,10 @@ struct SettingsAdvancedView: View {
                 maximumFractionDigits: 3,
                 width: 80)
 
-              AppLocalizedText("settings.defaults.value", arguments: ["value": "2"])
+              AppLocalizedText("settings.general.defaults.value", arguments: ["value": "2"])
             }
 
-            AppLocalizedText("multitouch.advanced.palm_hint")
+            AppLocalizedText("multitouch_extension.advanced.palm_hint")
               .fixedSize(horizontal: false, vertical: true)
           }
 

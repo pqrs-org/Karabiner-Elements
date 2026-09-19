@@ -41,7 +41,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case .log: return "settings.sidebar.item.log"
     case .systemExtensions: return "settings.sidebar.item.system_extensions"
     case .setup: return "settings.sidebar.item.setup"
-    case .debug: return "shared.debug.title"
+    case .debug: return "settings.debug.title"
     }
   }
 
@@ -141,7 +141,7 @@ struct ContentMainView: View {
             Section {
               sidebarRow(.debug)
             } header: {
-              AppLocalizedText("shared.debug.section")
+              AppLocalizedText("settings.debug.section")
             }
           }
         }
@@ -185,7 +185,7 @@ struct ContentMainView: View {
           if systemPreferences.virtualHIDKeyboardModifierMappingsExists {
             VStack(alignment: .leading) {
               AppLocalizedLabel(
-                "settings.modifier_mappings.reset_hint",
+                "settings.general.modifier_mappings.reset_hint",
                 systemImage: WarningBorder.icon
               )
 
@@ -193,7 +193,7 @@ struct ContentMainView: View {
                 url: "x-apple.systempreferences:com.apple.preference.keyboard",
                 label: {
                   AppLocalizedLabel(
-                    "settings.system_settings.open",
+                    "settings.setup.system_settings.open",
                     systemImage: "arrow.up.forward.app"
                   )
                 }
@@ -207,7 +207,7 @@ struct ContentMainView: View {
           if settings.saveErrorMessage != "" {
             VStack(alignment: .leading) {
               AppLocalizedLabel(
-                "settings.save.failed",
+                "settings.general.save.failed",
                 systemImage: ErrorBorder.icon,
                 arguments: ["error": settings.saveErrorMessage]
               )

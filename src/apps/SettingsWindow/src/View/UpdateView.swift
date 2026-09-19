@@ -22,10 +22,10 @@ struct UpdateView: View {
                 "settings.update.automatic",
                 " ",
                 .init(
-                  "settings.defaults.value",
+                  "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
-                      defaults.globalConfiguration.checkForUpdates ? "value.on" : "value.off")
+                      defaults.globalConfiguration.checkForUpdates ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }

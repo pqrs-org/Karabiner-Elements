@@ -1,8 +1,4 @@
 {
-    "settings.enable_multitouch_extension": {
-        "en": "Enable Multitouch Extension"
-        ,"ja": "マルチタッチ拡張を有効にする"
-    },
     "settings.misc.backup_hint": {
         "en": [
             "You can back up your settings or migrate them to another machine by copying karabiner.json. ",
@@ -14,6 +10,10 @@
             "automatic_backupsフォルダーにもバックアップが保存されており、",
             "そのファイルでkarabiner.jsonを上書きすると以前の状態に戻せます。"
         ]
+    },
+    "settings.misc.enable_multitouch_extension": {
+        "en": "Enable Multitouch Extension"
+        ,"ja": "マルチタッチ拡張を有効にする"
     },
     "settings.misc.export_import": {
         "en": "Export & Import"

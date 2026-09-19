@@ -7,7 +7,7 @@ struct VirtualHidDeviceServiceClientNotConnectedAlertView: View {
     ZStack(alignment: .topLeading) {
       VStack(alignment: .center) {
         AppLocalizedLabel(
-          "settings.connection.virtual_hid_waiting",
+          "settings.setup.connection.virtual_hid_waiting",
           systemImage: "hourglass"
         )
         .font(.system(size: 24))
@@ -16,7 +16,7 @@ struct VirtualHidDeviceServiceClientNotConnectedAlertView: View {
         ProgressView()
 
         AppLocalizedLabel(
-          "settings.connection.virtual_hid_hint",
+          "settings.setup.connection.virtual_hid_hint",
           systemImage: "lightbulb"
         )
         .fixedSize(horizontal: false, vertical: true)
