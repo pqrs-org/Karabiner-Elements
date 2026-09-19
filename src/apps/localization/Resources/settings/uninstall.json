@@ -1,7 +1,7 @@
 {
     "settings.uninstall.launch": {
         "en": "Launch uninstaller"
-        ,"ja": "アンインストーラーを起動"
+        ,"ja": "アンインストーラを起動"
     },
     "settings.uninstall.title": {
         "en": "Uninstall"
