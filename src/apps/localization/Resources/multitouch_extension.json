@@ -160,13 +160,9 @@
         "en": "Enable user-interactive activity for better responsiveness to user input"
         ,"ja": "ユーザー操作への応答性を高めるため、高優先度のアクティビティを有効にする"
     },
-    "multitouch.power.options": {
-        "en": "User-interactive activity options"
-        ,"ja": "高優先度アクティビティのオプション"
-    },
     "multitouch.power.warning": {
-        "en": "This setting consumes battery power and may prevent the system from sleeping"
-        ,"ja": "この設定はバッテリーを消費し、システムのスリープを妨げる場合があります。"
+        "en": "Enabling this setting consumes battery power and may prevent the system from sleeping."
+        ,"ja": "この設定を有効にするとバッテリーを消費し、システムのスリープを妨げる場合があります。"
     },
     "multitouch.tab.advanced": {
         "en": "Advanced"

@@ -7,39 +7,48 @@ struct SettingsPowerView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 25.0) {
       GroupBox(label: AppLocalizedText("multitouch.tab.power")) {
-        VStack(alignment: .leading, spacing: 10.0) {
-          HStack {
-            Toggle(isOn: $userSettings.allowUserInteractiveActivity) {
-              AppLocalizedText("multitouch.power.enable")
+        VStack(alignment: .leading, spacing: 30.0) {
+          VStack(alignment: .leading) {
+            HStack {
+              Toggle(isOn: $userSettings.allowUserInteractiveActivity) {
+                AppLocalizedText([
+                  "multitouch.power.enable",
+                  " ",
+                  .init(
+                    "settings.defaults.value",
+                    arguments: ["value": localized("value.off")]
+                  ),
+                ])
+                .fixedSize(horizontal: false, vertical: true)
+              }
+              .switchToggleStyle()
             }
-            .switchToggleStyle()
 
-            AppLocalizedText(
-              "settings.defaults.value", arguments: ["value": localized("value.off")])
+            AppLocalizedLabel(
+              "multitouch.power.warning",
+              systemImage: WarningBorder.icon
+            )
+            .fixedSize(horizontal: false, vertical: true)
+            .modifier(WarningBorder())
           }
 
-          AppLocalizedText("multitouch.power.warning")
+          if userSettings.allowUserInteractiveActivity {
+            HStack {
+              Toggle(isOn: $userSettings.keepUserInteractiveActivityDuringDisplaySleep) {
+                AppLocalizedText([
+                  "multitouch.power.display_sleep",
+                  " ",
+                  .init("settings.defaults.value", arguments: ["value": localized("value.off")]),
+                ])
+                .fixedSize(horizontal: false, vertical: true)
+              }
+              .switchToggleStyle()
+            }
+          }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
       }
-
-      GroupBox(label: AppLocalizedText("multitouch.power.options")) {
-        VStack(alignment: .leading, spacing: 10.0) {
-          HStack {
-            Toggle(isOn: $userSettings.keepUserInteractiveActivityDuringDisplaySleep) {
-              AppLocalizedText("multitouch.power.display_sleep")
-            }
-            .switchToggleStyle()
-
-            AppLocalizedText(
-              "settings.defaults.value", arguments: ["value": localized("value.off")])
-          }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-      }
-      .disabled(!userSettings.allowUserInteractiveActivity)
     }
   }
 }
