@@ -1,0 +1,86 @@
+{
+    "settings.sidebar.item.changed_settings": {
+        "en": "Changed Settings"
+        ,"ja": "変更済み設定"
+    },
+    "settings.sidebar.item.complex_modifications": {
+        "en": "Complex Modifications"
+        ,"ja": "高度なキー変換"
+    },
+    "settings.sidebar.item.devices": {
+        "en": "Devices"
+        ,"ja": "デバイス"
+    },
+    "settings.sidebar.item.expert": {
+        "en": "Expert"
+        ,"ja": "エキスパート向け設定"
+    },
+    "settings.sidebar.item.function_keys": {
+        "en": "Function Keys"
+        ,"ja": "ファンクションキー"
+    },
+    "settings.sidebar.item.log": {
+        "en": "Log"
+        ,"ja": "ログ"
+    },
+    "settings.sidebar.item.misc": {
+        "en": "Misc"
+        ,"ja": "その他"
+    },
+    "settings.sidebar.item.parameters": {
+        "en": "Parameters"
+        ,"ja": "パラメータ"
+    },
+    "settings.sidebar.item.profiles": {
+        "en": "Profiles"
+        ,"ja": "プロファイル"
+    },
+    "settings.sidebar.item.quit_restart": {
+        "en": "Quit, Restart"
+        ,"ja": "終了・再起動"
+    },
+    "settings.sidebar.item.setup": {
+        "en": "Setup"
+        ,"ja": "セットアップ"
+    },
+    "settings.sidebar.item.simple_modifications": {
+        "en": "Simple Modifications"
+        ,"ja": "単純なキー変換"
+    },
+    "settings.sidebar.item.system_extensions": {
+        "en": "System Extensions"
+        ,"ja": "システム拡張"
+    },
+    "settings.sidebar.item.ui": {
+        "en": "UI"
+        ,"ja": "UI"
+    },
+    "settings.sidebar.item.uninstall": {
+        "en": "Uninstall"
+        ,"ja": "アンインストール"
+    },
+    "settings.sidebar.item.update": {
+        "en": "Update"
+        ,"ja": "アップデート"
+    },
+    "settings.sidebar.item.virtual_keyboard": {
+        "en": "Virtual Keyboard"
+        ,"ja": "仮想キーボード"
+    },
+    "settings.sidebar.section.configurations": {
+        "en": "Configurations"
+        ,"ja": "設定"
+    },
+    "settings.sidebar.section.diagnostic": {
+        "en": "Diagnostic"
+        ,"ja": "診断"
+    },
+    "settings.sidebar.section.maintenance": {
+        "en": "Maintenance"
+        ,"ja": "メンテナンス"
+    },
+    "settings.sidebar.section.modifications": {
+        "en": "Modifications"
+        ,"ja": "キー変換"
+    }
+}
