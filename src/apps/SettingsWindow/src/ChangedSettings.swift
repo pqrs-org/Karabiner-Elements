@@ -28,7 +28,7 @@ struct ChangedSettings {
 
   static let settingLocalizationKeys: [String: [String]] = [
     "background_color": [
-      "setting.background_color"
+      "settings.ui.background_color"
     ],
     "basic.simultaneous_threshold_milliseconds": [
       "settings.complex_modifications.parameters.basic.simultaneous_threshold_milliseconds"
@@ -49,20 +49,20 @@ struct ChangedSettings {
       "settings.changed_settings.setting.configured_devices_count"
     ],
     "delay_milliseconds_before_open_device": [
-      "setting.delay_milliseconds_before_open_device"
+      "settings.expert.delay_milliseconds_before_open_device"
     ],
     "delay_milliseconds_before_sleep_shortcut": [
-      "setting.delay_milliseconds_before_sleep_shortcut"
+      "settings.expert.delay_milliseconds_before_sleep_shortcut"
     ],
     "enable_cgeventtap_fallback": [
-      "setting.enable_cgeventtap_fallback"
+      "settings.expert.enable_cgeventtap_fallback"
     ],
     "enable_multitouch_extension": [
-      "setting.enable_multitouch_extension"
+      "settings.enable_multitouch_extension"
     ],
     "enable_notification_window": [
       "settings.changed_settings.notification_window_prefix",
-      "setting.enable_notification_window",
+      "settings.ui.enable_notification_window",
     ],
     "enabled_rules_count": [
       "settings.changed_settings.setting.enabled_rules_count"
@@ -71,7 +71,7 @@ struct ChangedSettings {
       "settings.changed_settings.setting.external_editor_path"
     ],
     "filter_useless_events_from_specific_devices": [
-      "setting.filter_useless_events_from_specific_devices"
+      "settings.expert.filter_useless_events_from_specific_devices"
     ],
     "fn_function_keys_count": [
       "settings.changed_settings.setting.fn_function_keys_count"
@@ -81,82 +81,82 @@ struct ChangedSettings {
     ],
     "indicate_sticky_modifier_keys_state": [
       "settings.changed_settings.notification_window_prefix",
-      "setting.indicate_sticky_modifier_keys_state",
+      "settings.ui.indicate_sticky_modifier_keys_state",
     ],
     "keyboard_type_v2": [
-      "setting.keyboard_type_v2"
+      "settings.keyboard_type_v2"
     ],
     "mouse_key_xy_scale": [
-      "setting.mouse_key_xy_scale"
+      "settings.mouse_key_xy_scale"
     ],
     "mouse_motion_to_scroll.speed": [
       "settings.complex_modifications.parameters.mouse_motion_to_scroll.speed"
     ],
     "notification_window_colors.dark.background_color": [
       "settings.changed_settings.notification_window_prefix",
-      "section.dark",
-      "setting.background_color",
+      "settings.ui.section.dark",
+      "settings.ui.background_color",
     ],
     "notification_window_colors.dark.text_color": [
       "settings.changed_settings.notification_window_prefix",
-      "section.dark",
-      "setting.text_color",
+      "settings.ui.section.dark",
+      "settings.ui.text_color",
     ],
     "notification_window_colors.light.background_color": [
       "settings.changed_settings.notification_window_prefix",
-      "section.light",
-      "setting.background_color",
+      "settings.ui.section.light",
+      "settings.ui.background_color",
     ],
     "notification_window_colors.light.text_color": [
       "settings.changed_settings.notification_window_prefix",
-      "section.light",
-      "setting.text_color",
+      "settings.ui.section.light",
+      "settings.ui.text_color",
     ],
     "notification_window_font_size": [
       "settings.changed_settings.notification_window_prefix",
-      "setting.notification_window_font_size",
+      "settings.ui.notification_window_font_size",
     ],
     "notification_window_position": [
       "settings.changed_settings.notification_window_prefix",
-      "setting.notification_window_position",
+      "settings.ui.notification_window_position",
     ],
     "notification_window_respect_screen_visible_frame": [
       "settings.changed_settings.notification_window_prefix",
-      "setting.notification_window_respect_screen_visible_frame",
+      "settings.ui.notification_window_respect_screen_visible_frame",
     ],
     "notification_window_show_icon": [
       "settings.changed_settings.notification_window_prefix",
-      "setting.notification_window_show_icon",
+      "settings.ui.notification_window_show_icon",
     ],
     "reorder_same_timestamp_input_events_to_prioritize_modifiers": [
-      "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers"
+      "settings.expert.reorder_same_timestamp_input_events_to_prioritize_modifiers"
     ],
     "rules_count": [
       "settings.changed_settings.setting.rules_count"
     ],
     "show_additional_menu_items": [
-      "setting.show_additional_menu_items"
+      "settings.ui.show_additional_menu_items"
     ],
     "show_in_menu_bar": [
-      "setting.show_in_menu_bar"
+      "settings.ui.show_in_menu_bar"
     ],
     "show_profile_name_in_menu_bar": [
-      "setting.show_profile_name_in_menu_bar"
+      "settings.ui.show_profile_name_in_menu_bar"
     ],
     "show_quit_confirmation_menu": [
-      "setting.show_quit_confirmation_menu"
+      "settings.ui.show_quit_confirmation_menu"
     ],
     "simple_modifications_count": [
       "settings.changed_settings.setting.simple_modifications_count"
     ],
     "text_color": [
-      "setting.text_color"
+      "settings.ui.text_color"
     ],
     "ui_language": [
       "settings.changed_settings.setting.ui_language"
     ],
     "unsafe_ui": [
-      "setting.unsafe_ui"
+      "settings.expert.unsafe_ui"
     ],
   ]
 

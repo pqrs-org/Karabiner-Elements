@@ -16,7 +16,7 @@ struct UIView: View {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.showInMenuBar) {
               AppLocalizedText([
-                "setting.show_in_menu_bar",
+                "settings.ui.show_in_menu_bar",
                 " ",
                 .init(
                   "settings.defaults.value",
@@ -30,7 +30,7 @@ struct UIView: View {
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showProfileNameInMenuBar) {
               AppLocalizedText([
-                "setting.show_profile_name_in_menu_bar",
+                "settings.ui.show_profile_name_in_menu_bar",
                 " ",
                 .init(
                   "settings.defaults.value",
@@ -45,7 +45,7 @@ struct UIView: View {
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showAdditionalMenuItems) {
               AppLocalizedText([
-                "setting.show_additional_menu_items",
+                "settings.ui.show_additional_menu_items",
                 " ",
                 .init(
                   "settings.defaults.value",
@@ -60,7 +60,7 @@ struct UIView: View {
 
             Toggle(isOn: $settings.configuration.globalConfiguration.showQuitConfirmationMenu) {
               AppLocalizedText([
-                "setting.show_quit_confirmation_menu",
+                "settings.ui.show_quit_confirmation_menu",
                 " ",
                 .init(
                   "settings.defaults.value",
@@ -81,7 +81,7 @@ struct UIView: View {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.enableNotificationWindow) {
               AppLocalizedText([
-                "setting.enable_notification_window",
+                "settings.ui.enable_notification_window",
                 " ",
                 .init(
                   "settings.defaults.value",
@@ -100,7 +100,7 @@ struct UIView: View {
                   .indicateStickyModifierKeysState
               ) {
                 AppLocalizedText([
-                  "setting.indicate_sticky_modifier_keys_state",
+                  "settings.ui.indicate_sticky_modifier_keys_state",
                   " ",
                   .init(
                     "settings.defaults.value",
@@ -119,7 +119,7 @@ struct UIView: View {
                     Picker(
                       selection: $settings.configuration.globalConfiguration
                         .notificationWindowPosition,
-                      label: AppLocalizedText("setting.notification_window_position")
+                      label: AppLocalizedText("settings.ui.notification_window_position")
                     ) {
                       AppLocalizedText("settings.ui.position.top_left").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition.topLeft
@@ -143,7 +143,7 @@ struct UIView: View {
                         .notificationWindowRespectScreenVisibleFrame
                     ) {
                       AppLocalizedText([
-                        "setting.notification_window_respect_screen_visible_frame",
+                        "settings.ui.notification_window_respect_screen_visible_frame",
                         " ",
                         .init(
                           "settings.defaults.value",
@@ -162,7 +162,7 @@ struct UIView: View {
                     isOn: $settings.configuration.globalConfiguration.notificationWindowShowIcon
                   ) {
                     AppLocalizedText([
-                      "setting.notification_window_show_icon",
+                      "settings.ui.notification_window_show_icon",
                       " ",
                       .init(
                         "settings.defaults.value",
@@ -176,7 +176,7 @@ struct UIView: View {
                   .switchToggleStyle()
 
                   HStack {
-                    AppLocalizedText("setting.notification_window_font_size")
+                    AppLocalizedText("settings.ui.notification_window_font_size")
                     IntTextField(
                       value: $settings.configuration.globalConfiguration.notificationWindowFontSize,
                       range: 8...64,
@@ -192,7 +192,7 @@ struct UIView: View {
 
                   Grid(alignment: .leading, horizontalSpacing: 12.0, verticalSpacing: 12.0) {
                     notificationWindowColorSettings(
-                      title: "section.light",
+                      title: "settings.ui.section.light",
                       background: $settings.configuration.globalConfiguration
                         .notificationWindowColors
                         .light.backgroundColor,
@@ -204,7 +204,7 @@ struct UIView: View {
                         appearance: .aqua),
                       textSystemColor: resolvedSystemColor(.labelColor, appearance: .aqua))
                     notificationWindowColorSettings(
-                      title: "section.dark",
+                      title: "settings.ui.section.dark",
                       background: $settings.configuration.globalConfiguration
                         .notificationWindowColors
                         .dark.backgroundColor,
@@ -308,11 +308,11 @@ struct UIView: View {
         .bold()
         .fixedSize(horizontal: true, vertical: false)
       notificationWindowColorPicker(
-        title: "setting.background_color",
+        title: "settings.ui.background_color",
         value: background,
         systemColor: backgroundSystemColor)
       notificationWindowColorPicker(
-        title: "setting.text_color",
+        title: "settings.ui.text_color",
         value: text,
         systemColor: textSystemColor)
     }

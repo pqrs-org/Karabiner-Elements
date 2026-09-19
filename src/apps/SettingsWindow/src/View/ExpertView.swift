@@ -15,7 +15,7 @@ struct ExpertView: View {
           VStack(alignment: .leading, spacing: 4.0) {
             Toggle(isOn: $settings.configuration.globalConfiguration.unsafeUi) {
               AppLocalizedText([
-                "setting.unsafe_ui",
+                "settings.expert.unsafe_ui",
                 " ",
                 .init(
                   "settings.defaults.value",
@@ -64,7 +64,7 @@ struct ExpertView: View {
             VStack(alignment: .leading, spacing: 4.0) {
               Toggle(isOn: $settings.configuration.globalConfiguration.enableCgeventtapFallback) {
                 AppLocalizedText([
-                  "setting.enable_cgeventtap_fallback",
+                  "settings.expert.enable_cgeventtap_fallback",
                   " ",
                   .init(
                     "settings.defaults.value",
@@ -97,7 +97,7 @@ struct ExpertView: View {
                   .filterUselessEventsFromSpecificDevices
               ) {
                 AppLocalizedText([
-                  "setting.filter_useless_events_from_specific_devices",
+                  "settings.expert.filter_useless_events_from_specific_devices",
                   " ",
                   .init(
                     "settings.defaults.value",
@@ -124,7 +124,7 @@ struct ExpertView: View {
                   .reorderSameTimestampInputEventsToPrioritizeModifiers
               ) {
                 AppLocalizedText([
-                  "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers",
+                  "settings.expert.reorder_same_timestamp_input_events_to_prioritize_modifiers",
                   " ",
                   .init(
                     "settings.defaults.value",
@@ -149,7 +149,7 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: AppLocalizedText("setting.delay_milliseconds_before_open_device")) {
+        GroupBox(label: AppLocalizedText("settings.expert.delay_milliseconds_before_open_device")) {
           VStack(alignment: .leading, spacing: 4.0) {
             HStack {
               IntTextField(
@@ -178,7 +178,9 @@ struct ExpertView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: AppLocalizedText("setting.delay_milliseconds_before_sleep_shortcut")) {
+        GroupBox(
+          label: AppLocalizedText("settings.expert.delay_milliseconds_before_sleep_shortcut")
+        ) {
           VStack(alignment: .leading, spacing: 4.0) {
             HStack {
               IntTextField(

@@ -1,9 +1,9 @@
 {
-    "setting.keyboard_type_v2": {
+    "settings.keyboard_type_v2": {
         "en": "Keyboard type"
         ,"ja": "キーボードの種類"
     },
-    "setting.mouse_key_xy_scale": {
+    "settings.mouse_key_xy_scale": {
         "en": "Cursor speed:"
         ,"ja": "カーソル速度:"
     },

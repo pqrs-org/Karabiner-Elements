@@ -15,7 +15,7 @@ struct MiscView: View {
           VStack(alignment: .leading, spacing: 12.0) {
             Toggle(isOn: $settings.configuration.machineSpecific.enableMultitouchExtension) {
               AppLocalizedText([
-                "setting.enable_multitouch_extension",
+                "settings.enable_multitouch_extension",
                 " ",
                 .init(
                   "settings.defaults.value",

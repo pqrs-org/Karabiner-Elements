@@ -127,7 +127,8 @@ struct LocalizationTests {
         AppLanguage.text("menu_bar_extra.settings", locale: locale, catalog: extended)
           == translation)
       precondition(
-        AppLanguage.text("setting.enable_cgeventtap_fallback", locale: locale, catalog: extended)
+        AppLanguage.text(
+          "settings.expert.enable_cgeventtap_fallback", locale: locale, catalog: extended)
           == "Enable CGEventTap fallback")
     }
     precondition(

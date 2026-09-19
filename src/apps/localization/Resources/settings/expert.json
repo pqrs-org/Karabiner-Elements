@@ -1,31 +1,15 @@
 {
-    "setting.delay_milliseconds_before_open_device": {
-        "en": "Delay to grab device"
-        ,"ja": "デバイスを占有するまでの遅延"
-    },
-    "setting.delay_milliseconds_before_sleep_shortcut": {
-        "en": "Delay before sending sleep shortcut key-down events"
-        ,"ja": "スリープショートカットのキー押下イベントを送信するまでの遅延"
-    },
-    "setting.enable_cgeventtap_fallback": {
-        "en": "Enable CGEventTap fallback"
-        ,"ja": "CGEventTap fallbackを有効にする"
-    },
-    "setting.filter_useless_events_from_specific_devices": {
-        "en": "Filter useless events from specific devices"
-        ,"ja": "特定のデバイスからの不要なイベントを除外"
-    },
-    "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers": {
-        "en": "Reorder same timestamp input events to prioritize modifiers"
-        ,"ja": "同じタイムスタンプの入力イベントを並べ替えて修飾キーを優先"
-    },
-    "setting.unsafe_ui": {
-        "en": "Allow unsafe configuration"
-        ,"ja": "安全保護を無効にした設定を許可"
-    },
     "settings.expert.cgeventtap_fallback": {
         "en": "CGEventTap fallback"
         ,"ja": "CGEventTap fallback"
+    },
+    "settings.expert.delay_milliseconds_before_open_device": {
+        "en": "Delay to grab device"
+        ,"ja": "デバイスを占有するまでの遅延"
+    },
+    "settings.expert.delay_milliseconds_before_sleep_shortcut": {
+        "en": "Delay before sending sleep shortcut key-down events"
+        ,"ja": "スリープショートカットのキー押下イベントを送信するまでの遅延"
     },
     "settings.expert.device_delay_warning": {
         "en": [
@@ -37,6 +21,10 @@
             "遅延が短すぎる場合（例：0）、Karabiner-Elementsの終了後にデバイスが使用できなくなります。\n",
             "（macOSの問題です。デバイスを抜き差しすると解消します。）"
         ]
+    },
+    "settings.expert.enable_cgeventtap_fallback": {
+        "en": "Enable CGEventTap fallback"
+        ,"ja": "CGEventTap fallbackを有効にする"
     },
     "settings.expert.fallback_description": {
         "en": [
@@ -63,6 +51,10 @@
             "    - スティックを動かしていなくてもランダムな方向の傾きが送信され続けるスティックのイベント。"
         ]
     },
+    "settings.expert.filter_useless_events_from_specific_devices": {
+        "en": "Filter useless events from specific devices"
+        ,"ja": "特定のデバイスからの不要なイベントを除外"
+    },
     "settings.expert.modifier_order_hint": {
         "en": [
             "If your keyboard supports hardware macros and sends multiple keys at once, ",
@@ -84,6 +76,10 @@
     "settings.expert.pointing_devices": {
         "en": "Pointing devices"
         ,"ja": "ポインティングデバイス"
+    },
+    "settings.expert.reorder_same_timestamp_input_events_to_prioritize_modifiers": {
+        "en": "Reorder same timestamp input events to prioritize modifiers"
+        ,"ja": "同じタイムスタンプの入力イベントを並べ替えて修飾キーを優先"
     },
     "settings.expert.sleep_delay_description": {
         "en": [
@@ -125,5 +121,9 @@
             "- デバイスタブでApple製ポインティングデバイスを有効にする。\n",
             "- 単純なキー変換タブで左クリックを変更する。"
         ]
+    },
+    "settings.expert.unsafe_ui": {
+        "en": "Allow unsafe configuration"
+        ,"ja": "安全保護を無効にした設定を許可"
     }
 }

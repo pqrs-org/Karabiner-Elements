@@ -1,5 +1,5 @@
 {
-    "setting.enable_multitouch_extension": {
+    "settings.enable_multitouch_extension": {
         "en": "Enable Multitouch Extension"
         ,"ja": "マルチタッチ拡張を有効にする"
     },
