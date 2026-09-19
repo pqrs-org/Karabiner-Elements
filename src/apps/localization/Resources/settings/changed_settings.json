@@ -35,6 +35,34 @@
         "en": "Virtual keyboard"
         ,"ja": "仮想キーボード"
     },
+    "settings.changed_settings.setting.configured_devices_count": {
+        "en": "Configured device count"
+        ,"ja": "個別設定のあるデバイス数"
+    },
+    "settings.changed_settings.setting.enabled_rules_count": {
+        "en": "Enabled rule count"
+        ,"ja": "有効なルール数"
+    },
+    "settings.changed_settings.setting.external_editor_path": {
+        "en": "External editor"
+        ,"ja": "外部エディタ"
+    },
+    "settings.changed_settings.setting.fn_function_keys_count": {
+        "en": "Changed Function Keys count"
+        ,"ja": "変更した Function Keys の件数"
+    },
+    "settings.changed_settings.setting.rules_count": {
+        "en": "Complex Modifications rule count"
+        ,"ja": "高度なキー変換のルール数"
+    },
+    "settings.changed_settings.setting.simple_modifications_count": {
+        "en": "Simple Modifications count"
+        ,"ja": "単純なキー変換の件数"
+    },
+    "settings.changed_settings.setting.ui_language": {
+        "en": "Language"
+        ,"ja": "言語"
+    },
     "settings.changed_settings.title": {
         "en": "Changed Settings"
         ,"ja": "変更済み設定"

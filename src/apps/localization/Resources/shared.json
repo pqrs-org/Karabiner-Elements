@@ -27,14 +27,6 @@
         "en": "to_if_held_down_threshold_milliseconds:"
         ,"ja": "to_if_held_down_threshold_milliseconds:"
     },
-    "setting.check_for_updates": {
-        "en": "Check for updates"
-        ,"ja": "アップデートを確認"
-    },
-    "setting.configured_devices_count": {
-        "en": "Configured device count"
-        ,"ja": "個別設定のあるデバイス数"
-    },
     "setting.delay_milliseconds_before_open_device": {
         "en": "Delay to grab device"
         ,"ja": "デバイスを占有するまでの遅延"
@@ -55,21 +47,9 @@
         "en": "Enable notification window"
         ,"ja": "通知ウインドウを有効にする"
     },
-    "setting.enabled_rules_count": {
-        "en": "Enabled rule count"
-        ,"ja": "有効なルール数"
-    },
-    "setting.external_editor_path": {
-        "en": "External editor"
-        ,"ja": "外部エディタ"
-    },
     "setting.filter_useless_events_from_specific_devices": {
         "en": "Filter useless events from specific devices"
         ,"ja": "特定のデバイスからの不要なイベントを除外"
-    },
-    "setting.fn_function_keys_count": {
-        "en": "Changed Function Keys count"
-        ,"ja": "変更した Function Keys の件数"
     },
     "setting.indicate_sticky_modifier_keys_state": {
         "en": "Indicate sticky modifier key state"
@@ -107,10 +87,6 @@
         "en": "Reorder same timestamp input events to prioritize modifiers"
         ,"ja": "同じタイムスタンプの入力イベントを並べ替えて修飾キーを優先"
     },
-    "setting.rules_count": {
-        "en": "Complex Modifications rule count"
-        ,"ja": "高度なキー変換のルール数"
-    },
     "setting.show_additional_menu_items": {
         "en": "Show additional menu items"
         ,"ja": "追加のメニュー項目を表示"
@@ -127,17 +103,9 @@
         "en": "Show confirmation submenu for Quit Karabiner-Elements"
         ,"ja": "「Karabiner-Elements を終了」に確認用のサブメニューを表示"
     },
-    "setting.simple_modifications_count": {
-        "en": "Simple Modifications count"
-        ,"ja": "単純なキー変換の件数"
-    },
     "setting.text_color": {
         "en": "Text color"
         ,"ja": "文字色"
-    },
-    "setting.ui_language": {
-        "en": "Language"
-        ,"ja": "言語"
     },
     "setting.unsafe_ui": {
         "en": "Allow unsafe configuration"

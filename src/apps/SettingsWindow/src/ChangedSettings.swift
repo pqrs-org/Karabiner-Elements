@@ -43,10 +43,10 @@ struct ChangedSettings {
       "setting.basic.to_if_held_down_threshold_milliseconds"
     ],
     "check_for_updates": [
-      "setting.check_for_updates"
+      "settings.update.automatic"
     ],
     "configured_devices_count": [
-      "setting.configured_devices_count"
+      "settings.changed_settings.setting.configured_devices_count"
     ],
     "delay_milliseconds_before_open_device": [
       "setting.delay_milliseconds_before_open_device"
@@ -65,16 +65,16 @@ struct ChangedSettings {
       "setting.enable_notification_window",
     ],
     "enabled_rules_count": [
-      "setting.enabled_rules_count"
+      "settings.changed_settings.setting.enabled_rules_count"
     ],
     "external_editor_path": [
-      "setting.external_editor_path"
+      "settings.changed_settings.setting.external_editor_path"
     ],
     "filter_useless_events_from_specific_devices": [
       "setting.filter_useless_events_from_specific_devices"
     ],
     "fn_function_keys_count": [
-      "setting.fn_function_keys_count"
+      "settings.changed_settings.setting.fn_function_keys_count"
     ],
     "ignore_pointing_device_events_by_default": [
       "settings.expert.modify_pointing_by_default"
@@ -132,7 +132,7 @@ struct ChangedSettings {
       "setting.reorder_same_timestamp_input_events_to_prioritize_modifiers"
     ],
     "rules_count": [
-      "setting.rules_count"
+      "settings.changed_settings.setting.rules_count"
     ],
     "show_additional_menu_items": [
       "setting.show_additional_menu_items"
@@ -147,13 +147,13 @@ struct ChangedSettings {
       "setting.show_quit_confirmation_menu"
     ],
     "simple_modifications_count": [
-      "setting.simple_modifications_count"
+      "settings.changed_settings.setting.simple_modifications_count"
     ],
     "text_color": [
       "setting.text_color"
     ],
     "ui_language": [
-      "setting.ui_language"
+      "settings.changed_settings.setting.ui_language"
     ],
     "unsafe_ui": [
       "setting.unsafe_ui"
