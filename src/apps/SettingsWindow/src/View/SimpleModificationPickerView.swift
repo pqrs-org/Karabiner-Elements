@@ -18,26 +18,12 @@ struct SimpleModificationPickerView: View {
                   action(e.json)
                 },
                 label: {
-                  // We have to use `Image` and `Text` in menu instead of `Label` in order to show image.
-                  if e.label == label {
-                    Image(systemName: "circle.circle.fill")
-                  } else {
-                    Image(systemName: "circle")
-                  }
-
-                  Text(verbatim: localizedLabel(e.label))
+                  Text(verbatim: selectionLabel(e.label, selected: e.label == label))
                 })
             }
           }
         } label: {
-          // We have to use `Image` and `Text` in menu instead of `Label` in order to show image.
-          if category.include(label: label) {
-            Image(systemName: "circle.circle.fill")
-          } else {
-            Image(systemName: "circle")
-          }
-
-          Text(verbatim: localizedLabel(category.name))
+          Text(verbatim: selectionLabel(category.name, selected: category.include(label: label)))
         }
       }
     }
@@ -48,5 +34,11 @@ struct SimpleModificationPickerView: View {
   // Unknown strings (including custom JSON) are displayed verbatim by the lookup.
   private func localizedLabel(_ label: String) -> String {
     localized(label)
+  }
+
+  // On macOS 27, icons provided by Label or Image are not displayed in these menus.
+  // Use monochrome Unicode symbols in the label text to keep selection markers visible.
+  private func selectionLabel(_ label: String, selected: Bool) -> String {
+    (selected ? "◉ " : "○ ") + localizedLabel(label)
   }
 }
