@@ -17,7 +17,7 @@ struct SetupDriverExtensionView: View {
   }
 
   var body: some View {
-    VStack(alignment: .center) {
+    VStack(alignment: .leading) {
       AppLocalizedLabel(
         "settings.setup.driver.permission",
         systemImage: "lightbulb"
@@ -25,8 +25,8 @@ struct SetupDriverExtensionView: View {
       .font(.system(size: 24))
 
       GroupBox {
-        VStack(alignment: .center, spacing: 20.0) {
-          VStack(alignment: .center, spacing: 0) {
+        VStack(alignment: .leading, spacing: 20.0) {
+          VStack(alignment: .leading, spacing: 0) {
             AppLocalizedText("settings.setup.driver.not_loaded")
             AppLocalizedText(
               "settings.setup.driver.allow"

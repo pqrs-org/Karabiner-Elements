@@ -9,7 +9,7 @@ struct SetupDriverExtensionViewMacOS14: View {
   }
 
   var body: some View {
-    VStack(alignment: .center) {
+    VStack(alignment: .leading) {
       AppLocalizedLabel(
         "settings.setup.driver_legacy.permission",
         systemImage: "lightbulb"
@@ -17,8 +17,8 @@ struct SetupDriverExtensionViewMacOS14: View {
       .font(.system(size: 24))
 
       GroupBox {
-        VStack(alignment: .center, spacing: 20.0) {
-          VStack(alignment: .center, spacing: 0) {
+        VStack(alignment: .leading, spacing: 20.0) {
+          VStack(alignment: .leading, spacing: 0) {
             AppLocalizedText("settings.setup.driver.not_loaded")
             AppLocalizedText(
               "settings.setup.driver_legacy.allow"
