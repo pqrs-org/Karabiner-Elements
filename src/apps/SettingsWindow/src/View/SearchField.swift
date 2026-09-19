@@ -5,7 +5,7 @@ import SwiftUI
 struct SearchField: NSViewRepresentable {
   @AppLocalizationContext private var localized
   @Binding var text: String
-  var placeholderKey = "shared.filter"
+  var placeholderKey = "shared.find"
   var debounceInterval: TimeInterval = 0.2
 
   func makeCoordinator() -> Coordinator {
