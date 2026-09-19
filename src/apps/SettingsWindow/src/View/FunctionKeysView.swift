@@ -14,15 +14,13 @@ struct FunctionKeysView: View {
         // the setting will not be applied correctly.
         // Therefore, instead of changing it directly here, providing a button to open the System Settings.
 
-        HStack {
-          AppLocalizedText("settings.function_keys.system_setting")
-
-          if settingsCoreServiceDaemonClient.useFkeysAsStandardFunctionKeys {
-            AppLocalizedText("value.on").foregroundColor(.accentColor).bold()
-          } else {
-            AppLocalizedText("value.off")
-          }
-        }
+        AppLocalizedText([
+          "settings.function_keys.system_setting",
+          " ",
+          .init(
+            settingsCoreServiceDaemonClient.useFkeysAsStandardFunctionKeys
+              ? "value.on" : "value.off"),
+        ])
 
         OpenSystemSettingsButton(
           url: "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?FunctionKeys",
