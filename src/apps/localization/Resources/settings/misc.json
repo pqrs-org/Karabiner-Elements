@@ -9,7 +9,7 @@
     },
     "settings.misc.export_import": {
         "en": "Export & Import"
-        ,"ja": "書き出しと読み込み"
+        ,"ja": "エクスポートとインポート"
     },
     "settings.misc.install_system_default": {
         "en": "Copy the current configuration to the system default configuration"

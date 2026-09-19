@@ -31,16 +31,16 @@ struct ChangedSettings {
       "setting.background_color"
     ],
     "basic.simultaneous_threshold_milliseconds": [
-      "setting.basic.simultaneous_threshold_milliseconds"
+      "settings.complex_modifications.parameters.basic.simultaneous_threshold_milliseconds"
     ],
     "basic.to_delayed_action_delay_milliseconds": [
-      "setting.basic.to_delayed_action_delay_milliseconds"
+      "settings.complex_modifications.parameters.basic.to_delayed_action_delay_milliseconds"
     ],
     "basic.to_if_alone_timeout_milliseconds": [
-      "setting.basic.to_if_alone_timeout_milliseconds"
+      "settings.complex_modifications.parameters.basic.to_if_alone_timeout_milliseconds"
     ],
     "basic.to_if_held_down_threshold_milliseconds": [
-      "setting.basic.to_if_held_down_threshold_milliseconds"
+      "settings.complex_modifications.parameters.basic.to_if_held_down_threshold_milliseconds"
     ],
     "check_for_updates": [
       "settings.update.automatic"
@@ -90,7 +90,7 @@ struct ChangedSettings {
       "setting.mouse_key_xy_scale"
     ],
     "mouse_motion_to_scroll.speed": [
-      "setting.mouse_motion_to_scroll.speed"
+      "settings.complex_modifications.parameters.mouse_motion_to_scroll.speed"
     ],
     "notification_window_colors.dark.background_color": [
       "settings.changed_settings.notification_window_prefix",

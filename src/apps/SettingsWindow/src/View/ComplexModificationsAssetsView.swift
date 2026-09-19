@@ -23,7 +23,7 @@ struct ComplexModificationsAssetsView: View {
           },
           label: {
             AccentColorIconLabel(
-              title: localized("settings.assets.more_rules"),
+              title: localized("settings.complex_modifications.assets.more_rules"),
               systemImage: "icloud.and.arrow.down.fill")
           }
         )
@@ -91,7 +91,7 @@ struct ComplexModificationsAssetsView: View {
                   HStack {
                     if assetFile.userFile {
                       AppLocalizedText(
-                        "settings.assets.imported_at",
+                        "settings.complex_modifications.assets.imported_at",
                         arguments: ["date": formatter.string(from: assetFile.importedAt)]
                       )
                       .font(.caption)

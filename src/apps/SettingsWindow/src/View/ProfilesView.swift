@@ -148,7 +148,7 @@ struct ProfilesView: View {
         showing: $showingSheet,
         onEditingCancelledByExternalChange: {
           ContentViewStates.shared.showToast(
-            localized("settings.editor.profile_changed")
+            localized("settings.complex_modifications.editor.profile_changed")
           )
         }
       )

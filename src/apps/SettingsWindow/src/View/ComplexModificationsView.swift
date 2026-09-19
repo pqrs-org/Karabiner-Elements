@@ -56,7 +56,7 @@ struct ComplexModificationsView: View {
 
             editingRule = SettingsConfiguration.ComplexModificationsRule(
               index: -1,
-              description: localized("settings.editor.new_rule_hint"),
+              description: localized("settings.complex_modifications.editor.new_rule_hint"),
               descriptionNotes: [],
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
@@ -82,7 +82,7 @@ struct ComplexModificationsView: View {
 
             editingRule = SettingsConfiguration.ComplexModificationsRule(
               index: -1,
-              description: localized("settings.editor.new_script_hint"),
+              description: localized("settings.complex_modifications.editor.new_script_hint"),
               descriptionNotes: [],
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
@@ -274,7 +274,7 @@ struct ComplexModificationsView: View {
         showing: $showingEditSheet,
         onEditingCancelledByExternalChange: {
           contentViewStates.showToast(
-            localized("settings.editor.rules_changed")
+            localized("settings.complex_modifications.editor.rules_changed")
           )
         }
       )

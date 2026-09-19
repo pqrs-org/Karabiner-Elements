@@ -16,7 +16,7 @@ struct ComplexModificationsFileImportView: View {
 
       } else {
         AppLocalizedText(
-          "settings.import.source",
+          "settings.complex_modifications.import.source",
           arguments: ["url": complexModificationsFileImport.url?.absoluteString ?? ""])
 
         if let error = complexModificationsFileImport.error {

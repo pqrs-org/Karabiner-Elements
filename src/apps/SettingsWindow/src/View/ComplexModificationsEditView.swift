@@ -72,8 +72,10 @@ struct ComplexModificationsEditView: View {
                     externalEditorController.chooseEditor()
                   },
                   label: {
-                    AppLocalizedLabel("settings.editor.choose_editor", systemImage: "gear")
-                      .buttonLabelStyle()
+                    AppLocalizedLabel(
+                      "settings.complex_modifications.editor.choose_editor", systemImage: "gear"
+                    )
+                    .buttonLabelStyle()
                   }
                 )
 
@@ -98,7 +100,7 @@ struct ComplexModificationsEditView: View {
 
           if disabled {
             AppLocalizedLabel(
-              "settings.editor.content_too_large",
+              "settings.complex_modifications.editor.content_too_large",
               systemImage: ErrorBorder.icon
             )
             .modifier(ErrorBorder())
@@ -120,7 +122,7 @@ struct ComplexModificationsEditView: View {
               Label(
                 title: {
                   AppLocalizedText(
-                    "settings.editor.external_sync_hint"
+                    "settings.complex_modifications.editor.external_sync_hint"
                   )
                   .textSelection(.enabled)
                 },
@@ -156,7 +158,7 @@ struct ComplexModificationsEditView: View {
               }
 
               VStack(alignment: .leading, spacing: 6) {
-                AppLocalizedText("settings.editor.result")
+                AppLocalizedText("settings.complex_modifications.editor.result")
                   .font(.headline)
 
                 ScrollView {
@@ -179,7 +181,7 @@ struct ComplexModificationsEditView: View {
                 ScrollView {
                   Group {
                     if evalLogMessages.isEmpty {
-                      AppLocalizedText("settings.editor.no_log")
+                      AppLocalizedText("settings.complex_modifications.editor.no_log")
                     } else {
                       Text(verbatim: evalLogMessages)
                     }

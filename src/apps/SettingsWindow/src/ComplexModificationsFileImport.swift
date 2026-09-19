@@ -90,7 +90,7 @@ final class ComplexModificationsFileImport: ObservableObject {
           })
         else {
           self.error = AppLanguage.text(
-            "settings.import.invalid_utf8", locale: Settings.shared.uiLocale)
+            "settings.complex_modifications.import.invalid_utf8", locale: Settings.shared.uiLocale)
           return
         }
 
@@ -120,7 +120,8 @@ final class ComplexModificationsFileImport: ObservableObject {
 
         self.error =
           self.parseResult?.error
-          ?? AppLanguage.text("settings.import.unsupported", locale: Settings.shared.uiLocale)
+          ?? AppLanguage.text(
+            "settings.complex_modifications.import.unsupported", locale: Settings.shared.uiLocale)
       }
     }
 

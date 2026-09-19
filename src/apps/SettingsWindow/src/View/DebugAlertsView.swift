@@ -161,8 +161,8 @@ struct DebugAlertsView: View {
       case .setupServicesMacOS15: return "shared.debug.setup_services_macos15"
       case .setupDriverMacOS15: return "shared.debug.setup_driver_macos15"
       case .setupDriverMacOS15Advanced: return "shared.debug.setup_driver_macos15_advanced"
-      case .profileChangedToast: return "settings.editor.profile_changed"
-      case .rulesChangedToast: return "settings.editor.rules_changed"
+      case .profileChangedToast: return "settings.complex_modifications.editor.profile_changed"
+      case .rulesChangedToast: return "settings.complex_modifications.editor.rules_changed"
       }
     }
   }

@@ -21,7 +21,8 @@ final class ExternalEditorController: ObservableObject {
       panel.canChooseDirectories = false
       panel.canChooseFiles = true
       panel.allowedContentTypes = [UTType.application]
-      panel.prompt = AppLanguage.text("settings.editor.choose", locale: Settings.shared.uiLocale)
+      panel.prompt = AppLanguage.text(
+        "settings.complex_modifications.editor.choose", locale: Settings.shared.uiLocale)
       panel.begin { response in
         guard response == .OK, let url = panel.url else {
           continuation.resume(returning: nil)
@@ -52,9 +53,10 @@ final class ExternalEditorController: ObservableObject {
     if let url = externalEditorURL() {
       let name = FileManager.default.displayName(atPath: url.path)
       return AppLanguage.text(
-        "settings.editor.open_named", locale: locale, arguments: ["name": name])
+        "settings.complex_modifications.editor.open_named", locale: locale,
+        arguments: ["name": name])
     }
-    return AppLanguage.text("settings.editor.open_external", locale: locale)
+    return AppLanguage.text("settings.complex_modifications.editor.open_external", locale: locale)
   }
 
   func openEditor(
@@ -172,7 +174,9 @@ final class ExternalEditorController: ObservableObject {
     let path = String(utf8String: buffer) ?? ""
     guard !path.isEmpty else {
       onError(
-        AppLanguage.text("settings.editor.tmp_directory_error", locale: Settings.shared.uiLocale))
+        AppLanguage.text(
+          "settings.complex_modifications.editor.tmp_directory_error",
+          locale: Settings.shared.uiLocale))
       return nil
     }
     return URL(fileURLWithPath: path, isDirectory: true)

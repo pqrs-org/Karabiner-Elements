@@ -10,10 +10,11 @@ struct ComplexModificationsAdvancedView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24.0) {
-        GroupBox(label: AppLocalizedText("settings.parameters.basic")) {
+        GroupBox(label: AppLocalizedText("settings.complex_modifications.parameters.basic")) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
-              AppLocalizedText("setting.basic.to_if_alone_timeout_milliseconds")
+              AppLocalizedText(
+                "settings.complex_modifications.parameters.basic.to_if_alone_timeout_milliseconds")
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
@@ -34,7 +35,9 @@ struct ComplexModificationsAdvancedView: View {
             Divider()
 
             HStack {
-              AppLocalizedText("setting.basic.to_if_held_down_threshold_milliseconds")
+              AppLocalizedText(
+                "settings.complex_modifications.parameters.basic.to_if_held_down_threshold_milliseconds"
+              )
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
@@ -55,7 +58,9 @@ struct ComplexModificationsAdvancedView: View {
             Divider()
 
             HStack {
-              AppLocalizedText("setting.basic.to_delayed_action_delay_milliseconds")
+              AppLocalizedText(
+                "settings.complex_modifications.parameters.basic.to_delayed_action_delay_milliseconds"
+              )
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
@@ -76,7 +81,9 @@ struct ComplexModificationsAdvancedView: View {
             Divider()
 
             HStack {
-              AppLocalizedText("setting.basic.simultaneous_threshold_milliseconds")
+              AppLocalizedText(
+                "settings.complex_modifications.parameters.basic.simultaneous_threshold_milliseconds"
+              )
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
@@ -98,10 +105,14 @@ struct ComplexModificationsAdvancedView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         }
 
-        GroupBox(label: AppLocalizedText("settings.parameters.mouse_motion_to_scroll")) {
+        GroupBox(
+          label: AppLocalizedText(
+            "settings.complex_modifications.parameters.mouse_motion_to_scroll")
+        ) {
           VStack(alignment: .leading, spacing: 12.0) {
             HStack {
-              AppLocalizedText("setting.mouse_motion_to_scroll.speed")
+              AppLocalizedText(
+                "settings.complex_modifications.parameters.mouse_motion_to_scroll.speed")
 
               IntTextField(
                 value: $settings.configuration.selectedProfile.complexModifications.parameters
