@@ -72,7 +72,7 @@
     },
     "settings.expert.title": {
         "en": "Expert mode"
-        ,"ja": "上級者向けモード"
+        ,"ja": "エキスパート向けモード"
     },
     "settings.expert.unsafe_banner": {
         "en": "The unsafe configuration is enabled, so the safeguard feature is currently inactive."

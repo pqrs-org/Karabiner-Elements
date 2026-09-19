@@ -44,12 +44,12 @@
         ,"ja": "ログ"
     },
     "settings.complex_modifications.editor.new_rule_hint": {
-        "en": "Edit the following setting and press the Save button."
-        ,"ja": "次の設定を編集して保存ボタンを押してください。"
+        "en": "Edit the JSON content and press the Save button."
+        ,"ja": "JSONの内容を編集して保存ボタンを押してください。"
     },
     "settings.complex_modifications.editor.new_script_hint": {
-        "en": "Edit the following script and press the Save button."
-        ,"ja": "次のスクリプトを編集して保存ボタンを押してください。"
+        "en": "Edit the script content and press the Save button."
+        ,"ja": "スクリプトの内容を編集して保存ボタンを押してください。"
     },
     "settings.complex_modifications.editor.no_log": {
         "en": "(no log output)"
@@ -68,8 +68,8 @@
         ,"ja": "プロファイルが変更されたため、エディターを閉じました。"
     },
     "settings.complex_modifications.editor.result": {
-        "en": "Result"
-        ,"ja": "結果"
+        "en": "Script execution result"
+        ,"ja": "スクリプトの実行結果"
     },
     "settings.complex_modifications.editor.rules_changed": {
         "en": "The editor was closed because the selected profile or Complex Modifications rules changed."
@@ -85,7 +85,7 @@
     },
     "settings.complex_modifications.for_experts": {
         "en": "For expert"
-        ,"ja": "上級者向け"
+        ,"ja": "エキスパート向け"
     },
     "settings.complex_modifications.import.invalid_utf8": {
         "en": "The downloaded file is not valid UTF-8."

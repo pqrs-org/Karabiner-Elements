@@ -12,6 +12,7 @@
 | Simple Modifications                    | 単純なキー変換   |
 | EventViewer                             | イベントビューア |
 | Multitouch Extension                    | マルチタッチ拡張 |
+| expert                                  | エキスパート     |
 
 ## 表記ルール
 
