@@ -40,12 +40,24 @@
         ,"ja": "ドライバーの再起動が必要: 詳細な案内"
     },
     "shared.debug.instructions": {
-        "en": "Hold Option to reveal Debug in the sidebar. After selecting it, you can release Option and preview alerts."
-        ,"ja": "Optionキーを押すとサイドバーに「デバッグ」が表示されます。選択後はキーを離してアラートをプレビューできます。"
+        "en": [
+            "Hold Option to reveal Debug in the sidebar. ",
+            "After selecting it, you can release Option and preview alerts."
+        ]
+        ,"ja": [
+            "Optionキーを押すとサイドバーに「デバッグ」が表示されます。",
+            "選択後はキーを離してアラートをプレビューできます。"
+        ]
     },
     "shared.debug.preview_hint": {
-        "en": "Alerts use the current app language and sample states. Click anywhere in the preview or press Escape to close it. Preview actions do not change settings."
-        ,"ja": "アプリの現在の言語とサンプルの状態でアラートを表示します。プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。"
+        "en": [
+            "Alerts use the current app language and sample states. ",
+            "Click anywhere in the preview or press Escape to close it. Preview actions do not change settings."
+        ]
+        ,"ja": [
+            "アプリの現在の言語とサンプルの状態でアラートを表示します。",
+            "プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。"
+        ]
     },
     "shared.debug.section": {
         "en": "For Developer"

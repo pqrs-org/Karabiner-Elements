@@ -4,7 +4,7 @@
         ,"ja": "macOSのログメッセージ"
     },
     "settings.system_extensions.states": {
-        "en": "States"
-        ,"ja": "状態"
+        "en": "System extension states"
+        ,"ja": "システム拡張の状態"
     }
 }
