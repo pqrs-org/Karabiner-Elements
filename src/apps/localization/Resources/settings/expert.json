@@ -39,16 +39,39 @@
         ]
     },
     "settings.expert.fallback_description": {
-        "en": "If this setting is enabled, Karabiner-Core-Service uses CGEventTap as a fallback for devices that cannot be handled via HID input capture."
-        ,"ja": "この設定を有効にすると、HID入力の取得で処理できないデバイスに対して、Karabiner-Core-ServiceがCGEventTapを代替手段として使用します。"
+        "en": [
+            "If this setting is enabled, ",
+            "Karabiner-Core-Service uses CGEventTap as a fallback for devices ",
+            "that cannot be handled via HID input capture."
+        ]
+        ,"ja": [
+            "この設定を有効にすると、HID入力の取得で処理できないデバイスに対して、",
+            "Karabiner-Core-ServiceがCGEventTapを代替手段として使用します。"
+        ]
     },
     "settings.expert.filter_description": {
-        "en": "If this setting is enabled, the following events will be ignored:\n- Nintendo's Pro Controller (USB connected):\n    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed.\n    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all."
-        ,"ja": "この設定を有効にすると、次のイベントが無視されます：\n- Nintendo Switch Proコントローラー（USB接続）：\n    - 何も押していなくても高頻度でオン・オフが送信され続けるボタンのイベント。\n    - スティックを動かしていなくてもランダムな方向の傾きが送信され続けるスティックのイベント。"
+        "en": [
+            "If this setting is enabled, the following events will be ignored:\n",
+            "- Nintendo's Pro Controller (USB connected):\n",
+            "    - Buttons since on/off events are continuously sent at high frequency even when nothing is pressed.\n",
+            "    - Sticks since tilt events in random directions are continuously sent even when the stick is not moved at all."
+        ]
+        ,"ja": [
+            "この設定を有効にすると、次のイベントが無視されます：\n",
+            "- Nintendo Switch Proコントローラー（USB接続）：\n",
+            "    - 何も押していなくても高頻度でオン・オフが送信され続けるボタンのイベント。\n",
+            "    - スティックを動かしていなくてもランダムな方向の傾きが送信され続けるスティックのイベント。"
+        ]
     },
     "settings.expert.modifier_order_hint": {
-        "en": "If your keyboard supports hardware macros and sends multiple keys at once, and you notice that modifier key order is changing, try turning this setting off."
-        ,"ja": "ハードウェアマクロに対応したキーボードで複数のキーを同時に送信したとき、修飾キーの順序が変わる場合は、この設定をオフにしてみてください。"
+        "en": [
+            "If your keyboard supports hardware macros and sends multiple keys at once, ",
+            "and you notice that modifier key order is changing, try turning this setting off."
+        ]
+        ,"ja": [
+            "ハードウェアマクロに対応したキーボードで複数のキーを同時に送信したとき、",
+            "修飾キーの順序が変わる場合は、この設定をオフにしてみてください。"
+        ]
     },
     "settings.expert.modify_pointing_by_default": {
         "en": "Modify events for pointing devices by default"
@@ -63,8 +86,16 @@
         ,"ja": "ポインティングデバイス"
     },
     "settings.expert.sleep_delay_description": {
-        "en": "Karabiner-Elements delays the key-down event of the macOS sleep shortcut (command+option+power, command+option+eject, or escape at the login window). This prevents the shortcut's release events from waking the Mac immediately after sleep."
-        ,"ja": "Karabiner-Elementsは、macOSのスリープショートカット（command+option+power、command+option+eject、またはログイン画面でのescape）のキー押下イベントを遅延させます。これにより、キーを離したイベントでMacがすぐにスリープから復帰することを防ぎます。"
+        "en": [
+            "Karabiner-Elements delays the key-down event of the macOS sleep shortcut ",
+            "(command+option+power, command+option+eject, or escape at the login window).\n",
+            "This prevents the shortcut's release events from waking the Mac immediately after sleep."
+        ]
+        ,"ja": [
+            "Karabiner-Elementsは、macOSのスリープショートカットのキー押下イベントを遅延させます。",
+            "（command+option+power、command+option+eject、またはログイン画面でのescape）\n",
+            "これにより、キーを離したイベントでMacがすぐにスリープから復帰することを防ぎます。"
+        ]
     },
     "settings.expert.sleep_delay_disabled_hint": {
         "en": "0 disables delay"
@@ -79,7 +110,20 @@
         ,"ja": "安全でない設定が有効になっているため、保護機能は現在無効です。"
     },
     "settings.expert.unsafe_description": {
-        "en": "Unsafe configuration disables the safeguard feature on the configuration UI.\nYou should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. (e.g., using Screen Sharing)\n\nUnsafe configuration allows the following items:\n- Allow you to enable Apple pointing devices in the Devices tab.\n- Allow you to change left-click in Simple Modifications tab."
-        ,"ja": "安全でない設定を有効にすると、設定画面の保護機能が無効になります。\n別のマシンからKarabiner-Elementsを停止できる準備ができている場合にのみ有効にしてください（画面共有など）。\n\n次の操作が可能になります：\n- デバイスタブでApple製ポインティングデバイスを有効にする。\n- 単純なキー変換タブで左クリックを変更する。"
+        "en": [
+            "Unsafe configuration disables the safeguard feature on the configuration UI.\n",
+            "You should not enable unsafe configuration unless you are ready to stop Karabiner-Elements from remote machine. ",
+            "(e.g., using Screen Sharing)\n\n",
+            "Unsafe configuration allows the following items:\n",
+            "- Allow you to enable Apple pointing devices in the Devices tab.\n",
+            "- Allow you to change left-click in Simple Modifications tab."
+        ]
+        ,"ja": [
+            "安全でない設定を有効にすると、設定画面の保護機能が無効になります。\n",
+            "別のマシンからKarabiner-Elementsを停止できる準備ができている場合にのみ有効にしてください（画面共有など）。\n\n",
+            "次の操作が可能になります：\n",
+            "- デバイスタブでApple製ポインティングデバイスを有効にする。\n",
+            "- 単純なキー変換タブで左クリックを変更する。"
+        ]
     }
 }
