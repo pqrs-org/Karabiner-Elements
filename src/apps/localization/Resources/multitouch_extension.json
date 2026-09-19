@@ -5,7 +5,7 @@
             "configure it in the Misc tab of the Karabiner-Elements settings."
         ]
         ,"ja": [
-            "Multitouch Extensionを無効にするには、Karabiner-Elements設定の「その他」タブで設定してください。"
+            "マルチタッチ拡張を無効にするには、Karabiner-Elements設定の「その他」タブで設定してください。"
         ]
     },
     "multitouch.action.restart": {

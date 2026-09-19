@@ -11,12 +11,13 @@ struct SettingsAdvancedView: View {
           VStack(alignment: .leading) {
             HStack {
               Toggle(isOn: $userSettings.relaunchAfterWakeUpFromSleep) {
-                AppLocalizedText("multitouch.advanced.relaunch")
+                AppLocalizedText([
+                  "multitouch.advanced.relaunch",
+                  " ",
+                  .init("settings.defaults.value", arguments: ["value": localized("value.on")]),
+                ])
               }
               .switchToggleStyle()
-
-              AppLocalizedText(
-                "settings.defaults.value", arguments: ["value": localized("value.on")])
             }
 
             HStack {
