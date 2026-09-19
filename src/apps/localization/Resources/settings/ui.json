@@ -4,8 +4,14 @@
         ,"ja": "アプリアイコン"
     },
     "settings.ui.app_icon_hint": {
-        "en": "It takes a few seconds for changes to the application icon to take effect.\nAnd to update the Dock icon, you need to close and reopen the application."
-        ,"ja": "アプリアイコンの変更が反映されるまで数秒かかります。\nDockのアイコンを更新するには、アプリをいったん終了してから開き直してください。"
+        "en": [
+            "It takes a few seconds for changes to the application icon to take effect.\n",
+            "And to update the Dock icon, you need to close and reopen the application."
+        ]
+        ,"ja": [
+            "アプリアイコンの変更が反映されるまで数秒かかります。\n",
+            "Dockのアイコンを更新するには、アプリをいったん終了してから開き直してください。"
+        ]
     },
     "settings.ui.appearance": {
         "en": "Appearance"
@@ -28,8 +34,14 @@
         ,"ja": "メニューバー"
     },
     "settings.ui.notification_description": {
-        "en": "What is the Karabiner Notification Window?\n\nThe Karabiner Notification Window displays the status of sticky modifiers and messages from Complex Modifications."
-        ,"ja": "Karabiner通知ウィンドウとは？\n\nKarabiner通知ウィンドウには、複合キーの状態や、高度なキー変換からのメッセージが表示されます。"
+        "en": [
+            "What is the notification window?\n\n",
+            "The notification window displays the status of sticky modifiers and messages from Complex Modifications."
+        ]
+        ,"ja": [
+            "通知ウィンドウとは？\n\n",
+            "通知ウィンドウには、複合キーの状態や、高度なキー変換からのメッセージが表示されます。"
+        ]
     },
     "settings.ui.notification_window": {
         "en": "Notification window"

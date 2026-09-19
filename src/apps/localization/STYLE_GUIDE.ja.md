@@ -13,6 +13,8 @@
 | EventViewer                             | イベントビューア |
 | Multitouch Extension                    | マルチタッチ拡張 |
 | expert                                  | エキスパート     |
+| profile                                 | プロファイル     |
+| menu bar                                | メニューバー     |
 
 ## 表記ルール
 

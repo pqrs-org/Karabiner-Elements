@@ -22,7 +22,8 @@ struct UIView: View {
                   "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
-                      defaults.globalConfiguration.showInMenuBar ? "shared.value.on" : "shared.value.off")
+                      defaults.globalConfiguration.showInMenuBar
+                        ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }

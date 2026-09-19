@@ -11,7 +11,8 @@ struct SettingsActionView: View {
               NSApplication.shared.terminate(self)
             },
             label: {
-              AppLocalizedLabel("multitouch_extension.action.restart", systemImage: "arrow.clockwise")
+              AppLocalizedLabel(
+                "multitouch_extension.action.restart", systemImage: "arrow.clockwise")
             })
 
           AppLocalizedLabel(

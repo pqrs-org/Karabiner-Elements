@@ -21,7 +21,8 @@ struct ExpertView: View {
                   "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
-                      defaults.globalConfiguration.unsafeUi ? "shared.value.on" : "shared.value.off")
+                      defaults.globalConfiguration.unsafeUi ? "shared.value.on" : "shared.value.off"
+                    )
                   ]),
               ])
             }

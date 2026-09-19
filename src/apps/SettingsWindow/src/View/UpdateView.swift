@@ -25,7 +25,8 @@ struct UpdateView: View {
                   "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
-                      defaults.globalConfiguration.checkForUpdates ? "shared.value.on" : "shared.value.off")
+                      defaults.globalConfiguration.checkForUpdates
+                        ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }

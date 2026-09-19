@@ -98,22 +98,29 @@ private struct VariableUpdateLogTableHeader: View {
       VStack(spacing: 0) {
         HStack(spacing: 0) {
           textTableCell(
-            localized("multitouch_extension.count.finger"), width: VariableUpdateLogTableLayout.fingerWidth)
+            localized("multitouch_extension.count.finger"),
+            width: VariableUpdateLogTableLayout.fingerWidth)
           textTableCell(
-            localized("multitouch_extension.count.palm"), width: VariableUpdateLogTableLayout.palmWidth)
+            localized("multitouch_extension.count.palm"),
+            width: VariableUpdateLogTableLayout.palmWidth)
         }
 
         HStack(spacing: 0) {
           textTableCell(
-            localized("multitouch_extension.count.total"), width: VariableUpdateLogTableLayout.totalWidth)
+            localized("multitouch_extension.count.total"),
+            width: VariableUpdateLogTableLayout.totalWidth)
           textTableCell(
-            localized("multitouch_extension.count.half"), width: VariableUpdateLogTableLayout.halfWidth)
+            localized("multitouch_extension.count.half"),
+            width: VariableUpdateLogTableLayout.halfWidth)
           textTableCell(
-            localized("multitouch_extension.count.quarter"), width: VariableUpdateLogTableLayout.quarterWidth)
+            localized("multitouch_extension.count.quarter"),
+            width: VariableUpdateLogTableLayout.quarterWidth)
           textTableCell(
-            localized("multitouch_extension.count.total"), width: VariableUpdateLogTableLayout.totalWidth)
+            localized("multitouch_extension.count.total"),
+            width: VariableUpdateLogTableLayout.totalWidth)
           textTableCell(
-            localized("multitouch_extension.count.half"), width: VariableUpdateLogTableLayout.halfWidth)
+            localized("multitouch_extension.count.half"),
+            width: VariableUpdateLogTableLayout.halfWidth)
         }
 
         HStack(spacing: 0) {

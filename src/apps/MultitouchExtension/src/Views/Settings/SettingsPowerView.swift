@@ -38,7 +38,9 @@ struct SettingsPowerView: View {
                 AppLocalizedText([
                   "multitouch_extension.power.display_sleep",
                   " ",
-                  .init("settings.general.defaults.value", arguments: ["value": localized("shared.value.off")]),
+                  .init(
+                    "settings.general.defaults.value",
+                    arguments: ["value": localized("shared.value.off")]),
                 ])
                 .fixedSize(horizontal: false, vertical: true)
               }

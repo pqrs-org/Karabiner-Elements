@@ -1,7 +1,7 @@
 {
     "settings.expert.cgeventtap_fallback": {
         "en": "CGEventTap fallback"
-        ,"ja": "CGEventTap fallback"
+        ,"ja": "CGEventTapフォールバック"
     },
     "settings.expert.delay_milliseconds_before_open_device": {
         "en": "Delay to grab device"
@@ -24,7 +24,7 @@
     },
     "settings.expert.enable_cgeventtap_fallback": {
         "en": "Enable CGEventTap fallback"
-        ,"ja": "CGEventTap fallbackを有効にする"
+        ,"ja": "CGEventTapフォールバックを有効にする"
     },
     "settings.expert.fallback_description": {
         "en": [

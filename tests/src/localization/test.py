@@ -21,7 +21,9 @@ class LocalizationResourcesTests(unittest.TestCase):
         for path, entries in localizations.load_resources(directory).items():
             prefix = ".".join(path.relative_to(directory).with_suffix("").parts) + "."
             for key in entries:
-                self.assertTrue(key.startswith(prefix), f"{path}: {key} must start with {prefix}")
+                self.assertTrue(
+                    key.startswith(prefix), f"{path}: {key} must start with {prefix}"
+                )
 
     def test_application_translation_references(self):
         apps = SCRIPT.parents[2]

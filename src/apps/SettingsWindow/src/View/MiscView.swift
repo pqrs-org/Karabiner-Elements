@@ -21,7 +21,8 @@ struct MiscView: View {
                   "settings.general.defaults.value",
                   arguments: [
                     "value": localized(
-                      defaults.machineSpecific.enableMultitouchExtension ? "shared.value.on" : "shared.value.off")
+                      defaults.machineSpecific.enableMultitouchExtension
+                        ? "shared.value.on" : "shared.value.off")
                   ]),
               ])
             }

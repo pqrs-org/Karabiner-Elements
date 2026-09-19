@@ -12,7 +12,9 @@ struct SettingsView: View {
             AppLocalizedText([
               "event_viewer.settings.stay_on_top",
               " ",
-              .init("settings.general.defaults.value", arguments: ["value": localized("shared.value.off")]),
+              .init(
+                "settings.general.defaults.value",
+                arguments: ["value": localized("shared.value.off")]),
             ])
           }
           .switchToggleStyle()
@@ -21,7 +23,9 @@ struct SettingsView: View {
             AppLocalizedText([
               "event_viewer.settings.all_spaces",
               " ",
-              .init("settings.general.defaults.value", arguments: ["value": localized("shared.value.off")]),
+              .init(
+                "settings.general.defaults.value",
+                arguments: ["value": localized("shared.value.off")]),
             ])
           }
           .switchToggleStyle()

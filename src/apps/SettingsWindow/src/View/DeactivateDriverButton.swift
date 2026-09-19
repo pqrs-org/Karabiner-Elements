@@ -38,7 +38,8 @@ struct DeactivateDriverButton: View {
               .bold()
           } else {
             AppLocalizedText(
-              "settings.setup.driver.deactivation_failed", arguments: ["status": String(self.status)]
+              "settings.setup.driver.deactivation_failed",
+              arguments: ["status": String(self.status)]
             )
             .bold()
           }

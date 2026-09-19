@@ -14,7 +14,9 @@ struct SettingsAdvancedView: View {
                 AppLocalizedText([
                   "multitouch_extension.advanced.relaunch",
                   " ",
-                  .init("settings.general.defaults.value", arguments: ["value": localized("shared.value.on")]),
+                  .init(
+                    "settings.general.defaults.value",
+                    arguments: ["value": localized("shared.value.on")]),
                 ])
               }
               .switchToggleStyle()

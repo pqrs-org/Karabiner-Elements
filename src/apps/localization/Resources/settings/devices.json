@@ -25,7 +25,7 @@
     },
     "settings.devices.fallback_hint": {
         "en": "Key events from this device are handled via the CGEventTap fallback"
-        ,"ja": "このデバイスのキーイベントはCGEventTap fallbackで処理されます"
+        ,"ja": "このデバイスのキーイベントはCGEventTapフォールバックで処理されます"
     },
     "settings.devices.gamepad.continued_interval": {
         "en": "Continued movement interval milliseconds:"
