@@ -89,7 +89,7 @@
     },
     "shared.validation.number_range": {
         "en": "must be between {lower} and {upper}"
-        ,"ja": "{lower} から {upper} の範囲で入力してください"
+        ,"ja": "{lower}から{upper}の範囲で入力してください"
     },
     "shared.value.unknown": {
         "en": "Unknown"

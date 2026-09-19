@@ -17,7 +17,7 @@
     },
     "settings.update.version": {
         "en": "Karabiner-Elements version {version}"
-        ,"ja": "Karabiner-Elementsバージョン {version}"
+        ,"ja": "Karabiner-Elementsのバージョン: {version}"
     },
     "settings.update.websites": {
         "en": "Web sites"

@@ -93,7 +93,7 @@
     },
     "event_viewer.events.from": {
         "en": "from {product}"
-        ,"ja": "入力元 {product}"
+        ,"ja": "入力元: {product}"
     },
     "event_viewer.events.integer_value": {
         "en": "integer value: "

@@ -21,7 +21,7 @@
     },
     "settings.devices.disconnected_count": {
         "en": "There are {count} other settings for devices that are not currently connected"
-        ,"ja": "現在接続されていないデバイスの設定がほかに {count} 件あります"
+        ,"ja": "現在接続されていないデバイスの設定がほかに{count}件あります"
     },
     "settings.devices.fallback_hint": {
         "en": "Key events from this device are handled via the CGEventTap fallback"

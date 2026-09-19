@@ -13,7 +13,7 @@
     },
     "settings.complex_modifications.assets.imported_at": {
         "en": "Imported at {date}"
-        ,"ja": "取り込み日時 {date}"
+        ,"ja": "取り込み日時: {date}"
     },
     "settings.complex_modifications.assets.more_rules": {
         "en": "Import more rules from the Internet (Open a web browser)"
@@ -61,7 +61,7 @@
     },
     "settings.complex_modifications.editor.open_named": {
         "en": "Open in {name}"
-        ,"ja": "{name} で開く"
+        ,"ja": "{name}で開く"
     },
     "settings.complex_modifications.editor.profile_changed": {
         "en": "The editor was closed because the profile changed."
@@ -93,7 +93,7 @@
     },
     "settings.complex_modifications.import.source": {
         "en": "Import file from {url}"
-        ,"ja": "{url} からファイルを取り込む"
+        ,"ja": "{url}からファイルを取り込む"
     },
     "settings.complex_modifications.import.unsupported": {
         "en": "The downloaded file is not supported."
