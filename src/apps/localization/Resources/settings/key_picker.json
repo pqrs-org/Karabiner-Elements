@@ -171,6 +171,22 @@
         "en": "Application launch keys"
         ,"ja": "アプリ起動キー"
     },
+    "settings.key_picker.left_command": {
+        "en": "left_command"
+        ,"ja": "左コマンド"
+    },
+    "settings.key_picker.left_control": {
+        "en": "left_control"
+        ,"ja": "左コントロール"
+    },
+    "settings.key_picker.left_option": {
+        "en": "left_option"
+        ,"ja": "左オプション"
+    },
+    "settings.key_picker.left_shift": {
+        "en": "left_shift"
+        ,"ja": "左シフト"
+    },
     "settings.key_picker.letters": {
         "en": "Letter keys"
         ,"ja": "英字キー"
@@ -262,6 +278,22 @@
     "settings.key_picker.remote": {
         "en": "Remote control buttons"
         ,"ja": "リモコンボタン"
+    },
+    "settings.key_picker.right_command": {
+        "en": "right_command"
+        ,"ja": "右コマンド"
+    },
+    "settings.key_picker.right_control": {
+        "en": "right_control"
+        ,"ja": "右コントロール"
+    },
+    "settings.key_picker.right_option": {
+        "en": "right_option"
+        ,"ja": "右オプション"
+    },
+    "settings.key_picker.right_shift": {
+        "en": "right_shift"
+        ,"ja": "右シフト"
     },
     "settings.key_picker.scroll_down": {
         "en": "scroll down"

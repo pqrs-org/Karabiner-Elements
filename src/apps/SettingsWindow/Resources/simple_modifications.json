@@ -23,7 +23,7 @@
         ]
     },
     {
-        "label": "left_control",
+        "label_localization_key": "settings.key_picker.left_control",
         "data": [
             {
                 "key_code": "left_control"
@@ -31,7 +31,7 @@
         ]
     },
     {
-        "label": "left_shift",
+        "label_localization_key": "settings.key_picker.left_shift",
         "data": [
             {
                 "key_code": "left_shift"
@@ -39,7 +39,7 @@
         ]
     },
     {
-        "label": "left_option",
+        "label_localization_key": "settings.key_picker.left_option",
         "data": [
             {
                 "key_code": "left_option"
@@ -47,7 +47,7 @@
         ]
     },
     {
-        "label": "left_command",
+        "label_localization_key": "settings.key_picker.left_command",
         "data": [
             {
                 "key_code": "left_command"
@@ -55,7 +55,7 @@
         ]
     },
     {
-        "label": "right_control",
+        "label_localization_key": "settings.key_picker.right_control",
         "data": [
             {
                 "key_code": "right_control"
@@ -63,7 +63,7 @@
         ]
     },
     {
-        "label": "right_shift",
+        "label_localization_key": "settings.key_picker.right_shift",
         "data": [
             {
                 "key_code": "right_shift"
@@ -71,7 +71,7 @@
         ]
     },
     {
-        "label": "right_option",
+        "label_localization_key": "settings.key_picker.right_option",
         "data": [
             {
                 "key_code": "right_option"
@@ -79,7 +79,7 @@
         ]
     },
     {
-        "label": "right_command",
+        "label_localization_key": "settings.key_picker.right_command",
         "data": [
             {
                 "key_code": "right_command"
