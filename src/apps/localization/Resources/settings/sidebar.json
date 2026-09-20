@@ -67,6 +67,10 @@
         "en": "Virtual Keyboard"
         ,"ja": "仮想キーボード"
     },
+    "settings.sidebar.reset_layout": {
+        "en": "Reset layout"
+        ,"ja": "レイアウトをリセット"
+    },
     "settings.sidebar.section.configurations": {
         "en": "Configurations"
         ,"ja": "設定"

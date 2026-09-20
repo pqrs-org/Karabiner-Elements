@@ -41,8 +41,8 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 
 struct ContentMainView: View {
   @State private var optionPressed = false
+  @State private var layoutResetRequest = UUID()
   @State private var selection: SidebarItem = .inputEvents
-  @FocusState private var sidebarFocused: Bool
 
   var body: some View {
     NavigationSplitView(
@@ -54,22 +54,17 @@ struct ContentMainView: View {
           if optionPressed || selection == .debug {
             Section {
               sidebarRow(.debug)
+              SidebarLayoutResetButton(request: $layoutResetRequest)
             } header: {
               AppLocalizedText("settings.debug.section")
             }
           }
         }
-        .navigationSplitViewColumnWidth(250)
-        .listStyle(.sidebar)
-        // On macOS 27, clicking a row can change selection while focus stays in the other list,
-        // leaving the selection highlight inactive. Explicitly focus the clicked list.
-        // A simultaneous tap preserves native selection and also handles clicks on the selected row;
-        // observing selection changes would miss those clicks and react to programmatic changes.
-        .focused($sidebarFocused)
-        .simultaneousGesture(
-          TapGesture().onEnded {
-            sidebarFocused = true
-          }
+        .modifier(
+          SidebarStyle(
+            resetRequest: layoutResetRequest,
+            defaultContentSize: ContentView.defaultContentSize
+          )
         )
       },
       detail: {
@@ -101,8 +96,7 @@ struct ContentMainView: View {
   }
 
   private func sidebarRow(_ item: SidebarItem) -> some View {
-    AppLocalizedConstrainedLabel(item.title, systemImage: item.systemImage)
-      .padding(.vertical, 8)
+    SidebarLabel(title: item.title, systemImage: item.systemImage)
       .tag(item)
   }
 }

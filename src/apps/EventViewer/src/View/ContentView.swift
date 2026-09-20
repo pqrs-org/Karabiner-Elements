@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
+  static let defaultContentSize = NSSize(width: 1300, height: 650)
+
   @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
   @EnvironmentObject private var userSettings: UserSettings
 
@@ -50,9 +52,9 @@ struct ContentView: View {
       }
     }
     .frame(
-      minWidth: 1300,
+      minWidth: Self.defaultContentSize.width,
       maxWidth: .infinity,
-      minHeight: 650,
+      minHeight: Self.defaultContentSize.height,
       maxHeight: .infinity)
   }
 

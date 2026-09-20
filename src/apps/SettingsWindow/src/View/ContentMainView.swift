@@ -77,8 +77,8 @@ struct ContentMainView: View {
   @ObservedObject private var systemPreferences = SystemPreferences.shared
 
   @State private var optionPressed = false
+  @State private var layoutResetRequest = UUID()
   @State private var selectedSidebarItem: SidebarItem = .simpleModifications
-  @FocusState private var sidebarFocused: Bool
 
   struct SidebarSection {
     let title: String
@@ -141,6 +141,7 @@ struct ContentMainView: View {
           if optionPressed || selectedSidebarItem == .debug {
             Section {
               sidebarRow(.debug)
+              SidebarLayoutResetButton(request: $layoutResetRequest)
             } header: {
               AppLocalizedText("settings.debug.section")
             }
@@ -159,17 +160,11 @@ struct ContentMainView: View {
             selectedSidebarItem = newValue
           }
         }
-        .navigationSplitViewColumnWidth(250)
-        .listStyle(.sidebar)
-        // On macOS 27, clicking a row can change selection while focus stays in the other list,
-        // leaving the selection highlight inactive. Explicitly focus the clicked list.
-        // A simultaneous tap preserves native selection and also handles clicks on the selected row;
-        // observing selection changes would miss those clicks and react to programmatic changes.
-        .focused($sidebarFocused)
-        .simultaneousGesture(
-          TapGesture().onEnded {
-            sidebarFocused = true
-          }
+        .modifier(
+          SidebarStyle(
+            resetRequest: layoutResetRequest,
+            defaultContentSize: ContentView.defaultContentSize
+          )
         )
       },
       detail: {
@@ -301,13 +296,7 @@ struct ContentMainView: View {
 
   @ViewBuilder
   private func sidebarRow(_ item: SidebarItem) -> some View {
-    HStack(spacing: 8.0) {
-      Image(systemName: item.systemImage)
-        .frame(width: 18.0)
-
-      AppLocalizedConstrainedText(item.title)
-    }
-    .padding(.vertical, 2.0)
-    .tag(item)
+    SidebarLabel(title: item.title, systemImage: item.systemImage)
+      .tag(item)
   }
 }

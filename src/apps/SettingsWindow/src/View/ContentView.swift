@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
+  static let defaultContentSize = NSSize(width: 1100, height: 680)
+
   @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
@@ -86,9 +88,9 @@ struct ContentView: View {
     .animation(.easeInOut(duration: 0.2), value: contentViewStates.toast)
     .animation(.easeInOut(duration: 0.2), value: debugPreview.alert?.isToast)
     .frame(
-      minWidth: 1100,
+      minWidth: Self.defaultContentSize.width,
       maxWidth: .infinity,
-      minHeight: 680,
+      minHeight: Self.defaultContentSize.height,
       maxHeight: .infinity
     )
   }
