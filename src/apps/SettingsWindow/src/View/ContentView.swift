@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct ContentView: View {
-  @AppLocalizationContext private var localized
   @ObservedObject private var debugPreview = DebugAlertPreviewState.shared
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var settings = Settings.shared
@@ -54,7 +53,8 @@ struct ContentView: View {
       }
 
       if let alert = debugPreview.alert, alert.isToast {
-        DebugToastPreview(message: localized(alert.title)) {
+        // SettingsLanguage below applies to child views, not this view's environment.
+        DebugToastPreview(message: AppLanguage.text(alert.title, locale: settings.uiLocale)) {
           if debugPreview.alert == alert {
             debugPreview.alert = nil
           }
