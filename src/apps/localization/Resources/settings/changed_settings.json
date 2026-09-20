@@ -49,7 +49,7 @@
     },
     "settings.changed_settings.setting.fn_function_keys_count": {
         "en": "Changed Function Keys count"
-        ,"ja": "変更したFunction Keysの件数"
+        ,"ja": "変更したファンクションキーの件数"
     },
     "settings.changed_settings.setting.rules_count": {
         "en": "Complex Modifications rule count"
