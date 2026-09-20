@@ -129,6 +129,10 @@ private:
     krbn::core_configuration::details::device device;
 
     return {
+        {"game_pad_stick_x_formula", device.find_default_value(device.get_game_pad_stick_x_formula())},
+        {"game_pad_stick_y_formula", device.find_default_value(device.get_game_pad_stick_y_formula())},
+        {"game_pad_stick_vertical_wheel_formula", device.find_default_value(device.get_game_pad_stick_vertical_wheel_formula())},
+        {"game_pad_stick_horizontal_wheel_formula", device.find_default_value(device.get_game_pad_stick_horizontal_wheel_formula())},
         {"pointing_motion_xy_multiplier", device.find_default_value(device.get_pointing_motion_xy_multiplier())},
         {"pointing_motion_wheels_multiplier", device.find_default_value(device.get_pointing_motion_wheels_multiplier())},
         {"game_pad_xy_stick_deadzone", device.find_default_value(device.get_game_pad_xy_stick_deadzone())},

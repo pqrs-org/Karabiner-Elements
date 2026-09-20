@@ -2,6 +2,10 @@ import Foundation
 
 struct SettingsConfiguration: Decodable {
   struct DeviceDefaults: Decodable {
+    let gamePadStickXFormula: String
+    let gamePadStickYFormula: String
+    let gamePadStickVerticalWheelFormula: String
+    let gamePadStickHorizontalWheelFormula: String
     let pointingMotionXyMultiplier: Double
     let pointingMotionWheelsMultiplier: Double
     let gamePadXyStickDeadzone: Double

@@ -8,11 +8,29 @@ extension Button {
     // The padding area ignores click.
     // Use `buttonLabelStyle` in order to set padding.
 
-    self
-      .buttonStyle(PlainButtonStyle())
+    modifier(DeleteButtonStyleModifier())
+  }
+}
+
+private struct DeleteButtonStyleModifier: ViewModifier {
+  @Environment(\.isEnabled) private var isEnabled
+
+  func body(content: Content) -> some View {
+    if isEnabled {
+      content.buttonStyle(DeleteButtonStyle())
+    } else {
+      content
+    }
+  }
+}
+
+private struct DeleteButtonStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
       .background(Color.red)
       .foregroundColor(.white)
       .cornerRadius(5)
       .shadow(radius: 1)
+      .opacity(configuration.isPressed ? 0.8 : 1)
   }
 }

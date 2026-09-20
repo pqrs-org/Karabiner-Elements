@@ -44,53 +44,58 @@ struct DevicesGamePadSettingsView: View {
         .padding(.leading, 40)
         .padding(.top, 20)
 
-        TabView {
-          XYStickTabView(
-            deviceConfiguration: $deviceConfiguration,
-            defaults: settings.configuration.deviceDefaults,
-            xFormula: formulaBinding(
-              .x, value: $gamePadStickXFormula, error: $gamePadStickXFormulaError),
-            xFormulaError: $gamePadStickXFormulaError,
-            resetXFormula: { resetFormula(.x) },
-            yFormula: formulaBinding(
-              .y, value: $gamePadStickYFormula, error: $gamePadStickYFormulaError),
-            yFormulaError: $gamePadStickYFormulaError,
-            resetYFormula: { resetFormula(.y) }
-          )
-          .padding()
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-          .tabItem {
-            AppLocalizedText("settings.devices.gamepad.xy_stick")
-          }
-
-          WheelsStickTabView(
-            deviceConfiguration: $deviceConfiguration,
-            defaults: settings.configuration.deviceDefaults,
-            verticalWheelFormula: formulaBinding(
-              .verticalWheel,
-              value: $gamePadStickVerticalWheelFormula,
-              error: $gamePadStickVerticalWheelFormulaError),
-            verticalWheelFormulaError: $gamePadStickVerticalWheelFormulaError,
-            resetVerticalWheelFormula: { resetFormula(.verticalWheel) },
-            horizontalWheelFormula: formulaBinding(
-              .horizontalWheel,
-              value: $gamePadStickHorizontalWheelFormula,
-              error: $gamePadStickHorizontalWheelFormulaError),
-            horizontalWheelFormulaError: $gamePadStickHorizontalWheelFormulaError,
-            resetHorizontalWheelFormula: { resetFormula(.horizontalWheel) }
-          )
-          .padding()
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-          .tabItem {
-            AppLocalizedText("settings.devices.gamepad.wheels_stick")
-          }
-
-          OthersTabView(deviceConfiguration: $deviceConfiguration)
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .tabItem {
-              AppLocalizedText("settings.devices.gamepad.others")
+        ScrollView {
+          VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 12) {
+              AppLocalizedText("settings.devices.gamepad.xy_stick")
+                .font(.title2)
+              XYStickSettingsView(
+                deviceConfiguration: $deviceConfiguration,
+                defaults: settings.configuration.deviceDefaults,
+                xFormula: formulaBinding(
+                  .x, value: $gamePadStickXFormula, error: $gamePadStickXFormulaError),
+                xFormulaError: $gamePadStickXFormulaError,
+                resetXFormula: { resetFormula(.x) },
+                yFormula: formulaBinding(
+                  .y, value: $gamePadStickYFormula, error: $gamePadStickYFormulaError),
+                yFormulaError: $gamePadStickYFormulaError,
+                resetYFormula: { resetFormula(.y) }
+              )
             }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 12) {
+              AppLocalizedText("settings.devices.gamepad.wheels_stick")
+                .font(.title2)
+              WheelsStickSettingsView(
+                deviceConfiguration: $deviceConfiguration,
+                defaults: settings.configuration.deviceDefaults,
+                verticalWheelFormula: formulaBinding(
+                  .verticalWheel,
+                  value: $gamePadStickVerticalWheelFormula,
+                  error: $gamePadStickVerticalWheelFormulaError),
+                verticalWheelFormulaError: $gamePadStickVerticalWheelFormulaError,
+                resetVerticalWheelFormula: { resetFormula(.verticalWheel) },
+                horizontalWheelFormula: formulaBinding(
+                  .horizontalWheel,
+                  value: $gamePadStickHorizontalWheelFormula,
+                  error: $gamePadStickHorizontalWheelFormulaError),
+                horizontalWheelFormulaError: $gamePadStickHorizontalWheelFormulaError,
+                resetHorizontalWheelFormula: { resetFormula(.horizontalWheel) }
+              )
+            }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 12) {
+              AppLocalizedText("settings.devices.gamepad.others")
+                .font(.title2)
+              OthersSettingsView(deviceConfiguration: $deviceConfiguration)
+            }
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding()
         }
       }
 
@@ -160,7 +165,7 @@ struct DevicesGamePadSettingsView: View {
     }
   }
 
-  struct XYStickTabView: View {
+  struct XYStickSettingsView: View {
     @Binding var deviceConfiguration: SettingsConfiguration.Device
     let defaults: SettingsConfiguration.DeviceDefaults
     @Binding var xFormula: String
@@ -196,6 +201,7 @@ struct DevicesGamePadSettingsView: View {
           FormulaView(
             name: "settings.devices.gamepad.x_formula",
             value: $xFormula,
+            defaultValue: defaults.gamePadStickXFormula,
             error: $xFormulaError,
             resetFunction: resetXFormula
           )
@@ -203,6 +209,7 @@ struct DevicesGamePadSettingsView: View {
           FormulaView(
             name: "settings.devices.gamepad.y_formula",
             value: $yFormula,
+            defaultValue: defaults.gamePadStickYFormula,
             error: $yFormulaError,
             resetFunction: resetYFormula
           )
@@ -212,7 +219,7 @@ struct DevicesGamePadSettingsView: View {
     }
   }
 
-  struct WheelsStickTabView: View {
+  struct WheelsStickSettingsView: View {
     @Binding var deviceConfiguration: SettingsConfiguration.Device
     let defaults: SettingsConfiguration.DeviceDefaults
     @Binding var verticalWheelFormula: String
@@ -248,6 +255,7 @@ struct DevicesGamePadSettingsView: View {
           FormulaView(
             name: "settings.devices.gamepad.vertical_formula",
             value: $verticalWheelFormula,
+            defaultValue: defaults.gamePadStickVerticalWheelFormula,
             error: $verticalWheelFormulaError,
             resetFunction: resetVerticalWheelFormula
           )
@@ -255,6 +263,7 @@ struct DevicesGamePadSettingsView: View {
           FormulaView(
             name: "settings.devices.gamepad.horizontal_formula",
             value: $horizontalWheelFormula,
+            defaultValue: defaults.gamePadStickHorizontalWheelFormula,
             error: $horizontalWheelFormulaError,
             resetFunction: resetHorizontalWheelFormula
           )
@@ -264,7 +273,7 @@ struct DevicesGamePadSettingsView: View {
     }
   }
 
-  struct OthersTabView: View {
+  struct OthersSettingsView: View {
     @Binding var deviceConfiguration: SettingsConfiguration.Device
 
     var body: some View {
@@ -365,6 +374,7 @@ struct DevicesGamePadSettingsView: View {
   struct FormulaView: View {
     let name: String
     @Binding var value: String
+    let defaultValue: String
     @Binding var error: Bool
     let resetFunction: () -> Void
 
@@ -394,10 +404,14 @@ struct DevicesGamePadSettingsView: View {
             }
           )
           .deleteButtonStyle()
+          .disabled(value == defaultValue)
         }
 
         TextEditor(text: $value)
-          .frame(height: 250.0)
+          .padding(8)
+          .frame(height: 200.0)
+          .background(Color(NSColor.textBackgroundColor))
+          .border(Color(NSColor.separatorColor), width: 2)
       }
     }
   }
