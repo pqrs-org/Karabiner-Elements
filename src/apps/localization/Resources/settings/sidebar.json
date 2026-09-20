@@ -68,8 +68,8 @@
         ,"ja": "仮想キーボード"
     },
     "settings.sidebar.reset_layout": {
-        "en": "Reset layout"
-        ,"ja": "レイアウトをリセット"
+        "en": "Reset window size"
+        ,"ja": "ウィンドウサイズをリセット"
     },
     "settings.sidebar.section.configurations": {
         "en": "Configurations"
