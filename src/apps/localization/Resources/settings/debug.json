@@ -52,11 +52,13 @@
     "settings.debug.preview_hint": {
         "en": [
             "Alerts use the current app language and sample states. ",
-            "Click anywhere in the preview or press Escape to close it. Preview actions do not change settings."
+            "Click anywhere in the preview or press Escape to close it. Preview actions do not change settings.\n",
+            "A checkmark appears when you open a preview to help you keep track of which previews you have viewed."
         ]
         ,"ja": [
             "アプリの現在の言語とサンプルの状態でアラートを表示します。",
-            "プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。"
+            "プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。\n",
+            "プレビューを表示するとチェックが付きます。閲覧済みかどうかの印として使うために用意しています。"
         ]
     },
     "settings.debug.section": {
