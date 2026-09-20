@@ -14,7 +14,7 @@ struct InputReportHistoryActions: View {
           history.copyToPasteboardTSV()
         }
       } label: {
-        AppLocalizedLabel(
+        AppLocalizedConstrainedLabel(
           "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
       }
       .disabled(history.entries.isEmpty)
@@ -22,7 +22,7 @@ struct InputReportHistoryActions: View {
       Button {
         history.clear()
       } label: {
-        AppLocalizedLabel("shared.action.clear", systemImage: "clear")
+        AppLocalizedConstrainedLabel("shared.action.clear", systemImage: "clear")
       }
       .disabled(history.entries.isEmpty)
     }

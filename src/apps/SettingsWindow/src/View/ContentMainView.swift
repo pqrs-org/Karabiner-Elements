@@ -169,7 +169,7 @@ struct ContentMainView: View {
                 selectedSidebarItem = .expert
               },
               label: {
-                AppLocalizedLabel(
+                AppLocalizedConstrainedLabel(
                   "settings.expert.unsafe_banner",
                   systemImage: "exclamationmark.triangle"
                 )
@@ -192,7 +192,7 @@ struct ContentMainView: View {
               OpenSystemSettingsButton(
                 url: "x-apple.systempreferences:com.apple.preference.keyboard",
                 label: {
-                  AppLocalizedLabel(
+                  AppLocalizedConstrainedLabel(
                     "settings.setup.system_settings.open",
                     systemImage: "arrow.up.forward.app"
                   )
@@ -292,7 +292,7 @@ struct ContentMainView: View {
       Image(systemName: item.systemImage)
         .frame(width: 18.0)
 
-      AppLocalizedText(item.title)
+      AppLocalizedConstrainedText(item.title)
     }
     .padding(.vertical, 2.0)
     .tag(item)

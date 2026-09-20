@@ -72,7 +72,7 @@ struct ComplexModificationsEditView: View {
                     externalEditorController.chooseEditor()
                   },
                   label: {
-                    AppLocalizedLabel(
+                    AppLocalizedConstrainedLabel(
                       "settings.complex_modifications.editor.choose_editor", systemImage: "gear"
                     )
                     .buttonLabelStyle()
@@ -86,7 +86,7 @@ struct ComplexModificationsEditView: View {
                     }
                   },
                   label: {
-                    AppLocalizedLabel("shared.action.save", systemImage: "checkmark")
+                    AppLocalizedConstrainedLabel("shared.action.save", systemImage: "checkmark")
                       .buttonLabelStyle()
                   }
                 )

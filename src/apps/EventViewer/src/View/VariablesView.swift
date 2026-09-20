@@ -16,7 +16,7 @@ struct VariablesView: View {
               ])
             },
             label: {
-              AppLocalizedLabel(
+              AppLocalizedConstrainedLabel(
                 "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
             })
 
@@ -25,7 +25,7 @@ struct VariablesView: View {
               krbn_core_service_async_clear_user_variables()
             },
             label: {
-              AppLocalizedLabel("event_viewer.variables.clear", systemImage: "clear")
+              AppLocalizedConstrainedLabel("event_viewer.variables.clear", systemImage: "clear")
             })
         }
       }

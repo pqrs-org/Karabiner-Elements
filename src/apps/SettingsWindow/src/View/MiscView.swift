@@ -40,7 +40,7 @@ struct MiscView: View {
                   KarabinerAppHelper.shared.openMultitouchExtensionSettings()
                 },
                 label: {
-                  AppLocalizedLabel(
+                  AppLocalizedConstrainedLabel(
                     "menu_bar_extra.multitouch_settings",
                     systemImage: "rectangle.and.hand.point.up.left.filled")
                 }
@@ -70,7 +70,7 @@ struct MiscView: View {
                 NSWorkspace.shared.open(url)
               },
               label: {
-                AppLocalizedLabel(
+                AppLocalizedConstrainedLabel(
                   "settings.misc.open_config_folder", systemImage: "arrow.up.forward.app")
               })
 
@@ -91,7 +91,7 @@ struct MiscView: View {
                 settings.installSystemDefaultProfile()
               },
               label: {
-                AppLocalizedLabel(
+                AppLocalizedConstrainedLabel(
                   "settings.misc.install_system_default",
                   systemImage: "square.and.arrow.down")
               })
@@ -109,8 +109,10 @@ struct MiscView: View {
                   settings.removeSystemDefaultProfile()
                 },
                 label: {
-                  AppLocalizedLabel("settings.misc.remove_system_default", systemImage: "trash")
-                    .buttonLabelStyle()
+                  AppLocalizedConstrainedLabel(
+                    "settings.misc.remove_system_default", systemImage: "trash"
+                  )
+                  .buttonLabelStyle()
                 }
               )
               .deleteButtonStyle()

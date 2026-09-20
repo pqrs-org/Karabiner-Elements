@@ -10,7 +10,6 @@ struct SecureEventInputWarningView: View {
       .font(.system(size: 24))
 
       AppLocalizedText("event_viewer.secure_input.cannot_capture")
-        .fixedSize(horizontal: false, vertical: true)
         .multilineTextAlignment(.leading)
         .frame(maxWidth: .infinity, alignment: .leading)
     }

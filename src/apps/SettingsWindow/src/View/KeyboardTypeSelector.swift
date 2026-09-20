@@ -22,11 +22,11 @@ struct KeyboardTypeSelectorView: View {
   var body: some View {
     Picker(
       selection: keyboardType,
-      label: AppLocalizedText("settings.setup.keyboard_type.label")
+      label: AppLocalizedConstrainedText("settings.setup.keyboard_type.label")
     ) {
-      AppLocalizedText("settings.setup.keyboard_type.ansi").tag("ansi")
-      AppLocalizedText("settings.setup.keyboard_type.iso").tag("iso")
-      AppLocalizedText("settings.setup.keyboard_type.jis").tag("jis")
+      AppLocalizedConstrainedText("settings.setup.keyboard_type.ansi").tag("ansi")
+      AppLocalizedConstrainedText("settings.setup.keyboard_type.iso").tag("iso")
+      AppLocalizedConstrainedText("settings.setup.keyboard_type.jis").tag("jis")
     }
     .pickerStyle(RadioGroupPickerStyle())
   }

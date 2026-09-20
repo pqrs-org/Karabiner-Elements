@@ -14,7 +14,7 @@ struct UninstallView: View {
                 NSApplication.shared.terminate(nil)
               },
               label: {
-                AppLocalizedLabel("settings.uninstall.launch", systemImage: "trash")
+                AppLocalizedConstrainedLabel("settings.uninstall.launch", systemImage: "trash")
                   .buttonLabelStyle()
               }
             )

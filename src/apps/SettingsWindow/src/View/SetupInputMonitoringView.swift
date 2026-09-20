@@ -18,12 +18,11 @@ struct SetupInputMonitoringView: View {
       AppLocalizedText(
         "settings.setup.input_monitoring.description"
       )
-      .fixedSize(horizontal: false, vertical: true)
 
       OpenSystemSettingsButton(
         url: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent",
         label: {
-          AppLocalizedLabel(
+          AppLocalizedConstrainedLabel(
             "settings.setup.system_settings.open_privacy",
             systemImage: "arrow.forward.circle.fill")
         }

@@ -406,8 +406,10 @@ struct DevicesGamePadSettingsView: View {
               resetFunction()
             },
             label: {
-              AppLocalizedLabel("settings.devices.gamepad.reset_formula", systemImage: "trash")
-                .buttonLabelStyle()
+              AppLocalizedConstrainedLabel(
+                "settings.devices.gamepad.reset_formula", systemImage: "trash"
+              )
+              .buttonLabelStyle()
             }
           )
           .deleteButtonStyle()

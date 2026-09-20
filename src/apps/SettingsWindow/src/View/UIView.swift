@@ -120,18 +120,18 @@ struct UIView: View {
                     Picker(
                       selection: $settings.configuration.globalConfiguration
                         .notificationWindowPosition,
-                      label: AppLocalizedText("settings.ui.notification_window_position")
+                      label: AppLocalizedConstrainedText("settings.ui.notification_window_position")
                     ) {
-                      AppLocalizedText("settings.ui.position.top_left").tag(
+                      AppLocalizedConstrainedText("settings.ui.position.top_left").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition.topLeft
                       )
-                      AppLocalizedText("settings.ui.position.top_right").tag(
+                      AppLocalizedConstrainedText("settings.ui.position.top_right").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition
                           .topRight)
-                      AppLocalizedText("settings.ui.position.bottom_left").tag(
+                      AppLocalizedConstrainedText("settings.ui.position.bottom_left").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition
                           .bottomLeft)
-                      AppLocalizedText("settings.ui.position.bottom_right").tag(
+                      AppLocalizedConstrainedText("settings.ui.position.bottom_right").tag(
                         SettingsConfiguration.GlobalConfiguration.NotificationWindowPosition
                           .bottomRight
                       )
@@ -352,7 +352,7 @@ struct UIView: View {
           }),
         supportsOpacity: true
       ) {
-        AppLocalizedText(title)
+        AppLocalizedConstrainedText(title)
       }
 
       Button {

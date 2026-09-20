@@ -19,7 +19,6 @@ struct VirtualHidDeviceServiceClientNotConnectedAlertView: View {
           "settings.setup.connection.virtual_hid_hint",
           systemImage: "lightbulb"
         )
-        .fixedSize(horizontal: false, vertical: true)
         .textSelection(.enabled)
       }
       .padding()

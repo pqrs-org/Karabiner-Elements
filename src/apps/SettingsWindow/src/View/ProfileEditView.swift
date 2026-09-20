@@ -26,7 +26,7 @@ struct ProfileEditView: View {
                 showing = false
               },
               label: {
-                AppLocalizedLabel("shared.action.cancel", systemImage: "xmark")
+                AppLocalizedConstrainedLabel("shared.action.cancel", systemImage: "xmark")
               })
 
             Button(
@@ -34,7 +34,7 @@ struct ProfileEditView: View {
                 save()
               },
               label: {
-                AppLocalizedLabel("shared.action.save", systemImage: "checkmark")
+                AppLocalizedConstrainedLabel("shared.action.save", systemImage: "checkmark")
                   .buttonLabelStyle()
               }
             )

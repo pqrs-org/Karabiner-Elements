@@ -86,7 +86,7 @@ struct ContentMainView: View {
   }
 
   private func sidebarRow(_ item: SidebarItem) -> some View {
-    AppLocalizedLabel(item.title, systemImage: item.systemImage)
+    AppLocalizedConstrainedLabel(item.title, systemImage: item.systemImage)
       .padding(.vertical, 8)
       .tag(item)
   }

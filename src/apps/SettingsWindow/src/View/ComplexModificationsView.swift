@@ -142,18 +142,20 @@ struct ComplexModificationsView: View {
                     }
                   }
                   .contextMenu {
-                    Section(header: AppLocalizedText("settings.complex_modifications.position")) {
+                    Section(
+                      header: AppLocalizedConstrainedText("settings.complex_modifications.position")
+                    ) {
                       Button {
                         settings.moveComplexModificationsRule(complexModificationRule.index, 0)
                       } label: {
-                        AppLocalizedText("settings.complex_modifications.move_to_top")
+                        AppLocalizedConstrainedText("settings.complex_modifications.move_to_top")
                       }
 
                       Button {
                         settings.moveComplexModificationsRule(
                           complexModificationRule.index, rules.count)
                       } label: {
-                        AppLocalizedText("settings.complex_modifications.move_to_bottom")
+                        AppLocalizedConstrainedText("settings.complex_modifications.move_to_bottom")
                       }
                     }
                   }
@@ -212,7 +214,8 @@ struct ComplexModificationsView: View {
                     showingEditSheet = true
                   },
                   label: {
-                    AppLocalizedLabel("shared.action.edit", systemImage: "pencil.circle.fill")
+                    AppLocalizedConstrainedLabel(
+                      "shared.action.edit", systemImage: "pencil.circle.fill")
                   })
 
                 Button(

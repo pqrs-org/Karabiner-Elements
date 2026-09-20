@@ -50,7 +50,7 @@ struct LogView: View {
             pboard.writeObjects([text as NSString])
           },
           label: {
-            AppLocalizedLabel(
+            AppLocalizedConstrainedLabel(
               "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
           })
 
@@ -76,7 +76,7 @@ struct LogView: View {
             logMessages.addDivider()
           },
           label: {
-            AppLocalizedLabel("settings.log.add_divider", systemImage: "scissors")
+            AppLocalizedConstrainedLabel("settings.log.add_divider", systemImage: "scissors")
           })
       }
       .padding()

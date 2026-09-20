@@ -33,7 +33,7 @@ struct InputMonitoringAlertView: View {
         OpenSystemSettingsButton(
           url: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent",
           label: {
-            AppLocalizedLabel(
+            AppLocalizedConstrainedLabel(
               "event_viewer.input_monitoring.open_settings",
               systemImage: "arrow.forward.circle.fill")
           }

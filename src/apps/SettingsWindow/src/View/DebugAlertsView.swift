@@ -202,7 +202,7 @@ struct DebugAlertsView: View {
             .padding()
           }
           .tabItem {
-            AppLocalizedText(category.title)
+            AppLocalizedConstrainedText(category.title)
           }
           .tag(category)
         }
@@ -238,7 +238,7 @@ struct DebugAlertsView: View {
         viewedAlerts.insert(alert)
         preview.alert = alert
       } label: {
-        AppLocalizedText(alert.title)
+        AppLocalizedConstrainedText(alert.title)
           .frame(maxWidth: .infinity, alignment: .leading)
       }
     }

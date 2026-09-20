@@ -2,7 +2,32 @@ import SwiftUI
 
 // Use explicit external-JSON lookup for application-owned translations. The
 // system's own controls and ordinary user-provided strings keep their behavior.
+// Prefer the full text height for descriptions and settings labels, including on macOS 13.
+// Use AppLocalizedConstrainedText in controls that should follow their parent's sizing.
 struct AppLocalizedText: View {
+  typealias Segment = AppLocalizedConstrainedText.Segment
+
+  private let text: AppLocalizedConstrainedText
+
+  init(_ key: String, arguments: [String: String] = [:]) {
+    text = AppLocalizedConstrainedText(key, arguments: arguments)
+  }
+
+  init(_ segments: [Segment]) {
+    text = AppLocalizedConstrainedText(segments)
+  }
+
+  func localizedString(locale: Locale, catalog: LocalizationCatalog) -> String {
+    text.localizedString(locale: locale, catalog: catalog)
+  }
+
+  var body: some View {
+    text.fixedSize(horizontal: false, vertical: true)
+  }
+}
+
+// Keeps Text's normal sizing behavior without imposing a line limit or truncation mode.
+struct AppLocalizedConstrainedText: View {
   @ObservedObject private var localization = AppLocalization.shared
   @Environment(\.locale) private var locale
   struct Segment: ExpressibleByStringLiteral {
@@ -41,6 +66,19 @@ struct AppLocalizedText: View {
 }
 
 struct AppLocalizedLabel: View {
+  private let label: AppLocalizedConstrainedLabel
+
+  init(_ key: String, systemImage: String, arguments: [String: String] = [:]) {
+    label = AppLocalizedConstrainedLabel(key, systemImage: systemImage, arguments: arguments)
+  }
+
+  var body: some View {
+    label.fixedSize(horizontal: false, vertical: true)
+  }
+}
+
+// Use for buttons, menus, pickers and other size-constrained control labels.
+struct AppLocalizedConstrainedLabel: View {
   let key: String
   let systemImage: String
 
@@ -54,7 +92,7 @@ struct AppLocalizedLabel: View {
 
   var body: some View {
     Label {
-      AppLocalizedText(key, arguments: arguments)
+      AppLocalizedConstrainedText(key, arguments: arguments)
     } icon: {
       Image(systemName: systemImage)
     }

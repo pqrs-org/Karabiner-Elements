@@ -48,7 +48,7 @@ struct SetupServicesView: View {
               SMAppService.openSystemSettingsLoginItems()
             },
             label: {
-              AppLocalizedLabel(
+              AppLocalizedConstrainedLabel(
                 "settings.setup.system_settings.open_login_items",
                 systemImage: "arrow.forward.circle.fill")
             }

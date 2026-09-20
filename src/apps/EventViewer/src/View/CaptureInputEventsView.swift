@@ -16,7 +16,7 @@ struct CaptureInputEventsView: View {
             Button(role: .destructive) {
               CaptureCoordinator.shared.stopCapture()
             } label: {
-              AppLocalizedLabel("event_viewer.capture.stop", systemImage: "stop.fill")
+              AppLocalizedConstrainedLabel("event_viewer.capture.stop", systemImage: "stop.fill")
             }
 
             CaptureActiveLabel(text: localized("event_viewer.capture.active"))
@@ -25,7 +25,8 @@ struct CaptureInputEventsView: View {
               CaptureCoordinator.shared.startCapture()
               focusTestInput()
             } label: {
-              AppLocalizedLabel("event_viewer.capture.start", systemImage: "record.circle")
+              AppLocalizedConstrainedLabel(
+                "event_viewer.capture.start", systemImage: "record.circle")
             }
           }
         }

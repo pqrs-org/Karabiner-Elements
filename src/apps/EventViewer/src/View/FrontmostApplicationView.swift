@@ -60,7 +60,7 @@ struct FrontmostApplicationView: View {
                     pboard.writeObjects([string as NSString])
                   },
                   label: {
-                    AppLocalizedLabel(
+                    AppLocalizedConstrainedLabel(
                       "shared.action.copy_to_pasteboard",
                       systemImage: "arrow.right.doc.on.clipboard")
                   })

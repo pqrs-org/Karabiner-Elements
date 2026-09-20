@@ -19,7 +19,6 @@ struct SettingsPowerView: View {
                     arguments: ["value": localized("shared.value.off")]
                   ),
                 ])
-                .fixedSize(horizontal: false, vertical: true)
               }
               .switchToggleStyle()
             }
@@ -28,7 +27,6 @@ struct SettingsPowerView: View {
               "multitouch_extension.power.warning",
               systemImage: WarningBorder.icon
             )
-            .fixedSize(horizontal: false, vertical: true)
             .modifier(WarningBorder())
           }
 
@@ -42,7 +40,6 @@ struct SettingsPowerView: View {
                     "settings.general.defaults.value",
                     arguments: ["value": localized("shared.value.off")]),
                 ])
-                .fixedSize(horizontal: false, vertical: true)
               }
               .switchToggleStyle()
             }

@@ -54,7 +54,6 @@ struct DevicesView: View {
                       )
                       .foregroundColor(Color(NSColor.textColor))
                       .font(.caption)
-                      .fixedSize(horizontal: false, vertical: true)
                       .frame(maxWidth: .infinity, alignment: .leading)
                       .padding(.leading, 20.0)
                       .padding(.top, 4.0)
@@ -285,7 +284,6 @@ struct DevicesView: View {
       GridRow {
         AppLocalizedText(title)
           .font(.callout)
-          .fixedSize(horizontal: false, vertical: true)
 
         Toggle(isOn: $isOn) {
           AppLocalizedText(title)
@@ -311,8 +309,10 @@ struct DevicesView: View {
             showing = true
           },
           label: {
-            AppLocalizedLabel("settings.devices.open_mouse_settings", systemImage: "computermouse")
-              .buttonLabelStyle()
+            AppLocalizedConstrainedLabel(
+              "settings.devices.open_mouse_settings", systemImage: "computermouse"
+            )
+            .buttonLabelStyle()
           }
         )
         .sheet(isPresented: $showing) {
@@ -342,7 +342,7 @@ struct DevicesView: View {
             showing = true
           },
           label: {
-            AppLocalizedLabel(
+            AppLocalizedConstrainedLabel(
               "settings.devices.open_gamepad_settings", systemImage: "gamecontroller"
             )
             .buttonLabelStyle()

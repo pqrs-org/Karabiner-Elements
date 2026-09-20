@@ -12,7 +12,8 @@ struct ActionView: View {
                 Relauncher.relaunch()
               },
               label: {
-                AppLocalizedLabel("menu_bar_extra.restart", systemImage: "arrow.clockwise")
+                AppLocalizedConstrainedLabel(
+                  "menu_bar_extra.restart", systemImage: "arrow.clockwise")
               })
 
             Button(
@@ -21,7 +22,7 @@ struct ActionView: View {
                 krbn_killall_settings()
               },
               label: {
-                AppLocalizedLabel("menu_bar_extra.quit", systemImage: "xmark.rectangle")
+                AppLocalizedConstrainedLabel("menu_bar_extra.quit", systemImage: "xmark.rectangle")
               })
           }
           .padding()

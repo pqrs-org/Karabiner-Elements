@@ -38,7 +38,8 @@ struct UpdateView: View {
                   krbn_updater_check_for_updates_stable_only()
                 },
                 label: {
-                  AppLocalizedLabel("menu_bar_extra.check_for_updates", systemImage: "network")
+                  AppLocalizedConstrainedLabel(
+                    "menu_bar_extra.check_for_updates", systemImage: "network")
                 }
               )
 
@@ -49,7 +50,8 @@ struct UpdateView: View {
                   krbn_updater_check_for_updates_with_beta_version()
                 },
                 label: {
-                  AppLocalizedLabel("menu_bar_extra.check_for_beta_updates", systemImage: "hare")
+                  AppLocalizedConstrainedLabel(
+                    "menu_bar_extra.check_for_beta_updates", systemImage: "hare")
                 }
               )
             }
@@ -66,7 +68,8 @@ struct UpdateView: View {
                   NSWorkspace.shared.open(URL(string: "https://karabiner-elements.pqrs.org/")!)
                 },
                 label: {
-                  AppLocalizedLabel("settings.update.official_website", systemImage: "house")
+                  AppLocalizedConstrainedLabel(
+                    "settings.update.official_website", systemImage: "house")
                 })
 
               Button(
@@ -75,7 +78,7 @@ struct UpdateView: View {
                     URL(string: "https://github.com/pqrs-org/Karabiner-Elements")!)
                 },
                 label: {
-                  AppLocalizedLabel("settings.update.github", systemImage: "hammer")
+                  AppLocalizedConstrainedLabel("settings.update.github", systemImage: "hammer")
                 })
             }
           }

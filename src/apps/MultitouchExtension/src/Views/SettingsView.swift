@@ -16,35 +16,37 @@ struct SettingsView: View {
       SettingsMainView()
         .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          AppLocalizedLabel("multitouch_extension.tab.main", systemImage: "gearshape")
+          AppLocalizedConstrainedLabel("multitouch_extension.tab.main", systemImage: "gearshape")
         }
         .tag(TabTag.main)
 
       SettingsPowerView()
         .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          AppLocalizedLabel("multitouch_extension.tab.power", systemImage: "power")
+          AppLocalizedConstrainedLabel("multitouch_extension.tab.power", systemImage: "power")
         }
         .tag(TabTag.power)
 
       SettingsAdvancedView()
         .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          AppLocalizedLabel("multitouch_extension.tab.advanced", systemImage: "hammer")
+          AppLocalizedConstrainedLabel("multitouch_extension.tab.advanced", systemImage: "hammer")
         }
         .tag(TabTag.advanced)
 
       SettingsActionView()
         .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          AppLocalizedLabel("multitouch_extension.tab.restart", systemImage: "arrow.clockwise")
+          AppLocalizedConstrainedLabel(
+            "multitouch_extension.tab.restart", systemImage: "arrow.clockwise")
         }
         .tag(TabTag.action)
 
       SettingsLogView()
         .modifier(StoredAppLanguage(pickerPlacement: .contentTop))
         .tabItem {
-          AppLocalizedLabel("multitouch_extension.tab.log", systemImage: "list.bullet.rectangle")
+          AppLocalizedConstrainedLabel(
+            "multitouch_extension.tab.log", systemImage: "list.bullet.rectangle")
         }
         .tag(TabTag.log)
     }

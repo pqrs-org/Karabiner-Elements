@@ -22,7 +22,7 @@ struct InputEventHistoryActions: View {
             showUnknownEvents: userSettings.captureUnknownEvents)
         }
       } label: {
-        AppLocalizedLabel(
+        AppLocalizedConstrainedLabel(
           "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
       }
       .disabled(visibleEntries.isEmpty)
@@ -30,7 +30,7 @@ struct InputEventHistoryActions: View {
       Button {
         eventHistory.clear()
       } label: {
-        AppLocalizedLabel("shared.action.clear", systemImage: "clear")
+        AppLocalizedConstrainedLabel("shared.action.clear", systemImage: "clear")
       }
       .disabled(visibleEntries.isEmpty)
 

@@ -59,7 +59,6 @@ struct SettingsAdvancedView: View {
             }
 
             AppLocalizedText("multitouch_extension.advanced.touch_hint")
-              .fixedSize(horizontal: false, vertical: true)
           }
 
           VStack(alignment: .leading) {
@@ -77,7 +76,6 @@ struct SettingsAdvancedView: View {
             }
 
             AppLocalizedText("multitouch_extension.advanced.release_hint")
-              .fixedSize(horizontal: false, vertical: true)
           }
         }
         .padding()
@@ -101,7 +99,6 @@ struct SettingsAdvancedView: View {
             }
 
             AppLocalizedText("multitouch_extension.advanced.palm_hint")
-              .fixedSize(horizontal: false, vertical: true)
           }
 
         }

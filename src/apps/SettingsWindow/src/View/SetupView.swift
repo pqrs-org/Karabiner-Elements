@@ -89,7 +89,6 @@ struct SetupView: View {
           title: {
             AppLocalizedText(item.title)
               .lineLimit(nil)
-              .fixedSize(horizontal: false, vertical: true)
           },
           icon: {
             Image(systemName: setupStatusSystemImage(item))
@@ -237,7 +236,7 @@ struct SetupView: View {
       Button {
         selectedItem = .services
       } label: {
-        AppLocalizedLabel(
+        AppLocalizedConstrainedLabel(
           "settings.setup.open_services",
           systemImage: "arrow.left.circle.fill"
         )
@@ -258,7 +257,7 @@ struct SetupView: View {
       Button {
         selectedItem = .accessibility
       } label: {
-        AppLocalizedLabel(
+        AppLocalizedConstrainedLabel(
           "settings.setup.open_accessibility",
           systemImage: "arrow.left.circle.fill"
         )

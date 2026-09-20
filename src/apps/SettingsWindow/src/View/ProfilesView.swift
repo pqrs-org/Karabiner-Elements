@@ -93,7 +93,8 @@ struct ProfilesView: View {
                   showingSheet = true
                 },
                 label: {
-                  AppLocalizedLabel("shared.action.rename", systemImage: "pencil.circle.fill")
+                  AppLocalizedConstrainedLabel(
+                    "shared.action.rename", systemImage: "pencil.circle.fill")
                 })
 
               Button(
@@ -101,7 +102,8 @@ struct ProfilesView: View {
                   settings.duplicateProfile(profile)
                 },
                 label: {
-                  AppLocalizedLabel("shared.action.duplicate", systemImage: "person.2.fill")
+                  AppLocalizedConstrainedLabel(
+                    "shared.action.duplicate", systemImage: "person.2.fill")
                 })
 
               HStack {

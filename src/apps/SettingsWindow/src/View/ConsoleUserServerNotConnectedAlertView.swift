@@ -30,14 +30,13 @@ struct ConsoleUserServerNotConnectedAlertView: View {
               AppLocalizedText(
                 "settings.setup.connection.agent_retry"
               )
-              .fixedSize(horizontal: false, vertical: true)
 
               Button(
                 action: {
                   SMAppService.openSystemSettingsLoginItems()
                 },
                 label: {
-                  AppLocalizedLabel(
+                  AppLocalizedConstrainedLabel(
                     "settings.setup.system_settings.open_login_items",
                     systemImage: "arrow.forward.circle.fill")
                 }

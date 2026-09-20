@@ -28,7 +28,7 @@ struct SetupDriverExtensionViewMacOS14: View {
           OpenSystemSettingsButton(
             url: "x-apple.systempreferences:com.apple.preference.security?General",
             label: {
-              AppLocalizedLabel(
+              AppLocalizedConstrainedLabel(
                 "settings.setup.system_settings.open_privacy",
                 systemImage: "arrow.forward.circle.fill")
             }
@@ -44,7 +44,7 @@ struct SetupDriverExtensionViewMacOS14: View {
             Button(
               action: { showingAdvanced = true },
               label: {
-                AppLocalizedLabel(
+                AppLocalizedConstrainedLabel(
                   "settings.setup.driver_legacy.missing_allow",
                   systemImage: "questionmark.circle")
               })
@@ -70,7 +70,6 @@ struct SetupDriverExtensionViewMacOS14: View {
               AppLocalizedText(
                 "settings.setup.driver_legacy.reinstallation_step_001_deactivate"
               )
-              .fixedSize(horizontal: false, vertical: true)
 
               DeactivateDriverButton()
                 .padding(.vertical, 10)
@@ -78,20 +77,16 @@ struct SetupDriverExtensionViewMacOS14: View {
 
               AppLocalizedText("settings.setup.driver_legacy.reinstallation_step_002_restart")
                 .fontWeight(.bold)
-                .fixedSize(horizontal: false, vertical: true)
 
               AppLocalizedText("settings.setup.driver_legacy.reinstallation_step_003_activate")
-                .fixedSize(horizontal: false, vertical: true)
 
               ActivateDriverButton()
                 .padding(.vertical, 10)
                 .padding(.leading, 20)
 
               AppLocalizedText("settings.setup.driver_legacy.reinstallation_step_004_blocked")
-                .fixedSize(horizontal: false, vertical: true)
 
               AppLocalizedText("settings.setup.driver_legacy.reinstallation_step_005_allow")
-                .fixedSize(horizontal: false, vertical: true)
             }
           }.padding()
         }

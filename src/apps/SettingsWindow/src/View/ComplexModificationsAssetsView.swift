@@ -71,7 +71,7 @@ struct ComplexModificationsAssetsView: View {
                         label: {
                           // Use `Image` and `Text` instead of `Label` to set icon color like `Button` in `List`.
                           Image(systemName: "plus.circle.fill").foregroundColor(.blue)
-                          AppLocalizedText("shared.action.enable")
+                          AppLocalizedConstrainedText("shared.action.enable")
                         }
                       )
                       .onHover { hovering in
@@ -103,7 +103,7 @@ struct ComplexModificationsAssetsView: View {
                         contentViewStates.complexModificationsViewSheetPresented = false
                       },
                       label: {
-                        AppLocalizedText("shared.action.enable_all")
+                        AppLocalizedConstrainedText("shared.action.enable_all")
                           .font(.caption)
                       })
 

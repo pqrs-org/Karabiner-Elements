@@ -48,7 +48,7 @@ struct ComplexModificationsFileImportView: View {
             contentViewStates.complexModificationsViewSheetPresented = false
           },
           label: {
-            AppLocalizedLabel("shared.action.cancel", systemImage: "xmark")
+            AppLocalizedConstrainedLabel("shared.action.cancel", systemImage: "xmark")
           })
 
         Button(
@@ -60,8 +60,10 @@ struct ComplexModificationsFileImportView: View {
               ComplexModificationsSheetView.assets
           },
           label: {
-            AppLocalizedLabel("shared.action.import", systemImage: "tray.and.arrow.down.fill")
-              .buttonLabelStyle()
+            AppLocalizedConstrainedLabel(
+              "shared.action.import", systemImage: "tray.and.arrow.down.fill"
+            )
+            .buttonLabelStyle()
           }
         )
         .buttonStyle(BorderedProminentButtonStyle())

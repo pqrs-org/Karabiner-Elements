@@ -16,7 +16,7 @@ struct SystemExtensionsView: View {
                 pboard.writeObjects([systemExtensionsStreamer.text as NSString])
               },
               label: {
-                AppLocalizedLabel(
+                AppLocalizedConstrainedLabel(
                   "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
               })
 
@@ -25,7 +25,8 @@ struct SystemExtensionsView: View {
                 SystemExtensions.shared.update()
               },
               label: {
-                AppLocalizedLabel("shared.action.refresh", systemImage: "arrow.clockwise.circle")
+                AppLocalizedConstrainedLabel(
+                  "shared.action.refresh", systemImage: "arrow.clockwise.circle")
               })
           }
 
@@ -54,7 +55,7 @@ struct SystemExtensionsView: View {
                 pboard.writeObjects([sysextdLogStreamer.text as NSString])
               },
               label: {
-                AppLocalizedLabel(
+                AppLocalizedConstrainedLabel(
                   "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
               })
 
@@ -63,7 +64,8 @@ struct SystemExtensionsView: View {
                 SysextdLogMessages.shared.update()
               },
               label: {
-                AppLocalizedLabel("shared.action.refresh", systemImage: "arrow.clockwise.circle")
+                AppLocalizedConstrainedLabel(
+                  "shared.action.refresh", systemImage: "arrow.clockwise.circle")
               })
           }
 

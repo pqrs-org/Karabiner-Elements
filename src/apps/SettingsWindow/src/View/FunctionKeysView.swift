@@ -25,7 +25,7 @@ struct FunctionKeysView: View {
         OpenSystemSettingsButton(
           url: "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?FunctionKeys",
           label: {
-            AppLocalizedLabel(
+            AppLocalizedConstrainedLabel(
               "settings.setup.system_settings.open_function_keys",
               systemImage: "arrow.up.forward.app")
           }

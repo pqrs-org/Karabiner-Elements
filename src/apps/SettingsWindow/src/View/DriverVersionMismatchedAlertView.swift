@@ -32,7 +32,7 @@ struct DriverVersionMismatchedAlertView: View {
           Button(
             action: { showingAdvanced = true },
             label: {
-              AppLocalizedLabel(
+              AppLocalizedConstrainedLabel(
                 "settings.setup.driver.restart_did_not_help",
                 systemImage: "questionmark.circle")
             }
@@ -51,7 +51,6 @@ struct DriverVersionMismatchedAlertView: View {
                 AppLocalizedText(
                   "settings.setup.driver.manual_driver_load_step_001_deactivate"
                 )
-                .fixedSize(horizontal: false, vertical: true)
 
                 DeactivateDriverButton()
                   .padding(.vertical, 10)

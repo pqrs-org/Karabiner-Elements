@@ -21,7 +21,7 @@ struct ActivateDriverButton: View {
           })
         },
         label: {
-          AppLocalizedLabel(
+          AppLocalizedConstrainedLabel(
             "settings.setup.driver.activate",
             systemImage: "star.fill")
         })

@@ -18,12 +18,11 @@ struct SetupAccessibilityView: View {
       AppLocalizedText(
         "settings.setup.accessibility.description"
       )
-      .fixedSize(horizontal: false, vertical: true)
 
       OpenSystemSettingsButton(
         url: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
         label: {
-          AppLocalizedLabel(
+          AppLocalizedConstrainedLabel(
             "settings.setup.system_settings.open_privacy",
             systemImage: "arrow.forward.circle.fill")
         }

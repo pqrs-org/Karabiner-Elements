@@ -37,8 +37,23 @@ struct LocalizedTextTests {
       AppLocalizedText("default", arguments: ["value": "10"])
         .localizedString(locale: en, catalog: catalog) == "(Default: 10)")
 
+    let constrained = AppLocalizedConstrainedText([
+      "label", " ", .init("default", arguments: ["value": "*literal*"]), "\n", "fallback",
+    ])
+    precondition(
+      constrained.localizedString(locale: en, catalog: catalog)
+        == "Feature (Default: *literal*)\nEnglish only")
+    precondition(
+      constrained.localizedString(locale: ja, catalog: catalog)
+        == "機能 （デフォルト：*literal*）\nEnglish only")
+    precondition(
+      AppLocalizedConstrainedText("default", arguments: ["value": "10"])
+        .localizedString(locale: ja, catalog: catalog) == "（デフォルト：10）")
+    precondition(
+      AppLocalizedConstrainedText([]).localizedString(locale: en, catalog: catalog).isEmpty)
+
     print(
-      "Localized text arrays, arguments, literal spaces/newlines, fallback and locale switching passed"
+      "Default and constrained localized text: arrays, arguments, literal spaces/newlines, fallback and locale switching passed"
     )
   }
 }

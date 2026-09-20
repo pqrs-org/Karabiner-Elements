@@ -36,7 +36,8 @@ struct CaptureRawInputRecordsView: View {
                 Button(role: .destructive) {
                   CaptureCoordinator.shared.stopCapture()
                 } label: {
-                  AppLocalizedLabel("event_viewer.capture.stop_escape", systemImage: "stop.fill")
+                  AppLocalizedConstrainedLabel(
+                    "event_viewer.capture.stop_escape", systemImage: "stop.fill")
                 }
                 .keyboardShortcut(.escape, modifiers: [])
 
@@ -52,7 +53,8 @@ struct CaptureRawInputRecordsView: View {
                   CaptureCoordinator.shared.startCapture()
                   focusTestInput()
                 } label: {
-                  AppLocalizedLabel("event_viewer.capture.start", systemImage: "record.circle")
+                  AppLocalizedConstrainedLabel(
+                    "event_viewer.capture.start", systemImage: "record.circle")
                 }
                 .disabled(captureCoordinator.rawInputRecordsSelectedDeviceId == nil)
 

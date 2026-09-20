@@ -21,7 +21,7 @@ struct DeactivateDriverButton: View {
           })
         },
         label: {
-          AppLocalizedLabel(
+          AppLocalizedConstrainedLabel(
             "settings.setup.driver.deactivate",
             systemImage: "star.fill")
         })
