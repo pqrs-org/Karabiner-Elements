@@ -77,6 +77,7 @@ public:
       case event_definition::type::select_input_source:
       case event_definition::type::set_variable:
       case event_definition::type::set_notification_message:
+      case event_definition::type::set_caps_lock_led:
       case event_definition::type::mouse_key:
       case event_definition::type::sticky_modifier:
       case event_definition::type::software_function:

@@ -332,6 +332,23 @@
         "error": "`sticky_modifier` error: unknown value: `unknown`"
     },
 
+    // set_caps_lock_led
+
+    {
+        "class": "event_definition",
+        "input": {
+            "set_caps_lock_led": null
+        },
+        "error": "`set_caps_lock_led` error: json must be string, but is `null`"
+    },
+    {
+        "class": "event_definition",
+        "input": {
+            "set_caps_lock_led": "unknown"
+        },
+        "error": "`set_caps_lock_led` error: unknown value: `unknown`"
+    },
+
     // software_function
 
     {
