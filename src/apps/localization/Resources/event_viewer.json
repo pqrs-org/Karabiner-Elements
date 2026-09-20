@@ -201,9 +201,9 @@
         "en": "Capture Raw Input Records"
         ,"ja": "未加工の入力レコードの取得"
     },
-    "event_viewer.sidebar.section.input_events": {
-        "en": "Input Events"
-        ,"ja": "入力イベント"
+    "event_viewer.sidebar.section.capture": {
+        "en": "Capture"
+        ,"ja": "キャプチャ"
     },
     "event_viewer.sidebar.section.settings": {
         "en": "Settings"

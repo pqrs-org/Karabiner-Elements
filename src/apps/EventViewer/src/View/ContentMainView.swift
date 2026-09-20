@@ -51,7 +51,7 @@ struct ContentMainView: View {
 
   private let sections: [SidebarSection] = [
     SidebarSection(
-      title: "event_viewer.sidebar.section.input_events",
+      title: "event_viewer.sidebar.section.capture",
       items: [.inputEvents, .rawInputEvents, .rawInputRecords]
     ),
     SidebarSection(
