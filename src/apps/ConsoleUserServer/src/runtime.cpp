@@ -176,6 +176,12 @@ void console_user_server_select_profile(size_t index) {
   }
 }
 
+void console_user_server_set_resolved_ui_language(const char* language) {
+  if (ui_bridge_instance && language) {
+    ui_bridge_instance->async_set_resolved_ui_language(language);
+  }
+}
+
 void console_user_server_launch_settings(void) {
   krbn::application_launcher::launch_settings();
 }

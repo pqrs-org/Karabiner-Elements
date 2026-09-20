@@ -33,6 +33,14 @@ struct LocalizationTests {
       AppLanguage.locale(for: "auto", preferredLanguages: ["ja-JP"], catalog: catalog).identifier
         == "ja")
     precondition(
+      AppLanguage.locale(for: "", preferredLanguages: ["ja-JP"], catalog: catalog).identifier
+        == "ja")
+    precondition(
+      AppLanguage.locale(for: "ja", preferredLanguages: ["en-US"], catalog: catalog).identifier
+        == "ja")
+    precondition(
+      AppLanguage.locale(for: "auto", preferredLanguages: [], catalog: catalog).identifier == "en")
+    precondition(
       AppLanguage.locale(for: "auto", preferredLanguages: ["fr-FR", "en-US"], catalog: catalog)
         .identifier == "en")
     precondition(

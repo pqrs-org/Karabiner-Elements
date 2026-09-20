@@ -479,6 +479,10 @@ private:
                                       manipulator_environment.get_variable("system.scroll_direction_is_natural"),
                                   },
                                   {
+                                      "system.ui_language",
+                                      manipulator_environment.get_variable("system.ui_language"),
+                                  },
+                                  {
                                       "system.use_fkeys_as_standard_function_keys",
                                       manipulator_environment.get_variable("system.use_fkeys_as_standard_function_keys"),
                                   },

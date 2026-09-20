@@ -10,6 +10,7 @@ namespace krbn::console_user_server {
 class ui_bridge final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   nod::signal<void(size_t)> profile_selection_requested;
+  nod::signal<void(const std::string&)> resolved_ui_language_changed;
 
   using string_callback = void (*)(const char*);
 
@@ -25,6 +26,7 @@ public:
     std::call_once(unregister_callbacks_and_detach_once_, [this] {
       detach_from_dispatcher([this] {
         profile_selection_requested.disconnect_all_slots();
+        resolved_ui_language_changed.disconnect_all_slots();
 
         std::lock_guard<std::mutex> lock(mutex_);
         ui_state_callback_ = nullptr;
@@ -79,8 +81,30 @@ public:
     });
   }
 
+  void async_set_resolved_ui_language(std::string language) {
+    enqueue_to_dispatcher([this, language = std::move(language)] {
+      if (language.empty() || language == "auto") {
+        return;
+      }
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (resolved_ui_language_ == language) {
+          return;
+        }
+        resolved_ui_language_ = language;
+      }
+      resolved_ui_language_changed(language);
+    });
+  }
+
+  [[nodiscard]] std::string get_resolved_ui_language() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return resolved_ui_language_;
+  }
+
 private:
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
+  std::string resolved_ui_language_ = "en";
   std::string ui_state_;
   std::string notification_message_;
   string_callback ui_state_callback_ = nullptr;

@@ -78,6 +78,13 @@ public:
       }
     });
 
+    // Publish the language resolved in the logged-in user's Swift UI process.
+    resolved_ui_language_connection_ = ui_bridge_->resolved_ui_language_changed.connect([this](const auto& language) {
+      if (core_service_daemon_client_) {
+        core_service_daemon_client_->async_set_variables({{"system.ui_language", language}});
+      }
+    });
+
     //
     // console_user_id_changed_client_
     //
@@ -134,6 +141,7 @@ public:
       settings_window_guidance_manager_dispatcher_time_source_ = nullptr;
       session_monitor_ = nullptr;
       select_profile_connection_.disconnect();
+      resolved_ui_language_connection_.disconnect();
       configuration_monitor_ = nullptr;
       core_configuration_ = nullptr;
       console_user_id_changed_client_ = nullptr;
@@ -244,6 +252,7 @@ private:
 
     core_service_daemon_client_->connected.connect([this] {
       core_service_daemon_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
+      core_service_daemon_client_->async_set_variables({{"system.ui_language", ui_bridge_->get_resolved_ui_language()}});
       core_service_daemon_client_->async_observe_notification_message();
 
       stop_child_components();
@@ -351,7 +360,8 @@ private:
   //
 
   std::shared_ptr<ui_bridge> ui_bridge_;
-  // Declare this last so that it is disconnected before the other members are destroyed.
+  // Declare connections last so they are disconnected before the other members are destroyed.
   nod::scoped_connection select_profile_connection_;
+  nod::scoped_connection resolved_ui_language_connection_;
 };
 } // namespace krbn::console_user_server
