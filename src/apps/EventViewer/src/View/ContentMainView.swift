@@ -44,12 +44,38 @@ struct ContentMainView: View {
   @State private var layoutResetRequest = UUID()
   @State private var selection: SidebarItem = .inputEvents
 
+  private struct SidebarSection {
+    let title: String
+    let items: [SidebarItem]
+  }
+
+  private let sections: [SidebarSection] = [
+    SidebarSection(
+      title: "event_viewer.sidebar.section.input_events",
+      items: [.inputEvents, .rawInputEvents, .rawInputRecords]
+    ),
+    SidebarSection(
+      title: "event_viewer.sidebar.section.state",
+      items: [.frontmostApplication, .variables, .devices]
+    ),
+    SidebarSection(
+      title: "event_viewer.sidebar.section.settings",
+      items: [.settings]
+    ),
+  ]
+
   var body: some View {
     NavigationSplitView(
       sidebar: {
         List(selection: $selection) {
-          ForEach(SidebarItem.allCases.filter { $0 != .debug }) { item in
-            sidebarRow(item)
+          ForEach(sections.indices, id: \.self) { section in
+            Section {
+              ForEach(sections[section].items) { item in
+                sidebarRow(item)
+              }
+            } header: {
+              AppLocalizedText(sections[section].title)
+            }
           }
           if optionPressed || selection == .debug {
             Section {
