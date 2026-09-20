@@ -6,64 +6,81 @@ struct DevicesView: View {
   @ObservedObject private var connectedDevices = ConnectedDevices.shared
   @State private var showEraseNotConnectedDeviceSettingsButton = false
 
-  static let detailedSettingWidth = 400.0
-
   var body: some View {
     VStack(alignment: .leading, spacing: 0.0) {
-      List {
-        ForEach(connectedDevices.connectedDevices) { connectedDevice in
-          if let deviceConfiguration = settings.deviceConfigurationBinding(connectedDevice) {
-            VStack(alignment: .leading, spacing: 0.0) {
-              DeviceName(connectedDevice: connectedDevice)
-                .if(connectedDevice.isVirtualDevice) {
-                  $0.foregroundColor(Color(NSColor.placeholderTextColor))
-                }
-
-              if !connectedDevice.isVirtualDevice {
-                VStack(alignment: .leading, spacing: 0.0) {
-                  ModifyEventsSetting(
-                    connectedDevice: connectedDevice,
-                    deviceConfiguration: deviceConfiguration)
-
-                  VStack(alignment: .leading, spacing: 6.0) {
-                    KeyboardSettings(
-                      connectedDevice: connectedDevice,
-                      deviceConfiguration: deviceConfiguration)
-
-                    MouseSettings(
-                      connectedDevice: connectedDevice,
-                      deviceConfiguration: deviceConfiguration)
-
-                    GamePadSettings(
-                      connectedDevice: connectedDevice,
-                      deviceConfiguration: deviceConfiguration)
-
-                    ExtraSettings(
-                      connectedDevice: connectedDevice,
-                      deviceConfiguration: deviceConfiguration)
+      // Build all device rows eagerly so offscreen grids are laid out before scrolling.
+      ScrollView {
+        VStack(alignment: .leading, spacing: 4.0) {
+          ForEach(connectedDevices.connectedDevices) { connectedDevice in
+            if let deviceConfiguration = settings.deviceConfigurationBinding(connectedDevice) {
+              VStack(alignment: .leading, spacing: 0.0) {
+                DeviceName(connectedDevice: connectedDevice)
+                  .if(connectedDevice.isVirtualDevice) {
+                    $0.foregroundColor(Color(NSColor.placeholderTextColor))
                   }
-                  .padding(.leading, 20.0)
-                  .padding(.top, 8.0)
+
+                if !connectedDevice.isVirtualDevice {
+                  VStack(alignment: .leading, spacing: 0.0) {
+                    ModifyEventsSetting(
+                      connectedDevice: connectedDevice,
+                      deviceConfiguration: deviceConfiguration)
+
+                    Grid(alignment: .leading, horizontalSpacing: 8.0, verticalSpacing: 6.0) {
+                      KeyboardSettings(
+                        connectedDevice: connectedDevice,
+                        deviceConfiguration: deviceConfiguration)
+
+                      MouseSettings(
+                        connectedDevice: connectedDevice,
+                        deviceConfiguration: deviceConfiguration)
+
+                      GamePadSettings(
+                        connectedDevice: connectedDevice,
+                        deviceConfiguration: deviceConfiguration)
+
+                      ExtraSettings(
+                        connectedDevice: connectedDevice,
+                        deviceConfiguration: deviceConfiguration)
+                    }
+                    .padding(.leading, 20.0)
+                    .padding(.top, 8.0)
+
+                    if deviceConfiguration.wrappedValue.modifyEvents
+                      && !connectedDevice.isAppleDevice
+                    {
+                      AppLocalizedLabel(
+                        "settings.devices.vendor_events_hint",
+                        systemImage: "lightbulb"
+                      )
+                      .foregroundColor(Color(NSColor.textColor))
+                      .font(.caption)
+                      .fixedSize(horizontal: false, vertical: true)
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                      .padding(.leading, 20.0)
+                      .padding(.top, 4.0)
+                    }
+                  }
+                  .padding(.leading, 62.0)
+                  .padding(.top, 20.0)
                 }
-                .padding(.leading, 62.0)
-                .padding(.top, 20.0)
               }
+              .padding(.vertical, 12.0)
+              .padding(.trailing, 12.0)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                  .stroke(
+                    Color(NSColor.selectedControlColor),
+                    lineWidth: deviceConfiguration.wrappedValue.modifyEvents
+                      && !connectedDevice.isVirtualDevice
+                      ? 3 : 0
+                  )
+                  .padding(2)
+              )
             }
-            .padding(.vertical, 12.0)
-            .padding(.trailing, 12.0)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .overlay(
-              RoundedRectangle(cornerRadius: 8)
-                .stroke(
-                  Color(NSColor.selectedControlColor),
-                  lineWidth: deviceConfiguration.wrappedValue.modifyEvents
-                    && !connectedDevice.isVirtualDevice
-                    ? 3 : 0
-                )
-                .padding(2)
-            )
           }
         }
+        .padding(8.0)
       }
       .background(Color(NSColor.textBackgroundColor))
 
@@ -197,7 +214,7 @@ struct DevicesView: View {
               AppLocalizedText("settings.devices.modify_events")
             }
             .switchToggleStyle()
-            .frame(width: 140.0)
+            .fixedSize(horizontal: true, vertical: false)
 
             if settings.configuration.globalConfiguration.enableCgeventtapFallback
               && !deviceConfiguration.modifyEvents
@@ -230,48 +247,51 @@ struct DevicesView: View {
     @ObservedObject private var settings = Settings.shared
 
     var body: some View {
-      VStack {
-        if connectedDevice.isKeyboard {
-          VStack(alignment: .leading, spacing: 6.0) {
-            if !connectedDevice.isBuiltInKeyboard
-              && !deviceConfiguration.disableBuiltInKeyboardIfExists
-            {
-              Toggle(isOn: $deviceConfiguration.treatAsBuiltInKeyboard) {
-                AppLocalizedText("settings.devices.treat_as_built_in")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-              .frame(width: detailedSettingWidth)
-            }
-
-            if !connectedDevice.isBuiltInKeyboard
-              && !deviceConfiguration.treatAsBuiltInKeyboard
-            {
-              Toggle(isOn: $deviceConfiguration.disableBuiltInKeyboardIfExists) {
-                AppLocalizedText("settings.devices.disable_built_in")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-              .frame(width: detailedSettingWidth)
-            }
-
-            if deviceConfiguration.modifyEvents {
-              Toggle(isOn: $deviceConfiguration.manipulateCapsLockLed) {
-                AppLocalizedText("settings.devices.caps_lock_led")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-              .frame(width: detailedSettingWidth)
-
-              Toggle(isOn: $deviceConfiguration.swapGraveAccentAndNonUsBackslash) {
-                AppLocalizedText("settings.devices.swap_iso_keys")
-                  .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-              .frame(width: detailedSettingWidth)
-            }
-          }
+      if connectedDevice.isKeyboard {
+        if !connectedDevice.isBuiltInKeyboard
+          && !deviceConfiguration.disableBuiltInKeyboardIfExists
+        {
+          DetailedSetting(
+            title: "settings.devices.treat_as_built_in",
+            isOn: $deviceConfiguration.treatAsBuiltInKeyboard)
         }
+
+        if !connectedDevice.isBuiltInKeyboard
+          && !deviceConfiguration.treatAsBuiltInKeyboard
+        {
+          DetailedSetting(
+            title: "settings.devices.disable_built_in",
+            isOn: $deviceConfiguration.disableBuiltInKeyboardIfExists)
+        }
+
+        if deviceConfiguration.modifyEvents {
+          DetailedSetting(
+            title: "settings.devices.caps_lock_led",
+            isOn: $deviceConfiguration.manipulateCapsLockLed)
+
+          DetailedSetting(
+            title: "settings.devices.swap_iso_keys",
+            isOn: $deviceConfiguration.swapGraveAccentAndNonUsBackslash)
+        }
+      }
+    }
+  }
+
+  struct DetailedSetting: View {
+    let title: String
+    @Binding var isOn: Bool
+
+    var body: some View {
+      GridRow {
+        AppLocalizedText(title)
+          .font(.callout)
+          .fixedSize(horizontal: false, vertical: true)
+
+        Toggle(isOn: $isOn) {
+          AppLocalizedText(title)
+        }
+        .switchToggleStyle(controlSize: .mini, font: .callout)
+        .labelsHidden()
       }
     }
   }
@@ -348,28 +368,10 @@ struct DevicesView: View {
     @Binding var deviceConfiguration: SettingsConfiguration.Device
 
     var body: some View {
-      VStack {
-        if deviceConfiguration.modifyEvents {
-          if !connectedDevice.isAppleDevice {
-            VStack(alignment: .leading, spacing: 4.0) {
-              Toggle(isOn: $deviceConfiguration.ignoreVendorEvents) {
-                AppLocalizedText(
-                  "settings.devices.ignore_vendor_events"
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-              }
-              .switchToggleStyle(controlSize: .mini, font: .callout)
-              .frame(width: detailedSettingWidth)
-
-              AppLocalizedLabel(
-                "settings.devices.vendor_events_hint",
-                systemImage: "lightbulb"
-              )
-              .foregroundColor(Color(NSColor.textColor))
-              .font(.caption)
-            }
-          }
-        }
+      if deviceConfiguration.modifyEvents && !connectedDevice.isAppleDevice {
+        DetailedSetting(
+          title: "settings.devices.ignore_vendor_events",
+          isOn: $deviceConfiguration.ignoreVendorEvents)
       }
     }
   }
