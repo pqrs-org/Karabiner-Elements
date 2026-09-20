@@ -83,8 +83,6 @@ struct SystemExtensionsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       }
     }
-    // Fixed-size group titles must not determine the window's minimum height.
-    .frame(minHeight: 0, maxHeight: .infinity)
     .padding()
     .onAppear {
       SystemExtensions.shared.update()

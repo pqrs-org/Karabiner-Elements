@@ -9,9 +9,12 @@ struct CaptureRawInputEventsView: View {
   @FocusState private var testInputFocused: Bool
 
   var body: some View {
-    HSplitView {
+    // The device list is fixed-width; avoid nested split-view size negotiations.
+    HStack(spacing: 0) {
       deviceSelector
-        .frame(minWidth: 300, maxWidth: 300)
+        .frame(width: 300)
+
+      Divider()
 
       VStack(alignment: .leading, spacing: 0) {
         VStack(alignment: .leading, spacing: 12) {

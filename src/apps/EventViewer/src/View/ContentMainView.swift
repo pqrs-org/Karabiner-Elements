@@ -62,24 +62,28 @@ struct ContentMainView: View {
         .listStyle(.sidebar)
       },
       detail: {
-        switch selection {
-        case .inputEvents:
-          CaptureInputEventsView()
-        case .rawInputEvents:
-          CaptureRawInputEventsView()
-        case .rawInputRecords:
-          CaptureRawInputRecordsView()
-        case .frontmostApplication:
-          FrontmostApplicationView()
-        case .variables:
-          VariablesView()
-        case .devices:
-          DevicesView()
-        case .settings:
-          SettingsView()
-        case .debug:
-          DebugAlertsView()
+        Group {
+          switch selection {
+          case .inputEvents:
+            CaptureInputEventsView()
+          case .rawInputEvents:
+            CaptureRawInputEventsView()
+          case .rawInputRecords:
+            CaptureRawInputRecordsView()
+          case .frontmostApplication:
+            FrontmostApplicationView()
+          case .variables:
+            VariablesView()
+          case .devices:
+            DevicesView()
+          case .settings:
+            SettingsView()
+          case .debug:
+            DebugAlertsView()
+          }
         }
+        // Keep fixed-size localized text from inflating the detail pane's minimum height.
+        .frame(minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
       }
     )
     .background(OptionKeyObserver(isPressed: $optionPressed).frame(width: 0, height: 0))

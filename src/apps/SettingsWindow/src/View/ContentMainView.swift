@@ -256,6 +256,8 @@ struct ContentMainView: View {
             DebugAlertsView()
           }
         }
+        // Include banners so fixed-size localized text cannot inflate the detail pane's minimum height.
+        .frame(minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
       }
     )
     .background(OptionKeyObserver(isPressed: $optionPressed).frame(width: 0, height: 0))
