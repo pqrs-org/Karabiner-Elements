@@ -146,18 +146,14 @@ struct ComplexModificationsView: View {
                       Button {
                         settings.moveComplexModificationsRule(complexModificationRule.index, 0)
                       } label: {
-                        AppLocalizedLabel(
-                          "settings.complex_modifications.move_to_top",
-                          systemImage: "arrow.up.to.line")
+                        AppLocalizedText("settings.complex_modifications.move_to_top")
                       }
 
                       Button {
                         settings.moveComplexModificationsRule(
                           complexModificationRule.index, rules.count)
                       } label: {
-                        AppLocalizedLabel(
-                          "settings.complex_modifications.move_to_bottom",
-                          systemImage: "arrow.down.to.line")
+                        AppLocalizedText("settings.complex_modifications.move_to_bottom")
                       }
                     }
                   }
