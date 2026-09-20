@@ -78,6 +78,7 @@ struct ContentMainView: View {
 
   @State private var optionPressed = false
   @State private var selectedSidebarItem: SidebarItem = .simpleModifications
+  @FocusState private var sidebarFocused: Bool
 
   struct SidebarSection {
     let title: String
@@ -160,6 +161,16 @@ struct ContentMainView: View {
         }
         .navigationSplitViewColumnWidth(250)
         .listStyle(.sidebar)
+        // On macOS 27, clicking a row can change selection while focus stays in the other list,
+        // leaving the selection highlight inactive. Explicitly focus the clicked list.
+        // A simultaneous tap preserves native selection and also handles clicks on the selected row;
+        // observing selection changes would miss those clicks and react to programmatic changes.
+        .focused($sidebarFocused)
+        .simultaneousGesture(
+          TapGesture().onEnded {
+            sidebarFocused = true
+          }
+        )
       },
       detail: {
         VStack(alignment: .leading, spacing: 0) {

@@ -5,9 +5,12 @@ struct SimpleModificationsView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
   var body: some View {
-    HSplitView {
+    // The device list is fixed-width; avoid nested split-view size negotiations.
+    HStack(spacing: 0) {
       DeviceSelectorView(selectedDevice: $contentViewStates.simpleModificationsViewSelectedDevice)
-        .frame(minWidth: 250, maxWidth: 250)
+        .frame(width: 250)
+
+      Divider()
 
       SimpleModificationView(
         selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice)

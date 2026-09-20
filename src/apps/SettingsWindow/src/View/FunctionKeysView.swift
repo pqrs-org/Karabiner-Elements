@@ -35,9 +35,12 @@ struct FunctionKeysView: View {
 
       Divider()
 
-      HSplitView {
+      // The device list is fixed-width; avoid nested split-view size negotiations.
+      HStack(spacing: 0) {
         DeviceSelectorView(selectedDevice: $contentViewStates.functionKeysViewSelectedDevice)
-          .frame(minWidth: 250, maxWidth: 250)
+          .frame(width: 250)
+
+        Divider()
 
         FnFunctionKeysView(selectedDevice: contentViewStates.functionKeysViewSelectedDevice)
       }
