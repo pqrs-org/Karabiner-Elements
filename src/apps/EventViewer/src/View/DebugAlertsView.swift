@@ -38,6 +38,8 @@ struct DebugAlertsView: View {
       }
       Spacer()
     }
+    // Fixed-size descriptions must not determine the window's minimum height.
+    .frame(minHeight: 0, maxHeight: .infinity)
     .buttonStyle(.bordered)
     .padding()
   }
