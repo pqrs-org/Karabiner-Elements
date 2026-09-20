@@ -145,10 +145,28 @@ struct ChangedSettingsTests {
     // The same setting resolves to its Japanese label when Japanese is selected.
     precondition(
       japaneseRows.first { $0.id == "global.enable_cgeventtap_fallback" }?.label
-        == "CGEventTap fallbackを有効にする")
+        == "CGEventTapフォールバックを有効にする")
     precondition(
       japaneseRows.first { $0.id == "global.notification_window_font_size" }?.label.hasPrefix(
         "通知ウインドウ / ") == true)
+    // Copying rebuilds the report in English, including section titles, values and row order.
+    let clipboard = try ChangedSettings.clipboardText(
+      json: json, version: "test", systemVersion: "13.0.0", catalog: catalog)
+    precondition(clipboard == english.text(version: "test", systemVersion: "13.0.0"))
+    precondition(clipboard.contains("Global settings"))
+    precondition(
+      clipboard.contains("Enable CGEventTap fallback: On [global.enable_cgeventtap_fallback]"))
+    let emptyClipboard = try ChangedSettings.clipboardText(
+      json: "{}", version: nil, systemVersion: "13.0.0", catalog: catalog)
+    precondition(
+      emptyClipboard == "Karabiner-Elements: "
+        + AppLanguage.text("shared.value.unknown", locale: en, catalog: catalog)
+        + "\nmacOS: 13.0.0\n\nNo settings have been changed from their default values.")
+    // User-provided strings are configuration data and must not be translated.
+    let customClipboard = try ChangedSettings.clipboardText(
+      json: #"{"global":{"future_option":"日本語の値"}}"#,
+      version: "test", systemVersion: "13.0.0", catalog: catalog)
+    precondition(customClipboard.contains("future_option: 日本語の値 [global.future_option]"))
     // Changing locale back must not leave Japanese strings cached in the report.
     let again = try ChangedSettings(json: json, locale: en, catalog: catalog)
     precondition(again.sections.flatMap(\.rows).map(\.label) == englishRows.map(\.label))

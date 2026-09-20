@@ -266,6 +266,26 @@ struct ChangedSettings {
     return lines.joined(separator: "\n")
   }
 
+  // Keep shared reports in English regardless of the application's display language.
+  static func clipboardText(
+    json: String, version: String?, systemVersion: String,
+    catalog: LocalizationCatalog = AppLanguage.catalog
+  ) throws -> String {
+    let locale = Locale(identifier: "en")
+    let report = try ChangedSettings(json: json, locale: locale, catalog: catalog)
+    var content = report.text(
+      version: version
+        ?? AppLanguage.text("shared.value.unknown", locale: locale, catalog: catalog),
+      systemVersion: systemVersion)
+    if report.sections.isEmpty {
+      content +=
+        "\n\n"
+        + AppLanguage.text(
+          "settings.changed_settings.empty", locale: locale, catalog: catalog)
+    }
+    return content
+  }
+
   // Project supported snapshot fields into a compact report before comparing them.
   // Keep this independent of locale so language changes only rebuild the display.
   static func makeJSON(snapshotData: Data) throws -> String {

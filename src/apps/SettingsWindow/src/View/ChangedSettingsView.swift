@@ -6,30 +6,31 @@ struct ChangedSettingsView: View {
   @ObservedObject private var settings = Settings.shared
   @Environment(\.locale) private var locale
 
-  private func text(_ key: String) -> String {
-    AppLanguage.text(key, locale: locale)
-  }
-
   var body: some View {
     let result = Result {
-      try ChangedSettings(json: settings.configuration.changedSettingsJson, locale: locale)
+      let json = settings.configuration.changedSettingsJson
+      let systemVersion = ProcessInfo.processInfo.operatingSystemVersion
+      return (
+        report: try ChangedSettings(json: json, locale: locale),
+        clipboardText: try ChangedSettings.clipboardText(
+          json: json,
+          version: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")
+            as? String,
+          systemVersion:
+            "\(systemVersion.majorVersion).\(systemVersion.minorVersion).\(systemVersion.patchVersion)"
+        )
+      )
     }
     VStack(alignment: .leading, spacing: 12) {
       AppLocalizedText("settings.changed_settings.title")
         .font(.title2)
 
       switch result {
-      case .success(let report):
+      case .success(let (report, clipboardText)):
         Button {
-          let version =
-            Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? text("shared.value.unknown")
-          var content = report.text(
-            version: version, systemVersion: ProcessInfo.processInfo.operatingSystemVersionString)
-          if report.sections.isEmpty { content += "\n\n" + text("settings.changed_settings.empty") }
           let pasteboard = NSPasteboard.general
           pasteboard.clearContents()
-          pasteboard.writeObjects([content as NSString])
+          pasteboard.writeObjects([clipboardText as NSString])
         } label: {
           AppLocalizedConstrainedLabel(
             "shared.action.copy_to_pasteboard", systemImage: "arrow.right.doc.on.clipboard")
