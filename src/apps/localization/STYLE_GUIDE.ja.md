@@ -15,6 +15,7 @@
 | expert                                  | エキスパート     |
 | profile                                 | プロファイル     |
 | menu bar                                | メニューバー     |
+| swap                                    | 交換             |
 
 ## 表記ルール
 

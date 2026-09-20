@@ -61,7 +61,7 @@
     },
     "settings.devices.gamepad.swap_sticks": {
         "en": "Swap gamepad XY and wheels sticks"
-        ,"ja": "ゲームパッドのXYスティックとホイール用スティックを入れ替える"
+        ,"ja": "ゲームパッドのXYスティックとホイール用スティックを交換"
     },
     "settings.devices.gamepad.vertical_formula": {
         "en": "vertical wheel formula"
@@ -137,11 +137,11 @@
     },
     "settings.devices.mouse.swap_wheels": {
         "en": "Swap mouse wheels"
-        ,"ja": "マウスの縦ホイールと横ホイールを入れ替える"
+        ,"ja": "マウスの縦ホイールと横ホイールを交換"
     },
     "settings.devices.mouse.swap_xy": {
         "en": "Swap mouse X and Y"
-        ,"ja": "マウスのX軸とY軸を入れ替える"
+        ,"ja": "マウスのX軸とY軸を交換"
     },
     "settings.devices.mouse.wheels_multiplier": {
         "en": "Wheels multiplier:"
@@ -177,7 +177,7 @@
     },
     "settings.devices.swap_iso_keys": {
         "en": "Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)"
-        ,"ja": "ISO配列固有のキーを入れ替える（例: `~ / §± / ^° / ² ↔ \\| / <>）"
+        ,"ja": "ISO配列固有のキーを交換（例: `~ / §± / ^° / ² ↔ \\| / <>）"
     },
     "settings.devices.treat_as_built_in": {
         "en": "Treat as a built-in keyboard"
