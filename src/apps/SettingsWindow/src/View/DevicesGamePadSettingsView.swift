@@ -41,14 +41,12 @@ struct DevicesGamePadSettingsView: View {
         Text(
           "\(connectedDevice.localizedProductName(localized)) (\(connectedDevice.localizedManufacturerName(localized)))"
         )
-        .padding(.leading, 40)
-        .padding(.top, 20)
+        .padding(.leading, 40.0)
+        .padding(.top, 20.0)
 
         ScrollView {
-          VStack(alignment: .leading, spacing: 24) {
-            VStack(alignment: .leading, spacing: 12) {
-              AppLocalizedText("settings.devices.gamepad.xy_stick")
-                .font(.title2)
+          LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+            Section {
               XYStickSettingsView(
                 deviceConfiguration: $deviceConfiguration,
                 defaults: settings.configuration.deviceDefaults,
@@ -61,13 +59,13 @@ struct DevicesGamePadSettingsView: View {
                 yFormulaError: $gamePadStickYFormulaError,
                 resetYFormula: { resetFormula(.y) }
               )
+              .padding(.top, 12.0)
+              .padding(.bottom, 60.0)
+            } header: {
+              sectionHeader("settings.devices.gamepad.xy_stick")
             }
 
-            Divider()
-
-            VStack(alignment: .leading, spacing: 12) {
-              AppLocalizedText("settings.devices.gamepad.wheels_stick")
-                .font(.title2)
+            Section {
               WheelsStickSettingsView(
                 deviceConfiguration: $deviceConfiguration,
                 defaults: settings.configuration.deviceDefaults,
@@ -84,14 +82,17 @@ struct DevicesGamePadSettingsView: View {
                 horizontalWheelFormulaError: $gamePadStickHorizontalWheelFormulaError,
                 resetHorizontalWheelFormula: { resetFormula(.horizontalWheel) }
               )
+              .padding(.top, 12.0)
+              .padding(.bottom, 60.0)
+            } header: {
+              sectionHeader("settings.devices.gamepad.wheels_stick")
             }
 
-            Divider()
-
-            VStack(alignment: .leading, spacing: 12) {
-              AppLocalizedText("settings.devices.gamepad.others")
-                .font(.title2)
+            Section {
               OthersSettingsView(deviceConfiguration: $deviceConfiguration)
+                .padding(.top, 12.0)
+            } header: {
+              sectionHeader("settings.devices.gamepad.others")
             }
           }
           .frame(maxWidth: .infinity, alignment: .leading)
@@ -127,6 +128,12 @@ struct DevicesGamePadSettingsView: View {
         gamePadStickHorizontalWheelFormula = value
       }
     }
+  }
+
+  private func sectionHeader(_ key: String) -> some View {
+    AppLocalizedText(key)
+      .font(.title2)
+      .sectionHeaderStyle()
   }
 
   private func formulaBinding(
@@ -277,7 +284,7 @@ struct DevicesGamePadSettingsView: View {
     @Binding var deviceConfiguration: SettingsConfiguration.Device
 
     var body: some View {
-      VStack(alignment: .leading, spacing: 40.0) {
+      VStack(alignment: .leading, spacing: 12.0) {
         Toggle(isOn: $deviceConfiguration.gamePadSwapSticks) {
           AppLocalizedText("settings.devices.gamepad.swap_sticks")
         }

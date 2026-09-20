@@ -2,6 +2,16 @@ import SwiftUI
 
 @MainActor
 extension View {
+  func sectionHeaderStyle() -> some View {
+    self
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.vertical, 4)
+      .background(Color(NSColor.windowBackgroundColor))
+      .overlay(alignment: .bottom) {
+        Divider()
+      }
+  }
+
   func buttonLabelStyle() -> some View {
     self
       .padding(.horizontal, 8)
