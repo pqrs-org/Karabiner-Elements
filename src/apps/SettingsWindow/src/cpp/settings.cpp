@@ -165,12 +165,18 @@ void krbn_services_unregister_all_agents() {
   krbn::services_utility::unregister_all_agents();
 }
 
-bool krbn_services_daemons_enabled() {
-  return krbn::services_utility::core_daemons_enabled() == true;
+krbn_service_enabled_state krbn_services_daemons_enabled() {
+  if (auto enabled = krbn::services_utility::core_daemons_enabled()) {
+    return *enabled ? krbn_service_enabled_state_enabled : krbn_service_enabled_state_disabled;
+  }
+  return krbn_service_enabled_state_unknown;
 }
 
-bool krbn_services_agents_enabled() {
-  return krbn::services_utility::core_agents_enabled() == true;
+krbn_service_enabled_state krbn_services_agents_enabled() {
+  if (auto enabled = krbn::services_utility::core_agents_enabled()) {
+    return *enabled ? krbn_service_enabled_state_enabled : krbn_service_enabled_state_disabled;
+  }
+  return krbn_service_enabled_state_unknown;
 }
 
 void krbn_updater_check_for_updates_stable_only() {

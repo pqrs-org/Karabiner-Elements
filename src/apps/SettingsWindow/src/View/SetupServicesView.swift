@@ -4,16 +4,16 @@ import SwiftUI
 struct SetupServicesView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
-  let debugGuidanceContextOverride: SettingsWindowGuidanceContext?
+  let debugGuidanceContextOverride: LocalServicesGuidanceContext?
 
-  private var guidanceContext: SettingsWindowGuidanceContext {
-    debugGuidanceContextOverride ?? contentViewStates.guidanceContext
+  private var localServicesGuidanceContext: LocalServicesGuidanceContext {
+    debugGuidanceContextOverride ?? contentViewStates.localServicesGuidanceContext
   }
 
   private let loginItemsImage: String
 
   init(
-    debugGuidanceContextOverride: SettingsWindowGuidanceContext? = nil,
+    debugGuidanceContextOverride: LocalServicesGuidanceContext? = nil,
     debugLoginItemsImageOverride: String? = nil
   ) {
     self.debugGuidanceContextOverride = debugGuidanceContextOverride
@@ -63,12 +63,12 @@ struct SetupServicesView: View {
             Label(
               "Karabiner-Elements Non-Privileged Agents v2",
               systemImage:
-                guidanceContext.coreAgentsEnabled != false
+                localServicesGuidanceContext.coreAgentsEnabled == true
                 ? "checkmark.circle.fill" : "circle")
             Label(
               "Karabiner-Elements Privileged Daemons v2",
               systemImage:
-                guidanceContext.coreDaemonsEnabled != false
+                localServicesGuidanceContext.coreDaemonsEnabled == true
                 ? "checkmark.circle.fill" : "circle")
           }
         }

@@ -37,12 +37,12 @@ struct ServicesNotRunningAlertView: View {
               Label(
                 "Karabiner-Elements Non-Privileged Agents v2",
                 systemImage:
-                  guidanceContext.coreAgentsRunning != false
+                  guidanceContext.coreAgentsRunning == true
                   ? "checkmark.circle.fill" : "circle")
               Label(
                 "Karabiner-Elements Privileged Daemons v2",
                 systemImage:
-                  guidanceContext.coreDaemonsRunning != false
+                  guidanceContext.coreDaemonsRunning == true
                   ? "checkmark.circle.fill" : "circle")
             }
 

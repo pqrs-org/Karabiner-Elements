@@ -70,6 +70,25 @@ int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 
+  "settings_window_guidance_context wire format only exposes running states"_test = [] {
+    auto context = make_guidance_context(true, false);
+    context.set_core_agents_running(std::nullopt);
+    const auto json = nlohmann::json(context);
+    expect(json == nlohmann::json({
+                       {"core_daemons_running", false},
+                       {"core_agents_running", nullptr},
+                   }));
+    // Serializing the context must not alter the server's enabled-state decisions.
+    expect(context.services_enabled() == std::optional<bool>(true));
+    expect(context.services_running() == std::optional<bool>(false));
+
+    const auto decoded = json.get<krbn::settings_window_guidance_context>();
+    expect(decoded.get_core_daemons_running() == std::optional<bool>(false));
+    expect(!decoded.get_core_agents_running().has_value());
+    expect(!decoded.get_core_daemons_enabled().has_value());
+    expect(!decoded.get_core_agents_enabled().has_value());
+  };
+
   "settings_window_guidance_manager services_not_running"_test = [] {
     auto launch_count = 0;
     auto c = manager_test_context(

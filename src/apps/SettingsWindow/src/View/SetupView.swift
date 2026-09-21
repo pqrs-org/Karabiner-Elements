@@ -115,7 +115,7 @@ struct SetupView: View {
               SetupServicesView(
                 debugGuidanceContextOverride: debugPreview == nil
                   ? nil
-                  : SettingsWindowGuidanceContext(
+                  : LocalServicesGuidanceContext(
                     coreDaemonsEnabled: debugPreview?.debugDaemonsEnabled,
                     coreAgentsEnabled: debugPreview?.debugAgentsEnabled),
                 debugLoginItemsImageOverride: debugPreview?.debugMacOS15Images == true

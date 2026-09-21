@@ -43,9 +43,25 @@ final class ContentViewStates: ObservableObject {
 
   // These values are maintained by Settings locally, outside of
   // SettingsWindowGuidanceState from Karabiner-Console-User-Server.
-  private var localCoreDaemonsEnabled = true
-  private var localCoreAgentsEnabled = true
+  @Published private var localCoreDaemonsEnabled: Bool?
+  @Published private var localCoreAgentsEnabled: Bool?
   private var localServicesSetupPresented = false
+
+  var localServicesGuidanceContext: LocalServicesGuidanceContext {
+    var context = LocalServicesGuidanceContext()
+    // Enabled status is available locally even when the services cannot run or connect.
+    // Do not replace these values with potentially stale server-provided status.
+    context.coreDaemonsEnabled = localCoreDaemonsEnabled
+    context.coreAgentsEnabled = localCoreAgentsEnabled
+    if localCoreDaemonsEnabled == false || localCoreAgentsEnabled == false {
+      context.servicesEnabled = false
+    } else if localCoreDaemonsEnabled == true && localCoreAgentsEnabled == true {
+      context.servicesEnabled = true
+    } else {
+      context.servicesEnabled = nil
+    }
+    return context
+  }
 
   private var currentResolvedAlert: SettingsWindowGuidanceAlert {
     // Until Settings receives SettingsWindowGuidanceState from
@@ -152,11 +168,15 @@ final class ContentViewStates: ObservableObject {
   }
 
   func updateLocalServicesGuidanceContext(
-    coreDaemonsEnabled: Bool,
-    coreAgentsEnabled: Bool
+    coreDaemonsEnabled: Bool?,
+    coreAgentsEnabled: Bool?
   ) {
-    localCoreDaemonsEnabled = coreDaemonsEnabled
-    localCoreAgentsEnabled = coreAgentsEnabled
+    if localCoreDaemonsEnabled != coreDaemonsEnabled {
+      localCoreDaemonsEnabled = coreDaemonsEnabled
+    }
+    if localCoreAgentsEnabled != coreAgentsEnabled {
+      localCoreAgentsEnabled = coreAgentsEnabled
+    }
 
     if !consoleUserServerClientReady && localServicesRequireAttention {
       if localSetup != .services {
@@ -220,7 +240,7 @@ final class ContentViewStates: ObservableObject {
   func setupItemCompleted(_ item: SetupItem) -> Bool {
     switch item {
     case .services:
-      return guidanceContext.servicesEnabled == true
+      return localServicesGuidanceContext.servicesEnabled == true
     case .accessibility:
       return coreServiceDaemonState.accessibilityProcessTrusted == true
     case .inputMonitoring:

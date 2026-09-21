@@ -46,21 +46,20 @@ struct SettingsWindowCoreServiceState: Codable, Equatable {
 }
 
 struct SettingsWindowGuidanceContext: Codable, Equatable {
-  var coreDaemonsEnabled: Bool?
-  var coreAgentsEnabled: Bool?
   var coreDaemonsRunning: Bool?
   var coreAgentsRunning: Bool?
-  var servicesEnabled: Bool?
-  var servicesRunning: Bool?
 
   enum CodingKeys: String, CodingKey {
-    case coreDaemonsEnabled = "core_daemons_enabled"
-    case coreAgentsEnabled = "core_agents_enabled"
     case coreDaemonsRunning = "core_daemons_running"
     case coreAgentsRunning = "core_agents_running"
-    case servicesEnabled = "services_enabled"
-    case servicesRunning = "services_running"
   }
+}
+
+// Locally obtained status, separate from Console-User-Server's wire format.
+struct LocalServicesGuidanceContext: Equatable {
+  var coreDaemonsEnabled: Bool?
+  var coreAgentsEnabled: Bool?
+  var servicesEnabled: Bool?
 }
 
 struct SettingsWindowGuidanceState: Codable, Equatable {
