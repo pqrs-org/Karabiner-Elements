@@ -44,11 +44,11 @@ class LocalizationResourcesTests(unittest.TestCase):
                 if "build" in source.parts:
                     continue
                 for key in re.findall(
-                    r'"((?:event_viewer|multitouch_extension|multitouch|shared|search|settings|setting|section|value|changed_settings|menu_bar_extra)\.[A-Za-z0-9_.]+)"',
+                    r'"((?:event_viewer|multitouch_extension|multitouch|shared|search|settings|setting|section|value|changed_settings|menu_bar_extra)\.[A-Za-z0-9_.]*)"',
                     source.read_text(),
                 ):
-                    if not key.endswith("."):
-                        self.assertIn(key, catalog, str(source))
+                    # Check prefixes too: concatenating a suffix hides missing keys from this test.
+                    self.assertIn(key, catalog, str(source))
         for key, translations in catalog.items():
             if key.startswith(
                 (
