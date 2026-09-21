@@ -21,4 +21,5 @@ clean:
 	$(MAKE) -C apps/ServiceManager-Privileged-Daemons clean
 	$(MAKE) -C apps/SettingsWindow clean
 	$(MAKE) -C apps/Updater clean
+	$(MAKE) -C apps/localization clean
 	$(MAKE) -C bin/cli clean

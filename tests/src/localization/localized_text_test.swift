@@ -4,13 +4,10 @@ import Foundation
 @MainActor
 struct LocalizedTextTests {
   static func main() throws {
-    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    defer { try? FileManager.default.removeItem(at: directory) }
-    try
-      #"{"label":{"en":"Feature","ja":"機能"},"default":{"en":"(Default: {value})","ja":"（デフォルト：{value}）"},"fallback":{"en":"English only"}}"#
-      .write(to: directory.appendingPathComponent("test.json"), atomically: true, encoding: .utf8)
-    let catalog = try LocalizationCatalog(directory: directory)
+    let catalog = try LocalizationCatalog(
+      data: Data(
+        #"{"label":{"en":"Feature","ja":"機能"},"default":{"en":"(Default: {value})","ja":"（デフォルト：{value}）"},"fallback":{"en":"English only"}}"#
+          .utf8))
     let en = Locale(identifier: "en")
     let ja = Locale(identifier: "ja")
 
@@ -21,8 +18,6 @@ struct LocalizedTextTests {
     precondition(
       combined.localizedString(locale: en, catalog: catalog) == "Feature(Default: *literal*)")
     precondition(combined.localizedString(locale: ja, catalog: catalog) == "機能（デフォルト：*literal*）")
-    precondition(
-      combined.localizedString(locale: en, catalog: catalog) == "Feature(Default: *literal*)")
     precondition(
       AppLocalizedText(["label", "\n", "fallback"])
         .localizedString(locale: ja, catalog: catalog) == "機能\nEnglish only")

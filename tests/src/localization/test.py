@@ -147,6 +147,53 @@ class LocalizationResourcesTests(unittest.TestCase):
             self.assertIn("Duplicate translation key", result.stderr)
             self.assertEqual(first.read_text(), original)
 
+    def test_compile_catalog_and_preserve_output_on_invalid_sources(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "Resources"
+            (directory / "settings").mkdir(parents=True)
+            first = directory / "shared.json"
+            first.write_text(
+                json.dumps(
+                    {
+                        "shared": {
+                            "en": ["Hello ", "{na", "me}", "\n", "Next"],
+                            "ja": "共有",
+                        },
+                        "empty": {"en": []},
+                    }
+                )
+            )
+            second = directory / "settings" / "general.json"
+            second.write_text('{"setting": {"en": "Setting", "fr": "Réglage"}}')
+            output = Path(temporary) / "build" / "localizations.json"
+            command = [
+                "/usr/bin/python3",
+                str(SCRIPT),
+                "--directory",
+                str(directory),
+                "--output",
+                str(output),
+            ]
+            subprocess.run(command, check=True, capture_output=True)
+            self.assertEqual(
+                json.loads(output.read_text()),
+                {
+                    "shared": {"en": "Hello {name}\nNext", "ja": "共有"},
+                    "empty": {"en": ""},
+                    "setting": {"en": "Setting", "fr": "Réglage"},
+                },
+            )
+            self.assertIsInstance(json.loads(first.read_text())["shared"]["en"], list)
+            original = output.read_bytes()
+            second.write_text('{"shared": {"en": "Duplicate"}}')
+            result = subprocess.run(command, capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(output.read_bytes(), original)
+            # Regeneration removes deleted keys and languages from the output.
+            second.unlink()
+            subprocess.run(command, check=True, capture_output=True)
+            self.assertNotIn("setting", json.loads(output.read_text()))
+
     def test_duplicate_keys_inside_one_file(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)

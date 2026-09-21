@@ -1,9 +1,9 @@
 # Editing translations
 
-Settings, ConsoleUserServer, EventViewer, and MultitouchExtension share UTF-8 JSON translation files under:
+Settings, ConsoleUserServer, EventViewer, and MultitouchExtension share one generated UTF-8 JSON translation file:
 
 ```text
-/Library/Application Support/org.pqrs/Karabiner-Elements/localizations/
+/Library/Application Support/org.pqrs/Karabiner-Elements/localizations.json
 ```
 
 Sources are grouped by feature under `src/apps/localization/Resources/`:
@@ -23,8 +23,10 @@ Resources/
     setup.json
 ```
 
-All JSON files are loaded recursively into one catalog. A translation key must
-appear in only one file, even when adding a language. Hidden files and symbolic
+The Python preprocessing script reads all source JSON files recursively, validates
+them, and merges them into `build/localizations.json`. Applications load only this
+generated file. A translation key must appear in only one file, even when adding a
+language. Hidden files and symbolic
 links are ignored. Each top-level key maps language tags directly to translated
 strings. For example, adding French and German to an entry that already has English
 and Japanese would look like this (using a fictional key):
@@ -47,6 +49,9 @@ for fallback. Other languages may have translations for only some keys. Use lang
 tags such as `ja`, `fr`, `pt-BR`, or `zh-Hant` (lowercase primary language, hyphens
 for subtags). `auto` is reserved for the system language selection.
 
+Source translations may also be arrays of strings. Preprocessing joins these
+segments without adding separators, so the generated catalog contains only strings.
+
 Some strings contain placeholders such as `{count}` or `{name}`. Keep these names
 unchanged in translations; you may move them to fit the sentence.
 
@@ -59,20 +64,26 @@ Run these commands from the repository root:
     existing keys; update the strings or add a language under those keys.
 3.  Run `make -C src/apps/localization install`. This validates the entire
     directory, rejects duplicate keys, and formats JSON with sorted keys and
-    four-space indentation. It then synchronizes the files using `sudo`, removing
-    installed translation files that no longer exist in the source directory.
-    Each language's string stays on one line; languages after `en` have a leading
-    comma. Embedded newlines use JSON escapes.
+    four-space indentation. It then merges the sources into
+    `build/localizations.json` and uses `sudo` to overwrite the installed `localizations.json`. Keys removed from the sources
+    are also removed from the generated catalog.
+    String values stay on one line; source arrays may span multiple lines.
+    Languages after `en` have a leading comma. Embedded newlines use JSON escapes.
     No Xcode, resource compilation, application build, code signing, or application
     restart is needed to update translations.
 4.  All four applications automatically reload the installed translations and
     update their translations and language lists. Select the added language and
     check the result, then submit the JSON changes in your pull request.
 
-`make -C src/apps/localization` validates all files without installing them.
+`make -C src/apps/localization` validates and generates the merged catalog without
+installing it. Use `make -C src/apps/localization check` to validate only.
 `make format` includes localization formatting. The scripts require Python 3.
 An application/package installation may replace local translation edits; keep your
 source changes and run `make -C src/apps/localization install` again afterward.
+
+Applications watch the generated file and its parent directory for changes. If a
+reload encounters incomplete or invalid JSON during an overwrite, the previous
+catalog stays active until a later change triggers a successful reload.
 
 ## Alert previews
 

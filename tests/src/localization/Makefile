@@ -1,25 +1,24 @@
-BUILD_DIR ?= build
-
 all:
+	$(MAKE) -C ../../../src/apps/localization
 	PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 test.py
-	mkdir -p "$(BUILD_DIR)"
-	xcrun swiftc -module-cache-path "$(BUILD_DIR)/ModuleCache" -swift-version 6 -warnings-as-errors \
+	mkdir -p build
+	xcrun swiftc -module-cache-path build/ModuleCache -swift-version 6 -warnings-as-errors \
 		../../../src/apps/localization/swift/AppLanguage.swift \
 		../../../src/apps/localization/swift/AppLocalization.swift \
-		test.swift -o "$(BUILD_DIR)/localization_test"
-	"$(BUILD_DIR)/localization_test" ../../../src/apps/localization/Resources
+		test.swift -o build/localization_test
+	build/localization_test ../../../src/apps/localization/build/localizations.json
 
-	xcrun swiftc -module-cache-path "$(BUILD_DIR)/ModuleCache" -swift-version 6 -warnings-as-errors \
+	xcrun swiftc -module-cache-path build/ModuleCache -swift-version 6 -warnings-as-errors \
 		../../../src/apps/share/swift/Views/OptionKeyObserver.swift \
-		option_key_observer_test.swift -o "$(BUILD_DIR)/option_key_observer_test"
-	"$(BUILD_DIR)/option_key_observer_test"
+		option_key_observer_test.swift -o build/option_key_observer_test
+	build/option_key_observer_test
 
-	xcrun swiftc -module-cache-path "$(BUILD_DIR)/ModuleCache" -swift-version 6 -warnings-as-errors \
+	xcrun swiftc -module-cache-path build/ModuleCache -swift-version 6 -warnings-as-errors \
 		../../../src/apps/localization/swift/AppLanguage.swift \
 		../../../src/apps/localization/swift/AppLocalization.swift \
 		../../../src/apps/localization/swift/AppLocalizedText.swift \
-		localized_text_test.swift -o "$(BUILD_DIR)/localized_text_test"
-	"$(BUILD_DIR)/localized_text_test"
+		localized_text_test.swift -o build/localized_text_test
+	build/localized_text_test
 
 clean:
-	rm -rf "$(BUILD_DIR)"
+	rm -rf build

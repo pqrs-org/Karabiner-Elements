@@ -1,14 +1,18 @@
 INSTALL_DIR ?= /Library/Application Support/org.pqrs/Karabiner-Elements
 
-.PHONY: all check install format
-all: check
+.PHONY: all check install format clean
+all:
+	/usr/bin/python3 scripts/localizations.py --output build/localizations.json
 
 check:
 	/usr/bin/python3 scripts/localizations.py
 
 install: format
-	sudo /usr/bin/install -d "$(INSTALL_DIR)/localizations"
-	sudo /usr/bin/rsync -rt --delete --exclude='.*' --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r Resources/ "$(INSTALL_DIR)/localizations/"
+	$(MAKE) all
+	sudo /usr/bin/install -m 644 build/localizations.json "$(INSTALL_DIR)/localizations.json"
 
 format: check
 	/usr/bin/python3 scripts/localizations.py --format
+
+clean:
+	rm -rf build

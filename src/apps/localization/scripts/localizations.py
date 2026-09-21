@@ -99,6 +99,17 @@ def format_strings(strings):
     return "{\n" + ",\n".join(entries) + "\n}\n"
 
 
+def compile_resources(resources):
+    return {
+        key: {
+            language: "".join(value) if isinstance(value, list) else value
+            for language, value in translations.items()
+        }
+        for strings in resources.values()
+        for key, translations in strings.items()
+    }
+
+
 def print_coverage(resources):
     total = sum(len(strings) for strings in resources.values())
     counts = Counter(
@@ -116,7 +127,7 @@ def print_coverage(resources):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Validate or format translation resources"
+        description="Validate, format, or compile translation resources"
     )
     parser.add_argument(
         "--directory",
@@ -124,6 +135,9 @@ if __name__ == "__main__":
         default=Path(__file__).resolve().parents[1] / "Resources",
     )
     parser.add_argument("--format", action="store_true")
+    parser.add_argument(
+        "--output", type=Path, help="Write a merged translation catalog"
+    )
     args = parser.parse_args()
     # Validate every file and detect duplicates before rewriting any file.
     resources = load_resources(args.directory)
@@ -132,3 +146,8 @@ if __name__ == "__main__":
             path.write_text(format_strings(strings), encoding="utf-8")
     else:
         print_coverage(resources)
+    if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(
+            format_strings(compile_resources(resources)), encoding="utf-8"
+        )

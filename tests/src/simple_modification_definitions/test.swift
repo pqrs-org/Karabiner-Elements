@@ -9,7 +9,7 @@ struct SimpleModificationDefinitionsTests {
     let data = try Data(contentsOf: source)
     let definitions = SimpleModificationDefinitions(data: data)
     let catalog = try LocalizationCatalog(
-      directory: URL(fileURLWithPath: "../../../src/apps/localization/Resources"))
+      file: URL(fileURLWithPath: "../../../src/apps/localization/build/localizations.json"))
     let en = Locale(identifier: "en")
     let rows = try JSONSerialization.jsonObject(with: data) as! [[String: Any]]
 

@@ -3,19 +3,6 @@ import Darwin
 import Foundation
 
 struct LocalizationCatalog: Equatable, Sendable {
-  private struct Translation: Decodable {
-    let text: String
-
-    init(from decoder: Decoder) throws {
-      let container = try decoder.singleValueContainer()
-      if let string = try? container.decode(String.self) {
-        text = string
-      } else {
-        text = try container.decode([String].self).joined()
-      }
-    }
-  }
-
   let strings: [String: [String: String]]
   let languages: [String]
 
@@ -26,61 +13,12 @@ struct LocalizationCatalog: Equatable, Sendable {
     languages = ["en"]
   }
 
-  init(directory: URL) throws {
-    try self.init(resources: Self.resourceURLs(in: directory))
-  }
-
-  fileprivate init(resources: [URL]) throws {
-    var strings: [String: [String: String]] = [:]
-    var languages: Set<String> = []
-    for url in resources where url.pathExtension == "json" && !url.hasDirectoryPath {
-      let catalog = try Self(data: Data(contentsOf: url))
-      for (key, value) in catalog.strings {
-        guard strings[key] == nil else {
-          throw NSError(
-            domain: "LocalizationCatalog", code: 1,
-            userInfo: [
-              NSLocalizedDescriptionKey: "Duplicate translation key: \(key) (\(url.path))"
-            ])
-        }
-        strings[key] = value
-      }
-      languages.formUnion(catalog.languages)
-    }
-    guard !strings.isEmpty else { throw CocoaError(.fileReadCorruptFile) }
-    self.strings = strings
-    self.languages = languages.sorted()
-  }
-
-  // Include directories so additions/removals are observed, and files so in-place
-  // writes are observed. Hidden files and symbolic links are not resources.
-  fileprivate static func resourceURLs(in directory: URL) throws -> [URL] {
-    let values = try directory.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
-    guard values.isDirectory == true, values.isSymbolicLink != true else {
-      throw CocoaError(.fileReadCorruptFile)
-    }
-    var result = [URL(fileURLWithPath: directory.path, isDirectory: true)]
-    for url in try FileManager.default.contentsOfDirectory(
-      at: directory,
-      includingPropertiesForKeys: [.isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey],
-      options: .skipsHiddenFiles
-    ).sorted(by: { $0.path < $1.path }) {
-      let values = try url.resourceValues(forKeys: [
-        .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey,
-      ])
-      if values.isSymbolicLink == true { continue }
-      if values.isDirectory == true {
-        result += try resourceURLs(in: url)
-      } else if values.isRegularFile == true && url.pathExtension == "json" {
-        result.append(url)
-      }
-    }
-    return result
+  init(file: URL) throws {
+    try self.init(data: Data(contentsOf: file))
   }
 
   init(data: Data) throws {
-    let strings = try JSONDecoder().decode([String: [String: Translation]].self, from: data)
-      .mapValues { $0.mapValues(\.text) }
+    let strings = try JSONDecoder().decode([String: [String: String]].self, from: data)
     guard !strings.isEmpty else { throw CocoaError(.fileReadCorruptFile) }
     var languages: Set<String> = []
     for (key, translations) in strings {
@@ -114,7 +52,7 @@ final class AppLocalization: ObservableObject {
   init(
     source: URL = URL(
       fileURLWithPath:
-        "/Library/Application Support/org.pqrs/Karabiner-Elements/localizations"),
+        "/Library/Application Support/org.pqrs/Karabiner-Elements/localizations.json"),
     automaticallyReload: Bool = true
   ) {
     self.source = source
@@ -132,22 +70,24 @@ final class AppLocalization: ObservableObject {
   }
 
   func reload() throws {
-    let resources = try LocalizationCatalog.resourceURLs(in: source)
-    // Refresh watches even when parsing fails, so correcting a newly added invalid
-    // file triggers another reload. Publish only after the entire catalog is valid.
+    // Watch before reading so a subsequent write can recover from missing or invalid JSON.
     if automaticallyReload {
-      startMonitoring(resources)
+      startMonitoring()
     }
-    let updated = try LocalizationCatalog(resources: resources)
+    let updated = try LocalizationCatalog(file: source)
     if updated != catalog {
       catalog = updated
     }
   }
 
-  private func startMonitoring(_ resources: [URL]) {
+  private func startMonitoring() {
     fileMonitors.forEach { $0.cancel() }
     fileMonitors.removeAll()
-    for url in resources {
+    // Watch the file for in-place writes and its parent for creation or replacement.
+    for url in [
+      source,  // /Library/Application Support/org.pqrs/Karabiner-Elements/localizations.json
+      source.deletingLastPathComponent(),  // /Library/Application Support/org.pqrs/Karabiner-Elements
+    ] {
       let descriptor = open(url.path, O_EVTONLY | O_CLOEXEC)
       guard descriptor >= 0 else { continue }
       let monitor = DispatchSource.makeFileSystemObjectSource(
