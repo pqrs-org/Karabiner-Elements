@@ -136,9 +136,16 @@ private struct VariableUpdateLogTableHeader: View {
   }
 
   private func directionHeaders() -> some View {
-    ForEach(["upper", "lower", "left", "right"], id: \.self) { label in
+    ForEach(
+      [
+        "multitouch_extension.direction.upper",
+        "multitouch_extension.direction.lower",
+        "multitouch_extension.direction.left",
+        "multitouch_extension.direction.right",
+      ], id: \.self
+    ) { key in
       textTableCell(
-        localized("multitouch.direction." + label),
+        localized(key),
         width: VariableUpdateLogTableLayout.directionWidth)
     }
   }
