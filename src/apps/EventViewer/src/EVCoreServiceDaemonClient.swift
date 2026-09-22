@@ -165,9 +165,13 @@ final class EVCoreServiceDaemonClient: ObservableObject {
 
   public func setHIDDevice(_ deviceId: UInt64, opened: Bool) {
     if opened {
-      openHIDDeviceIds.insert(deviceId)
+      if !openHIDDeviceIds.contains(deviceId) {
+        openHIDDeviceIds.insert(deviceId)
+      }
     } else {
-      openHIDDeviceIds.remove(deviceId)
+      if openHIDDeviceIds.contains(deviceId) {
+        openHIDDeviceIds.remove(deviceId)
+      }
     }
   }
 
@@ -176,6 +180,8 @@ final class EVCoreServiceDaemonClient: ObservableObject {
   }
 
   public func updateManipulatorEnvironment(_ text: String) {
+    guard manipulatorEnvironmentText != text else { return }
+
     manipulatorEnvironmentText = text
   }
 

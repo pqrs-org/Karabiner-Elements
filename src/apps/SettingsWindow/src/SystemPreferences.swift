@@ -25,10 +25,10 @@ final class SystemPreferences: ObservableObject {
     //
 
     timerTask = Task { @MainActor in
-      self.checkModifierMappings()
+      self.updateModifierMappingsState()
 
       for await _ in timer {
-        self.checkModifierMappings()
+        self.updateModifierMappingsState()
       }
     }
   }
@@ -41,8 +41,10 @@ final class SystemPreferences: ObservableObject {
     timerTask?.cancel()
   }
 
-  private func checkModifierMappings() {
-    virtualHIDKeyboardModifierMappingsExists =
-      krbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists()
+  private func updateModifierMappingsState() {
+    let exists = krbn_system_preferences_virtual_hid_keyboard_modifier_mappings_exists()
+    guard virtualHIDKeyboardModifierMappingsExists != exists else { return }
+
+    virtualHIDKeyboardModifierMappingsExists = exists
   }
 }
