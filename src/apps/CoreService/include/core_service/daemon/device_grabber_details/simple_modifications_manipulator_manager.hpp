@@ -83,13 +83,19 @@ public:
           discard.push_back("horizontal_wheel");
         }
 
-        if (flip.size() > 0 || swap.size() > 0 || discard.size() > 0) {
+        auto to_buttons = nlohmann::json::array();
+        if (device->get_mouse_horizontal_wheel_to_buttons()) {
+          to_buttons.push_back("horizontal_wheel");
+        }
+
+        if (flip.size() > 0 || swap.size() > 0 || discard.size() > 0 || to_buttons.size() > 0) {
           try {
             auto json = nlohmann::json::object({
                 {"type", "mouse_basic"},
                 {"flip", flip},
                 {"swap", swap},
                 {"discard", discard},
+                {"to_buttons", to_buttons},
             });
             auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
             auto m = std::make_shared<manipulator::manipulators::mouse_basic::mouse_basic>(json,

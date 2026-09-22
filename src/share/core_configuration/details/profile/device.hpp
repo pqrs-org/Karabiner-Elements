@@ -122,6 +122,10 @@ public:
                                          mouse_discard_horizontal_wheel_,
                                          false);
 
+    helper_values_.push_back_value<bool>("mouse_horizontal_wheel_to_buttons",
+                                         mouse_horizontal_wheel_to_buttons_,
+                                         false);
+
     helper_values_.push_back_value<bool>("game_pad_swap_sticks",
                                          game_pad_swap_sticks_,
                                          false);
@@ -531,6 +535,15 @@ cos(radian) * m;
     coordinate_between_properties();
   }
 
+  [[nodiscard]] const bool& get_mouse_horizontal_wheel_to_buttons() const {
+    return mouse_horizontal_wheel_to_buttons_;
+  }
+  void set_mouse_horizontal_wheel_to_buttons(bool value) {
+    mouse_horizontal_wheel_to_buttons_ = value;
+
+    coordinate_between_properties();
+  }
+
   [[nodiscard]] const bool& get_game_pad_swap_sticks() const {
     return game_pad_swap_sticks_;
   }
@@ -748,6 +761,7 @@ private:
   bool mouse_discard_y_;
   bool mouse_discard_vertical_wheel_;
   bool mouse_discard_horizontal_wheel_;
+  bool mouse_horizontal_wheel_to_buttons_;
   bool game_pad_swap_sticks_;
 
   double game_pad_xy_stick_deadzone_;

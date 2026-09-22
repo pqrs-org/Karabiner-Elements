@@ -142,6 +142,7 @@ public:
           changed |= apply_value<bool>(device_json, "mouse_discard_y", [&](auto value) { device->set_mouse_discard_y(value); });
           changed |= apply_value<bool>(device_json, "mouse_discard_vertical_wheel", [&](auto value) { device->set_mouse_discard_vertical_wheel(value); });
           changed |= apply_value<bool>(device_json, "mouse_discard_horizontal_wheel", [&](auto value) { device->set_mouse_discard_horizontal_wheel(value); });
+          changed |= apply_value<bool>(device_json, "mouse_horizontal_wheel_to_buttons", [&](auto value) { device->set_mouse_horizontal_wheel_to_buttons(value); });
           changed |= apply_value<bool>(device_json, "mouse_swap_xy", [&](auto value) { device->set_mouse_swap_xy(value); });
           changed |= apply_value<bool>(device_json, "mouse_swap_wheels", [&](auto value) { device->set_mouse_swap_wheels(value); });
           changed |= apply_value<bool>(device_json, "game_pad_swap_sticks", [&](auto value) { device->set_game_pad_swap_sticks(value); });
