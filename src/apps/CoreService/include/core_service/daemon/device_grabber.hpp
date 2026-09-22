@@ -969,12 +969,18 @@ private:
     pqrs::karabiner::driverkit::virtual_hid_device_service::virtual_hid_keyboard_parameters parameters;
 
     auto t = core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_iokit_keyboard_type();
+    if (event_tap_monitor_) {
+      event_tap_monitor_->set_virtual_hid_keyboard_is_iso(t == pqrs::osx::iokit_keyboard_type::iso);
+    }
+
     if (t == pqrs::osx::iokit_keyboard_type::ansi) {
       // Apple Aluminum USB Keyboard (A1243) (ANSI)
       parameters.set_vendor_id(pqrs::hid::vendor_id::value_t(0x05ac));
       parameters.set_product_id(pqrs::hid::product_id::value_t(0x024f));
     } else if (t == pqrs::osx::iokit_keyboard_type::iso) {
       // Apple Aluminum USB Keyboard (A1243) (ISO)
+      // AppleHIDKeyboard assigns alt_handler_id 47 (kgestM89ISOKbd) to these IDs.
+      // See event_tap_utility::make_event_for_virtual_hid_matching for the resulting macOS ISO key exchange.
       parameters.set_vendor_id(pqrs::hid::vendor_id::value_t(0x05ac));
       parameters.set_product_id(pqrs::hid::product_id::value_t(0x0250));
     } else if (t == pqrs::osx::iokit_keyboard_type::jis) {
@@ -1111,6 +1117,9 @@ private:
         cgeventtap_fallback_enabled,
         post_event_to_virtual_devices_manipulator_->get_virtual_hid_keyboard_pressed_keys_manager(),
         post_event_to_virtual_devices_manipulator_->get_keyboard_suppression());
+
+    auto t = core_configuration_->get_selected_profile().get_virtual_hid_keyboard()->get_iokit_keyboard_type();
+    event_tap_monitor_->set_virtual_hid_keyboard_is_iso(t == pqrs::osx::iokit_keyboard_type::iso);
 
     event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
       auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();

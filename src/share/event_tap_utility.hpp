@@ -67,6 +67,49 @@ namespace event_tap_utility_details {
 
 class event_tap_utility final {
 public:
+  // Recover the virtual HID usage from the fixed CGEvent key-code-to-HID table.
+  //
+  // device_grabber::update_virtual_hid_keyboard configures our virtual keyboard
+  // with vendor ID 0x05ac (Apple Aluminum USB Keyboard) and the product IDs below.
+  // These mappings were verified in the macOS-supplied
+  // AppleHIDKeyboard.kext/Contents/Info.plist (CFBundleVersion 9070.3):
+  //
+  // Type | Product ID | IOKit personality name              | alt_handler_id
+  // -----|------------|-------------------------------------|---------------
+  // ANSI | 0x024f     | Wired Keyboard 2007 B ANSI Map      | 46
+  // ISO  | 0x0250     | Wired Keyboard 2007 B ISO Map       | 47
+  // JIS  | 0x0251     | Wired Keyboard 2007 B JIS Map       | 48
+  //
+  // Apple's IOHIDPrivateKeys.h defines kgestM89ISOKbd = 47. IOHIDKeyboard::deviceType
+  // uses alt_handler_id when _deviceType is not already set, so the ISO device matches
+  // case kgestM89ISOKbd in its ISO-specific conversion:
+  //   HID usage 0x35 (grave_accent_and_tilde) -> CGEvent key code 0x0a
+  //   HID usage 0x64 (non_us_backslash)       -> CGEvent key code 0x32
+  // The fixed CGEvent conversion table maps these codes back to the opposite HID
+  // usages. Reverse that exchange for suppression and repeat matching.
+  // ANSI and JIS use the normal mapping and need no exchange here.
+  // https://github.com/apple-oss-distributions/IOHIDFamily/blob/777ccd9698845aadf711e32d843c8c9b777431d9/IOHIDFamily/IOHIDKeyboard.cpp#L388-L432
+  // https://github.com/apple-oss-distributions/IOHIDFamily/blob/main/IOHIDFamily/IOHIDPrivateKeys.h#L93
+  //
+  // Use this copy only to match virtual HID output. If matching fails, preserve the
+  // original event for fallback input and the loop guard: its source device is unknown.
+  [[nodiscard]] static momentary_switch_event make_event_for_virtual_hid_matching(const momentary_switch_event& event,
+                                                                                  bool virtual_hid_keyboard_is_iso) {
+    if (virtual_hid_keyboard_is_iso &&
+        event.get_usage_pair().get_usage_page() == pqrs::hid::usage_page::keyboard_or_keypad) {
+      auto usage = event.get_usage_pair().get_usage();
+      if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_grave_accent_and_tilde) {
+        return momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                      pqrs::hid::usage::keyboard_or_keypad::keyboard_non_us_backslash);
+      }
+      if (usage == pqrs::hid::usage::keyboard_or_keypad::keyboard_non_us_backslash) {
+        return momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                      pqrs::hid::usage::keyboard_or_keypad::keyboard_grave_accent_and_tilde);
+      }
+    }
+    return event;
+  }
+
   [[nodiscard]] static std::optional<event_queue::event> make_momentary_switch_event(CGEventRef event) {
     if (!event) {
       return std::nullopt;

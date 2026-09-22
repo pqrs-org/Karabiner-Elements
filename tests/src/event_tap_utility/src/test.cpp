@@ -1,9 +1,63 @@
 #include "event_tap_utility.hpp"
+#include "keyboard_suppression.hpp"
+#include "pressed_keys_manager.hpp"
 #include <boost/ut.hpp>
 
 int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
+
+  "virtual HID matching reverses ISO conversion without changing fallback input"_test = [] {
+    namespace hid = pqrs::hid;
+    using krbn::event_type;
+    using krbn::momentary_switch_event;
+    struct key final {
+      hid::usage::value_t usage;
+      CGKeyCode normal_code;
+      CGKeyCode iso_code;
+    };
+    for (const auto* type : {"ansi", "iso", "jis"}) {
+      for (const auto& key : {
+               key{hid::usage::keyboard_or_keypad::keyboard_grave_accent_and_tilde, 0x32, 0x0a},
+               key{hid::usage::keyboard_or_keypad::keyboard_non_us_backslash, 0x0a, 0x32},
+               key{hid::usage::keyboard_or_keypad::keyboard_a, 0x00, 0x00},
+           }) {
+        bool iso = std::string_view(type) == "iso";
+        momentary_switch_event posted(hid::usage_page::keyboard_or_keypad, key.usage);
+        krbn::pressed_keys_manager pressed_keys;
+        krbn::keyboard_suppression suppression;
+        for (auto down : {true, false}) {
+          // Use the same fixed key-code table as make_momentary_switch_event.
+          auto usage_pair = pqrs::osx::cg_event::make_usage_pair(
+              pqrs::osx::cg_event::key_code::value_t(iso ? key.iso_code : key.normal_code));
+          expect(usage_pair.has_value()) << fatal;
+          momentary_switch_event tapped(*usage_pair);
+          auto original = tapped;
+          auto et = down ? event_type::key_down : event_type::key_up;
+          auto lookup = krbn::event_tap_utility::make_event_for_virtual_hid_matching(tapped, iso);
+          expect(lookup == posted);
+          expect(tapped == original);
+
+          auto now = pqrs::osx::chrono::mach_absolute_time_point();
+          // An unmatched lookup leaves the original fallback event intact.
+          expect(!suppression.consume(lookup, et, now));
+          suppression.enqueue(posted, et, now);
+          expect(suppression.consume(lookup, et, now));
+          expect(!suppression.consume(lookup, et, now));
+
+          if (down) {
+            pressed_keys.insert(posted);
+          } else {
+            pressed_keys.erase(posted);
+          }
+          expect(pressed_keys.contains(lookup) == down);
+        }
+      }
+    }
+    // The same numeric usage on another usage page must not be exchanged.
+    momentary_switch_event other(hid::usage_page::consumer, hid::usage::value_t(0x35));
+    expect(krbn::event_tap_utility::make_event_for_virtual_hid_matching(other, true) == other);
+  };
 
   "make_event"_test = [] {
     {
