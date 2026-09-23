@@ -1,0 +1,9 @@
+[
+    "errors/manipulator_factory_errors.jsonc",
+    "errors/basic_errors.jsonc",
+    "errors/from_event_definition_errors.jsonc",
+    "errors/simultaneous_options_errors.jsonc",
+    "errors/mouse_basic_errors.jsonc",
+    "errors/mouse_motion_to_scroll_errors.jsonc",
+    "errors/mouse_motion_and_wheel_to_key_errors.jsonc"
+]

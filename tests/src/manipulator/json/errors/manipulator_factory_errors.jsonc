@@ -1,0 +1,7 @@
+[
+    {
+        "class": "manipulator_factory",
+        "input": null,
+        "error": "`type` must be specified: null"
+    }
+]

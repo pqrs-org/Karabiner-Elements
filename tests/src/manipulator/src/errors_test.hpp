@@ -1,5 +1,5 @@
 #include "../../share/json_helper.hpp"
-#include "manipulator/manipulators/basic/basic.hpp"
+#include "manipulator/manipulator_factory.hpp"
 #include "manipulator/types.hpp"
 #include <boost/ut.hpp>
 
@@ -9,7 +9,19 @@ using namespace boost::ut::literals;
 
 void handle_json(const nlohmann::json& json) {
   auto c = json.at("class").get<std::string>();
-  if (c == "basic") {
+  if (c == "manipulator_factory") {
+    auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
+    krbn::manipulator::manipulator_factory::make_manipulator(json.at("input"), parameters);
+  } else if (c == "mouse_basic") {
+    auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
+    krbn::manipulator::manipulators::mouse_basic::mouse_basic(json.at("input"), parameters);
+  } else if (c == "mouse_motion_to_scroll") {
+    auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
+    krbn::manipulator::manipulators::mouse_motion_to_scroll::mouse_motion_to_scroll(json.at("input"), parameters);
+  } else if (c == "mouse_motion_and_wheel_to_key") {
+    auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
+    krbn::manipulator::manipulators::mouse_motion_and_wheel_to_key::mouse_motion_and_wheel_to_key(json.at("input"), parameters);
+  } else if (c == "basic") {
     auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
     krbn::manipulator::manipulators::basic::basic(json.at("input"), parameters);
   } else if (c == "from_event_definition") {
@@ -31,8 +43,6 @@ void run_errors_test() {
   using namespace boost::ut::literals;
 
   "errors"_test = [] {
-    namespace basic = krbn::manipulator::manipulators::basic;
-
     auto json = krbn::unit_testing::json_helper::load_jsonc("json/errors.jsonc");
     for (const auto& j : json) {
       auto error_json = krbn::unit_testing::json_helper::load_jsonc("json/" + j.get<std::string>());
@@ -40,9 +50,9 @@ void run_errors_test() {
         try {
           handle_json(e);
           expect(false);
-        } catch (pqrs::json::unmarshal_error& ex) {
+        } catch (const pqrs::json::unmarshal_error& ex) {
           auto error = e.at("error").get<std::string>();
-          expect(std::string_view(error) == ex.what());
+          expect(std::string_view(error) == ex.what()) << e << ex.what();
         } catch (...) {
           expect(false);
         }

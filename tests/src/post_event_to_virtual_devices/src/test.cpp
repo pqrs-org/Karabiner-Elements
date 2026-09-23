@@ -1,7 +1,6 @@
 #include "../../share/json_helper.hpp"
 #include "../../share/manipulator_helper.hpp"
 #include "dispatcher_utility.hpp"
-#include "errors_test.hpp"
 #include "manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <boost/ut.hpp>
@@ -13,8 +12,6 @@ int main() {
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();
   auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::abort);
-
-  run_errors_test();
 
   "actual examples"_test = [] {
     auto helper = std::make_unique<krbn::unit_testing::manipulator_helper>();

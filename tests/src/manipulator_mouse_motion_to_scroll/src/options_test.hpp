@@ -3,6 +3,8 @@
 #include <iostream>
 
 void run_options_test() {
+  using namespace boost::ut;
+  using namespace boost::ut::literals;
   namespace mouse_motion_to_scroll = krbn::manipulator::manipulators::mouse_motion_to_scroll;
 
   "options"_test = [] {
