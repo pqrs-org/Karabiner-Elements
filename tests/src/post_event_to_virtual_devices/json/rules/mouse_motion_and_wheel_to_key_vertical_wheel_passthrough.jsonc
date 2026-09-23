@@ -1,0 +1,15 @@
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "vertical_wheel"
+        },
+        "to": {
+            "up": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ]
+        }
+    }
+]

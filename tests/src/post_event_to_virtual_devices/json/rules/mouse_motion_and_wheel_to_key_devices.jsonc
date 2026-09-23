@@ -1,0 +1,16 @@
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy",
+            "threshold": 3
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ]
+        }
+    }
+]

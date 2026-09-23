@@ -1,0 +1,17 @@
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy",
+            "threshold": 10,
+            "sampling_interval_milliseconds": 40
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ]
+        }
+    }
+]

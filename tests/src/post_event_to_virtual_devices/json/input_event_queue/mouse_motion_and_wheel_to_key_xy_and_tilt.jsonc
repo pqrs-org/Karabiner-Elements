@@ -1,0 +1,38 @@
+// Pointer and tilt have independent windows; vertical scrolling passes immediately
+[
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 10,
+                "y": 2,
+                "vertical_wheel": 3,
+                "horizontal_wheel": -4
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 10,
+                "y": 2,
+                "vertical_wheel": 3,
+                "horizontal_wheel": -4
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 150
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    }
+]

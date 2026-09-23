@@ -1,0 +1,19 @@
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy",
+            "threshold": 30,
+            "modifiers": {
+                "mandatory": ["fn"]
+            }
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ]
+        }
+    }
+]

@@ -1,0 +1,22 @@
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy"
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow",
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "enabled",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]

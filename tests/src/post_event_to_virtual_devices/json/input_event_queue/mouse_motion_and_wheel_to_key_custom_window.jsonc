@@ -1,0 +1,158 @@
+// Mouse motion: custom interval discards surplus and subthreshold totals
+[
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 100,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 100,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 139
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 140
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 9,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 200
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 9,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 240
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 1,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 1,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 340
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 6,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 400
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 6,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 4,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 420
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 4,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 440
+    }
+]

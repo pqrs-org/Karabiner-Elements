@@ -1,0 +1,260 @@
+[
+    // Horizontal starts the shared window; evaluate thresholds per axis and discard totals.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 5
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 5
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 5,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 140
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 5,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 199
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 240
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 2,
+                "horizontal_wheel": 2
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 2,
+                "horizontal_wheel": 2
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 400
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 10,
+                "horizontal_wheel": 2
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 500
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 10,
+                "horizontal_wheel": 2
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 600
+    },
+    // Vertical starts the same shared window; horizontal output still comes first.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 5,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 5,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 5
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1140
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 5
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1199
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1200
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1240
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 2,
+                "horizontal_wheel": 2
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 2,
+                "horizontal_wheel": 2
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1400
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 10,
+                "horizontal_wheel": 2
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1500
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 10,
+                "horizontal_wheel": 2
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1600
+    }
+]

@@ -1,0 +1,197 @@
+[
+    // Disconnect cancels the old window; a new window must not fire at the old deadline.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "device_ungrabbed"
+        },
+        "event_time_stamp": {
+            "time_stamp": 150
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "device_ungrabbed"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 1,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 160
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 1,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 260
+    },
+    // Device release also cancels the old window.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 500
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "event_time_stamp": {
+            "time_stamp": 550
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "device_keys_and_pointing_buttons_are_released"
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 1,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 560
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 1,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 600
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 660
+    },
+    // Configuration invalidation cancels the pending window.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 900
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 950
+    },
+    {
+        "action": "invalidate_manipulators"
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1000
+    }
+]

@@ -1,0 +1,94 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 140,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 200,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 205,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 210,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 215,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 220,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 400,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 405,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 410,
+        "type": "keyboard_input"
+    }
+]

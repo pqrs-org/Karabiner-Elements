@@ -1,0 +1,486 @@
+[
+    // Fn stays held: captured shift survives release on two keyboards; later command is excluded.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 20
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 40
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 10,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 60
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 140
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 10,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 150
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 170
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 300
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 320
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 340
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 360
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // Fn is also released: use the same captured output modifiers and restore the actual state.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1020
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1040
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 10,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1060
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1140
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 10,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1150
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1160
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1170
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1200
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1300
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1320
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1340
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "validity": true
+    }
+]

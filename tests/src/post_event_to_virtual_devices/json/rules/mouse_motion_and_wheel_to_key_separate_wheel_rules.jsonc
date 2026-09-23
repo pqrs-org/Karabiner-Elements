@@ -1,0 +1,30 @@
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "horizontal_wheel",
+            "sampling_interval_milliseconds": 40
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ]
+        }
+    },
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "vertical_wheel",
+            "sampling_interval_milliseconds": 80
+        },
+        "to": {
+            "up": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ]
+        }
+    }
+]

@@ -1,0 +1,20 @@
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy",
+            "modifiers": {
+                "mandatory": ["fn"],
+                "optional": ["any"]
+            }
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow",
+                    "modifiers": ["left_command"]
+                }
+            ]
+        }
+    }
+]

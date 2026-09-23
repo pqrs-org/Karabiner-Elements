@@ -1,0 +1,21 @@
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "wheels",
+            "threshold": 3
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "up": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ]
+        }
+    }
+]

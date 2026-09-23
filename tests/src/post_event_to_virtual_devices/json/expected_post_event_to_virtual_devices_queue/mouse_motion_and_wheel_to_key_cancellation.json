@@ -1,0 +1,42 @@
+[
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 260,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 265,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 660,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 665,
+        "type": "keyboard_input"
+    }
+]

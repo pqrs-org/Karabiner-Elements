@@ -1,0 +1,65 @@
+// Mouse motion: sampling windows and totals are independent per device
+[
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 2,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 3,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 140
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 3,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 240
+    }
+]
