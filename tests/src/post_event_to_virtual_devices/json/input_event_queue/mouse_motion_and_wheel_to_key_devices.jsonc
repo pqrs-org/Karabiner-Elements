@@ -1,5 +1,6 @@
 // Mouse motion: sampling windows and totals are independent per device
 [
+    // Device 1 starts a window with 1, below threshold 2.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +28,7 @@
         },
         "validity": true
     },
+    // Device 2 independently reaches threshold; its deadline is 240ms.
     {
         "device_id": 2,
         "event": {
@@ -54,15 +56,18 @@
         },
         "validity": true
     },
+    // Device 1 must not borrow device 2's delta to reach threshold.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200
     },
+    // Only device 2 emits right_arrow.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 240
     },
     // Both windows expire before the dispatcher runs: emit right (600ms) before left (640ms).
+    // Device 1 reaches threshold with an earlier deadline of 600ms.
     {
         "device_id": 1,
         "event": {
@@ -90,6 +95,7 @@
         },
         "validity": true
     },
+    // Device 2 reaches threshold in the opposite direction, due at 640ms.
     {
         "device_id": 2,
         "event": {
@@ -117,6 +123,7 @@
         },
         "validity": true
     },
+    // Run both overdue windows together; preserve deadline order, not device map order.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 800

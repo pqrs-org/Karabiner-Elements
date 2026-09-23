@@ -1,5 +1,6 @@
 // Mouse motion: custom interval discards surplus and subthreshold totals
 [
+    // Threshold is 10: a delta of 100 still produces only one tap after 40ms.
     {
         "device_id": 1,
         "event": {
@@ -27,14 +28,17 @@
         },
         "validity": true
     },
+    // Advance to 1ms before the custom deadline.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 139
     },
+    // Emit the single tap at 140ms and discard the surplus.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 140
     },
+    // A new window with 9 must not inherit the previous surplus.
     {
         "device_id": 1,
         "event": {
@@ -62,10 +66,12 @@
         },
         "validity": true
     },
+    // Below threshold: discard 9 without output.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 240
     },
+    // This 1 must not combine with the discarded 9 from the preceding window.
     {
         "device_id": 1,
         "event": {
@@ -93,10 +99,12 @@
         },
         "validity": true
     },
+    // Still below threshold: no output.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 340
     },
+    // Start a new window with 6, below threshold.
     {
         "device_id": 1,
         "event": {
@@ -124,6 +132,7 @@
         },
         "validity": true
     },
+    // Add 4 within that window to reach exactly 10.
     {
         "device_id": 1,
         "event": {
@@ -151,6 +160,7 @@
         },
         "validity": true
     },
+    // Emit one tap for the accumulated 6 + 4.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 440

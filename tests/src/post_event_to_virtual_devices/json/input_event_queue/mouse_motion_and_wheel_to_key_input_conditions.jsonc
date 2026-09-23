@@ -1,5 +1,6 @@
 // Input conditions stay latched per device and are checked again next window
 [
+    // Enable the xy rule before opening the first window.
     {
         "device_id": 1,
         "event": {
@@ -23,6 +24,7 @@
         },
         "validity": true
     },
+    // Latch enabled=1 for device 1; 20 is below threshold 30.
     {
         "device_id": 1,
         "event": {
@@ -50,6 +52,7 @@
         },
         "validity": true
     },
+    // Disable the rule while device 1's window is pending.
     {
         "device_id": 1,
         "event": {
@@ -73,6 +76,7 @@
         },
         "validity": true
     },
+    // Device 1 still consumes this delta and reaches 30 under its latched condition.
     {
         "device_id": 1,
         "event": {
@@ -100,6 +104,7 @@
         },
         "validity": true
     },
+    // Device 2 has no pending window: evaluate enabled=0 and pass its motion through.
     {
         "device_id": 2,
         "event": {
@@ -127,10 +132,12 @@
         },
         "validity": true
     },
+    // Device 1 emits right_arrow despite the condition now being false.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200
     },
+    // Device 1's next input must recheck the condition and pass through.
     {
         "device_id": 1,
         "event": {
@@ -158,10 +165,12 @@
         },
         "validity": true
     },
+    // No conversion was scheduled while disabled.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 400
     },
+    // Re-enable the rule for subsequent windows.
     {
         "device_id": 1,
         "event": {
@@ -185,6 +194,7 @@
         },
         "validity": true
     },
+    // A new window can now consume a delta exactly at threshold.
     {
         "device_id": 1,
         "event": {
@@ -212,6 +222,7 @@
         },
         "validity": true
     },
+    // Emit right_arrow from the newly enabled window.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 600

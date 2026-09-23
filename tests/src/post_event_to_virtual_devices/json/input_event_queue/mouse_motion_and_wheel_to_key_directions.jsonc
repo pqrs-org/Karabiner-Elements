@@ -1,5 +1,6 @@
+// Representative axis selection, ties, and large signed accumulation.
 [
-    // All diagonal quadrants and ties; choose the accumulated vector, not an individual report.
+    // Horizontal dominates: total (2, -1) emits right_arrow.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +28,7 @@
         },
         "validity": true
     },
+    // Reverse part of the first report; direction is determined by the accumulated vector.
     {
         "device_id": 1,
         "event": {
@@ -54,10 +56,12 @@
         },
         "validity": true
     },
+    // Evaluate the total at the 100ms deadline and emit a single tap.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200
     },
+    // Vertical dominates: total (-1, 2) emits down_arrow.
     {
         "device_id": 1,
         "event": {
@@ -85,13 +89,14 @@
         },
         "validity": true
     },
+    // Reverse part of the first report; direction is determined by the accumulated vector.
     {
         "device_id": 1,
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": -8,
-                "y": -9,
+                "x": -11,
+                "y": -8,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -104,18 +109,20 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": -8,
-                "y": -9,
+                "x": -11,
+                "y": -8,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
         },
         "validity": true
     },
+    // Evaluate the total at the 100ms deadline and emit a single tap.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 400
     },
+    // Positive tie: total (2, 2) selects horizontal and emits right_arrow.
     {
         "device_id": 1,
         "event": {
@@ -143,13 +150,14 @@
         },
         "validity": true
     },
+    // Reverse part of the first report; direction is determined by the accumulated vector.
     {
         "device_id": 1,
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": -12,
-                "y": -11,
+                "x": -8,
+                "y": -8,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -162,18 +170,20 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": -12,
-                "y": -11,
+                "x": -8,
+                "y": -8,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
         },
         "validity": true
     },
+    // Evaluate the total at the 100ms deadline and emit a single tap.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 600
     },
+    // Negative tie: total (-2, -2) selects horizontal and emits left_arrow.
     {
         "device_id": 1,
         "event": {
@@ -201,13 +211,14 @@
         },
         "validity": true
     },
+    // Reverse part of the first report; direction is determined by the accumulated vector.
     {
         "device_id": 1,
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
                 "x": -12,
-                "y": -9,
+                "y": -12,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -221,24 +232,26 @@
             "type": "pointing_motion",
             "pointing_motion": {
                 "x": -12,
-                "y": -9,
+                "y": -12,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
         },
         "validity": true
     },
+    // Evaluate the total at the 100ms deadline and emit a single tap.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 800
     },
+    // Large negative total: INT32_MIN + INT32_MIN emits one left_arrow without overflow.
     {
         "device_id": 1,
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 10,
-                "y": 10,
+                "x": -2147483648,
+                "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -251,21 +264,22 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 10,
-                "y": 10,
+                "x": -2147483648,
+                "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
         },
         "validity": true
     },
+    // The accumulated x value now exceeds the signed 32-bit range.
     {
         "device_id": 1,
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": -9,
-                "y": -12,
+                "x": -2147483648,
+                "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -278,365 +292,17 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": -9,
-                "y": -12,
+                "x": -2147483648,
+                "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
         },
         "validity": true
     },
+    // Evaluate the total at the 100ms deadline and emit a single tap.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 1000
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1100
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -11,
-                "y": -12,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1150
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -11,
-                "y": -12,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "action": "invoke_dispatcher",
-        "time_stamp": 1200
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1300
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -9,
-                "y": -8,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1350
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -9,
-                "y": -8,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "action": "invoke_dispatcher",
-        "time_stamp": 1400
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1500
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -11,
-                "y": -8,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1550
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -11,
-                "y": -8,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "action": "invoke_dispatcher",
-        "time_stamp": 1600
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1700
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -8,
-                "y": -8,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1750
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -8,
-                "y": -8,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "action": "invoke_dispatcher",
-        "time_stamp": 1800
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1900
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 10,
-                "y": 10,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -12,
-                "y": -12,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 1950
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -12,
-                "y": -12,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "action": "invoke_dispatcher",
-        "time_stamp": 2000
-    },
-    // Large negative totals produce one left tap without overflow.
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -2147483648,
-                "y": 0,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 2300
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -2147483648,
-                "y": 0,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -2147483648,
-                "y": 0,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 2350
-        },
-        "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": -2147483648,
-                "y": 0,
-                "vertical_wheel": 0,
-                "horizontal_wheel": 0
-            }
-        },
-        "validity": true
-    },
-    {
-        "action": "invoke_dispatcher",
-        "time_stamp": 2400
     }
 ]

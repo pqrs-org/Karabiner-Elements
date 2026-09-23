@@ -1,5 +1,7 @@
 // Wheel axis selection: vertical_wheel preserves pointer motion and the other wheel axis
 [
+    // Combine pointer motion, horizontal scroll, and vertical delta 1 (the default threshold).
+    // Only vertical_wheel is consumed; x/y and horizontal_wheel pass immediately.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +29,7 @@
         },
         "validity": true
     },
+    // After the default 100ms, emit up_arrow for the consumed vertical delta.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200

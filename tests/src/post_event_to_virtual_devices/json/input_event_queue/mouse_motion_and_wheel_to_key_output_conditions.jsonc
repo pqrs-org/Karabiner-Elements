@@ -1,5 +1,6 @@
 // Output conditions are evaluated at the window deadline
 [
+    // Start left motion while enabled is unset; the to condition must not be frozen yet.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +28,7 @@
         },
         "validity": true
     },
+    // Make the output condition true before the deadline.
     {
         "device_id": 1,
         "event": {
@@ -50,10 +52,12 @@
         },
         "validity": true
     },
+    // Evaluate the current condition and emit left_arrow.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200
     },
+    // Start another left window while the output condition is true.
     {
         "device_id": 1,
         "event": {
@@ -81,6 +85,7 @@
         },
         "validity": true
     },
+    // Make the output condition false before this window ends.
     {
         "device_id": 1,
         "event": {
@@ -104,6 +109,7 @@
         },
         "validity": true
     },
+    // Re-evaluate at the deadline and suppress left_arrow.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 400

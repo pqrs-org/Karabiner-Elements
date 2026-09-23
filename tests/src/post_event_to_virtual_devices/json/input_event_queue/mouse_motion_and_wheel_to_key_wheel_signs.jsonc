@@ -1,5 +1,6 @@
 // Wheels: signed accumulation cancels reversals and maps all four directions
 [
+    // Start with positive deltas on both wheel axes.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +28,7 @@
         },
         "validity": true
     },
+    // Reverse enough to leave horizontal=-3 and vertical=+3, exactly at threshold.
     {
         "device_id": 1,
         "event": {
@@ -54,10 +56,12 @@
         },
         "validity": true
     },
+    // Emit left_arrow then up_arrow; positive vertical wheel means up.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200
     },
+    // Start a fresh window with the same positive deltas.
     {
         "device_id": 1,
         "event": {
@@ -85,6 +89,7 @@
         },
         "validity": true
     },
+    // Leave horizontal=+3 and vertical=-3 to test the opposite directions.
     {
         "device_id": 1,
         "event": {
@@ -112,10 +117,12 @@
         },
         "validity": true
     },
+    // Emit right_arrow then down_arrow.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 400
     },
+    // Start another window to test complete cancellation.
     {
         "device_id": 1,
         "event": {
@@ -143,6 +150,7 @@
         },
         "validity": true
     },
+    // Cancel both axes exactly with opposite deltas.
     {
         "device_id": 1,
         "event": {
@@ -170,6 +178,7 @@
         },
         "validity": true
     },
+    // Zero totals must produce no arrow keys.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 600

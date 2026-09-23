@@ -1,5 +1,6 @@
 [
     // Disconnect cancels the old window; a new window must not fire at the old deadline.
+    // Reach threshold and start a window due at 200ms.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +28,7 @@
         },
         "validity": true
     },
+    // Disconnect before the deadline: discard this device's pending motion.
     {
         "device_id": 1,
         "event": {
@@ -42,6 +44,7 @@
         },
         "validity": true
     },
+    // Start a fresh window due at 260ms, independent of the canceled one.
     {
         "device_id": 1,
         "event": {
@@ -69,15 +72,18 @@
         },
         "validity": true
     },
+    // The canceled deadline must produce no key.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200
     },
+    // Only the new window emits up_arrow.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 260
     },
     // Releasing all keys/buttons preserves the window and its original deadline.
+    // Start another window due at 600ms.
     {
         "device_id": 1,
         "event": {
@@ -105,6 +111,7 @@
         },
         "validity": true
     },
+    // An ordinary release notification must not cancel pending motion.
     {
         "device_id": 1,
         "event": {
@@ -120,6 +127,7 @@
         },
         "validity": true
     },
+    // Accumulate into the existing window; do not move its deadline to 660ms.
     {
         "device_id": 1,
         "event": {
@@ -147,15 +155,18 @@
         },
         "validity": true
     },
+    // Emit one up_arrow at the original deadline.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 600
     },
+    // No second tap may appear at the would-be restarted deadline.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 660
     },
     // Configuration invalidation cancels the pending window.
+    // Start a window that would emit at 1000ms.
     {
         "device_id": 1,
         "event": {
@@ -183,13 +194,16 @@
         },
         "validity": true
     },
+    // Advance time to invalidate the rule before its deadline.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 950
     },
+    // Simulate configuration reload invalidating the pending manipulator.
     {
         "action": "invalidate_manipulators"
     },
+    // The invalidated window must produce no key.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 1000

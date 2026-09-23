@@ -1,5 +1,6 @@
 [
     // Default 100ms window: further motion and a zero report do not restart it.
+    // Reach the default xy threshold of 20; output must wait until 200ms.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +28,7 @@
         },
         "validity": true
     },
+    // Add a large surplus without extending the deadline or producing repeated taps.
     {
         "device_id": 1,
         "event": {
@@ -54,6 +56,7 @@
         },
         "validity": true
     },
+    // A zero report must not restart the sampling window.
     {
         "device_id": 1,
         "event": {
@@ -81,6 +84,7 @@
         },
         "validity": true
     },
+    // Advance to just before the deadline; the following b marks output order.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 199
@@ -107,6 +111,7 @@
         },
         "validity": true
     },
+    // Release the marker key before testing the deadline.
     {
         "device_id": 9,
         "event": {
@@ -154,6 +159,7 @@
         },
         "validity": true
     },
+    // Release c after it has marked the post-deadline output order.
     {
         "device_id": 9,
         "event": {
@@ -175,11 +181,13 @@
         },
         "validity": true
     },
+    // Advance well beyond the window: surplus must not schedule more taps.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 1200
     },
     // Opposite deltas cancel; an unmapped nearest direction must not fall back to right.
+    // Start a window with a diagonal vector.
     {
         "device_id": 1,
         "event": {
@@ -207,6 +215,7 @@
         },
         "validity": true
     },
+    // Cancel both components exactly; the net displacement is zero.
     {
         "device_id": 1,
         "event": {
@@ -234,10 +243,12 @@
         },
         "validity": true
     },
+    // A zero total must produce no key.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 1400
     },
+    // Down is nearest but unmapped; do not choose the mapped right direction instead.
     {
         "device_id": 1,
         "event": {
@@ -265,6 +276,7 @@
         },
         "validity": true
     },
+    // Consume the motion without emitting a fallback key.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 1600
@@ -297,10 +309,12 @@
         },
         "validity": true
     },
+    // Discard the below-threshold total at the deadline.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 2100
     },
+    // Start a new window exactly at the default threshold.
     {
         "device_id": 1,
         "event": {
@@ -328,6 +342,7 @@
         },
         "validity": true
     },
+    // Emit one up_arrow, independently of the discarded 19.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 2300

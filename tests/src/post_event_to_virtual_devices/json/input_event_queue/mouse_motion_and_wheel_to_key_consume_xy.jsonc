@@ -1,5 +1,6 @@
 // Fn condition with empty to: pointer motion is consumed; wheel values pass through
 [
+    // Without Fn, the pointer motion must pass through unchanged.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +28,7 @@
         },
         "validity": true
     },
+    // Enable the empty-to xy rule.
     {
         "device_id": 9,
         "event": {
@@ -48,6 +50,7 @@
         },
         "validity": true
     },
+    // Start a window with subthreshold left motion; consume it immediately.
     {
         "device_id": 1,
         "event": {
@@ -75,6 +78,7 @@
         },
         "validity": true
     },
+    // Change direction within the same window: consumption is not direction-specific.
     {
         "device_id": 1,
         "event": {
@@ -129,6 +133,7 @@
         },
         "validity": true
     },
+    // Together these four directions cancel, but none may move the pointer.
     {
         "device_id": 1,
         "event": {
@@ -156,6 +161,7 @@
         },
         "validity": true
     },
+    // In a mixed report, clear x/y while preserving both wheel components.
     {
         "device_id": 1,
         "event": {
@@ -183,10 +189,12 @@
         },
         "validity": true
     },
+    // The empty to object produces no key at the deadline.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 240
     },
+    // Release Fn after the consumption check.
     {
         "device_id": 9,
         "event": {

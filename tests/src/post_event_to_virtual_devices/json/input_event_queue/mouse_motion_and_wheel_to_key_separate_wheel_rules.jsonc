@@ -1,5 +1,6 @@
 // Separate horizontal and vertical rules retain their own intervals
 [
+    // One report starts both rules; horizontal uses 40ms and vertical uses 80ms.
     {
         "device_id": 1,
         "event": {
@@ -27,10 +28,12 @@
         },
         "validity": true
     },
+    // Only the horizontal rule is due: emit right_arrow.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 140
     },
+    // The vertical rule now emits up_arrow at its own deadline.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 180

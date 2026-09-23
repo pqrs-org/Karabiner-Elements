@@ -1,5 +1,7 @@
 // Pointer and tilt have independent windows; vertical scrolling passes immediately
 [
+    // A single report starts xy and tilt windows; vertical scroll must pass immediately.
+    // The xy vector selects right; negative horizontal wheel selects left.
     {
         "device_id": 1,
         "event": {
@@ -27,10 +29,12 @@
         },
         "validity": true
     },
+    // Only the 50ms tilt window is due: emit left_arrow.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 150
     },
+    // The independent 100ms xy window now emits right_arrow.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200

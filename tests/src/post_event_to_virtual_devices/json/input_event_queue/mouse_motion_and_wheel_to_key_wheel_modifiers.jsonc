@@ -1,5 +1,6 @@
 // Wheels share the initial modifier snapshot; the next window captures new modifiers
 [
+    // Horizontal motion starts the shared window with no modifiers held.
     {
         "device_id": 1,
         "event": {
@@ -27,6 +28,7 @@
         },
         "validity": true
     },
+    // Press Shift after the snapshot has been captured.
     {
         "device_id": 9,
         "event": {
@@ -48,6 +50,7 @@
         },
         "validity": true
     },
+    // Vertical motion joins the same window and must use the original modifier snapshot.
     {
         "device_id": 1,
         "event": {
@@ -75,10 +78,12 @@
         },
         "validity": true
     },
+    // Emit right_arrow and up_arrow without Shift, then restore the physical Shift state.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 200
     },
+    // A new window now captures the held Shift.
     {
         "device_id": 1,
         "event": {
@@ -106,6 +111,7 @@
         },
         "validity": true
     },
+    // Release Shift after capture; the pending output must retain it.
     {
         "device_id": 9,
         "event": {
@@ -127,6 +133,7 @@
         },
         "validity": true
     },
+    // Emit Shift+right_arrow, then restore the released physical state.
     {
         "action": "invoke_dispatcher",
         "time_stamp": 400
