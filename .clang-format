@@ -5,3 +5,4 @@ AllowShortIfStatementsOnASingleLine: true
 AllowShortBlocksOnASingleLine: true
 PointerAlignment: Left
 IndentCaseLabels: true
+InsertBraces: true
