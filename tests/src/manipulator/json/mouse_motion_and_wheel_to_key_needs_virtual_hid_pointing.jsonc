@@ -1,3 +1,6 @@
+// Test cases for mouse_motion_and_wheel_to_key::needs_virtual_hid_pointing.
+// Each input is a manipulator configuration; expected is whether its outputs
+// require a virtual HID pointing device.
 [
     {
         "input": {
