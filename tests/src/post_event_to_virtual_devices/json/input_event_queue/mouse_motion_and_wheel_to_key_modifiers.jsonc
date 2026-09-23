@@ -1,0 +1,256 @@
+[
+    // Fn stays held: captured shift survives release on two keyboards; later command is excluded.
+    // Hold Fn to select the modifier-aware xy rule.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 20
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // Hold Shift on keyboard 9 before the snapshot.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 40
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    // Also hold Shift on keyboard 10 to exercise multiple physical owners.
+    {
+        "device_id": 10,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 60
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    // Start the window: capture Shift, exclude mandatory Fn, and add left_command from to.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Release the first physical Shift owner.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 140
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    // Release the second owner; captured Shift must still be used for output.
+    {
+        "device_id": 10,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 150
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "left_shift"
+            }
+        },
+        "validity": true
+    },
+    // Press right_command after capture; it must not leak into the converted arrow.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 170
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "validity": true
+    },
+    // Emit Shift+left_command+right_arrow, then restore the actual physical modifiers.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    // Send b to verify restored physical modifiers: Fn and right_command, without Shift or left_command.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 300
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "validity": true
+    },
+    // Release the probe key.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 320
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "validity": true
+    },
+    // Release right_command after the restoration check.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 340
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "right_command"
+            }
+        },
+        "validity": true
+    },
+    // Release Fn after checking modifier restoration.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 360
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "pointing_input": {
+            "buttons": [],
+            "horizontal_wheel": 0,
+            "vertical_wheel": 0,
+            "x": 1,
+            "y": 2
+        },
+        "time_stamp": 100,
+        "type": "pointing_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": [
+                {
+                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                }
+            ]
+        },
+        "time_stamp": 120,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "pointing_input": {
+            "buttons": [],
+            "horizontal_wheel": 4,
+            "vertical_wheel": 3,
+            "x": 0,
+            "y": 0
+        },
+        "time_stamp": 180,
+        "type": "pointing_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": []
+        },
+        "time_stamp": 300,
+        "type": "apple_vendor_top_case_input"
+    }
+]

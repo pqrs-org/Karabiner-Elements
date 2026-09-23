@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../types.hpp"
+#include "../shared_event_sender.hpp"
 #include "event_queue.hpp"
 #include "manipulated_original_event/manipulated_original_event.hpp"
 #include "types.hpp"
@@ -299,87 +300,16 @@ inline void post_extra_to_events(const to_event_definitions& to_events,
 
   for (auto it = std::begin(filtered_to_events); it != std::end(filtered_to_events); std::advance(it, 1)) {
     auto to = *it;
-    if (auto event = to->get_event_definition().to_event()) {
-      auto to_modifier_events = to->make_modifier_events();
+    manipulators::shared_event_sender::post_tap(*to,
+                                                device_id,
+                                                event_time_stamp,
+                                                time_stamp_delay,
+                                                original_event,
+                                                output_event_queue);
 
-      // Post modifier events
-
-      for (const auto& e : to_modifier_events) {
-        base::post_lazy_modifier_key_event(e,
-                                           event_type::key_down,
-                                           device_id,
-                                           event_time_stamp,
-                                           time_stamp_delay,
-                                           original_event,
-                                           output_event_queue);
-      }
-
-      // Post key_down event
-
-      {
-        auto t = event_time_stamp;
-        t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-        output_event_queue.emplace_back_entry(device_id,
-                                              t,
-                                              *event,
-                                              event_type::key_down,
-                                              std::nullopt,
-                                              original_event,
-                                              event_queue::state::manipulated,
-                                              to->get_lazy());
-
-        if (to->get_halt()) {
-          current_manipulated_original_event.set_halted();
-        }
-      }
-
-      // Post key_up event
-
-      {
-        time_stamp_delay += pqrs::osx::chrono::make_absolute_time_duration(to->get_hold_down_milliseconds());
-
-        auto t = event_time_stamp;
-        t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
-
-        output_event_queue.emplace_back_entry(device_id,
-                                              t,
-                                              *event,
-                                              event_type::key_up,
-                                              std::nullopt,
-                                              original_event,
-                                              event_queue::state::manipulated,
-                                              to->get_lazy());
-      }
-
-      // Post modifier events
-
-      for (const auto& e : to_modifier_events) {
-        base::post_lazy_modifier_key_event(e,
-                                           event_type::key_up,
-                                           device_id,
-                                           event_time_stamp,
-                                           time_stamp_delay,
-                                           original_event,
-                                           output_event_queue);
-      }
+    if (to->get_halt() && to->get_event_definition().to_event()) {
+      current_manipulated_original_event.set_halted();
     }
-  }
-}
-
-inline void post_active_modifier_flags(const std::vector<modifier_flag_manager::active_modifier_flag>& active_modifier_flags,
-                                       const event_queue::event_time_stamp& event_time_stamp,
-                                       absolute_time_duration& time_stamp_delay,
-                                       const event_queue::event& original_event,
-                                       event_queue::queue& output_event_queue) {
-  for (const auto& f : active_modifier_flags) {
-    base::post_lazy_modifier_key_event(momentary_switch_event(f.get_modifier_flag()),
-                                       f.get_count() > 0 ? event_type::key_down : event_type::key_up,
-                                       f.get_device_id(),
-                                       event_time_stamp,
-                                       time_stamp_delay,
-                                       original_event,
-                                       output_event_queue);
   }
 }
 
@@ -406,11 +336,11 @@ public:
       inverse_active_modifier_flags_ = scoped_modifier_flags.get_inverse_active_modifier_flags();
     }
 
-    event_sender::post_active_modifier_flags(scoped_active_modifier_flags,
-                                             event_time_stamp_,
-                                             time_stamp_delay_,
-                                             original_event_,
-                                             output_event_queue_);
+    shared_event_sender::post_active_modifier_flags(scoped_active_modifier_flags,
+                                                    event_time_stamp_,
+                                                    time_stamp_delay_,
+                                                    original_event_,
+                                                    output_event_queue_);
   }
 
   ~scoped_from_key_modifier_flags_state_restorer() {
@@ -418,11 +348,11 @@ public:
     // Revert scoped modifier flags changes.
     //
 
-    event_sender::post_active_modifier_flags(inverse_active_modifier_flags_,
-                                             event_time_stamp_,
-                                             time_stamp_delay_,
-                                             original_event_,
-                                             output_event_queue_);
+    shared_event_sender::post_active_modifier_flags(inverse_active_modifier_flags_,
+                                                    event_time_stamp_,
+                                                    time_stamp_delay_,
+                                                    original_event_,
+                                                    output_event_queue_);
   }
 
 private:

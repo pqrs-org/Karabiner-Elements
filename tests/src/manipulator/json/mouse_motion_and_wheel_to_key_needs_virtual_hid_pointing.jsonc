@@ -1,0 +1,140 @@
+// Test cases for mouse_motion_and_wheel_to_key::needs_virtual_hid_pointing.
+// Each input is a manipulator configuration; expected is whether its outputs
+// require a virtual HID pointing device.
+[
+    {
+        "input": {
+            "type": "mouse_motion_and_wheel_to_key",
+            "from": {
+                "source": "xy"
+            },
+            "to": {}
+        },
+        "expected": false
+    },
+    {
+        "input": {
+            "type": "mouse_motion_and_wheel_to_key",
+            "from": {
+                "source": "xy"
+            },
+            "to": {
+                "up": [
+                    {
+                        "key_code": "a"
+                    }
+                ],
+                "down": [
+                    {
+                        "key_code": "a"
+                    }
+                ],
+                "left": [
+                    {
+                        "key_code": "a"
+                    }
+                ],
+                "right": [
+                    {
+                        "key_code": "a"
+                    }
+                ]
+            }
+        },
+        "expected": false
+    },
+    {
+        "input": {
+            "type": "mouse_motion_and_wheel_to_key",
+            "from": {
+                "source": "xy"
+            },
+            "to": {
+                "up": [
+                    {
+                        "key_code": "a"
+                    },
+                    {
+                        "pointing_button": "button1"
+                    }
+                ]
+            }
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "mouse_motion_and_wheel_to_key",
+            "from": {
+                "source": "xy"
+            },
+            "to": {
+                "down": [
+                    {
+                        "key_code": "a"
+                    },
+                    {
+                        "pointing_button": "button1"
+                    }
+                ]
+            }
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "mouse_motion_and_wheel_to_key",
+            "from": {
+                "source": "xy"
+            },
+            "to": {
+                "left": [
+                    {
+                        "key_code": "a"
+                    },
+                    {
+                        "pointing_button": "button1"
+                    }
+                ]
+            }
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "mouse_motion_and_wheel_to_key",
+            "from": {
+                "source": "xy"
+            },
+            "to": {
+                "right": [
+                    {
+                        "key_code": "a"
+                    },
+                    {
+                        "pointing_button": "button1"
+                    }
+                ]
+            }
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "mouse_motion_and_wheel_to_key",
+            "from": {
+                "source": "xy"
+            },
+            "to": {
+                "right": [
+                    {
+                        "mouse_key": {
+                            "x": 100
+                        }
+                    }
+                ]
+            }
+        },
+        "expected": true
+    }
+]

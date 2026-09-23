@@ -1,0 +1,230 @@
+// Input conditions stay latched per device and are checked again next window
+[
+    // Enable the xy rule before opening the first window.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 1
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 50
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 1
+            }
+        },
+        "validity": true
+    },
+    // Latch enabled=1 for device 1; 20 is below threshold 30.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 20,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Disable the rule while device 1's window is pending.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 140
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 0
+            }
+        },
+        "validity": true
+    },
+    // Device 1 still consumes this delta and reaches 30 under its latched condition.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 10,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 150
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 10,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Device 2 has no pending window: evaluate enabled=0 and pass its motion through.
+    {
+        "device_id": 2,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 30,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 160
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 30,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Device 1 emits right_arrow despite the condition now being false.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    // Device 1's next input must recheck the condition and pass through.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 30,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 30,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // No conversion was scheduled while disabled.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 400
+    },
+    // Re-enable the rule for subsequent windows.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 1
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 450
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 1
+            }
+        },
+        "validity": true
+    },
+    // A new window can now consume a delta exactly at threshold.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 30,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 500
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 30,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Emit right_arrow from the newly enabled window.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 600
+    }
+]

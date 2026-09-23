@@ -123,4 +123,14 @@ void run_manipulator_manager_test() {
       manager = nullptr;
     }
   };
+
+  "mouse_motion_and_wheel_to_key.needs_virtual_hid_pointing"_test = [] {
+    for (const auto& test : krbn::unit_testing::json_helper::load_jsonc("json/mouse_motion_and_wheel_to_key_needs_virtual_hid_pointing.jsonc")) {
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(test.at("input"), parameters);
+      krbn::manipulator::manipulator_manager manager;
+      manager.push_back_manipulator(m);
+      expect(manager.needs_virtual_hid_pointing() == test.at("expected").get<bool>()) << test;
+    }
+  };
 }

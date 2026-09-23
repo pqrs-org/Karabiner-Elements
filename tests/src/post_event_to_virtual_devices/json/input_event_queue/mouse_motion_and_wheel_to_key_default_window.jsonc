@@ -1,0 +1,350 @@
+[
+    // Default 100ms window: further motion and a zero report do not restart it.
+    // Reach the default xy threshold of 20; output must wait until 200ms.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Add a large surplus without extending the deadline or producing repeated taps.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -1000,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 150
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -1000,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // A zero report must not restart the sampling window.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 160
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Advance to just before the deadline; the following b marks output order.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 199
+    },
+    // Before the deadline, b must be sent before the converted arrow.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 199
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "validity": true
+    },
+    // Release the marker key before testing the deadline.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 199
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "b"
+            }
+        },
+        "validity": true
+    },
+    // At the deadline, the converted arrow must be sent before c.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "c"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 200
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "c"
+            }
+        },
+        "validity": true
+    },
+    // Release c after it has marked the post-deadline output order.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "c"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 201
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "key_code": "c"
+            }
+        },
+        "validity": true
+    },
+    // Advance well beyond the window: surplus must not schedule more taps.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1200
+    },
+    // Opposite deltas cancel; an unmapped nearest direction must not fall back to right.
+    // Start a window with a diagonal vector.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 10,
+                "y": -20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 10,
+                "y": -20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Cancel both components exactly; the net displacement is zero.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": -10,
+                "y": 20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1350
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": -10,
+                "y": 20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // A zero total must produce no key.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1400
+    },
+    // Down is nearest but unmapped; do not choose the mapped right direction instead.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 10,
+                "y": 20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1500
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 10,
+                "y": 20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Consume the motion without emitting a fallback key.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1600
+    },
+    // Default xy threshold: 19 is discarded; 20 emits one tap in a new window.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -19,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2000
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -19,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Discard the below-threshold total at the deadline.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 2100
+    },
+    // Start a new window exactly at the default threshold.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 2200
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Emit one up_arrow, independently of the discarded 19.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 2300
+    }
+]

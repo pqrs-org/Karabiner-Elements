@@ -1,0 +1,212 @@
+[
+    // Horizontal starts the shared window; evaluate thresholds per axis and discard totals.
+    // Start the shared window with horizontal motion; its deadline is 200ms.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 5
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 5
+            }
+        },
+        "validity": true
+    },
+    // The other axis joins 40ms later without getting a separate deadline.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 5,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 140
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 5,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Advance to 1ms before the shared deadline.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 199
+    },
+    // Emit both axes together, horizontal first.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    // No output may remain for a separate second-axis deadline.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 240
+    },
+    // Both deltas are 2, below threshold 3; previous totals must not carry over.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 2,
+                "horizontal_wheel": 2
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 2,
+                "horizontal_wheel": 2
+            }
+        },
+        "validity": true
+    },
+    // Discard both subthreshold totals without output.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 400
+    },
+    // Only vertical reaches threshold; horizontal remains below 3.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 10,
+                "horizontal_wheel": 2
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 500
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 10,
+                "horizontal_wheel": 2
+            }
+        },
+        "validity": true
+    },
+    // Emit only up_arrow and discard the horizontal remainder.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 600
+    },
+    // Vertical starts the same shared window; horizontal output still comes first.
+    // Start the shared window with vertical motion; its deadline is 1200ms.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 5,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 5,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // The other axis joins 40ms later without getting a separate deadline.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 5
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1140
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 5
+            }
+        },
+        "validity": true
+    },
+    // Advance to 1ms before the shared deadline.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1199
+    },
+    // Emit both axes together, horizontal first.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1200
+    },
+    // No output may remain for a separate second-axis deadline.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1240
+    }
+]

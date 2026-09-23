@@ -1,0 +1,104 @@
+[
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": null,
+        "error": "json must be object, but is `null`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "from": null
+        },
+        "error": "`from` must be object, but is `null`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "from": {
+                "source": 42
+            }
+        },
+        "error": "`from.source` must be string, but is `42`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "from": {
+                "source": "unknown"
+            }
+        },
+        "error": "unknown `from.source`: `unknown`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "from": {
+                "threshold": "100"
+            }
+        },
+        "error": "`from.threshold` must be number, but is `\"100\"`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "from": {
+                "sampling_interval_milliseconds": "100"
+            }
+        },
+        "error": "`from.sampling_interval_milliseconds` must be number, but is `\"100\"`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "from": {
+                "unknown": true
+            }
+        },
+        "error": "unknown key in `from`: `unknown`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "unknown": true
+        },
+        "error": "unknown key in mouse_motion_and_wheel_to_key: `unknown`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "to": {
+                "right": [
+                    {
+                        "key_code": "a"
+                    }
+                ]
+            }
+        },
+        "error": "mouse_motion_and_wheel_to_key requires from.source"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "to": []
+        },
+        "error": "`to` must be object, but is `[]`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "to": {
+                "diagonal": []
+            }
+        },
+        "error": "unknown direction in `to`: `diagonal`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "to": {
+                "right": null
+            }
+        },
+        "error": "`to.right` must be array, but is `null`"
+    }
+]

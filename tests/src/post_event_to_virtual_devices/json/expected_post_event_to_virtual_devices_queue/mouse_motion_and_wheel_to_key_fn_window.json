@@ -1,0 +1,116 @@
+[
+    {
+        "apple_vendor_top_case_input": {
+            "keys": [
+                {
+                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                }
+            ]
+        },
+        "time_stamp": 50,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": []
+        },
+        "time_stamp": 150,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 200,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 205,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 400,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 405,
+        "type": "keyboard_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": [
+                {
+                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                }
+            ]
+        },
+        "time_stamp": 650,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": []
+        },
+        "time_stamp": 740,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": [
+                {
+                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                }
+            ]
+        },
+        "time_stamp": 750,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": []
+        },
+        "time_stamp": 800,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ],
+            "modifiers": []
+        },
+        "time_stamp": 805,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 810,
+        "type": "keyboard_input"
+    }
+]

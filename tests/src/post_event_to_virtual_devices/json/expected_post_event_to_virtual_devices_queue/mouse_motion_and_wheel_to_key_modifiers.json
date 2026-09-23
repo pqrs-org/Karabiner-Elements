@@ -1,0 +1,186 @@
+[
+    {
+        "apple_vendor_top_case_input": {
+            "keys": [
+                {
+                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                }
+            ]
+        },
+        "time_stamp": 20,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift"
+            ]
+        },
+        "time_stamp": 40,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 150,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_command"
+            ]
+        },
+        "time_stamp": 170,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift",
+                "right_command"
+            ]
+        },
+        "time_stamp": 200,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift",
+                "left_command",
+                "right_command"
+            ]
+        },
+        "time_stamp": 205,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift",
+                "left_command"
+            ]
+        },
+        "time_stamp": 210,
+        "type": "keyboard_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": []
+        },
+        "time_stamp": 215,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "modifiers": [
+                "left_shift",
+                "left_command"
+            ]
+        },
+        "time_stamp": 220,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_shift",
+                "left_command"
+            ]
+        },
+        "time_stamp": 225,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "left_command"
+            ]
+        },
+        "time_stamp": 300,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 305,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_command"
+            ]
+        },
+        "time_stamp": 310,
+        "type": "keyboard_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": [
+                {
+                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                }
+            ]
+        },
+        "time_stamp": 315,
+        "type": "apple_vendor_top_case_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [
+                {
+                    "key_code": "b"
+                }
+            ],
+            "modifiers": [
+                "right_command"
+            ]
+        },
+        "time_stamp": 320,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": [
+                "right_command"
+            ]
+        },
+        "time_stamp": 325,
+        "type": "keyboard_input"
+    },
+    {
+        "keyboard_input": {
+            "keys": [],
+            "modifiers": []
+        },
+        "time_stamp": 340,
+        "type": "keyboard_input"
+    },
+    {
+        "apple_vendor_top_case_input": {
+            "keys": []
+        },
+        "time_stamp": 360,
+        "type": "apple_vendor_top_case_input"
+    }
+]

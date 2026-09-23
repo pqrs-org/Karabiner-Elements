@@ -1,0 +1,50 @@
+// With Fn, consume pointer motion and preserve wheel values.
+// Without modifiers, convert the vertical wheel; also convert xy when enabled is 1.
+// Preserve components not selected by an eligible rule.
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy",
+            "threshold": 3,
+            "modifiers": {
+                "mandatory": ["fn"]
+            }
+        },
+        "to": {}
+    },
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "vertical_wheel"
+        },
+        "to": {
+            "up": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ]
+        }
+    },
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy",
+            "threshold": 30
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ]
+        },
+        "conditions": [
+            {
+                "type": "variable_if",
+                "name": "enabled",
+                "value": 1
+            }
+        ]
+    }
+]

@@ -1,0 +1,296 @@
+[
+    // Release fn during the window: keep accumulating, then recheck eligibility next window.
+    // Hold the mandatory modifier before the first motion.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 50
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // Latch Fn eligibility and start with 10 of the required 20, due at 200ms.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -10,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -10,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Release Fn before the window ends; eligibility must remain latched.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 150
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // Add the remaining 10 after release, still in the original window.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -10,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 160
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -10,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Emit up_arrow from the latched Fn rule.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 200
+    },
+    // Fn is now up: the next window uses plain right, without the Fn rule's command modifier.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 30,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 30,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Emit plain right_arrow from the fallback rule, without command.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 400
+    },
+    // Release and repress fn: keep the original deadline (10 + 10 reaches threshold 20).
+    // Enable the Fn rule for a second window.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 650
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // Start another subthreshold window, due at 800ms.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -10,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 700
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -10,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Release Fn during sampling.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 740
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // Repress Fn without resetting the existing window.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 750
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // Reach threshold with the second 10; keep the original 800ms deadline.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -10,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 760
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -10,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Emit once from the original window.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 800
+    },
+    // No extra tap may appear at the would-be restarted deadline.
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 860
+    },
+    // Release the remaining physical Fn state.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 900
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    }
+]

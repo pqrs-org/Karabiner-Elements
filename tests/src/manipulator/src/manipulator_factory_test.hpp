@@ -77,19 +77,4 @@ void run_manipulator_factory_test() {
       expect(basic->get_to()[0]->get_modifiers() == std::set<modifier_definition::modifier>());
     }
   };
-
-  "errors"_test = [] {
-    {
-      try {
-        nlohmann::json json;
-        auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
-        krbn::manipulator::manipulator_factory::make_manipulator(json, parameters);
-        expect(false);
-      } catch (pqrs::json::unmarshal_error& ex) {
-        expect(std::string("`type` must be specified: null") == ex.what());
-      } catch (...) {
-        expect(false);
-      }
-    }
-  };
 }

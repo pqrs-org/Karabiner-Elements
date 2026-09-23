@@ -934,5 +934,128 @@
         "rules": ["json/rules/to_if_other_key_pressed.jsonc"],
         "input_event_queue": "json/input_event_queue/to_if_other_key_pressed_2.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_other_key_pressed_2.json"
+    },
+    {
+        "description": "Mouse motion: default deadline, output order, cancellation and unmapped direction",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_default_window.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_default_window.json"
+    },
+    {
+        "description": "Mouse motion: custom interval discards surplus and subthreshold totals",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key_custom_intervals.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_custom_window.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_custom_window.json"
+    },
+    {
+        "description": "Mouse motion: nearest direction, horizontal ties and large signed totals",
+        "rules": ["json/rules/mouse_motion_and_wheel_to_key_directions.jsonc"],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_directions.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_directions.json"
+    },
+    {
+        "description": "Mouse motion: sampling windows and totals are independent per device",
+        "rules": ["json/rules/mouse_motion_and_wheel_to_key_directions.jsonc"],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_devices.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_devices.json"
+    },
+    {
+        "description": "Wheels: shared deadline starts on either axis and thresholds apply independently",
+        "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_wheels.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_wheels.json"
+    },
+    {
+        "description": "Wheel axis selection: horizontal_wheel preserves pointer motion and the other wheel axis",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough.json"
+    },
+    {
+        "description": "Wheel axis selection: vertical_wheel preserves pointer motion and the other wheel axis",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.json"
+    },
+    {
+        "description": "Wheels: signed accumulation cancels reversals and maps all four directions",
+        "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_wheel_signs.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_wheel_signs.json"
+    },
+    {
+        "description": "Pointer and tilt have independent windows; vertical scrolling passes immediately",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key_directions.jsonc",
+            "json/rules/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_xy_and_tilt.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_xy_and_tilt.json"
+    },
+    {
+        "description": "Separate horizontal and vertical rules retain their own intervals",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key_custom_intervals.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_separate_wheel_rules.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_separate_wheel_rules.json"
+    },
+    {
+        "description": "Fn condition with empty to: pointer motion is consumed; wheel values pass through",
+        "rules": ["json/rules/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.jsonc"],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_consume_xy.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_consume_xy.json"
+    },
+    {
+        "description": "Fn eligibility: latched through release or repress; next window falls back to the plain rule",
+        "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_fn_window.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_fn_window.json"
+    },
+    {
+        "description": "Input conditions stay latched per device and are checked again next window",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_input_conditions.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_input_conditions.json"
+    },
+    {
+        "description": "Pending windows: cancel on disconnect or invalidation; retain on key/button release",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_cancellation.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_cancellation.json"
+    },
+    {
+        "description": "Modifiers: capture initial state, exclude later presses and restore actual state",
+        "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_modifiers.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_modifiers.json"
+    },
+    {
+        "description": "Wheels share the initial modifier snapshot; the next window captures new modifiers",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_wheel_modifiers.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_wheel_modifiers.json"
+    },
+    {
+        "description": "Output conditions are evaluated at the window deadline",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_output_conditions.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_output_conditions.json"
     }
 ]

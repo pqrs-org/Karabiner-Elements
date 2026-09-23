@@ -1,0 +1,90 @@
+// Fn xy comes first: up is plain and right adds command; optional modifiers are captured.
+// Otherwise xy uses plain up/right, conditional left, and unmapped down.
+// Wheels map all four directions and capture optional modifiers.
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy",
+            "modifiers": {
+                "mandatory": ["fn"],
+                "optional": ["any"]
+            }
+        },
+        "to": {
+            "up": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ],
+            "right": [
+                {
+                    "key_code": "right_arrow",
+                    "modifiers": ["left_command"]
+                }
+            ]
+        }
+    },
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy"
+        },
+        "to": {
+            "up": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ],
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "left": [
+                {
+                    "key_code": "left_arrow",
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "enabled",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "wheels",
+            "threshold": 3,
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": {
+            "up": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ],
+            "down": [
+                {
+                    "key_code": "down_arrow"
+                }
+            ],
+            "left": [
+                {
+                    "key_code": "left_arrow"
+                }
+            ],
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ]
+        }
+    }
+]

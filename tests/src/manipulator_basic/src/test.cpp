@@ -1,4 +1,3 @@
-#include "errors_test.hpp"
 #include "manipulator_basic_test.hpp"
 #include "simultaneous_options_test.hpp"
 #include "to_after_key_up_test.hpp"
@@ -8,7 +7,6 @@
 #include "to_if_other_key_pressed_test.hpp"
 
 int main() {
-  run_errors_test();
   run_manipulator_basic_test();
   run_simultaneous_options_test();
   run_to_after_key_up_test();
