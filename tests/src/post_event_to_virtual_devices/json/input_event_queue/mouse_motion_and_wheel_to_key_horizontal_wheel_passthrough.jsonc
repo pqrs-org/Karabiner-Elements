@@ -8,7 +8,7 @@
                 "x": 3,
                 "y": 4,
                 "vertical_wheel": 10,
-                "horizontal_wheel": 20
+                "horizontal_wheel": 1
             }
         },
         "event_time_stamp": {
@@ -22,7 +22,7 @@
                 "x": 3,
                 "y": 4,
                 "vertical_wheel": 10,
-                "horizontal_wheel": 20
+                "horizontal_wheel": 1
             }
         },
         "validity": true

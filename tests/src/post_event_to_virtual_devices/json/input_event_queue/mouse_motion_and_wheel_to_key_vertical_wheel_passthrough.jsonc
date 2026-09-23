@@ -7,7 +7,7 @@
             "pointing_motion": {
                 "x": 3,
                 "y": 4,
-                "vertical_wheel": 10,
+                "vertical_wheel": 1,
                 "horizontal_wheel": 20
             }
         },
@@ -21,7 +21,7 @@
             "pointing_motion": {
                 "x": 3,
                 "y": 4,
-                "vertical_wheel": 10,
+                "vertical_wheel": 1,
                 "horizontal_wheel": 20
             }
         },

@@ -31,11 +31,11 @@ key taps. This example converts movement to arrow keys while fn is pressed:
 
 ## Configuration
 
-| Field                                 | Values                                                  | Default  |
-| ------------------------------------- | ------------------------------------------------------- | -------- |
-| `from.source`                         | `xy`, `wheels`, `horizontal_wheel`, `vertical_wheel`    | Required |
-| `from.threshold`                      | Number in input delta units, not pixels or scroll lines | `1`      |
-| `from.sampling_interval_milliseconds` | Number in milliseconds                                  | `100`    |
+| Field                                 | Values                                                  | Default                              |
+| ------------------------------------- | ------------------------------------------------------- | ------------------------------------ |
+| `from.source`                         | `xy`, `wheels`, `horizontal_wheel`, `vertical_wheel`    | Required                             |
+| `from.threshold`                      | Number in input delta units, not pixels or scroll lines | `20` for `xy`, `1` for wheel sources |
+| `from.sampling_interval_milliseconds` | Number in milliseconds                                  | `100`                                |
 
 `xy` selects both pointer axes; `wheels` selects both wheel axes. Use
 `horizontal_wheel` with `to.left` / `to.right` for tilt only, or `vertical_wheel`

@@ -5,7 +5,7 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 10,
+                "x": 20,
                 "y": 2,
                 "vertical_wheel": 3,
                 "horizontal_wheel": -4
@@ -19,7 +19,7 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 10,
+                "x": 20,
                 "y": 2,
                 "vertical_wheel": 3,
                 "horizontal_wheel": -4

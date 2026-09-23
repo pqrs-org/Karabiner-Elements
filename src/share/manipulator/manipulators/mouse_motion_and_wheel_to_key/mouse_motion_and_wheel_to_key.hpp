@@ -88,6 +88,10 @@ public:
         }
       }
 
+      if (source_ == source::xy && !json.at("from").contains("threshold")) {
+        threshold_ = 20;
+      }
+
       if (source_ == source::none) {
         throw pqrs::json::unmarshal_error("mouse_motion_and_wheel_to_key requires from.source");
       }
