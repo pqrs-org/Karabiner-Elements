@@ -31,21 +31,17 @@ key taps. This example converts movement to arrow keys while fn is pressed:
 
 ## Configuration
 
-| Field                                 | Values                                                            | Default  |
-| ------------------------------------- | ----------------------------------------------------------------- | -------- |
-| `from.source`                         | `xy`, `wheels`, `horizontal_wheel`, `vertical_wheel`              | Required |
-| `from.threshold`                      | Positive integer in input delta units, not pixels or scroll lines | `1`      |
-| `from.sampling_interval_milliseconds` | Positive integer in milliseconds                                  | `100`    |
-
-Both numeric fields accept values up to 2147483647.
+| Field                                 | Values                                                  | Default  |
+| ------------------------------------- | ------------------------------------------------------- | -------- |
+| `from.source`                         | `xy`, `wheels`, `horizontal_wheel`, `vertical_wheel`    | Required |
+| `from.threshold`                      | Number in input delta units, not pixels or scroll lines | `1`      |
+| `from.sampling_interval_milliseconds` | Number in milliseconds                                  | `100`    |
 
 `xy` selects both pointer axes; `wheels` selects both wheel axes. Use
 `horizontal_wheel` with `to.left` / `to.right` for tilt only, or `vertical_wheel`
 with `to.up` / `to.down` for vertical scrolling only.
 
-`to` maps directions to output arrays. At least one array must be nonempty;
-nonempty outputs must belong to a selected axis. Arrays support output event
-definitions with `modifiers`, `lazy`, and per-output `conditions`.
+`to` is an object mapping `up`, `down`, `left`, and `right` to output arrays.
 
 Direction names refer to input deltas before macOS scrolling preferences:
 
@@ -69,14 +65,17 @@ At the deadline:
 - **Wheel:** both axes share one window. Evaluate each axis against the threshold
   independently, emitting at most one array per axis, horizontal first.
 
-Each selected array runs all its actions as down/up pairs. Then all accumulated
+Each selected array runs its matching output events once as down/up pairs, with
+`hold_down_milliseconds` setting the time between down and up. Then all accumulated
 values are discarded, including surplus and subthreshold movement. The next input
 starts a new window. A longer interval reduces repeated actions; a shorter one
 responds faster.
 
 Windows are independent per rule and device: pointer and wheel rules have separate
 windows, as do separately configured horizontal and vertical wheel rules.
-Device release/disconnection or configuration replacement cancels pending windows.
+Ungrab or disconnection cancels that device's pending window; configuration reload
+or replacement cancels all windows of the invalidated rule. Releasing keys or
+buttons does not cancel them.
 Outputs enter the normal output queue without being rematched in the same manager.
 
 ## Conditions and modifiers
