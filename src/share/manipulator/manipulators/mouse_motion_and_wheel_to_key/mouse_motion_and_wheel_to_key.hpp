@@ -326,6 +326,8 @@ private:
               return false;
             });
 
+            // A delayed callback can expire several windows at once.
+            std::ranges::sort(expired, {}, &pending_window::deadline);
             for (const auto& window : expired) {
               post_window(window);
             }
