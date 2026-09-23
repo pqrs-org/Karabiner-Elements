@@ -26,8 +26,8 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 20,
-                "y": 0,
+                "x": 0,
+                "y": -10,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -40,8 +40,8 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 20,
-                "y": 0,
+                "x": 0,
+                "y": -10,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -74,8 +74,8 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 10,
-                "y": 0,
+                "x": 0,
+                "y": -10,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -88,8 +88,8 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 10,
-                "y": 0,
+                "x": 0,
+                "y": -10,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -100,6 +100,7 @@
         "action": "invoke_dispatcher",
         "time_stamp": 200
     },
+    // Fn is now up: the next window uses plain right, without the Fn rule's command modifier.
     {
         "device_id": 1,
         "event": {
@@ -158,8 +159,8 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 20,
-                "y": 0,
+                "x": 0,
+                "y": -10,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -172,8 +173,8 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 20,
-                "y": 0,
+                "x": 0,
+                "y": -10,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -227,8 +228,8 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 20,
-                "y": 0,
+                "x": 0,
+                "y": -10,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }
@@ -241,8 +242,8 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 20,
-                "y": 0,
+                "x": 0,
+                "y": -10,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
             }

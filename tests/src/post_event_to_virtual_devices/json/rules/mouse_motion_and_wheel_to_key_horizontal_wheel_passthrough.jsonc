@@ -2,12 +2,18 @@
     {
         "type": "mouse_motion_and_wheel_to_key",
         "from": {
-            "source": "horizontal_wheel"
+            "source": "horizontal_wheel",
+            "sampling_interval_milliseconds": 50
         },
         "to": {
             "right": [
                 {
                     "key_code": "right_arrow"
+                }
+            ],
+            "left": [
+                {
+                    "key_code": "left_arrow"
                 }
             ]
         }

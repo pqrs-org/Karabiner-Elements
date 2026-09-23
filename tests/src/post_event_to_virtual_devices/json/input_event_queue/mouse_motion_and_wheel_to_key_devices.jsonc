@@ -5,7 +5,7 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 2,
+                "x": 1,
                 "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
@@ -19,7 +19,7 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 2,
+                "x": 1,
                 "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
@@ -32,7 +32,7 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 3,
+                "x": 2,
                 "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
@@ -46,7 +46,7 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 3,
+                "x": 2,
                 "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
@@ -68,7 +68,7 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 3,
+                "x": 2,
                 "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
@@ -82,7 +82,7 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": 3,
+                "x": 2,
                 "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
@@ -95,7 +95,7 @@
         "event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": -3,
+                "x": -2,
                 "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0
@@ -109,7 +109,7 @@
         "original_event": {
             "type": "pointing_motion",
             "pointing_motion": {
-                "x": -3,
+                "x": -2,
                 "y": 0,
                 "vertical_wheel": 0,
                 "horizontal_wheel": 0

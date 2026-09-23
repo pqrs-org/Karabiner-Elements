@@ -29,6 +29,6 @@
     },
     {
         "action": "invoke_dispatcher",
-        "time_stamp": 200
+        "time_stamp": 150
     }
 ]

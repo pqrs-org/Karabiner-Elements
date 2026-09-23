@@ -8,7 +8,7 @@
                 "x": 0,
                 "y": 0,
                 "vertical_wheel": 0,
-                "horizontal_wheel": 1
+                "horizontal_wheel": 3
             }
         },
         "event_time_stamp": {
@@ -22,7 +22,7 @@
                 "x": 0,
                 "y": 0,
                 "vertical_wheel": 0,
-                "horizontal_wheel": 1
+                "horizontal_wheel": 3
             }
         },
         "validity": true
@@ -55,7 +55,7 @@
             "pointing_motion": {
                 "x": 0,
                 "y": 0,
-                "vertical_wheel": 1,
+                "vertical_wheel": 3,
                 "horizontal_wheel": 0
             }
         },
@@ -69,7 +69,7 @@
             "pointing_motion": {
                 "x": 0,
                 "y": 0,
-                "vertical_wheel": 1,
+                "vertical_wheel": 3,
                 "horizontal_wheel": 0
             }
         },
@@ -87,7 +87,7 @@
                 "x": 0,
                 "y": 0,
                 "vertical_wheel": 0,
-                "horizontal_wheel": 1
+                "horizontal_wheel": 3
             }
         },
         "event_time_stamp": {
@@ -101,7 +101,7 @@
                 "x": 0,
                 "y": 0,
                 "vertical_wheel": 0,
-                "horizontal_wheel": 1
+                "horizontal_wheel": 3
             }
         },
         "validity": true

@@ -34,7 +34,7 @@
         "keyboard_input": {
             "keys": [
                 {
-                    "key_code": "right_arrow"
+                    "key_code": "up_arrow"
                 }
             ],
             "modifiers": []
@@ -74,7 +74,7 @@
         "keyboard_input": {
             "keys": [
                 {
-                    "key_code": "right_arrow"
+                    "key_code": "up_arrow"
                 }
             ],
             "modifiers": []
