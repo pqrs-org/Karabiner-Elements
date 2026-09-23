@@ -1006,7 +1006,7 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_separate_wheel_rules.json"
     },
     {
-        "description": "Fn condition: all selected pointer directions are consumed; wheel values pass through",
+        "description": "Fn condition with empty to: pointer motion is consumed; wheel values pass through",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key_consume_xy.jsonc"],
         "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_consume_xy.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_consume_xy.json"
@@ -1026,7 +1026,7 @@
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_input_conditions.json"
     },
     {
-        "description": "Pending windows: disconnect, device release and configuration invalidation",
+        "description": "Pending windows: cancel on disconnect or invalidation; retain on key/button release",
         "rules": [
             "json/rules/mouse_motion_and_wheel_to_key_default_window.jsonc"
         ],

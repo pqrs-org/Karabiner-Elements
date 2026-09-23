@@ -1,4 +1,4 @@
-// Fn condition: all selected pointer directions are consumed; wheel values pass through
+// Fn condition with empty to: pointer motion is consumed; wheel values pass through
 [
     {
         "device_id": 1,

@@ -77,7 +77,7 @@
         "action": "invoke_dispatcher",
         "time_stamp": 260
     },
-    // Device release also cancels the old window.
+    // Releasing all keys/buttons preserves the window and its original deadline.
     {
         "device_id": 1,
         "event": {
