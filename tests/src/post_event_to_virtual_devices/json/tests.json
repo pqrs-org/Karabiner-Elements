@@ -1057,5 +1057,21 @@
         ],
         "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_output_conditions.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_output_conditions.json"
+    },
+    {
+        "description": "Cooldown: fixed expiry, per-device isolation, cancellation, and no-output windows",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key_cooldown.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_cooldown_xy.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_cooldown_xy.json"
+    },
+    {
+        "description": "Cooldown: shared wheel suppression preserves pointer motion and rechecks modifiers afterward",
+        "rules": [
+            "json/rules/mouse_motion_and_wheel_to_key_cooldown.jsonc"
+        ],
+        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_cooldown_wheels.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_cooldown_wheels.json"
     }
 ]

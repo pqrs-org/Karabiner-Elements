@@ -1,0 +1,58 @@
+// Short sampling windows with a longer, fixed cooldown after output.
+[
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "xy",
+            "threshold": 2,
+            "sampling_interval_milliseconds": 20,
+            "cooldown_milliseconds": 200
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow",
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "emit",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "conditions": [
+            {
+                "type": "variable_if",
+                "name": "enabled",
+                "value": 1
+            }
+        ]
+    },
+    {
+        "type": "mouse_motion_and_wheel_to_key",
+        "from": {
+            "source": "wheels",
+            "sampling_interval_milliseconds": 20,
+            "cooldown_milliseconds": 200,
+            "modifiers": {
+                "mandatory": [
+                    "fn"
+                ]
+            }
+        },
+        "to": {
+            "right": [
+                {
+                    "key_code": "right_arrow"
+                }
+            ],
+            "up": [
+                {
+                    "key_code": "up_arrow"
+                }
+            ]
+        }
+    }
+]

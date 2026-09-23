@@ -1,0 +1,591 @@
+[
+    // Enable both input and output conditions.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 1
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 0
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 1
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "emit",
+                "value": 1
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 0
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "emit",
+                "value": 1
+            }
+        },
+        "validity": true
+    },
+    // Emit at 120ms: cooldown lasts until 320ms.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 120
+    },
+    // During cooldown consume xy, but pass the wheel component immediately.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 50,
+                "y": 0,
+                "vertical_wheel": 3,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 150
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 50,
+                "y": 0,
+                "vertical_wheel": 3,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // Another device can start and emit during device 1's cooldown.
+    {
+        "device_id": 2,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 160
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 180
+    },
+    // Changing input conditions must not stop cooldown consumption.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 200
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 0
+            }
+        },
+        "validity": true
+    },
+    // This late input is discarded and must not extend cooldown.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 50,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 50,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    // At the exact end, recheck the false condition and pass xy through.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 320
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 1
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 330
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "enabled",
+                "value": 1
+            }
+        },
+        "validity": true
+    },
+    // The expired cooldown has retained no accumulated movement.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 340
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 360
+    },
+    // Disconnect cancels cooldown as well as pending windows.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "device_ungrabbed"
+        },
+        "event_time_stamp": {
+            "time_stamp": 380
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "device_ungrabbed"
+        },
+        "validity": true
+    },
+    // A fresh window can emit before the old cooldown would have ended.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 390
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 410
+    },
+    // After cooldown, a subthreshold window emits nothing.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 1,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 620
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 1,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 640
+    },
+    // No output means no cooldown: accept the next window immediately.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 650
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 670
+    },
+    // An unmapped direction also must not start cooldown.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": -2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 900
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": -2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 920
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 930
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 950
+    },
+    // Filtered output must not start cooldown either.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "emit",
+                "value": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1200
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "emit",
+                "value": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1210
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1230
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "emit",
+                "value": 1
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1240
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "set_variable",
+            "set_variable": {
+                "name": "emit",
+                "value": 1
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1250
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 1270
+    },
+    // Configuration invalidation clears cooldown; following xy passes unchanged.
+    {
+        "action": "invalidate_manipulators"
+    },
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 1300
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 2,
+                "y": 0,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    }
+]

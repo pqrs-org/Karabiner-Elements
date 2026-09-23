@@ -181,6 +181,34 @@
         },
         "validity": true
     },
+    // Default cooldown lasts until 300ms: consume this threshold-sized motion without a new tap.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 250
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": -20,
+                "vertical_wheel": 0,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
     // Advance well beyond the window: surplus must not schedule more taps.
     {
         "action": "invoke_dispatcher",

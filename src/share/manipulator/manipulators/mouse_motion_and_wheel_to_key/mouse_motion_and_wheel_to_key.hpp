@@ -49,6 +49,11 @@ public:
 
               sampling_interval_ = std::chrono::milliseconds(v.get<int>());
 
+            } else if (k == "cooldown_milliseconds") {
+              pqrs::json::requires_number(v, "`from.cooldown_milliseconds`");
+
+              cooldown_ = std::chrono::milliseconds(v.get<int>());
+
             } else if (k == "modifiers") {
               from_modifiers_definition_ = v.get<from_modifiers_definition>();
 
@@ -105,6 +110,7 @@ public:
   ~mouse_motion_and_wheel_to_key() override {
     detach_from_dispatcher([this] {
       windows_.clear();
+      cooldowns_.clear();
     });
   }
 
@@ -119,6 +125,7 @@ public:
     if (!output_event_queue ||
         validity_ == validity::invalid) {
       windows_.clear();
+      cooldowns_.clear();
       schedule();
       return manipulate_result::passed;
     }
@@ -163,41 +170,51 @@ public:
       return manipulate_result::passed;
     }
 
-    auto it = windows_.find(front_input_event.get_device_id());
-    if (it == windows_.end()) {
-      const conditions::condition_context context{
-          .device_id = front_input_event.get_device_id(),
-          .state = front_input_event.get_state(),
-      };
-      auto modifiers = from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager());
-      if (!modifiers ||
-          !condition_manager_.is_fulfilled(context, output_event_queue->get_manipulator_environment())) {
-        return manipulate_result::passed;
-      }
-      auto output_modifiers = output_event_queue->get_modifier_flag_manager().make_modifier_flags();
-      for (auto flag : *modifiers) {
-        output_modifiers.erase(flag);
-      }
-      // Latch input eligibility for the entire fixed window. Later input from
-      // this device is accumulated and consumed without rechecking conditions.
-      it = windows_.emplace(front_input_event.get_device_id(),
-                            pending_window{
-                                .deadline = when_now() + sampling_interval_,
-                                .context = context,
-                                .original_event = front_input_event.get_original_event(),
-                                .output = output_event_queue,
-                                .output_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() + pqrs::osx::chrono::make_absolute_time_duration(sampling_interval_),
-                                .output_modifiers = std::move(output_modifiers),
-                            })
-               .first;
+    auto device = front_input_event.get_device_id();
+    auto cooldown = cooldowns_.find(device);
+    if (cooldown != cooldowns_.end() && cooldown->second <= when_now()) {
+      cooldowns_.erase(cooldown);
+      cooldown = cooldowns_.end();
     }
 
-    auto& window = it->second;
-    // Keep signed sums and abs safe even with extreme deltas and long windows.
-    constexpr auto limit = std::numeric_limits<int64_t>::max() / 2;
-    window.x = std::clamp(window.x + x, -limit, limit);
-    window.y = std::clamp(window.y + y, -limit, limit);
-    schedule();
+    // During cooldown, consume selected axes without accumulating or rechecking eligibility.
+    if (cooldown == cooldowns_.end()) {
+      auto it = windows_.find(front_input_event.get_device_id());
+      if (it == windows_.end()) {
+        const conditions::condition_context context{
+            .device_id = front_input_event.get_device_id(),
+            .state = front_input_event.get_state(),
+        };
+        auto modifiers = from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager());
+        if (!modifiers ||
+            !condition_manager_.is_fulfilled(context, output_event_queue->get_manipulator_environment())) {
+          return manipulate_result::passed;
+        }
+        auto output_modifiers = output_event_queue->get_modifier_flag_manager().make_modifier_flags();
+        for (auto flag : *modifiers) {
+          output_modifiers.erase(flag);
+        }
+        // Latch input eligibility for the entire fixed window. Later input from
+        // this device is accumulated and consumed without rechecking conditions.
+        it = windows_.emplace(front_input_event.get_device_id(),
+                              pending_window{
+                                  .deadline = when_now() + sampling_interval_,
+                                  .context = context,
+                                  .original_event = front_input_event.get_original_event(),
+                                  .output = output_event_queue,
+                                  .output_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() + pqrs::osx::chrono::make_absolute_time_duration(sampling_interval_),
+                                  .output_modifiers = std::move(output_modifiers),
+                              })
+                 .first;
+      }
+
+      auto& window = it->second;
+      // Keep signed sums and abs safe even with extreme deltas and long windows.
+      constexpr auto limit = std::numeric_limits<int64_t>::max() / 2;
+      window.x = std::clamp(window.x + x, -limit, limit);
+      window.y = std::clamp(window.y + y, -limit, limit);
+      schedule();
+    }
 
     // Consume the entire selected group, even unmapped directions and deltas
     // below the threshold. Leave only the other group available to later rules.
@@ -255,6 +272,7 @@ public:
                                      const event_queue::queue&,
                                      absolute_time_point) override {
     windows_.erase(device_id);
+    cooldowns_.erase(device_id);
     schedule();
   }
 
@@ -267,6 +285,7 @@ public:
 
     if (value == validity::invalid) {
       windows_.clear();
+      cooldowns_.clear();
       schedule();
     }
   }
@@ -329,7 +348,9 @@ private:
             // A delayed callback can expire several windows at once.
             std::ranges::sort(expired, {}, &pending_window::deadline);
             for (const auto& window : expired) {
-              post_window(window);
+              if (post_window(window) && cooldown_ > std::chrono::milliseconds::zero()) {
+                cooldowns_[window.context.device_id] = when_now() + cooldown_;
+              }
             }
 
             schedule();
@@ -338,10 +359,10 @@ private:
     }
   }
 
-  void post_window(const pending_window& window) {
+  bool post_window(const pending_window& window) {
     auto output = window.output.lock();
     if (!output || validity_ == validity::invalid) {
-      return;
+      return false;
     }
 
     auto x = window.x;
@@ -363,7 +384,7 @@ private:
                              [](bool value) {
                                return value;
                              })) {
-      return;
+      return false;
     }
 
     event_queue::event_time_stamp time_stamp(window.output_time_stamp);
@@ -385,6 +406,8 @@ private:
                                                     window.original_event,
                                                     *output);
 
+    bool emitted = false;
+
     // Wheel directions are evaluated independently, horizontal before vertical.
     for (size_t direction = 0; direction < selected.size(); ++direction) {
       if (!selected[direction]) {
@@ -393,12 +416,15 @@ private:
       for (const auto& to : to_[direction]) {
         if (to->get_condition_manager().is_fulfilled(window.context,
                                                      output->get_manipulator_environment())) {
+          // post_tap leaves delay unchanged when the definition produces no event.
+          auto previous_delay = delay;
           shared_event_sender::post_tap(*to,
                                         window.context.device_id,
                                         time_stamp,
                                         delay,
                                         window.original_event,
                                         *output);
+          emitted |= delay != previous_delay;
         }
       }
     }
@@ -411,14 +437,17 @@ private:
 
     output->increase_time_stamp_delay(delay);
     krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+    return emitted;
   }
 
   source source_ = source::none;
   int threshold_ = 1;
   std::chrono::milliseconds sampling_interval_{100};
+  std::chrono::milliseconds cooldown_{100};
   from_modifiers_definition from_modifiers_definition_;
   std::array<to_event_definitions, 4> to_;
   std::unordered_map<device_id, pending_window> windows_;
+  std::unordered_map<device_id, pqrs::dispatcher::time_point> cooldowns_;
   std::optional<pqrs::dispatcher::time_point> scheduled_at_;
   pqrs::dispatcher::extra::debounced_task timer_;
 };

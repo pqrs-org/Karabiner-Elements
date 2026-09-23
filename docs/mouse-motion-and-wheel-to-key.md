@@ -11,12 +11,13 @@ key taps. This example converts movement to arrow keys while fn is pressed:
             "type": "mouse_motion_and_wheel_to_key",
             "from": {
                 "source": "xy",
-                "threshold": 32,
-                "sampling_interval_milliseconds": 100,
                 "modifiers": {
                     "mandatory": ["fn"],
                     "optional": ["any"]
-                }
+                },
+                "threshold": 32,
+                "sampling_interval_milliseconds": 100,
+                "cooldown_milliseconds": 100
             },
             "to": {
                 "up": [{ "key_code": "up_arrow" }],
@@ -36,6 +37,7 @@ key taps. This example converts movement to arrow keys while fn is pressed:
 | `from.source`                         | `xy`, `wheels`, `horizontal_wheel`, `vertical_wheel`    | Required                             |
 | `from.threshold`                      | Number in input delta units, not pixels or scroll lines | `20` for `xy`, `1` for wheel sources |
 | `from.sampling_interval_milliseconds` | Number in milliseconds                                  | `100`                                |
+| `from.cooldown_milliseconds`          | Number in milliseconds                                  | `100`                                |
 
 `xy` selects both pointer axes; `wheels` selects both wheel axes. Use
 `horizontal_wheel` with `to.left` / `to.right` for tilt only, or `vertical_wheel`
@@ -66,17 +68,21 @@ At the deadline:
   independently, emitting at most one array per axis, horizontal first.
 
 Each selected array runs its matching output events once as down/up pairs, with
-`hold_down_milliseconds` setting the time between down and up. Then all accumulated
-values are discarded, including surplus and subthreshold movement. The next input
-starts a new window. A longer interval reduces repeated actions; a shorter one
-responds faster.
+`hold_down_milliseconds` setting the time between down and up. Then all
+accumulated values are discarded, including surplus and subthreshold movement.
+If an output event is emitted, `cooldown_milliseconds` starts a fixed cooldown
+from emission. During cooldown, selected input is consumed without accumulation
+or condition checks; further input does not extend it. Afterward, the next input
+can start a new window. No cooldown starts for subthreshold, unmapped, or
+filtered output. A short sampling interval with a longer cooldown reduces
+response latency while limiting repeated actions.
 
-Windows are independent per rule and device: pointer and wheel rules have separate
-windows, as do separately configured horizontal and vertical wheel rules.
-Ungrab or disconnection cancels that device's pending window; configuration reload
-or replacement cancels all windows of the invalidated rule. Releasing keys or
-buttons does not cancel them.
-Outputs enter the normal output queue without being rematched in the same manager.
+Windows and cooldowns are independent per rule and device: pointer and wheel
+rules have separate windows, as do separately configured horizontal and vertical
+wheel rules. Ungrab or disconnection cancels that device's pending window and
+cooldown; configuration reload or replacement cancels all windows and cooldowns
+of the invalidated rule. Releasing keys or buttons does not cancel them. Outputs
+enter the normal output queue without being rematched in the same manager.
 
 ## Conditions and modifiers
 
@@ -86,10 +92,10 @@ until the deadline, even if those conditions or modifiers change. The next windo
 checks them again. Per-output `conditions` are checked at the deadline.
 
 **All selected axes are consumed immediately in every direction**, including
-unmapped, empty, filtered, or subthreshold output. The first applicable rule takes
-those axes. Unselected axes and button clicks pass through immediately, including
-in mixed reports. If no window is active and its input conditions do not match,
-input passes through unchanged.
+unmapped, empty, filtered, or subthreshold output. The first applicable rule
+takes those axes. Unselected axes and button clicks pass through immediately,
+including in mixed reports. If neither a window nor a cooldown is active and its
+input conditions do not match, input passes through unchanged.
 
 Output modifiers are captured at the start of each window:
 

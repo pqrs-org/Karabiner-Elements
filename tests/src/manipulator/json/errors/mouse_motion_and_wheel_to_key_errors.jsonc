@@ -100,5 +100,15 @@
             }
         },
         "error": "`to.right` must be array, but is `null`"
+    },
+    {
+        "class": "mouse_motion_and_wheel_to_key",
+        "input": {
+            "from": {
+                "source": "xy",
+                "cooldown_milliseconds": "200"
+            }
+        },
+        "error": "`from.cooldown_milliseconds` must be number, but is `\"200\"`"
     }
 ]

@@ -5,7 +5,8 @@
         "from": {
             "source": "xy",
             "threshold": 10,
-            "sampling_interval_milliseconds": 40
+            "sampling_interval_milliseconds": 40,
+            "cooldown_milliseconds": 0
         },
         "to": {
             "right": [

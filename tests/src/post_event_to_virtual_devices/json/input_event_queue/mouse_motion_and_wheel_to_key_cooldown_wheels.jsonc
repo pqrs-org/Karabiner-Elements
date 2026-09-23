@@ -1,0 +1,208 @@
+[
+    // Hold Fn to start the wheel rule.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 50
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // Both wheel axes share a window and the ensuing cooldown.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 1,
+                "horizontal_wheel": 1
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 100
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 1,
+                "horizontal_wheel": 1
+            }
+        },
+        "validity": true
+    },
+    // Release Fn before output; eligibility is already latched.
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 110
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 120
+    },
+    // Even without Fn, consume both wheel axes during cooldown; preserve xy.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 3,
+                "y": 4,
+                "vertical_wheel": 9,
+                "horizontal_wheel": 9
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 200
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 3,
+                "y": 4,
+                "vertical_wheel": 9,
+                "horizontal_wheel": 9
+            }
+        },
+        "validity": true
+    },
+    // At 320ms cooldown has ended: without Fn both wheel axes pass through.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 1,
+                "horizontal_wheel": 1
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 320
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 1,
+                "horizontal_wheel": 1
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 330
+        },
+        "event_type": "key_down",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    // New input starts a new window; discarded deltas have not carried over.
+    {
+        "device_id": 1,
+        "event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 1,
+                "horizontal_wheel": 0
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 340
+        },
+        "event_type": "single",
+        "lazy": false,
+        "original_event": {
+            "type": "pointing_motion",
+            "pointing_motion": {
+                "x": 0,
+                "y": 0,
+                "vertical_wheel": 1,
+                "horizontal_wheel": 0
+            }
+        },
+        "validity": true
+    },
+    {
+        "device_id": 9,
+        "event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "event_time_stamp": {
+            "time_stamp": 350
+        },
+        "event_type": "key_up",
+        "lazy": false,
+        "original_event": {
+            "type": "momentary_switch_event",
+            "momentary_switch_event": {
+                "apple_vendor_top_case_key_code": "keyboard_fn"
+            }
+        },
+        "validity": true
+    },
+    {
+        "action": "invoke_dispatcher",
+        "time_stamp": 360
+    }
+]
