@@ -174,7 +174,6 @@ struct SettingsConfiguration: Decodable {
     var mouseDiscardY: Bool
     var mouseDiscardVerticalWheel: Bool
     var mouseDiscardHorizontalWheel: Bool
-    var mouseHorizontalWheelToButtons: Bool
     var mouseSwapXy: Bool
     var mouseSwapWheels: Bool
     var gamePadSwapSticks: Bool

@@ -72,14 +72,8 @@ struct DevicesMouseFlagsView: View {
               .frame(maxWidth: .infinity, alignment: .leading)
           }
           .switchToggleStyle(controlSize: .mini, font: .callout)
-
-          Toggle(isOn: $deviceConfiguration.mouseHorizontalWheelToButtons) {
-            Text("Treat mouse horizontal wheel as buttons")
-              .frame(maxWidth: .infinity, alignment: .leading)
-          }
-          .switchToggleStyle(controlSize: .mini, font: .callout)
         }
-        .frame(width: 220.0)
+        .frame(width: 160.0)
       }
       .padding()
     }

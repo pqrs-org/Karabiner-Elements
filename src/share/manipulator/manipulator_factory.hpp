@@ -4,6 +4,7 @@
 #include "manipulator/manipulators/base.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/manipulators/mouse_basic/mouse_basic.hpp"
+#include "manipulator/manipulators/mouse_motion_and_wheel_to_key/mouse_motion_and_wheel_to_key.hpp"
 #include "manipulator/manipulators/mouse_motion_to_scroll/mouse_motion_to_scroll.hpp"
 #include "manipulator/manipulators/nop.hpp"
 #include "manipulator/types.hpp"
@@ -25,6 +26,9 @@ inline pqrs::not_null_shared_ptr_t<manipulators::base> make_manipulator(const nl
   } else if (type == "mouse_basic") {
     return std::make_shared<manipulators::mouse_basic::mouse_basic>(json,
                                                                     parameters);
+
+  } else if (type == "mouse_motion_and_wheel_to_key") {
+    return std::make_shared<manipulators::mouse_motion_and_wheel_to_key::mouse_motion_and_wheel_to_key>(json, parameters);
 
   } else if (type == "mouse_motion_to_scroll") {
     return std::make_shared<manipulators::mouse_motion_to_scroll::mouse_motion_to_scroll>(json,

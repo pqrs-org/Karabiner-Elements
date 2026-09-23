@@ -217,7 +217,6 @@ private:
           {"mouse_discard_y", device->get_mouse_discard_y()},
           {"mouse_discard_vertical_wheel", device->get_mouse_discard_vertical_wheel()},
           {"mouse_discard_horizontal_wheel", device->get_mouse_discard_horizontal_wheel()},
-          {"mouse_horizontal_wheel_to_buttons", device->get_mouse_horizontal_wheel_to_buttons()},
           {"mouse_swap_xy", device->get_mouse_swap_xy()},
           {"mouse_swap_wheels", device->get_mouse_swap_wheels()},
           {"game_pad_swap_sticks", device->get_game_pad_swap_sticks()},
