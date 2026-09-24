@@ -4,6 +4,7 @@
 
 #include "core_service/core_service_utility.hpp"
 #include "core_service_daemon_client.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "permission_checker.hpp"
 #include "services_utility.hpp"
@@ -15,96 +16,100 @@
 namespace krbn::core_service::agent {
 
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   components_manager(const components_manager&) = delete;
 
   components_manager()
       : dispatcher_client() {
-    //
-    // permission_checker_
-    //
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          //
+          // permission_checker_
+          //
 
-    permission_checker_ = std::make_unique<permission_checker>();
+          permission_checker_ = std::make_unique<permission_checker>();
 
-    permission_checker_->permission_check_result_changed.connect([this](auto&& result) {
-      send_core_service_bundle_permission_check_result(result);
-    });
+          permission_checker_->permission_check_result_changed.connect([this](auto&& result) {
+            send_core_service_bundle_permission_check_result(result);
+          });
 
-    //
-    // session_monitor_
-    //
+          //
+          // session_monitor_
+          //
 
-    session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
+          session_monitor_ = std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_);
 
-    session_monitor_->on_console_changed.connect([this](auto&& on_console) {
-      logger::get_logger()->debug("on_console_changed: on_console:{}", on_console);
+          session_monitor_->on_console_changed.connect([this](auto&& on_console) {
+            logger::get_logger()->debug("on_console_changed: on_console:{}", on_console);
 
-      on_console_ = on_console;
+            on_console_ = on_console;
 
-      permission_checker_->async_set_on_console(on_console);
+            permission_checker_->async_set_on_console(on_console);
 
-      stop_core_service_daemon_client();
-      start_core_service_daemon_client();
-    });
+            stop_core_service_daemon_client();
+            start_core_service_daemon_client();
+          });
 
-    //
-    // accessibility_monitor_
-    //
+          //
+          // accessibility_monitor_
+          //
 
-    pqrs::osx::accessibility::monitor::initialize_shared_monitor(pqrs::dispatcher::extra::get_shared_dispatcher());
-    if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
-      m->frontmost_application_changed.connect([this](auto&& application_ptr) {
-        if (core_service_daemon_client_) {
-          application a;
-          a.set_bundle_identifier(application_ptr->get_bundle_identifier());
-          a.set_bundle_path(application_ptr->get_bundle_path());
-          a.set_file_path(application_ptr->get_file_path());
-          a.set_pid(application_ptr->get_pid());
+          pqrs::osx::accessibility::monitor::initialize_shared_monitor(pqrs::dispatcher::extra::get_shared_dispatcher());
+          accessibility_monitor_initialized_ = true;
+          if (auto m = pqrs::osx::accessibility::monitor::get_shared_monitor().lock()) {
+            m->frontmost_application_changed.connect([this](auto&& application_ptr) {
+              if (core_service_daemon_client_) {
+                application a;
+                a.set_bundle_identifier(application_ptr->get_bundle_identifier());
+                a.set_bundle_path(application_ptr->get_bundle_path());
+                a.set_file_path(application_ptr->get_file_path());
+                a.set_pid(application_ptr->get_pid());
 
-          switch (application_ptr->get_detection_source()) {
-            case pqrs::osx::accessibility::application::detection_source::none:
-              a.set_detection_source(application::detection_source::none);
-              break;
+                switch (application_ptr->get_detection_source()) {
+                  case pqrs::osx::accessibility::application::detection_source::none:
+                    a.set_detection_source(application::detection_source::none);
+                    break;
 
-            case pqrs::osx::accessibility::application::detection_source::workspace:
-              a.set_detection_source(application::detection_source::workspace);
-              break;
+                  case pqrs::osx::accessibility::application::detection_source::workspace:
+                    a.set_detection_source(application::detection_source::workspace);
+                    break;
 
-            case pqrs::osx::accessibility::application::detection_source::ax_observer:
-              a.set_detection_source(application::detection_source::ax_observer);
-              break;
+                  case pqrs::osx::accessibility::application::detection_source::ax_observer:
+                    a.set_detection_source(application::detection_source::ax_observer);
+                    break;
+                }
+
+                core_service_daemon_client_->async_frontmost_application_changed(a);
+              }
+            });
+
+            m->focused_ui_element_changed.connect([this](auto&& focused_ui_element_ptr) {
+              if (core_service_daemon_client_) {
+                focused_ui_element e;
+                e.set_role(focused_ui_element_ptr->get_role());
+                e.set_subrole(focused_ui_element_ptr->get_subrole());
+                e.set_title(focused_ui_element_ptr->get_title());
+                e.set_window_title(focused_ui_element_ptr->get_window_title());
+                e.set_window_position_x(focused_ui_element_ptr->get_window_position_x());
+                e.set_window_position_y(focused_ui_element_ptr->get_window_position_y());
+                e.set_window_size_width(focused_ui_element_ptr->get_window_size_width());
+                e.set_window_size_height(focused_ui_element_ptr->get_window_size_height());
+
+                core_service_daemon_client_->async_focused_ui_element_changed(e);
+              }
+            });
           }
-
-          core_service_daemon_client_->async_frontmost_application_changed(a);
-        }
-      });
-
-      m->focused_ui_element_changed.connect([this](auto&& focused_ui_element_ptr) {
-        if (core_service_daemon_client_) {
-          focused_ui_element e;
-          e.set_role(focused_ui_element_ptr->get_role());
-          e.set_subrole(focused_ui_element_ptr->get_subrole());
-          e.set_title(focused_ui_element_ptr->get_title());
-          e.set_window_title(focused_ui_element_ptr->get_window_title());
-          e.set_window_position_x(focused_ui_element_ptr->get_window_position_x());
-          e.set_window_position_y(focused_ui_element_ptr->get_window_position_y());
-          e.set_window_size_width(focused_ui_element_ptr->get_window_size_width());
-          e.set_window_size_height(focused_ui_element_ptr->get_window_size_height());
-
-          core_service_daemon_client_->async_focused_ui_element_changed(e);
-        }
-      });
-    }
+        },
+        [this] {
+          cleanup();
+        });
   }
 
   ~components_manager() override {
     detach_from_dispatcher([this] {
-      stop_core_service_daemon_client();
-
-      pqrs::osx::accessibility::monitor::terminate_shared_monitor();
-
-      session_monitor_ = nullptr;
-      permission_checker_ = nullptr;
+      cleanup();
     });
   }
 
@@ -115,6 +120,18 @@ public:
   }
 
 private:
+  void cleanup() {
+    stop_core_service_daemon_client();
+
+    if (accessibility_monitor_initialized_) {
+      pqrs::osx::accessibility::monitor::terminate_shared_monitor();
+      accessibility_monitor_initialized_ = false;
+    }
+
+    session_monitor_ = nullptr;
+    permission_checker_ = nullptr;
+  }
+
   void send_core_service_bundle_permission_check_result(const core_service_permission_check_result& result) {
     if (core_service_daemon_client_) {
       core_service_daemon_client_->async_core_service_bundle_permission_check_result(
@@ -174,6 +191,7 @@ private:
     core_service_daemon_client_ = nullptr;
   }
 
+  bool accessibility_monitor_initialized_ = false;
   std::optional<bool> on_console_;
   std::unique_ptr<permission_checker> permission_checker_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;

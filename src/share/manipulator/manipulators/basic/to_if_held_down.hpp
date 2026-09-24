@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../types.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "event_sender.hpp"
 #include <pqrs/json.hpp>
 #include <unordered_set>
@@ -8,26 +9,25 @@
 
 namespace krbn::manipulator::manipulators::basic {
 class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client {
+  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   to_if_held_down(const nlohmann::json& json) : dispatcher_client(),
                                                 held_down_task_(*this) {
-    try {
-      if (json.is_object()) {
-        to_.push_back(std::make_shared<to_event_definition>(json));
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          if (json.is_object()) {
+            to_.push_back(std::make_shared<to_event_definition>(json));
 
-      } else if (json.is_array()) {
-        for (const auto& j : json) {
-          to_.push_back(std::make_shared<to_event_definition>(j));
-        }
+          } else if (json.is_array()) {
+            for (const auto& j : json) {
+              to_.push_back(std::make_shared<to_event_definition>(j));
+            }
 
-      } else {
-        throw pqrs::json::unmarshal_error(fmt::format("json must be object or array, but is `{0}`", pqrs::json::dump_for_error_message(json)));
-      }
-
-    } catch (...) {
-      detach_from_dispatcher();
-      throw;
-    }
+          } else {
+            throw pqrs::json::unmarshal_error(fmt::format("json must be object or array, but is `{0}`", pqrs::json::dump_for_error_message(json)));
+          }
+        });
   }
 
   ~to_if_held_down() override {

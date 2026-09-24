@@ -2,6 +2,7 @@
 
 // `krbn::process_lifecycle_manager` can be used safely in a multi-threaded environment.
 
+#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <chrono>
@@ -14,6 +15,8 @@
 
 namespace krbn {
 class process_lifecycle_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   using termination_completion_handler_t = std::function<void()>;
 
@@ -111,64 +114,67 @@ private:
         components_manager_maker_(std::move(make_components_manager)),
         termination_completion_handler_(std::move(termination_completion_handler)),
         system_will_sleep_delay_(system_will_sleep_delay) {
-    power_management_monitor_ = std::make_unique<pqrs::osx::iokit_power_management::monitor>(weak_dispatcher_,
-                                                                                             run_loop_thread_utility::get_power_management_run_loop_thread());
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          power_management_monitor_ = std::make_unique<pqrs::osx::iokit_power_management::monitor>(weak_dispatcher_,
+                                                                                                   run_loop_thread_utility::get_power_management_run_loop_thread());
 
-    power_management_monitor_->system_will_sleep.connect([this](auto&& kernel_port,
-                                                                auto&& notification_id,
-                                                                auto&& wait) {
-      logger::get_logger()->info("system_will_sleep");
+          power_management_monitor_->system_will_sleep.connect([this](auto&& kernel_port,
+                                                                      auto&& notification_id,
+                                                                      auto&& wait) {
+            logger::get_logger()->info("system_will_sleep");
 
-      stop_components();
+            stop_components();
 
-      pending_system_sleep_acknowledgement_ = [kernel_port, notification_id, wait] {
-        logger::get_logger()->info("call IOAllowPowerChange");
+            pending_system_sleep_acknowledgement_ = [kernel_port, notification_id, wait] {
+              logger::get_logger()->info("call IOAllowPowerChange");
 
-        IOAllowPowerChange(kernel_port, notification_id);
+              IOAllowPowerChange(kernel_port, notification_id);
 
-        wait->notify();
-      };
+              wait->notify();
+            };
 
-      if (!enqueue_to_dispatcher(
-              [this] {
-                acknowledge_pending_system_sleep();
-              },
-              when_now() + system_will_sleep_delay_)) {
-        acknowledge_pending_system_sleep();
-      }
-    });
+            if (!enqueue_to_dispatcher(
+                    [this] {
+                      acknowledge_pending_system_sleep();
+                    },
+                    when_now() + system_will_sleep_delay_)) {
+              acknowledge_pending_system_sleep();
+            }
+          });
 
-    power_management_monitor_->system_will_power_on.connect([this] {
-      logger::get_logger()->info("system_will_power_on");
+          power_management_monitor_->system_will_power_on.connect([this] {
+            logger::get_logger()->info("system_will_power_on");
 
-      start_components();
-    });
+            start_components();
+          });
 
-    power_management_monitor_->system_has_powered_on.connect([this] {
-      logger::get_logger()->info("system_has_powered_on");
+          power_management_monitor_->system_has_powered_on.connect([this] {
+            logger::get_logger()->info("system_has_powered_on");
 
-      start_components();
-    });
+            start_components();
+          });
 
-    power_management_monitor_->can_system_sleep.connect([](auto&& kernel_port,
-                                                           auto&& notification_id,
-                                                           auto&& wait) {
-      logger::get_logger()->info("can_system_sleep");
+          power_management_monitor_->can_system_sleep.connect([](auto&& kernel_port,
+                                                                 auto&& notification_id,
+                                                                 auto&& wait) {
+            logger::get_logger()->info("can_system_sleep");
 
-      IOAllowPowerChange(kernel_port, notification_id);
+            IOAllowPowerChange(kernel_port, notification_id);
 
-      wait->notify();
-    });
+            wait->notify();
+          });
 
-    power_management_monitor_->system_will_not_sleep.connect([this] {
-      logger::get_logger()->info("system_will_not_sleep");
+          power_management_monitor_->system_will_not_sleep.connect([this] {
+            logger::get_logger()->info("system_will_not_sleep");
 
-      start_components();
-    });
+            start_components();
+          });
 
-    power_management_monitor_->error_occurred.connect([](auto&& message) {
-      logger::get_logger()->error("power_management_monitor_ error: {0}", message);
-    });
+          power_management_monitor_->error_occurred.connect([](auto&& message) {
+            logger::get_logger()->error("power_management_monitor_ error: {0}", message);
+          });
+        });
   }
 
   void start_components() {

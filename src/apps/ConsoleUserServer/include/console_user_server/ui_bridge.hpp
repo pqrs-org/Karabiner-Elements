@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dispatcher_client_constructor_guard.hpp"
 #include <functional>
 #include <mutex>
 #include <nod/nod.hpp>
@@ -8,6 +9,8 @@
 
 namespace krbn::console_user_server {
 class ui_bridge final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   nod::signal<void(size_t)> profile_selection_requested;
   nod::signal<void(const std::string&)> resolved_ui_language_changed;
@@ -16,6 +19,7 @@ public:
 
   ui_bridge()
       : dispatcher_client() {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~ui_bridge() override {

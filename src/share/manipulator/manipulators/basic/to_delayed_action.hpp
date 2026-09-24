@@ -1,70 +1,70 @@
 #pragma once
 
 #include "../../types.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "event_sender.hpp"
 #include <unordered_set>
 #include <vector>
 
 namespace krbn::manipulator::manipulators::basic {
 class to_delayed_action final : public pqrs::dispatcher::extra::dispatcher_client {
+  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   to_delayed_action(const nlohmann::json& json) : dispatcher_client(),
                                                   delayed_action_task_(*this) {
-    try {
-      pqrs::json::requires_object(json, "json");
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          pqrs::json::requires_object(json, "json");
 
-      for (const auto& [key, value] : json.items()) {
-        if (key == "to_if_invoked") {
-          if (value.is_object()) {
-            try {
-              to_if_invoked_.push_back(std::make_shared<to_event_definition>(value));
-            } catch (const pqrs::json::unmarshal_error& e) {
-              throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-            }
+          for (const auto& [key, value] : json.items()) {
+            if (key == "to_if_invoked") {
+              if (value.is_object()) {
+                try {
+                  to_if_invoked_.push_back(std::make_shared<to_event_definition>(value));
+                } catch (const pqrs::json::unmarshal_error& e) {
+                  throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+                }
 
-          } else if (value.is_array()) {
-            try {
-              for (const auto& j : value) {
-                to_if_invoked_.push_back(std::make_shared<to_event_definition>(j));
+              } else if (value.is_array()) {
+                try {
+                  for (const auto& j : value) {
+                    to_if_invoked_.push_back(std::make_shared<to_event_definition>(j));
+                  }
+                } catch (const pqrs::json::unmarshal_error& e) {
+                  throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+                }
+
+              } else {
+                throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
               }
-            } catch (const pqrs::json::unmarshal_error& e) {
-              throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
-            }
 
-          } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
-          }
+            } else if (key == "to_if_canceled") {
+              if (value.is_object()) {
+                try {
+                  to_if_canceled_.push_back(std::make_shared<to_event_definition>(value));
+                } catch (const pqrs::json::unmarshal_error& e) {
+                  throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+                }
 
-        } else if (key == "to_if_canceled") {
-          if (value.is_object()) {
-            try {
-              to_if_canceled_.push_back(std::make_shared<to_event_definition>(value));
-            } catch (const pqrs::json::unmarshal_error& e) {
-              throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-            }
+              } else if (value.is_array()) {
+                try {
+                  for (const auto& j : value) {
+                    to_if_canceled_.push_back(std::make_shared<to_event_definition>(j));
+                  }
+                } catch (const pqrs::json::unmarshal_error& e) {
+                  throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+                }
 
-          } else if (value.is_array()) {
-            try {
-              for (const auto& j : value) {
-                to_if_canceled_.push_back(std::make_shared<to_event_definition>(j));
+              } else {
+                throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
               }
-            } catch (const pqrs::json::unmarshal_error& e) {
-              throw pqrs::json::unmarshal_error(fmt::format("`{0}` entry error: {1}", key, e.what()));
+
+            } else {
+              throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
             }
-
-          } else {
-            throw pqrs::json::unmarshal_error(fmt::format("`{0}` must be object or array, but is `{1}`", key, pqrs::json::dump_for_error_message(value)));
           }
-
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`", key, pqrs::json::dump_for_error_message(json)));
-        }
-      }
-
-    } catch (...) {
-      detach_from_dispatcher();
-      throw;
-    }
+        });
   }
 
   ~to_delayed_action() override {

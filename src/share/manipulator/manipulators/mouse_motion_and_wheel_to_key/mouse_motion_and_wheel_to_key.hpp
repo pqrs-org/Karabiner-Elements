@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../shared_event_sender.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "krbn_notification_center.hpp"
 #include <algorithm>
 #include <array>
@@ -13,98 +14,97 @@
 namespace krbn::manipulator::manipulators::mouse_motion_and_wheel_to_key {
 // Manipulation, environment updates and timer callbacks run on the shared dispatcher.
 class mouse_motion_and_wheel_to_key final : public base, public pqrs::dispatcher::extra::dispatcher_client {
+  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   mouse_motion_and_wheel_to_key(const nlohmann::json& json,
                                 pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters)
       : timer_(*this) {
-    try {
-      pqrs::json::requires_object(json, "json");
-      for (const auto& [key, value] : json.items()) {
-        if (key == "from") {
-          pqrs::json::requires_object(value, "`from`");
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          pqrs::json::requires_object(json, "json");
+          for (const auto& [key, value] : json.items()) {
+            if (key == "from") {
+              pqrs::json::requires_object(value, "`from`");
 
-          for (const auto& [k, v] : value.items()) {
-            if (k == "source") {
-              pqrs::json::requires_string(v, "`from.source`");
+              for (const auto& [k, v] : value.items()) {
+                if (k == "source") {
+                  pqrs::json::requires_string(v, "`from.source`");
 
-              if (v == "xy") {
-                source_ = source::xy;
-              } else if (v == "wheels") {
-                source_ = source::wheels;
-              } else if (v == "vertical_wheel") {
-                source_ = source::vertical_wheel;
-              } else if (v == "horizontal_wheel") {
-                source_ = source::horizontal_wheel;
-              } else {
-                throw pqrs::json::unmarshal_error("unknown `from.source`: `" + v.get<std::string>() + "`");
+                  if (v == "xy") {
+                    source_ = source::xy;
+                  } else if (v == "wheels") {
+                    source_ = source::wheels;
+                  } else if (v == "vertical_wheel") {
+                    source_ = source::vertical_wheel;
+                  } else if (v == "horizontal_wheel") {
+                    source_ = source::horizontal_wheel;
+                  } else {
+                    throw pqrs::json::unmarshal_error("unknown `from.source`: `" + v.get<std::string>() + "`");
+                  }
+
+                } else if (k == "threshold") {
+                  pqrs::json::requires_number(v, "`from.threshold`");
+
+                  threshold_ = v.get<int>();
+
+                } else if (k == "sampling_interval_milliseconds") {
+                  pqrs::json::requires_number(v, "`from.sampling_interval_milliseconds`");
+
+                  sampling_interval_ = std::chrono::milliseconds(v.get<int>());
+
+                } else if (k == "cooldown_milliseconds") {
+                  pqrs::json::requires_number(v, "`from.cooldown_milliseconds`");
+
+                  cooldown_ = std::chrono::milliseconds(v.get<int>());
+
+                } else if (k == "modifiers") {
+                  from_modifiers_definition_ = v.get<from_modifiers_definition>();
+
+                } else {
+                  throw pqrs::json::unmarshal_error("unknown key in `from`: `" + k + "`");
+                }
               }
 
-            } else if (k == "threshold") {
-              pqrs::json::requires_number(v, "`from.threshold`");
+            } else if (key == "to") {
+              pqrs::json::requires_object(value, "`to`");
 
-              threshold_ = v.get<int>();
+              for (const auto& [name, events] : value.items()) {
+                direction output_direction;
+                if (name == "left") {
+                  output_direction = left;
+                } else if (name == "right") {
+                  output_direction = right;
+                } else if (name == "up") {
+                  output_direction = up;
+                } else if (name == "down") {
+                  output_direction = down;
+                } else {
+                  throw pqrs::json::unmarshal_error("unknown direction in `to`: `" + name + "`");
+                }
 
-            } else if (k == "sampling_interval_milliseconds") {
-              pqrs::json::requires_number(v, "`from.sampling_interval_milliseconds`");
+                pqrs::json::requires_array(events, "`to." + name + "`");
+                for (const auto& j : events) {
+                  to_[output_direction].push_back(std::make_shared<to_event_definition>(j));
+                }
+              }
 
-              sampling_interval_ = std::chrono::milliseconds(v.get<int>());
-
-            } else if (k == "cooldown_milliseconds") {
-              pqrs::json::requires_number(v, "`from.cooldown_milliseconds`");
-
-              cooldown_ = std::chrono::milliseconds(v.get<int>());
-
-            } else if (k == "modifiers") {
-              from_modifiers_definition_ = v.get<from_modifiers_definition>();
-
-            } else {
-              throw pqrs::json::unmarshal_error("unknown key in `from`: `" + k + "`");
+            } else if (key != "type" &&
+                       key != "description" &&
+                       key != "conditions" &&
+                       key != "parameters") {
+              throw pqrs::json::unmarshal_error("unknown key in mouse_motion_and_wheel_to_key: `" + key + "`");
             }
           }
 
-        } else if (key == "to") {
-          pqrs::json::requires_object(value, "`to`");
-
-          for (const auto& [name, events] : value.items()) {
-            direction output_direction;
-            if (name == "left") {
-              output_direction = left;
-            } else if (name == "right") {
-              output_direction = right;
-            } else if (name == "up") {
-              output_direction = up;
-            } else if (name == "down") {
-              output_direction = down;
-            } else {
-              throw pqrs::json::unmarshal_error("unknown direction in `to`: `" + name + "`");
-            }
-
-            pqrs::json::requires_array(events, "`to." + name + "`");
-            for (const auto& j : events) {
-              to_[output_direction].push_back(std::make_shared<to_event_definition>(j));
-            }
+          if (source_ == source::xy && !json.at("from").contains("threshold")) {
+            threshold_ = 20;
           }
 
-        } else if (key != "type" &&
-                   key != "description" &&
-                   key != "conditions" &&
-                   key != "parameters") {
-          throw pqrs::json::unmarshal_error("unknown key in mouse_motion_and_wheel_to_key: `" + key + "`");
-        }
-      }
-
-      if (source_ == source::xy && !json.at("from").contains("threshold")) {
-        threshold_ = 20;
-      }
-
-      if (source_ == source::none) {
-        throw pqrs::json::unmarshal_error("mouse_motion_and_wheel_to_key requires from.source");
-      }
-
-    } catch (...) {
-      detach_from_dispatcher();
-      throw;
-    }
+          if (source_ == source::none) {
+            throw pqrs::json::unmarshal_error("mouse_motion_and_wheel_to_key requires from.source");
+          }
+        });
   }
 
   ~mouse_motion_and_wheel_to_key() override {

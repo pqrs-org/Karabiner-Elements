@@ -1,15 +1,19 @@
 #pragma once
 
+#include "dispatcher_client_constructor_guard.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/process.hpp>
 
 namespace krbn::console_user_server {
 class shell_command_handler final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   shell_command_handler(const shell_command_handler&) = delete;
 
   shell_command_handler()
       : dispatcher_client() {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~shell_command_handler() {

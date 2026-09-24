@@ -1,6 +1,7 @@
 #pragma once
 
 #include "connected_devices.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "json_utility.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "settings.hpp"
@@ -9,6 +10,8 @@
 #include <mutex>
 
 class settings_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   settings_configuration_monitor(const settings_configuration_monitor&) = delete;
 
@@ -18,6 +21,7 @@ public:
       : dispatcher_client(),
         callback_(callback),
         load_state_changed_callback_(load_state_changed_callback) {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~settings_configuration_monitor() override {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dispatcher_client_constructor_guard.hpp"
 #include "exprtk_utility.hpp"
 #include "logger.hpp"
 #include "types/device_id.hpp"
@@ -23,6 +24,8 @@ namespace krbn::core_service::daemon::device_grabber_details {
 //   We should ignore these values.
 //
 class game_pad_stick_converter final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   //
   // Signals (invoked from the dispatcher thread)
@@ -68,6 +71,8 @@ public:
   };
 
   class stick final : public pqrs::dispatcher::extra::dispatcher_client {
+    krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
   public:
     //
     // Signals (invoked from the dispatcher thread)
@@ -89,6 +94,7 @@ public:
           delta_magnitude_detection_threshold_(0.0),
           continued_movement_absolute_magnitude_threshold_(1.0),
           continued_movement_interval_milliseconds_(0) {
+      dispatcher_client_constructor_guard_.initialize();
     }
 
     ~stick() {
@@ -254,24 +260,27 @@ public:
       : dispatcher_client(),
         device_properties_(device_properties),
         core_configuration_(core_configuration),
-        continued_movement_timer_(*this),
         continued_movement_timer_count_(0),
         continued_movement_mode_(continued_movement_mode::none),
         x_formula_(exprtk_utility::compile("")),
         y_formula_(exprtk_utility::compile("")),
         vertical_wheel_formula_(exprtk_utility::compile("")),
-        horizontal_wheel_formula_(exprtk_utility::compile("")) {
-    set_core_configuration(core_configuration);
+        horizontal_wheel_formula_(exprtk_utility::compile("")),
+        continued_movement_timer_(*this) {
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          set_core_configuration(core_configuration);
 
-    xy_.values_updated.connect([this]() {
-      auto interval = xy_.get_continued_movement_interval_milliseconds();
-      update_continued_movement_timer(continued_movement_mode::xy, interval);
-    });
+          xy_.values_updated.connect([this]() {
+            auto interval = xy_.get_continued_movement_interval_milliseconds();
+            update_continued_movement_timer(continued_movement_mode::xy, interval);
+          });
 
-    wheels_.values_updated.connect([this]() {
-      auto interval = wheels_.get_continued_movement_interval_milliseconds();
-      update_continued_movement_timer(continued_movement_mode::wheels, interval);
-    });
+          wheels_.values_updated.connect([this]() {
+            auto interval = wheels_.get_continued_movement_interval_milliseconds();
+            update_continued_movement_timer(continued_movement_mode::wheels, interval);
+          });
+        });
   }
 
   ~game_pad_stick_converter() {
@@ -629,7 +638,6 @@ private:
   event_value horizontal_wheel_value_;
   event_value vertical_wheel_value_;
 
-  pqrs::dispatcher::extra::timer continued_movement_timer_;
   int continued_movement_timer_count_;
   continued_movement_mode continued_movement_mode_;
 
@@ -641,5 +649,7 @@ private:
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> y_formula_;
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> vertical_wheel_formula_;
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> horizontal_wheel_formula_;
+
+  pqrs::dispatcher::extra::timer continued_movement_timer_;
 };
 } // namespace krbn::core_service::daemon::device_grabber_details

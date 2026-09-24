@@ -7,6 +7,7 @@
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "event_tap_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
@@ -45,6 +46,8 @@
 
 namespace krbn::core_service::daemon {
 class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -60,355 +63,362 @@ public:
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
         logger_unique_filter_(logger::get_logger()) {
-    notification_message_manager_ = std::make_shared<notification_message_manager>();
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          notification_message_manager_ = std::make_shared<notification_message_manager>();
 
-    notification_message_manager_->notification_message_changed.connect(
-        [this](const auto& notification_message) {
-          notification_message_changed(notification_message);
-        });
+          notification_message_manager_->notification_message_changed.connect(
+              [this](const auto& notification_message) {
+                notification_message_changed(notification_message);
+              });
 
-    // Apply per-device key-code swaps through basic manipulators rather than
-    // rewriting events when they are added to the queue. A basic manipulator
-    // retains the mapping selected at key_down until the corresponding key_up,
-    // even if the configuration is updated while the key is held.
-    device_key_code_manipulator_manager_ = std::make_shared<device_grabber_details::device_key_code_manipulator_manager>();
-    simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
-    complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
-    fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
-    post_event_to_virtual_devices_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
+          // Apply per-device key-code swaps through basic manipulators rather than
+          // rewriting events when they are added to the queue. A basic manipulator
+          // retains the mapping selected at key_down until the corresponding key_up,
+          // even if the configuration is updated while the key is held.
+          device_key_code_manipulator_manager_ = std::make_shared<device_grabber_details::device_key_code_manipulator_manager>();
+          simple_modifications_manipulator_manager_ = std::make_shared<device_grabber_details::simple_modifications_manipulator_manager>();
+          complex_modifications_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
+          fn_function_keys_manipulator_manager_ = std::make_shared<device_grabber_details::fn_function_keys_manipulator_manager>();
+          post_event_to_virtual_devices_manipulator_manager_ = std::make_shared<manipulator::manipulator_manager>();
 
-    merged_input_event_queue_ = std::make_shared<event_queue::queue>();
-    device_key_code_manipulated_event_queue_ = std::make_shared<event_queue::queue>();
-    simple_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
-    complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
-    fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>();
-    posted_event_queue_ = std::make_shared<event_queue::queue>();
+          merged_input_event_queue_ = std::make_shared<event_queue::queue>();
+          device_key_code_manipulated_event_queue_ = std::make_shared<event_queue::queue>();
+          simple_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
+          complex_modifications_applied_event_queue_ = std::make_shared<event_queue::queue>();
+          fn_function_keys_applied_event_queue_ = std::make_shared<event_queue::queue>();
+          posted_event_queue_ = std::make_shared<event_queue::queue>();
 
-    //
-    // virtual_hid_device_service_client_
-    //
+          //
+          // virtual_hid_device_service_client_
+          //
 
-    virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>();
+          virtual_hid_device_service_client_ = std::make_shared<pqrs::karabiner::driverkit::virtual_hid_device_service::client>();
 
-    virtual_hid_device_service_client_->connected.connect([this, weak_core_service_daemon_state_manager] {
-      logger::get_logger()->debug("virtual_hid_device_service_client_ connected");
+          virtual_hid_device_service_client_->connected.connect([this, weak_core_service_daemon_state_manager] {
+            logger::get_logger()->debug("virtual_hid_device_service_client_ connected");
 
-      if (auto m = weak_core_service_daemon_state_manager.lock()) {
-        m->set_virtual_hid_device_service_client_connected(true);
-      }
+            if (auto m = weak_core_service_daemon_state_manager.lock()) {
+              m->set_virtual_hid_device_service_client_connected(true);
+            }
 
-      update_virtual_hid_keyboard();
-      update_virtual_hid_pointing();
-
-      update_devices_disabled();
-      async_grab_devices();
-    });
-
-    virtual_hid_device_service_client_->connect_failed.connect([weak_core_service_daemon_state_manager](auto&& error_code) {
-      logger::get_logger()->debug("virtual_hid_device_service_client_ connect_failed: {0}", error_code.message());
-
-      if (auto m = weak_core_service_daemon_state_manager.lock()) {
-        m->set_virtual_hid_device_service_client_connected(false);
-      }
-    });
-
-    virtual_hid_device_service_client_->closed.connect([weak_core_service_daemon_state_manager] {
-      logger::get_logger()->debug("virtual_hid_device_service_client_ closed");
-
-      if (auto m = weak_core_service_daemon_state_manager.lock()) {
-        m->set_virtual_hid_device_service_client_connected(false);
-      }
-
-      // Wait automatic reconnection.
-      //
-      // Note:
-      // The following callback will be signaled by virtual_hid_device_service::client.
-      // - `virtual_hid_keyboard_ready_response(false)`
-      // - `virtual_hid_pointing_ready_response(false)`
-    });
-
-    virtual_hid_device_service_client_->error_occurred.connect([](auto&& error_code) {
-      logger::get_logger()->debug("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
-    });
-
-    virtual_hid_device_service_client_->driver_activated.connect([weak_core_service_daemon_state_manager](auto&& driver_activated) {
-      if (auto m = weak_core_service_daemon_state_manager.lock()) {
-        m->set_driver_activated(driver_activated);
-      }
-    });
-
-    virtual_hid_device_service_client_->driver_connected.connect([weak_core_service_daemon_state_manager](auto&& driver_connected) {
-      if (auto m = weak_core_service_daemon_state_manager.lock()) {
-        m->set_driver_connected(driver_connected);
-      }
-    });
-
-    virtual_hid_device_service_client_->driver_version_mismatched.connect([weak_core_service_daemon_state_manager](auto&& driver_version_mismatched) {
-      if (auto m = weak_core_service_daemon_state_manager.lock()) {
-        m->set_driver_version_mismatched(driver_version_mismatched);
-      }
-    });
-
-    virtual_hid_device_service_client_->virtual_hid_keyboard_ready.connect([this, weak_core_service_daemon_state_manager](auto&& ready) {
-      if (virtual_hid_devices_state_.get_virtual_hid_keyboard_ready() != ready) {
-        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_response: {0}", ready);
-
-        virtual_hid_devices_state_.set_virtual_hid_keyboard_ready(ready);
-        async_post_virtual_hid_devices_state_changed_event();
-
-        if (auto m = weak_core_service_daemon_state_manager.lock()) {
-          m->set_virtual_hid_keyboard_ready(ready);
-        }
-
-        // The virtual_hid_keyboard might have been terminated or become unavailable.
-        // We try to reinitialize the device.
-        if (!ready) {
-          if (post_event_to_virtual_devices_manipulator_) {
-            post_event_to_virtual_devices_manipulator_->clear_virtual_hid_keyboard_pressed_keys();
-          }
-          virtual_hid_device_service_client_->async_virtual_hid_keyboard_terminate();
-          update_virtual_hid_keyboard();
-        }
-
-        update_devices_disabled();
-        async_grab_devices();
-      }
-    });
-
-    virtual_hid_device_service_client_->virtual_hid_pointing_ready.connect([this](auto&& ready) {
-      if (virtual_hid_devices_state_.get_virtual_hid_pointing_ready() != ready) {
-        logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_response: {0}", ready);
-
-        virtual_hid_devices_state_.set_virtual_hid_pointing_ready(ready);
-        async_post_virtual_hid_devices_state_changed_event();
-
-        // The virtual_hid_pointing might have been terminated or become unavailable.
-        // We try to reinitialize the device.
-        if (!ready) {
-          virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
-          update_virtual_hid_pointing();
-        }
-
-        update_devices_disabled();
-        async_grab_devices();
-      }
-    });
-
-    post_event_to_virtual_devices_manipulator_ =
-        std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
-            weak_console_user_server_peer_,
-            notification_message_manager_);
-    post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
-    post_event_to_virtual_devices_manipulator_->set_sleep_shortcut_delay(
-        std::chrono::milliseconds(core_configuration_->get_global_configuration().get_delay_milliseconds_before_sleep_shortcut()));
-    post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
-
-    // Connect manipulator_managers
-
-    manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(device_key_code_manipulator_manager_->get_manipulator_manager()),
-                                                            merged_input_event_queue_,
-                                                            device_key_code_manipulated_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(simple_modifications_manipulator_manager_->get_manipulator_manager()),
-                                                            simple_modifications_applied_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(complex_modifications_manipulator_manager_,
-                                                            complex_modifications_applied_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(fn_function_keys_manipulator_manager_->get_manipulator_manager()),
-                                                            fn_function_keys_applied_event_queue_);
-    manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
-                                                            posted_event_queue_);
-
-    external_signal_connections_.emplace_back(
-        krbn_notification_center::get_instance().input_event_arrived.connect([this] {
-          manipulate(pqrs::osx::chrono::mach_absolute_time_point());
-        }));
-
-    // hid_manager_
-
-    std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
-        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::hid::usage_page::generic_desktop,
-            pqrs::hid::usage::generic_desktop::keyboard),
-
-        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::hid::usage_page::generic_desktop,
-            pqrs::hid::usage::generic_desktop::mouse),
-
-        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::hid::usage_page::generic_desktop,
-            pqrs::hid::usage::generic_desktop::pointer),
-
-        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::hid::usage_page::generic_desktop,
-            pqrs::hid::usage::generic_desktop::joystick),
-
-        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::hid::usage_page::generic_desktop,
-            pqrs::hid::usage::generic_desktop::game_pad),
-
-        // Headset
-        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::hid::usage_page::consumer,
-            pqrs::hid::usage::consumer::consumer_control),
-
-        // Special devices (e.g., VEC USB Footpedal INFINITY USB-3)
-        pqrs::osx::iokit_hid_manager::make_matching_dictionary(
-            pqrs::hid::usage_page::consumer,
-            pqrs::hid::usage::consumer::programmable_buttons),
-    };
-
-    hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
-                                                                  pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
-                                                                  matching_dictionaries,
-                                                                  std::chrono::milliseconds(1000));
-
-    hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
-      if (device_ptr) {
-        auto device_id = make_device_id(registry_entry_id);
-
-        //
-        // entries_
-        //
-
-        pqrs::not_null_shared_ptr_t<device_grabber_details::entry> entry =
-            std::make_shared<device_grabber_details::entry>(device_id,
-                                                            *device_ptr,
-                                                            core_configuration_);
-        entries_.insert_or_assign(device_id,
-                                  entry);
-
-        connected_devices_changed();
-
-        entry->set_temporarily_ignore(
-            temporarily_ignored_device_ids_.contains(device_id));
-
-        entry->hid_values_arrived.connect([this](auto&& entry,
-                                                 auto&& event_queue_entries) {
-          hid_values_arrived(entry,
-                             event_queue_entries);
-        });
-
-        entry->get_hid_device_events_monitor()->started.connect([this, device_id] {
-          if (auto it = entries_.find(device_id);
-              it != entries_.end()) {
-            logger::get_logger()->info("{0} hid device events monitor is started ({1}).",
-                                       it->second->get_device_name(),
-                                       it->second->seized() ? "grabbed" : "observed");
-            logger_unique_filter_.reset();
-
-            post_device_grabbed_event(it->second->get_device_properties());
-
-            update_caps_lock_led();
-
+            update_virtual_hid_keyboard();
             update_virtual_hid_pointing();
-          }
-        });
 
-        entry->get_hid_device_events_monitor()->stopped.connect([this, device_id] {
-          if (auto it = entries_.find(device_id);
-              it != entries_.end()) {
-            logger::get_logger()->info("{0} hid device events monitor is stopped.",
-                                       it->second->get_device_name());
-            logger_unique_filter_.reset();
+            update_devices_disabled();
+            async_grab_devices();
+          });
+
+          virtual_hid_device_service_client_->connect_failed.connect([weak_core_service_daemon_state_manager](auto&& error_code) {
+            logger::get_logger()->debug("virtual_hid_device_service_client_ connect_failed: {0}", error_code.message());
+
+            if (auto m = weak_core_service_daemon_state_manager.lock()) {
+              m->set_virtual_hid_device_service_client_connected(false);
+            }
+          });
+
+          virtual_hid_device_service_client_->closed.connect([weak_core_service_daemon_state_manager] {
+            logger::get_logger()->debug("virtual_hid_device_service_client_ closed");
+
+            if (auto m = weak_core_service_daemon_state_manager.lock()) {
+              m->set_virtual_hid_device_service_client_connected(false);
+            }
+
+            // Wait automatic reconnection.
+            //
+            // Note:
+            // The following callback will be signaled by virtual_hid_device_service::client.
+            // - `virtual_hid_keyboard_ready_response(false)`
+            // - `virtual_hid_pointing_ready_response(false)`
+          });
+
+          virtual_hid_device_service_client_->error_occurred.connect([](auto&& error_code) {
+            logger::get_logger()->debug("virtual_hid_device_service_client_ error_occurred: {0}", error_code.message());
+          });
+
+          virtual_hid_device_service_client_->driver_activated.connect([weak_core_service_daemon_state_manager](auto&& driver_activated) {
+            if (auto m = weak_core_service_daemon_state_manager.lock()) {
+              m->set_driver_activated(driver_activated);
+            }
+          });
+
+          virtual_hid_device_service_client_->driver_connected.connect([weak_core_service_daemon_state_manager](auto&& driver_connected) {
+            if (auto m = weak_core_service_daemon_state_manager.lock()) {
+              m->set_driver_connected(driver_connected);
+            }
+          });
+
+          virtual_hid_device_service_client_->driver_version_mismatched.connect([weak_core_service_daemon_state_manager](auto&& driver_version_mismatched) {
+            if (auto m = weak_core_service_daemon_state_manager.lock()) {
+              m->set_driver_version_mismatched(driver_version_mismatched);
+            }
+          });
+
+          virtual_hid_device_service_client_->virtual_hid_keyboard_ready.connect([this, weak_core_service_daemon_state_manager](auto&& ready) {
+            if (virtual_hid_devices_state_.get_virtual_hid_keyboard_ready() != ready) {
+              logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_keyboard_ready_response: {0}", ready);
+
+              virtual_hid_devices_state_.set_virtual_hid_keyboard_ready(ready);
+              async_post_virtual_hid_devices_state_changed_event();
+
+              if (auto m = weak_core_service_daemon_state_manager.lock()) {
+                m->set_virtual_hid_keyboard_ready(ready);
+              }
+
+              // The virtual_hid_keyboard might have been terminated or become unavailable.
+              // We try to reinitialize the device.
+              if (!ready) {
+                if (post_event_to_virtual_devices_manipulator_) {
+                  post_event_to_virtual_devices_manipulator_->clear_virtual_hid_keyboard_pressed_keys();
+                }
+                virtual_hid_device_service_client_->async_virtual_hid_keyboard_terminate();
+                update_virtual_hid_keyboard();
+              }
+
+              update_devices_disabled();
+              async_grab_devices();
+            }
+          });
+
+          virtual_hid_device_service_client_->virtual_hid_pointing_ready.connect([this](auto&& ready) {
+            if (virtual_hid_devices_state_.get_virtual_hid_pointing_ready() != ready) {
+              logger::get_logger()->info("virtual_hid_device_service_client_ virtual_hid_pointing_ready_response: {0}", ready);
+
+              virtual_hid_devices_state_.set_virtual_hid_pointing_ready(ready);
+              async_post_virtual_hid_devices_state_changed_event();
+
+              // The virtual_hid_pointing might have been terminated or become unavailable.
+              // We try to reinitialize the device.
+              if (!ready) {
+                virtual_hid_device_service_client_->async_virtual_hid_pointing_terminate();
+                update_virtual_hid_pointing();
+              }
+
+              update_devices_disabled();
+              async_grab_devices();
+            }
+          });
+
+          post_event_to_virtual_devices_manipulator_ =
+              std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
+                  weak_console_user_server_peer_,
+                  notification_message_manager_);
+          post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
+          post_event_to_virtual_devices_manipulator_->set_sleep_shortcut_delay(
+              std::chrono::milliseconds(core_configuration_->get_global_configuration().get_delay_milliseconds_before_sleep_shortcut()));
+          post_event_to_virtual_devices_manipulator_manager_->push_back_manipulator(std::shared_ptr<manipulator::manipulators::base>(post_event_to_virtual_devices_manipulator_));
+
+          // Connect manipulator_managers
+
+          manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(device_key_code_manipulator_manager_->get_manipulator_manager()),
+                                                                  merged_input_event_queue_,
+                                                                  device_key_code_manipulated_event_queue_);
+          manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(simple_modifications_manipulator_manager_->get_manipulator_manager()),
+                                                                  simple_modifications_applied_event_queue_);
+          manipulator_managers_connector_.emplace_back_connection(complex_modifications_manipulator_manager_,
+                                                                  complex_modifications_applied_event_queue_);
+          manipulator_managers_connector_.emplace_back_connection(pqrs::make_weak(fn_function_keys_manipulator_manager_->get_manipulator_manager()),
+                                                                  fn_function_keys_applied_event_queue_);
+          manipulator_managers_connector_.emplace_back_connection(post_event_to_virtual_devices_manipulator_manager_,
+                                                                  posted_event_queue_);
+
+          nod::scoped_connection input_event_arrived_connection =
+              krbn_notification_center::get_instance().input_event_arrived.connect([this] {
+                manipulate(pqrs::osx::chrono::mach_absolute_time_point());
+              });
+          external_signal_connections_.push_back(std::move(input_event_arrived_connection));
+
+          // hid_manager_
+
+          std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
+              pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+                  pqrs::hid::usage_page::generic_desktop,
+                  pqrs::hid::usage::generic_desktop::keyboard),
+
+              pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+                  pqrs::hid::usage_page::generic_desktop,
+                  pqrs::hid::usage::generic_desktop::mouse),
+
+              pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+                  pqrs::hid::usage_page::generic_desktop,
+                  pqrs::hid::usage::generic_desktop::pointer),
+
+              pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+                  pqrs::hid::usage_page::generic_desktop,
+                  pqrs::hid::usage::generic_desktop::joystick),
+
+              pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+                  pqrs::hid::usage_page::generic_desktop,
+                  pqrs::hid::usage::generic_desktop::game_pad),
+
+              // Headset
+              pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+                  pqrs::hid::usage_page::consumer,
+                  pqrs::hid::usage::consumer::consumer_control),
+
+              // Special devices (e.g., VEC USB Footpedal INFINITY USB-3)
+              pqrs::osx::iokit_hid_manager::make_matching_dictionary(
+                  pqrs::hid::usage_page::consumer,
+                  pqrs::hid::usage::consumer::programmable_buttons),
+          };
+
+          hid_manager_ = std::make_unique<pqrs::osx::iokit_hid_manager>(weak_dispatcher_,
+                                                                        pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+                                                                        matching_dictionaries,
+                                                                        std::chrono::milliseconds(1000));
+
+          hid_manager_->device_matched.connect([this](auto&& registry_entry_id, auto&& device_ptr) {
+            if (device_ptr) {
+              auto device_id = make_device_id(registry_entry_id);
+
+              //
+              // entries_
+              //
+
+              pqrs::not_null_shared_ptr_t<device_grabber_details::entry> entry =
+                  std::make_shared<device_grabber_details::entry>(device_id,
+                                                                  *device_ptr,
+                                                                  core_configuration_);
+              entries_.insert_or_assign(device_id,
+                                        entry);
+
+              connected_devices_changed();
+
+              entry->set_temporarily_ignore(
+                  temporarily_ignored_device_ids_.contains(device_id));
+
+              entry->hid_values_arrived.connect([this](auto&& entry,
+                                                       auto&& event_queue_entries) {
+                hid_values_arrived(entry,
+                                   event_queue_entries);
+              });
+
+              entry->get_hid_device_events_monitor()->started.connect([this, device_id] {
+                if (auto it = entries_.find(device_id);
+                    it != entries_.end()) {
+                  logger::get_logger()->info("{0} hid device events monitor is started ({1}).",
+                                             it->second->get_device_name(),
+                                             it->second->seized() ? "grabbed" : "observed");
+                  logger_unique_filter_.reset();
+
+                  post_device_grabbed_event(it->second->get_device_properties());
+
+                  update_caps_lock_led();
+
+                  update_virtual_hid_pointing();
+                }
+              });
+
+              entry->get_hid_device_events_monitor()->stopped.connect([this, device_id] {
+                if (auto it = entries_.find(device_id);
+                    it != entries_.end()) {
+                  logger::get_logger()->info("{0} hid device events monitor is stopped.",
+                                             it->second->get_device_name());
+                  logger_unique_filter_.reset();
+
+                  physical_pressed_momentary_switch_events_.erase(device_id);
+                  post_device_ungrabbed_event(device_id);
+
+                  update_virtual_hid_pointing();
+                }
+              });
+
+              entry->get_hid_device_events_monitor()->error_occurred.connect([](auto&& message, auto&& kr) {
+                if (kr.not_permitted()) {
+                  logger::get_logger()->warn("hid_device_events_monitor not_permitted error");
+                  process_lifecycle_manager::async_request_termination();
+                }
+              });
+
+              // ----------------------------------------
+
+              update_virtual_hid_pointing();
+
+              // ----------------------------------------
+
+              update_devices_disabled();
+              async_grab_devices();
+            }
+          });
+
+          hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
+            auto device_id = make_device_id(registry_entry_id);
+
+            // entries_
+
+            {
+              if (auto it = entries_.find(device_id);
+                  it != entries_.end()) {
+                logger::get_logger()->info("{0} is terminated.",
+                                           it->second->get_device_name());
+                logger_unique_filter_.reset();
+
+                entries_.erase(it);
+                connected_devices_changed();
+              }
+            }
+
+            //
+            // Unregister device
+            //
 
             physical_pressed_momentary_switch_events_.erase(device_id);
+            hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
+
+            // ----------------------------------------
+
             post_device_ungrabbed_event(device_id);
 
             update_virtual_hid_pointing();
-          }
+
+            // ----------------------------------------
+            update_devices_disabled();
+            async_grab_devices();
+          });
+
+          hid_manager_->error_occurred.connect([this](auto&& message, auto&& kern_return) {
+            logger::get_logger()->error("{0}: {1}", message, kern_return.to_string());
+            logger_unique_filter_.reset();
+          });
+
+          //
+          // secure_event_input_monitor_
+          //
+
+          secure_event_input_monitor_ = std::make_unique<pqrs::osx::hitoolbox::secure_event_input_monitor>(weak_dispatcher_,
+                                                                                                           std::chrono::milliseconds(50));
+          secure_event_input_monitor_->secure_event_input_enabled_changed.connect([this](auto&& enabled) {
+            // For devices opened via IOHIDDeviceOpen, we can still receive events even when secure event input is enabled
+            // (for example, when sudo or System Settings is prompting for a password).
+            //
+            // With CGEventTap, however, we cannot receive events while secure event input is active.
+            // As a result, for keys that were pressed before entering secure event input, we cannot receive key_up,
+            // and key repeat can continue unexpectedly.
+            //
+            // Therefore, when using CGEventTap, we must release all keys pressed on the virtual device
+            // when secure event input becomes enabled.
+
+            if (!cgeventtap_fallback_enabled_) {
+              return;
+            }
+
+            if (enabled) {
+              logger::get_logger()->info("secure event input is enabled: release all pressed keys");
+              post_device_keys_and_pointing_buttons_are_released_event();
+              physical_pressed_momentary_switch_events_.clear();
+
+              if (post_event_to_virtual_devices_manipulator_) {
+                post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().clear_pressed_modifier_flags();
+
+                post_event_to_virtual_devices_manipulator_->async_release_virtual_hid_keyboard_pressed_keys(
+                    virtual_hid_device_service_client_);
+              }
+            }
+          });
+        },
+        [this] {
+          cleanup();
         });
-
-        entry->get_hid_device_events_monitor()->error_occurred.connect([](auto&& message, auto&& kr) {
-          if (kr.not_permitted()) {
-            logger::get_logger()->warn("hid_device_events_monitor not_permitted error");
-            process_lifecycle_manager::async_request_termination();
-          }
-        });
-
-        // ----------------------------------------
-
-        update_virtual_hid_pointing();
-
-        // ----------------------------------------
-
-        update_devices_disabled();
-        async_grab_devices();
-      }
-    });
-
-    hid_manager_->device_terminated.connect([this](auto&& registry_entry_id) {
-      auto device_id = make_device_id(registry_entry_id);
-
-      // entries_
-
-      {
-        if (auto it = entries_.find(device_id);
-            it != entries_.end()) {
-          logger::get_logger()->info("{0} is terminated.",
-                                     it->second->get_device_name());
-          logger_unique_filter_.reset();
-
-          entries_.erase(it);
-          connected_devices_changed();
-        }
-      }
-
-      //
-      // Unregister device
-      //
-
-      physical_pressed_momentary_switch_events_.erase(device_id);
-      hat_switch_converter::get_global_hat_switch_converter()->erase_device(device_id);
-
-      // ----------------------------------------
-
-      post_device_ungrabbed_event(device_id);
-
-      update_virtual_hid_pointing();
-
-      // ----------------------------------------
-      update_devices_disabled();
-      async_grab_devices();
-    });
-
-    hid_manager_->error_occurred.connect([this](auto&& message, auto&& kern_return) {
-      logger::get_logger()->error("{0}: {1}", message, kern_return.to_string());
-      logger_unique_filter_.reset();
-    });
-
-    //
-    // secure_event_input_monitor_
-    //
-
-    secure_event_input_monitor_ = std::make_unique<pqrs::osx::hitoolbox::secure_event_input_monitor>(weak_dispatcher_,
-                                                                                                     std::chrono::milliseconds(50));
-    secure_event_input_monitor_->secure_event_input_enabled_changed.connect([this](auto&& enabled) {
-      // For devices opened via IOHIDDeviceOpen, we can still receive events even when secure event input is enabled
-      // (for example, when sudo or System Settings is prompting for a password).
-      //
-      // With CGEventTap, however, we cannot receive events while secure event input is active.
-      // As a result, for keys that were pressed before entering secure event input, we cannot receive key_up,
-      // and key repeat can continue unexpectedly.
-      //
-      // Therefore, when using CGEventTap, we must release all keys pressed on the virtual device
-      // when secure event input becomes enabled.
-
-      if (!cgeventtap_fallback_enabled_) {
-        return;
-      }
-
-      if (enabled) {
-        logger::get_logger()->info("secure event input is enabled: release all pressed keys");
-        post_device_keys_and_pointing_buttons_are_released_event();
-        physical_pressed_momentary_switch_events_.clear();
-
-        if (post_event_to_virtual_devices_manipulator_) {
-          post_event_to_virtual_devices_manipulator_->get_key_event_dispatcher().clear_pressed_modifier_flags();
-
-          post_event_to_virtual_devices_manipulator_->async_release_virtual_hid_keyboard_pressed_keys(
-              virtual_hid_device_service_client_);
-        }
-      }
-    });
   }
 
   ~device_grabber() override {
@@ -419,22 +429,7 @@ public:
 
       stop();
 
-      hid_manager_ = nullptr;
-
-      external_signal_connections_.clear();
-
-      post_event_to_virtual_devices_manipulator_ = nullptr;
-
-      device_key_code_manipulator_manager_ = nullptr;
-      simple_modifications_manipulator_manager_ = nullptr;
-      complex_modifications_manipulator_manager_ = nullptr;
-      fn_function_keys_manipulator_manager_ = nullptr;
-      post_event_to_virtual_devices_manipulator_manager_ = nullptr;
-      virtual_hid_device_service_client_ = nullptr;
-      secure_event_input_monitor_ = nullptr;
-
-      notification_message_manager_ = nullptr;
-
+      cleanup();
       hat_switch_converter::get_global_hat_switch_converter()->clear();
     });
   }
@@ -684,6 +679,24 @@ public:
   }
 
 private:
+  void cleanup() {
+    hid_manager_ = nullptr;
+
+    external_signal_connections_.clear();
+
+    post_event_to_virtual_devices_manipulator_ = nullptr;
+
+    device_key_code_manipulator_manager_ = nullptr;
+    simple_modifications_manipulator_manager_ = nullptr;
+    complex_modifications_manipulator_manager_ = nullptr;
+    fn_function_keys_manipulator_manager_ = nullptr;
+    post_event_to_virtual_devices_manipulator_manager_ = nullptr;
+    virtual_hid_device_service_client_ = nullptr;
+    secure_event_input_monitor_ = nullptr;
+
+    notification_message_manager_ = nullptr;
+  }
+
   void stop() {
     configuration_monitor_ = nullptr;
 

@@ -3,6 +3,7 @@
 #include "core_configuration/core_configuration.hpp"
 #include "device_properties.hpp"
 #include "device_utility.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "event_queue.hpp"
 #include "game_pad_stick_converter.hpp"
 #include "hid_device_events_monitor.hpp"
@@ -14,6 +15,8 @@
 
 namespace krbn::core_service::daemon::device_grabber_details {
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   //
   // Signals (invoked from the shared dispatcher thread)
@@ -40,128 +43,131 @@ public:
         pressed_keys_manager_(std::make_shared<pressed_keys_manager>()),
         disabled_(false),
         temporarily_ignore_(false) {
-    caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
 
-    hid_device_events_monitor_ = std::make_shared<hid_device_events_monitor>(
-        pqrs::dispatcher::extra::get_shared_dispatcher(),
-        pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
-        device,
-        *device_properties_,
-        hid_device_events_monitor::configuration{
-            .enable_input_report_handler = true,
-        });
-    hid_device_events_monitor_->started.connect([this] {
-      control_caps_lock_led_state_manager();
+          hid_device_events_monitor_ = std::make_shared<hid_device_events_monitor>(
+              pqrs::dispatcher::extra::get_shared_dispatcher(),
+              pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+              device,
+              *device_properties_,
+              hid_device_events_monitor::configuration{
+                  .enable_input_report_handler = true,
+              });
+          hid_device_events_monitor_->started.connect([this] {
+            control_caps_lock_led_state_manager();
 
-      if (seized()) {
-        if (device_properties_->get_device_identifiers().get_is_game_pad()) {
-          game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
-                                                                                 core_configuration_);
-          game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& event_queue_entry) {
-            auto event_queue_entries = std::make_shared<std::vector<event_queue::not_null_const_entry_ptr_t>>();
-            event_queue_entries->push_back(event_queue_entry);
+            if (seized()) {
+              if (device_properties_->get_device_identifiers().get_is_game_pad()) {
+                game_pad_stick_converter_ = std::make_unique<game_pad_stick_converter>(device_properties_,
+                                                                                       core_configuration_);
+                game_pad_stick_converter_->pointing_motion_arrived.connect([this](auto&& event_queue_entry) {
+                  auto event_queue_entries = std::make_shared<std::vector<event_queue::not_null_const_entry_ptr_t>>();
+                  event_queue_entries->push_back(event_queue_entry);
 
+                  hid_values_arrived(*this,
+                                     event_queue_entries);
+                });
+              }
+            }
+          });
+          hid_device_events_monitor_->stopped.connect([this] {
+            control_caps_lock_led_state_manager();
+
+            game_pad_stick_converter_ = nullptr;
+          });
+          hid_device_events_monitor_->values_arrived.connect([this](auto&& values_ptr) {
+            auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+
+            auto hid_values = *values_ptr;
+
+            //
+            // Eliminated the entries that needed to be removed from hid_values
+            //
+
+            std::erase_if(hid_values,
+                          [this, &d](const auto& v) {
+                            //
+                            // Handle ignore_vendor_events
+                            //
+
+                            // For Apple devices, process vendor events regardless of the "ignore_vendor_events" setting.
+                            // Even if karabiner.json is manually edited to set "ignore_vendor_events": true,
+                            // ignore that setting and handle vendor events.
+                            if (d->get_ignore_vendor_events() &&
+                                !device_properties_->get_is_apple()) {
+                              // 0xff
+                              if (v.get_usage_page() == pqrs::hid::usage_page::apple_vendor_top_case) {
+                                return true;
+                              }
+
+                              // Vendor-defined (0xff00-0xffff)
+                              if (v.get_usage_page() >= pqrs::hid::usage_page::value_t(0xff00) &&
+                                  v.get_usage_page() <= pqrs::hid::usage_page::value_t(0xffff)) {
+                                return true;
+                              }
+                            }
+
+                            //
+                            // Filter useless events
+                            //
+
+                            if (core_configuration_->get_global_configuration().get_filter_useless_events_from_specific_devices()) {
+                              if (device_properties_->get_device_identifiers().is_nintendo_pro_controller_0x057e_0x2009() &&
+                                  device_properties_->get_transport() == "USB") {
+                                // Nintendo's Pro Controller, when connected via USB, generates a high frequency of events even when no input is made.
+                                // As these events contain no meaningful information, they should be ignored.
+
+                                // Since button on/off events keep firing endlessly, they must be ignored.
+                                if (v.get_usage_page() == pqrs::hid::usage_page::button) {
+                                  return true;
+                                }
+
+                                // The sticks continuously move randomly, they must be ignored.
+                                if (v.get_usage_page() == pqrs::hid::usage_page::generic_desktop &&
+                                    (v.get_usage() == pqrs::hid::usage::generic_desktop::x ||
+                                     v.get_usage() == pqrs::hid::usage::generic_desktop::y ||
+                                     v.get_usage() == pqrs::hid::usage::generic_desktop::z ||
+                                     v.get_usage() == pqrs::hid::usage::generic_desktop::rz)) {
+                                  return true;
+                                }
+                              }
+                            }
+
+                            return false;
+                          });
+
+            //
+            // Make event queue
+            //
+
+            auto event_queue_entries = event_queue::utility::make_entries(device_properties_,
+                                                                          hid_values,
+                                                                          {
+                                                                              .pointing_motion_xy_multiplier = d->get_pointing_motion_xy_multiplier(),
+                                                                              .pointing_motion_wheels_multiplier = d->get_pointing_motion_wheels_multiplier(),
+                                                                          });
+
+            event_queue_entries = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue_entries,
+                                                                                                                   device_id_,
+                                                                                                                   pressed_keys_manager_);
             hid_values_arrived(*this,
                                event_queue_entries);
+
+            //
+            // game pad stick to pointing motion
+            //
+
+            if (game_pad_stick_converter_) {
+              game_pad_stick_converter_->convert(hid_values);
+            }
           });
-        }
-      }
-    });
-    hid_device_events_monitor_->stopped.connect([this] {
-      control_caps_lock_led_state_manager();
 
-      game_pad_stick_converter_ = nullptr;
-    });
-    hid_device_events_monitor_->values_arrived.connect([this](auto&& values_ptr) {
-      auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
-
-      auto hid_values = *values_ptr;
-
-      //
-      // Eliminated the entries that needed to be removed from hid_values
-      //
-
-      std::erase_if(hid_values,
-                    [this, &d](const auto& v) {
-                      //
-                      // Handle ignore_vendor_events
-                      //
-
-                      // For Apple devices, process vendor events regardless of the "ignore_vendor_events" setting.
-                      // Even if karabiner.json is manually edited to set "ignore_vendor_events": true,
-                      // ignore that setting and handle vendor events.
-                      if (d->get_ignore_vendor_events() &&
-                          !device_properties_->get_is_apple()) {
-                        // 0xff
-                        if (v.get_usage_page() == pqrs::hid::usage_page::apple_vendor_top_case) {
-                          return true;
-                        }
-
-                        // Vendor-defined (0xff00-0xffff)
-                        if (v.get_usage_page() >= pqrs::hid::usage_page::value_t(0xff00) &&
-                            v.get_usage_page() <= pqrs::hid::usage_page::value_t(0xffff)) {
-                          return true;
-                        }
-                      }
-
-                      //
-                      // Filter useless events
-                      //
-
-                      if (core_configuration_->get_global_configuration().get_filter_useless_events_from_specific_devices()) {
-                        if (device_properties_->get_device_identifiers().is_nintendo_pro_controller_0x057e_0x2009() &&
-                            device_properties_->get_transport() == "USB") {
-                          // Nintendo's Pro Controller, when connected via USB, generates a high frequency of events even when no input is made.
-                          // As these events contain no meaningful information, they should be ignored.
-
-                          // Since button on/off events keep firing endlessly, they must be ignored.
-                          if (v.get_usage_page() == pqrs::hid::usage_page::button) {
-                            return true;
-                          }
-
-                          // The sticks continuously move randomly, they must be ignored.
-                          if (v.get_usage_page() == pqrs::hid::usage_page::generic_desktop &&
-                              (v.get_usage() == pqrs::hid::usage::generic_desktop::x ||
-                               v.get_usage() == pqrs::hid::usage::generic_desktop::y ||
-                               v.get_usage() == pqrs::hid::usage::generic_desktop::z ||
-                               v.get_usage() == pqrs::hid::usage::generic_desktop::rz)) {
-                            return true;
-                          }
-                        }
-                      }
-
-                      return false;
-                    });
-
-      //
-      // Make event queue
-      //
-
-      auto event_queue_entries = event_queue::utility::make_entries(device_properties_,
-                                                                    hid_values,
-                                                                    {
-                                                                        .pointing_motion_xy_multiplier = d->get_pointing_motion_xy_multiplier(),
-                                                                        .pointing_motion_wheels_multiplier = d->get_pointing_motion_wheels_multiplier(),
-                                                                    });
-
-      event_queue_entries = event_queue::utility::insert_device_keys_and_pointing_buttons_are_released_event(event_queue_entries,
-                                                                                                             device_id_,
-                                                                                                             pressed_keys_manager_);
-      hid_values_arrived(*this,
-                         event_queue_entries);
-
-      //
-      // game pad stick to pointing motion
-      //
-
-      if (game_pad_stick_converter_) {
-        game_pad_stick_converter_->convert(hid_values);
-      }
-    });
-
-    device_name_ = iokit_utility::make_device_name_for_log(device_id,
-                                                           device);
-    device_short_name_ = iokit_utility::make_device_name(device);
+          device_name_ = iokit_utility::make_device_name_for_log(device_id,
+                                                                 device);
+          device_short_name_ = iokit_utility::make_device_name(device);
+        });
   }
 
   ~entry() {

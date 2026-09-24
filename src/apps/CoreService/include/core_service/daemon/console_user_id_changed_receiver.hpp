@@ -4,6 +4,7 @@
 
 #include "codesign_manager.hpp"
 #include "constants.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "filesystem_utility.hpp"
 #include "types.hpp"
 #include <atomic>
@@ -13,6 +14,8 @@
 
 namespace krbn::core_service::daemon {
 class console_user_id_changed_receiver final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -23,129 +26,132 @@ public:
   console_user_id_changed_receiver(const console_user_id_changed_receiver&) = delete;
 
   console_user_id_changed_receiver() : dispatcher_client() {
-    prepare_console_user_id_changed_receiver_socket_parent_directory();
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          prepare_console_user_id_changed_receiver_socket_parent_directory();
 
-    server_ = std::make_unique<pqrs::unix_domain_stream::server>(
-        weak_dispatcher_,
-        constants::get_console_user_id_changed_receiver_socket_file_path(),
-        constants::get_unix_domain_stream_server_options(),
-        [](const auto& peer_credentials) {
-          auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
-          if (!result) {
-            // During an update, retrieving the Team ID may fail, causing an error once.
-            // Since this can occur during normal use, treat it as debug rather than warn.
-            logger::get_logger()->debug("console_user_id_changed_receiver: peer is not code-signed with same Team ID (pid: {0})",
-                                        peer_credentials.pid.value_or(-1));
-          }
-          return result;
-        });
-
-    server_->bound.connect([] {
-      logger::get_logger()->debug("console_user_id_changed_receiver: bound");
-
-      if (!filesystem_utility::permissions(constants::get_console_user_id_changed_receiver_socket_file_path(),
-                                           filesystem_utility::permissions_0666)) {
-        return;
-      }
-    });
-
-    server_->bind_failed.connect([this](auto&& error_code) {
-      logger::get_logger()->error("console_user_id_changed_receiver: bind_failed");
-
-      // If the socket parent directory is deleted for any reason,
-      // bind_failed will be triggered, so recreate the directory each time.
-      prepare_console_user_id_changed_receiver_socket_parent_directory();
-    });
-
-    server_->closed.connect([] {
-      logger::get_logger()->debug("console_user_id_changed_receiver: closed");
-    });
-
-    server_->peer_connected.connect([this](auto peer_id, const auto& peer_credentials) {
-      peer_credentials_[peer_id] = peer_credentials;
-    });
-
-    server_->peer_closed.connect([this](auto peer_id) {
-      peer_credentials_.erase(peer_id);
-
-      if (auto it = peer_states_.find(peer_id);
-          it != std::end(peer_states_)) {
-        auto state = it->second;
-        peer_states_.erase(it);
-
-        if (state.on_console &&
-            current_console_user_id_ == state.uid &&
-            !has_on_console_peer(state.uid)) {
-          update_current_console_user_id(std::nullopt);
-        }
-      }
-    });
-
-    server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
-      logger::get_logger()->debug("console_user_id_changed_receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
-    });
-
-    server_->received.connect([](auto, auto&&) {
-      // Do nothing
-    });
-
-    server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
-      if (buffer->empty()) {
-        server_->async_close_peer(peer_id);
-        return;
-      }
-
-      try {
-        nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-        switch (json.at("operation_type").get<operation_type>()) {
-          case operation_type::console_user_id_changed: {
-            auto uid = get_peer_uid(peer_id);
-            if (!uid) {
-              server_->async_close_peer(peer_id);
-              break;
-            }
-
-            auto on_console = json.at("on_console").get<bool>();
-
-            peer_states_[peer_id] = peer_state{
-                .uid = *uid,
-                .on_console = on_console,
-            };
-
-            if (on_console) {
-              update_current_console_user_id(*uid);
-            } else {
-              if (current_console_user_id_ == uid) {
-                if (!has_on_console_peer(*uid)) {
-                  update_current_console_user_id(std::nullopt);
+          server_ = std::make_unique<pqrs::unix_domain_stream::server>(
+              weak_dispatcher_,
+              constants::get_console_user_id_changed_receiver_socket_file_path(),
+              constants::get_unix_domain_stream_server_options(),
+              [](const auto& peer_credentials) {
+                auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
+                if (!result) {
+                  // During an update, retrieving the Team ID may fail, causing an error once.
+                  // Since this can occur during normal use, treat it as debug rather than warn.
+                  logger::get_logger()->debug("console_user_id_changed_receiver: peer is not code-signed with same Team ID (pid: {0})",
+                                              peer_credentials.pid.value_or(-1));
                 }
+                return result;
+              });
+
+          server_->bound.connect([] {
+            logger::get_logger()->debug("console_user_id_changed_receiver: bound");
+
+            if (!filesystem_utility::permissions(constants::get_console_user_id_changed_receiver_socket_file_path(),
+                                                 filesystem_utility::permissions_0666)) {
+              return;
+            }
+          });
+
+          server_->bind_failed.connect([this](auto&& error_code) {
+            logger::get_logger()->error("console_user_id_changed_receiver: bind_failed");
+
+            // If the socket parent directory is deleted for any reason,
+            // bind_failed will be triggered, so recreate the directory each time.
+            prepare_console_user_id_changed_receiver_socket_parent_directory();
+          });
+
+          server_->closed.connect([] {
+            logger::get_logger()->debug("console_user_id_changed_receiver: closed");
+          });
+
+          server_->peer_connected.connect([this](auto peer_id, const auto& peer_credentials) {
+            peer_credentials_[peer_id] = peer_credentials;
+          });
+
+          server_->peer_closed.connect([this](auto peer_id) {
+            peer_credentials_.erase(peer_id);
+
+            if (auto it = peer_states_.find(peer_id);
+                it != std::end(peer_states_)) {
+              auto state = it->second;
+              peer_states_.erase(it);
+
+              if (state.on_console &&
+                  current_console_user_id_ == state.uid &&
+                  !has_on_console_peer(state.uid)) {
+                update_current_console_user_id(std::nullopt);
               }
             }
+          });
 
-            // This response means that the request has been accepted.
-            // The applied state is sent separately by core_service_daemon_server_bound.
-            server_->async_respond(peer_id, request_id, {});
+          server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
+            logger::get_logger()->debug("console_user_id_changed_receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
+          });
 
-            // Send the current bound state to the requester even if the console user ID
-            // did not change and the receiver was not recreated.
-            send_core_service_daemon_server_bound_if_available(peer_id);
+          server_->received.connect([](auto, auto&&) {
+            // Do nothing
+          });
 
-            break;
-          }
+          server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
+            if (buffer->empty()) {
+              server_->async_close_peer(peer_id);
+              return;
+            }
 
-          default:
+            try {
+              nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+              switch (json.at("operation_type").get<operation_type>()) {
+                case operation_type::console_user_id_changed: {
+                  auto uid = get_peer_uid(peer_id);
+                  if (!uid) {
+                    server_->async_close_peer(peer_id);
+                    break;
+                  }
+
+                  auto on_console = json.at("on_console").get<bool>();
+
+                  peer_states_[peer_id] = peer_state{
+                      .uid = *uid,
+                      .on_console = on_console,
+                  };
+
+                  if (on_console) {
+                    update_current_console_user_id(*uid);
+                  } else {
+                    if (current_console_user_id_ == uid) {
+                      if (!has_on_console_peer(*uid)) {
+                        update_current_console_user_id(std::nullopt);
+                      }
+                    }
+                  }
+
+                  // This response means that the request has been accepted.
+                  // The applied state is sent separately by core_service_daemon_server_bound.
+                  server_->async_respond(peer_id, request_id, {});
+
+                  // Send the current bound state to the requester even if the console user ID
+                  // did not change and the receiver was not recreated.
+                  send_core_service_daemon_server_bound_if_available(peer_id);
+
+                  break;
+                }
+
+                default:
+                  server_->async_close_peer(peer_id);
+                  break;
+              }
+              return;
+            } catch (std::exception& e) {
+              logger::get_logger()->error("console_user_id_changed_receiver: received data is corrupted");
+            }
+
             server_->async_close_peer(peer_id);
-            break;
-        }
-        return;
-      } catch (std::exception& e) {
-        logger::get_logger()->error("console_user_id_changed_receiver: received data is corrupted");
-      }
+          });
 
-      server_->async_close_peer(peer_id);
-    });
-
-    logger::get_logger()->debug("console_user_id_changed_receiver is initialized");
+          logger::get_logger()->debug("console_user_id_changed_receiver is initialized");
+        });
   }
 
   ~console_user_id_changed_receiver() override {

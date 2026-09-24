@@ -1,6 +1,7 @@
 #pragma once
 
 #include "device_properties.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "hid_report_only_events.hpp"
 #include <chrono>
 #include <functional>
@@ -19,6 +20,8 @@ namespace krbn {
 // Publishes the values exposed by IOHIDQueue and, when enabled, events recovered
 // directly from raw input reports through one chronologically consistent stream.
 class hid_device_events_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   //
   // Signals (invoked from the shared dispatcher thread)
@@ -48,94 +51,97 @@ public:
       configuration configuration)
       : dispatcher_client(weak_dispatcher),
         last_time_stamp_(0) {
-    pqrs::osx::iokit_hid_device_events_monitor::parameters parameters;
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          pqrs::osx::iokit_hid_device_events_monitor::parameters parameters;
 
-    const auto& identifiers = device_properties.get_device_identifiers();
-    if (configuration.enable_input_report_handler &&
-        hid_report_only_events::is_target_device(identifiers)) {
-      // Reading and parsing the descriptor is unnecessary for all other devices.
-      auto report_descriptor = find_report_descriptor(device);
+          const auto& identifiers = device_properties.get_device_identifiers();
+          if (configuration.enable_input_report_handler &&
+              hid_report_only_events::is_target_device(identifiers)) {
+            // Reading and parsing the descriptor is unnecessary for all other devices.
+            auto report_descriptor = find_report_descriptor(device);
 
-      input_report_handler_ =
-          hid_report_only_events::make_report_handler(
-              identifiers,
-              report_descriptor);
+            input_report_handler_ =
+                hid_report_only_events::make_report_handler(
+                    identifiers,
+                    report_descriptor);
 
-      if (input_report_handler_) {
-        parameters.input_report_filter_started =
-            [handler = input_report_handler_] {
-              handler->reset_filter_state();
-            };
-      }
-    }
+            if (input_report_handler_) {
+              parameters.input_report_filter_started =
+                  [handler = input_report_handler_] {
+                    handler->reset_filter_state();
+                  };
+            }
+          }
 
-    if (configuration.input_report_observer || input_report_handler_) {
-      parameters.observe_input_reports = true;
+          if (configuration.input_report_observer || input_report_handler_) {
+            parameters.observe_input_reports = true;
 
-      parameters.input_report_filter =
-          [observer = std::move(configuration.input_report_observer),
-           handler = input_report_handler_](auto report_id, auto report) {
-            if (observer) {
-              observer(report_id, report);
+            parameters.input_report_filter =
+                [observer = std::move(configuration.input_report_observer),
+                 handler = input_report_handler_](auto report_id, auto report) {
+                  if (observer) {
+                    observer(report_id, report);
+                  }
+
+                  return handler && handler->should_accept_report(report_id, report);
+                };
+          }
+
+          device_events_monitor_ =
+              std::make_shared<pqrs::osx::iokit_hid_device_events_monitor>(
+                  weak_dispatcher,
+                  run_loop_thread,
+                  device,
+                  parameters);
+
+          device_events_monitor_->started.connect([this] {
+            if (input_report_handler_) {
+              // The vendor monitor enqueues started before any input_report_arrived
+              // signal from the newly opened device.
+              input_report_handler_->reset();
             }
 
-            return handler && handler->should_accept_report(report_id, report);
-          };
-    }
+            started();
+          });
 
-    device_events_monitor_ =
-        std::make_shared<pqrs::osx::iokit_hid_device_events_monitor>(
-            weak_dispatcher,
-            run_loop_thread,
-            device,
-            parameters);
+          device_events_monitor_->stopped.connect([this] {
+            stopped();
+          });
 
-    device_events_monitor_->started.connect([this] {
-      if (input_report_handler_) {
-        // The vendor monitor enqueues started before any input_report_arrived
-        // signal from the newly opened device.
-        input_report_handler_->reset();
-      }
+          device_events_monitor_->input_values_arrived.connect([this](auto&& values) {
+            auto hid_values = std::make_shared<std::vector<pqrs::osx::iokit_hid_value>>();
+            hid_values->reserve(values->size());
 
-      started();
-    });
+            for (const auto& value : *values) {
+              hid_values->emplace_back(*value);
+            }
 
-    device_events_monitor_->stopped.connect([this] {
-      stopped();
-    });
+            input_values_arrived(hid_values);
+          });
 
-    device_events_monitor_->input_values_arrived.connect([this](auto&& values) {
-      auto hid_values = std::make_shared<std::vector<pqrs::osx::iokit_hid_value>>();
-      hid_values->reserve(values->size());
+          device_events_monitor_->input_report_arrived.connect(
+              [this](auto report_id, auto report, auto time_stamp) {
+                if (!input_report_handler_) {
+                  return;
+                }
 
-      for (const auto& value : *values) {
-        hid_values->emplace_back(*value);
-      }
+                auto hid_values = std::make_shared<std::vector<pqrs::osx::iokit_hid_value>>(
+                    input_report_handler_->handle(
+                        report_id,
+                        report,
+                        time_stamp));
+                if (hid_values->empty()) {
+                  return;
+                }
 
-      input_values_arrived(hid_values);
-    });
+                input_values_arrived(hid_values);
+              });
 
-    device_events_monitor_->input_report_arrived.connect(
-        [this](auto report_id, auto report, auto time_stamp) {
-          if (!input_report_handler_) {
-            return;
-          }
-
-          auto hid_values = std::make_shared<std::vector<pqrs::osx::iokit_hid_value>>(
-              input_report_handler_->handle(
-                  report_id,
-                  report,
-                  time_stamp));
-          if (hid_values->empty()) {
-            return;
-          }
-
-          input_values_arrived(hid_values);
+          device_events_monitor_->error_occurred.connect([this](auto&& message, auto&& result) {
+            error_occurred(message, result);
+          });
         });
-
-    device_events_monitor_->error_occurred.connect([this](auto&& message, auto&& result) {
-      error_occurred(message, result);
-    });
   }
 
   ~hid_device_events_monitor() override {

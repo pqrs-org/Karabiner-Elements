@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "settings.hpp"
@@ -10,13 +11,21 @@
 #include <tuple>
 
 class settings_log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   settings_log_monitor(const settings_log_monitor&) = delete;
 
   explicit settings_log_monitor(krbn_log_messages_updated_t callback)
       : dispatcher_client(),
         callback_(callback) {
-    start();
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          start();
+        },
+        [this] {
+          stop();
+        });
   }
 
   ~settings_log_monitor() override {

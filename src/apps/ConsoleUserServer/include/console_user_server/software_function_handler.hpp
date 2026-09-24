@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include <deque>
 #include <pqrs/cf/bundle.hpp>
@@ -14,10 +15,13 @@
 
 namespace krbn::console_user_server {
 class software_function_handler final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   software_function_handler()
       : dispatcher_client(),
         check_trusted_(false) {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~software_function_handler() override {

@@ -2,6 +2,7 @@
 
 // `krbn::console_user_server::update_check_scheduler` can be used safely in a multi-threaded environment.
 
+#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "update_utility.hpp"
 #include <chrono>
@@ -11,12 +12,15 @@
 
 namespace krbn::console_user_server {
 class update_check_scheduler final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   update_check_scheduler(const update_check_scheduler&) = delete;
 
   update_check_scheduler()
       : dispatcher_client(),
         check_for_updates_task_(*this) {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~update_check_scheduler() override {

@@ -4,6 +4,7 @@
 
 #include "codesign_manager.hpp"
 #include "constants.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <mutex>
@@ -16,6 +17,8 @@
 
 namespace krbn {
 class console_user_server_client final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -31,6 +34,7 @@ public:
   explicit console_user_server_client(uid_t uid)
       : dispatcher_client(),
         uid_(uid) {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~console_user_server_client() override {

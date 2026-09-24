@@ -5,6 +5,7 @@
 #include "console_user_id_changed_receiver.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "filesystem_utility.hpp"
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
@@ -14,17 +15,22 @@
 
 namespace krbn::core_service::daemon {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   components_manager(const components_manager&) = delete;
 
   components_manager(std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager)
       : dispatcher_client(),
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
-    //
-    // hid_event_system_monitor_
-    //
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          //
+          // hid_event_system_monitor_
+          //
 
-    hid_event_system_monitor_ = std::make_unique<hid_event_system_monitor>();
+          hid_event_system_monitor_ = std::make_unique<hid_event_system_monitor>();
+        });
   }
 
   ~components_manager() override {

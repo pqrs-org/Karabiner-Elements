@@ -8,6 +8,7 @@
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "device_grabber.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "filesystem_utility.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "types.hpp"
@@ -27,6 +28,8 @@
 
 namespace krbn::core_service::daemon {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   // Signals (invoked from the shared dispatcher thread)
 
@@ -41,112 +44,122 @@ public:
       : dispatcher_client(),
         current_console_user_id_(current_console_user_id),
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
-    prepare_karabiner_core_service_daemon_socket_directory();
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          prepare_karabiner_core_service_daemon_socket_directory();
 
-    if (auto m = weak_core_service_daemon_state_manager_.lock()) {
-      core_service_daemon_state_manager_connection_ = m->core_service_daemon_state_changed.connect([this](const auto& core_service_daemon_state) {
-        enqueue_to_dispatcher([this, core_service_daemon_state] {
-          send_core_service_daemon_state(core_service_daemon_state);
-        });
-      });
-    }
-
-    //
-    // Setup server_
-    //
-
-    auto socket_file_path = karabiner_core_service_daemon_socket_file_path();
-
-    server_ = std::make_shared<pqrs::unix_domain_stream::server>(
-        weak_dispatcher_,
-        socket_file_path,
-        constants::get_unix_domain_stream_server_options(),
-        [](const auto& peer_credentials) {
-          auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
-          if (!result) {
-            // During an update, retrieving the Team ID may fail, causing an error once.
-            // Since this can occur during normal use, treat it as debug rather than warn.
-            logger::get_logger()->debug("receiver: peer is not code-signed with same Team ID (pid: {0})",
-                                        peer_credentials.pid.value_or(-1));
+          if (auto m = weak_core_service_daemon_state_manager_.lock()) {
+            core_service_daemon_state_manager_connection_ = m->core_service_daemon_state_changed.connect([this](const auto& core_service_daemon_state) {
+              enqueue_to_dispatcher([this, core_service_daemon_state] {
+                send_core_service_daemon_state(core_service_daemon_state);
+              });
+            });
           }
-          return result;
+
+          //
+          // Setup server_
+          //
+
+          auto socket_file_path = karabiner_core_service_daemon_socket_file_path();
+
+          server_ = std::make_shared<pqrs::unix_domain_stream::server>(
+              weak_dispatcher_,
+              socket_file_path,
+              constants::get_unix_domain_stream_server_options(),
+              [](const auto& peer_credentials) {
+                auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
+                if (!result) {
+                  // During an update, retrieving the Team ID may fail, causing an error once.
+                  // Since this can occur during normal use, treat it as debug rather than warn.
+                  logger::get_logger()->debug("receiver: peer is not code-signed with same Team ID (pid: {0})",
+                                              peer_credentials.pid.value_or(-1));
+                }
+                return result;
+              });
+
+          server_->bound.connect([this, socket_file_path] {
+            logger::get_logger()->debug("receiver: bound");
+
+            auto chown_uid = current_console_user_id_.value_or(uid_t(0));
+            logger::get_logger()->debug("receiver: chown socket: {0}", chown_uid);
+            if (!filesystem_utility::chown(socket_file_path, chown_uid, 0)) {
+              return;
+            }
+
+            if (!filesystem_utility::permissions(socket_file_path,
+                                                 filesystem_utility::permissions_0600)) {
+              return;
+            }
+
+            server_bound();
+          });
+
+          server_->bind_failed.connect([this](auto&& error_code) {
+            logger::get_logger()->error("receiver: bind_failed");
+
+            // If the socket directory is deleted for any reason,
+            // bind_failed will be triggered, so recreate the directory each time.
+            prepare_karabiner_core_service_daemon_socket_directory();
+          });
+
+          server_->closed.connect([] {
+            logger::get_logger()->debug("receiver: closed");
+          });
+
+          server_->peer_connected.connect([](auto, auto&&) {
+            // Do nothing
+          });
+
+          server_->peer_closed.connect([this](auto peer_id) {
+            handle_peer_closed(peer_id);
+          });
+
+          server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
+            logger::get_logger()->debug("receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
+          });
+
+          server_->received.connect([](auto, auto&&) {
+            // Do nothing
+          });
+
+          server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
+            handle_request(peer_id,
+                           request_id,
+                           buffer);
+          });
+
+          server_->async_start();
+
+          //
+          // Start device_grabber
+          //
+
+          start_grabbing_if_system_core_configuration_file_exists();
+
+          logger::get_logger()->debug("receiver is initialized");
+        },
+        [this] {
+          cleanup();
         });
-
-    server_->bound.connect([this, socket_file_path] {
-      logger::get_logger()->debug("receiver: bound");
-
-      auto chown_uid = current_console_user_id_.value_or(uid_t(0));
-      logger::get_logger()->debug("receiver: chown socket: {0}", chown_uid);
-      if (!filesystem_utility::chown(socket_file_path, chown_uid, 0)) {
-        return;
-      }
-
-      if (!filesystem_utility::permissions(socket_file_path,
-                                           filesystem_utility::permissions_0600)) {
-        return;
-      }
-
-      server_bound();
-    });
-
-    server_->bind_failed.connect([this](auto&& error_code) {
-      logger::get_logger()->error("receiver: bind_failed");
-
-      // If the socket directory is deleted for any reason,
-      // bind_failed will be triggered, so recreate the directory each time.
-      prepare_karabiner_core_service_daemon_socket_directory();
-    });
-
-    server_->closed.connect([] {
-      logger::get_logger()->debug("receiver: closed");
-    });
-
-    server_->peer_connected.connect([](auto, auto&&) {
-      // Do nothing
-    });
-
-    server_->peer_closed.connect([this](auto peer_id) {
-      handle_peer_closed(peer_id);
-    });
-
-    server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
-      logger::get_logger()->debug("receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
-    });
-
-    server_->received.connect([](auto, auto&&) {
-      // Do nothing
-    });
-
-    server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
-      handle_request(peer_id,
-                     request_id,
-                     buffer);
-    });
-
-    server_->async_start();
-
-    //
-    // Start device_grabber
-    //
-
-    start_grabbing_if_system_core_configuration_file_exists();
-
-    logger::get_logger()->debug("receiver is initialized");
   }
 
   ~receiver() override {
     detach_from_dispatcher([this] {
-      core_service_daemon_state_manager_connection_.disconnect();
-      console_user_server_peer_id_ = std::nullopt;
-      console_user_server_peer_ = nullptr;
-      stop_device_grabber();
-      server_ = nullptr;
+      cleanup();
     });
 
     logger::get_logger()->debug("receiver is terminated");
   }
 
 private:
+  void cleanup() {
+    core_service_daemon_state_manager_connection_.disconnect();
+    console_user_server_peer_id_ = std::nullopt;
+    console_user_server_peer_ = nullptr;
+    stop_device_grabber();
+    server_ = nullptr;
+  }
+
   void async_request(pqrs::unix_domain_stream::peer_id peer_id,
                      nlohmann::json json) {
     if (server_) {

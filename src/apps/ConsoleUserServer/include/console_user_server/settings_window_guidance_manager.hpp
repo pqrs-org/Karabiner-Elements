@@ -1,6 +1,7 @@
 #pragma once
 
 #include "application_launcher.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "services_utility.hpp"
 #include "types/settings_window_guidance_state.hpp"
@@ -12,6 +13,8 @@
 
 namespace krbn::console_user_server {
 class settings_window_guidance_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   using guidance_context_maker = std::function<settings_window_guidance_context()>;
   using launch_settings_handler = std::function<void()>;
@@ -44,6 +47,7 @@ public:
         guidance_context_maker_(std::move(guidance_context_maker)),
         launch_settings_handler_(std::move(launch_settings_handler)),
         timer_(*this) {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~settings_window_guidance_manager() {
@@ -326,8 +330,6 @@ private:
   guidance_context_maker guidance_context_maker_;
   launch_settings_handler launch_settings_handler_;
 
-  pqrs::dispatcher::extra::timer timer_;
-
   mutable std::mutex mutex_;
 
   settings_window_guidance_setup current_setup_ = settings_window_guidance_setup::none;
@@ -356,5 +358,7 @@ private:
   // For settings_window_guidance_alert::driver_not_connected
   std::optional<bool> driver_connected_;
   std::optional<pqrs::dispatcher::time_point> driver_not_connected_started_at_;
+
+  pqrs::dispatcher::extra::timer timer_;
 };
 } // namespace krbn::console_user_server

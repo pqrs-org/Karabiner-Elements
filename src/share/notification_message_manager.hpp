@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dispatcher_client_constructor_guard.hpp"
 #include "json_writer.hpp"
 #include "modifier_flag_manager.hpp"
 #include "types/device_id.hpp"
@@ -15,12 +16,15 @@
 
 namespace krbn {
 class notification_message_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   nod::signal<void(const std::string&)> notification_message_changed;
 
   explicit notification_message_manager(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher =
                                             pqrs::dispatcher::extra::get_shared_dispatcher())
       : dispatcher_client(std::move(weak_dispatcher)) {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~notification_message_manager() override {

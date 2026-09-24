@@ -3,6 +3,7 @@
 #include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "filesystem_utility.hpp"
@@ -28,6 +29,8 @@ std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_disp
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager_;
 
 class settings_process_lifecycle_components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   settings_process_lifecycle_components_manager(const settings_process_lifecycle_components_manager&) = delete;
 
@@ -36,7 +39,10 @@ public:
       : dispatcher_client(),
         components_manager_(std::make_shared<settings_components_manager>(callbacks)),
         components_manager_stopped_callback_(components_manager_stopped_callback) {
-    settings_cpp::set_components_manager(components_manager_);
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          settings_cpp::set_components_manager(components_manager_);
+        });
   }
 
   ~settings_process_lifecycle_components_manager() override {

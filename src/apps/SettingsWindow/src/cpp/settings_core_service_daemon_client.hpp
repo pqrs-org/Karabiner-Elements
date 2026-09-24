@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core_service_daemon_client.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "settings.hpp"
 #include <atomic>
 #include <chrono>
@@ -10,6 +11,8 @@
 #include <utility>
 
 class settings_core_service_daemon_client final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   settings_core_service_daemon_client(const settings_core_service_daemon_client&) = delete;
 
@@ -21,7 +24,13 @@ public:
         connected_devices_received_callback_(connected_devices_received_callback),
         system_variables_received_callback_(system_variables_received_callback),
         system_variables_timer_(*this) {
-    start();
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          start();
+        },
+        [this] {
+          cleanup();
+        });
   }
 
   ~settings_core_service_daemon_client() override {
@@ -31,15 +40,7 @@ public:
   void unregister_callbacks_and_detach() {
     std::call_once(unregister_callbacks_and_detach_once_, [this] {
       detach_from_dispatcher([this] {
-        system_variables_timer_.stop();
-
-        auto client = std::atomic_load(&core_service_daemon_client_);
-        std::atomic_store(&core_service_daemon_client_,
-                          std::shared_ptr<krbn::core_service_daemon_client>());
-
-        if (client) {
-          client->unregister_callbacks_and_detach();
-        }
+        cleanup();
       });
     });
   }
@@ -108,7 +109,8 @@ public:
       }
     });
 
-    std::atomic_store(&core_service_daemon_client_, client);
+    std::atomic_store(&core_service_daemon_client_,
+                      client);
   }
 
   void stop() {
@@ -131,6 +133,18 @@ public:
   }
 
 private:
+  void cleanup() {
+    system_variables_timer_.stop();
+
+    auto client = std::atomic_load(&core_service_daemon_client_);
+    std::atomic_store(&core_service_daemon_client_,
+                      std::shared_ptr<krbn::core_service_daemon_client>());
+
+    if (client) {
+      client->unregister_callbacks_and_detach();
+    }
+  }
+
   void async_get_system_variables() const {
     if (auto client = std::atomic_load(&core_service_daemon_client_)) {
       client->async_get_system_variables();

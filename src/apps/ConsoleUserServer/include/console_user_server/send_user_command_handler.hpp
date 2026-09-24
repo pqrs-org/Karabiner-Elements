@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include <asio.hpp>
 #include <memory>
@@ -13,6 +14,8 @@
 namespace krbn::console_user_server {
 
 class send_user_command_handler final : public pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   static constexpr int send_buffer_size = 32 * 1024;
 
@@ -23,9 +26,12 @@ public:
         io_context_(),
         work_guard_(asio::make_work_guard(io_context_)),
         socket_(io_context_) {
-    io_thread_ = std::thread([this] {
-      io_context_.run();
-    });
+    dispatcher_client_constructor_guard_.initialize(
+        [&] {
+          io_thread_ = std::thread([this] {
+            io_context_.run();
+          });
+        });
   }
 
   ~send_user_command_handler() {

@@ -3,6 +3,7 @@
 #include "../../../keyboard_suppression.hpp"
 #include "../../../pressed_keys_manager.hpp"
 #include "console_user_server_peer.hpp"
+#include "dispatcher_client_constructor_guard.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_utility.hpp"
@@ -14,6 +15,8 @@
 
 namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
 class queue final : pqrs::dispatcher::extra::dispatcher_client {
+  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+
 public:
   class event final {
   public:
@@ -343,6 +346,7 @@ public:
         cgeventtap_fallback_enabled_(false),
         last_event_type_(event_type::single),
         last_event_time_stamp_(0) {
+    dispatcher_client_constructor_guard_.initialize();
   }
 
   ~queue() override {
