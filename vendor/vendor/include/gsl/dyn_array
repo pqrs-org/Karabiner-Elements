@@ -176,10 +176,11 @@ namespace details
         using reference = T&;
         using const_reference = const T&;
         using iterator_category = std::random_access_iterator_tag;
+#if defined(__cpp_lib_ranges) || (defined(_MSVC_STL_VERSION) && defined(__cpp_lib_concepts))
+        using iterator_concept = std::contiguous_iterator_tag;
+#endif /* __cpp_lib_ranges || (_MSVC_STL_VERSION && __cpp_lib_concepts) */
 
-#if defined(__cpp_lib_ranges) && (__cpp_lib_ranges >= 201911L)
         constexpr dyn_array_iterator() = default;
-#endif /* __cpp_lib_ranges >= 201911L */
 
         constexpr operator dyn_array_iterator<const T>() const { return {_ptr, _pos, _end_pos}; }
 
@@ -199,11 +200,37 @@ namespace details
             return !(*this == other);
         }
 
+        constexpr auto operator<(const dyn_array_iterator& other) const
+        {
+            Expects(_ptr == other._ptr);
+            Expects(_end_pos == other._end_pos);
+            return _pos < other._pos;
+        }
+
+        constexpr auto operator>(const dyn_array_iterator& other) const { return other < *this; }
+
+        constexpr auto operator<=(const dyn_array_iterator& other) const
+        {
+            return !(other < *this);
+        }
+
+        constexpr auto operator>=(const dyn_array_iterator& other) const
+        {
+            return !(*this < other);
+        }
+
         constexpr auto operator*() const -> reference
         {
             Expects(_ptr != nullptr);
             Expects(_pos < _end_pos);
             return _ptr[_pos];
+        }
+
+        constexpr auto operator->() const -> pointer
+        {
+            Expects(_ptr != nullptr);
+            Expects(_pos < _end_pos);
+            return _ptr + _pos;
         }
 
         constexpr auto operator++() -> dyn_array_iterator&
@@ -256,6 +283,11 @@ namespace details
             return dyn_array_iterator{_ptr, gsl::narrow<size_type>(new_pos), _end_pos};
         }
 
+        friend constexpr auto operator+(difference_type diff, const dyn_array_iterator& it)
+        {
+            return it + diff;
+        }
+
         constexpr auto operator-(difference_type diff) const { return *this + (-diff); }
 
         constexpr auto operator-(const dyn_array_iterator& other) const
@@ -265,16 +297,7 @@ namespace details
             return gsl::narrow<difference_type>(_pos) - gsl::narrow<difference_type>(other._pos);
         }
 
-        constexpr auto operator[](size_type pos) -> reference
-        {
-            Expects(_pos + pos < _end_pos);
-            return _ptr[_pos + pos];
-        }
-
-        constexpr auto operator[](size_type pos) const -> const_reference
-        {
-            return const_cast<dyn_array_iterator&>(*this).operator[](pos);
-        }
+        constexpr auto operator[](difference_type pos) const -> reference { return *(*this + pos); }
 
     private:
         constexpr dyn_array_iterator(pointer ptr, size_type pos, size_type end_pos)
@@ -288,8 +311,12 @@ namespace details
         size_type _pos{};
         size_type _end_pos{};
 
+        template <typename>
+        friend class dyn_array_iterator;
         template <typename, typename>
         friend class ::gsl::dyn_array;
+        template <typename Ptr>
+        friend struct std::pointer_traits;
     };
 } // namespace details
 
@@ -442,5 +469,18 @@ dyn_array(std::from_range_t, InputRg&&, Alloc = {})
 
 #endif /* __cpp_deduction_guides >= 201703L */
 } // namespace gsl
+
+namespace std
+{
+template <class Type>
+struct pointer_traits<::gsl::details::dyn_array_iterator<Type>>
+{
+    using pointer = ::gsl::details::dyn_array_iterator<Type>;
+    using element_type = Type;
+    using difference_type = ptrdiff_t;
+
+    static constexpr element_type* to_address(const pointer i) noexcept { return i._ptr + i._pos; }
+};
+} // namespace std
 
 #endif /* defined(GSL_DYN_ARRAY_H) */

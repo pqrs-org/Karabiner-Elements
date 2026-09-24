@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::dispatcher v2.16.0
+// pqrs::dispatcher v2.17.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -12,5 +12,6 @@
 
 #include "dispatcher/extra/debounced_task.hpp"
 #include "dispatcher/extra/dispatcher_client.hpp"
+#include "dispatcher/extra/dispatcher_client_constructor_exception_guard.hpp"
 #include "dispatcher/extra/shared_dispatcher.hpp"
 #include "dispatcher/extra/timer.hpp"
