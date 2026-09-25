@@ -26,13 +26,13 @@ namespace pqrs::dispatcher::extra {
 // class client final : public pqrs::dispatcher::extra::dispatcher_client {
 // private:
 //   // Members initialize in declaration order. Keep the guard first.
-//   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard guard_{*this};
+//   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
 //
 // public:
 //   client(std::weak_ptr<pqrs::dispatcher::dispatcher> dispatcher, bool fail)
 //       : dispatcher_client(dispatcher),
 //         timer_(*this) {
-//     guard_.initialize(
+//     dispatcher_client_constructor_exception_guard_.initialize(
 //         [&] {
 //           // Put potentially throwing constructor-body work here.
 //           if (fail) {
@@ -57,8 +57,8 @@ namespace pqrs::dispatcher::extra {
 //   pqrs::dispatcher::extra::timer timer_;
 // };
 //
-// Use guard_.initialize(function) when no cleanup is needed, or
-// guard_.initialize() for an empty constructor body.
+// Use dispatcher_client_constructor_exception_guard_.initialize(function) when no cleanup is needed, or
+// dispatcher_client_constructor_exception_guard_.initialize() for an empty constructor body.
 // Call initialize only once. Reentrant calls and calls after success or failure abort.
 
 class dispatcher_client_constructor_exception_guard final {
