@@ -34,6 +34,10 @@ namespace impl {
 
 class server_state final : public dispatcher::extra::dispatcher_client,
                            public std::enable_shared_from_this<server_state> {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   nod::signal<void()> bound;
   nod::signal<void(const asio::error_code&)> bind_failed;
@@ -64,11 +68,12 @@ public:
         options_(options),
         verify_peer_(verify_peer),
         notification_scope_(*this),
-        bind_retry_task_(*this),
-        socket_path_health_check_timer_(*this),
         io_ctx_(runtime::get_io_context()),
         request_manager_(io_ctx_,
-                         *this) {
+                         *this),
+        bind_retry_task_(*this),
+        socket_path_health_check_timer_(*this) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~server_state() override {
@@ -768,8 +773,6 @@ private:
   server_options options_;
   std::function<bool(const peer_credentials&)> verify_peer_;
   notification_scope notification_scope_;
-  dispatcher::extra::debounced_task bind_retry_task_;
-  dispatcher::extra::timer socket_path_health_check_timer_;
 
   asio::io_context& io_ctx_;
   request_manager request_manager_;
@@ -787,6 +790,9 @@ private:
   std::shared_ptr<asio::steady_timer> socket_path_health_check_timeout_;
   peer_id next_peer_id_ = 0;
   std::atomic_bool shutdown_started_ = false;
+  // Construct after potentially throwing members; destruction requires detach.
+  dispatcher::extra::debounced_task bind_retry_task_;
+  dispatcher::extra::timer socket_path_health_check_timer_;
 };
 
 } // namespace impl
@@ -795,6 +801,9 @@ private:
 // I/O thread while server_state remains alive until queued shutdown work ends.
 class server final : public dispatcher::extra::dispatcher_client {
 private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
   // This member must be declared before the signal references below because
   // members are initialized in declaration order.
   not_null_shared_ptr_t<impl::server_state> state_;
@@ -833,6 +842,7 @@ public:
         peer_error_occurred(state_->peer_error_occurred),
         received(state_->received),
         request_received(state_->request_received) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~server() override {

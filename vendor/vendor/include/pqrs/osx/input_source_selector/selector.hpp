@@ -17,31 +17,40 @@
 
 namespace pqrs::osx::input_source_selector {
 class selector final : public dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   selector(const selector&) = delete;
   selector& operator=(const selector&) = delete;
 
   explicit selector(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher)
       : dispatcher_client(std::move(weak_dispatcher)) {
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(),
-                                    this,
-                                    static_enabled_input_sources_changed_callback,
-                                    kTISNotifyEnabledKeyboardInputSourcesChanged,
-                                    nullptr,
-                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+    dispatcher_client_constructor_exception_guard_.initialize(
+        [&] {
+          CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(),
+                                          this,
+                                          static_enabled_input_sources_changed_callback,
+                                          kTISNotifyEnabledKeyboardInputSourcesChanged,
+                                          nullptr,
+                                          CFNotificationSuspensionBehaviorDeliverImmediately);
 
-    enabled_input_sources_changed_callback();
+          try {
+            enabled_input_sources_changed_callback();
+          } catch (...) {
+            // Unregister on the constructing thread: a dispatcher cleanup that
+            // synchronously waits for the main thread could deadlock construction.
+            unregister_observer();
+            throw;
+          }
+        });
   }
 
   ~selector() override {
     detach_from_dispatcher();
 
-    gcd::dispatch_sync_on_main_queue(^{
-      CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(),
-                                         this,
-                                         kTISNotifyEnabledKeyboardInputSourcesChanged,
-                                         nullptr);
-    });
+    unregister_observer();
   }
 
   void async_select(std::vector<specifier> specifiers) {
@@ -58,6 +67,15 @@ public:
   }
 
 private:
+  void unregister_observer() {
+    gcd::dispatch_sync_on_main_queue(^{
+      CFNotificationCenterRemoveObserver(CFNotificationCenterGetDistributedCenter(),
+                                         this,
+                                         kTISNotifyEnabledKeyboardInputSourcesChanged,
+                                         nullptr);
+    });
+  }
+
   static void static_enabled_input_sources_changed_callback(CFNotificationCenterRef,
                                                             void* observer,
                                                             CFStringRef,

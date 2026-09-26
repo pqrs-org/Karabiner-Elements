@@ -19,6 +19,10 @@ namespace pqrs::unix_domain_stream::impl {
 
 class peer final : public dispatcher::extra::dispatcher_client,
                    public std::enable_shared_from_this<peer> {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   nod::signal<void()> ready;
   nod::signal<void(not_null_shared_ptr_t<std::vector<uint8_t>>)> received;
@@ -45,6 +49,7 @@ public:
         heartbeat_deadline_(socket_.get_executor()),
         read_deadline_(socket_.get_executor()),
         write_deadline_(socket_.get_executor()) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   // The owner must call async_close before releasing the last shared_ptr so

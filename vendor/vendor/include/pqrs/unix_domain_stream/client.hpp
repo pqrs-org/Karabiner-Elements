@@ -33,6 +33,10 @@ namespace impl {
 
 class client_state final : public dispatcher::extra::dispatcher_client,
                            public std::enable_shared_from_this<client_state> {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   nod::signal<void(const peer_credentials&)> connected;
   nod::signal<void(const peer_credentials&)> peer_verification_failed;
@@ -55,10 +59,11 @@ public:
         options_(options),
         verify_peer_(verify_peer),
         notification_scope_(*this),
-        reconnect_task_(*this),
         io_ctx_(runtime::get_io_context()),
         request_manager_(io_ctx_,
-                         *this) {
+                         *this),
+        reconnect_task_(*this) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~client_state() override {
@@ -565,7 +570,6 @@ private:
   client_options options_;
   std::function<bool(const peer_credentials&)> verify_peer_;
   notification_scope notification_scope_;
-  dispatcher::extra::debounced_task reconnect_task_;
 
   asio::io_context& io_ctx_;
   request_manager request_manager_;
@@ -576,6 +580,8 @@ private:
   std::shared_ptr<asio::local::stream_protocol::socket> connecting_socket_;
   std::shared_ptr<peer> peer_;
   std::atomic_bool shutdown_started_ = false;
+  // Construct after potentially throwing members; destruction requires detach.
+  dispatcher::extra::debounced_task reconnect_task_;
 };
 
 } // namespace impl
@@ -584,6 +590,9 @@ private:
 // I/O thread while client_state remains alive until queued shutdown work ends.
 class client final : public dispatcher::extra::dispatcher_client {
 private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
   // This member must be declared before the signal references below because
   // members are initialized in declaration order.
   not_null_shared_ptr_t<impl::client_state> state_;
@@ -616,6 +625,7 @@ public:
         error_occurred(state_->error_occurred),
         received(state_->received),
         request_received(state_->request_received) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~client() override {

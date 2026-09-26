@@ -15,6 +15,10 @@
 
 namespace pqrs::spdlog {
 class monitor final : public dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   // Signals (invoked from the dispatcher thread)
 
@@ -31,6 +35,7 @@ public:
         target_file_paths_(target_file_paths),
         max_line_count_(max_line_count),
         timer_(*this) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~monitor() override {
@@ -77,7 +82,8 @@ public:
 private:
   std::vector<::spdlog::filename_t> target_file_paths_;
   size_t max_line_count_;
-  dispatcher::extra::timer timer_;
   std::unordered_map<std::string, std::uintmax_t> file_sizes_;
+  // Construct after potentially throwing members; destruction requires detach.
+  dispatcher::extra::timer timer_;
 };
 } // namespace pqrs::spdlog

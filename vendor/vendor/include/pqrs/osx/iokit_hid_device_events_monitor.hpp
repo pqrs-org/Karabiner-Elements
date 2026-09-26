@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device_events_monitor v5.0.0
+// pqrs::osx::iokit_hid_device_events_monitor v5.1.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -29,6 +29,10 @@
 
 namespace pqrs::osx {
 class iokit_hid_device_events_monitor final : public dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   //
   // Signals (invoked from the dispatcher thread)
@@ -88,37 +92,40 @@ public:
       : dispatcher_client(weak_dispatcher),
         run_loop_thread_(run_loop_thread),
         hid_device_(device),
-        open_timer_(*this),
         last_open_error_(kIOReturnSuccess),
         observe_input_values_(parameters.observe_input_values),
         input_report_filter_(parameters.input_report_filter),
-        input_report_filter_started_(parameters.input_report_filter_started) {
-    if (parameters.observe_input_reports) {
-      constexpr size_t minimum_input_report_buffer_size = 1024;
+        input_report_filter_started_(parameters.input_report_filter_started),
+        open_timer_(*this) {
+    dispatcher_client_constructor_exception_guard_.initialize(
+        [&] {
+          if (parameters.observe_input_reports) {
+            constexpr size_t minimum_input_report_buffer_size = 1024;
 
-      auto size = minimum_input_report_buffer_size;
-      if (auto max_input_report_size = hid_device_.find_max_input_report_size()) {
-        if (*max_input_report_size > static_cast<int64_t>(size)) {
-          size = static_cast<size_t>(*max_input_report_size);
-        }
-      }
-      input_report_buffer_.resize(size);
-    }
+            auto size = minimum_input_report_buffer_size;
+            if (auto max_input_report_size = hid_device_.find_max_input_report_size()) {
+              if (*max_input_report_size > static_cast<int64_t>(size)) {
+                size = static_cast<size_t>(*max_input_report_size);
+              }
+            }
+            input_report_buffer_.resize(size);
+          }
 
-    // Schedule device
+          // Schedule device
 
-    if (CFRunLoopGetCurrent() == run_loop_thread_->get_run_loop()) {
-      schedule_device();
-    } else {
-      auto wait = make_thread_wait();
+          if (CFRunLoopGetCurrent() == run_loop_thread_->get_run_loop()) {
+            schedule_device();
+          } else {
+            auto wait = make_thread_wait();
 
-      run_loop_thread_->enqueue(^{
-        schedule_device();
-        wait->notify();
-      });
+            run_loop_thread_->enqueue(^{
+              schedule_device();
+              wait->notify();
+            });
 
-      wait->wait_notice();
-    }
+            wait->wait_notice();
+          }
+        });
   }
 
   ~iokit_hid_device_events_monitor() override {
@@ -580,7 +587,6 @@ private:
   not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread_;
 
   iokit_hid_device hid_device_;
-  dispatcher::extra::timer open_timer_;
   std::optional<IOOptionBits> requested_open_options_;
   uint64_t requested_open_options_generation_{0};
   std::optional<IOOptionBits> current_open_options_;
@@ -593,5 +599,7 @@ private:
                      std::span<const uint8_t> report)>
       input_report_filter_;
   std::function<void()> input_report_filter_started_;
+  // Construct after potentially throwing members; destruction requires detach.
+  dispatcher::extra::timer open_timer_;
 };
 } // namespace pqrs::osx

@@ -18,6 +18,10 @@
 
 namespace pqrs::osx::accessibility {
 class monitor final : public dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   // Signals (invoked from the dispatcher thread)
 
@@ -31,6 +35,7 @@ private:
       : dispatcher_client(weak_dispatcher),
         last_application_(std::make_shared<application>()),
         last_focused_ui_element_(std::make_shared<focused_ui_element>()) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   void register_callback() {

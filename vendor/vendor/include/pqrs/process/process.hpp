@@ -28,6 +28,10 @@ extern char** environ;
 namespace pqrs::process {
 // Capture the data using a signal for commands like top -l that produce output at regular intervals.
 class process final : public dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   // Signals (invoked from the dispatcher thread)
 
@@ -47,6 +51,7 @@ public:
         stderr_pipe_(std::make_unique<pipe>()),
         file_actions_(make_file_actions(*stdout_pipe_, *stderr_pipe_)),
         killed_(false) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~process() {

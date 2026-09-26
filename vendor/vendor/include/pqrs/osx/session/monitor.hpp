@@ -13,6 +13,10 @@
 
 namespace pqrs::osx::session {
 class monitor final : public dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   // Signals (invoked from the dispatcher thread)
 
@@ -24,6 +28,7 @@ public:
 
   explicit monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher) : dispatcher_client(weak_dispatcher),
                                                                             timer_(*this) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~monitor() override {
@@ -58,7 +63,8 @@ public:
   }
 
 private:
-  dispatcher::extra::timer timer_;
   std::optional<bool> on_console_;
+  // Construct after potentially throwing members; destruction requires detach.
+  dispatcher::extra::timer timer_;
 };
 } // namespace pqrs::osx::session

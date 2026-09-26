@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::json_file_monitor v1.2.0
+// pqrs::osx::json_file_monitor v1.3.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -11,6 +11,10 @@
 
 namespace pqrs::osx {
 class json_file_monitor final : public dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   // Signals (invoked from the dispatcher thread)
 
@@ -22,30 +26,33 @@ public:
 
   json_file_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
                     const std::vector<std::string>& files) : dispatcher_client(weak_dispatcher) {
-    file_monitor_ = std::make_unique<file_monitor>(weak_dispatcher,
-                                                   files);
+    dispatcher_client_constructor_exception_guard_.initialize(
+        [&] {
+          file_monitor_ = std::make_unique<file_monitor>(weak_dispatcher,
+                                                         files);
 
-    file_monitor_->file_changed.connect([this](auto&& changed_file_path, auto&& changed_file_body) {
-      std::shared_ptr<nlohmann::json> json;
+          file_monitor_->file_changed.connect([this](auto&& changed_file_path, auto&& changed_file_body) {
+            std::shared_ptr<nlohmann::json> json;
 
-      if (changed_file_body) {
-        try {
-          json = std::make_shared<nlohmann::json>(
-              nlohmann::json::parse(std::begin(*changed_file_body),
-                                    std::end(*changed_file_body)));
-        } catch (const std::exception& e) {
-          std::string message(e.what());
-          json_error_occurred(changed_file_path, message);
-          return;
-        }
-      }
+            if (changed_file_body) {
+              try {
+                json = std::make_shared<nlohmann::json>(
+                    nlohmann::json::parse(std::begin(*changed_file_body),
+                                          std::end(*changed_file_body)));
+              } catch (const std::exception& e) {
+                std::string message(e.what());
+                json_error_occurred(changed_file_path, message);
+                return;
+              }
+            }
 
-      json_file_changed(changed_file_path, json);
-    });
+            json_file_changed(changed_file_path, json);
+          });
 
-    file_monitor_->error_occurred.connect([this](auto&& message) {
-      error_occurred(message);
-    });
+          file_monitor_->error_occurred.connect([this](auto&& message) {
+            error_occurred(message);
+          });
+        });
   }
 
   ~json_file_monitor() override {

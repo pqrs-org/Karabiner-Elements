@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::file_monitor v2.2.0
+// pqrs::osx::file_monitor v2.3.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -40,6 +40,10 @@
 
 namespace pqrs::osx {
 class file_monitor final : public dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   enum class availability {
     unavailable,
@@ -68,15 +72,22 @@ public:
   file_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
                const std::vector<std::string>& files) : dispatcher_client(weak_dispatcher),
                                                         files_(files) {
-    queue_ = dispatch_queue_create("org.pqrs.osx.file_monitor", DISPATCH_QUEUE_SERIAL);
+    dispatcher_client_constructor_exception_guard_.initialize(
+        [&] {
+          for (const auto& f : files) {
+            watched_directories_.insert(dirname(f));
+          }
 
-    for (const auto& f : files) {
-      watched_directories_.insert(dirname(f));
-    }
-
-    dispatch_sync(queue_, ^{
-      impl::file_monitors_manager::insert(this);
-    });
+          queue_ = dispatch_queue_create("org.pqrs.osx.file_monitor", DISPATCH_QUEUE_SERIAL);
+          try {
+            // The manager serializes access internally. Keep allocation failures on
+            // the constructing thread instead of unwinding through a GCD block.
+            impl::file_monitors_manager::insert(this);
+          } catch (...) {
+            dispatch_release(queue_);
+            throw;
+          }
+        });
   }
 
   ~file_monitor() override {

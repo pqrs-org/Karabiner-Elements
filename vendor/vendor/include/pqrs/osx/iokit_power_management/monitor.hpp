@@ -99,6 +99,10 @@ private:
 } // namespace detail
 
 class monitor final : dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   class lifetime final {};
 
@@ -135,6 +139,7 @@ public:
           not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread)
       : dispatcher_client(weak_dispatcher),
         run_loop_thread_(std::move(run_loop_thread)) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~monitor() override {
