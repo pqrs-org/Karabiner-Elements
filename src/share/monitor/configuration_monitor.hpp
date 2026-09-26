@@ -1,6 +1,5 @@
 #pragma once
 
-#include "dispatcher_client_constructor_guard.hpp"
 // `krbn::configuration_monitor` can be used safely in a multi-threaded environment.
 
 #include "constants.hpp"
@@ -11,11 +10,12 @@
 #include <filesystem>
 #include <nod/nod.hpp>
 #include <optional>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/file_monitor.hpp>
 
 namespace krbn {
 class configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
-  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   // Signals (invoked from the shared dispatcher thread)

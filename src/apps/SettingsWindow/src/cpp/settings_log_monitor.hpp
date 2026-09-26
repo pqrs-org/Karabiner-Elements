@@ -1,17 +1,17 @@
 #pragma once
 
 #include "constants.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "settings.hpp"
 #include <mutex>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/spdlog.hpp>
 #include <set>
 #include <tuple>
 
 class settings_log_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   settings_log_monitor(const settings_log_monitor&) = delete;

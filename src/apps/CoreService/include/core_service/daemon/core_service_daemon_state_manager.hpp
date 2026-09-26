@@ -2,7 +2,6 @@
 
 // `core_service_daemon_state_manager` can be used safely in a multi-threaded environment.
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "types/core_service_daemon_state.hpp"
 #include <mutex>
 #include <nod/nod.hpp>
@@ -10,7 +9,7 @@
 
 namespace krbn::core_service::daemon {
 class core_service_daemon_state_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   nod::signal<void(const core_service_daemon_state&)> core_service_daemon_state_changed;

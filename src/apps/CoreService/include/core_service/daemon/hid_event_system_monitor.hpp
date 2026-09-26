@@ -2,7 +2,6 @@
 
 // `krbn::core_service::daemon::hid_event_system_monitor` can be used safely in a multi-threaded environment.
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <pqrs/cf/cf_ptr.hpp>
 #include <pqrs/dispatcher.hpp>
@@ -11,7 +10,7 @@
 
 namespace krbn::core_service::daemon {
 class hid_event_system_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   hid_event_system_monitor(const hid_event_system_monitor&) = delete;

@@ -5,7 +5,6 @@
 #include "console_user_id_changed_receiver.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "filesystem_utility.hpp"
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
@@ -15,7 +14,7 @@
 
 namespace krbn::core_service::daemon {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   components_manager(const components_manager&) = delete;

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "exprtk_utility.hpp"
 #include "logger.hpp"
 #include "types/device_id.hpp"
 #include <deque>
 #include <memory>
+#include <pqrs/dispatcher.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -24,7 +24,7 @@ namespace krbn::core_service::daemon::device_grabber_details {
 //   We should ignore these values.
 //
 class game_pad_stick_converter final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   //
@@ -71,7 +71,7 @@ public:
   };
 
   class stick final : public pqrs::dispatcher::extra::dispatcher_client {
-    krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+    pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
   public:
     //

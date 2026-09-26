@@ -1,7 +1,6 @@
 #include "event_viewer.hpp"
 #include "console_user_server_client.hpp"
 #include "core_service_daemon_client.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "hat_switch_convert.hpp"
@@ -14,6 +13,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/hitoolbox/secure_event_input_monitor.hpp>
 #include <pqrs/osx/iokit_hid_manager.hpp>
@@ -37,7 +37,7 @@ std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client;
 std::shared_ptr<krbn::console_user_server_client> console_user_server_client;
 
 class hid_value_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   hid_value_monitor(const hid_value_monitor&) = delete;
@@ -338,7 +338,7 @@ private:
 std::shared_ptr<hid_value_monitor> global_hid_value_monitor;
 
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   components_manager(const components_manager&) = delete;

@@ -3,14 +3,13 @@
 #include "../../types.hpp"
 #include "../base.hpp"
 #include "counter.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "krbn_notification_center.hpp"
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 
 namespace krbn::manipulator::manipulators::mouse_motion_to_scroll {
 class mouse_motion_to_scroll final : public base, public pqrs::dispatcher::extra::dispatcher_client {
-  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   mouse_motion_to_scroll(const nlohmann::json& json,

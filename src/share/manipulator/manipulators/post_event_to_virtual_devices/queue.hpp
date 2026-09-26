@@ -3,7 +3,6 @@
 #include "../../../keyboard_suppression.hpp"
 #include "../../../pressed_keys_manager.hpp"
 #include "console_user_server_peer.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "types.hpp"
 #include "virtual_hid_device_utility.hpp"
@@ -15,7 +14,7 @@
 
 namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
 class queue final : pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   class event final {

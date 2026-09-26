@@ -4,7 +4,6 @@
 
 #include "codesign_manager.hpp"
 #include "constants.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <filesystem>
@@ -22,7 +21,7 @@
 
 namespace krbn {
 class core_service_daemon_client final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   // Signals (invoked from the shared dispatcher thread)

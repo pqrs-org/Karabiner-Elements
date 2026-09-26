@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../shared_event_sender.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "krbn_notification_center.hpp"
 #include <algorithm>
 #include <array>
@@ -14,7 +13,7 @@
 namespace krbn::manipulator::manipulators::mouse_motion_and_wheel_to_key {
 // Manipulation, environment updates and timer callbacks run on the shared dispatcher.
 class mouse_motion_and_wheel_to_key final : public base, public pqrs::dispatcher::extra::dispatcher_client {
-  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   mouse_motion_and_wheel_to_key(const nlohmann::json& json,

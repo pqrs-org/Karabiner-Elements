@@ -1,12 +1,12 @@
 #include "multitouch_extension.hpp"
 #include "core_service_daemon_client.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <atomic>
 #include <memory>
+#include <pqrs/dispatcher.hpp>
 
 namespace {
 std::atomic<krbn_core_service_connected_changed_callback> connected_changed_callback;
@@ -19,7 +19,7 @@ void notify_connected_changed(bool value) {
 }
 
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   components_manager(const components_manager&) = delete;

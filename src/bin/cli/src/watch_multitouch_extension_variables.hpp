@@ -1,17 +1,17 @@
 #pragma once
 
 #include "core_service_daemon_client.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "termination_signal_monitor.hpp"
 #include <atomic>
 #include <iostream>
 #include <memory>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/thread_wait.hpp>
 
 namespace krbn::cli::watch_multitouch_extension_variables {
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   components_manager(const components_manager&) = delete;

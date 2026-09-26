@@ -4,7 +4,6 @@
 // The owner must call async_stop and wait for its completion before releasing
 // the last reference.
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "event_tap_utility.hpp"
 #include "keyboard_fallback_loop_guard.hpp"
 #include "keyboard_suppression.hpp"
@@ -26,7 +25,7 @@
 
 namespace krbn {
 class event_tap_monitor final : pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   // Signals (invoked from the shared dispatcher thread)

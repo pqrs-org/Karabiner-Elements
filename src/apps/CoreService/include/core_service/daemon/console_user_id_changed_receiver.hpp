@@ -4,17 +4,17 @@
 
 #include "codesign_manager.hpp"
 #include "constants.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "filesystem_utility.hpp"
 #include "types.hpp"
 #include <atomic>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/unix_domain_stream.hpp>
 #include <unordered_map>
 #include <vector>
 
 namespace krbn::core_service::daemon {
 class console_user_id_changed_receiver final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   // Signals (invoked from the shared dispatcher thread)

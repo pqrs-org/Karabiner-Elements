@@ -1,6 +1,5 @@
 #pragma once
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "iokit_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
@@ -14,7 +13,7 @@
 
 namespace krbn {
 class hid_keyboard_caps_lock_led_state_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   hid_keyboard_caps_lock_led_state_manager(IOHIDDeviceRef device)

@@ -4,7 +4,6 @@
 #include "counter_chunk_value.hpp"
 #include "counter_direction.hpp"
 #include "counter_entry.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "options.hpp"
 #include "types/absolute_time_duration.hpp"
 #include "types/pointing_motion.hpp"
@@ -19,7 +18,7 @@
 
 namespace krbn::manipulator::manipulators::mouse_motion_to_scroll {
 class counter final : pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   using chunk_accumulated_values_entry_t = std::pair<pqrs::dispatcher::time_point, int>;

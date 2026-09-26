@@ -4,7 +4,6 @@
 
 #include "codesign_manager.hpp"
 #include "constants.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "send_user_command_handler.hpp"
 #include "settings_window_guidance_manager.hpp"
 #include "shell_command_handler.hpp"
@@ -18,7 +17,7 @@
 
 namespace krbn::console_user_server {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   receiver(const receiver&) = delete;

@@ -8,7 +8,6 @@
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "device_grabber.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "filesystem_utility.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "types.hpp"
@@ -28,7 +27,7 @@
 
 namespace krbn::core_service::daemon {
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   // Signals (invoked from the shared dispatcher thread)

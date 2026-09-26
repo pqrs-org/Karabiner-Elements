@@ -1,16 +1,16 @@
 #pragma once
 
 #include "connected_devices.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "json_utility.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "settings.hpp"
 #include "settings_configuration_snapshot.hpp"
 #include "settings_remembered_device_properties.hpp"
 #include <mutex>
+#include <pqrs/dispatcher.hpp>
 
 class settings_configuration_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   settings_configuration_monitor(const settings_configuration_monitor&) = delete;

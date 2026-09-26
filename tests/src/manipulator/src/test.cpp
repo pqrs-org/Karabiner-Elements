@@ -1,4 +1,3 @@
-#include "dispatcher_client_constructor_guard_test.hpp"
 #include "dispatcher_utility.hpp"
 #include "errors_test.hpp"
 #include "manipulator_factory_test.hpp"
@@ -10,7 +9,6 @@ int main() {
   auto scoped_run_loop_thread_manager = krbn::run_loop_thread_utility::initialize_scoped_run_loop_thread_manager(
       pqrs::cf::run_loop_thread::failure_policy::abort);
 
-  run_dispatcher_client_constructor_guard_test();
   run_errors_test();
   run_manipulator_factory_test();
   run_manipulator_manager_test();

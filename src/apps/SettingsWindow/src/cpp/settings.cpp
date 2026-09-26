@@ -3,7 +3,6 @@
 #include "application_launcher.hpp"
 #include "constants.hpp"
 #include "core_configuration/core_configuration.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "filesystem_utility.hpp"
@@ -20,6 +19,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <pqrs/cf/dictionary.hpp>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <string>
@@ -29,7 +29,7 @@ std::shared_ptr<krbn::dispatcher_utility::scoped_dispatcher_manager> scoped_disp
 std::shared_ptr<krbn::run_loop_thread_utility::scoped_run_loop_thread_manager> scoped_run_loop_thread_manager_;
 
 class settings_process_lifecycle_components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   settings_process_lifecycle_components_manager(const settings_process_lifecycle_components_manager&) = delete;

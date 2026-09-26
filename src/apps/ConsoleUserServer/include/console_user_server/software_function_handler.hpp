@@ -1,9 +1,9 @@
 #pragma once
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include <deque>
 #include <pqrs/cf/bundle.hpp>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/accessibility.hpp>
 #include <pqrs/osx/cg_display.hpp>
 #include <pqrs/osx/cg_event.hpp>
@@ -15,7 +15,7 @@
 
 namespace krbn::console_user_server {
 class software_function_handler final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   software_function_handler()

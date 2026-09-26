@@ -1,6 +1,5 @@
 #pragma once
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "json_writer.hpp"
 #include "modifier_flag_manager.hpp"
 #include "types/device_id.hpp"
@@ -16,7 +15,7 @@
 
 namespace krbn {
 class notification_message_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   nod::signal<void(const std::string&)> notification_message_changed;

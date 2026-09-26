@@ -1,7 +1,6 @@
 #pragma once
 
 #include "constants.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include <asio.hpp>
 #include <memory>
@@ -14,7 +13,7 @@
 namespace krbn::console_user_server {
 
 class send_user_command_handler final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   static constexpr int send_buffer_size = 32 * 1024;

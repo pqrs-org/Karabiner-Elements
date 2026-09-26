@@ -1,7 +1,6 @@
 #pragma once
 
 #include "device_properties.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "hid_report_only_events.hpp"
 #include <chrono>
 #include <functional>
@@ -20,7 +19,7 @@ namespace krbn {
 // Publishes the values exposed by IOHIDQueue and, when enabled, events recovered
 // directly from raw input reports through one chronologically consistent stream.
 class hid_device_events_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   //

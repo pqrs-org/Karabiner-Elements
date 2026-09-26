@@ -1,12 +1,12 @@
 #pragma once
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "queue.hpp"
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 
 namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
 class mouse_key_handler final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   class count_converter final {

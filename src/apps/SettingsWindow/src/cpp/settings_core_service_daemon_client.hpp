@@ -1,17 +1,17 @@
 #pragma once
 
 #include "core_service_daemon_client.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "settings.hpp"
 #include <atomic>
 #include <chrono>
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <pqrs/dispatcher.hpp>
 #include <utility>
 
 class settings_core_service_daemon_client final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   settings_core_service_daemon_client(const settings_core_service_daemon_client&) = delete;

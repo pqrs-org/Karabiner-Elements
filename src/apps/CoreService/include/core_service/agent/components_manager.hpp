@@ -4,7 +4,6 @@
 
 #include "core_service/core_service_utility.hpp"
 #include "core_service_daemon_client.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "permission_checker.hpp"
 #include "services_utility.hpp"
@@ -16,7 +15,7 @@
 namespace krbn::core_service::agent {
 
 class components_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   components_manager(const components_manager&) = delete;

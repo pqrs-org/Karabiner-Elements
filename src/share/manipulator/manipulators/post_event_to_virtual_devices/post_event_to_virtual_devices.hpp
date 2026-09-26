@@ -3,7 +3,6 @@
 #include "../../types.hpp"
 #include "../base.hpp"
 #include "console_user_server_peer.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "key_event_dispatcher.hpp"
 #include "keyboard_repeat_detector.hpp"
 #include "krbn_notification_center.hpp"
@@ -12,11 +11,12 @@
 #include "queue.hpp"
 #include "types.hpp"
 #include <algorithm>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_service.hpp>
 
 namespace krbn::manipulator::manipulators::post_event_to_virtual_devices {
 class post_event_to_virtual_devices final : public base, public pqrs::dispatcher::extra::dispatcher_client {
-  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   post_event_to_virtual_devices(std::weak_ptr<console_user_server_peer> weak_console_user_server_peer,

@@ -3,7 +3,6 @@
 #include "../../types.hpp"
 #include "../base.hpp"
 #include "core_configuration/core_configuration.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "event_sender.hpp"
 #include "from_event_definition.hpp"
 #include "krbn_notification_center.hpp"
@@ -18,7 +17,7 @@
 
 namespace krbn::manipulator::manipulators::basic {
 class basic final : public base, public pqrs::dispatcher::extra::dispatcher_client {
-  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   basic(const nlohmann::json& json,

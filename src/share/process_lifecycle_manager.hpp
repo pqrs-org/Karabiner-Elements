@@ -2,7 +2,6 @@
 
 // `krbn::process_lifecycle_manager` can be used safely in a multi-threaded environment.
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "run_loop_thread_utility.hpp"
 #include <chrono>
@@ -15,7 +14,7 @@
 
 namespace krbn {
 class process_lifecycle_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   using termination_completion_handler_t = std::function<void()>;

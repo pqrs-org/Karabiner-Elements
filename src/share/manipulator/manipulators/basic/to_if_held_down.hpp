@@ -1,15 +1,15 @@
 #pragma once
 
 #include "../../types.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "event_sender.hpp"
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/json.hpp>
 #include <unordered_set>
 #include <vector>
 
 namespace krbn::manipulator::manipulators::basic {
 class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client {
-  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   to_if_held_down(const nlohmann::json& json) : dispatcher_client(),

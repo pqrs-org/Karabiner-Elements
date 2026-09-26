@@ -1,10 +1,10 @@
 #pragma once
 
-#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include <memory>
 #include <nlohmann/json.hpp>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/dispatcher/extra/dispatcher_client.hpp>
 #include <pqrs/unix_domain_stream.hpp>
 #include <string>
@@ -14,7 +14,7 @@
 namespace krbn {
 class console_user_server_peer final : public pqrs::dispatcher::extra::dispatcher_client,
                                        public std::enable_shared_from_this<console_user_server_peer> {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   console_user_server_peer(const console_user_server_peer&) = delete;

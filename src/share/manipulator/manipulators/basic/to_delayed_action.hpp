@@ -1,14 +1,14 @@
 #pragma once
 
 #include "../../types.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "event_sender.hpp"
+#include <pqrs/dispatcher.hpp>
 #include <unordered_set>
 #include <vector>
 
 namespace krbn::manipulator::manipulators::basic {
 class to_delayed_action final : public pqrs::dispatcher::extra::dispatcher_client {
-  dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   to_delayed_action(const nlohmann::json& json) : dispatcher_client(),

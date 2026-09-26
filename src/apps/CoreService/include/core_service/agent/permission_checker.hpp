@@ -1,7 +1,6 @@
 #pragma once
 
 #include "constants.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "filesystem_utility.hpp"
 #include "logger.hpp"
 #include "process_lifecycle_manager.hpp"
@@ -20,7 +19,7 @@
 namespace krbn::core_service::agent {
 
 class permission_checker final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   nod::signal<void(const core_service_permission_check_result&)> permission_check_result_changed;

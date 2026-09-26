@@ -7,7 +7,6 @@
 #include "device_grabber_details/entry.hpp"
 #include "device_grabber_details/fn_function_keys_manipulator_manager.hpp"
 #include "device_grabber_details/simple_modifications_manipulator_manager.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "event_tap_utility.hpp"
 #include "filesystem_utility.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
@@ -30,6 +29,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <nod/nod.hpp>
+#include <pqrs/dispatcher.hpp>
 #include <pqrs/gsl.hpp>
 #include <pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp>
 #include <pqrs/osx/hitoolbox/secure_event_input_monitor.hpp>
@@ -46,7 +46,7 @@
 
 namespace krbn::core_service::daemon {
 class device_grabber final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   // Signals (invoked from the shared dispatcher thread)

@@ -3,7 +3,6 @@
 #include "core_configuration/core_configuration.hpp"
 #include "device_properties.hpp"
 #include "device_utility.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "event_queue.hpp"
 #include "game_pad_stick_converter.hpp"
 #include "hid_device_events_monitor.hpp"
@@ -12,10 +11,11 @@
 #include "pressed_keys_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
+#include <pqrs/dispatcher.hpp>
 
 namespace krbn::core_service::daemon::device_grabber_details {
 class entry final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   //

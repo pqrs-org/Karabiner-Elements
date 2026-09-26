@@ -1,7 +1,6 @@
 #pragma once
 
 #include "application_launcher.hpp"
-#include "dispatcher_client_constructor_guard.hpp"
 #include "logger.hpp"
 #include "services_utility.hpp"
 #include "types/settings_window_guidance_state.hpp"
@@ -13,7 +12,7 @@
 
 namespace krbn::console_user_server {
 class settings_window_guidance_manager final : public pqrs::dispatcher::extra::dispatcher_client {
-  krbn::dispatcher_client_constructor_guard dispatcher_client_constructor_guard_{*this};
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
   using guidance_context_maker = std::function<settings_window_guidance_context()>;
