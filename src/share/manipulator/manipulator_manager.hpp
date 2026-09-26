@@ -107,6 +107,7 @@ public:
             case event_queue::event::type::send_user_command:
             case event_queue::event::type::select_input_source:
             case event_queue::event::type::set_notification_message:
+            case event_queue::event::type::set_caps_lock_led:
             case event_queue::event::type::mouse_key:
             case event_queue::event::type::sticky_modifier:
             case event_queue::event::type::software_function:
