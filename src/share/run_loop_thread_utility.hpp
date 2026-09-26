@@ -11,7 +11,13 @@ public:
     scoped_run_loop_thread_manager(pqrs::cf::run_loop_thread::failure_policy failure_policy) {
       pqrs::cf::run_loop_thread::extra::initialize_shared_run_loop_thread(failure_policy);
 
-      get_power_management_run_loop_thread() = std::make_shared<pqrs::cf::run_loop_thread>(failure_policy);
+      try {
+        get_power_management_run_loop_thread() = std::make_shared<pqrs::cf::run_loop_thread>(failure_policy);
+      } catch (...) {
+        // The destructor is not called if construction fails.
+        pqrs::cf::run_loop_thread::extra::terminate_shared_run_loop_thread();
+        throw;
+      }
     }
 
     ~scoped_run_loop_thread_manager() {
