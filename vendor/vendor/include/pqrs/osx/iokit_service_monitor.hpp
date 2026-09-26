@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service_monitor v6.2.0
+// pqrs::osx::iokit_service_monitor v6.3.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -23,6 +23,10 @@
 
 namespace pqrs::osx {
 class iokit_service_monitor final : dispatcher::extra::dispatcher_client {
+private:
+  // Keep the guard first so member initialization failures also detach.
+  pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_exception_guard_{*this};
+
 public:
   // Signals (invoked from the dispatcher thread)
 
@@ -47,6 +51,7 @@ public:
         matching_dictionary_(matching_dictionary),
         notification_port_(nullptr),
         scan_timer_(*this) {
+    dispatcher_client_constructor_exception_guard_.initialize();
   }
 
   ~iokit_service_monitor() override {
@@ -311,7 +316,8 @@ private:
   iokit_iterator matched_notification_;
   iokit_iterator terminated_notification_;
 
-  pqrs::dispatcher::extra::timer scan_timer_;
   std::unordered_set<iokit_registry_entry_id::value_t> registry_entry_ids_;
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer scan_timer_;
 };
 } // namespace pqrs::osx
