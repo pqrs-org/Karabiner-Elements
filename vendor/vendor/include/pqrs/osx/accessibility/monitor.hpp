@@ -49,7 +49,10 @@ private:
   }
 
 public:
-  ~monitor() override = default;
+  ~monitor() override {
+    // Also detach if shared_ptr control block allocation fails after construction.
+    detach_from_dispatcher();
+  }
 
   // initialize_shared_monitor and terminate_shared_monitor must be called
   // serially during application lifecycle transitions.
