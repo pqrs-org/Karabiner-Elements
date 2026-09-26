@@ -159,8 +159,8 @@ void krbn_services_register_core_agents() {
   krbn::services_utility::register_core_agents();
 }
 
-void krbn_services_bootout_old_agents() {
-  krbn::services_utility::bootout_old_agents();
+void krbn_services_bootout_and_disable_old_agents() {
+  krbn::services_utility::bootout_and_disable_old_agents();
 }
 
 void krbn_services_restart_console_user_server_agent() {

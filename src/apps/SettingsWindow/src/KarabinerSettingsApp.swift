@@ -24,7 +24,7 @@ struct KarabinerSettingsApp: App {
     // Unregister old agents
     //
 
-    krbn_services_bootout_old_agents()
+    krbn_services_bootout_and_disable_old_agents()
 
     //
     // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.

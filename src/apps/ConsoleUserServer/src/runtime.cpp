@@ -89,7 +89,7 @@ void console_user_server_start(console_user_server_terminated_callback callback)
   // Register services
   //
 
-  krbn::services_utility::bootout_old_agents();
+  krbn::services_utility::bootout_and_disable_old_agents();
   // Register services when console_user_server starts to avoid missing registrations,
   // for example when new services are added in an update.
   krbn::services_utility::register_core_daemons();

@@ -93,10 +93,13 @@ inline void unregister_multitouch_extension_agent() {
 // Old agents
 //
 
-// For old daemons, the installer can stop them, but for agents, the user needs to handle the stopping process, so the installer cannot do it.
-// Additionally, simply deleting /Library/LaunchAgents will not stop launchd from processing; the old services will continue to run until bootout is explicitly called or macOS is restarted.
-// Therefore, explicitly call bootout at the start of Settings and console_user_server to stop the old agents.
-inline void bootout_old_agents() {
+// For old daemons, the installer can stop them, but for agents,
+// the user needs to handle the stopping process, so the installer cannot do it.
+// Additionally, simply deleting /Library/LaunchAgents will not stop launchd from processing; the old services
+// will continue to run until bootout is explicitly called or macOS is restarted.
+// At the start of Settings and console_user_server, boot out old agents and disable their labels.
+// Disable even if bootout fails, so unloaded services do not remain enabled.
+inline void bootout_and_disable_old_agents() {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
 
   for (const auto& service_name : {
@@ -105,14 +108,17 @@ inline void bootout_old_agents() {
            "org.pqrs.karabiner.karabiner_session_monitor",
            "org.pqrs.karabiner.NotificationWindow",
            "org.pqrs.service.agent.karabiner_console_user_server",
+           "org.pqrs.service.agent.karabiner_grabber",
            "org.pqrs.service.agent.karabiner_session_monitor",
            // The current label is `org.pqrs.service.agent.Karabiner-Core-Service-rev2`,
-           // so boot out any service still registered under the former label.
+           // so boot out and disable the former label.
            "org.pqrs.service.agent.Karabiner-Core-Service",
            "org.pqrs.service.agent.Karabiner-Menu",
            "org.pqrs.service.agent.Karabiner-NotificationWindow",
        }) {
     pqrs::osx::launchctl::bootout(domain_target,
+                                  pqrs::osx::launchctl::service_name(service_name));
+    pqrs::osx::launchctl::disable(domain_target,
                                   pqrs::osx::launchctl::service_name(service_name));
   }
 }

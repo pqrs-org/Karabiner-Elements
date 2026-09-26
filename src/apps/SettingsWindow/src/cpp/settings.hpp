@@ -70,7 +70,7 @@ void krbn_get_user_tmp_directory(char* _Nonnull buffer,
 
 void krbn_services_register_core_daemons(void);
 void krbn_services_register_core_agents(void);
-void krbn_services_bootout_old_agents(void);
+void krbn_services_bootout_and_disable_old_agents(void);
 void krbn_services_restart_console_user_server_agent(void);
 void krbn_services_unregister_all_agents(void);
 typedef enum {
