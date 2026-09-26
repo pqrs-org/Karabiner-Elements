@@ -21,7 +21,7 @@ namespace pqrs::dispatcher::extra {
 
 class timer final {
 public:
-  timer(dispatcher_client& dispatcher_client)
+  timer(dispatcher_client& dispatcher_client) noexcept
       : dispatcher_client_(dispatcher_client),
         current_function_id_(0),
         interval_(duration::zero()),

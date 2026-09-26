@@ -22,7 +22,7 @@ namespace pqrs::dispatcher::extra {
 
 class debounced_task final {
 public:
-  explicit debounced_task(dispatcher_client& dispatcher_client)
+  explicit debounced_task(dispatcher_client& dispatcher_client) noexcept
       : dispatcher_client_(dispatcher_client) {
   }
 

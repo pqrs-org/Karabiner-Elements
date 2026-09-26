@@ -14,9 +14,20 @@ namespace pqrs::dispatcher::extra {
 // initialize() for an empty constructor body. If member initialization throws,
 // it detaches before the dispatcher_client base destructor checks for a missing detach.
 // Use initialize for the constructor body so exceptions detach before member
-// destruction, including timers that require their owner to be detached.
-// Initialize those timers after potentially throwing members: this guard cannot
-// run before an already constructed timer during member-initialization unwinding.
+// destruction, including timer and debounced_task members that require their
+// owner to be detached. Declare these after all potentially throwing members:
+// this guard cannot run before them during member-initialization unwinding.
+// Their constructors are noexcept, so multiple such members can be declared last.
+// After constructing them, put all potentially throwing constructor-body work
+// inside initialize's function. Argument evaluation (including lambda captures)
+// happens before initialize is entered and must not throw either.
+// Apply the same ordering rule to custom members whose destruction requires
+// their owner to be detached.
+//
+// A dispatcher_client held as a member needs its own detach; this guard only
+// detaches the owner. Use a child client that detaches in its own destructor and
+// handles its own construction failures. Declaration order alone cannot make
+// a directly held, attached dispatcher_client safe to destroy on an exception.
 //
 // Usage:
 //
@@ -31,7 +42,8 @@ namespace pqrs::dispatcher::extra {
 // public:
 //   client(std::weak_ptr<pqrs::dispatcher::dispatcher> dispatcher, bool fail)
 //       : dispatcher_client(dispatcher),
-//         timer_(*this) {
+//         timer_(*this),
+//         debounced_task_(*this) {
 //     dispatcher_client_constructor_exception_guard_.initialize(
 //         [&] {
 //           // Put potentially throwing constructor-body work here.
@@ -53,8 +65,9 @@ namespace pqrs::dispatcher::extra {
 //   }
 //
 // private:
-//   // Declare timers after all potentially throwing members.
+//   // Declare timer and debounced_task members after all potentially throwing members.
 //   pqrs::dispatcher::extra::timer timer_;
+//   pqrs::dispatcher::extra::debounced_task debounced_task_;
 // };
 //
 // Use dispatcher_client_constructor_exception_guard_.initialize(function) when no cleanup is needed, or
