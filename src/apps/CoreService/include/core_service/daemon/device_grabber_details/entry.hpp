@@ -253,7 +253,8 @@ public:
   }
 
   [[nodiscard]] bool determine_is_built_in_keyboard() const {
-    return device_utility::determine_is_built_in_keyboard(*core_configuration_, *device_properties_);
+    auto device = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+    return device_utility::determine_is_built_in_keyboard(*device, *device_properties_);
   }
 
   void async_start_hid_device_events_monitor(grabbable_state::state state) {
@@ -317,7 +318,8 @@ public:
       return true;
     }
 
-    return !device_utility::determine_should_ignore_device(*core_configuration_,
+    auto device = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
+    return !device_utility::determine_should_ignore_device(*device,
                                                            *device_properties_);
   }
 

@@ -196,7 +196,7 @@ private:
       const auto& device = profile.get_device(i);
       auto ignore = device->get_ignore();
       if (device_properties) {
-        ignore = krbn::device_utility::determine_should_ignore_device(core_configuration_,
+        ignore = krbn::device_utility::determine_should_ignore_device(*device,
                                                                       *device_properties);
       }
 

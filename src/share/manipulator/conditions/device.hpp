@@ -176,7 +176,8 @@ private:
       }
       if (is_built_in_keyboard) {
         auto c = manipulator_environment.get_core_configuration();
-        if (is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*c, device_properties)) {
+        auto device = c->get_selected_profile().get_device(device_properties.get_device_identifiers());
+        if (is_built_in_keyboard != device_utility::determine_is_built_in_keyboard(*device, device_properties)) {
           return false;
         }
       }

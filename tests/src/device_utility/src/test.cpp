@@ -21,7 +21,7 @@ int main() {
             .product_id = pqrs::hid::product_id::value_t(5678),
             .is_pointing_device = true,
         });
-    expect(!krbn::device_utility::determine_should_ignore_device(core_configuration,
+    expect(!krbn::device_utility::determine_should_ignore_device(*profile.get_device(pointing_device.get_device_identifiers()),
                                                                  pointing_device));
 
     auto apple_pointing_device = krbn::device_properties(
@@ -30,7 +30,7 @@ int main() {
             .product_id = pqrs::hid::product_id::value_t(1234),
             .is_pointing_device = true,
         });
-    expect(krbn::device_utility::determine_should_ignore_device(core_configuration,
+    expect(krbn::device_utility::determine_should_ignore_device(*profile.get_device(apple_pointing_device.get_device_identifiers()),
                                                                 apple_pointing_device));
 
     // No actual Apple device is currently known to report both keyboard and
@@ -43,7 +43,7 @@ int main() {
             .is_keyboard = true,
             .is_pointing_device = true,
         });
-    expect(krbn::device_utility::determine_should_ignore_device(core_configuration,
+    expect(krbn::device_utility::determine_should_ignore_device(*profile.get_device(apple_composite_device.get_device_identifiers()),
                                                                 apple_composite_device));
 
     auto fifo_pointing_device = krbn::device_properties(
@@ -51,17 +51,17 @@ int main() {
             .transport = "FIFO",
             .is_pointing_device = true,
         });
-    expect(krbn::device_utility::determine_should_ignore_device(core_configuration,
+    expect(krbn::device_utility::determine_should_ignore_device(*profile.get_device(fifo_pointing_device.get_device_identifiers()),
                                                                 fifo_pointing_device));
 
     // An explicit per-device setting takes precedence over the Apple pointing
     // device safeguard.
     profile.get_device(apple_pointing_device.get_device_identifiers())->set_ignore(false);
-    expect(!krbn::device_utility::determine_should_ignore_device(core_configuration,
+    expect(!krbn::device_utility::determine_should_ignore_device(*profile.get_device(apple_pointing_device.get_device_identifiers()),
                                                                  apple_pointing_device));
 
     profile.get_device(apple_pointing_device.get_device_identifiers())->set_ignore(true);
-    expect(krbn::device_utility::determine_should_ignore_device(core_configuration,
+    expect(krbn::device_utility::determine_should_ignore_device(*profile.get_device(apple_pointing_device.get_device_identifiers()),
                                                                 apple_pointing_device));
   };
 
