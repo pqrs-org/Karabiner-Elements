@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import Foundation
 import SwiftUI
 
@@ -71,9 +70,7 @@ final class Settings: ObservableObject {
 
   private var didSetEnabled = false
 
-  private let saveStream: AsyncStream<Void>
-  private let saveContinuation: AsyncStream<Void>.Continuation
-  private var saveTask: Task<Void, Never>?
+  private let saveTask = DebouncedTask()
 
   @Published var saveErrorMessage = ""
   @Published private(set) var configurationLoaded = false
@@ -97,19 +94,7 @@ final class Settings: ObservableObject {
     }
   }
 
-  private init() {
-    var continuation: AsyncStream<Void>.Continuation!
-    self.saveStream = AsyncStream<Void> { continuation = $0 }
-    self.saveContinuation = continuation
-
-    self.saveTask = Task { @MainActor in
-      for await _ in self.saveStream.debounce(for: .seconds(0.2)) {
-        guard self.configurationLoaded else { continue }
-
-        _ = self.saveImmediately()
-      }
-    }
-  }
+  private init() {}
 
   private func saveImmediately() -> Bool {
     print("save")
@@ -156,7 +141,10 @@ final class Settings: ObservableObject {
   private func reloadConfigurationSnapshotAndSave() {
     reloadConfigurationSnapshot()
     krbn_core_configuration_mark_save_pending()
-    saveContinuation.yield(())
+    saveTask.schedule(after: .milliseconds(200)) { [weak self] in
+      guard let self, self.configurationLoaded else { return }
+      _ = self.saveImmediately()
+    }
   }
 
   fileprivate func applyConfigurationSnapshot(_ data: Data) {

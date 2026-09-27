@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import Combine
 import Foundation
 
@@ -120,7 +119,7 @@ final class EVCoreServiceDaemonClient: ObservableObject {
 
   static let shared = EVCoreServiceDaemonClient()
 
-  private let manipulatorEnvironmentTimer: AsyncTimerSequence<ContinuousClock>
+  private let manipulatorEnvironmentTimer: PeriodicTimer
   private var manipulatorEnvironmentTimerTask: Task<Void, Never>?
   private var manipulatorEnvironmentStartCount = 0
   @Published private(set) var manipulatorEnvironmentText = ""
@@ -131,9 +130,8 @@ final class EVCoreServiceDaemonClient: ObservableObject {
   @Published private(set) var openHIDDeviceIds: Set<UInt64> = []
 
   init() {
-    manipulatorEnvironmentTimer = AsyncTimerSequence(
-      interval: .milliseconds(500),
-      clock: .continuous
+    manipulatorEnvironmentTimer = PeriodicTimer(
+      interval: .milliseconds(500)
     )
   }
 

@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import Combine
 import Foundation
 import SwiftUI
@@ -9,13 +8,12 @@ final class SystemPreferences: ObservableObject {
 
   @Published var virtualHIDKeyboardModifierMappingsExists: Bool = false
 
-  private let timer: AsyncTimerSequence<ContinuousClock>
+  private let timer: PeriodicTimer
   private var timerTask: Task<Void, Never>?
 
   init() {
-    timer = AsyncTimerSequence(
-      interval: .seconds(3),
-      clock: .continuous
+    timer = PeriodicTimer(
+      interval: .seconds(3)
     )
   }
 

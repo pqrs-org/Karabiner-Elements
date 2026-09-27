@@ -1,5 +1,4 @@
 import AppKit
-import AsyncAlgorithms
 import CodeEditor
 import SwiftUI
 
@@ -24,8 +23,7 @@ struct ComplexModificationsEditView: View {
   @State private var evalResultString = ""
   @State private var evalLogMessages = ""
   @State private var evalErrorMessage: String?
-  @State private var evalContinuation: AsyncStream<String>.Continuation?
-  @State private var evalStreamTask: Task<Void, Never>?
+  @State private var evalTask = DebouncedTask()
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -224,49 +222,15 @@ struct ComplexModificationsEditView: View {
 
       externalEditorController.reset()
 
-      if evalContinuation == nil {
-        let stream = AsyncStream<String> { continuation in
-          evalContinuation = continuation
-        }
-
-        evalStreamTask = Task {
-          for await code in stream.debounce(for: .milliseconds(500)) {
-            if Task.isCancelled {
-              break
-            }
-
-            if disabled || codeType != .javascript {
-              await MainActor.run {
-                evalResultString = ""
-                evalLogMessages = ""
-                evalErrorMessage = nil
-              }
-              continue
-            }
-
-            let result = evaluateJavascript(code: code)
-            await MainActor.run {
-              if codeString != code {
-                return
-              }
-
-              evalResultString = result.jsonString
-              evalLogMessages = result.logMessages
-              evalErrorMessage = result.errorMessage
-            }
-          }
-        }
-      }
-
-      evalContinuation?.yield(codeString)
+      scheduleEvaluation()
+    }
+    .onDisappear {
+      evalTask.cancel()
     }
     .onChange(of: showing) { newValue in
       if !newValue {
         externalEditorController.reset()
-        evalContinuation?.finish()
-        evalContinuation = nil
-        evalStreamTask?.cancel()
-        evalStreamTask = nil
+        evalTask.cancel()
       }
     }
     .onChange(of: codeString) { newValue in
@@ -275,13 +239,32 @@ struct ComplexModificationsEditView: View {
         onError: { errorMessage = $0 }
       )
 
-      evalContinuation?.yield(newValue)
+      scheduleEvaluation()
     }
     .onChange(of: codeType) { _ in
-      evalContinuation?.yield(codeString)
+      scheduleEvaluation()
     }
     .onChange(of: monitoredConfiguration) { _ in
       cancelEditingIfTargetChangedExternally()
+    }
+  }
+
+  private func scheduleEvaluation() {
+    guard showing else { return }
+    let code = codeString
+    evalTask.schedule(after: .milliseconds(500)) {
+      if disabled || codeType != .javascript {
+        evalResultString = ""
+        evalLogMessages = ""
+        evalErrorMessage = nil
+        return
+      }
+
+      let result = evaluateJavascript(code: code)
+      guard codeString == code else { return }
+      evalResultString = result.jsonString
+      evalLogMessages = result.logMessages
+      evalErrorMessage = result.errorMessage
     }
   }
 

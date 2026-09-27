@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import Combine
 import Foundation
 
@@ -37,16 +36,15 @@ struct FrontmostApplicationHistoryEntry: Identifiable, Equatable {
 final class FrontmostApplicationHistory: ObservableObject {
   static let shared = FrontmostApplicationHistory()
 
-  private let timer: AsyncTimerSequence<ContinuousClock>
+  private let timer: PeriodicTimer
   private var timerTask: Task<Void, Never>?
 
   private(set) var jsonString = ""
   @Published var entries: [FrontmostApplicationHistoryEntry] = []
 
   init() {
-    timer = AsyncTimerSequence(
-      interval: .milliseconds(1000),
-      clock: .continuous
+    timer = PeriodicTimer(
+      interval: .milliseconds(1000)
     )
   }
 

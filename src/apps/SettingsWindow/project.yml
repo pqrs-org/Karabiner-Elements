@@ -1,9 +1,6 @@
 name: Karabiner-Elements
 
 packages:
-  AsyncAlgorithms:
-    url: https://github.com/apple/swift-async-algorithms
-    from: 1.1.5
   CodeEditor:
     url: https://github.com/ZeeZide/CodeEditor
     from: 1.2.6
@@ -52,6 +49,5 @@ targets:
           - '*.plist.in'
       - path: ../share/Resources/app.icns
     dependencies:
-      - package: AsyncAlgorithms
       - package: CodeEditor
       - sdk: libc++.tbd

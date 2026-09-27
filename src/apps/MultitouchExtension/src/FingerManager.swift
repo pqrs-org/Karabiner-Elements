@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import Combine
 
 @MainActor
@@ -32,7 +31,7 @@ class FingerManager: ObservableObject {
 
   private func startTimer() {
     timerTask = Task { @MainActor in
-      let timer = AsyncTimerSequence(interval: .milliseconds(20), clock: ContinuousClock())
+      let timer = PeriodicTimer(interval: .milliseconds(20))
       for await _ in timer {
         if Task.isCancelled { break }
 

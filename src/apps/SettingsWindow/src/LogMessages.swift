@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import SwiftUI
 
 enum LogLevel {
@@ -92,13 +91,12 @@ public class LogMessages: ObservableObject {
 
   private var dividers: [LogMessageEntry] = []
 
-  private let timer: AsyncTimerSequence<ContinuousClock>
+  private let timer: PeriodicTimer
   private var timerTask: Task<Void, Never>?
 
   init() {
-    timer = AsyncTimerSequence(
-      interval: .seconds(1),
-      clock: .continuous
+    timer = PeriodicTimer(
+      interval: .seconds(1)
     )
   }
 
