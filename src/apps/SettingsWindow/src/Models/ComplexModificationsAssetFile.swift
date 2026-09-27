@@ -1,15 +1,15 @@
 import Foundation
 
 struct ComplexModificationsAssetFile: Identifiable, Decodable {
-  var id = UUID()
-  var index: Int
+  var id: String { filePath }
+  var filePath: String
   var title: String
   var userFile: Bool
   var importedAt: Date
   var assetRules: [ComplexModificationsAssetRule]
 
   private enum CodingKeys: String, CodingKey {
-    case index
+    case filePath
     case title
     case userFile
     case importedAt
@@ -17,13 +17,13 @@ struct ComplexModificationsAssetFile: Identifiable, Decodable {
   }
 
   init(
-    _ index: Int,
+    _ filePath: String,
     _ title: String,
     _ userFile: Bool,
     _ importedAt: Date,
     _ assetRules: [ComplexModificationsAssetRule]
   ) {
-    self.index = index
+    self.filePath = filePath
     self.title = title
     self.userFile = userFile
     self.importedAt = importedAt

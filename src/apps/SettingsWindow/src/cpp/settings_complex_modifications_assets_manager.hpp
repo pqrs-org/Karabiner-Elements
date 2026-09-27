@@ -1,7 +1,7 @@
 #pragma once
 
 #include "complex_modifications_assets_manager.hpp"
-#include "settings_configuration_monitor.hpp"
+#include "core_configuration/core_configuration.hpp"
 #include <chrono>
 #include <nlohmann/json.hpp>
 #include <utility>
@@ -47,7 +47,7 @@ public:
       }
 
       json.push_back({
-          {"index", file_index},
+          {"file_path", file->get_file_path().string()},
           {"title", file->get_title()},
           {"user_file", file->user_file()},
           {"imported_at", imported_at.count()},
@@ -58,9 +58,12 @@ public:
     return json;
   }
 
-  void erase_file(size_t index) const {
-    if (auto f = find_file(index)) {
-      f->unlink_file();
+  void erase_file(const std::filesystem::path& file_path) const {
+    for (const auto& file : manager_->get_files()) {
+      if (file->get_file_path() == file_path) {
+        file->unlink_file();
+        return;
+      }
     }
   }
 
