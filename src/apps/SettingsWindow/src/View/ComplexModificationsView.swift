@@ -243,7 +243,7 @@ struct ComplexModificationsView: View {
             }
             .listOverlayDivider()
             .moveDisabled(
-              settings.isChangingStructure || moveDisabled || !normalizedFilterKeyword.isEmpty)
+              settings.isStructuralChangePending || moveDisabled || !normalizedFilterKeyword.isEmpty)
           }
         }
         .onMove { indices, destination in

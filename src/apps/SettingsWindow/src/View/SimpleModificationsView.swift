@@ -15,17 +15,6 @@ struct SimpleModificationsView: View {
       SimpleModificationView(
         selectedDevice: contentViewStates.simpleModificationsViewSelectedDevice)
     }
-    .onAppear {
-      settings.appendSimpleModificationIfEmpty(
-        device: contentViewStates.simpleModificationsViewSelectedDevice)
-    }
-    .onChange(of: contentViewStates.simpleModificationsViewSelectedDevice) { newDevice in
-      settings.appendSimpleModificationIfEmpty(device: newDevice)
-    }
-    .onReceive(NotificationCenter.default.publisher(for: Settings.didConfigurationLoad)) { _ in
-      settings.appendSimpleModificationIfEmpty(
-        device: contentViewStates.simpleModificationsViewSelectedDevice)
-    }
   }
 
   struct SimpleModificationView: View {

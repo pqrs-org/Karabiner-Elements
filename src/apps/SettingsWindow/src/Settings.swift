@@ -55,9 +55,11 @@ final class Settings: ObservableObject {
   private var snapshots = ConfigurationSnapshotBuffer<
     (data: Data?, count: UInt64, saveError: String)
   >()
-  private var pendingEmptyRows: Set<String> = []
-
-  @Published private(set) var isChangingStructure = false
+  // Block UI edits while an add, removal, reorder, or profile switch is pending.
+  // Otherwise, indices from the old UI could modify a different item after the change.
+  // Keep edits blocked until all pending responses are received and the latest snapshot
+  // can be applied; also clear this flag when components stop. Ordinary key edits do not set it.
+  @Published private(set) var isStructuralChangePending = false
 
   @Published var saveErrorMessage = ""
   @Published private var loadingState = ConfigurationLoadingState.stopped
@@ -91,7 +93,8 @@ final class Settings: ObservableObject {
     }
     set {
       // This setter handles UI edits only. Received snapshots update storage directly.
-      guard configurationLoaded, !isChangingStructure, let oldValue = configurationStorage else {
+      guard configurationLoaded, !isStructuralChangePending, let oldValue = configurationStorage
+      else {
         return
       }
       configurationStorage = newValue
@@ -113,13 +116,13 @@ final class Settings: ObservableObject {
       return
     }
     // Reject callbacks already queued before SwiftUI disables the controls.
-    guard !isChangingStructure else {
+    guard !isStructuralChangePending else {
       completion?("Settings are being updated. Please try again.")
       return
     }
 
     let requestID = snapshots.beginRequest(blocksEditing: action.blocksEditing)
-    isChangingStructure = snapshots.isEditingBlocked
+    isStructuralChangePending = snapshots.isEditingBlocked
     let generation = lifecycleGeneration
     pendingRequests[requestID] =
       completion ?? { [weak self] error in
@@ -179,7 +182,7 @@ final class Settings: ObservableObject {
     guard pendingRequests.isEmpty else { return }
 
     let readySnapshot = snapshots.takeReadySnapshot()
-    isChangingStructure = snapshots.isEditingBlocked
+    isStructuralChangePending = snapshots.isEditingBlocked
     if let snapshot = readySnapshot {
       if let data = snapshot.data {
         if applyConfigurationSnapshot(data) {
@@ -201,7 +204,7 @@ final class Settings: ObservableObject {
   func componentsManagerStopped(through revision: UInt64) -> Bool {
     guard snapshots.reset(through: revision) else { return false }
 
-    isChangingStructure = false
+    isStructuralChangePending = false
     lifecycleGeneration += 1
 
     let pending = pendingRequests.values
@@ -215,8 +218,6 @@ final class Settings: ObservableObject {
     for callback in completed {
       callback()
     }
-
-    pendingEmptyRows.removeAll()
 
     transitionLoadingState(.stopped)
 
@@ -292,7 +293,7 @@ final class Settings: ObservableObject {
     toJsonString: String? = nil,
     device: ConnectedDevice?
   ) {
-    guard configurationLoaded, !isChangingStructure,
+    guard configurationLoaded, !isStructuralChangePending,
       let current = simpleModifications(connectedDevice: device).first(where: { $0.index == index })
     else { return }
 
@@ -315,26 +316,9 @@ final class Settings: ObservableObject {
   }
 
   public func appendSimpleModification(device: ConnectedDevice?) {
-    let key = device?.id ?? "{}"
-    guard pendingEmptyRows.insert(key).inserted else { return }
-
     performCommand(
       .appendSimple,
-      parameters: [
-        "device": key
-      ]
-    ) { [weak self] error in
-      self?.pendingEmptyRows.remove(key)
-      if let error { self?.saveErrorMessage = error }
-    }
-  }
-
-  public func appendSimpleModificationIfEmpty(device: ConnectedDevice?) {
-    guard configurationLoaded else { return }
-
-    if simpleModifications(connectedDevice: device).isEmpty {
-      appendSimpleModification(device: device)
-    }
+      parameters: ["device": device?.id ?? "{}"])
   }
 
   public func removeSimpleModification(

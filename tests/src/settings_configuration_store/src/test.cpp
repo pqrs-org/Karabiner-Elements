@@ -53,10 +53,6 @@ int main() {
                           },
                           completed);
       store.async_execute({
-                              {"action", "append_simple"},
-                          },
-                          completed);
-      store.async_execute({
                               {"action", "replace_simple"},
                               {"index", 0},
                               {"from", R"({"key_code":"a"})"},
@@ -70,7 +66,7 @@ int main() {
     });
     expect(done.get_future().wait_for(std::chrono::seconds(5)) == std::future_status::ready);
     expect(callbacks_on_dispatcher);
-    expect(responses.size() == size_t(5));
+    expect(responses.size() == size_t(4));
     expect(saves == 1_i);
     expect(saved.at("profiles") == nlohmann::json::parse(R"([
       {
@@ -160,9 +156,70 @@ int main() {
     });
     expect(done.get_future().wait_for(std::chrono::seconds(5)) == std::future_status::ready);
     expect(saves == 0_i);
-    expect(responses.at(0).at("snapshot").at("selected_profile").at("simple_modifications").size() == size_t(1));
+    expect(responses.at(0).at("snapshot").at("selected_profile").at("simple_modifications").size() == size_t(2));
     expect(responses.at(1).at("snapshot") == responses.at(0).at("snapshot"));
     expect(responses.at(2).at("error") == "Unknown settings command: unknown");
+  };
+
+  "snapshots_keep_editable_empty_rows_for_profile_and_devices"_test = [] {
+    settings_configuration_store store({
+        .updated = [](const auto&) {},
+        .save = [](auto&) {},
+    });
+    std::promise<void> done;
+    store.enqueue_to_dispatcher([&] {
+      auto configuration = std::make_shared<krbn::core_configuration::core_configuration>();
+      const auto original_json = configuration->to_json();
+      store.update(configuration);
+
+      krbn::connected_devices devices;
+      const auto properties = krbn::device_properties::make_device_properties(nlohmann::json::parse(R"({
+        "device_id": 54321,
+        "device_identifiers": {"vendor_id": 789, "product_id": 123, "is_keyboard": true}
+      })"));
+      devices.push_back_device(properties);
+      store.set_connected_devices(devices);
+      const auto device_key = properties->get_device_identifiers().to_normalized_json().dump();
+      const auto empty_rows = nlohmann::json::parse(R"([
+        {"index": 0, "from_json_string": "{}", "to_json_string": "[]"}
+      ])");
+
+      // Automatic rows do not change the configuration written to disk.
+      expect(configuration->to_json() == original_json);
+      for (const auto& key : {std::string("{}"), device_key}) {
+        auto rows = [key](const auto& result) {
+          const auto& profile = result.at("snapshot").at("selected_profile");
+          return key == "{}" ? profile.at("simple_modifications")
+                             : profile.at("devices").at(key).at("simple_modifications");
+        };
+        store.async_execute({{"action", "snapshot"}}, [&, rows](const auto& result) {
+          expect(rows(result) == empty_rows);
+        });
+        // Index 0 must refer to an actual row, without an append_simple command.
+        store.async_execute({{"action", "replace_simple"},
+                             {"device", key},
+                             {"index", 0},
+                             {"from", R"({"key_code":"a"})"},
+                             {"to", R"([{"key_code":"b"}])"}},
+                            [rows](const auto& result) {
+                              expect(rows(result) == nlohmann::json::parse(R"([
+                                {"index": 0, "from_json_string": "{\"key_code\":\"a\"}",
+                                 "to_json_string": "[{\"key_code\":\"b\"}]"}
+                              ])"));
+                            });
+        // Removing the last row restores one blank row; later snapshots do not add more.
+        for (const auto& action : {"erase_simple", "snapshot"}) {
+          store.async_execute({{"action", action}, {"device", key}, {"index", 0}},
+                              [&, rows](const auto& result) {
+                                expect(rows(result) == empty_rows);
+                              });
+        }
+      }
+      store.stop();
+      expect(configuration->to_json() == original_json);
+      done.set_value();
+    });
+    expect(done.get_future().wait_for(std::chrono::seconds(5)) == std::future_status::ready);
   };
 
   "device_counts_and_validation_are_computed_on_dispatcher"_test = [] {

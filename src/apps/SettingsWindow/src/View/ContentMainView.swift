@@ -266,7 +266,7 @@ struct ContentMainView: View {
         .frame(minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
       }
     )
-    .disabled(settings.isChangingStructure)
+    .disabled(settings.isStructuralChangePending)
     .background(OptionKeyObserver(isPressed: $optionPressed).frame(width: 0, height: 0))
     .toolbar {
       ToolbarItem(placement: .primaryAction) {

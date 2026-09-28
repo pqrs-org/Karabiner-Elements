@@ -503,8 +503,25 @@ private:
     publish();
   }
 
-  [[nodiscard]] nlohmann::json make_snapshot() const {
+  [[nodiscard]] nlohmann::json make_snapshot() {
     assert(dispatcher_thread());
+
+    // Keep an editable row in the actual data so snapshot indices can be used directly
+    // by replace_simple. Empty rows are omitted from the saved configuration.
+    auto& profile = configuration_->get_selected_profile();
+    if (profile.get_simple_modifications()->get_pairs().empty()) {
+      profile.get_simple_modifications()->push_back_pair();
+    }
+
+    // Materialize remembered devices before iterating over the profile's devices.
+    for (const auto& properties : settings_remembered_device_properties::get_instance().get_device_properties()) {
+      static_cast<void>(profile.get_device(properties->get_device_identifiers()));
+    }
+    for (const auto& device : profile.get_devices()) {
+      if (device->get_simple_modifications()->get_pairs().empty()) {
+        device->get_simple_modifications()->push_back_pair();
+      }
+    }
 
     return {{"snapshot", settings_configuration_snapshot(*configuration_).to_json()},
             {"revision", ++snapshot_revision_},
@@ -512,7 +529,7 @@ private:
             {"save_error", save_error_}};
   }
 
-  void publish() const {
+  void publish() {
     if (configuration_ &&
         configuration_ready_) {
       updated_(make_snapshot());
