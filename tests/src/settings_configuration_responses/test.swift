@@ -1,6 +1,7 @@
 @main
 struct ConfigurationResponseTests {
   static func main() {
+    testConfigurationLoadingState()
     var snapshots = ConfigurationSnapshotBuffer<String>()
     let first = snapshots.beginRequest()
     let second = snapshots.beginRequest()

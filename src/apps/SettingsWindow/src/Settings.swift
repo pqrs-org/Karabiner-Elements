@@ -49,8 +49,6 @@ final class Settings: ObservableObject {
 
   static let didConfigurationLoad = Notification.Name("didConfigurationLoad")
 
-  private var didSetEnabled = false
-
   private var pendingRequests: [UInt64: (String?) -> Void] = [:]
   private var completedRequests: [() -> Void] = []
   private var lifecycleGeneration: UInt64 = 0
@@ -62,9 +60,27 @@ final class Settings: ObservableObject {
   @Published private(set) var isChangingStructure = false
 
   @Published var saveErrorMessage = ""
-  @Published private(set) var configurationLoaded = false
-  @Published private(set) var configurationLoadState: krbn_core_configuration_load_state?
+  @Published private var loadingState = ConfigurationLoadingState.stopped
   @Published private var configurationStorage: SettingsConfiguration?
+
+  var configurationLoaded: Bool {
+    loadingState.isReady
+  }
+
+  var configurationLoadState: krbn_core_configuration_load_state? {
+    switch loadingState {
+    case .stopped, .loading:
+      return nil
+    case .ready:
+      return krbn_core_configuration_load_state_loaded
+    case .failed(.permission):
+      return krbn_core_configuration_load_state_permission_error
+    case .failed(.json):
+      return krbn_core_configuration_load_state_json_error
+    case .failed(.other):
+      return krbn_core_configuration_load_state_other_error
+    }
+  }
 
   var configuration: SettingsConfiguration {
     get {
@@ -74,13 +90,12 @@ final class Settings: ObservableObject {
       return configurationStorage
     }
     set {
-      guard !didSetEnabled || !isChangingStructure else { return }
-      let oldValue = configurationStorage
-      configurationStorage = newValue
-
-      if didSetEnabled, let oldValue {
-        applyConfigurationPatch(from: oldValue, to: newValue)
+      // This setter handles UI edits only. Received snapshots update storage directly.
+      guard configurationLoaded, !isChangingStructure, let oldValue = configurationStorage else {
+        return
       }
+      configurationStorage = newValue
+      applyConfigurationPatch(from: oldValue, to: newValue)
     }
   }
 
@@ -93,6 +108,10 @@ final class Settings: ObservableObject {
     parameters: [String: Any] = [:],
     completion: ((String?) -> Void)? = nil
   ) {
+    guard configurationLoaded else {
+      completion?("Configuration is not ready")
+      return
+    }
     // Reject callbacks already queued before SwiftUI disables the controls.
     guard !isChangingStructure else {
       completion?("Settings are being updated. Please try again.")
@@ -163,13 +182,13 @@ final class Settings: ObservableObject {
     isChangingStructure = snapshots.isEditingBlocked
     if let snapshot = readySnapshot {
       if let data = snapshot.data {
-        applyConfigurationSnapshot(data)
-        ConnectedDevices.shared.notConnectedConfiguredDevicesCount = snapshot.count
-        saveErrorMessage = snapshot.saveError
-        NotificationCenter.default.post(name: Self.didConfigurationLoad, object: nil)
+        if applyConfigurationSnapshot(data) {
+          ConnectedDevices.shared.notConnectedConfiguredDevicesCount = snapshot.count
+          saveErrorMessage = snapshot.saveError
+          NotificationCenter.default.post(name: Self.didConfigurationLoad, object: nil)
+        }
       } else {
-        didSetEnabled = false
-        configurationLoaded = false
+        transitionLoadingState(.unavailable)
       }
     }
     let completions = completedRequests
@@ -199,42 +218,48 @@ final class Settings: ObservableObject {
 
     pendingEmptyRows.removeAll()
 
-    didSetEnabled = false
-    configurationLoaded = false
-    configurationLoadState = nil
-    saveErrorMessage = ""
+    transitionLoadingState(.stopped)
 
     return true
   }
 
-  func coreConfigurationLoadStateChanged(_ state: krbn_core_configuration_load_state) {
-    configurationLoadState = state
-
-    if state != krbn_core_configuration_load_state_loaded {
-      didSetEnabled = false
-      configurationLoaded = false
+  private func transitionLoadingState(_ event: ConfigurationLoadingState.Event) {
+    loadingState.handle(event)
+    if !configurationLoaded {
       saveErrorMessage = ""
     }
   }
 
-  fileprivate func applyConfigurationSnapshot(_ data: Data) {
+  func coreConfigurationLoadStateChanged(_ state: krbn_core_configuration_load_state) {
+    switch state {
+    case krbn_core_configuration_load_state_loaded:
+      transitionLoadingState(.loadSucceeded)
+    case krbn_core_configuration_load_state_permission_error:
+      transitionLoadingState(.loadFailed(.permission))
+    case krbn_core_configuration_load_state_json_error:
+      transitionLoadingState(.loadFailed(.json))
+    default:
+      transitionLoadingState(.loadFailed(.other))
+    }
+  }
+
+  private func applyConfigurationSnapshot(_ data: Data) -> Bool {
     var snapshot: SettingsConfiguration
     do {
       snapshot = try settingsJSONDecoder.decode(SettingsConfiguration.self, from: data)
       snapshot.changedSettingsJson = try ChangedSettings.makeJSON(snapshotData: data)
     } catch {
       print("Failed to decode settings configuration snapshot JSON: \(error)")
-      return
+      transitionLoadingState(.loadFailed(.other))
+      return false
     }
 
-    didSetEnabled = false
-    configuration = snapshot
-
+    // Retain the last snapshot during loading/stopping for views that are being dismissed.
+    // This path must not send the received configuration back as a UI edit.
+    configurationStorage = snapshot
     updateSystemDefaultProfileExists()
-
-    didSetEnabled = true
-    configurationLoadState = krbn_core_configuration_load_state_loaded
-    configurationLoaded = true
+    transitionLoadingState(.snapshotApplied)
+    return true
   }
 
   //
