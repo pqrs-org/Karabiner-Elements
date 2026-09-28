@@ -19,15 +19,21 @@ public:
   using launch_settings_handler = std::function<void()>;
 
   static guidance_context_maker make_default_guidance_context_maker() {
-    return [] {
-      settings_window_guidance_context c;
-
-      // Note:
-      // services_utility::*_enabled and services_utility::*_running may take time because they trigger process launches.
-      c.set_core_daemons_enabled(services_utility::core_daemons_enabled());
-      c.set_core_agents_enabled(services_utility::core_agents_enabled());
-      c.set_core_daemons_running(services_utility::core_daemons_running());
-      c.set_core_agents_running(services_utility::core_agents_running());
+    return [c = settings_window_guidance_context()]() mutable {
+      // Each check launches processes. Keep each successful result for this
+      // manager's lifetime, and only retry checks that are false or unknown.
+      if (c.get_core_daemons_enabled() != std::optional<bool>(true)) {
+        c.set_core_daemons_enabled(services_utility::core_daemons_enabled());
+      }
+      if (c.get_core_agents_enabled() != std::optional<bool>(true)) {
+        c.set_core_agents_enabled(services_utility::core_agents_enabled());
+      }
+      if (c.get_core_daemons_running() != std::optional<bool>(true)) {
+        c.set_core_daemons_running(services_utility::core_daemons_running());
+      }
+      if (c.get_core_agents_running() != std::optional<bool>(true)) {
+        c.set_core_agents_running(services_utility::core_agents_running());
+      }
 
       return c;
     };

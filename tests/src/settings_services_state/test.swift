@@ -25,25 +25,19 @@ import Foundation
     precondition(!state.setupItemCompleted(.services))
 
     // An initial failed connection must still obtain the local enabled state.
-    ServiceStatus.agentsEnabled = true
+    ServiceStatus.agentsEnabled = nil
     client.start()
-    try await waitUntil { state.localServicesGuidanceContext.coreAgentsEnabled == true }
-    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == false)
-    precondition(state.localServicesGuidanceContext.coreAgentsEnabled == true)
+    try await waitUntil { state.localServicesGuidanceContext.coreDaemonsEnabled == false }
+    precondition(state.localServicesGuidanceContext.coreAgentsEnabled == nil)
     precondition(state.currentResolvedSetup == .services)
     precondition(state.displayedAlert == .none)
 
-    // Polling must publish changes even when no further connection callbacks arrive.
-    ServiceStatus.daemonsEnabled = true
-    try await waitUntil { state.setupItemCompleted(.services) }
-    precondition(state.currentResolvedSetup == .none)
-
-    // Keep polling past the five-second disconnected warning threshold.
+    // Polling must continue past the disconnected warning while services are unconfirmed.
     try await waitUntil { state.consoleUserServerClientDisconnectedForAWhile }
-    ServiceStatus.agentsEnabled = false
-    try await waitUntil { state.localServicesGuidanceContext.coreAgentsEnabled == false }
-    precondition(!state.setupItemCompleted(.services))
-    precondition(state.currentResolvedSetup == .services)
+    ServiceStatus.daemonsEnabled = nil
+    try await waitUntil { state.localServicesGuidanceContext.coreDaemonsEnabled == nil }
+    precondition(state.localServicesGuidanceContext.servicesEnabled == nil)
+    precondition(state.currentResolvedSetup == .none)
 
     // Decode running status from the current wire format.
     let remoteContext = try JSONDecoder().decode(
@@ -62,38 +56,16 @@ import Foundation
     precondition(stoppedContext.coreDaemonsRunning == nil)
     precondition(stoppedContext.coreAgentsRunning == false)
 
-    // Reconnection must preserve locally obtained enabled status.
+    // Reconnection preserves local state and stops disconnected polling.
     ServiceStatus.connected = true
     client.settingsWindowGuidanceReceived(
       SettingsWindowGuidanceState(
-        currentSetup: .none,
-        currentAlert: .none,
-        guidanceContext: remoteContext))
+        currentSetup: .none, currentAlert: .none, guidanceContext: remoteContext))
     precondition(!state.consoleUserServerClientDisconnectedForAWhile)
-    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == true)
-    precondition(state.localServicesGuidanceContext.coreAgentsEnabled == false)
-    precondition(!state.setupItemCompleted(.services))
+    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == nil)
 
-    // Disconnecting clears remote guidance but preserves local enabled status.
-    ServiceStatus.connected = false
-    client.updateConsoleUserServerClientState()
-    precondition(state.guidanceContext.coreDaemonsRunning == nil)
-    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == true)
-    precondition(state.localServicesGuidanceContext.coreAgentsEnabled == false)
-    ServiceStatus.agentsEnabled = true
-    try await waitUntil { state.setupItemCompleted(.services) }
-
-    // Stop disconnected polling and wait for a fresh result, not an estimated delay.
-    ServiceStatus.connected = true
+    // Hold a query while MainActor submits a burst. Unconfirmed results still get one follow-up.
     ServiceStatus.daemonsEnabled = false
-    client.settingsWindowGuidanceReceived(
-      SettingsWindowGuidanceState(
-        currentSetup: .none, currentAlert: .none,
-        guidanceContext: SettingsWindowGuidanceContext()))
-    try await waitUntil { state.localServicesGuidanceContext.coreDaemonsEnabled == false }
-
-    // Hold a query indefinitely while MainActor submits a burst of requests.
-    ServiceStatus.daemonsEnabled = true
     let firstQuery = ServiceStatus.blockNextQuery()
     client.updateLocalServicesGuidanceContext()
     try await waitUntil { firstQuery.hasStarted }
@@ -101,69 +73,84 @@ import Foundation
     for _ in 0..<20 { client.updateLocalServicesGuidanceContext() }
     precondition(ServiceStatus.queryCount == queriesAtFirstStart)
 
-    // Hold the follow-up too, so its start proves the first result was applied.
     let followUp = ServiceStatus.blockNextQuery()
-    ServiceStatus.daemonsEnabled = false
+    ServiceStatus.daemonsEnabled = nil
     firstQuery.release()
     try await waitUntil { followUp.hasStarted }
-    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == true)
+    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == false)
     precondition(ServiceStatus.queryCount == queriesAtFirstStart + 1)
     precondition(ServiceStatus.maxConcurrentCalls == 1)
     followUp.release()
-    try await waitUntil { state.localServicesGuidanceContext.coreDaemonsEnabled == false }
+    try await waitUntil { state.localServicesGuidanceContext.coreDaemonsEnabled == nil }
 
+    // A true result from before components stopped must not latch the enabled state.
     ServiceStatus.daemonsEnabled = true
-    client.updateLocalServicesGuidanceContext()
-    try await waitUntil { state.setupItemCompleted(.services) }
-
-    // Discard a query started before components stopped, even if it completes later.
-    ServiceStatus.daemonsEnabled = false
     let oldQuery = ServiceStatus.blockNextQuery()
     client.updateLocalServicesGuidanceContext()
     try await waitUntil { oldQuery.hasStarted }
-    ServiceStatus.daemonsEnabled = true
-    ServiceStatus.agentsEnabled = false
+    ServiceStatus.daemonsEnabled = false
     let freshQuery = ServiceStatus.blockNextQuery()
     client.componentsManagerStopped()
     oldQuery.release()
     try await waitUntil { freshQuery.hasStarted }
-    // The old query captured false. Keep the fresh query blocked while checking that
-    // the old result was discarded, rather than being overwritten quickly by a new one.
-    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == true)
-    precondition(state.localServicesGuidanceContext.coreAgentsEnabled == true)
+    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == nil)
     freshQuery.release()
-    try await waitUntil { state.localServicesGuidanceContext.coreAgentsEnabled == false }
-    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == true)
-    precondition(!state.setupItemCompleted(.services))
-    // Failed commands cross the actual C enum bridge as unknown, not disabled.
-    ServiceStatus.daemonsEnabled = nil
-    ServiceStatus.agentsEnabled = nil
-    client.updateLocalServicesGuidanceContext()
-    try await waitUntil {
-      state.localServicesGuidanceContext.coreDaemonsEnabled == nil
-        && state.localServicesGuidanceContext.coreAgentsEnabled == nil
-    }
-    precondition(state.localServicesGuidanceContext.servicesEnabled == nil)
-    precondition(!state.setupItemCompleted(.services))
-    precondition(state.currentResolvedSetup == .none)
-
-    // One known disabled service is sufficient to require setup, even if the other is unknown.
-    ServiceStatus.daemonsEnabled = false
-    client.updateLocalServicesGuidanceContext()
     try await waitUntil { state.localServicesGuidanceContext.coreDaemonsEnabled == false }
-    precondition(state.localServicesGuidanceContext.coreAgentsEnabled == nil)
-    precondition(state.localServicesGuidanceContext.servicesEnabled == false)
     precondition(state.currentResolvedSetup == .services)
 
-    ServiceStatus.daemonsEnabled = true
-    client.updateLocalServicesGuidanceContext()
-    try await waitUntil { state.localServicesGuidanceContext.coreDaemonsEnabled == true }
-    precondition(state.localServicesGuidanceContext.servicesEnabled == nil)
-    precondition(state.currentResolvedSetup == .none)
-
+    // Confirm agents first. Further retries must query only daemons.
     ServiceStatus.agentsEnabled = true
     client.updateLocalServicesGuidanceContext()
+    try await waitUntil { state.localServicesGuidanceContext.coreAgentsEnabled == true }
+    let confirmedAgentQueries = ServiceStatus.agentQueryCount
+    ServiceStatus.agentsEnabled = false
+    ServiceStatus.daemonsEnabled = nil
+    client.updateLocalServicesGuidanceContext()
+    try await waitUntil { state.localServicesGuidanceContext.coreDaemonsEnabled == nil }
+    precondition(ServiceStatus.agentQueryCount == confirmedAgentQueries)
+    precondition(state.localServicesGuidanceContext.coreAgentsEnabled == true)
+
+    // Once the last group is enabled, even a pending follow-up must launch no process.
+    ServiceStatus.daemonsEnabled = true
+    let finalQuery = ServiceStatus.blockNextQuery()
+    client.updateLocalServicesGuidanceContext()
+    try await waitUntil { finalQuery.hasStarted }
+    for _ in 0..<20 { client.updateLocalServicesGuidanceContext() }
+    finalQuery.release()
     try await waitUntil { state.setupItemCompleted(.services) }
+    let confirmedDaemonQueries = ServiceStatus.queryCount
+    ServiceStatus.daemonsEnabled = false
+
+    // Connection changes and component resets must preserve confirmed states.
+    ServiceStatus.connected = false
+    client.componentsManagerStopped()
+    precondition(state.guidanceContext.coreDaemonsRunning == nil)
+    for _ in 0..<20 { client.updateLocalServicesGuidanceContext() }
+    try await waitUntil { state.consoleUserServerClientDisconnectedForAWhile }
+    precondition(ServiceStatus.queryCount == confirmedDaemonQueries)
+    precondition(ServiceStatus.agentQueryCount == confirmedAgentQueries)
+    precondition(state.setupItemCompleted(.services))
+
+    ServiceStatus.connected = true
+    client.settingsWindowGuidanceReceived(
+      SettingsWindowGuidanceState(
+        currentSetup: .none, currentAlert: .none, guidanceContext: remoteContext))
+    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == true)
+    precondition(state.localServicesGuidanceContext.coreAgentsEnabled == true)
+
+    // The opposite order also skips confirmed daemons while agents still need checking.
+    let anotherClient = SettingsConsoleUserServerClient()
+    ServiceStatus.daemonsEnabled = true
+    ServiceStatus.agentsEnabled = false
+    anotherClient.updateLocalServicesGuidanceContext()
+    try await waitUntil { state.localServicesGuidanceContext.coreAgentsEnabled == false }
+    let daemonQueries = ServiceStatus.queryCount
+    ServiceStatus.daemonsEnabled = false
+    ServiceStatus.agentsEnabled = true
+    anotherClient.updateLocalServicesGuidanceContext()
+    try await waitUntil { state.setupItemCompleted(.services) }
+    precondition(ServiceStatus.queryCount == daemonQueries)
+    precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == true)
     print("Settings services state tests passed")
   }
 }

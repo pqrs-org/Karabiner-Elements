@@ -45,6 +45,7 @@ final class ServiceStatus: @unchecked Sendable {
   private var daemons: Bool? = false
   private var agents: Bool? = false
   private var calls = 0
+  private var agentCalls = 0
   private var activeCalls = 0
   private var maximumActiveCalls = 0
   private var nextQueryGate: QueryGate?
@@ -59,6 +60,7 @@ final class ServiceStatus: @unchecked Sendable {
     set { shared.lock.withLock { shared.agents = newValue } }
   }
   static var queryCount: Int { shared.lock.withLock { shared.calls } }
+  static var agentQueryCount: Int { shared.lock.withLock { shared.agentCalls } }
   static var maxConcurrentCalls: Int { shared.lock.withLock { shared.maximumActiveCalls } }
   static func blockNextQuery() -> QueryGate {
     let gate = QueryGate()
@@ -74,7 +76,7 @@ final class ServiceStatus: @unchecked Sendable {
     let (value, gate) = shared.lock.withLock {
       shared.activeCalls += 1
       shared.maximumActiveCalls = max(shared.maximumActiveCalls, shared.activeCalls)
-      if daemons { shared.calls += 1 }
+      if daemons { shared.calls += 1 } else { shared.agentCalls += 1 }
       let gate = daemons ? shared.nextQueryGate : nil
       if daemons { shared.nextQueryGate = nil }
       return (daemons ? shared.daemons : shared.agents, gate)

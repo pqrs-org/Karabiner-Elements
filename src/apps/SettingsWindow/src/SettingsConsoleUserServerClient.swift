@@ -28,6 +28,8 @@ final class SettingsConsoleUserServerClient {
   private var servicesQueryInFlight = false
   private var servicesQueryPending = false
   private var servicesQueryGeneration = UUID()
+  private var coreDaemonsOnceEnabled = false
+  private var coreAgentsOnceEnabled = false
 
   public func start() {
     updateConsoleUserServerClientState()
@@ -36,7 +38,7 @@ final class SettingsConsoleUserServerClient {
 
   func componentsManagerStopped() {
     // An external command already running cannot be cancelled. Ignore its result and
-    // request a fresh snapshot after it finishes.
+    // retry unconfirmed services after it finishes. Preserve confirmed enabled states.
     servicesQueryGeneration = UUID()
     consoleUserServerClientReady = false
     disconnectedForAWhileTask?.cancel()
@@ -72,7 +74,7 @@ final class SettingsConsoleUserServerClient {
             ContentViewStates.shared.updateConsoleUserServerClientDisconnectedForAWhile(true)
           }
           // Failed connection attempts do not emit another status change. Poll locally
-          // so toggling login items still updates SetupServicesView while disconnected.
+          // until login items have been confirmed enabled while disconnected.
           self.updateLocalServicesGuidanceContext()
         }
       }
@@ -93,7 +95,7 @@ final class SettingsConsoleUserServerClient {
     ContentViewStates.shared.updateGuidanceState(state)
 
     // The C++ client requests settings_window_guidance once per second while connected,
-    // so this also keeps the locally obtained services state up to date while connected.
+    // so this retries unconfirmed services while connected.
     updateLocalServicesGuidanceContext()
   }
 
@@ -103,19 +105,27 @@ final class SettingsConsoleUserServerClient {
     // locally so ContentViewStates can open SetupServicesView as a fallback.
     // These calls launch processes and wait for them. Keep them off MainActor and
     // coalesce requests arriving during a query into one follow-up, without a queue backlog.
+    // Once enabled, stop checking each service group for this Settings process's lifetime.
+    guard !coreDaemonsOnceEnabled || !coreAgentsOnceEnabled else { return }
     guard !servicesQueryInFlight else {
       servicesQueryPending = true
       return
     }
     servicesQueryInFlight = true
     let generation = servicesQueryGeneration
+    let daemonsOnceEnabled = coreDaemonsOnceEnabled
+    let agentsOnceEnabled = coreAgentsOnceEnabled
     servicesStatusQueue.async { [weak self] in
-      let daemonsEnabled = Self.enabledValue(krbn_services_daemons_enabled())
-      let agentsEnabled = Self.enabledValue(krbn_services_agents_enabled())
+      let daemonsEnabled =
+        daemonsOnceEnabled ? true : Self.enabledValue(krbn_services_daemons_enabled())
+      let agentsEnabled =
+        agentsOnceEnabled ? true : Self.enabledValue(krbn_services_agents_enabled())
       Task { @MainActor [weak self] in
         guard let self else { return }
         self.servicesQueryInFlight = false
         if self.servicesQueryGeneration == generation {
+          self.coreDaemonsOnceEnabled = daemonsEnabled == true
+          self.coreAgentsOnceEnabled = agentsEnabled == true
           ContentViewStates.shared.updateLocalServicesGuidanceContext(
             coreDaemonsEnabled: daemonsEnabled,
             coreAgentsEnabled: agentsEnabled)
