@@ -4,9 +4,7 @@
 #include "json_utility.hpp"
 #include "monitor/configuration_monitor.hpp"
 #include "settings.hpp"
-#include "settings_configuration_snapshot.hpp"
 #include "settings_configuration_store.hpp"
-#include "settings_remembered_device_properties.hpp"
 #include <mutex>
 #include <pqrs/dispatcher.hpp>
 

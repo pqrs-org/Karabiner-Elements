@@ -1,6 +1,7 @@
 #include "complex_modifications_utility.hpp"
 #include "duktape_utility.hpp"
 #include "json_utility.hpp"
+#include "settings.hpp"
 #include "settings_components_manager.hpp"
 #include "settings_cpp.hpp"
 

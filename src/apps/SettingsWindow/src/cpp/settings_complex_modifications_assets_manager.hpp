@@ -58,11 +58,8 @@ public:
   }
 
   void erase_file(const std::filesystem::path& file_path) const {
-    for (const auto& file : manager_->get_files()) {
-      if (file->get_file_path() == file_path) {
-        file->unlink_file();
-        return;
-      }
+    if (auto file = find_file(file_path)) {
+      file->unlink_file();
     }
   }
 

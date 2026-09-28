@@ -42,7 +42,7 @@ private struct ConnectedDevicePayload: Decodable {
 final class ConnectedDevices: ObservableObject {
   static let shared = ConnectedDevices()
 
-  private(set) var connectedDevicesJSONString = ""
+  private var connectedDevicesJSONString = ""
   @Published var connectedDevices: [ConnectedDevice] = []
   @Published var notConnectedConfiguredDevicesCount: UInt64 = 0
 

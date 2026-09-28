@@ -18,9 +18,7 @@ public:
     return instance;
   }
 
-  bool remember_connected_devices(const krbn::connected_devices& connected_devices) {
-    auto changed = false;
-
+  void remember_connected_devices(const krbn::connected_devices& connected_devices) {
     std::lock_guard<std::mutex> lock(mutex_);
     for (const auto& device : connected_devices.get_devices()) {
       const auto& identifiers = device->get_device_identifiers();
@@ -31,11 +29,8 @@ public:
           });
       if (it == std::end(device_properties_)) {
         device_properties_.push_back(device);
-        changed = true;
       }
     }
-
-    return changed;
   }
 
   [[nodiscard]] std::vector<pqrs::not_null_shared_ptr_t<krbn::device_properties>> get_device_properties() const {

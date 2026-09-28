@@ -248,10 +248,6 @@ int main() {
                               {"action", "erase_disconnected_devices"},
                           },
                           completed);
-      store.async_execute({
-                              {"action", "snapshot"},
-                          },
-                          completed);
       store.stop();
       done.set_value();
     });
@@ -259,7 +255,7 @@ int main() {
     expect(notifications.front().at("not_connected_configured_devices_count") == 1);
     expect(responses.at(0).contains("error"));
     expect(responses.at(1).at("not_connected_configured_devices_count") == 0);
-    expect(responses.at(2).at("snapshot").at("selected_profile").at("complex_modifications").at("rules").empty());
+    expect(responses.at(0).at("snapshot").at("selected_profile").at("complex_modifications").at("rules").empty());
   };
 
   "failed_save_reports_error_and_is_retried_on_stop"_test = [] {
@@ -365,7 +361,7 @@ int main() {
     expect(done.get_future().wait_for(std::chrono::seconds(5)) == std::future_status::ready);
   };
 
-  "erase_asset_uses_the_path_from_before_a_reload"_test = [] {
+  "asset_commands_use_the_path_from_before_a_reload"_test = [] {
     const auto directory = krbn::constants::get_user_complex_modifications_assets_directory();
     std::filesystem::create_directories(directory);
     const auto first = directory / "first.json";
