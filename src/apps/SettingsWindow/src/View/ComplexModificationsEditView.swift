@@ -13,6 +13,8 @@ struct ComplexModificationsEditView: View {
   @State private var codeString = ""
   @State private var codeType = SettingsConfiguration.ComplexModificationsRule.CodeType.json
   @State private var errorMessage: String?
+  @State private var isSaving = false
+  @State private var saveAgain = false
   @State private var expectedProfileIndex: Int?
   @State private var expectedRules: [SettingsConfiguration.ComplexModificationsRule]?
   @StateObject private var externalEditorController = ExternalEditorController.shared
@@ -50,7 +52,7 @@ struct ComplexModificationsEditView: View {
                       onError: { errorMessage = $0 },
                       onReload: {
                         codeString = $0
-                        _ = save()
+                        Task { _ = await save() }
                       }
                     )
 
@@ -79,8 +81,10 @@ struct ComplexModificationsEditView: View {
 
                 Button(
                   action: {
-                    if save() {
-                      showing = false
+                    Task {
+                      if await save() {
+                        showing = false
+                      }
                     }
                   },
                   label: {
@@ -137,7 +141,8 @@ struct ComplexModificationsEditView: View {
                 ? .javascript
                 : .json,
               theme: CodeEditor.ThemeName(
-                rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light")
+                rawValue: colorScheme == .dark ? "qtcreator_dark" : "qtcreator_light"),
+              flags: isSaving ? .defaultViewerFlags : .defaultEditorFlags
             )
             .border(Color(NSColor.separatorColor), width: 2)
 
@@ -203,6 +208,7 @@ struct ComplexModificationsEditView: View {
         showing = false
       }
     }
+    .disabled(isSaving)
     .padding()
     .frame(width: 1000, height: 600)
     .onAppear {
@@ -268,28 +274,41 @@ struct ComplexModificationsEditView: View {
     }
   }
 
-  private func save() -> Bool {
+  private func save() async -> Bool {
+    guard !isSaving else {
+      saveAgain = true
+      return false
+    }
     guard editingTargetIsCurrent() else {
       cancelEditingIfTargetChangedExternally()
       return false
     }
 
-    if rule!.index < 0 {
-      errorMessage = settings.pushFrontComplexModificationsRule(
+    isSaving = true
+    defer {
+      isSaving = false
+      if saveAgain {
+        saveAgain = false
+        Task { _ = await save() }
+      }
+    }
+    let index = rule!.index
+    if index < 0 {
+      errorMessage = await settings.pushFrontComplexModificationsRule(
         codeString: codeString,
         codeType: codeType)
       if errorMessage == nil {
         updateEditedRuleAfterSave(index: 0)
-        return true
+        return !saveAgain
       }
     } else {
-      errorMessage = settings.replaceComplexModificationsRule(
-        index: rule!.index,
+      errorMessage = await settings.replaceComplexModificationsRule(
+        index: index,
         codeString: codeString,
         codeType: codeType)
       if errorMessage == nil {
-        updateEditedRuleAfterSave(index: rule!.index)
-        return true
+        updateEditedRuleAfterSave(index: index)
+        return !saveAgain
       }
     }
 
@@ -338,6 +357,7 @@ struct ComplexModificationsEditView: View {
   }
 
   private func cancelEditingIfTargetChangedExternally() {
+    guard !isSaving else { return }
     guard showing, !editingTargetIsCurrent() else {
       return
     }

@@ -57,7 +57,6 @@ struct SimpleModificationsView: View {
                   Settings.shared.updateSimpleModification(
                     index: simpleModification.index,
                     fromJsonString: json,
-                    toJsonString: toEntry.json,
                     device: selectedDevice)
                 },
                 showUnsafe: settings.configuration.globalConfiguration.unsafeUi
@@ -73,7 +72,6 @@ struct SimpleModificationsView: View {
                 action: { json in
                   Settings.shared.updateSimpleModification(
                     index: simpleModification.index,
-                    fromJsonString: fromEntry.json,
                     toJsonString: json,
                     device: selectedDevice)
                 },

@@ -189,7 +189,7 @@ struct SettingsConfiguration: Decodable {
     var gamePadStickYFormula: String
     var gamePadStickVerticalWheelFormula: String
     var gamePadStickHorizontalWheelFormula: String
-    let simpleModifications: [SimpleModification]
+    var simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
 
     var modifyEvents: Bool {
@@ -229,7 +229,7 @@ struct SettingsConfiguration: Decodable {
       set { ignorePointingDeviceEventsByDefault = !newValue }
     }
     var parameters: Parameters
-    let simpleModifications: [SimpleModification]
+    var simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
     var devices: [String: Device]
     var complexModifications: ComplexModifications

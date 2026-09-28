@@ -1,9 +1,11 @@
 import Foundation
 import SwiftUI
 
-func componentsManagerStoppedCallback() {
+func componentsManagerStoppedCallback(_ lastConfigurationRevision: UInt64) {
   Task { @MainActor in
-    Settings.shared.componentsManagerStopped()
+    guard Settings.shared.componentsManagerStopped(through: lastConfigurationRevision) else {
+      return
+    }
     ConnectedDevices.shared.componentsManagerStopped()
     SettingsCoreServiceDaemonClient.shared.componentsManagerStopped()
     SettingsConsoleUserServerClient.shared.componentsManagerStopped()
@@ -14,12 +16,7 @@ func coreConfigurationUpdatedCallback(_ json: UnsafePointer<CChar>, _ length: In
   let data = Data(bytes: json, count: length)
 
   Task { @MainActor in
-    Settings.shared.applyConfigurationSnapshot(data)
-
-    NotificationCenter.default.post(
-      name: Settings.didConfigurationLoad,
-      object: nil
-    )
+    Settings.shared.receiveConfigurationResponse(data)
   }
 }
 
@@ -27,22 +24,6 @@ func coreConfigurationLoadStateChangedCallback(_ state: krbn_core_configuration_
   Task { @MainActor in
     Settings.shared.coreConfigurationLoadStateChanged(state)
   }
-}
-
-private func settingsJSONOutputCallback(
-  _ json: UnsafePointer<CChar>,
-  _ length: Int,
-  _ context: UnsafeMutableRawPointer
-) {
-  context.assumingMemoryBound(to: Data.self).pointee = Data(bytes: json, count: length)
-}
-
-private func dataFromJSONOutput(_ body: (UnsafeMutableRawPointer) -> Void) -> Data {
-  var data = Data()
-  withUnsafeMutablePointer(to: &data) { context in
-    body(UnsafeMutableRawPointer(context))
-  }
-  return data
 }
 
 private let settingsJSONDecoder: JSONDecoder = {
@@ -70,7 +51,15 @@ final class Settings: ObservableObject {
 
   private var didSetEnabled = false
 
-  private let saveTask = DebouncedTask()
+  private var pendingRequests: [UInt64: (String?) -> Void] = [:]
+  private var completedRequests: [() -> Void] = []
+  private var lifecycleGeneration: UInt64 = 0
+  private var snapshots = ConfigurationSnapshotBuffer<
+    (data: Data?, count: UInt64, saveError: String)
+  >()
+  private var pendingEmptyRows: Set<String> = []
+
+  @Published private(set) var isChangingStructure = false
 
   @Published var saveErrorMessage = ""
   @Published private(set) var configurationLoaded = false
@@ -85,6 +74,7 @@ final class Settings: ObservableObject {
       return configurationStorage
     }
     set {
+      guard !didSetEnabled || !isChangingStructure else { return }
       let oldValue = configurationStorage
       configurationStorage = newValue
 
@@ -96,24 +86,125 @@ final class Settings: ObservableObject {
 
   private init() {}
 
-  private func saveImmediately() -> Bool {
-    print("save")
-
-    saveErrorMessage = ""
-    var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-    let result = krbn_core_configuration_save(&errorMessageBuffer, errorMessageBuffer.count)
-    if !result {
-      saveErrorMessage = String(utf8String: errorMessageBuffer) ?? ""
+  // Register before enqueueing. Older snapshots are held while edits are pending,
+  // so acknowledgements cannot overwrite newer optimistic Swift edits.
+  private func performCommand(
+    _ action: ConfigurationAction,
+    parameters: [String: Any] = [:],
+    completion: ((String?) -> Void)? = nil
+  ) {
+    // Reject callbacks already queued before SwiftUI disables the controls.
+    guard !isChangingStructure else {
+      completion?("Settings are being updated. Please try again.")
+      return
     }
 
-    return result
+    let requestID = snapshots.beginRequest(blocksEditing: action.blocksEditing)
+    isChangingStructure = snapshots.isEditingBlocked
+    let generation = lifecycleGeneration
+    pendingRequests[requestID] =
+      completion ?? { [weak self] error in
+        if let error { self?.saveErrorMessage = error }
+      }
+
+    sendConfigurationCommand(action, parameters: parameters) { [weak self] data in
+      guard let self, self.lifecycleGeneration == generation else { return }
+
+      let result = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+      self.receiveConfigurationResponse(data)
+      self.snapshots.completeRequest(requestID)
+      if let completed = self.pendingRequests.removeValue(forKey: requestID) {
+        let error = result?["error"] as? String
+        self.completedRequests.append { completed(error) }
+      }
+      self.flushConfigurationResponses()
+    }
   }
 
-  func componentsManagerStopped() {
+  private func commandResult(
+    _ action: ConfigurationAction, parameters: [String: Any] = [:]
+  ) async -> String? {
+    await withCheckedContinuation { continuation in
+      performCommand(action, parameters: parameters) {
+        continuation.resume(returning: $0)
+      }
+    }
+  }
+
+  fileprivate func receiveConfigurationResponse(_ data: Data) {
+    guard let result = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+      let revision = result["revision"] as? UInt64
+    else { return }
+
+    if result["configuration_unavailable"] as? Bool == true {
+      snapshots.receive(revision: revision, value: (nil, 0, ""))
+      flushConfigurationResponses()
+      return
+    }
+
+    guard let snapshot = result["snapshot"],
+      let snapshotData = try? JSONSerialization.data(withJSONObject: snapshot)
+    else { return }
+
+    snapshots.receive(
+      revision: revision,
+      value: (
+        snapshotData,
+        result["not_connected_configured_devices_count"] as? UInt64 ?? 0,
+        result["save_error"] as? String ?? ""
+      ))
+    flushConfigurationResponses()
+  }
+
+  private func flushConfigurationResponses() {
+    guard pendingRequests.isEmpty else { return }
+
+    let readySnapshot = snapshots.takeReadySnapshot()
+    isChangingStructure = snapshots.isEditingBlocked
+    if let snapshot = readySnapshot {
+      if let data = snapshot.data {
+        applyConfigurationSnapshot(data)
+        ConnectedDevices.shared.notConnectedConfiguredDevicesCount = snapshot.count
+        saveErrorMessage = snapshot.saveError
+        NotificationCenter.default.post(name: Self.didConfigurationLoad, object: nil)
+      } else {
+        didSetEnabled = false
+        configurationLoaded = false
+      }
+    }
+    let completions = completedRequests
+    completedRequests.removeAll()
+    for completed in completions {
+      completed()
+    }
+  }
+
+  func componentsManagerStopped(through revision: UInt64) -> Bool {
+    guard snapshots.reset(through: revision) else { return false }
+
+    isChangingStructure = false
+    lifecycleGeneration += 1
+
+    let pending = pendingRequests.values
+    pendingRequests.removeAll()
+    for callback in pending {
+      callback("Settings components are stopped")
+    }
+
+    let completed = completedRequests
+    completedRequests.removeAll()
+    for callback in completed {
+      callback()
+    }
+
+    pendingEmptyRows.removeAll()
+
     didSetEnabled = false
     configurationLoaded = false
     configurationLoadState = nil
     saveErrorMessage = ""
+
+    return true
   }
 
   func coreConfigurationLoadStateChanged(_ state: krbn_core_configuration_load_state) {
@@ -123,27 +214,6 @@ final class Settings: ObservableObject {
       didSetEnabled = false
       configurationLoaded = false
       saveErrorMessage = ""
-    }
-  }
-
-  // C++ owns the canonical configuration. After mutating it, reload the whole
-  // snapshot instead of mirroring individual changes in the Swift model.
-  private func reloadConfigurationSnapshot() {
-    let data = dataFromJSONOutput { context in
-      krbn_core_configuration_get_settings_configuration_snapshot_json(
-        settingsJSONOutputCallback,
-        context)
-    }
-
-    applyConfigurationSnapshot(data)
-  }
-
-  private func reloadConfigurationSnapshotAndSave() {
-    reloadConfigurationSnapshot()
-    krbn_core_configuration_mark_save_pending()
-    saveTask.schedule(after: .milliseconds(200)) { [weak self] in
-      guard let self, self.configurationLoaded else { return }
-      _ = self.saveImmediately()
     }
   }
 
@@ -193,32 +263,45 @@ final class Settings: ObservableObject {
 
   public func updateSimpleModification(
     index: Int,
-    fromJsonString: String,
-    toJsonString: String,
+    fromJsonString: String? = nil,
+    toJsonString: String? = nil,
     device: ConnectedDevice?
   ) {
-    device.withDeviceIdentifiersJSONCString {
-      if let fromJson = fromJsonString.cString(using: .utf8),
-        let toJson = toJsonString.cString(using: .utf8)
-      {
-        krbn_core_configuration_replace_selected_profile_simple_modification(
-          index: index,
-          fromJSON: fromJson,
-          toJSON: toJson,
-          deviceIdentifiersJSON: $0)
-      }
-    }
+    guard configurationLoaded, !isChangingStructure,
+      let current = simpleModifications(connectedDevice: device).first(where: { $0.index == index })
+    else { return }
 
-    reloadConfigurationSnapshotAndSave()
+    let updated = SettingsConfiguration.SimpleModification(
+      index: index,
+      fromJsonString: fromJsonString ?? current.fromJsonString,
+      toJsonString: toJsonString ?? current.toJsonString)
+    // Merge with the latest local row, including edits whose responses are still pending.
+    if let device {
+      configurationStorage?.selectedProfile.devices[device.id]?.simpleModifications[index] = updated
+    } else {
+      configurationStorage?.selectedProfile.simpleModifications[index] = updated
+    }
+    performCommand(
+      .replaceSimple,
+      parameters: [
+        "index": index, "from": updated.fromJsonString,
+        "to": updated.toJsonString, "device": device?.id ?? "{}",
+      ])
   }
 
   public func appendSimpleModification(device: ConnectedDevice?) {
-    device.withDeviceIdentifiersJSONCString {
-      krbn_core_configuration_push_back_selected_profile_simple_modification($0)
-    }
+    let key = device?.id ?? "{}"
+    guard pendingEmptyRows.insert(key).inserted else { return }
 
-    // Do not save here because the partial entry would be erased.
-    reloadConfigurationSnapshot()
+    performCommand(
+      .appendSimple,
+      parameters: [
+        "device": key
+      ]
+    ) { [weak self] error in
+      self?.pendingEmptyRows.remove(key)
+      if let error { self?.saveErrorMessage = error }
+    }
   }
 
   public func appendSimpleModificationIfEmpty(device: ConnectedDevice?) {
@@ -233,11 +316,11 @@ final class Settings: ObservableObject {
     index: Int,
     device: ConnectedDevice?
   ) {
-    device.withDeviceIdentifiersJSONCString {
-      krbn_core_configuration_erase_selected_profile_simple_modification(index, $0)
-    }
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .eraseSimple,
+      parameters: [
+        "index": index, "device": device?.id ?? "{}",
+      ])
   }
 
   //
@@ -249,124 +332,99 @@ final class Settings: ObservableObject {
     toJsonString: String,
     device: ConnectedDevice?
   ) {
-    device.withDeviceIdentifiersJSONCString {
-      if let fromJson = fromJsonString.cString(using: .utf8),
-        let toJson = toJsonString.cString(using: .utf8)
-      {
-        krbn_core_configuration_replace_selected_profile_fn_function_key(
-          fromJSON: fromJson,
-          toJSON: toJson,
-          deviceIdentifiersJSON: $0)
-      }
-    }
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .replaceFn,
+      parameters: [
+        "from": fromJsonString,
+        "to": toJsonString, "device": device?.id ?? "{}",
+      ])
   }
 
   //
   // Complex modifications
   //
 
-  private func krbnCodeType(
-    _ codeType: SettingsConfiguration.ComplexModificationsRule.CodeType
-  ) -> krbn_complex_modifications_rule_code_type {
-    switch codeType {
-    case .json:
-      return krbn_complex_modifications_rule_code_type_json
-    case .javascript:
-      return krbn_complex_modifications_rule_code_type_javascript
-    }
-  }
-
   public func replaceComplexModificationsRule(
     index: Int,
     codeString: String,
     codeType: SettingsConfiguration.ComplexModificationsRule.CodeType
-  ) -> String? {
-    var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-    if let cString = codeString.cString(using: .utf8) {
-      krbn_core_configuration_replace_selected_profile_complex_modifications_rule(
-        index: index,
-        code: cString,
-        codeType: krbnCodeType(codeType),
-        errorMessageBuffer: &errorMessageBuffer,
-        errorMessageBufferLength: errorMessageBuffer.count
-      )
-
-      let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
-      if errorMessage != "" {
-        return errorMessage
-      }
-
-      reloadConfigurationSnapshotAndSave()
-    }
-
-    return nil
+  ) async -> String? {
+    await commandResult(
+      .replaceRule,
+      parameters: [
+        "index": index, "code": codeString,
+        "code_type": codeType.rawValue,
+        "expected_profile": configuration.profiles.first { $0.selected }?.index ?? 0,
+        "expected_rules": configuration.selectedProfile.complexModifications.rules.map(
+          \.codeString),
+      ])
   }
 
   public func pushFrontComplexModificationsRule(
     codeString: String,
     codeType: SettingsConfiguration.ComplexModificationsRule.CodeType
-  ) -> String? {
-    var errorMessageBuffer = [Int8](repeating: 0, count: 4 * 1024)
-    if let cString = codeString.cString(using: .utf8) {
-      krbn_core_configuration_push_front_selected_profile_complex_modifications_rule(
-        code: cString,
-        codeType: krbnCodeType(codeType),
-        errorMessageBuffer: &errorMessageBuffer,
-        errorMessageBufferLength: errorMessageBuffer.count
-      )
-
-      let errorMessage = String(utf8String: errorMessageBuffer) ?? ""
-      if errorMessage != "" {
-        return errorMessage
-      }
-
-      reloadConfigurationSnapshotAndSave()
-    }
-
-    return nil
+  ) async -> String? {
+    await commandResult(
+      .prependRule,
+      parameters: [
+        "code": codeString,
+        "code_type": codeType.rawValue,
+        "expected_profile": configuration.profiles.first { $0.selected }?.index ?? 0,
+        "expected_rules": configuration.selectedProfile.complexModifications.rules.map(
+          \.codeString),
+      ])
   }
 
   public func moveComplexModificationsRule(_ sourceIndex: Int, _ destinationIndex: Int) {
-    krbn_core_configuration_move_selected_profile_complex_modifications_rule(
-      sourceIndex,
-      destinationIndex
-    )
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .moveRule,
+      parameters: [
+        "source": sourceIndex, "destination": destinationIndex,
+      ])
   }
 
   public func setComplexModificationsRuleEnabled(index: Int, enabled: Bool) {
-    krbn_core_configuration_set_selected_profile_complex_modifications_rule_enabled(index, enabled)
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .enableRule,
+      parameters: [
+        "index": index, "enabled": enabled,
+      ])
   }
 
   public func removeComplexModificationsRule(index: Int) {
-    krbn_core_configuration_erase_selected_profile_complex_modifications_rule(index)
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .eraseRule,
+      parameters: [
+        "index": index
+      ])
   }
 
   public func addComplexModificationRules(
     _ complexModificationsAssetFile: ComplexModificationsAssetFile
   ) {
-    for rule in complexModificationsAssetFile.assetRules.reversed() {
-      krbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
-        rule.fileIndex, rule.ruleIndex)
+    let rules = complexModificationsAssetFile.assetRules.reversed().map {
+      ["file_path": $0.filePath, "index": $0.ruleIndex] as [String: Any]
     }
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .addRules,
+      parameters: [
+        "rules": rules
+      ])
   }
 
   public func addComplexModificationRule(
     _ complexModificationsAssetRule: ComplexModificationsAssetRule
   ) {
-    krbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(
-      complexModificationsAssetRule.fileIndex, complexModificationsAssetRule.ruleIndex)
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .addRules,
+      parameters: [
+        "rules": [
+          [
+            "file_path": complexModificationsAssetRule.filePath,
+            "index": complexModificationsAssetRule.ruleIndex,
+          ]
+        ]
+      ])
   }
 
   //
@@ -394,74 +452,39 @@ final class Settings: ObservableObject {
       })
   }
 
-  enum GamePadStickFormula {
+  enum GamePadStickFormula: String {
     case x
     case y
-    case verticalWheel
-    case horizontalWheel
+    case verticalWheel = "vertical_wheel"
+    case horizontalWheel = "horizontal_wheel"
   }
 
   func setGamePadStickFormula(
     _ formula: GamePadStickFormula,
     value: String,
     connectedDevice: ConnectedDevice
-  ) -> Bool {
-    let valid = value.withCString { value in
-      connectedDevice.withDeviceIdentifiersJSONCString { identifiers in
-        switch formula {
-        case .x:
-          krbn_core_configuration_set_selected_profile_device_game_pad_stick_x_formula(
-            identifiers, value)
-        case .y:
-          krbn_core_configuration_set_selected_profile_device_game_pad_stick_y_formula(
-            identifiers, value)
-        case .verticalWheel:
-          krbn_core_configuration_set_selected_profile_device_game_pad_stick_vertical_wheel_formula(
-            identifiers, value)
-        case .horizontalWheel:
-          krbn_core_configuration_set_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
-            identifiers, value)
-        }
-      }
-    }
-
-    if valid {
-      reloadConfigurationSnapshotAndSave()
-    }
-
-    return valid
+  ) async -> Bool {
+    await commandResult(
+      .setFormula,
+      parameters: [
+        "formula": formula.rawValue,
+        "device": connectedDevice.id, "value": value,
+      ]) == nil
   }
 
   func resetGamePadStickFormula(
     _ formula: GamePadStickFormula,
     connectedDevice: ConnectedDevice
-  ) {
-    connectedDevice.withDeviceIdentifiersJSONCString { identifiers in
-      switch formula {
-      case .x:
-        krbn_core_configuration_reset_selected_profile_device_game_pad_stick_x_formula(identifiers)
-      case .y:
-        krbn_core_configuration_reset_selected_profile_device_game_pad_stick_y_formula(identifiers)
-      case .verticalWheel:
-        krbn_core_configuration_reset_selected_profile_device_game_pad_stick_vertical_wheel_formula(
-          identifiers)
-      case .horizontalWheel:
-        krbn_core_configuration_reset_selected_profile_device_game_pad_stick_horizontal_wheel_formula(
-          identifiers)
-      }
-    }
-
-    reloadConfigurationSnapshotAndSave()
+  ) async {
+    _ = await commandResult(
+      .resetFormula,
+      parameters: [
+        "formula": formula.rawValue, "device": connectedDevice.id,
+      ])
   }
 
   public func eraseNotConnectedDeviceSettings() {
-    ConnectedDevices.shared.connectedDevicesJSONString.withCString {
-      krbn_core_configuration_erase_selected_profile_not_connected_configured_devices($0)
-    }
-
-    ConnectedDevices.shared.notConnectedConfiguredDevicesCount = 0
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(.eraseDisconnectedDevices)
   }
 
   //
@@ -473,44 +496,47 @@ final class Settings: ObservableObject {
   }
 
   public func selectProfile(_ profile: SettingsConfiguration.Profile) {
-    krbn_core_configuration_select_profile(profile.index)
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .selectProfile,
+      parameters: [
+        "index": profile.index
+      ])
   }
 
   public func updateProfileName(_ profile: SettingsConfiguration.Profile, _ name: String) {
-    if let cString = name.cString(using: .utf8) {
-      krbn_core_configuration_set_profile_name(profile.index, cString)
-
-      reloadConfigurationSnapshotAndSave()
-    }
+    performCommand(
+      .renameProfile,
+      parameters: [
+        "index": profile.index, "name": name,
+      ])
   }
 
   public func appendProfile() {
-    krbn_core_configuration_push_back_profile()
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(.appendProfile)
   }
 
   public func duplicateProfile(_ profile: SettingsConfiguration.Profile) {
-    krbn_core_configuration_duplicate_profile(profile.index)
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .duplicateProfile,
+      parameters: [
+        "index": profile.index
+      ])
   }
 
   public func moveProfile(_ sourceIndex: Int, _ destinationIndex: Int) {
-    krbn_core_configuration_move_profile(
-      sourceIndex,
-      destinationIndex
-    )
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .moveProfile,
+      parameters: [
+        "source": sourceIndex, "destination": destinationIndex,
+      ])
   }
 
   public func removeProfile(_ profile: SettingsConfiguration.Profile) {
-    krbn_core_configuration_erase_profile(profile.index)
-
-    reloadConfigurationSnapshotAndSave()
+    performCommand(
+      .eraseProfile,
+      parameters: [
+        "index": profile.index
+      ])
   }
 
   //
@@ -531,13 +557,11 @@ final class Settings: ObservableObject {
         return
       }
 
-      let data = try JSONSerialization.data(withJSONObject: patch)
-      guard let jsonString = String(data: data, encoding: .utf8) else { return }
-
-      if jsonString.withCString({ krbn_core_configuration_apply_settings_configuration_update($0) })
-      {
-        reloadConfigurationSnapshotAndSave()
-      }
+      performCommand(
+        .patch,
+        parameters: [
+          "patch": patch
+        ])
     } catch {
       print("Failed to make settings configuration update JSON: \(error)")
     }
@@ -548,9 +572,12 @@ final class Settings: ObservableObject {
     systemDefaultProfileExists = krbn_system_core_configuration_file_path_exists()
   }
 
-  func installSystemDefaultProfile() {
+  func installSystemDefaultProfile() async {
     // The copy must not start until the latest configuration has been written.
-    guard saveImmediately() else { return }
+    if let error = await commandResult(.syncSave) {
+      saveErrorMessage = error
+      return
+    }
 
     let url = URL(
       fileURLWithPath:

@@ -88,7 +88,7 @@ struct MiscView: View {
           VStack(alignment: .leading, spacing: 12.0) {
             Button(
               action: {
-                settings.installSystemDefaultProfile()
+                Task { await settings.installSystemDefaultProfile() }
               },
               label: {
                 AppLocalizedConstrainedLabel(

@@ -134,7 +134,7 @@ struct ProfilesView: View {
             }
           }
           .listOverlayDivider()
-          .moveDisabled(moveDisabled)
+          .moveDisabled(settings.isChangingStructure || moveDisabled)
         }
         .onMove { indices, destination in
           if let first = indices.first {

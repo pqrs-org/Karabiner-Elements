@@ -1,28 +1,26 @@
 import AppKit
 
-private func complexModificationsAssetsJSONOutputCallback(
-  _ json: UnsafePointer<CChar>,
-  _ length: Int
-) {
-  // The C++ JSON buffer is valid only during this callback, so copy it first.
-  let data = Data(bytes: json, count: length)
-
-  // `krbn_complex_modifications_assets_manager_reload` invokes this callback
-  // synchronously from the main actor.
-  MainActor.assumeIsolated {
-    ComplexModificationsAssetFiles.shared.updateFiles(data)
-  }
-}
-
 @MainActor
 final class ComplexModificationsAssetFiles: ObservableObject {
   static let shared = ComplexModificationsAssetFiles()
 
+  private var lastRevision: UInt64 = 0
+
   @Published var files: [ComplexModificationsAssetFile] = []
 
   public func updateFiles() {
-    krbn_complex_modifications_assets_manager_reload(
-      complexModificationsAssetsJSONOutputCallback)
+    sendConfigurationCommand(.reloadAssets) { data in
+      Self.shared.applyResponse(data)
+    }
+  }
+
+  private func applyResponse(_ data: Data) {
+    guard let result = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+      let revision = result["revision"] as? UInt64, revision > lastRevision,
+      let files = result["files"], let data = try? JSONSerialization.data(withJSONObject: files)
+    else { return }
+    lastRevision = revision
+    updateFiles(data)
   }
 
   fileprivate func updateFiles(_ data: Data) {
@@ -39,8 +37,13 @@ final class ComplexModificationsAssetFiles: ObservableObject {
   }
 
   public func removeFile(_ complexModificationsAssetFile: ComplexModificationsAssetFile) {
-    krbn_complex_modifications_assets_manager_erase_file(complexModificationsAssetFile.index)
-
-    updateFiles()
+    sendConfigurationCommand(
+      .eraseAsset,
+      parameters: [
+        "file_path": complexModificationsAssetFile.filePath
+      ]
+    ) { data in
+      Self.shared.applyResponse(data)
+    }
   }
 }

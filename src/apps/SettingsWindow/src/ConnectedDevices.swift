@@ -91,12 +91,6 @@ final class ConnectedDevices: ObservableObject {
         )
       }
 
-      notConnectedConfiguredDevicesCount = connectedDevicesJSONString.withCString {
-        UInt64(
-          krbn_core_configuration_get_selected_profile_not_connected_configured_devices_count(
-            $0))
-      }
-
       connectedDevices = newConnectedDevices
     } catch {
       print(error.localizedDescription)

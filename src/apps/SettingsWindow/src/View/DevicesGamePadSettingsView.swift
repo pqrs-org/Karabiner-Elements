@@ -145,15 +145,22 @@ struct DevicesGamePadSettingsView: View {
       get: { value.wrappedValue },
       set: { newValue in
         value.wrappedValue = newValue
-        error.wrappedValue = !settings.setGamePadStickFormula(
-          formula,
-          value: newValue,
-          connectedDevice: connectedDevice)
+        Task {
+          let valid = await settings.setGamePadStickFormula(
+            formula,
+            value: newValue,
+            connectedDevice: connectedDevice)
+          if value.wrappedValue == newValue { error.wrappedValue = !valid }
+        }
       })
   }
 
   private func resetFormula(_ formula: Settings.GamePadStickFormula) {
-    settings.resetGamePadStickFormula(formula, connectedDevice: connectedDevice)
+    Task { await resetFormulaAndUpdate(formula) }
+  }
+
+  private func resetFormulaAndUpdate(_ formula: Settings.GamePadStickFormula) async {
+    await settings.resetGamePadStickFormula(formula, connectedDevice: connectedDevice)
 
     guard let device = settings.deviceConfiguration(connectedDevice) else { return }
     switch formula {

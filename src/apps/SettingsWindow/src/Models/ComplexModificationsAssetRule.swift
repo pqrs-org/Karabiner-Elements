@@ -2,20 +2,20 @@ import Foundation
 
 struct ComplexModificationsAssetRule: Identifiable, Decodable {
   var id = UUID()
-  var fileIndex: Int
+  var filePath: String
   var ruleIndex: Int
   var description: String
   var descriptionNotes: [String]
 
   private enum CodingKeys: String, CodingKey {
-    case fileIndex
+    case filePath
     case ruleIndex
     case description
     case descriptionNotes
   }
 
-  init(_ fileIndex: Int, _ ruleIndex: Int, _ description: String, _ descriptionNotes: [String]) {
-    self.fileIndex = fileIndex
+  init(_ filePath: String, _ ruleIndex: Int, _ description: String, _ descriptionNotes: [String]) {
+    self.filePath = filePath
     self.ruleIndex = ruleIndex
     self.description = description
     self.descriptionNotes = descriptionNotes
