@@ -53,10 +53,9 @@ public:
       // its destructor run after components_manager_stopped_callback_.
       settings_cpp::set_components_manager(std::weak_ptr<settings_components_manager>());
 
-      components_manager_->sync_save_core_configuration_if_pending();
       components_manager_->unregister_callbacks_and_detach();
       components_manager_ = nullptr;
-      components_manager_stopped_callback_();
+      components_manager_stopped_callback_(settings_configuration_store::current_revision());
     });
   }
 
@@ -284,31 +283,6 @@ void krbn_complex_modifications_assets_file_parse(const char* code,
 
   auto json_string = krbn::json_utility::dump(json);
   output(json_string.data(), json_string.size());
-}
-
-void krbn_complex_modifications_assets_manager_reload(krbn_json_output_callback output) {
-  auto json = nlohmann::json::array();
-
-  if (auto manager = settings_cpp::get_components_manager()) {
-    json = manager->reload_complex_modifications_assets();
-  }
-
-  auto json_string = krbn::json_utility::dump(json);
-  output(json_string.data(), json_string.size());
-}
-
-void krbn_complex_modifications_assets_manager_add_rule_to_core_configuration_selected_profile(size_t file_index,
-                                                                                               size_t index) {
-  if (auto manager = settings_cpp::get_components_manager()) {
-    manager->add_complex_modifications_rule_to_core_configuration_selected_profile(file_index,
-                                                                                   index);
-  }
-}
-
-void krbn_complex_modifications_assets_manager_erase_file(size_t index) {
-  if (auto manager = settings_cpp::get_components_manager()) {
-    manager->erase_complex_modifications_asset_file(index);
-  }
 }
 
 //

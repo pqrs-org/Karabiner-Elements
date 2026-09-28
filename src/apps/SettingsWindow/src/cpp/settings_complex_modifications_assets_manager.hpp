@@ -2,6 +2,7 @@
 
 #include "complex_modifications_assets_manager.hpp"
 #include "core_configuration/core_configuration.hpp"
+#include <algorithm>
 #include <chrono>
 #include <nlohmann/json.hpp>
 #include <utility>
@@ -27,14 +28,12 @@ public:
     auto json = nlohmann::json::array();
 
     const auto& files = manager_->get_files();
-    for (size_t file_index = 0; file_index < files.size(); ++file_index) {
-      const auto& file = files[file_index];
-
+    for (const auto& file : files) {
       auto rules_json = nlohmann::json::array();
       const auto& rules = file->get_rules();
       for (size_t rule_index = 0; rule_index < rules.size(); ++rule_index) {
         rules_json.push_back({
-            {"file_index", file_index},
+            {"file_path", file->get_file_path().string()},
             {"rule_index", rule_index},
             {"description", rules[rule_index]->get_description()},
             {"description_notes", rules[rule_index]->get_description_notes()},
@@ -67,26 +66,30 @@ public:
     }
   }
 
-  void add_rule_to_core_configuration_selected_profile(size_t file_index,
+  void add_rule_to_core_configuration_selected_profile(const std::filesystem::path& file_path,
                                                        size_t index,
                                                        krbn::core_configuration::core_configuration& core_configuration) const {
-    if (auto r = find_rule(file_index, index)) {
+    if (auto r = find_rule(file_path, index)) {
       core_configuration.get_selected_profile().get_complex_modifications()->push_front_rule(r);
+    } else {
+      throw std::runtime_error("The asset rule is no longer available. Reload the asset list.");
     }
   }
 
 private:
-  [[nodiscard]] std::shared_ptr<krbn::complex_modifications_assets_file> find_file(size_t index) const {
-    auto& files = manager_->get_files();
-    if (index < files.size()) {
-      return files[index];
+  [[nodiscard]] std::shared_ptr<krbn::complex_modifications_assets_file> find_file(const std::filesystem::path& file_path) const {
+    const auto& files = manager_->get_files();
+    if (auto it = std::ranges::find(files,
+                                    file_path, &krbn::complex_modifications_assets_file::get_file_path);
+        it != files.end()) {
+      return *it;
     }
     return nullptr;
   }
 
-  [[nodiscard]] std::shared_ptr<krbn::core_configuration::details::complex_modifications_rule> find_rule(size_t file_index,
+  [[nodiscard]] std::shared_ptr<krbn::core_configuration::details::complex_modifications_rule> find_rule(const std::filesystem::path& file_path,
                                                                                                          size_t index) const {
-    if (auto f = find_file(file_index)) {
+    if (auto f = find_file(file_path)) {
       auto& rules = f->get_rules();
       if (index < rules.size()) {
         return rules[index];

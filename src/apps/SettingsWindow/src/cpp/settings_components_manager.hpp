@@ -1,12 +1,10 @@
 #pragma once
 
 #include "logger.hpp"
-#include "settings_complex_modifications_assets_manager.hpp"
 #include "settings_configuration_monitor.hpp"
 #include "settings_console_user_server_client.hpp"
 #include "settings_core_service_daemon_client.hpp"
 #include "settings_log_monitor.hpp"
-#include <atomic>
 #include <mutex>
 #include <unistd.h>
 
@@ -56,52 +54,8 @@ public:
     console_user_server_client_.async_start();
   }
 
-  [[nodiscard]] std::shared_ptr<krbn::core_configuration::core_configuration> get_current_core_configuration() const {
-    return configuration_monitor_.get_weak_core_configuration().lock();
-  }
-
-  void mark_core_configuration_save_pending() {
-    core_configuration_save_pending_ = true;
-  }
-
-  [[nodiscard]] bool take_core_configuration_save_pending() {
-    return core_configuration_save_pending_.exchange(false);
-  }
-
-  void sync_save_core_configuration_if_pending() {
-    // Swift normally saves after a short debounce. If the components are stopped before that
-    // save runs, flush only configurations that Swift has marked as changed. Saving every time
-    // could overwrite a configuration file while an external editor is temporarily modifying it.
-    if (!take_core_configuration_save_pending()) {
-      return;
-    }
-
-    if (auto core_configuration = get_current_core_configuration()) {
-      try {
-        core_configuration->sync_save_to_file();
-      } catch (const std::exception& e) {
-        krbn::logger::get_logger()->error(
-            "Failed to save core_configuration before stopping Settings components: {0}",
-            e.what());
-      }
-    }
-  }
-
-  [[nodiscard]] nlohmann::json reload_complex_modifications_assets() const {
-    return complex_modifications_assets_manager_.reload_and_get_files_json();
-  }
-
-  void add_complex_modifications_rule_to_core_configuration_selected_profile(size_t file_index,
-                                                                             size_t index) const {
-    if (auto core_configuration = get_current_core_configuration()) {
-      complex_modifications_assets_manager_.add_rule_to_core_configuration_selected_profile(file_index,
-                                                                                            index,
-                                                                                            *core_configuration);
-    }
-  }
-
-  void erase_complex_modifications_asset_file(size_t index) const {
-    complex_modifications_assets_manager_.erase_file(index);
+  [[nodiscard]] pqrs::not_null_shared_ptr_t<settings_configuration_store> get_configuration_store() const {
+    return configuration_monitor_.get_configuration_store();
   }
 
   void async_set_app_icon(int number) {
@@ -114,10 +68,8 @@ public:
 
 private:
   settings_configuration_monitor configuration_monitor_;
-  settings_complex_modifications_assets_manager complex_modifications_assets_manager_;
   settings_log_monitor log_monitor_;
   settings_core_service_daemon_client core_service_daemon_client_;
   settings_console_user_server_client console_user_server_client_;
-  std::atomic<bool> core_configuration_save_pending_{false};
   std::once_flag unregister_callbacks_and_detach_once_;
 };
