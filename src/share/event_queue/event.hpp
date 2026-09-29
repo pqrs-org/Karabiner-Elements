@@ -27,6 +27,7 @@ public:
     select_input_source,
     set_variable,
     set_notification_message,
+    set_caps_lock_led,
     mouse_key,
     sticky_modifier,
     software_function,
@@ -51,6 +52,7 @@ public:
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                manipulator_environment_variable_set_variable,            // For set_variable
                                notification_message,                                     // For set_notification_message
+                               caps_lock_led_value,                                      // For set_caps_lock_led
                                mouse_key,                                                // For mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For sticky_modifier
                                software_function,                                        // For software_function
@@ -89,6 +91,8 @@ public:
             result.value_ = value.get<manipulator_environment_variable_set_variable>();
           } else if (key == "set_notification_message") {
             result.value_ = value.get<notification_message>();
+          } else if (key == "set_caps_lock_led") {
+            result.value_ = value.get<caps_lock_led_value>();
           } else if (key == "mouse_key") {
             result.value_ = value.get<mouse_key>();
           } else if (key == "sticky_modifier") {
@@ -165,6 +169,12 @@ public:
       case type::set_notification_message:
         if (auto v = get_if<notification_message>()) {
           json["set_notification_message"] = *v;
+        }
+        break;
+
+      case type::set_caps_lock_led:
+        if (auto v = get_if<caps_lock_led_value>()) {
+          json["set_caps_lock_led"] = *v;
         }
         break;
 
@@ -260,6 +270,13 @@ public:
   static event make_set_notification_message_event(const notification_message& value) {
     event e;
     e.type_ = type::set_notification_message;
+    e.value_ = value;
+    return e;
+  }
+
+  static event make_set_caps_lock_led_event(caps_lock_led_value value) {
+    event e;
+    e.type_ = type::set_caps_lock_led;
     e.value_ = value;
     return e;
   }
@@ -487,6 +504,7 @@ private:
       TO_C_STRING(select_input_source);
       TO_C_STRING(set_variable);
       TO_C_STRING(set_notification_message);
+      TO_C_STRING(set_caps_lock_led);
       TO_C_STRING(mouse_key);
       TO_C_STRING(sticky_modifier);
       TO_C_STRING(software_function);
@@ -522,6 +540,7 @@ private:
     TO_TYPE(select_input_source);
     TO_TYPE(set_variable);
     TO_TYPE(set_notification_message);
+    TO_TYPE(set_caps_lock_led);
     TO_TYPE(mouse_key);
     TO_TYPE(sticky_modifier);
     TO_TYPE(software_function);

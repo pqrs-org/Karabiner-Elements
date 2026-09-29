@@ -45,6 +45,7 @@ public:
 
       auto core_configuration = std::make_shared<krbn::core_configuration::core_configuration>();
       auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
+      auto caps_lock_led_override_manager = std::make_shared<krbn::caps_lock_led_override_manager>();
       auto connector = std::make_shared<manipulator::manipulator_managers_connector>();
       auto manipulator_managers = std::make_shared<std::vector<pqrs::not_null_shared_ptr_t<manipulator::manipulator_manager>>>();
       auto event_queues = std::make_shared<std::vector<pqrs::not_null_shared_ptr_t<event_queue::queue>>>();
@@ -139,7 +140,8 @@ public:
         post_event_to_virtual_devices_manipulator =
             std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
                 std::weak_ptr<krbn::console_user_server_peer>(),
-                notification_message_manager);
+                notification_message_manager,
+                caps_lock_led_override_manager);
 
         manipulator_managers->push_back(std::make_shared<manipulator::manipulator_manager>());
         manipulator_managers->back()->push_back_manipulator(post_event_to_virtual_devices_manipulator);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "caps_lock_led_override_manager.hpp"
 #include "console_user_server_peer.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
@@ -70,6 +71,15 @@ public:
           notification_message_manager_->notification_message_changed.connect(
               [this](const auto& notification_message) {
                 notification_message_changed(notification_message);
+              });
+
+          caps_lock_led_override_manager_ = std::make_shared<caps_lock_led_override_manager>();
+
+          caps_lock_led_override_manager_->override_changed.connect(
+              [this](auto&&) {
+                enqueue_to_dispatcher([this] {
+                  update_caps_lock_led();
+                });
               });
 
           // Apply per-device key-code swaps through basic manipulators rather than
@@ -202,7 +212,8 @@ public:
           post_event_to_virtual_devices_manipulator_ =
               std::make_shared<manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
                   weak_console_user_server_peer_,
-                  notification_message_manager_);
+                  notification_message_manager_,
+                  caps_lock_led_override_manager_);
           post_event_to_virtual_devices_manipulator_->set_cgeventtap_fallback_enabled(cgeventtap_fallback_enabled_);
           post_event_to_virtual_devices_manipulator_->set_sleep_shortcut_delay(
               std::chrono::milliseconds(core_configuration_->get_global_configuration().get_delay_milliseconds_before_sleep_shortcut()));
@@ -695,6 +706,7 @@ private:
     secure_event_input_monitor_ = nullptr;
 
     notification_message_manager_ = nullptr;
+    caps_lock_led_override_manager_ = nullptr;
   }
 
   void stop() {
@@ -942,7 +954,13 @@ private:
 
   void update_caps_lock_led() {
     std::optional<led_state> state;
-    if (last_caps_lock_state_) {
+
+    // `set_caps_lock_led` in complex modifications takes precedence over the actual caps lock state.
+    if (caps_lock_led_override_manager_) {
+      state = caps_lock_led_override_manager_->get_override();
+    }
+
+    if (!state && last_caps_lock_state_) {
       state = *last_caps_lock_state_ ? led_state::on : led_state::off;
     }
 
@@ -1248,6 +1266,7 @@ private:
   manipulator::manipulator_managers_connector manipulator_managers_connector_;
 
   std::shared_ptr<notification_message_manager> notification_message_manager_;
+  std::shared_ptr<caps_lock_led_override_manager> caps_lock_led_override_manager_;
 
   std::shared_ptr<event_queue::queue> merged_input_event_queue_;
 
