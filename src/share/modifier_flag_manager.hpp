@@ -14,8 +14,7 @@ public:
 
   modifier_flag_manager(const modifier_flag_manager&) = delete;
 
-  modifier_flag_manager() {
-  }
+  modifier_flag_manager() = default;
 
   void push_back_active_modifier_flag(const active_modifier_flag& flag) {
     switch (flag.get_type()) {

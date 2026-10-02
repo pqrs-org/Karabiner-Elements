@@ -17,10 +17,7 @@ public:
       : from_events_(from_events),
         from_mandatory_modifiers_(from_mandatory_modifiers),
         key_down_time_stamp_(key_down_time_stamp),
-        key_down_modifier_flags_(key_down_modifier_flags),
-        alone_(true),
-        halted_(false),
-        key_up_posted_(false) {
+        key_down_modifier_flags_(key_down_modifier_flags) {
   }
 
   [[nodiscard]] const std::vector<from_event>& get_from_events() const {
@@ -102,9 +99,9 @@ private:
   std::unordered_set<modifier_flag> key_up_posted_from_mandatory_modifiers_;
   absolute_time_point key_down_time_stamp_;
   std::unordered_set<modifier_flag> key_down_modifier_flags_;
-  bool alone_;
-  bool halted_;
+  bool alone_{true};
+  bool halted_{false};
   events_at_key_up events_at_key_up_;
-  bool key_up_posted_;
+  bool key_up_posted_{false};
 };
 } // namespace krbn::manipulator::manipulators::basic::manipulated_original_event

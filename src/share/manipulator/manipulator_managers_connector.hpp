@@ -78,9 +78,6 @@ public:
     std::weak_ptr<event_queue::queue> weak_output_event_queue_;
   };
 
-  manipulator_managers_connector() {
-  }
-
   void emplace_back_connection(std::weak_ptr<manipulator_manager> weak_manipulator_manager,
                                std::weak_ptr<event_queue::queue> weak_input_event_queue,
                                std::weak_ptr<event_queue::queue> weak_output_event_queue) {

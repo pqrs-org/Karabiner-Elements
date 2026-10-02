@@ -20,12 +20,7 @@ public:
 
   simultaneous_options(const simultaneous_options&) = delete;
 
-  simultaneous_options()
-      : detect_key_down_uninterruptedly_(false),
-        key_down_order_(key_order::insensitive),
-        key_up_order_(key_order::insensitive),
-        key_up_when_(key_up_when::any) {
-  }
+  simultaneous_options() = default;
 
   simultaneous_options(const nlohmann::json& json)
       : simultaneous_options() {
@@ -111,10 +106,10 @@ public:
   }
 
 private:
-  bool detect_key_down_uninterruptedly_;
-  key_order key_down_order_;
-  key_order key_up_order_;
-  key_up_when key_up_when_;
+  bool detect_key_down_uninterruptedly_{false};
+  key_order key_down_order_{key_order::insensitive};
+  key_order key_up_order_{key_order::insensitive};
+  key_up_when key_up_when_{key_up_when::any};
   to_event_definitions to_after_key_up_;
 };
 

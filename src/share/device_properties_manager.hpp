@@ -8,8 +8,7 @@ class device_properties_manager final {
 public:
   device_properties_manager(const device_properties_manager&) = delete;
 
-  device_properties_manager() {
-  }
+  device_properties_manager() = default;
 
   [[nodiscard]] const std::unordered_map<device_id, pqrs::not_null_shared_ptr_t<device_properties>>& get_map() const {
     return map_;

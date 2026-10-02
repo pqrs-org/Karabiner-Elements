@@ -16,8 +16,7 @@ public:
 
   core_service_daemon_state_manager(const core_service_daemon_state_manager&) = delete;
 
-  core_service_daemon_state_manager()
-      : dispatcher_client() {
+  core_service_daemon_state_manager() {
     dispatcher_client_constructor_guard_.initialize();
   }
 

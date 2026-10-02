@@ -12,12 +12,7 @@ class to_event_definition final {
 public:
   to_event_definition(const to_event_definition&) = delete;
 
-  to_event_definition()
-      : lazy_(false),
-        repeat_(true),
-        halt_(false),
-        hold_down_milliseconds_(0) {
-  }
+  to_event_definition() = default;
 
   to_event_definition(const nlohmann::json& json)
       : to_event_definition() {
@@ -202,10 +197,10 @@ public:
 private:
   event_definition event_definition_;
   std::set<modifier_definition::modifier> modifiers_;
-  bool lazy_;
-  bool repeat_;
-  bool halt_;
-  std::chrono::milliseconds hold_down_milliseconds_;
+  bool lazy_{false};
+  bool repeat_{true};
+  bool halt_{false};
+  std::chrono::milliseconds hold_down_milliseconds_{0};
   condition_manager condition_manager_;
 };
 

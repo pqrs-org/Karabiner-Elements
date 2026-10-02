@@ -25,8 +25,7 @@ public:
   receiver(std::weak_ptr<settings_window_guidance_manager> weak_settings_window_guidance_manager,
            std::weak_ptr<software_function_handler> weak_software_function_handler,
            std::weak_ptr<update_check_scheduler> weak_update_check_scheduler)
-      : dispatcher_client(),
-        weak_settings_window_guidance_manager_(weak_settings_window_guidance_manager),
+      : weak_settings_window_guidance_manager_(weak_settings_window_guidance_manager),
         weak_software_function_handler_(weak_software_function_handler),
         weak_update_check_scheduler_(weak_update_check_scheduler),
         input_source_selector_(std::make_unique<pqrs::osx::input_source_selector::selector>(weak_dispatcher_)),

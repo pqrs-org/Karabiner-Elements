@@ -7,9 +7,6 @@
 namespace krbn {
 class focused_ui_element final {
 public:
-  focused_ui_element() {
-  }
-
   [[nodiscard]] const std::optional<std::string>& get_role() const {
     return role_;
   }

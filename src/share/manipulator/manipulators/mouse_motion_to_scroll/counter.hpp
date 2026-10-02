@@ -36,15 +36,7 @@ public:
           const options& options)
       : dispatcher_client(weak_dispatcher),
         parameters_(parameters),
-        options_(options),
-        counter_direction_(counter_direction::none),
-        total_x_(0),
-        total_y_(0),
-        momentum_x_(0),
-        momentum_y_(0),
-        momentum_count_(0),
-        momentum_wait_(0),
-        timer_(*this) {
+        options_(options) {
     dispatcher_client_constructor_guard_.initialize();
   }
 
@@ -417,19 +409,20 @@ private:
   std::optional<pqrs::dispatcher::time_point> last_entry_time_point_;
   std::optional<pqrs::dispatcher::time_point> last_scroll_time_point_;
 
-  counter_direction counter_direction_;
+  counter_direction counter_direction_{counter_direction::none};
   chunk_accumulated_values_t chunk_accumulated_values_x_;
   chunk_accumulated_values_t chunk_accumulated_values_y_;
 
-  int total_x_;
-  int total_y_;
+  int total_x_{0};
+  int total_y_{0};
 
-  int momentum_x_;
-  int momentum_y_;
-  int momentum_minus_;
-  int momentum_count_;
-  int momentum_wait_;
+  int momentum_x_{0};
+  int momentum_y_{0};
+  int momentum_minus_{0};
+  int momentum_count_{0};
+  int momentum_wait_{0};
 
-  pqrs::dispatcher::extra::timer timer_;
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer timer_{*this};
 };
 } // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

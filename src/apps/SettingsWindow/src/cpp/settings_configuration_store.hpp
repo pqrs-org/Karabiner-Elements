@@ -30,8 +30,7 @@ public:
 
   explicit settings_configuration_store(callbacks callbacks)
       : updated_(std::move(callbacks.updated)),
-        save_(std::move(callbacks.save)),
-        save_task_(*this) {
+        save_(std::move(callbacks.save)) {
     dispatcher_client_constructor_guard_.initialize();
   }
 
@@ -556,5 +555,5 @@ private:
   inline static std::atomic<uint64_t> snapshot_revision_{0};
 
   // Construct after potentially throwing members; destruction requires detach.
-  pqrs::dispatcher::extra::debounced_task save_task_;
+  pqrs::dispatcher::extra::debounced_task save_task_{*this};
 };

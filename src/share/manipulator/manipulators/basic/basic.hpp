@@ -22,9 +22,7 @@ class basic final : public base, public pqrs::dispatcher::extra::dispatcher_clie
 public:
   basic(const nlohmann::json& json,
         pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters)
-      : base(),
-        dispatcher_client(),
-        parameters_(parameters) {
+      : parameters_(parameters) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           pqrs::json::requires_object(json, "json");
@@ -137,9 +135,7 @@ public:
   // For simple_modifications
   basic(const from_event_definition& from,
         const to_event_definitions& to)
-      : base(),
-        dispatcher_client(),
-        parameters_(std::make_shared<core_configuration::details::complex_modifications_parameters>()),
+      : parameters_(std::make_shared<core_configuration::details::complex_modifications_parameters>()),
         from_(from),
         to_(to) {
     dispatcher_client_constructor_guard_.initialize();

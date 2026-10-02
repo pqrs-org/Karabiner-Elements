@@ -12,8 +12,7 @@ public:
     event_changed_unless,
   };
 
-  event_changed(const nlohmann::json& json) : base(),
-                                              type_(type::event_changed_if) {
+  event_changed(const nlohmann::json& json) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -76,7 +75,7 @@ public:
   }
 
 private:
-  type type_;
+  type type_{type::event_changed_if};
   std::optional<bool> value_;
 };
 } // namespace krbn::manipulator::conditions

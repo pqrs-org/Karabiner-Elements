@@ -15,8 +15,7 @@ class hid_event_system_monitor final : public pqrs::dispatcher::extra::dispatche
 public:
   hid_event_system_monitor(const hid_event_system_monitor&) = delete;
 
-  hid_event_system_monitor() : dispatcher_client(),
-                               set_property_timer_(*this) {
+  hid_event_system_monitor() {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           if (auto matching_dictionary = pqrs::cf::adopt_cf_ptr(IOServiceNameMatching("AppleUserHIDEventDriver"))) {
@@ -75,6 +74,8 @@ private:
 
   pqrs::osx::iokit_hid_event_system_client client_;
   std::unique_ptr<pqrs::osx::iokit_service_monitor> monitor_;
-  pqrs::dispatcher::extra::timer set_property_timer_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer set_property_timer_{*this};
 };
 } // namespace krbn::core_service::daemon

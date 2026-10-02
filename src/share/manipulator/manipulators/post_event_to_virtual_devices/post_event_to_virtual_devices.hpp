@@ -21,9 +21,7 @@ class post_event_to_virtual_devices final : public base, public pqrs::dispatcher
 public:
   post_event_to_virtual_devices(std::weak_ptr<console_user_server_peer> weak_console_user_server_peer,
                                 std::weak_ptr<notification_message_manager> weak_notification_message_manager)
-      : base(),
-        dispatcher_client(),
-        weak_console_user_server_peer_(weak_console_user_server_peer),
+      : weak_console_user_server_peer_(weak_console_user_server_peer),
         weak_notification_message_manager_(weak_notification_message_manager),
         virtual_hid_keyboard_pressed_keys_manager_(std::make_shared<pressed_keys_manager>()),
         keyboard_suppression_(std::make_shared<keyboard_suppression>()),

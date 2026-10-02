@@ -6,9 +6,6 @@
 namespace krbn::manipulator::manipulators {
 class nop final : public base {
 public:
-  nop() : base() {
-  }
-
   ~nop() override {
   }
 

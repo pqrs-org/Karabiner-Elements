@@ -8,9 +8,6 @@ using namespace std::string_literals;
 
 class simple_modifications final {
 public:
-  simple_modifications() {
-  }
-
   nlohmann::json to_json(const nlohmann::json& default_json) const {
     // If there are multiple identical `from` entries, the first one takes precedence.
     std::unordered_set<std::string> froms;

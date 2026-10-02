@@ -20,8 +20,7 @@ public:
   components_manager(const components_manager&) = delete;
 
   components_manager(std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager)
-      : dispatcher_client(),
-        weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
+      : weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           //

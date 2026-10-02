@@ -40,8 +40,7 @@ public:
   event_tap_monitor(bool cgeventtap_fallback_enabled,
                     pqrs::not_null_shared_ptr_t<pressed_keys_manager> virtual_hid_keyboard_pressed_keys_manager,
                     pqrs::not_null_shared_ptr_t<keyboard_suppression> keyboard_suppression)
-      : dispatcher_client(),
-        cgeventtap_fallback_enabled_(cgeventtap_fallback_enabled),
+      : cgeventtap_fallback_enabled_(cgeventtap_fallback_enabled),
         virtual_hid_keyboard_pressed_keys_manager_(virtual_hid_keyboard_pressed_keys_manager),
         keyboard_suppression_(keyboard_suppression) {
     dispatcher_client_constructor_guard_.initialize(

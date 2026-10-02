@@ -67,8 +67,6 @@ public:
                      error_handling error_handling)
       : json_(nlohmann::json::object()),
         error_handling_(error_handling),
-        load_state_(load_state::loaded),
-        source_(source::default_configuration),
         global_configuration_(std::make_shared<details::global_configuration>(nlohmann::json::object(),
                                                                               error_handling)),
         machine_specific_(std::make_shared<details::machine_specific>(nlohmann::json::object(),
@@ -351,8 +349,8 @@ private:
 
   nlohmann::json json_;
   error_handling error_handling_;
-  load_state load_state_;
-  source source_;
+  load_state load_state_{load_state::loaded};
+  source source_{source::default_configuration};
   std::string parse_error_message_;
 
   pqrs::not_null_shared_ptr_t<details::global_configuration> global_configuration_;

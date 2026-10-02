@@ -44,10 +44,6 @@ public:
                                software_function,                                        // For type::software_function
                                std::monostate>;                                          // For type::from_event, type::none
 
-  event_definition() : type_(type::none),
-                       value_(std::monostate()) {
-  }
-
   ~event_definition() {
   }
 
@@ -368,7 +364,7 @@ private:
     }
   }
 
-  type type_;
-  value_t value_;
+  type type_{type::none};
+  value_t value_{std::monostate()};
 };
 } // namespace krbn::manipulator

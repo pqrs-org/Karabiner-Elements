@@ -61,9 +61,7 @@ public:
                                virtual_hid_devices_state,                                // For virtual_hid_devices_state_changed
                                std::monostate>;                                          // For virtual events
 
-  event() : type_(type::none),
-            value_(std::monostate()) {
-  }
+  event() = default;
 
   static event make_from_json(const nlohmann::json& json) {
     event result;
@@ -541,8 +539,8 @@ private:
     return type::none;
   }
 
-  type type_;
-  value_t value_;
+  type type_{type::none};
+  value_t value_{std::monostate()};
 };
 
 inline void to_json(nlohmann::json& json, const event& value) {

@@ -7,18 +7,7 @@ namespace krbn::manipulator::manipulators::mouse_basic {
 class mouse_basic final : public base {
 public:
   mouse_basic(const nlohmann::json& json,
-              pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters)
-      : base(),
-        flip_x_(false),
-        flip_y_(false),
-        flip_vertical_wheel_(false),
-        flip_horizontal_wheel_(false),
-        swap_xy_(false),
-        swap_wheels_(false),
-        discard_x_(false),
-        discard_y_(false),
-        discard_vertical_wheel_(false),
-        discard_horizontal_wheel_(false) {
+              pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -222,15 +211,15 @@ public:
   }
 
 private:
-  bool flip_x_;
-  bool flip_y_;
-  bool flip_vertical_wheel_;
-  bool flip_horizontal_wheel_;
-  bool swap_xy_;
-  bool swap_wheels_;
-  bool discard_x_;
-  bool discard_y_;
-  bool discard_vertical_wheel_;
-  bool discard_horizontal_wheel_;
+  bool flip_x_{false};
+  bool flip_y_{false};
+  bool flip_vertical_wheel_{false};
+  bool flip_horizontal_wheel_{false};
+  bool swap_xy_{false};
+  bool swap_wheels_{false};
+  bool discard_x_{false};
+  bool discard_y_{false};
+  bool discard_vertical_wheel_{false};
+  bool discard_horizontal_wheel_{false};
 };
 } // namespace krbn::manipulator::manipulators::mouse_basic

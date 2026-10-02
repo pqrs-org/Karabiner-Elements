@@ -15,8 +15,7 @@ public:
   event_time_stamp() : event_time_stamp(absolute_time_point(0)) {
   }
 
-  event_time_stamp(absolute_time_point time_stamp) : time_stamp_(time_stamp),
-                                                     input_delay_duration_(0) {
+  event_time_stamp(absolute_time_point time_stamp) : time_stamp_(time_stamp) {
   }
 
   event_time_stamp(absolute_time_point time_stamp,
@@ -99,7 +98,7 @@ public:
 
 private:
   absolute_time_point time_stamp_;
-  absolute_time_duration input_delay_duration_;
+  absolute_time_duration input_delay_duration_{0};
   mutable std::mutex mutex_;
 };
 

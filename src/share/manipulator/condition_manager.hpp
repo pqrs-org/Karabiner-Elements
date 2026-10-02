@@ -7,8 +7,7 @@ class condition_manager final {
 public:
   condition_manager(const condition_manager&) = delete;
 
-  condition_manager() {
-  }
+  condition_manager() = default;
 
   [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<manipulator::conditions::base>>& get_conditions() const {
     return conditions_;

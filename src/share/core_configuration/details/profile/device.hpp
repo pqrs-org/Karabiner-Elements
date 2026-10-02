@@ -46,8 +46,6 @@ public:
          const default_values_resolver& resolve_default_values)
       : json_(json),
         identifiers_(make_device_identifiers(json)),
-        ignore_(false),
-        ignore_configured_(false),
         simple_modifications_(std::make_shared<simple_modifications>()),
         fn_function_keys_(std::make_shared<simple_modifications>()) {
     const auto default_values = resolve_default_values(identifiers_);
@@ -703,7 +701,7 @@ private:
 
   nlohmann::json json_;
   device_identifiers identifiers_;
-  bool ignore_;
+  bool ignore_{false};
   // The default value of `ignore_` can change at runtime, most notably when the
   // profile's `ignore_pointing_device_events_by_default` setting changes. An
   // explicitly configured value can then temporarily equal the new default. Keep
@@ -726,7 +724,7 @@ private:
   // where it equals the new default. The value would then be omitted from JSON and
   // changed back to true along with the default in the fourth row. Keeping it
   // configured preserves the user's device-specific choice throughout the change.
-  bool ignore_configured_;
+  bool ignore_configured_{false};
   bool manipulate_caps_lock_led_;
   // macOS maps these two HID usages differently depending on the keyboard's
   // device type. This setting compensates when the physical device and the

@@ -7,8 +7,7 @@ class manipulator_manager final {
 public:
   manipulator_manager(const manipulator_manager&) = delete;
 
-  manipulator_manager() {
-  }
+  manipulator_manager() = default;
 
   ~manipulator_manager() {
   }

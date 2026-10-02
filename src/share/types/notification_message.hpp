@@ -7,9 +7,6 @@
 namespace krbn {
 class notification_message final {
 public:
-  notification_message() {
-  }
-
   [[nodiscard]] const std::string& get_id() const {
     return id_;
   }

@@ -35,14 +35,11 @@ public:
   entry(device_id device_id,
         IOHIDDeviceRef device,
         pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration)
-      : dispatcher_client(),
-        device_id_(device_id),
+      : device_id_(device_id),
         core_configuration_(core_configuration),
         device_properties_(device_properties::make_device_properties(device_id,
                                                                      device)),
-        pressed_keys_manager_(std::make_shared<pressed_keys_manager>()),
-        disabled_(false),
-        temporarily_ignore_(false) {
+        pressed_keys_manager_(std::make_shared<pressed_keys_manager>()) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
@@ -353,9 +350,9 @@ private:
   std::string device_short_name_;
 
   // For disabling the built in keyboard
-  bool disabled_;
+  bool disabled_{false};
 
   // For ignoring all devices via EventViewer
-  bool temporarily_ignore_;
+  bool temporarily_ignore_{false};
 };
 } // namespace krbn::core_service::daemon::device_grabber_details

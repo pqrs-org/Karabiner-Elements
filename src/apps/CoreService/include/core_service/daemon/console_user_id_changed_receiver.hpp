@@ -25,7 +25,7 @@ public:
 
   console_user_id_changed_receiver(const console_user_id_changed_receiver&) = delete;
 
-  console_user_id_changed_receiver() : dispatcher_client() {
+  console_user_id_changed_receiver() {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           prepare_console_user_id_changed_receiver_socket_parent_directory();

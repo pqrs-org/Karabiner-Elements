@@ -9,13 +9,7 @@
 namespace krbn {
 class mouse_key final {
 public:
-  mouse_key()
-      : x_(0),
-        y_(0),
-        vertical_wheel_(0),
-        horizontal_wheel_(0),
-        speed_multiplier_(1.0) {
-  }
+  mouse_key() = default;
 
   mouse_key(int x,
             int y,
@@ -112,11 +106,11 @@ public:
   }
 
 private:
-  int x_;
-  int y_;
-  int vertical_wheel_;
-  int horizontal_wheel_;
-  double speed_multiplier_;
+  int x_{0};
+  int y_{0};
+  int vertical_wheel_{0};
+  int horizontal_wheel_{0};
+  double speed_multiplier_{1.0};
 };
 
 inline void to_json(nlohmann::json& json, const mouse_key& m) {

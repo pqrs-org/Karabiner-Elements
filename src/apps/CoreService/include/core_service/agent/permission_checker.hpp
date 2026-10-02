@@ -26,9 +26,7 @@ public:
 
   permission_checker(const permission_checker&) = delete;
 
-  permission_checker()
-      : dispatcher_client(),
-        check_permissions_task_(*this) {
+  permission_checker() {
     dispatcher_client_constructor_guard_.initialize();
   }
 
@@ -170,7 +168,9 @@ private:
   std::optional<bool> on_console_;
   std::optional<core_service_permission_check_result> last_bundle_permission_check_result_;
   bool restart_required_after_permissions_granted_ = false;
-  pqrs::dispatcher::extra::debounced_task check_permissions_task_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::debounced_task check_permissions_task_{*this};
 };
 
 } // namespace krbn::core_service::agent

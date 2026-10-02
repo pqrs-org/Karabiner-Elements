@@ -13,9 +13,7 @@ class mouse_motion_to_scroll final : public base, public pqrs::dispatcher::extra
 
 public:
   mouse_motion_to_scroll(const nlohmann::json& json,
-                         pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters)
-      : base(),
-        dispatcher_client() {
+                         pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           pqrs::json::requires_object(json, "json");

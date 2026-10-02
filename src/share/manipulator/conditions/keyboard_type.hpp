@@ -12,8 +12,7 @@ public:
     keyboard_type_unless,
   };
 
-  keyboard_type(const nlohmann::json& json) : base(),
-                                              type_(type::keyboard_type_if) {
+  keyboard_type(const nlohmann::json& json) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -82,7 +81,7 @@ public:
   }
 
 private:
-  type type_;
+  type type_{type::keyboard_type_if};
   std::vector<std::string> keyboard_types_;
 };
 } // namespace krbn::manipulator::conditions

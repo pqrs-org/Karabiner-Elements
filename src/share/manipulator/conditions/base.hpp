@@ -11,8 +11,7 @@ struct condition_context final {
 
 class base {
 protected:
-  base() {
-  }
+  base() = default;
 
 public:
   virtual ~base() {

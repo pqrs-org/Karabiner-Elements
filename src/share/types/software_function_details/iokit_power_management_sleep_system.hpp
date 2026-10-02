@@ -8,10 +8,6 @@
 namespace krbn::software_function_details {
 class iokit_power_management_sleep_system {
 public:
-  iokit_power_management_sleep_system()
-      : delay_milliseconds_(500) {
-  }
-
   [[nodiscard]] std::chrono::milliseconds get_delay_milliseconds() const {
     return delay_milliseconds_;
   }
@@ -23,7 +19,7 @@ public:
   constexpr bool operator==(const iokit_power_management_sleep_system&) const = default;
 
 private:
-  std::chrono::milliseconds delay_milliseconds_;
+  std::chrono::milliseconds delay_milliseconds_{500};
 };
 
 inline void to_json(nlohmann::json& json, const iokit_power_management_sleep_system& value) {

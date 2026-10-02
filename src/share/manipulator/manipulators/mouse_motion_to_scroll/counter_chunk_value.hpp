@@ -7,12 +7,6 @@
 namespace krbn::manipulator::manipulators::mouse_motion_to_scroll {
 class counter_chunk_value final {
 public:
-  counter_chunk_value() : plus_value_(0),
-                          minus_value_(0),
-                          abs_total_(0),
-                          last_sign_(pqrs::sign::zero) {
-  }
-
   [[nodiscard]] int get_abs_total() const {
     return abs_total_;
   }
@@ -49,9 +43,9 @@ public:
   }
 
 private:
-  int plus_value_;
-  int minus_value_;
-  int abs_total_;
-  pqrs::sign last_sign_;
+  int plus_value_{0};
+  int minus_value_{0};
+  int abs_total_{0};
+  pqrs::sign last_sign_{pqrs::sign::zero};
 };
 } // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

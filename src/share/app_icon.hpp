@@ -17,9 +17,7 @@
 namespace krbn {
 class app_icon final {
 public:
-  app_icon()
-      : number_(0) {
-  }
+  app_icon() = default;
 
   app_icon(int number)
       : number_(number) {
@@ -57,6 +55,6 @@ public:
   }
 
 private:
-  int number_;
+  int number_{0};
 };
 } // namespace krbn

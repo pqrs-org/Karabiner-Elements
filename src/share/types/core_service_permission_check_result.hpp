@@ -5,11 +5,6 @@
 namespace krbn {
 class core_service_permission_check_result final {
 public:
-  core_service_permission_check_result()
-      : iohid_listen_event_allowed_(false),
-        accessibility_process_trusted_(false) {
-  }
-
   [[nodiscard]] bool get_iohid_listen_event_allowed() const {
     return iohid_listen_event_allowed_;
   }
@@ -34,8 +29,8 @@ public:
   bool operator==(const core_service_permission_check_result&) const = default;
 
 private:
-  bool iohid_listen_event_allowed_;
-  bool accessibility_process_trusted_;
+  bool iohid_listen_event_allowed_{false};
+  bool accessibility_process_trusted_{false};
 };
 
 inline void to_json(nlohmann::json& json, const core_service_permission_check_result& value) {

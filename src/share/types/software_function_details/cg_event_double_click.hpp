@@ -7,10 +7,6 @@
 namespace krbn::software_function_details {
 class cg_event_double_click {
 public:
-  cg_event_double_click()
-      : button_(0) {
-  }
-
   [[nodiscard]] uint32_t get_button() const {
     return button_;
   }
@@ -22,7 +18,7 @@ public:
   constexpr bool operator==(const cg_event_double_click&) const = default;
 
 private:
-  uint32_t button_;
+  uint32_t button_{0};
 };
 
 inline void to_json(nlohmann::json& json, const cg_event_double_click& value) {

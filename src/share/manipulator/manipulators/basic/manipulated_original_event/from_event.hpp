@@ -6,8 +6,7 @@
 namespace krbn::manipulator::manipulators::basic::manipulated_original_event {
 class from_event final {
 public:
-  from_event() : device_id_(device_id(0)) {
-  }
+  from_event() = default;
 
   from_event(device_id device_id,
              const event_queue::event& event,
@@ -35,7 +34,7 @@ public:
   }
 
 private:
-  device_id device_id_;
+  device_id device_id_{0};
   event_queue::event event_;
   event_queue::event original_event_;
 };

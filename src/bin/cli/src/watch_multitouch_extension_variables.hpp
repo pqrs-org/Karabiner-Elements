@@ -17,10 +17,8 @@ public:
   components_manager(const components_manager&) = delete;
 
   explicit components_manager(int interval)
-      : dispatcher_client(),
-        interval_(interval),
-        client_(std::make_unique<core_service_daemon_client>()),
-        timer_(*this) {
+      : interval_(interval),
+        client_(std::make_unique<core_service_daemon_client>()) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           client_->connected.connect([this] {
@@ -78,7 +76,9 @@ private:
   int interval_;
   std::string output_json_string_;
   std::unique_ptr<core_service_daemon_client> client_;
-  pqrs::dispatcher::extra::timer timer_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer timer_{*this};
 };
 inline int run(int interval) {
   auto termination_wait = pqrs::make_thread_wait();

@@ -36,8 +36,7 @@ public:
 
   settings_process_lifecycle_components_manager(const settings_components_manager::callbacks& callbacks,
                                                 krbn_components_manager_stopped_t components_manager_stopped_callback)
-      : dispatcher_client(),
-        components_manager_(std::make_shared<settings_components_manager>(callbacks)),
+      : components_manager_(std::make_shared<settings_components_manager>(callbacks)),
         components_manager_stopped_callback_(components_manager_stopped_callback) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {

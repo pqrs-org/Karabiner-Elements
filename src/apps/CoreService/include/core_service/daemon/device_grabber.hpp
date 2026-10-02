@@ -58,8 +58,7 @@ public:
 
   device_grabber(std::weak_ptr<console_user_server_peer> weak_console_user_server_peer,
                  std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager)
-      : dispatcher_client(),
-        weak_console_user_server_peer_(weak_console_user_server_peer),
+      : weak_console_user_server_peer_(weak_console_user_server_peer),
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager),
         core_configuration_(std::make_shared<core_configuration::core_configuration>()),
         logger_unique_filter_(logger::get_logger()) {

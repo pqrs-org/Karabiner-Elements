@@ -11,8 +11,7 @@ class mouse_key_handler final : public pqrs::dispatcher::extra::dispatcher_clien
 public:
   class count_converter final {
   public:
-    count_converter(int threshold) : threshold_(threshold),
-                                     count_(0) {
+    count_converter(int threshold) : threshold_(threshold) {
     }
 
     uint8_t update(int value) {
@@ -42,17 +41,10 @@ public:
 
   private:
     int threshold_;
-    int count_;
+    int count_{0};
   };
 
-  mouse_key_handler(queue& queue) : dispatcher_client(),
-                                    queue_(queue),
-                                    active_(false),
-                                    x_count_converter_(128),
-                                    y_count_converter_(128),
-                                    vertical_wheel_count_converter_(128),
-                                    horizontal_wheel_count_converter_(128),
-                                    timer_(*this) {
+  mouse_key_handler(queue& queue) : queue_(queue) {
     dispatcher_client_constructor_guard_.initialize();
   }
 
@@ -186,13 +178,15 @@ private:
   queue& queue_;
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   std::vector<std::pair<device_id, mouse_key>> entries_;
-  std::atomic<bool> active_;
+  std::atomic<bool> active_{false};
   std::weak_ptr<event_queue::queue> weak_output_event_queue_;
   std::optional<mouse_key> last_mouse_key_total_;
-  count_converter x_count_converter_;
-  count_converter y_count_converter_;
-  count_converter vertical_wheel_count_converter_;
-  count_converter horizontal_wheel_count_converter_;
-  pqrs::dispatcher::extra::timer timer_;
+  count_converter x_count_converter_{128};
+  count_converter y_count_converter_{128};
+  count_converter vertical_wheel_count_converter_{128};
+  count_converter horizontal_wheel_count_converter_{128};
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer timer_{*this};
 };
 } // namespace krbn::manipulator::manipulators::post_event_to_virtual_devices

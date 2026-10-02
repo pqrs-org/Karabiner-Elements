@@ -12,8 +12,7 @@ public:
     variable_unless,
   };
 
-  variable(const nlohmann::json& json) : base(),
-                                         type_(type::variable_if) {
+  variable(const nlohmann::json& json) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -71,7 +70,7 @@ public:
   }
 
 private:
-  type type_;
+  type type_{type::variable_if};
   std::optional<std::string> name_;
   std::optional<manipulator_environment_variable_value> value_;
 };

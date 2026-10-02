@@ -19,11 +19,9 @@ public:
   settings_core_service_daemon_client(std::function<void(const krbn::connected_devices&)> connected_devices_updated_callback,
                                       krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received_callback,
                                       krbn_core_service_daemon_client_system_variables_received_t system_variables_received_callback)
-      : dispatcher_client(),
-        connected_devices_updated_callback_(std::move(connected_devices_updated_callback)),
+      : connected_devices_updated_callback_(std::move(connected_devices_updated_callback)),
         connected_devices_received_callback_(connected_devices_received_callback),
-        system_variables_received_callback_(system_variables_received_callback),
-        system_variables_timer_(*this) {
+        system_variables_received_callback_(system_variables_received_callback) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           start();
@@ -155,6 +153,8 @@ private:
   std::shared_ptr<krbn::core_service_daemon_client> core_service_daemon_client_;
   const krbn_core_service_daemon_client_connected_devices_received_t connected_devices_received_callback_;
   const krbn_core_service_daemon_client_system_variables_received_t system_variables_received_callback_;
-  pqrs::dispatcher::extra::timer system_variables_timer_;
   std::once_flag unregister_callbacks_and_detach_once_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer system_variables_timer_{*this};
 };

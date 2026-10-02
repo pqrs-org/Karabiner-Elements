@@ -35,8 +35,7 @@ public:
 
   core_service_daemon_client(const core_service_daemon_client&) = delete;
 
-  core_service_daemon_client()
-      : dispatcher_client() {
+  core_service_daemon_client() {
     dispatcher_client_constructor_guard_.initialize();
   }
 

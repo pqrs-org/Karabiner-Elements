@@ -13,9 +13,6 @@
 namespace krbn {
 class connected_devices final {
 public:
-  connected_devices() {
-  }
-
   [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<device_properties>>& get_devices() const {
     return devices_;
   }

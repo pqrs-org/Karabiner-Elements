@@ -17,10 +17,7 @@ class hid_keyboard_caps_lock_led_state_manager final : public pqrs::dispatcher::
 
 public:
   hid_keyboard_caps_lock_led_state_manager(IOHIDDeviceRef device)
-      : dispatcher_client(),
-        device_(device),
-        timer_(*this),
-        started_(false) {
+      : device_(device) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           if (device_) {
@@ -148,7 +145,9 @@ private:
   pqrs::osx::iokit_hid_element element_;
   std::optional<led_state> state_;
   mutable std::mutex state_mutex_;
-  pqrs::dispatcher::extra::timer timer_;
-  bool started_;
+  bool started_{false};
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer timer_{*this};
 };
 } // namespace krbn

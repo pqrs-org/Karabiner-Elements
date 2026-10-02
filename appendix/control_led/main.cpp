@@ -12,7 +12,7 @@ class control_led final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   control_led(const control_led&) = delete;
 
-  control_led(krbn::led_state led_state) : dispatcher_client() {
+  control_led(krbn::led_state led_state) {
     std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
         pqrs::osx::iokit_hid_manager::make_matching_dictionary(
             pqrs::hid::usage_page::generic_desktop,

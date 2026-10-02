@@ -31,11 +31,7 @@ public:
         manufacturer_(parameters.manufacturer),
         product_(parameters.product),
         serial_number_(parameters.serial_number),
-        transport_(parameters.transport),
-        is_built_in_keyboard_(false),
-        is_built_in_pointing_device_(false),
-        is_built_in_touch_bar_(false),
-        is_apple_(false) {
+        transport_(parameters.transport) {
     device_identifiers_ = device_identifiers({
         .vendor_id = parameters.vendor_id,
         .product_id = parameters.product_id,
@@ -430,10 +426,10 @@ private:
   pqrs::hid::product_string::value_t product_;
   std::string serial_number_;
   std::string transport_;
-  bool is_built_in_keyboard_;
-  bool is_built_in_pointing_device_;
-  bool is_built_in_touch_bar_;
-  bool is_apple_;
+  bool is_built_in_keyboard_{false};
+  bool is_built_in_pointing_device_{false};
+  bool is_built_in_touch_bar_{false};
+  bool is_apple_{false};
 };
 
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {

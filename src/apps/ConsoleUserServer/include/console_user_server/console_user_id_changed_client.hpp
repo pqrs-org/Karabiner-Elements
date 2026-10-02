@@ -26,8 +26,7 @@ public:
 
   console_user_id_changed_client(const console_user_id_changed_client&) = delete;
 
-  console_user_id_changed_client()
-      : dispatcher_client() {
+  console_user_id_changed_client() {
     dispatcher_client_constructor_guard_.initialize();
   }
 

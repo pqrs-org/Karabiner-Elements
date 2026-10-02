@@ -40,8 +40,7 @@ public:
 
   receiver(std::optional<uid_t> current_console_user_id,
            std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager)
-      : dispatcher_client(),
-        current_console_user_id_(current_console_user_id),
+      : current_console_user_id_(current_console_user_id),
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {

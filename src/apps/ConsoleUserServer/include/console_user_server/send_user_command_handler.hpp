@@ -21,8 +21,7 @@ public:
   send_user_command_handler(const send_user_command_handler&) = delete;
 
   send_user_command_handler()
-      : dispatcher_client(),
-        io_context_(),
+      : io_context_(),
         work_guard_(asio::make_work_guard(io_context_)),
         socket_(io_context_) {
     dispatcher_client_constructor_guard_.initialize(

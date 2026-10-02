@@ -13,8 +13,7 @@ class queue {
 public:
   queue(const queue&) = delete;
 
-  queue() : time_stamp_delay_(0) {
-  }
+  queue() = default;
 
   void emplace_back_entry(device_id device_id,
                           const event_time_stamp& event_time_stamp,
@@ -361,6 +360,6 @@ private:
   modifier_flag_manager modifier_flag_manager_;
   pointing_button_manager pointing_button_manager_;
   manipulator::manipulator_environment manipulator_environment_;
-  absolute_time_duration time_stamp_delay_;
+  absolute_time_duration time_stamp_delay_{0};
 };
 } // namespace krbn::event_queue

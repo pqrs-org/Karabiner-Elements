@@ -8,8 +8,7 @@
 namespace krbn::manipulator::manipulators {
 class base {
 protected:
-  base() : validity_(validity::valid) {
-  }
+  base() = default;
 
 public:
   virtual ~base() {
@@ -120,7 +119,7 @@ protected:
   // needed to handle the matching key_up and release its output keys.
   // manipulator_manager keeps invalid manipulators while active() is true and
   // removes them once active() becomes false.
-  validity validity_;
+  validity validity_{validity::valid};
   condition_manager condition_manager_;
 };
 } // namespace krbn::manipulator::manipulators

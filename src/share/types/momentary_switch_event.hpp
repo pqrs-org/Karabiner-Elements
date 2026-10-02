@@ -25,8 +25,7 @@ public:
            momentary_switch_event_details::generic_desktop::target(usage_page, usage);
   }
 
-  momentary_switch_event() {
-  }
+  momentary_switch_event() = default;
 
   momentary_switch_event(pqrs::hid::usage_page::value_t usage_page,
                          pqrs::hid::usage::value_t usage)

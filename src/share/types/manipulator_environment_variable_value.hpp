@@ -13,8 +13,7 @@ public:
                                bool,
                                std::string>;
 
-  manipulator_environment_variable_value()
-      : value_(0) {}
+  manipulator_environment_variable_value() = default;
 
   manipulator_environment_variable_value(value_t value)
       : value_(value) {}
@@ -44,7 +43,7 @@ public:
   }
 
 private:
-  value_t value_;
+  value_t value_{0};
 };
 
 inline void to_json(nlohmann::json& j, const manipulator_environment_variable_value& value) {

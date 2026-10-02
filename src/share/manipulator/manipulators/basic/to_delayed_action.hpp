@@ -11,8 +11,7 @@ class to_delayed_action final : public pqrs::dispatcher::extra::dispatcher_clien
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
-  to_delayed_action(const nlohmann::json& json) : dispatcher_client(),
-                                                  delayed_action_task_(*this) {
+  to_delayed_action(const nlohmann::json& json) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           pqrs::json::requires_object(json, "json");
@@ -195,6 +194,8 @@ private:
   std::optional<event_queue::entry> front_input_event_;
   std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
-  pqrs::dispatcher::extra::debounced_task delayed_action_task_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::debounced_task delayed_action_task_{*this};
 };
 } // namespace krbn::manipulator::manipulators::basic

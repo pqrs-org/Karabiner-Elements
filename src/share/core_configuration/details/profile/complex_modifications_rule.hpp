@@ -88,8 +88,7 @@ public:
   complex_modifications_rule(const nlohmann::json& json,
                              pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
                              error_handling error_handling)
-      : json_(json),
-        code_type_(code_type::json) {
+      : json_(json) {
     auto resolved_json = resolve_code(json, error_handling);
 
     helper_values_.push_back_value<bool>("enabled",
@@ -251,7 +250,7 @@ private:
   bool enabled_;
   std::string description_;
   std::vector<std::string> description_notes_;
-  code_type code_type_;
+  code_type code_type_{code_type::json};
   std::string code_string_;
   // Contains the rule description, description notes, and the JSON representation
   // of each resolved manipulator. Other top-level metadata is intentionally

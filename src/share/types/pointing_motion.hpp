@@ -7,12 +7,7 @@
 namespace krbn {
 class pointing_motion final {
 public:
-  pointing_motion()
-      : x_(0),
-        y_(0),
-        vertical_wheel_(0),
-        horizontal_wheel_(0) {
-  }
+  pointing_motion() = default;
 
   pointing_motion(int x,
                   int y,
@@ -78,10 +73,10 @@ public:
   }
 
 private:
-  int x_;
-  int y_;
-  int vertical_wheel_;
-  int horizontal_wheel_;
+  int x_{0};
+  int y_{0};
+  int vertical_wheel_{0};
+  int horizontal_wheel_{0};
 };
 
 inline void to_json(nlohmann::json& j, const pointing_motion& value) {

@@ -16,8 +16,7 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager()
-      : dispatcher_client() {
+  components_manager() {
     client_ = std::make_unique<krbn::core_service_daemon_client>();
 
     client_->connected.connect([this] {

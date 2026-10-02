@@ -14,8 +14,7 @@ public:
     frontmost_application_unless,
   };
 
-  frontmost_application(const nlohmann::json& json) : base(),
-                                                      type_(type::frontmost_application_if) {
+  frontmost_application(const nlohmann::json& json) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -127,7 +126,7 @@ public:
   }
 
 private:
-  type type_;
+  type type_{type::frontmost_application_if};
   std::vector<pqrs::regex> bundle_identifiers_;
   std::vector<pqrs::regex> file_paths_;
 

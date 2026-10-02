@@ -12,8 +12,7 @@ public:
     input_source_unless,
   };
 
-  input_source(const nlohmann::json& json) : base(),
-                                             type_(type::input_source_if) {
+  input_source(const nlohmann::json& json) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -93,7 +92,7 @@ public:
   }
 
 private:
-  type type_;
+  type type_{type::input_source_if};
   std::vector<pqrs::osx::input_source_selector::specifier> input_source_specifiers_;
 
   mutable std::optional<std::pair<pqrs::osx::input_source::properties, bool>> cached_result_;

@@ -10,9 +10,6 @@
 namespace krbn::software_function_details {
 class open_application {
 public:
-  open_application() {
-  }
-
   [[nodiscard]] const std::optional<std::string>& get_bundle_identifier() const {
     return bundle_identifier_;
   }

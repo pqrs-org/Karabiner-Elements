@@ -19,8 +19,7 @@ public:
   hid_value_monitor(const hid_value_monitor&) = delete;
 
   explicit hid_value_monitor(game_pad_viewer_hid_value_arrived_callback callback)
-      : dispatcher_client(),
-        callback_(callback) {
+      : callback_(callback) {
     hid_value_monitor_observed = false;
 
     std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
@@ -115,9 +114,7 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager()
-      : dispatcher_client() {
-  }
+  components_manager() = default;
 
   ~components_manager() override {
     detach_from_dispatcher([this] {

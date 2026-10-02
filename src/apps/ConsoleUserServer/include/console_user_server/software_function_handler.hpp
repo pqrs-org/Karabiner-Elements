@@ -18,9 +18,7 @@ class software_function_handler final : public pqrs::dispatcher::extra::dispatch
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
-  software_function_handler()
-      : dispatcher_client(),
-        check_trusted_(false) {
+  software_function_handler() {
     dispatcher_client_constructor_guard_.initialize();
   }
 
@@ -312,7 +310,7 @@ private:
   }
 
 private:
-  bool check_trusted_;
+  bool check_trusted_{false};
   // Stored in order from the newest at the beginning.
   std::deque<application> frontmost_application_history_;
   focused_ui_element focused_ui_element_;

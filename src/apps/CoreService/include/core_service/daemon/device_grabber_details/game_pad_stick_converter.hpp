@@ -47,10 +47,6 @@ public:
 
   class stick_sensor {
   public:
-    stick_sensor()
-        : value_(0) {
-    }
-
     [[nodiscard]] double get_value() const {
       return value_;
     }
@@ -67,7 +63,7 @@ public:
     }
 
   private:
-    double value_; // -1.0 ... 1.0
+    double value_{0.0}; // -1.0 ... 1.0
   };
 
   class stick final : public pqrs::dispatcher::extra::dispatcher_client {
@@ -84,16 +80,7 @@ public:
     // Methods
     //
 
-    stick()
-        : dispatcher_client(),
-          radian_(0.0),
-          absolute_magnitude_(0.0),
-          delta_magnitude_(0.0),
-          previous_absolute_magnitude_(0.0),
-          deadzone_(0.0),
-          delta_magnitude_detection_threshold_(0.0),
-          continued_movement_absolute_magnitude_threshold_(1.0),
-          continued_movement_interval_milliseconds_(0) {
+    stick() {
       dispatcher_client_constructor_guard_.initialize();
     }
 
@@ -208,27 +195,24 @@ public:
     stick_sensor horizontal_stick_sensor_;
     stick_sensor vertical_stick_sensor_;
 
-    double radian_;
-    double absolute_magnitude_;
-    double delta_magnitude_;
-    double previous_absolute_magnitude_;
+    double radian_{0.0};
+    double absolute_magnitude_{0.0};
+    double delta_magnitude_{0.0};
+    double previous_absolute_magnitude_{0.0};
 
     //
     // configurations
     //
 
-    double deadzone_;
-    double delta_magnitude_detection_threshold_;
-    double continued_movement_absolute_magnitude_threshold_;
-    int continued_movement_interval_milliseconds_;
+    double deadzone_{0.0};
+    double delta_magnitude_detection_threshold_{0.0};
+    double continued_movement_absolute_magnitude_threshold_{1.0};
+    int continued_movement_interval_milliseconds_{0};
   };
 
   class event_value final {
   public:
-    event_value()
-        : value_(0.0),
-          remainder_(0.0) {
-    }
+    event_value() = default;
 
     void set_value(double value) {
       value_ = value;
@@ -247,8 +231,8 @@ public:
     }
 
   private:
-    double value_;
-    double remainder_;
+    double value_{0.0};
+    double remainder_{0.0};
   };
 
   //
@@ -257,16 +241,12 @@ public:
 
   game_pad_stick_converter(pqrs::not_null_shared_ptr_t<device_properties> device_properties,
                            pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration)
-      : dispatcher_client(),
-        device_properties_(device_properties),
+      : device_properties_(device_properties),
         core_configuration_(core_configuration),
-        continued_movement_timer_count_(0),
-        continued_movement_mode_(continued_movement_mode::none),
         x_formula_(exprtk_utility::compile("")),
         y_formula_(exprtk_utility::compile("")),
         vertical_wheel_formula_(exprtk_utility::compile("")),
-        horizontal_wheel_formula_(exprtk_utility::compile("")),
-        continued_movement_timer_(*this) {
+        horizontal_wheel_formula_(exprtk_utility::compile("")) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           set_core_configuration(core_configuration);
@@ -638,8 +618,8 @@ private:
   event_value horizontal_wheel_value_;
   event_value vertical_wheel_value_;
 
-  int continued_movement_timer_count_;
-  continued_movement_mode continued_movement_mode_;
+  int continued_movement_timer_count_{0};
+  continued_movement_mode continued_movement_mode_{continued_movement_mode::none};
 
   std::string x_formula_string_;
   std::string y_formula_string_;
@@ -650,6 +630,7 @@ private:
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> vertical_wheel_formula_;
   pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> horizontal_wheel_formula_;
 
-  pqrs::dispatcher::extra::timer continued_movement_timer_;
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer continued_movement_timer_{*this};
 };
 } // namespace krbn::core_service::daemon::device_grabber_details

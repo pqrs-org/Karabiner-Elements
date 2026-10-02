@@ -12,9 +12,7 @@ public:
     unset,
   };
 
-  manipulator_environment_variable_set_variable()
-      : type_(manipulator_environment_variable_set_variable::type::set) {
-  }
+  manipulator_environment_variable_set_variable() = default;
 
   manipulator_environment_variable_set_variable(std::optional<std::string> name,
                                                 std::optional<manipulator_environment_variable_value> value,
@@ -97,7 +95,7 @@ private:
   std::shared_ptr<exprtk_utility::expression_wrapper> expression_;
   std::optional<manipulator_environment_variable_value> key_up_value_;
   std::shared_ptr<exprtk_utility::expression_wrapper> key_up_expression_;
-  type type_;
+  type type_{manipulator_environment_variable_set_variable::type::set};
 };
 
 inline void to_json(nlohmann::json& json, const manipulator_environment_variable_set_variable& m) {

@@ -24,8 +24,7 @@ public:
   runner(const runner&) = delete;
 
   explicit runner(bool verbose)
-      : dispatcher_client(),
-        verbose_(verbose),
+      : verbose_(verbose),
         input_completion_wait_(pqrs::make_thread_wait()) {
     dispatcher_client_constructor_guard_.initialize();
   }
@@ -44,10 +43,8 @@ private:
     components_manager(const components_manager&) = delete;
 
     explicit components_manager(runner& runner)
-        : dispatcher_client(),
-          runner_(runner),
-          client_(std::make_shared<core_service_daemon_client>()),
-          process_pending_task_(*this) {
+        : runner_(runner),
+          client_(std::make_shared<core_service_daemon_client>()) {
       dispatcher_client_constructor_guard_.initialize(
           [&] {
             client_->connected.connect([this] {
@@ -179,7 +176,8 @@ private:
     bool connected_{false};
     std::shared_ptr<int> callback_lifetime_{std::make_shared<int>(0)};
 
-    pqrs::dispatcher::extra::debounced_task process_pending_task_;
+    // Construct after potentially throwing members; destruction requires detach.
+    pqrs::dispatcher::extra::debounced_task process_pending_task_{*this};
   };
 
   void set_components_manager(components_manager* manager) {

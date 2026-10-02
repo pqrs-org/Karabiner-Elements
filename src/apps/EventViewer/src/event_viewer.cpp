@@ -42,8 +42,7 @@ class hid_value_monitor final : public pqrs::dispatcher::extra::dispatcher_clien
 public:
   hid_value_monitor(const hid_value_monitor&) = delete;
 
-  hid_value_monitor()
-      : dispatcher_client() {
+  hid_value_monitor() {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           std::vector<pqrs::cf::cf_ptr<CFDictionaryRef>> matching_dictionaries{
@@ -343,8 +342,7 @@ class components_manager final : public pqrs::dispatcher::extra::dispatcher_clie
 public:
   components_manager(const components_manager&) = delete;
 
-  components_manager()
-      : dispatcher_client() {
+  components_manager() {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           //

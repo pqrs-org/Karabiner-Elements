@@ -13,8 +13,7 @@ public:
     expression_unless,
   };
 
-  expression(const nlohmann::json& json) : base(),
-                                           type_(type::expression_if) {
+  expression(const nlohmann::json& json) {
     pqrs::json::requires_object(json, "json");
 
     for (const auto& [key, value] : json.items()) {
@@ -72,7 +71,7 @@ public:
   }
 
 private:
-  type type_;
+  type type_{type::expression_if};
   std::shared_ptr<exprtk_utility::expression_wrapper> expression_;
 };
 } // namespace krbn::manipulator::conditions

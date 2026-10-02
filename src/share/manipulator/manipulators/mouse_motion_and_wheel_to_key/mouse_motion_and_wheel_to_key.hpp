@@ -17,8 +17,7 @@ class mouse_motion_and_wheel_to_key final : public base, public pqrs::dispatcher
 
 public:
   mouse_motion_and_wheel_to_key(const nlohmann::json& json,
-                                pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters)
-      : timer_(*this) {
+                                pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           pqrs::json::requires_object(json, "json");
@@ -448,6 +447,8 @@ private:
   std::unordered_map<device_id, pending_window> windows_;
   std::unordered_map<device_id, pqrs::dispatcher::time_point> cooldowns_;
   std::optional<pqrs::dispatcher::time_point> scheduled_at_;
-  pqrs::dispatcher::extra::debounced_task timer_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::debounced_task timer_{*this};
 };
 } // namespace krbn::manipulator::manipulators::mouse_motion_and_wheel_to_key

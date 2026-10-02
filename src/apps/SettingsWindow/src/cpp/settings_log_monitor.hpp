@@ -17,8 +17,7 @@ public:
   settings_log_monitor(const settings_log_monitor&) = delete;
 
   explicit settings_log_monitor(krbn_log_messages_updated_t callback)
-      : dispatcher_client(),
-        callback_(callback) {
+      : callback_(callback) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           start();

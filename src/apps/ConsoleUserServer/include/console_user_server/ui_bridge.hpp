@@ -16,8 +16,7 @@ public:
 
   using string_callback = void (*)(const char*);
 
-  ui_bridge()
-      : dispatcher_client() {
+  ui_bridge() {
     dispatcher_client_constructor_guard_.initialize();
   }
 

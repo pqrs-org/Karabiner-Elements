@@ -15,9 +15,6 @@ public:
     ax_observer,
   };
 
-  application() {
-  }
-
   [[nodiscard]] const std::optional<std::string>& get_bundle_identifier() const {
     return bundle_identifier_;
   }

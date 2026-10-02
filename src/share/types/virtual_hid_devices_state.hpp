@@ -9,11 +9,6 @@
 namespace krbn {
 class virtual_hid_devices_state final {
 public:
-  virtual_hid_devices_state()
-      : virtual_hid_keyboard_ready_(false),
-        virtual_hid_pointing_ready_(false) {
-  }
-
   [[nodiscard]] bool get_virtual_hid_keyboard_ready() const {
     return virtual_hid_keyboard_ready_;
   }
@@ -37,8 +32,8 @@ public:
   }
 
 private:
-  bool virtual_hid_keyboard_ready_;
-  bool virtual_hid_pointing_ready_;
+  bool virtual_hid_keyboard_ready_{false};
+  bool virtual_hid_pointing_ready_{false};
 };
 
 inline void to_json(nlohmann::json& json, const virtual_hid_devices_state& s) {

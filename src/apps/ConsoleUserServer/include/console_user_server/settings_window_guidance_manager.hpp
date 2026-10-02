@@ -50,8 +50,7 @@ public:
                                    launch_settings_handler launch_settings_handler = make_default_launch_settings_handler())
       : dispatcher_client(weak_dispatcher),
         guidance_context_maker_(std::move(guidance_context_maker)),
-        launch_settings_handler_(std::move(launch_settings_handler)),
-        timer_(*this) {
+        launch_settings_handler_(std::move(launch_settings_handler)) {
     dispatcher_client_constructor_guard_.initialize();
   }
 
@@ -364,6 +363,7 @@ private:
   std::optional<bool> driver_connected_;
   std::optional<pqrs::dispatcher::time_point> driver_not_connected_started_at_;
 
-  pqrs::dispatcher::extra::timer timer_;
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer timer_{*this};
 };
 } // namespace krbn::console_user_server

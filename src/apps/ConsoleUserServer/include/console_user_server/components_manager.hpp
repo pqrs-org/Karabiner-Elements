@@ -35,8 +35,7 @@ public:
 
   components_manager(std::shared_ptr<ui_bridge> ui_bridge,
                      std::weak_ptr<update_check_scheduler> weak_update_check_scheduler)
-      : dispatcher_client(),
-        console_user_id_changed_client_(std::make_shared<console_user_id_changed_client>()),
+      : console_user_id_changed_client_(std::make_shared<console_user_id_changed_client>()),
         session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
         configuration_monitor_(std::make_unique<configuration_monitor>(constants::get_user_core_configuration_file_path().string(),
                                                                        geteuid(),

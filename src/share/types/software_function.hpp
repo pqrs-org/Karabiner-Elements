@@ -16,9 +16,6 @@ public:
                                software_function_details::set_mouse_cursor_position,
                                std::monostate>;
 
-  software_function() : value_(std::monostate()) {
-  }
-
   [[nodiscard]] const value_t& get_value() const {
     return value_;
   }
@@ -35,7 +32,7 @@ public:
   constexpr bool operator==(const software_function&) const = default;
 
 private:
-  value_t value_;
+  value_t value_{std::monostate()};
 };
 
 inline void to_json(nlohmann::json& json, const software_function& value) {

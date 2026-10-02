@@ -30,12 +30,10 @@ public:
                         uid_t expected_user_core_configuration_file_owner,
                         core_configuration::error_handling error_handling,
                         const std::string& system_core_configuration_file_path = constants::get_system_core_configuration_file_path())
-      : dispatcher_client(),
-        user_core_configuration_file_path_(user_core_configuration_file_path),
+      : user_core_configuration_file_path_(user_core_configuration_file_path),
         expected_user_core_configuration_file_owner_(expected_user_core_configuration_file_owner),
         error_handling_(error_handling),
-        system_core_configuration_file_path_(system_core_configuration_file_path),
-        file_removal_task_(*this) {
+        system_core_configuration_file_path_(system_core_configuration_file_path) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           std::vector<std::string> targets;
@@ -181,9 +179,11 @@ private:
   const std::string system_core_configuration_file_path_;
 
   std::unique_ptr<pqrs::osx::file_monitor> file_monitor_;
-  pqrs::dispatcher::extra::debounced_task file_removal_task_;
   std::shared_ptr<core_configuration::core_configuration> core_configuration_;
   std::optional<core_configuration::core_configuration::load_state> load_state_;
   std::string parse_error_message_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::debounced_task file_removal_task_{*this};
 };
 } // namespace krbn

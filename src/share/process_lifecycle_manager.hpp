@@ -109,8 +109,7 @@ private:
   process_lifecycle_manager(components_manager_maker make_components_manager,
                             termination_completion_handler_t termination_completion_handler,
                             std::chrono::milliseconds system_will_sleep_delay)
-      : dispatcher_client(),
-        components_manager_maker_(std::move(make_components_manager)),
+      : components_manager_maker_(std::move(make_components_manager)),
         termination_completion_handler_(std::move(termination_completion_handler)),
         system_will_sleep_delay_(system_will_sleep_delay) {
     dispatcher_client_constructor_guard_.initialize(

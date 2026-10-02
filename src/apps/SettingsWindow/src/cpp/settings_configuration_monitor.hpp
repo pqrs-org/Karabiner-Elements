@@ -17,8 +17,7 @@ public:
   settings_configuration_monitor(
       krbn_core_configuration_updated_t callback,
       krbn_core_configuration_load_state_changed_t load_state_changed_callback)
-      : dispatcher_client(),
-        configuration_store_(std::make_shared<settings_configuration_store>(
+      : configuration_store_(std::make_shared<settings_configuration_store>(
             settings_configuration_store::callbacks{
                 .updated = [callback](const auto& value) {
                   auto json = krbn::json_utility::dump(value);

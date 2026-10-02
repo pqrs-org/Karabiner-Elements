@@ -15,14 +15,6 @@ public:
   static constexpr std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_default_value =
       std::chrono::milliseconds(100);
 
-  options() : momentum_scroll_enabled_(true),
-              speed_multiplier_(speed_multiplier_default_value),
-              recent_time_duration_milliseconds_(recent_time_duration_milliseconds_default_value),
-              threshold_(threshold_default_value),
-              direction_lock_threshold_(direction_lock_threshold_default_value),
-              scroll_event_interval_milliseconds_threshold_(scroll_event_interval_milliseconds_threshold_default_value) {
-  }
-
   [[nodiscard]] bool get_momentum_scroll_enabled() const {
     return momentum_scroll_enabled_;
   }
@@ -129,11 +121,11 @@ public:
   }
 
 private:
-  bool momentum_scroll_enabled_;
-  double speed_multiplier_;
-  std::chrono::milliseconds recent_time_duration_milliseconds_;
-  int threshold_;
-  int direction_lock_threshold_;
-  std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_;
+  bool momentum_scroll_enabled_{true};
+  double speed_multiplier_{speed_multiplier_default_value};
+  std::chrono::milliseconds recent_time_duration_milliseconds_{recent_time_duration_milliseconds_default_value};
+  int threshold_{threshold_default_value};
+  int direction_lock_threshold_{direction_lock_threshold_default_value};
+  std::chrono::milliseconds scroll_event_interval_milliseconds_threshold_{scroll_event_interval_milliseconds_threshold_default_value};
 };
 } // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

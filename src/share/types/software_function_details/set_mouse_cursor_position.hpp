@@ -16,11 +16,6 @@ public:
       percent,
     };
 
-    position_value()
-        : value_(0),
-          type_(type::point) {
-    }
-
     [[nodiscard]] int get_value() const {
       return value_;
     }
@@ -49,8 +44,8 @@ public:
     constexpr bool operator==(const position_value&) const = default;
 
   private:
-    int value_;
-    type type_;
+    int value_{0};
+    type type_{type::point};
   };
 
   enum class relative_to {
@@ -62,9 +57,6 @@ public:
     none,
     screen,
   };
-
-  set_mouse_cursor_position() {
-  }
 
   [[nodiscard]] const position_value& get_x() const {
     return x_;

@@ -15,8 +15,7 @@ public:
                                                                  time_source_(time_source),
                                                                  counter_(weak_dispatcher,
                                                                           parameters,
-                                                                          options),
-                                                                 last_ms_(0) {
+                                                                          options) {
     result_ = nlohmann::json::array();
 
     counter_.scroll_event_arrived.connect([this](auto&& pointing_motion) {
@@ -75,7 +74,7 @@ private:
   pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> time_source_;
   mouse_motion_to_scroll::counter counter_;
   int first_ms_;
-  int last_ms_;
+  int last_ms_{0};
   nlohmann::json result_;
 };
 

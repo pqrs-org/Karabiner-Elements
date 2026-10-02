@@ -8,9 +8,6 @@
 namespace krbn::manipulator {
 class from_modifiers_definition final {
 public:
-  from_modifiers_definition() {
-  }
-
   ~from_modifiers_definition() {
   }
 

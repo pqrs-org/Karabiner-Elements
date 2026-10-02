@@ -5,9 +5,6 @@
 namespace krbn::manipulator::conditions {
 class nop final : public base {
 public:
-  nop() : base() {
-  }
-
   ~nop() override {
   }
 

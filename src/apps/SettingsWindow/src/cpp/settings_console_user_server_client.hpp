@@ -17,12 +17,9 @@ public:
   settings_console_user_server_client(uid_t uid,
                                       krbn_console_user_server_client_status_changed_t status_changed_callback,
                                       krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback)
-      : dispatcher_client(),
-        uid_(uid),
-        connected_(false),
+      : uid_(uid),
         status_changed_callback_(status_changed_callback),
-        settings_window_guidance_received_callback_(settings_window_guidance_received_callback),
-        settings_window_guidance_timer_(*this) {
+        settings_window_guidance_received_callback_(settings_window_guidance_received_callback) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           start();
@@ -139,9 +136,11 @@ private:
 
   uid_t uid_;
   std::shared_ptr<krbn::console_user_server_client> console_user_server_client_;
-  std::atomic_bool connected_;
+  std::atomic_bool connected_{false};
   const krbn_console_user_server_client_status_changed_t status_changed_callback_;
   const krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback_;
-  pqrs::dispatcher::extra::timer settings_window_guidance_timer_;
   std::once_flag unregister_callbacks_and_detach_once_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::timer settings_window_guidance_timer_{*this};
 };

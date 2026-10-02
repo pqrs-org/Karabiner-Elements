@@ -48,8 +48,7 @@ public:
       IOHIDDeviceRef device,
       const device_properties& device_properties,
       configuration configuration)
-      : dispatcher_client(weak_dispatcher),
-        last_time_stamp_(0) {
+      : dispatcher_client(weak_dispatcher) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           pqrs::osx::iokit_hid_device_events_monitor::parameters parameters;
@@ -215,6 +214,6 @@ private:
   // should_accept_report and reset_filter_state access filter state from run_loop_thread, while
   // handle and reset access handler state from the shared dispatcher thread.
   std::shared_ptr<hid_report_only_events::report_handler> input_report_handler_;
-  pqrs::osx::chrono::absolute_time_point last_time_stamp_;
+  pqrs::osx::chrono::absolute_time_point last_time_stamp_{0};
 };
 } // namespace krbn

@@ -12,8 +12,7 @@ class to_if_held_down final : public pqrs::dispatcher::extra::dispatcher_client 
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
-  to_if_held_down(const nlohmann::json& json) : dispatcher_client(),
-                                                held_down_task_(*this) {
+  to_if_held_down(const nlohmann::json& json) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           if (json.is_object()) {
@@ -142,6 +141,8 @@ private:
   std::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
-  pqrs::dispatcher::extra::debounced_task held_down_task_;
+
+  // Construct after potentially throwing members; destruction requires detach.
+  pqrs::dispatcher::extra::debounced_task held_down_task_{*this};
 };
 } // namespace krbn::manipulator::manipulators::basic

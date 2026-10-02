@@ -6,7 +6,7 @@
 namespace {
 class test_configuration_monitor final {
 public:
-  test_configuration_monitor(std::optional<std::string> user_core_configuration_file_path = "target/user.json") : count_(0) {
+  test_configuration_monitor(std::optional<std::string> user_core_configuration_file_path = "target/user.json") {
     configuration_monitor_ = std::make_unique<krbn::configuration_monitor>(user_core_configuration_file_path,
                                                                            geteuid(),
                                                                            krbn::core_configuration::error_handling::loose,
@@ -50,7 +50,7 @@ public:
 
 private:
   std::unique_ptr<krbn::configuration_monitor> configuration_monitor_;
-  size_t count_;
+  size_t count_{0};
   std::shared_ptr<const krbn::core_configuration::core_configuration> last_core_configuration_;
   std::optional<krbn::core_configuration::core_configuration::load_state> last_load_state_;
 };
