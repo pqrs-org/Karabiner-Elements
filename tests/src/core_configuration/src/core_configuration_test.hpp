@@ -3,6 +3,7 @@
 #include "json_utility.hpp"
 #include "manipulator/manipulators/basic/basic.hpp"
 #include "manipulator/types.hpp"
+#include <algorithm>
 #include <boost/ut.hpp>
 #include <filesystem>
 #include <fstream>
@@ -341,6 +342,58 @@ void run_core_configuration_test() {
     std::filesystem::remove(file_path);
 
     expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::other_error);
+  };
+
+  "configuration file size limit"_test = [] {
+    auto file_path = std::filesystem::temp_directory_path() /
+                     ("karabiner_core_configuration_size_limit_" + std::to_string(getpid()) + ".json");
+    constexpr size_t limit = 64 * 1024 * 1024;
+    {
+      // Valid JSON padded to exactly 64 MiB must still load.
+      std::ofstream output(file_path);
+      output << "{}";
+      std::string padding(8192, ' ');
+      for (size_t remaining = limit - 2; remaining > 0;) {
+        auto size = std::min(remaining, padding.size());
+        output.write(padding.data(), size);
+        remaining -= size;
+      }
+    }
+    {
+      krbn::core_configuration::core_configuration configuration(file_path,
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
+      expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::loaded);
+      expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::user_file);
+    }
+    {
+      // One more whitespace byte keeps the JSON valid but exceeds the size limit.
+      std::ofstream output(file_path, std::ios::app);
+      output << ' ';
+    }
+    {
+      krbn::core_configuration::core_configuration configuration(file_path,
+                                                                 geteuid(),
+                                                                 krbn::core_configuration::error_handling::strict);
+      expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::other_error);
+      expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
+      expect(configuration.get_parse_error_message().empty());
+    }
+    std::filesystem::remove(file_path);
+  };
+
+  "configuration file without EOF"_test = [] {
+    auto file_path = std::filesystem::temp_directory_path() /
+                     ("karabiner_core_configuration_no_eof_" + std::to_string(getpid()) + ".json");
+    // /dev/zero is owned by root and reports a size of zero, but never reaches EOF.
+    std::filesystem::create_symlink("/dev/zero", file_path);
+    krbn::core_configuration::core_configuration configuration(file_path,
+                                                               geteuid(),
+                                                               krbn::core_configuration::error_handling::strict);
+    std::filesystem::remove(file_path);
+    expect(configuration.get_load_state() == krbn::core_configuration::core_configuration::load_state::other_error);
+    expect(configuration.get_source() == krbn::core_configuration::core_configuration::source::default_configuration);
+    expect(configuration.get_parse_error_message().empty());
   };
 
   "broken.json"_test = [] {
