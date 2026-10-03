@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service v3.1.0
+// pqrs::osx::iokit_service v3.2.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -20,9 +20,7 @@ public:
   // Constructors
   //
 
-  iokit_registry_entry() noexcept
-      : iokit_registry_entry(IO_OBJECT_NULL) {
-  }
+  iokit_registry_entry() noexcept = default;
 
   explicit iokit_registry_entry(io_registry_entry_t registry_entry) noexcept
       : registry_entry_(registry_entry) {

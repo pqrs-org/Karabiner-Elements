@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::cf::cf_ptr v2.3.0
+// pqrs::cf::cf_ptr v2.4.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -19,8 +19,7 @@ cf_ptr<T> adopt_cf_ptr(T _Nullable p) noexcept;
 template <typename T>
 class cf_ptr final {
 public:
-  cf_ptr() noexcept : cf_ptr(nullptr) {
-  }
+  cf_ptr() noexcept = default;
 
   cf_ptr(T _Nullable p) noexcept : p_(p) {
     if (p_) {
@@ -28,7 +27,7 @@ public:
     }
   }
 
-  cf_ptr(const cf_ptr& other) noexcept : p_(nullptr) {
+  cf_ptr(const cf_ptr& other) noexcept {
     *this = other;
   }
 
@@ -100,7 +99,7 @@ private:
   template <typename U>
   friend cf_ptr<U> adopt_cf_ptr(U) noexcept;
 
-  T _Nullable p_;
+  T _Nullable p_{nullptr};
 };
 
 template <typename T>

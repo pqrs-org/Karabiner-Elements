@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_value v4.1.0
+// pqrs::osx::iokit_hid_value v4.2.0
 
 // (C) Copyright Takayama Fumihiko 2019.
 // Distributed under the Boost Software License, Version 1.0.
@@ -15,10 +15,7 @@
 namespace pqrs::osx {
 class iokit_hid_value final {
 public:
-  iokit_hid_value() noexcept
-      : time_stamp_(chrono::absolute_time_point(0)),
-        integer_value_(0) {
-  }
+  iokit_hid_value() noexcept = default;
 
   iokit_hid_value(chrono::absolute_time_point time_stamp,
                   CFIndex integer_value,
@@ -34,8 +31,7 @@ public:
         logical_min_(logical_min) {
   }
 
-  iokit_hid_value(IOHIDValueRef value)
-      : iokit_hid_value() {
+  iokit_hid_value(IOHIDValueRef value) {
     if (value) {
       time_stamp_ = chrono::absolute_time_point(IOHIDValueGetTimeStamp(value));
       integer_value_ = IOHIDValueGetIntegerValue(value);
@@ -111,8 +107,8 @@ public:
   [[nodiscard]] bool operator==(const iokit_hid_value& other) const noexcept = default;
 
 private:
-  chrono::absolute_time_point time_stamp_;
-  CFIndex integer_value_;
+  chrono::absolute_time_point time_stamp_{0};
+  CFIndex integer_value_{0};
   std::optional<hid::usage_page::value_t> usage_page_;
   std::optional<hid::usage::value_t> usage_;
   std::optional<CFIndex> logical_max_;

@@ -177,9 +177,7 @@ enum class collection_type : uint8_t {
 
 class maximum_value final {
 public:
-  maximum_value() noexcept
-      : maximum_value(0, 0) {
-  }
+  maximum_value() noexcept = default;
 
   maximum_value(uint32_t unsigned_value,
                 int32_t signed_value) noexcept
@@ -199,8 +197,8 @@ private:
   // These two interpretations are fixed at construction. Keeping them private
   // prevents either value from being changed independently while preserving
   // assignment of the complete value object for HID Global Push/Pop.
-  uint32_t unsigned_value_;
-  int32_t signed_value_;
+  uint32_t unsigned_value_{0};
+  int32_t signed_value_{0};
 };
 
 struct global_state final {

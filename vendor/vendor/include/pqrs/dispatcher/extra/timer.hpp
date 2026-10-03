@@ -22,10 +22,7 @@ namespace pqrs::dispatcher::extra {
 class timer final {
 public:
   timer(dispatcher_client& dispatcher_client) noexcept
-      : dispatcher_client_(dispatcher_client),
-        current_function_id_(0),
-        interval_(duration::zero()),
-        enabled_(false) {
+      : dispatcher_client_(dispatcher_client) {
   }
 
   ~timer() {
@@ -123,10 +120,10 @@ private:
   }
 
   dispatcher_client& dispatcher_client_;
-  int current_function_id_;
+  int current_function_id_{0};
   std::function<void()> function_;
-  duration interval_;
+  duration interval_{duration::zero()};
 
-  std::atomic<bool> enabled_;
+  std::atomic<bool> enabled_{false};
 };
 } // namespace pqrs::dispatcher::extra

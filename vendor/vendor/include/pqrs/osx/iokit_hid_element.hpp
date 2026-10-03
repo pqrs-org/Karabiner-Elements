@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_element v1.4.0
+// pqrs::osx::iokit_hid_element v1.5.0
 
 // (C) Copyright Takayama Fumihiko 2020.
 // Distributed under the Boost Software License, Version 1.0.
@@ -17,9 +17,7 @@
 namespace pqrs::osx {
 class iokit_hid_element final {
 public:
-  iokit_hid_element() noexcept
-      : iokit_hid_element(nullptr) {
-  }
+  iokit_hid_element() noexcept = default;
 
   iokit_hid_element(IOHIDElementRef element) noexcept
       : element_(element) {

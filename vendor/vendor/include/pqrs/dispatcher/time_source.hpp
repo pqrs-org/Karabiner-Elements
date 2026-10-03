@@ -26,10 +26,6 @@ public:
 
 class pseudo_time_source final : public time_source {
 public:
-  pseudo_time_source() noexcept
-      : now_(duration::zero()) {
-  }
-
   time_point now() override {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -43,7 +39,7 @@ public:
   }
 
 private:
-  time_point now_;
+  time_point now_{duration::zero()};
   mutable std::mutex mutex_;
 };
 } // namespace pqrs::dispatcher

@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_service_monitor v6.3.0
+// pqrs::osx::iokit_service_monitor v6.4.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -49,7 +49,6 @@ public:
       : dispatcher_client(weak_dispatcher),
         run_loop_thread_(run_loop_thread),
         matching_dictionary_(matching_dictionary),
-        notification_port_(nullptr),
         scan_timer_(*this) {
     dispatcher_client_constructor_exception_guard_.initialize();
   }
@@ -312,11 +311,12 @@ private:
   pqrs::not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread_;
   cf::cf_ptr<CFDictionaryRef> matching_dictionary_;
 
-  IONotificationPortRef _Nullable notification_port_;
+  IONotificationPortRef _Nullable notification_port_{nullptr};
   iokit_iterator matched_notification_;
   iokit_iterator terminated_notification_;
 
   std::unordered_set<iokit_registry_entry_id::value_t> registry_entry_ids_;
+
   // Construct after potentially throwing members; destruction requires detach.
   pqrs::dispatcher::extra::timer scan_timer_;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::iokit_hid_device_events_monitor v5.1.0
+// pqrs::osx::iokit_hid_device_events_monitor v5.2.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -55,8 +55,8 @@ public:
   iokit_hid_device_events_monitor(const iokit_hid_device_events_monitor&) = delete;
 
   struct parameters final {
-    bool observe_input_values = true;
-    bool observe_input_reports = false;
+    bool observe_input_values{true};
+    bool observe_input_reports{false};
 
     // Invoked synchronously and serially in the supplied run_loop_thread.
     // The same monitor instance never invokes this filter concurrently.
@@ -92,14 +92,11 @@ public:
       : dispatcher_client(weak_dispatcher),
         run_loop_thread_(run_loop_thread),
         hid_device_(device),
-        last_open_error_(kIOReturnSuccess),
-        observe_input_values_(parameters.observe_input_values),
-        input_report_filter_(parameters.input_report_filter),
-        input_report_filter_started_(parameters.input_report_filter_started),
+        parameters_(parameters),
         open_timer_(*this) {
     dispatcher_client_constructor_exception_guard_.initialize(
         [&] {
-          if (parameters.observe_input_reports) {
+          if (parameters_.observe_input_reports) {
             constexpr size_t minimum_input_report_buffer_size = 1024;
 
             auto size = minimum_input_report_buffer_size;
@@ -277,7 +274,7 @@ private:
     //
 
     // Start queue before `IOHIDDeviceOpen` in order to avoid events drop.
-    if (observe_input_values_) {
+    if (parameters_.observe_input_values) {
       start_input_values_queue();
     }
 
@@ -306,9 +303,9 @@ private:
     }
 
     if (!input_report_buffer_.empty() &&
-        input_report_filter_started_) {
+        parameters_.input_report_filter_started) {
       try {
-        input_report_filter_started_();
+        parameters_.input_report_filter_started();
       } catch (...) {
         // Ignore exceptions from the lifecycle callback.
       }
@@ -563,9 +560,9 @@ private:
 
     // Run the filter before copying the borrowed IOKit buffer or enqueueing work
     // to the dispatcher. The filter is invoked synchronously in run_loop_thread_.
-    if (input_report_filter_) {
+    if (parameters_.input_report_filter) {
       try {
-        if (!input_report_filter_(report_id, report)) {
+        if (!parameters_.input_report_filter(report_id, report)) {
           return;
         }
       } catch (...) {
@@ -585,20 +582,17 @@ private:
   }
 
   not_null_shared_ptr_t<cf::run_loop_thread> run_loop_thread_;
-
   iokit_hid_device hid_device_;
+  parameters parameters_;
+
   std::optional<IOOptionBits> requested_open_options_;
   uint64_t requested_open_options_generation_{0};
   std::optional<IOOptionBits> current_open_options_;
   mutable std::mutex open_options_mutex_;
-  iokit_return last_open_error_;
+  iokit_return last_open_error_{kIOReturnSuccess};
   cf::cf_ptr<IOHIDQueueRef> input_values_queue_;
-  bool observe_input_values_;
   std::vector<uint8_t> input_report_buffer_;
-  std::function<bool(uint32_t report_id,
-                     std::span<const uint8_t> report)>
-      input_report_filter_;
-  std::function<void()> input_report_filter_started_;
+
   // Construct after potentially throwing members; destruction requires detach.
   dispatcher::extra::timer open_timer_;
 };

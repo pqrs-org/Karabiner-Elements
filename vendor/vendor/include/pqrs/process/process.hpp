@@ -49,8 +49,8 @@ public:
         argv_(make_argv(argv_buffer_)),
         stdout_pipe_(std::make_unique<pipe>()),
         stderr_pipe_(std::make_unique<pipe>()),
-        file_actions_(make_file_actions(*stdout_pipe_, *stderr_pipe_)),
-        killed_(false) {
+        file_actions_(make_file_actions(*stdout_pipe_,
+                                        *stderr_pipe_)) {
     dispatcher_client_constructor_exception_guard_.initialize();
   }
 
@@ -358,7 +358,7 @@ private:
   std::shared_ptr<std::thread> thread_;
   mutable std::mutex thread_mutex_;
 
-  std::atomic<bool> killed_;
+  std::atomic<bool> killed_{false};
   std::atomic<bool> run_started_{false};
 };
 } // namespace pqrs::process
