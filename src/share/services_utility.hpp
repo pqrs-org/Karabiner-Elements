@@ -1,8 +1,12 @@
 #pragma once
 
+#include <chrono>
+#include <mutex>
 #include <pqrs/osx/launchctl.hpp>
 #include <pqrs/process.hpp>
 #include <spdlog/fmt/fmt.h>
+#include <string>
+#include <unordered_map>
 
 namespace krbn::services_utility {
 
@@ -38,12 +42,87 @@ inline std::optional<bool> command_result_to_optional_bool(const std::optional<i
 }
 
 //
+// Status query cache
+//
+// `run_command` launches a full .app binary through `pqrs::process::system`, and
+// every launch makes macOS verify the binary's code signature and perform a
+// Background Task Management lookup. The results of the status queries below
+// change only when services are registered or unregistered, but callers poll
+// them continuously: `settings_window_guidance_manager` issues four queries
+// every 3 seconds, and SettingsWindow refreshes two more every second while
+// connected.
+//
+// Measured on an otherwise idle Apple silicon machine, this produced roughly 62
+// process launches per second, costing about half a core spread across `smd`,
+// `trustd`, `amfid` and `backgroundtaskmanagementd`. Because the cost lands in
+// those daemons rather than in Karabiner-Elements, it presents as unexplained
+// system load: load average sat at 10-15 with no visibly busy process.
+//
+// Caching the results for a short interval bounds that cost regardless of how
+// often callers ask. Every operation that can change service state clears the
+// cache, so a state change is still observed immediately.
+
+inline constexpr auto query_cache_ttl = std::chrono::seconds(3);
+
+struct query_cache_entry final {
+  std::chrono::steady_clock::time_point acquired_at;
+  std::optional<int> exit_code;
+};
+
+inline std::mutex& query_cache_mutex(void) {
+  static std::mutex m;
+  return m;
+}
+
+inline std::unordered_map<std::string, query_cache_entry>& query_cache(void) {
+  static std::unordered_map<std::string, query_cache_entry> c;
+  return c;
+}
+
+inline void invalidate_query_cache(void) {
+  std::lock_guard<std::mutex> lock(query_cache_mutex());
+  query_cache().clear();
+}
+
+inline std::optional<int> cached_run_command(const char* path,
+                                             std::string_view argument) {
+  // The key must include the path: `core_daemons_running` and
+  // `core_agents_running` share the `running` argument but target different apps.
+  auto key = fmt::format("{0}\n{1}", path, argument);
+
+  {
+    std::lock_guard<std::mutex> lock(query_cache_mutex());
+    auto it = query_cache().find(key);
+    if (it != std::end(query_cache()) &&
+        std::chrono::steady_clock::now() - it->second.acquired_at < query_cache_ttl) {
+      return it->second.exit_code;
+    }
+  }
+
+  // Deliberately invoked outside the lock: this launches a process and may
+  // block, and holding the mutex across it would serialize unrelated queries.
+  auto exit_code = run_command(path, argument);
+
+  {
+    std::lock_guard<std::mutex> lock(query_cache_mutex());
+    query_cache()[key] = query_cache_entry{
+        .acquired_at = std::chrono::steady_clock::now(),
+        .exit_code = exit_code,
+    };
+  }
+
+  return exit_code;
+}
+
+//
 // core_daemons
 //
 
 inline void register_core_daemons() {
   run_command(daemons_path,
               "register-core-daemons");
+
+  invalidate_query_cache();
 }
 
 //
@@ -53,11 +132,15 @@ inline void register_core_daemons() {
 inline void register_core_agents() {
   run_command(agents_path,
               "register-core-agents");
+
+  invalidate_query_cache();
 }
 
 inline void unregister_core_agents() {
   run_command(agents_path,
               "unregister-core-agents");
+
+  invalidate_query_cache();
 }
 
 //
@@ -73,6 +156,10 @@ inline void restart_console_user_server_agent() {
   pqrs::osx::launchctl::kickstart(domain_target,
                                   service_name,
                                   flags);
+
+  // Kickstarting with `kill` can change `core_agents_running` without going
+  // through `run_command`, so the cache must be cleared here too.
+  invalidate_query_cache();
 }
 
 //
@@ -82,11 +169,15 @@ inline void restart_console_user_server_agent() {
 inline void register_multitouch_extension_agent() {
   run_command(agents_path,
               "register-multitouch-extension-agent");
+
+  invalidate_query_cache();
 }
 
 inline void unregister_multitouch_extension_agent() {
   run_command(agents_path,
               "unregister-multitouch-extension-agent");
+
+  invalidate_query_cache();
 }
 
 //
@@ -135,23 +226,23 @@ inline void unregister_all_agents() {
 }
 
 inline std::optional<bool> core_daemons_enabled() {
-  return command_result_to_optional_bool(run_command(daemons_path,
-                                                     "core-daemons-enabled"));
+  return command_result_to_optional_bool(cached_run_command(daemons_path,
+                                                            "core-daemons-enabled"));
 }
 
 inline std::optional<bool> core_agents_enabled() {
-  return command_result_to_optional_bool(run_command(agents_path,
-                                                     "core-agents-enabled"));
+  return command_result_to_optional_bool(cached_run_command(agents_path,
+                                                            "core-agents-enabled"));
 }
 
 inline std::optional<bool> core_daemons_running() {
-  return command_result_to_optional_bool(run_command(daemons_path,
-                                                     "running"));
+  return command_result_to_optional_bool(cached_run_command(daemons_path,
+                                                            "running"));
 }
 
 inline std::optional<bool> core_agents_running() {
-  return command_result_to_optional_bool(run_command(agents_path,
-                                                     "running"));
+  return command_result_to_optional_bool(cached_run_command(agents_path,
+                                                            "running"));
 }
 
 inline bool daemon_running(const std::string& service_name) {
