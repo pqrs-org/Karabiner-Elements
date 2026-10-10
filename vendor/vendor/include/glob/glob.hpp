@@ -273,8 +273,9 @@ std::vector<fs::path> glob2(const fs::path &dirname, [[maybe_unused]] const std:
                             bool dironly) {
   // std::cout << "In glob2\n";
   std::vector<fs::path> result;
-  // look into the base directory as well, but only if it exists
-  if (fs::exists(dirname)) {
+  // An empty base searches the current directory, just as in iter_directory.
+  const auto current_directory = dirname.empty() ? fs::current_path() : dirname;
+  if (fs::exists(current_directory)) {
     result.push_back(".");
   }
   assert(is_recursive(pattern));
