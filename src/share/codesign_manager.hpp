@@ -1,9 +1,12 @@
 #pragma once
 
 #include "logger.hpp"
+#include <initializer_list>
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/codesign.hpp>
+#include <string_view>
 #include <thread>
+#include <vector>
 
 namespace krbn {
 
@@ -33,6 +36,33 @@ public:
 
     auto signing_information = pqrs::osx::codesign::get_signing_information_of_process(*pid);
     return current_team_id == signing_information.get_verified_team_id();
+  }
+
+  [[nodiscard]] std::optional<std::string> xpc_signing_requirement(std::initializer_list<std::string_view> identifiers) const {
+    if (identifiers.size() == 0) {
+      return std::nullopt;
+    }
+
+    if (auto team_id = current_process_signing_information_.get_verified_team_id()) {
+      std::vector<pqrs::osx::codesign::signing_requirement_parameters> parameters_list;
+      parameters_list.reserve(identifiers.size());
+      for (auto identifier : identifiers) {
+        parameters_list.emplace_back(pqrs::osx::codesign::signing_requirement_parameters{
+            .anchor = pqrs::osx::codesign::anchor_type::apple_generic,
+            .team_id = *team_id,
+            .identifier = std::string(identifier),
+        });
+      }
+
+      if (auto requirement = pqrs::osx::codesign::make_or_signing_requirement(parameters_list)) {
+        return *requirement;
+      }
+
+      return std::nullopt;
+    }
+
+    // Preserve the development-build policy: unsigned peers are permitted.
+    return std::nullopt;
   }
 
 private:
