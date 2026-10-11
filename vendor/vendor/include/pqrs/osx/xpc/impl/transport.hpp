@@ -43,7 +43,9 @@ public:
   // than destroying this transport during signal emission.
   nod::signal<void(const error_info&)> error_occurred;
   nod::signal<void()> listener_started;
-  nod::signal<void(const std::error_code&)> listener_failed;
+  // Terminal listener failure. This transport cannot be started again; its
+  // owner must defer destruction and create a replacement listener.
+  nod::signal<void(const std::error_code&)> listener_terminated;
   nod::signal<void(const std::error_code&)> connection_failed;
   nod::signal<void(peer_id)> peer_ready;
   nod::signal<void(peer_id)> peer_interrupted;
@@ -296,6 +298,16 @@ private:
     }
   }
 
+  void terminate_listener(const std::error_code& error) {
+    stopped_ = true;
+    listener_.cancel();
+    peers_.clear();
+
+    enqueue_notification([this, error] {
+      listener_terminated(error);
+    });
+  }
+
   template <typename Function>
   void enqueue_notification(Function&& function) {
     enqueue_to_dispatcher([this, failed = failed_, function = std::forward<Function>(function)] {
@@ -409,22 +421,13 @@ private:
       listener_ = connection::create_listener(options_,
                                               queue_);
       if (!listener_.get()) {
-        stopped_ = true;
-
-        enqueue_notification([this] {
-          listener_failed(make_error_code(errc::connection_invalid));
-        });
+        terminate_listener(make_error_code(errc::connection_invalid));
 
         return;
       }
 
       if (!apply_peer_signing_requirement(listener_)) {
-        listener_.cancel();
-        stopped_ = true;
-
-        enqueue_notification([this] {
-          listener_failed(make_error_code(errc::invalid_signing_requirement));
-        });
+        terminate_listener(make_error_code(errc::invalid_signing_requirement));
 
         return;
       }
@@ -441,9 +444,7 @@ private:
                 add_peer(connection::from_peer(static_cast<xpc_connection_t>(event)));
               } else {
                 auto error = make_error_code(connection_error(event));
-                enqueue_notification([this, error] {
-                  listener_failed(error);
-                });
+                terminate_listener(error);
               }
             });
           });
