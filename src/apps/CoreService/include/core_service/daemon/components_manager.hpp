@@ -2,7 +2,6 @@
 
 // `krbn::core_service::daemon::components_manager` can be used safely in a multi-threaded environment.
 
-#include "console_user_id_changed_receiver.hpp"
 #include "constants.hpp"
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "filesystem_utility.hpp"
@@ -46,31 +45,13 @@ public:
 
 private:
   void start_receivers() {
-    if (console_user_id_changed_receiver_) {
-      return;
-    }
-
     current_console_user_id_ = std::nullopt;
 
-    console_user_id_changed_receiver_ = std::make_unique<console_user_id_changed_receiver>();
-
-    console_user_id_changed_receiver_->current_console_user_id_changed.connect([this](auto&& uid) {
-      if (uid) {
-        logger::get_logger()->info("current_console_user_id: {0}", *uid);
-      } else {
-        logger::get_logger()->info("current_console_user_id: none");
-      }
-
-      start_receiver(uid);
-    });
-
     start_receiver(std::nullopt);
-    console_user_id_changed_receiver_->async_start();
   }
 
   void stop_receivers() {
     receiver_ = nullptr;
-    console_user_id_changed_receiver_ = nullptr;
     current_console_user_id_ = std::nullopt;
   }
 
@@ -83,10 +64,19 @@ private:
     receiver_ = std::make_unique<receiver>(uid,
                                            weak_core_service_daemon_state_manager_);
 
-    receiver_->server_bound.connect([this, uid] {
-      if (console_user_id_changed_receiver_) {
-        console_user_id_changed_receiver_->async_core_service_daemon_server_bound(uid);
+    receiver_->console_user_id_changed.connect([this](auto uid) {
+      if (uid) {
+        logger::get_logger()->info("current_console_user_id: {0}",
+                                   *uid);
+      } else {
+        logger::get_logger()->info("current_console_user_id: none");
       }
+
+      // Defer destruction of the current receiver until signal delivery has
+      // returned to its request handler.
+      enqueue_to_dispatcher([this, uid] {
+        start_receiver(uid);
+      });
     });
 
     receiver_->listener_terminated.connect([this](const std::error_code& error) {
@@ -132,7 +122,6 @@ private:
   std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;
   std::optional<uid_t> current_console_user_id_;
 
-  std::unique_ptr<console_user_id_changed_receiver> console_user_id_changed_receiver_;
   std::unique_ptr<hid_event_system_monitor> hid_event_system_monitor_;
   std::unique_ptr<receiver> receiver_;
 };

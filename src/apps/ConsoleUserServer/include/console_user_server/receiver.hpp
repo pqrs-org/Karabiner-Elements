@@ -49,7 +49,7 @@ public:
                           "org.pqrs.Karabiner-Elements.Settings",
                           "org.pqrs.Karabiner-EventViewer",
                       }),
-                      .max_message_size = constants::unix_domain_stream_max_message_size,
+                      .max_message_size = constants::xpc_max_message_size,
                   },
                   .listener_parameters = {
                       .service_name = constants::get_console_user_server_mach_service_name(),

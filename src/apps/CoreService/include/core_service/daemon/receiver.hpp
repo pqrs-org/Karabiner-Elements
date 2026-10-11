@@ -34,7 +34,7 @@ class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
 public:
   // Signals (invoked from the shared dispatcher thread)
 
-  nod::signal<void()> server_bound;
+  nod::signal<void(std::optional<uid_t>)> console_user_id_changed;
   nod::signal<void(const std::error_code&)> listener_terminated;
 
   // Methods
@@ -71,16 +71,15 @@ public:
                           "org.pqrs.Karabiner-EventViewer",
                           "org.pqrs.Karabiner-MultitouchExtension",
                       }),
-                      .max_message_size = constants::unix_domain_stream_max_message_size,
+                      .max_message_size = constants::xpc_max_message_size,
                   },
                   .listener_parameters = {
                       .service_name = constants::get_core_service_daemon_mach_service_name(),
                   },
               }));
 
-          server_->listener_started.connect([this] {
+          server_->listener_started.connect([] {
             logger::get_logger()->debug("receiver: listener_started");
-            server_bound();
           });
 
           server_->listener_terminated.connect([this](const auto& error) {
@@ -217,13 +216,49 @@ private:
     try {
       nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
 
+      auto operation_type_value = json.at("operation_type").get<operation_type>();
+      if (operation_type_value == operation_type::console_user_id_changed) {
+        auto uid = json.at("uid").get<uid_t>();
+
+        if (!json.at("on_console").get<bool>()) {
+          // A Console User Server for a user who is no longer on the console can
+          // remain connected while another account is active. Only clear the
+          // console UID when the notification is for the active account.
+          if (current_console_user_id_ == uid) {
+            console_user_id_changed(std::nullopt);
+          }
+          async_respond_none(reply);
+          return;
+        }
+
+        if (current_console_user_id_ != uid) {
+          // A user has become the console user, or the console account changed.
+          // Recreate the listener with this UID before accepting ordinary
+          // requests. Cancel this peer so the Console User Server reconnects
+          // and repeats its notification to the replacement listener.
+          console_user_id_changed(uid);
+          server_->async_cancel_peer(peer_id);
+          return;
+        }
+
+        // The replacement listener is ready for this console account. Return
+        // the bound state so the Console User Server can start its regular
+        // CoreService daemon client connection.
+        async_respond(reply,
+                      nlohmann::json{
+                          {"operation_type", operation_type::core_service_daemon_server_bound},
+                          {"uid", uid},
+                      });
+        return;
+      }
+
       if (!current_console_user_id_ ||
           json.at("uid").get<uid_t>() != *current_console_user_id_) {
         server_->async_cancel_peer(peer_id);
         return;
       }
 
-      switch (json.at("operation_type").get<operation_type>()) {
+      switch (operation_type_value) {
         case operation_type::core_service_bundle_permission_check_result:
           if (auto m = weak_core_service_daemon_state_manager_.lock()) {
             core_service_agent_peer_id_ = peer_id;

@@ -4,7 +4,6 @@
 
 #include "app_icon.hpp"
 #include "application_launcher.hpp"
-#include "console_user_id_changed_client.hpp"
 #include "console_user_server/ui_bridge.hpp"
 #include "constants.hpp"
 #include "core_service_daemon_client.hpp"
@@ -34,8 +33,7 @@ public:
 
   components_manager(std::shared_ptr<ui_bridge> ui_bridge,
                      std::weak_ptr<update_check_scheduler> weak_update_check_scheduler)
-      : console_user_id_changed_client_(std::make_shared<console_user_id_changed_client>()),
-        session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
+      : session_monitor_(std::make_unique<pqrs::osx::session::monitor>(weak_dispatcher_)),
         configuration_monitor_(std::make_unique<configuration_monitor>(constants::get_user_core_configuration_file_path().string(),
                                                                        geteuid(),
                                                                        core_configuration::error_handling::loose)),
@@ -88,31 +86,6 @@ public:
           });
 
           //
-          // console_user_id_changed_client_
-          //
-
-          console_user_id_changed_client_->connected.connect([this] {
-            if (on_console_) {
-              console_user_id_changed_client_->async_console_user_id_changed(*on_console_);
-            }
-          });
-
-          console_user_id_changed_client_->connect_failed.connect([](auto&&) {
-            // Do nothing
-          });
-
-          console_user_id_changed_client_->closed.connect([] {
-            // Do nothing
-          });
-
-          console_user_id_changed_client_->core_service_daemon_server_bound.connect([this](auto&& uid) {
-            if (on_console_ == std::optional<bool>(true) &&
-                uid == std::optional<uid_t>(getuid())) {
-              start_core_service_daemon_client();
-            }
-          });
-
-          //
           // session_monitor_
           //
 
@@ -122,11 +95,7 @@ public:
             on_console_ = on_console;
 
             stop_core_service_daemon_client();
-
-            console_user_id_changed_client_->async_console_user_id_changed(on_console);
-
-            // Delay start_core_service_daemon_client until core_service_daemon_server_bound is received.
-            // The Core Service daemon recreates its XPC listener for the new console user.
+            start_core_service_daemon_client();
           });
         },
         [this] {
@@ -143,7 +112,6 @@ public:
 
   void async_start() {
     enqueue_to_dispatcher([this] {
-      console_user_id_changed_client_->async_start();
       session_monitor_->async_start(std::chrono::milliseconds(1000));
       configuration_monitor_->async_start();
       settings_window_guidance_manager_->async_start();
@@ -182,7 +150,6 @@ private:
     resolved_ui_language_connection_.disconnect();
     configuration_monitor_ = nullptr;
     core_configuration_ = nullptr;
-    console_user_id_changed_client_ = nullptr;
   }
 
   void publish_ui_state(const core_configuration::core_configuration* configuration) const {
@@ -268,19 +235,17 @@ private:
       return;
     }
 
-    if (on_console_ != std::optional<bool>(true)) {
+    if (!on_console_.has_value()) {
       return;
     }
 
     core_service_daemon_client_ = std::make_shared<core_service_daemon_client>();
 
     core_service_daemon_client_->connected.connect([this] {
-      core_service_daemon_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
-      core_service_daemon_client_->async_set_variables({{"system.ui_language", ui_bridge_->get_resolved_ui_language()}});
-      core_service_daemon_client_->async_observe_notification_message();
-
-      stop_child_components();
-      start_child_components();
+      if (core_service_daemon_client_ &&
+          on_console_.has_value()) {
+        core_service_daemon_client_->async_console_user_id_changed(*on_console_);
+      }
     });
 
     core_service_daemon_client_->connect_failed.connect([this](auto&&) {
@@ -293,6 +258,20 @@ private:
 
     core_service_daemon_client_->received.connect([this](auto&& operation_type,
                                                          auto&& json) {
+      if (operation_type == krbn::operation_type::core_service_daemon_server_bound) {
+        if (on_console_ == std::optional<bool>(true) &&
+            json.at("uid").template get<uid_t>() == getuid() &&
+            core_service_daemon_client_) {
+          core_service_daemon_client_->async_start_device_grabber(constants::get_user_core_configuration_file_path());
+          core_service_daemon_client_->async_set_variables({{"system.ui_language", ui_bridge_->get_resolved_ui_language()}});
+          core_service_daemon_client_->async_observe_notification_message();
+
+          stop_child_components();
+          start_child_components();
+        }
+        return;
+      }
+
       if (operation_type == krbn::operation_type::app_icon_changed) {
         publish_ui_state(core_configuration_.get());
         return;
@@ -355,7 +334,6 @@ private:
   //
 
   std::optional<bool> on_console_;
-  std::shared_ptr<console_user_id_changed_client> console_user_id_changed_client_;
   std::unique_ptr<pqrs::osx::session::monitor> session_monitor_;
   std::unique_ptr<configuration_monitor> configuration_monitor_;
   std::shared_ptr<core_configuration::core_configuration> core_configuration_;
