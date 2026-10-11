@@ -126,7 +126,7 @@ In that case, reset the permissions by following these steps.
 2.  In System Settings, disable or remove the following permissions.
     - Disable both of the following background services:
         - Karabiner-Elements Non-Privileged Agents v2
-        - Karabiner-Elements Privileged Daemons v2
+        - Karabiner-Elements Privileged Daemons v3
     - Remove the Accessibility permission.
 3.  Restart macOS.
 4.  Open Karabiner-Elements and grant the permissions again.
