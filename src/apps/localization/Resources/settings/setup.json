@@ -66,11 +66,11 @@
     "settings.setup.connection.agent_retry": {
         "en": [
             "The connection could not be established. ",
-            "Open System Settings and turn Karabiner-Elements Non-Privileged Agents v2 off and on again."
+            "Open System Settings and turn Karabiner-Elements Non-Privileged Agents v3 off and on again."
         ]
         ,"ja": [
             "接続できませんでした。",
-            "システム設定を開き、Karabiner-Elements Non-Privileged Agents v2をいったんオフにしてから、再度オンにしてください。"
+            "システム設定を開き、Karabiner-Elements Non-Privileged Agents v3をいったんオフにしてから、再度オンにしてください。"
         ]
     },
     "settings.setup.connection.agent_waiting": {

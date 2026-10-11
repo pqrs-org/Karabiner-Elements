@@ -92,7 +92,7 @@ RunLoop.main.perform {
   }
 
   print("Usage:")
-  print("    'Karabiner-Elements Non-Privileged Agents v2' subcommand")
+  print("    'Karabiner-Elements Non-Privileged Agents v3' subcommand")
   print("")
   print("Subcommands:")
   print("    \(Subcommand.registerCoreAgents.rawValue)")

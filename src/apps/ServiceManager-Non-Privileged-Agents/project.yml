@@ -1,9 +1,9 @@
-name: Karabiner-Elements Non-Privileged Agents v2
+name: Karabiner-Elements Non-Privileged Agents v3
 
 targets:
-  Karabiner-Elements Non-Privileged Agents v2:
+  Karabiner-Elements Non-Privileged Agents v3:
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements-Non-Privileged-Agents-v2
+      PRODUCT_BUNDLE_IDENTIFIER: org.pqrs.Karabiner-Elements-Non-Privileged-Agents-v3
       # SMAppService requires codesigning
       CODE_SIGN_ENTITLEMENTS: ''
       CODE_SIGN_IDENTITY: 'Apple Development'

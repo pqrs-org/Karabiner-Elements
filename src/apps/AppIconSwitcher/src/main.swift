@@ -5,7 +5,7 @@ let appIconNumber = String(format: "%03d", krbn_get_app_icon_number())
 for file in [
   "/Applications/Karabiner-Elements.app",
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app",
-  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents v2.app",
+  "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents v3.app",
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons v3.app",
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Console-User-Server.app",
   "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app",

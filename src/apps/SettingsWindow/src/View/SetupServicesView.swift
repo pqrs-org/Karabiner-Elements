@@ -61,7 +61,7 @@ struct SetupServicesView: View {
 
           VStack(alignment: .leading, spacing: 0.0) {
             Label(
-              "Karabiner-Elements Non-Privileged Agents v2",
+              "Karabiner-Elements Non-Privileged Agents v3",
               systemImage:
                 localServicesGuidanceContext.coreAgentsEnabled == true
                 ? "checkmark.circle.fill" : "circle")

@@ -125,7 +125,7 @@ In that case, reset the permissions by following these steps.
 1.  Install your package.
 2.  In System Settings, disable or remove the following permissions.
     - Disable both of the following background services:
-        - Karabiner-Elements Non-Privileged Agents v2
+        - Karabiner-Elements Non-Privileged Agents v3
         - Karabiner-Elements Privileged Daemons v3
     - Remove the Accessibility permission.
 3.  Restart macOS.
