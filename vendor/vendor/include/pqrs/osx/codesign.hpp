@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::codesign v3.3.0
+// pqrs::osx::codesign v3.4.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.

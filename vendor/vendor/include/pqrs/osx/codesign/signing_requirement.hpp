@@ -9,6 +9,7 @@
 #include <expected>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace pqrs::osx::codesign {
 
@@ -23,6 +24,7 @@ struct signing_requirement_parameters final {
 
 enum class signing_requirement_error {
   missing_anchor,
+  empty_requirements,
   invalid_anchor,
   empty_string,
   invalid_string_character,
@@ -135,6 +137,31 @@ make_signing_requirement(const signing_requirement_parameters &parameters) {
     }
 
     append("cdhash " + *quoted);
+  }
+
+  return result;
+}
+
+// Builds a requirement that matches any of the supplied signing requirements.
+// Each operand is parenthesized so its `and` conditions remain grouped.
+[[nodiscard]] inline std::expected<std::string, signing_requirement_error>
+make_or_signing_requirement(const std::vector<signing_requirement_parameters> &parameters_list) {
+  if (parameters_list.empty()) {
+    return std::unexpected(signing_requirement_error::empty_requirements);
+  }
+
+  std::string result;
+
+  for (const auto &parameters : parameters_list) {
+    auto requirement = make_signing_requirement(parameters);
+    if (!requirement) {
+      return std::unexpected(requirement.error());
+    }
+
+    if (!result.empty()) {
+      result += " or ";
+    }
+    result += '(' + *requirement + ')';
   }
 
   return result;
