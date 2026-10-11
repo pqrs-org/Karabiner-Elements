@@ -10,7 +10,7 @@ clean:
 	rm -fr build
 
 codesign: all
-	bash ../../../scripts/codesign.sh build/Release/karabiner_cli
+	bash ../../../scripts/codesign.sh -i org.pqrs.Karabiner-CLI build/Release/karabiner_cli
 
 install: codesign
 	sudo install \
