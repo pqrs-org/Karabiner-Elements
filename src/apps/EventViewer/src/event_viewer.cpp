@@ -397,7 +397,7 @@ public:
           // console_user_server_client_
           //
 
-          console_user_server_client_ = std::make_shared<krbn::console_user_server_client>(geteuid());
+          console_user_server_client_ = std::make_shared<krbn::console_user_server_client>();
 
           console_user_server_client_->received.connect([](auto&& operation_type, auto&& json) {
             if (operation_type != krbn::operation_type::frontmost_application_history) {

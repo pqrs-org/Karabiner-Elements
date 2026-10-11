@@ -78,6 +78,10 @@ public:
     return "org.pqrs.Karabiner-Core-Service.daemon";
   }
 
+  [[nodiscard]] static const char* get_console_user_server_mach_service_name() {
+    return "org.pqrs.Karabiner-Console-User-Server";
+  }
+
   [[nodiscard]] static const std::filesystem::path& get_console_user_id_changed_receiver_socket_file_path() {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
@@ -85,14 +89,6 @@ public:
 
     static auto path = get_tmp_directory() / std::filesystem::path("karabiner_console_user_id_changed_receiver.sock");
     return path;
-  }
-
-  [[nodiscard]] static std::filesystem::path get_console_user_server_socket_file_path(uid_t uid) {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // "/Library/Application Support/org.pqrs/tmp/user/501/karabiner_console_user_server.sock" length is 85.
-
-    return constants::get_system_user_directory(uid) / std::filesystem::path("karabiner_console_user_server.sock");
   }
 
   [[nodiscard]] static const std::filesystem::path& get_karabiner_machine_identifier_json_file_path() {

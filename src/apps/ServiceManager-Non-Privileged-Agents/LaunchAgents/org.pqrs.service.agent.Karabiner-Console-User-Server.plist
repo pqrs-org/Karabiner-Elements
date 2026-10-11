@@ -4,6 +4,11 @@
   <dict>
     <key>Label</key>
     <string>org.pqrs.service.agent.Karabiner-Console-User-Server</string>
+    <key>MachServices</key>
+    <dict>
+      <key>org.pqrs.Karabiner-Console-User-Server</key>
+      <true/>
+    </dict>
     <key>KeepAlive</key>
     <true/>
     <key>ProgramArguments</key>

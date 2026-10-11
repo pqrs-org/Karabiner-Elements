@@ -274,7 +274,7 @@ void show_settings_window_guidance() {
   try {
     auto wait = pqrs::make_thread_wait();
 
-    krbn::console_user_server_client client(geteuid());
+    krbn::console_user_server_client client;
 
     client.connect_failed.connect([&wait](auto&& error_code) {
       std::cerr << "show-settings-window-guidance error:" << error_code << std::endl;

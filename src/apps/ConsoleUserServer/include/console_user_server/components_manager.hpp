@@ -147,13 +147,28 @@ public:
       session_monitor_->async_start(std::chrono::milliseconds(1000));
       configuration_monitor_->async_start();
       settings_window_guidance_manager_->async_start();
-      receiver_ = std::make_unique<receiver>(settings_window_guidance_manager_,
-                                             software_function_handler_,
-                                             weak_update_check_scheduler_);
+      start_receiver();
     });
   }
 
 private:
+  void start_receiver() {
+    receiver_ = std::make_unique<receiver>(settings_window_guidance_manager_,
+                                           software_function_handler_,
+                                           weak_update_check_scheduler_);
+
+    receiver_->listener_terminated.connect([this](const std::error_code& error) {
+      logger::get_logger()->error("console_user_server XPC listener terminated: {0}",
+                                  error.message());
+
+      enqueue_to_dispatcher(
+          [this] {
+            start_receiver();
+          },
+          when_now() + std::chrono::seconds(1));
+    });
+  }
+
   void cleanup() {
     stop_core_service_daemon_client();
 

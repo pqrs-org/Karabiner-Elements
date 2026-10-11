@@ -8,13 +8,16 @@
 #include "types.hpp"
 #include <mutex>
 #include <nod/nod.hpp>
+#include <optional>
 #include <pqrs/dispatcher.hpp>
-#include <pqrs/unix_domain_stream.hpp>
+#include <pqrs/osx/xpc.hpp>
 #include <unistd.h>
 #include <utility>
 #include <vector>
 
 namespace krbn {
+namespace xpc = pqrs::osx::xpc;
+
 class console_user_server_client final : public pqrs::dispatcher::extra::dispatcher_client {
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
@@ -22,7 +25,7 @@ public:
   // Signals (invoked from the shared dispatcher thread)
 
   nod::signal<void()> connected;
-  nod::signal<void(const asio::error_code&)> connect_failed;
+  nod::signal<void(const std::error_code&)> connect_failed;
   nod::signal<void()> closed;
   nod::signal<void(operation_type, const nlohmann::json&)> received;
 
@@ -30,8 +33,7 @@ public:
 
   console_user_server_client(const console_user_server_client&) = delete;
 
-  explicit console_user_server_client(uid_t uid)
-      : uid_(uid) {
+  console_user_server_client() {
     dispatcher_client_constructor_guard_.initialize();
   }
 
@@ -64,15 +66,22 @@ public:
         return;
       }
 
-      client_ = std::make_unique<pqrs::unix_domain_stream::client>(
+      client_ = std::make_unique<xpc::client>(
           weak_dispatcher_,
-          constants::get_console_user_server_socket_file_path(uid_),
-          constants::get_unix_domain_stream_client_options(),
-          [](const auto& peer_credentials) {
-            return get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
-          });
+          xpc::client_options({
+              .common_parameters = {
+                  .signing_requirement = get_shared_codesign_manager()->xpc_signing_requirement({
+                      "org.pqrs.Karabiner-Console-User-Server",
+                  }),
+                  .max_message_size = constants::unix_domain_stream_max_message_size,
+              },
+              .client_parameters = {
+                  .service_name = constants::get_console_user_server_mach_service_name(),
+              },
+          }));
 
-      client_->connected.connect([this](auto&&) {
+      client_->peer_ready.connect([this](auto peer_id) {
+        peer_id_ = peer_id;
         logger::get_logger()->debug("console_user_server_client is connected.");
 
         enqueue_to_dispatcher([this] {
@@ -80,7 +89,7 @@ public:
         });
       });
 
-      client_->connect_failed.connect([this](auto&& error_code) {
+      client_->connection_failed.connect([this](const auto& error_code) {
         logger::get_logger()->debug("console_user_server_client connect_failed: {0}", error_code.message());
 
         enqueue_to_dispatcher([this, error_code] {
@@ -88,25 +97,36 @@ public:
         });
       });
 
-      client_->closed.connect([this] {
-        logger::get_logger()->debug("console_user_server_client is closed.");
+      client_->peer_interrupted.connect([this](auto peer_id) {
+        if (peer_id_ == peer_id) {
+          peer_id_.reset();
+        }
+        logger::get_logger()->debug("console_user_server_client is interrupted.");
 
         enqueue_to_dispatcher([this] {
           closed();
         });
       });
 
-      client_->error_occurred.connect([](auto&& error_code) {
-        logger::get_logger()->debug("console_user_server_client error: {0}", error_code.message());
+      client_->peer_invalidated.connect([this](auto peer_id,
+                                               const auto& error_code) {
+        if (peer_id_ == peer_id) {
+          peer_id_.reset();
+        }
+        logger::get_logger()->debug("console_user_server_client peer_invalidated: {0}",
+                                    error_code.message());
+
+        enqueue_to_dispatcher([this] {
+          closed();
+        });
       });
 
-      client_->peer_verification_failed.connect([](auto&&) {
-        // During an update, retrieving the Team ID may fail, causing an error once.
-        // Since this can occur during normal use, treat it as debug rather than warn.
-        logger::get_logger()->debug("console_user_server_client peer_verification_failed");
+      client_->error_occurred.connect([](const auto& error) {
+        logger::get_logger()->debug("console_user_server_client error: {0}",
+                                    error.message);
       });
 
-      client_->received.connect([this](auto&& buffer) {
+      client_->message_received.connect([this](auto, auto&& buffer) {
         enqueue_to_dispatcher([this, buffer] {
           if (buffer->empty()) {
             return;
@@ -124,8 +144,20 @@ public:
         });
       });
 
-      client_->request_received.connect([](auto, auto&&) {
-        // Do nothing
+      client_->request_received.connect([this](auto,
+                                               auto reply,
+                                               auto&& buffer) {
+        if (client_) {
+          client_->async_reply(
+              reply,
+              std::make_shared<const std::vector<uint8_t>>(nlohmann::json::to_msgpack(nlohmann::json{
+                  {"operation_type", operation_type::none},
+              })));
+        }
+
+        if (!buffer->empty()) {
+          handle_message(buffer);
+        }
       });
 
       client_->async_start();
@@ -164,27 +196,35 @@ public:
 
 private:
   void async_request(nlohmann::json&& json) const {
-    if (!client_) {
+    if (!client_ ||
+        !peer_id_) {
       return;
     }
 
-    client_->async_request(
-        nlohmann::json::to_msgpack(json),
-        [this](auto&& error_code, auto&& buffer) {
-          enqueue_to_dispatcher([this, error_code, buffer] {
-            if (error_code) {
-              logger::get_logger()->debug("console_user_server_client request failed: {0}", error_code.message());
-            }
+    // The listener checks this UID against its console account.
+    json["uid"] = getuid();
 
-            if (buffer &&
-                !buffer->empty()) {
-              handle_message(buffer);
-            }
-          });
+    client_->async_request(
+        xpc::client::async_request_parameters{
+            .id = *peer_id_,
+            .data = std::make_shared<const std::vector<uint8_t>>(nlohmann::json::to_msgpack(json)),
+            .completion = [this](auto result) {
+              enqueue_to_dispatcher([this, result] {
+                if (!result) {
+                  logger::get_logger()->debug("console_user_server_client request failed: {0}",
+                                              result.error().message());
+                  return;
+                }
+
+                if (!(*result)->empty()) {
+                  handle_message(*result);
+                }
+              });
+            },
         });
   }
 
-  void handle_message(pqrs::not_null_shared_ptr_t<std::vector<uint8_t>> buffer) const {
+  void handle_message(pqrs::not_null_shared_ptr_t<const std::vector<uint8_t>> buffer) const {
     try {
       auto json = nlohmann::json::from_msgpack(*buffer);
       auto ot = json.at("operation_type").template get<operation_type>();
@@ -205,13 +245,13 @@ private:
     }
 
     client_ = nullptr;
+    peer_id_.reset();
 
     logger::get_logger()->debug("console_user_server_client is stopped.");
   }
 
-  uid_t uid_;
-
-  std::unique_ptr<pqrs::unix_domain_stream::client> client_;
+  std::unique_ptr<xpc::client> client_;
+  std::optional<xpc::peer_id> peer_id_;
   std::once_flag unregister_callbacks_and_detach_once_;
 };
 } // namespace krbn

@@ -14,11 +14,10 @@ class settings_console_user_server_client final : public pqrs::dispatcher::extra
 public:
   settings_console_user_server_client(const settings_console_user_server_client&) = delete;
 
-  settings_console_user_server_client(uid_t uid,
+  settings_console_user_server_client(uid_t,
                                       krbn_console_user_server_client_status_changed_t status_changed_callback,
                                       krbn_console_user_server_client_settings_window_guidance_received_t settings_window_guidance_received_callback)
-      : uid_(uid),
-        status_changed_callback_(status_changed_callback),
+      : status_changed_callback_(status_changed_callback),
         settings_window_guidance_received_callback_(settings_window_guidance_received_callback) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
@@ -46,7 +45,7 @@ public:
       return;
     }
 
-    auto client = std::make_shared<krbn::console_user_server_client>(uid_);
+    auto client = std::make_shared<krbn::console_user_server_client>();
 
     client->connected.connect([this] {
       set_connected(true);
@@ -134,7 +133,6 @@ private:
     }
   }
 
-  uid_t uid_;
   std::shared_ptr<krbn::console_user_server_client> console_user_server_client_;
   std::atomic_bool connected_{false};
   const krbn_console_user_server_client_status_changed_t status_changed_callback_;

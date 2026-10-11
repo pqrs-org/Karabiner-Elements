@@ -13,13 +13,21 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/input_source_selector.hpp>
 #include <pqrs/osx/input_source_selector/extra/nlohmann_json.hpp>
-#include <pqrs/unix_domain_stream.hpp>
+#include <pqrs/osx/xpc.hpp>
 
 namespace krbn::console_user_server {
+namespace xpc = pqrs::osx::xpc;
+
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
+  // Signals (invoked from the shared dispatcher thread)
+
+  nod::signal<void(const std::error_code&)> listener_terminated;
+
+  // Methods
+
   receiver(const receiver&) = delete;
 
   receiver(std::weak_ptr<settings_window_guidance_manager> weak_settings_window_guidance_manager,
@@ -33,55 +41,58 @@ public:
         send_user_command_handler_(std::make_unique<send_user_command_handler>()) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
-          auto socket_file_path = console_user_server_socket_file_path();
-
-          server_ = std::make_unique<pqrs::unix_domain_stream::server>(
+          server_ = std::make_shared<xpc::listener>(
               weak_dispatcher_,
-              socket_file_path,
-              constants::get_unix_domain_stream_server_options(),
-              [](const auto& peer_credentials) {
-                auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
-                if (!result) {
-                  // During an update, retrieving the Team ID may fail, causing an error once.
-                  // Since this can occur during normal use, treat it as debug rather than warn.
-                  logger::get_logger()->debug("receiver: peer is not code-signed with same Team ID (pid: {0})",
-                                              peer_credentials.pid.value_or(-1));
-                }
-                return result;
-              });
+              xpc::listener_options({
+                  .common_parameters = {
+                      .signing_requirement = get_shared_codesign_manager()->xpc_signing_requirement({
+                          "org.pqrs.Karabiner-Elements.Settings",
+                          "org.pqrs.Karabiner-EventViewer",
+                      }),
+                      .max_message_size = constants::unix_domain_stream_max_message_size,
+                  },
+                  .listener_parameters = {
+                      .service_name = constants::get_console_user_server_mach_service_name(),
+                  },
+              }));
 
-          server_->bound.connect([socket_file_path] {
-            logger::get_logger()->debug("receiver: bound");
+          server_->listener_started.connect([] {
+            logger::get_logger()->debug("receiver: listener_started");
           });
 
-          server_->bind_failed.connect([](auto&& error_code) {
-            logger::get_logger()->error("receiver: bind_failed: {0}",
+          server_->listener_terminated.connect([this](const auto& error) {
+            listener_terminated(error);
+          });
+
+          server_->peer_ready.connect([](auto) {
+            // Do nothing
+          });
+
+          server_->peer_interrupted.connect([](auto) {
+            // Do nothing
+          });
+
+          server_->peer_invalidated.connect([](auto peer_id,
+                                               const auto& error_code) {
+            logger::get_logger()->debug("receiver: peer_invalidated ({0}): {1}",
+                                        peer_id,
                                         error_code.message());
           });
 
-          server_->closed.connect([] {
-            logger::get_logger()->debug("receiver: closed");
+          server_->error_occurred.connect([](const auto& error) {
+            logger::get_logger()->debug("receiver: error_occurred: {0}",
+                                        error.message);
           });
 
-          server_->peer_connected.connect([](auto, auto&&) {
+          server_->message_received.connect([](auto, auto&&) {
             // Do nothing
           });
 
-          server_->peer_closed.connect([](auto) {
-            // Do nothing
-          });
-
-          server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
-            logger::get_logger()->debug("receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
-          });
-
-          server_->received.connect([](auto, auto&&) {
-            // Do nothing
-          });
-
-          server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
+          server_->request_received.connect([this](auto peer_id,
+                                                   auto reply,
+                                                   auto&& buffer) {
             handle_request(peer_id,
-                           request_id,
+                           reply,
                            buffer);
           });
 
@@ -177,76 +188,69 @@ private:
     server_ = nullptr;
   }
 
-  std::filesystem::path console_user_server_socket_file_path() const {
-    return constants::get_console_user_server_socket_file_path(geteuid());
-  }
-
-  void async_respond(pqrs::unix_domain_stream::peer_id peer_id,
-                     pqrs::unix_domain_stream::request_id request_id,
+  void async_respond(xpc::reply_token reply,
                      nlohmann::json json) {
     if (server_) {
-      server_->async_respond(peer_id,
-                             request_id,
-                             nlohmann::json::to_msgpack(json));
+      server_->async_reply(reply,
+                           std::make_shared<const std::vector<uint8_t>>(nlohmann::json::to_msgpack(json)));
     }
   }
 
-  void async_respond_none(pqrs::unix_domain_stream::peer_id peer_id,
-                          pqrs::unix_domain_stream::request_id request_id) {
-    async_respond(peer_id,
-                  request_id,
+  void async_respond_none(xpc::reply_token reply) {
+    async_respond(reply,
                   nlohmann::json{
                       {"operation_type", operation_type::none},
                   });
   }
 
-  void handle_request(pqrs::unix_domain_stream::peer_id peer_id,
-                      pqrs::unix_domain_stream::request_id request_id,
-                      pqrs::not_null_shared_ptr_t<std::vector<uint8_t>> buffer) {
+  void handle_request(xpc::peer_id peer_id,
+                      xpc::reply_token reply,
+                      std::shared_ptr<const std::vector<uint8_t>> buffer) {
     if (buffer->empty()) {
-      server_->async_close_peer(peer_id);
+      server_->async_cancel_peer(peer_id);
       return;
     }
 
     try {
       nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+      if (json.at("uid").get<uid_t>() != geteuid()) {
+        server_->async_cancel_peer(peer_id);
+        return;
+      }
+
       switch (json.at("operation_type").get<operation_type>()) {
         case operation_type::get_settings_window_guidance:
           if (auto m = weak_settings_window_guidance_manager_.lock()) {
-            async_respond(peer_id,
-                          request_id,
+            async_respond(reply,
                           nlohmann::json{
                               {"operation_type", operation_type::settings_window_guidance},
                               {"settings_window_guidance", m->get_guidance_state()}});
           } else {
-            async_respond_none(peer_id,
-                               request_id);
+            async_respond_none(reply);
           }
           break;
 
         case operation_type::get_frontmost_application_history:
           if (auto h = weak_software_function_handler_.lock()) {
             h->async_invoke_with_frontmost_application_history(
-                [this, peer_id, request_id](auto&& frontmost_application_history) {
-                  async_respond(peer_id,
-                                request_id,
+                [this, reply](auto&& frontmost_application_history) {
+                  async_respond(reply,
                                 nlohmann::json{
                                     {"operation_type", operation_type::frontmost_application_history},
                                     {"frontmost_application_history", frontmost_application_history}});
                 });
           } else {
-            async_respond_none(peer_id,
-                               request_id);
+            async_respond_none(reply);
           }
           break;
 
         default:
-          server_->async_close_peer(peer_id);
+          server_->async_cancel_peer(peer_id);
           break;
       }
     } catch (std::exception& e) {
       logger::get_logger()->error("received data is corrupted");
-      server_->async_close_peer(peer_id);
+      server_->async_cancel_peer(peer_id);
     }
   }
 
@@ -256,6 +260,6 @@ private:
   std::unique_ptr<pqrs::osx::input_source_selector::selector> input_source_selector_;
   std::unique_ptr<shell_command_handler> shell_command_handler_;
   std::unique_ptr<send_user_command_handler> send_user_command_handler_;
-  std::unique_ptr<pqrs::unix_domain_stream::server> server_;
+  std::shared_ptr<xpc::listener> server_;
 };
 } // namespace krbn::console_user_server
