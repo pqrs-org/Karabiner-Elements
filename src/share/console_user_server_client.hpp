@@ -111,9 +111,11 @@ public:
         handle_peer_closed(peer_id);
       });
 
-      client_->error_occurred.connect([](const auto& error) {
+      client_->error_occurred.connect([this](const auto& error) {
         logger::get_logger()->debug("console_user_server_client error: {0}",
                                     error.message);
+
+        handle_transport_error(error.code);
       });
 
       client_->message_received.connect([this](auto, auto&& buffer) {
@@ -185,6 +187,16 @@ public:
   }
 
 private:
+  void handle_transport_error(const std::error_code& error_code) {
+    if (peer_id_) {
+      handle_peer_closed(*peer_id_);
+    } else {
+      enqueue_to_dispatcher([this, error_code] {
+        connect_failed(error_code);
+      });
+    }
+  }
+
   void handle_peer_closed(xpc::peer_id peer_id) {
     if (peer_id_ != peer_id) {
       return;

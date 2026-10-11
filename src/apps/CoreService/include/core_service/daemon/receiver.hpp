@@ -103,6 +103,13 @@ public:
             handle_peer_closed(peer_id);
           });
 
+          server_->error_occurred.connect([this](const auto& error) {
+            logger::get_logger()->error("receiver: error_occurred: {0}",
+                                        error.message);
+
+            listener_terminated(error.code);
+          });
+
           server_->message_received.connect([](auto, auto&&) {
             // Do nothing
           });

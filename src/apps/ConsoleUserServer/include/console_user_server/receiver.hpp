@@ -80,9 +80,11 @@ public:
                                         error_code.message());
           });
 
-          server_->error_occurred.connect([](const auto& error) {
-            logger::get_logger()->debug("receiver: error_occurred: {0}",
+          server_->error_occurred.connect([this](const auto& error) {
+            logger::get_logger()->error("receiver: error_occurred: {0}",
                                         error.message);
+
+            listener_terminated(error.code);
           });
 
           server_->message_received.connect([](auto, auto&&) {
