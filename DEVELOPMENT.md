@@ -4,8 +4,10 @@
 
 If you want to modify the source code, replacing the built binaries requires several steps.
 
-Karabiner-Elements is split into multiple processes, and inter-process communication is performed using UNIX domain sockets.
-For this communication to work, each process must have the same code signature, or be unsigned.
+Karabiner-Elements is split into multiple processes. Most inter-process communication uses XPC Mach services.
+Communication with `Karabiner-DriverKit-VirtualHIDDevice` and a few external interfaces uses UNIX domain sockets.
+In signed builds, the XPC listeners verify the signing anchor, Team ID, and identifier of their peers.
+For this communication to work, replacement processes must be signed consistently with the rest of the build, or all involved processes must be unsigned development builds.
 All binaries distributed officially are signed with G43BCU2T37, so if you replace only some of the binaries, communication will stop working.
 
 Therefore, you first need to rebuild and install the entire package with your own signature.
@@ -40,13 +42,13 @@ make install
       For that reason, responsibilities are split so that tasks such as launching external processes are handled by `Karabiner-Console-User-Server` rather than by `Karabiner-Core-Service`.
 - `Karabiner-Console-User-Server`
     - It informs `Karabiner-Core-Service` of the user currently using the console.
-      Karabiner-Core-Service will change the owner of the Unix domain socket that `Karabiner-Core-Service` provides for `Karabiner-Console-User-Server`.
+      The console UID is included in the authenticated XPC protocol and is used to reject ordinary requests from other user accounts.
     - The methods for accurately detecting the console user, including when multiple people are logged in through Screen Sharing, are very limited.
-      Even in macOS 14, there is no alternative to using the Core Graphics API `CGSessionCopyCurrentDictionary`.
+      Karabiner-Elements uses the Core Graphics API `CGSessionCopyCurrentDictionary` for this purpose.
       To use this API, it must be launched from a GUI session. Specifically, it needs to be started from LaunchAgents.
       Therefore, the function to detect the console user cannot be integrated into `Karabiner-Core-Service (daemon)` and is handled by `Karabiner-Console-User-Server`.
-    - `Karabiner-Console-User-Server` connects to the Unix domain socket provided by `Karabiner-Core-Service` and requests the start of processing input events.
-      `Karabiner-Core-Service` will not modify input events until it receives the user configuration path from `Karabiner-Console-User-Server`, unless the system core configuration file exists.
+    - `Karabiner-Console-User-Server` connects to the XPC Mach service provided by `Karabiner-Core-Service` and requests the start of processing input events.
+      `Karabiner-Core-Service` does not modify input events until it receives the user configuration path from `Karabiner-Console-User-Server`, unless the system core configuration file exists.
     - The execution of `shell_command`, `software_function`, and `select_input_source` is carried out by `Karabiner-Console-User-Server`.
     - It notifies `Karabiner-Core-Service` of the information needed to reference the filter function when modifying input events, such as the active application and the current input source.
     - It is a SwiftUI application that provides the menu bar menu and notification windows.
@@ -61,21 +63,22 @@ make install
 `Karabiner-Core-Service (daemon)`
 
 1.  Run `Karabiner-Core-Service`.
-2.  `Karabiner-Core-Service` opens the Unix domain socket for console user change notifications.
-3.  `Karabiner-Core-Service` opens the Unix domain socket of server.
-4.  When a window server session state is changed, `Karabiner-Core-Service` changes the Unix domain socket owner to console user.
+2.  launchd provides the CoreService XPC Mach service to `Karabiner-Core-Service`.
+3.  `Karabiner-Core-Service` starts an XPC listener that admits only configured Karabiner-Elements identifiers signed by the expected Team ID.
+4.  The listener initially accepts only console-session notifications and requests for the current console UID.
 
 `Karabiner-Console-User-Server`
 
 1.  Run `Karabiner-Console-User-Server` as a LaunchAgent in the GUI session.
-2.  `Karabiner-Console-User-Server` monitors the window server session state and notifies `Karabiner-Core-Service`.
-3.  `Karabiner-Core-Service` changes the owner of its Unix domain socket for `Karabiner-Console-User-Server` when the console user changes.
-4.  `Karabiner-Console-User-Server` starts its menu bar menu and notification window UI in the same process.
+2.  `Karabiner-Console-User-Server` monitors the window server session state and sends the state and its UID to `Karabiner-Core-Service` over XPC.
+3.  When the console UID changes, `Karabiner-Core-Service` recreates its receiver with the new UID. `Karabiner-Console-User-Server` reconnects and repeats the notification.
+4.  After `Karabiner-Core-Service` confirms the bound console UID, `Karabiner-Console-User-Server` starts its regular CoreService client components, menu bar menu, and notification window UI.
+5.  `Karabiner-Console-User-Server` also provides an XPC Mach service for Settings and EventViewer requests.
 
 #### device grabbing
 
-1.  `Karabiner-Console-User-Server` tries to open the ConsoleUserServer Unix domain socket.
-2.  Karabiner-Core-Service starts grabbing the input devices that should be modified.
+1.  After the console UID handshake completes, `Karabiner-Console-User-Server` sends the user configuration path to the CoreService XPC service.
+2.  `Karabiner-Core-Service` starts grabbing the input devices that should be modified.
 
 ### Other notes
 
