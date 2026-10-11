@@ -6,6 +6,8 @@
 #include "constants.hpp"
 #include "logger.hpp"
 #include "types.hpp"
+#include <chrono>
+#include <cstdint>
 #include <mutex>
 #include <nod/nod.hpp>
 #include <optional>
@@ -66,6 +68,9 @@ public:
         return;
       }
 
+      running_ = true;
+      auto client_generation = ++client_generation_;
+
       client_ = std::make_unique<xpc::client>(
           weak_dispatcher_,
           xpc::client_options({
@@ -111,11 +116,12 @@ public:
         handle_peer_closed(peer_id);
       });
 
-      client_->error_occurred.connect([this](const auto& error) {
+      client_->error_occurred.connect([this, client_generation](const auto& error) {
         logger::get_logger()->debug("console_user_server_client error: {0}",
                                     error.message);
 
-        handle_transport_error(error.code);
+        handle_transport_error(error.code,
+                               client_generation);
       });
 
       client_->message_received.connect([this](auto, auto&& buffer) {
@@ -187,7 +193,8 @@ public:
   }
 
 private:
-  void handle_transport_error(const std::error_code& error_code) {
+  void handle_transport_error(const std::error_code& error_code,
+                              uint64_t client_generation) {
     if (peer_id_) {
       handle_peer_closed(*peer_id_);
     } else {
@@ -195,6 +202,25 @@ private:
         connect_failed(error_code);
       });
     }
+
+    // error_occurred is terminal for pqrs::osx::xpc::client. Defer its
+    // destruction until signal delivery has returned, then replace it. The
+    // generation check prevents a delayed restart from replacing a client that
+    // was explicitly stopped and started again in the meantime.
+    enqueue_to_dispatcher(
+        [this, client_generation] {
+          if (!running_ ||
+              client_generation_ != client_generation) {
+            return;
+          }
+
+          peer_id_.reset();
+          client_ = nullptr;
+
+          logger::get_logger()->debug("console_user_server_client is restarting after a terminal error.");
+          async_start();
+        },
+        when_now() + std::chrono::seconds(1));
   }
 
   void handle_peer_closed(xpc::peer_id peer_id) {
@@ -254,6 +280,9 @@ private:
   }
 
   void stop() {
+    running_ = false;
+    ++client_generation_;
+
     if (!client_) {
       return;
     }
@@ -266,6 +295,8 @@ private:
 
   std::unique_ptr<xpc::client> client_;
   std::optional<xpc::peer_id> peer_id_;
+  uint64_t client_generation_{0};
+  bool running_{false};
   std::once_flag unregister_callbacks_and_detach_once_;
 };
 } // namespace krbn
