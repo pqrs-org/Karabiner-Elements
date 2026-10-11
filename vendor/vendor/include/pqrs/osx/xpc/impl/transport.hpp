@@ -46,6 +46,8 @@ public:
   // Terminal listener failure. This transport cannot be started again; its
   // owner must defer destruction and create a replacement listener.
   nod::signal<void(const std::error_code&)> listener_terminated;
+  // The client could not establish or re-establish a ready peer session.
+  // peer_invalidated is also emitted when a created peer is invalidated.
   nod::signal<void(const std::error_code&)> connection_failed;
   nod::signal<void(peer_id)> peer_ready;
   nod::signal<void(peer_id)> peer_interrupted;
@@ -129,7 +131,9 @@ public:
         queue_,
         ^{
           run_guarded([&] {
-            if (auto peer = peers_.find(id); peer && peer->ready_for_communication()) {
+            if (auto peer = peers_.find(id);
+                peer &&
+                peer->ready_for_communication()) {
               if (options_.common_parameters.max_message_size &&
                   data->size() > *options_.common_parameters.max_message_size) {
                 invalidate(id,
@@ -159,7 +163,8 @@ public:
         ^{
           run_guarded([&] {
             auto peer = peers_.find(parameters.id);
-            if (!peer || !peer->ready_for_communication()) {
+            if (!peer ||
+                !peer->ready_for_communication()) {
               complete(parameters.completion,
                        std::unexpected(make_error_code(errc::not_ready)));
 
@@ -237,6 +242,11 @@ private:
     hello = 1,
     hello_reply,
     data,
+  };
+
+  enum class peer_failure_action {
+    interrupt,
+    invalidate,
   };
 
   static constexpr char type_key[]{"type"};
@@ -418,68 +428,79 @@ private:
 
   void start() {
     if constexpr (is_listener()) {
-      listener_ = connection::create_listener(options_,
-                                              queue_);
-      if (!listener_.get()) {
-        terminate_listener(make_error_code(errc::connection_invalid));
-
-        return;
-      }
-
-      if (!apply_peer_signing_requirement(listener_)) {
-        terminate_listener(make_error_code(errc::invalid_signing_requirement));
-
-        return;
-      }
-
-      auto alive = alive_;
-      listener_.set_event_handler(
-          ^(xpc_object_t event) {
-            if (!*alive) {
-              return;
-            }
-
-            run_guarded([&] {
-              if (xpc_get_type(event) == XPC_TYPE_CONNECTION) {
-                add_peer(connection::from_peer(static_cast<xpc_connection_t>(event)));
-              } else {
-                auto error = make_error_code(connection_error(event));
-                terminate_listener(error);
-              }
-            });
-          });
-
-      listener_.resume();
-
-      enqueue_notification([this] {
-        listener_started();
-      });
-
+      start_listener();
     } else {
-      auto connection = connection::create_client(options_,
-                                                  queue_);
-      if (!connection.get()) {
-        enqueue_notification([this] {
-          connection_failed(make_error_code(errc::connection_invalid));
-        });
-
-        reconnect_at_ = std::chrono::steady_clock::now() + reconnect_interval();
-
-      } else if (!add_peer(std::move(connection))) {
-        stopped_ = true;
-
-        enqueue_notification([this] {
-          connection_failed(make_error_code(errc::invalid_signing_requirement));
-        });
-      }
+      start_client();
     }
   }
 
-  bool add_peer(connection connection) {
+  void start_listener() {
+    listener_ = connection::create_listener(options_,
+                                            queue_);
+    if (!listener_.get()) {
+      terminate_listener(make_error_code(errc::connection_invalid));
+      return;
+    }
+
+    if (!apply_peer_signing_requirement(listener_)) {
+      terminate_listener(make_error_code(errc::invalid_signing_requirement));
+      return;
+    }
+
+    auto alive = alive_;
+    listener_.set_event_handler(
+        ^(xpc_object_t event) {
+          if (!*alive) {
+            return;
+          }
+
+          run_guarded([&] {
+            if (xpc_get_type(event) == XPC_TYPE_CONNECTION) {
+              // Reject this connection if its signing requirement cannot be applied.
+              if (!add_peer(connection::from_peer(static_cast<xpc_connection_t>(event)))) {
+                return;
+              }
+            } else {
+              terminate_listener(make_error_code(connection_error(event)));
+            }
+          });
+        });
+
+    listener_.resume();
+
+    enqueue_notification([this] {
+      listener_started();
+    });
+  }
+
+  void start_client() {
+    auto connection = connection::create_client(options_,
+                                                queue_);
+    if (!connection.get()) {
+      enqueue_notification([this] {
+        connection_failed(make_error_code(errc::connection_invalid));
+      });
+
+      reconnect_at_ = std::chrono::steady_clock::now() + reconnect_interval();
+      return;
+    }
+
+    auto added_peer = add_peer(std::move(connection));
+    if (!added_peer) {
+      stopped_ = true;
+
+      auto error = make_error_code(added_peer.error());
+      enqueue_notification([this, error] {
+        connection_failed(error);
+      });
+    }
+  }
+
+  [[nodiscard]] std::expected<peer_id, errc> add_peer(connection connection) {
     connection.set_target_queue(queue_);
 
     if (!apply_peer_signing_requirement(connection)) {
-      return false;
+      return std::unexpected(errc::invalid_signing_requirement);
     }
 
     auto added_peer = peers_.add(std::move(connection));
@@ -505,7 +526,7 @@ private:
       begin_handshake(id);
     }
 
-    return true;
+    return id;
   }
 
   void begin_handshake(peer_id id) {
@@ -548,64 +569,81 @@ private:
 
     auto data = read_message(event);
     if (!data) {
-      handle_failure(id,
-                     data.error());
+      handle_connection_event_failure(id,
+                                      data.error());
       return;
     }
 
     auto reply = create_reply(event);
     if (data->type == message_type::hello) {
-      if (!is_listener() ||
-          !reply) {
+      handle_hello(id,
+                   *found_peer,
+                   std::move(reply));
+    } else {
+      handle_application_message(id,
+                                 *found_peer,
+                                 std::move(reply),
+                                 data->data);
+    }
+  }
+
+  void handle_hello(peer_id id,
+                    peer& target_peer,
+                    std::optional<dictionary> reply) {
+    if (!is_listener() ||
+        !reply) {
+      invalidate(id,
+                 errc::invalid_message);
+      return;
+    }
+
+    mark_ready_for_communication(id,
+                                 target_peer);
+    reply->set_uint64(type_key,
+                      static_cast<uint64_t>(message_type::hello_reply));
+
+    if (!target_peer.get_connection().send_message(*reply)) {
+      invalidate(id,
+                 errc::connection_invalid);
+    }
+  }
+
+  void handle_application_message(peer_id id,
+                                  peer& target_peer,
+                                  std::optional<dictionary> reply,
+                                  std::shared_ptr<const std::vector<uint8_t>> data) {
+    // Reply handlers and event handlers have no cross-handler ordering guarantee.
+    // Any application message from the server demonstrates that the connection
+    // is ready, even if it arrives before the handshake reply handler runs.
+    if (!target_peer.ready_for_communication()) {
+      if (is_listener()) {
         invalidate(id,
-                   errc::invalid_message);
+                   errc::not_ready);
         return;
       }
 
       mark_ready_for_communication(id,
-                                   *found_peer);
-      reply->set_uint64(type_key,
-                        static_cast<uint64_t>(message_type::hello_reply));
+                                   target_peer);
+    }
 
-      if (!found_peer->get_connection().send_message(*reply)) {
-        invalidate(id,
-                   errc::connection_invalid);
-      }
+    if (reply) {
+      auto token = reply_token(reply_token::state{
+          .reply_dictionary = std::move(*reply),
+          .peer = id,
+          .session = target_peer.get_session(),
+      });
+
+      enqueue_notification([this, id, token, data] {
+        request_received(id,
+                         token,
+                         data);
+      });
 
     } else {
-      // Reply handlers and event handlers have no cross-handler ordering guarantee.
-      // Any authenticated message from the server establishes its identity, even
-      // if a notification is dispatched before the handshake reply handler.
-      if (!found_peer->ready_for_communication()) {
-        if (is_listener()) {
-          invalidate(id,
-                     errc::not_ready);
-          return;
-        }
-
-        mark_ready_for_communication(id,
-                                     *found_peer);
-      }
-
-      if (reply) {
-        auto token = reply_token(reply_token::state{
-            .reply_dictionary = std::move(*reply),
-            .peer = id,
-            .session = found_peer->get_session(),
-        });
-
-        enqueue_notification([this, id, token, data = data->data] {
-          request_received(id,
-                           token,
-                           data);
-        });
-
-      } else {
-        enqueue_notification([this, id, data = data->data] {
-          message_received(id,
-                           data);
-        });
-      }
+      enqueue_notification([this, id, data] {
+        message_received(id,
+                         data);
+      });
     }
   }
 
@@ -651,61 +689,9 @@ private:
       }
 
       run_guarded([&] {
-        auto found_peer = peers_.find(id);
-        if (!found_peer) {
-          return;
-        }
-
-        auto request_state = found_peer->take_pending_request(request);
-        if (!request_state) {
-          return;
-        }
-
-        auto data = read_message(event,
-                                 request_state->handshake
-                                     ? message_type::hello_reply
-                                     : message_type::data);
-        if (!data) {
-          // A reply error describes this request, not necessarily the connection.
-          // Only the connection event handler emits peer_interrupted.
-          complete(request_state->completion,
-                   std::unexpected(make_error_code(data.error())));
-
-          if (request_state->handshake &&
-              data.error() == errc::connection_interrupted) {
-            // XPC can reuse this connection. Retry the probe without replacing it.
-            found_peer->schedule_handshake_retry(std::chrono::steady_clock::now() + reconnect_interval());
-
-            auto error = make_error_code(data.error());
-            enqueue_notification([this, error] {
-              connection_failed(error);
-            });
-
-          } else {
-            if constexpr (!is_listener()) {
-              if (data.error() == errc::signature_rejected) {
-                // A client-side signing requirement cannot become satisfied by retrying.
-                stopped_ = true;
-              }
-            }
-
-            if (request_state->handshake ||
-                xpc_get_type(event) == XPC_TYPE_DICTIONARY) {
-              invalidate(id,
-                         data.error());
-            }
-          }
-
-          return;
-        }
-
-        if (request_state->handshake) {
-          mark_ready_for_communication(id,
-                                       *found_peer);
-        } else {
-          complete(request_state->completion,
-                   pqrs::not_null_shared_ptr_t<const std::vector<uint8_t>>(data->data));
-        }
+        handle_reply(id,
+                     request,
+                     event);
       });
     };
 
@@ -714,6 +700,74 @@ private:
       // Invalidation consumes pending requests and reports their failure immediately.
       invalidate(id,
                  errc::connection_invalid);
+    }
+  }
+
+  void handle_reply(peer_id id,
+                    uint64_t request_id,
+                    xpc_object_t event) {
+    auto found_peer = peers_.find(id);
+    if (!found_peer) {
+      return;
+    }
+
+    auto request_state = found_peer->take_pending_request(request_id);
+    if (!request_state) {
+      return;
+    }
+
+    auto data = read_message(event,
+                             request_state->handshake
+                                 ? message_type::hello_reply
+                                 : message_type::data);
+    if (!data) {
+      handle_reply_failure(id,
+                           *request_state,
+                           data.error(),
+                           event);
+      return;
+    }
+
+    if (request_state->handshake) {
+      mark_ready_for_communication(id,
+                                   *found_peer);
+    } else {
+      complete(request_state->completion,
+               pqrs::not_null_shared_ptr_t<const std::vector<uint8_t>>(data->data));
+    }
+  }
+
+  void handle_reply_failure(peer_id id,
+                            const peer::pending_request& request_state,
+                            errc error,
+                            xpc_object_t event) {
+    // A reply error describes this request, not necessarily the connection.
+    // A handshake interruption transitions the peer immediately so the client
+    // can retry it; other connection interruptions are handled by the connection
+    // event handler.
+    complete(request_state.completion,
+             std::unexpected(make_error_code(error)));
+
+    if (request_state.handshake &&
+        error == errc::connection_interrupted) {
+      // XPC can reuse this connection. Retry the probe without replacing it.
+      fail_peer(id,
+                error,
+                peer_failure_action::interrupt);
+      return;
+    }
+
+    if constexpr (!is_listener()) {
+      if (error == errc::signature_rejected) {
+        // A client-side signing requirement cannot become satisfied by retrying.
+        stopped_ = true;
+      }
+    }
+
+    if (request_state.handshake ||
+        xpc_get_type(event) == XPC_TYPE_DICTIONARY) {
+      invalidate(id,
+                 error);
     }
   }
 
@@ -734,43 +788,63 @@ private:
     }
   }
 
-  void handle_failure(peer_id id,
-                      errc error) {
-    if (error != errc::connection_interrupted) {
-      invalidate(id,
-                 error);
-      return;
-    }
-
-    auto peer = peers_.find(id);
-    if (!peer ||
-        !peer->mark_connection_interrupted(std::chrono::steady_clock::now() + reconnect_interval())) {
-      return;
-    }
-
-    fail_all_pending_requests(*peer,
-                              error);
-    enqueue_notification([this, id] {
-      peer_interrupted(id);
-    });
+  void handle_connection_event_failure(peer_id id,
+                                       errc error) {
+    fail_peer(id,
+              error,
+              error == errc::connection_interrupted
+                  ? peer_failure_action::interrupt
+                  : peer_failure_action::invalidate);
   }
 
   void invalidate(peer_id id,
                   errc reason) {
+    fail_peer(id,
+              reason,
+              peer_failure_action::invalidate);
+  }
+
+  void fail_peer(peer_id id,
+                 errc reason,
+                 peer_failure_action action) {
     if (auto found_peer = peers_.find(id); found_peer) {
+      auto was_ready_for_communication = found_peer->ready_for_communication();
+
+      if (action == peer_failure_action::interrupt &&
+          !found_peer->mark_connection_interrupted(std::chrono::steady_clock::now() + reconnect_interval())) {
+        return;
+      }
+
       fail_all_pending_requests(*found_peer,
                                 reason);
 
-      peers_.erase(id);
+      if (action == peer_failure_action::invalidate) {
+        peers_.erase(id);
+      }
 
       auto error = make_error_code(reason);
-      enqueue_notification([this, id, error] {
-        peer_invalidated(id,
-                         error);
-      });
+      if constexpr (!is_listener()) {
+        if (!was_ready_for_communication) {
+          enqueue_notification([this, error] {
+            connection_failed(error);
+          });
+        }
+      }
 
-      if (!is_listener()) {
-        reconnect_at_ = std::chrono::steady_clock::now() + reconnect_interval();
+      if (action == peer_failure_action::interrupt) {
+        enqueue_notification([this, id] {
+          peer_interrupted(id);
+        });
+
+      } else {
+        enqueue_notification([this, id, error] {
+          peer_invalidated(id,
+                           error);
+        });
+
+        if (!is_listener()) {
+          reconnect_at_ = std::chrono::steady_clock::now() + reconnect_interval();
+        }
       }
     }
   }

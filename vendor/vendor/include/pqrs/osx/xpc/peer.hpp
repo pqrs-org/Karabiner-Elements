@@ -73,10 +73,6 @@ public:
     return session.lock() == session_.get();
   }
 
-  void schedule_handshake_retry(std::chrono::steady_clock::time_point handshake_retry_at) noexcept {
-    handshake_retry_at_ = handshake_retry_at;
-  }
-
   [[nodiscard]] bool can_retry_handshake(std::chrono::steady_clock::time_point now) const noexcept {
     return !ready_for_communication_ &&
            pending_requests_.empty() &&
@@ -118,8 +114,8 @@ private:
   connection connection_;
 
   // The transport has established that this peer can exchange application messages.
-  // Set by the handshake, or by an authenticated server message received before
-  // the handshake reply. Cleared when the connection is interrupted.
+  // Set by the handshake, or by a server message received before the handshake
+  // reply. Cleared when the connection is interrupted.
   bool ready_for_communication_{false};
 
   // An interruption has been handled and communication has not become ready again.
@@ -128,9 +124,9 @@ private:
   // a later send can launch the service again. The transport clears readiness,
   // replaces the session to invalidate old reply tokens, fails pending requests,
   // and retries the handshake on the client side.
-  // Only connection-event interruptions set this flag. A reply-handler
-  // interruption means that request will never receive a reply; it does not
-  // necessarily mean the whole connection was interrupted.
+  // Connection-event interruptions and handshake-reply interruptions set this
+  // flag. Other reply-handler interruptions fail only that request and wait for
+  // the connection event handler to update the peer state.
   // Suppresses repeated interruption handling until mark_ready_for_communication() clears it.
   bool connection_interrupted_{false};
 

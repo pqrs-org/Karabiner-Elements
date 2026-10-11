@@ -43,11 +43,6 @@ public:
                : nullptr;
   }
 
-  [[nodiscard]] bool ready_for_communication(peer_id id) const noexcept {
-    auto peer = find(id);
-    return peer && peer->ready_for_communication();
-  }
-
   void erase(peer_id id) {
     peers_.erase(id);
   }
