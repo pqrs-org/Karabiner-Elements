@@ -8,7 +8,6 @@
 #include <cstdlib>
 #include <filesystem>
 #include <pqrs/osx/launchctl.hpp>
-#include <pqrs/unix_domain_stream.hpp>
 #include <spdlog/fmt/fmt.h>
 #include <string>
 #include <string_view>
@@ -17,34 +16,7 @@
 namespace krbn {
 class constants final {
 public:
-  static constexpr size_t unix_domain_stream_max_message_size = 32 * 1024;
-
-  [[nodiscard]] static pqrs::unix_domain_stream::server_options get_unix_domain_stream_server_options() {
-    return pqrs::unix_domain_stream::server_options(
-        {
-            .max_message_size = unix_domain_stream_max_message_size,
-            .heartbeat_timeout = std::chrono::milliseconds(30000),
-            .read_timeout = std::chrono::milliseconds(15000),
-            .write_timeout = std::chrono::milliseconds(15000),
-        },
-        {
-            .bind_retry_interval = std::chrono::milliseconds(1000),
-            .socket_path_health_check_interval = std::chrono::milliseconds(3000),
-        });
-  }
-
-  [[nodiscard]] static pqrs::unix_domain_stream::client_options get_unix_domain_stream_client_options() {
-    return pqrs::unix_domain_stream::client_options(
-        {
-            .max_message_size = unix_domain_stream_max_message_size,
-            .heartbeat_timeout = std::chrono::milliseconds(30000),
-            .read_timeout = std::chrono::milliseconds(15000),
-            .write_timeout = std::chrono::milliseconds(15000),
-        },
-        {
-            .reconnect_interval = std::chrono::milliseconds(1000),
-        });
-  }
+  static constexpr size_t xpc_max_message_size = 32 * 1024;
 
   [[nodiscard]] static const std::filesystem::path& get_tmp_directory() {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/tmp");
@@ -80,15 +52,6 @@ public:
 
   [[nodiscard]] static const char* get_console_user_server_mach_service_name() {
     return "org.pqrs.Karabiner-Console-User-Server";
-  }
-
-  [[nodiscard]] static const std::filesystem::path& get_console_user_id_changed_receiver_socket_file_path() {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // "/Library/Application Support/org.pqrs/tmp/karabiner_console_user_id_changed_receiver.sock" length is 89.
-
-    static auto path = get_tmp_directory() / std::filesystem::path("karabiner_console_user_id_changed_receiver.sock");
-    return path;
   }
 
   [[nodiscard]] static const std::filesystem::path& get_karabiner_machine_identifier_json_file_path() {

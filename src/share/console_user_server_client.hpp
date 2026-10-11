@@ -73,7 +73,7 @@ public:
                   .signing_requirement = get_shared_codesign_manager()->xpc_signing_requirement({
                       "org.pqrs.Karabiner-Console-User-Server",
                   }),
-                  .max_message_size = constants::unix_domain_stream_max_message_size,
+                  .max_message_size = constants::xpc_max_message_size,
               },
               .client_parameters = {
                   .service_name = constants::get_console_user_server_mach_service_name(),

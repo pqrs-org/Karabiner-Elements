@@ -77,7 +77,7 @@ public:
                   .signing_requirement = get_shared_codesign_manager()->xpc_signing_requirement({
                       "org.pqrs.Karabiner-Core-Service",
                   }),
-                  .max_message_size = constants::unix_domain_stream_max_message_size,
+                  .max_message_size = constants::xpc_max_message_size,
               },
               .client_parameters = {
                   .service_name = constants::get_core_service_daemon_mach_service_name(),
@@ -176,6 +176,18 @@ public:
   void async_stop() {
     enqueue_to_dispatcher([this] {
       stop();
+    });
+  }
+
+  // console_user_server -> core_service (daemon)
+  void async_console_user_id_changed(bool on_console) const {
+    enqueue_to_dispatcher([this, on_console] {
+      nlohmann::json json{
+          {"operation_type", operation_type::console_user_id_changed},
+          {"on_console", on_console},
+      };
+
+      async_request(std::move(json));
     });
   }
 
