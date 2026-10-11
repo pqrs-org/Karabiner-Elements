@@ -10,7 +10,7 @@ run:
 	./build/Release/get_frontmost_application_history
 
 codesign: all
-#	operation_type::get_frontmost_application_history must be code-signed with the same Team ID as karabiner_console_user_server.
-	bash ../../scripts/codesign.sh build/Release/get_frontmost_application_history
+#	operation_type::get_frontmost_application_history must satisfy the signing requirement of karabiner_console_user_server.
+	bash ../../scripts/codesign.sh -i org.pqrs.Karabiner-CLI build/Release/get_frontmost_application_history
 
 include ../Makefile.rules

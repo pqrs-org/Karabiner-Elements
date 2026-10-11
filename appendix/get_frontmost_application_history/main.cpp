@@ -18,7 +18,7 @@ public:
   components_manager(const components_manager&) = delete;
 
   components_manager() {
-    client_ = std::make_unique<krbn::console_user_server_client>(geteuid());
+    client_ = std::make_unique<krbn::console_user_server_client>();
 
     client_->connected.connect([this] {
       std::cerr << "console_user_server_client connected" << std::endl;
@@ -62,7 +62,8 @@ int main() {
             << "Type control-c to quit" << std::endl
             << std::endl
             << "To receive frontmost_application_history from karabiner_console_user_server," << std::endl
-            << "the process must be code-signed with the same Team ID as karabiner_console_user_server." << std::endl
+            << "the process must be code-signed with the same Team ID as karabiner_console_user_server" << std::endl
+            << "and the org.pqrs.Karabiner-CLI identifier." << std::endl
             << std::endl;
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();

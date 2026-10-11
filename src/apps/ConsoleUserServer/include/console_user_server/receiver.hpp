@@ -46,6 +46,7 @@ public:
               xpc::listener_options({
                   .common_parameters = {
                       .signing_requirement = get_shared_codesign_manager()->xpc_signing_requirement({
+                          "org.pqrs.Karabiner-CLI",
                           "org.pqrs.Karabiner-Elements.Settings",
                           "org.pqrs.Karabiner-EventViewer",
                       }),

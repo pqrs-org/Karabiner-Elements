@@ -61,7 +61,8 @@ int main() {
             << "Type control-c to quit" << std::endl
             << std::endl
             << "To receive manipulator_environment_json from Karabiner-Core-Service.app," << std::endl
-            << "the process must be code-signed with the same Team ID as Karabiner-Core-Service.app." << std::endl
+            << "the process must be code-signed with the same Team ID as Karabiner-Core-Service.app" << std::endl
+            << "and the org.pqrs.Karabiner-CLI identifier." << std::endl
             << std::endl;
 
   auto scoped_dispatcher_manager = krbn::dispatcher_utility::initialize_dispatchers();

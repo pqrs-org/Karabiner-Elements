@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <pqrs/gsl.hpp>
 #include <pqrs/osx/codesign.hpp>
+#include <stdexcept>
 #include <string_view>
 #include <thread>
 #include <vector>
@@ -39,10 +40,6 @@ public:
   }
 
   [[nodiscard]] std::optional<std::string> xpc_signing_requirement(std::initializer_list<std::string_view> identifiers) const {
-    if (identifiers.size() == 0) {
-      return std::nullopt;
-    }
-
     if (auto team_id = current_process_signing_information_.get_verified_team_id()) {
       std::vector<pqrs::osx::codesign::signing_requirement_parameters> parameters_list;
       parameters_list.reserve(identifiers.size());
@@ -58,7 +55,7 @@ public:
         return *requirement;
       }
 
-      return std::nullopt;
+      throw std::runtime_error("Failed to make the XPC signing requirement");
     }
 
     // Preserve the development-build policy: unsigned peers are permitted.
