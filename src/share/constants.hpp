@@ -37,15 +37,6 @@ public:
     return get_system_user_directory() / fmt::format("{0}", uid);
   }
 
-  [[nodiscard]] static const std::filesystem::path& get_karabiner_core_service_daemon_socket_file_path() {
-    // Note:
-    // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
-    // "/Library/Application Support/org.pqrs/tmp/karabiner_core_service_daemon.sock" length is 76.
-
-    static auto path = get_tmp_directory() / "karabiner_core_service_daemon.sock";
-    return path;
-  }
-
   [[nodiscard]] static const char* get_core_service_daemon_mach_service_name() {
     return "org.pqrs.Karabiner-Core-Service.daemon";
   }
