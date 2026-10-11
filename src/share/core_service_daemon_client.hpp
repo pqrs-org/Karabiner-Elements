@@ -103,27 +103,17 @@ public:
       });
 
       client_->peer_interrupted.connect([this](auto peer_id) {
-        if (peer_id_ == peer_id) {
-          peer_id_.reset();
-        }
         logger::get_logger()->debug("core_service_daemon_client is interrupted.");
 
-        enqueue_to_dispatcher([this] {
-          closed();
-        });
+        handle_peer_closed(peer_id);
       });
 
       client_->peer_invalidated.connect([this](auto peer_id,
                                                const auto& error_code) {
-        if (peer_id_ == peer_id) {
-          peer_id_.reset();
-        }
         logger::get_logger()->debug("core_service_daemon_client peer_invalidated: {0}",
                                     error_code.message());
 
-        enqueue_to_dispatcher([this] {
-          closed();
-        });
+        handle_peer_closed(peer_id);
       });
 
       client_->error_occurred.connect([](const auto& error) {
@@ -375,6 +365,18 @@ public:
   }
 
 private:
+  void handle_peer_closed(xpc::peer_id peer_id) {
+    if (peer_id_ != peer_id) {
+      return;
+    }
+
+    peer_id_.reset();
+
+    enqueue_to_dispatcher([this] {
+      closed();
+    });
+  }
+
   using request_completion_handler = std::function<void(const std::error_code&)>;
 
   void async_request(nlohmann::json&& json,
