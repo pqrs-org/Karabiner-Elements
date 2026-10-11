@@ -126,8 +126,7 @@ public:
             console_user_id_changed_client_->async_console_user_id_changed(on_console);
 
             // Delay start_core_service_daemon_client until core_service_daemon_server_bound is received.
-            // The core service daemon recreates its receiver socket for the new console user,
-            // so connecting before the socket ownership and permissions are updated may fail.
+            // The Core Service daemon recreates its XPC listener for the new console user.
           });
         },
         [this] {

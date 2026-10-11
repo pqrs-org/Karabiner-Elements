@@ -20,12 +20,14 @@
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences.hpp>
 #include <pqrs/osx/system_preferences/extra/nlohmann_json.hpp>
-#include <pqrs/unix_domain_stream.hpp>
+#include <pqrs/osx/xpc.hpp>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace krbn::core_service::daemon {
+namespace xpc = pqrs::osx::xpc;
+
 class receiver final : public pqrs::dispatcher::extra::dispatcher_client {
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
@@ -33,6 +35,7 @@ public:
   // Signals (invoked from the shared dispatcher thread)
 
   nod::signal<void()> server_bound;
+  nod::signal<void(const std::error_code&)> listener_terminated;
 
   // Methods
 
@@ -44,8 +47,6 @@ public:
         weak_core_service_daemon_state_manager_(weak_core_service_daemon_state_manager) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
-          prepare_karabiner_core_service_daemon_socket_directory();
-
           if (auto m = weak_core_service_daemon_state_manager_.lock()) {
             core_service_daemon_state_manager_connection_ = m->core_service_daemon_state_changed.connect([this](const auto& core_service_daemon_state) {
               enqueue_to_dispatcher([this, core_service_daemon_state] {
@@ -58,71 +59,60 @@ public:
           // Setup server_
           //
 
-          auto socket_file_path = karabiner_core_service_daemon_socket_file_path();
-
-          server_ = std::make_shared<pqrs::unix_domain_stream::server>(
+          server_ = std::make_shared<xpc::listener>(
               weak_dispatcher_,
-              socket_file_path,
-              constants::get_unix_domain_stream_server_options(),
-              [](const auto& peer_credentials) {
-                auto result = get_shared_codesign_manager()->same_team_id(peer_credentials.pid);
-                if (!result) {
-                  // During an update, retrieving the Team ID may fail, causing an error once.
-                  // Since this can occur during normal use, treat it as debug rather than warn.
-                  logger::get_logger()->debug("receiver: peer is not code-signed with same Team ID (pid: {0})",
-                                              peer_credentials.pid.value_or(-1));
-                }
-                return result;
-              });
+              xpc::listener_options({
+                  .common_parameters = {
+                      .signing_requirement = get_shared_codesign_manager()->xpc_signing_requirement({
+                          "org.pqrs.Karabiner-CLI",
+                          "org.pqrs.Karabiner-Console-User-Server",
+                          "org.pqrs.Karabiner-Core-Service",
+                          "org.pqrs.Karabiner-Elements.Settings",
+                          "org.pqrs.Karabiner-EventViewer",
+                          "org.pqrs.Karabiner-MultitouchExtension",
+                      }),
+                      .max_message_size = constants::unix_domain_stream_max_message_size,
+                  },
+                  .listener_parameters = {
+                      .service_name = constants::get_core_service_daemon_mach_service_name(),
+                  },
+              }));
 
-          server_->bound.connect([this, socket_file_path] {
-            logger::get_logger()->debug("receiver: bound");
-
-            auto chown_uid = current_console_user_id_.value_or(uid_t(0));
-            logger::get_logger()->debug("receiver: chown socket: {0}", chown_uid);
-            if (!filesystem_utility::chown(socket_file_path, chown_uid, 0)) {
-              return;
-            }
-
-            if (!filesystem_utility::permissions(socket_file_path,
-                                                 filesystem_utility::permissions_0600)) {
-              return;
-            }
-
+          server_->listener_started.connect([this] {
+            logger::get_logger()->debug("receiver: listener_started");
             server_bound();
           });
 
-          server_->bind_failed.connect([this](auto&& error_code) {
-            logger::get_logger()->error("receiver: bind_failed");
-
-            // If the socket directory is deleted for any reason,
-            // bind_failed will be triggered, so recreate the directory each time.
-            prepare_karabiner_core_service_daemon_socket_directory();
+          server_->listener_terminated.connect([this](const auto& error) {
+            listener_terminated(error);
           });
 
-          server_->closed.connect([] {
-            logger::get_logger()->debug("receiver: closed");
-          });
-
-          server_->peer_connected.connect([](auto, auto&&) {
+          server_->peer_ready.connect([](auto) {
             // Do nothing
           });
 
-          server_->peer_closed.connect([this](auto peer_id) {
+          server_->peer_interrupted.connect([this](auto peer_id) {
             handle_peer_closed(peer_id);
           });
 
-          server_->peer_error_occurred.connect([](auto peer_id, auto&& error_code) {
-            logger::get_logger()->debug("receiver: peer_error_occurred ({0}): {1}", peer_id, error_code.message());
+          server_->peer_invalidated.connect([this](auto peer_id,
+                                                   const auto& error_code) {
+            logger::get_logger()->debug("receiver: peer_invalidated ({0}): {1}",
+                                        peer_id,
+                                        error_code.message());
+
+            handle_peer_closed(peer_id);
           });
 
-          server_->received.connect([](auto, auto&&) {
+          server_->message_received.connect([](auto, auto&&) {
             // Do nothing
           });
 
-          server_->request_received.connect([this](auto peer_id, auto request_id, auto&& buffer) {
+          server_->request_received.connect([this](auto peer_id,
+                                                   auto reply,
+                                                   auto&& buffer) {
             handle_request(peer_id,
-                           request_id,
+                           reply,
                            buffer);
           });
 
@@ -158,40 +148,38 @@ private:
     server_ = nullptr;
   }
 
-  void async_request(pqrs::unix_domain_stream::peer_id peer_id,
+  void async_request(xpc::peer_id peer_id,
                      nlohmann::json json) {
     if (server_) {
       server_->async_request(
-          peer_id,
-          nlohmann::json::to_msgpack(json),
-          [](auto&& error_code, auto&&) {
-            if (error_code) {
-              logger::get_logger()->debug("receiver: request failed: {0}", error_code.message());
-            }
+          xpc::listener::async_request_parameters{
+              .id = peer_id,
+              .data = std::make_shared<const std::vector<uint8_t>>(nlohmann::json::to_msgpack(json)),
+              .completion = [](auto result) {
+                if (!result) {
+                  logger::get_logger()->debug("receiver: request failed: {0}", result.error().message());
+                }
+              },
           });
     }
   }
 
-  void async_respond(pqrs::unix_domain_stream::peer_id peer_id,
-                     pqrs::unix_domain_stream::request_id request_id,
+  void async_respond(xpc::reply_token reply,
                      nlohmann::json json) {
     if (server_) {
-      server_->async_respond(peer_id,
-                             request_id,
-                             nlohmann::json::to_msgpack(json));
+      server_->async_reply(reply,
+                           std::make_shared<const std::vector<uint8_t>>(nlohmann::json::to_msgpack(json)));
     }
   }
 
-  void async_respond_none(pqrs::unix_domain_stream::peer_id peer_id,
-                          pqrs::unix_domain_stream::request_id request_id) {
-    async_respond(peer_id,
-                  request_id,
+  void async_respond_none(xpc::reply_token reply) {
+    async_respond(reply,
                   nlohmann::json{
                       {"operation_type", operation_type::none},
                   });
   }
 
-  void handle_peer_closed(pqrs::unix_domain_stream::peer_id peer_id) {
+  void handle_peer_closed(xpc::peer_id peer_id) {
     if (temporarily_ignored_device_ids_by_peer_.erase(peer_id) > 0) {
       update_temporarily_ignored_device_ids();
     }
@@ -218,16 +206,23 @@ private:
     }
   }
 
-  void handle_request(pqrs::unix_domain_stream::peer_id peer_id,
-                      pqrs::unix_domain_stream::request_id request_id,
-                      pqrs::not_null_shared_ptr_t<std::vector<uint8_t>> buffer) {
+  void handle_request(xpc::peer_id peer_id,
+                      xpc::reply_token reply,
+                      std::shared_ptr<const std::vector<uint8_t>> buffer) {
     if (buffer->empty()) {
-      server_->async_close_peer(peer_id);
+      server_->async_cancel_peer(peer_id);
       return;
     }
 
     try {
       nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
+
+      if (!current_console_user_id_ ||
+          json.at("uid").get<uid_t>() != *current_console_user_id_) {
+        server_->async_cancel_peer(peer_id);
+        return;
+      }
+
       switch (json.at("operation_type").get<operation_type>()) {
         case operation_type::core_service_bundle_permission_check_result:
           if (auto m = weak_core_service_daemon_state_manager_.lock()) {
@@ -257,8 +252,7 @@ private:
               process_lifecycle_manager::async_request_termination();
             }
           }
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
 
         case operation_type::system_preferences_updated:
@@ -268,8 +262,7 @@ private:
             device_grabber_->async_set_system_preferences_properties(system_preferences_properties_);
           }
           logger::get_logger()->debug("`system_preferences` is updated.");
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
 
         case operation_type::start_device_grabber: {
@@ -287,8 +280,7 @@ private:
 
           request_core_service_bundle_permission_check_result_refresh();
 
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
         }
 
@@ -313,8 +305,7 @@ private:
               device_grabber_->async_post_frontmost_application_changed_event(app);
             }
           }
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
         }
 
@@ -335,8 +326,7 @@ private:
 
           focused_ui_element_ = element;
           set_focused_ui_element_variables();
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
         }
 
@@ -346,8 +336,7 @@ private:
           if (device_grabber_) {
             device_grabber_->async_post_input_source_changed_event(input_source_properties_);
           }
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
 
         case operation_type::temporarily_ignore_device: {
@@ -364,33 +353,29 @@ private:
           }
 
           update_temporarily_ignored_device_ids();
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
         }
 
         case operation_type::get_manipulator_environment:
           if (device_grabber_) {
             device_grabber_->async_invoke_with_manipulator_environment(
-                [this, peer_id, request_id](auto&& manipulator_environment) {
-                  async_respond(peer_id,
-                                request_id,
+                [this, reply](auto&& manipulator_environment) {
+                  async_respond(reply,
                                 nlohmann::json{
                                     {"operation_type", operation_type::manipulator_environment},
                                     {"manipulator_environment", manipulator_environment.to_json()},
                                 });
                 });
           } else {
-            async_respond_none(peer_id,
-                               request_id);
+            async_respond_none(reply);
           }
           break;
 
         case operation_type::connect_multitouch_extension:
           logger::get_logger()->debug("multitouch_extension is connected.");
           multitouch_extension_peer_id_ = peer_id;
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
 
         case operation_type::set_app_icon: {
@@ -407,8 +392,7 @@ private:
             console_user_server_peer_->async_app_icon_changed(number);
           }
 
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
         }
 
@@ -424,14 +408,13 @@ private:
                       nullptr));
             }
           }
-          async_respond_none(peer_id,
-                             request_id);
+          async_respond_none(reply);
           break;
 
         case operation_type::clear_user_variables:
           if (device_grabber_) {
             device_grabber_->async_invoke_with_manipulator_environment(
-                [this, peer_id, request_id](auto&& manipulator_environment) {
+                [this, reply](auto&& manipulator_environment) {
                   for (const auto& name : manipulator_environment.get_variable_names()) {
                     if (name.starts_with("system.") ||
                         name.starts_with("accessibility.")) {
@@ -448,34 +431,29 @@ private:
                             manipulator_environment_variable_set_variable::type::unset));
                   }
 
-                  async_respond_none(peer_id,
-                                     request_id);
+                  async_respond_none(reply);
                 });
           } else {
-            async_respond_none(peer_id,
-                               request_id);
+            async_respond_none(reply);
           }
           break;
 
         case operation_type::observe_connected_devices:
           connected_devices_observer_peer_ids_.insert(peer_id);
-          async_respond_connected_devices(peer_id,
-                                          request_id);
+          async_respond_connected_devices(reply);
           break;
 
         case operation_type::observe_notification_message:
           notification_message_observer_peer_ids_.insert(peer_id);
-          async_respond_notification_message(peer_id,
-                                             request_id);
+          async_respond_notification_message(reply);
           break;
 
         case operation_type::get_system_variables:
           if (device_grabber_) {
             device_grabber_->async_invoke_with_manipulator_environment(
-                [this, peer_id, request_id](auto&& manipulator_environment) {
+                [this, reply](auto&& manipulator_environment) {
                   async_respond(
-                      peer_id,
-                      request_id,
+                      reply,
                       nlohmann::json{
                           {"operation_type", operation_type::system_variables},
                           {
@@ -506,48 +484,37 @@ private:
                           }});
                 });
           } else {
-            async_respond_none(peer_id,
-                               request_id);
+            async_respond_none(reply);
           }
           break;
 
         case operation_type::get_multitouch_extension_variables:
           if (device_grabber_) {
             device_grabber_->async_invoke_with_manipulator_environment(
-                [this, peer_id, request_id](auto&& manipulator_environment) {
+                [this, reply](auto&& manipulator_environment) {
                   std::unordered_map<std::string, manipulator_environment_variable_value> variables;
                   for (const auto& name : multitouch_extension_environment_variable_names) {
                     variables[name] = manipulator_environment.get_variable(name);
                   }
 
-                  async_respond(peer_id,
-                                request_id,
+                  async_respond(reply,
                                 nlohmann::json{
                                     {"operation_type", operation_type::multitouch_extension_variables},
                                     {"multitouch_extension_variables", variables}});
                 });
           } else {
-            async_respond_none(peer_id,
-                               request_id);
+            async_respond_none(reply);
           }
           break;
 
         default:
-          server_->async_close_peer(peer_id);
+          server_->async_cancel_peer(peer_id);
           break;
       }
     } catch (std::exception& e) {
       logger::get_logger()->error("received data is corrupted");
-      server_->async_close_peer(peer_id);
+      server_->async_cancel_peer(peer_id);
     }
-  }
-
-  std::filesystem::path karabiner_core_service_daemon_socket_file_path() const {
-    return constants::get_karabiner_core_service_daemon_socket_file_path();
-  }
-
-  void prepare_karabiner_core_service_daemon_socket_directory() const {
-    filesystem_utility::prepare_system_directories(current_console_user_id_);
   }
 
   void start_grabbing_if_system_core_configuration_file_exists() {
@@ -641,12 +608,10 @@ private:
     return false;
   }
 
-  void async_respond_connected_devices(pqrs::unix_domain_stream::peer_id peer_id,
-                                       pqrs::unix_domain_stream::request_id request_id) {
+  void async_respond_connected_devices(xpc::reply_token reply) {
     async_invoke_with_connected_devices_message(
-        [this, peer_id, request_id](const auto& message) {
-          async_respond(peer_id,
-                        request_id,
+        [this, reply](const auto& message) {
+          async_respond(reply,
                         message);
         });
   }
@@ -676,12 +641,10 @@ private:
     }
   }
 
-  void async_respond_notification_message(pqrs::unix_domain_stream::peer_id peer_id,
-                                          pqrs::unix_domain_stream::request_id request_id) {
+  void async_respond_notification_message(xpc::reply_token reply) {
     async_invoke_with_notification_message_message(
-        [this, peer_id, request_id](const auto& message) {
-          async_respond(peer_id,
-                        request_id,
+        [this, reply](const auto& message) {
+          async_respond(reply,
                         message);
         });
   }
@@ -837,17 +800,17 @@ private:
   std::weak_ptr<core_service_daemon_state_manager> weak_core_service_daemon_state_manager_;
   nod::scoped_connection core_service_daemon_state_manager_connection_;
 
-  std::shared_ptr<pqrs::unix_domain_stream::server> server_;
+  std::shared_ptr<xpc::listener> server_;
   std::unique_ptr<device_grabber> device_grabber_;
   nod::scoped_connection connected_devices_changed_connection_;
   nod::scoped_connection notification_message_changed_connection_;
-  std::optional<pqrs::unix_domain_stream::peer_id> core_service_agent_peer_id_;
-  std::optional<pqrs::unix_domain_stream::peer_id> console_user_server_peer_id_;
+  std::optional<xpc::peer_id> core_service_agent_peer_id_;
+  std::optional<xpc::peer_id> console_user_server_peer_id_;
   std::shared_ptr<console_user_server_peer> console_user_server_peer_;
-  std::optional<pqrs::unix_domain_stream::peer_id> multitouch_extension_peer_id_;
-  std::unordered_map<pqrs::unix_domain_stream::peer_id, device_id> temporarily_ignored_device_ids_by_peer_;
-  std::unordered_set<pqrs::unix_domain_stream::peer_id> connected_devices_observer_peer_ids_;
-  std::unordered_set<pqrs::unix_domain_stream::peer_id> notification_message_observer_peer_ids_;
+  std::optional<xpc::peer_id> multitouch_extension_peer_id_;
+  std::unordered_map<xpc::peer_id, device_id> temporarily_ignored_device_ids_by_peer_;
+  std::unordered_set<xpc::peer_id> connected_devices_observer_peer_ids_;
+  std::unordered_set<xpc::peer_id> notification_message_observer_peer_ids_;
 
   pqrs::osx::system_preferences::properties system_preferences_properties_;
   application frontmost_application_;

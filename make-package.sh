@@ -56,6 +56,7 @@ cp -R "src/apps/SettingsWindow/build/Release/Karabiner-Elements.app" "$basedir"
 #
 
 bash scripts/codesign.sh "pkgroot"
+bash scripts/codesign.sh -i org.pqrs.Karabiner-CLI "pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli"
 
 #
 # Update file permissions

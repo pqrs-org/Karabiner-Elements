@@ -4,6 +4,11 @@
   <dict>
     <key>Label</key>
     <string>org.pqrs.service.daemon.Karabiner-Core-Service</string>
+    <key>MachServices</key>
+    <dict>
+      <key>org.pqrs.Karabiner-Core-Service.daemon</key>
+      <true/>
+    </dict>
     <key>KeepAlive</key>
     <true/>
     <key>ProcessType</key>

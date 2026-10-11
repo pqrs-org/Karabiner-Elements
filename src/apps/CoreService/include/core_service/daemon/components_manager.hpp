@@ -88,6 +88,17 @@ private:
         console_user_id_changed_receiver_->async_core_service_daemon_server_bound(uid);
       }
     });
+
+    receiver_->listener_terminated.connect([this](const std::error_code& error) {
+      logger::get_logger()->error("core_service daemon XPC listener terminated: {0}",
+                                  error.message());
+
+      enqueue_to_dispatcher(
+          [this] {
+            start_receiver(current_console_user_id_);
+          },
+          when_now() + std::chrono::seconds(1));
+    });
   }
 
   void enqueue_ensure_base_directories() {

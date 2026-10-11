@@ -6,12 +6,14 @@
 #include <nlohmann/json.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/dispatcher/extra/dispatcher_client.hpp>
-#include <pqrs/unix_domain_stream.hpp>
+#include <pqrs/osx/xpc.hpp>
 #include <string>
 #include <utility>
 #include <vector>
 
 namespace krbn {
+namespace xpc = pqrs::osx::xpc;
+
 class console_user_server_peer final : public pqrs::dispatcher::extra::dispatcher_client,
                                        public std::enable_shared_from_this<console_user_server_peer> {
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
@@ -20,10 +22,10 @@ public:
   console_user_server_peer(const console_user_server_peer&) = delete;
 
   console_user_server_peer(std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
-                           std::weak_ptr<pqrs::unix_domain_stream::server> weak_server,
-                           pqrs::unix_domain_stream::peer_id peer_id)
+                           std::weak_ptr<xpc::listener> weak_listener,
+                           xpc::peer_id peer_id)
       : dispatcher_client(std::move(weak_dispatcher)),
-        weak_server_(weak_server),
+        weak_listener_(weak_listener),
         peer_id_(peer_id) {
     dispatcher_client_constructor_guard_.initialize();
   }
@@ -32,7 +34,7 @@ public:
     detach_from_dispatcher();
   }
 
-  pqrs::unix_domain_stream::peer_id get_peer_id() const {
+  xpc::peer_id get_peer_id() const {
     return peer_id_;
   }
 
@@ -105,21 +107,24 @@ private:
 
     enqueue_to_dispatcher([weak_peer, json = std::move(json)] mutable {
       if (auto peer = weak_peer.lock()) {
-        if (auto server = peer->weak_server_.lock()) {
-          server->async_request(
-              peer->peer_id_,
-              nlohmann::json::to_msgpack(json),
-              [](auto&& error_code, auto&&) {
-                if (error_code) {
-                  logger::get_logger()->debug("console_user_server_peer request failed: {0}", error_code.message());
-                }
+        if (auto listener = peer->weak_listener_.lock()) {
+          listener->async_request(
+              xpc::listener::async_request_parameters{
+                  .id = peer->peer_id_,
+                  .data = std::make_shared<const std::vector<uint8_t>>(nlohmann::json::to_msgpack(json)),
+                  .completion = [](auto result) {
+                    if (!result) {
+                      logger::get_logger()->debug("console_user_server_peer request failed: {0}",
+                                                  result.error().message());
+                    }
+                  },
               });
         }
       }
     });
   }
 
-  std::weak_ptr<pqrs::unix_domain_stream::server> weak_server_;
-  pqrs::unix_domain_stream::peer_id peer_id_;
+  std::weak_ptr<xpc::listener> weak_listener_;
+  xpc::peer_id peer_id_;
 };
 } // namespace krbn

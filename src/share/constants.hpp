@@ -74,6 +74,10 @@ public:
     return path;
   }
 
+  [[nodiscard]] static const char* get_core_service_daemon_mach_service_name() {
+    return "org.pqrs.Karabiner-Core-Service.daemon";
+  }
+
   [[nodiscard]] static const std::filesystem::path& get_console_user_id_changed_receiver_socket_file_path() {
     // Note:
     // The socket file path length must be <= 103 because sizeof(sockaddr_un.sun_path) == 104.
