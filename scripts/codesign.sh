@@ -66,17 +66,25 @@ if [[ -z $CODE_SIGN_IDENTITY ]]; then
 fi
 
 do_codesign() {
-    local identifier_options=()
-    if [[ -n $CODE_SIGN_IDENTIFIER ]]; then
-        identifier_options=(--identifier "$CODE_SIGN_IDENTIFIER")
+    local identifier="$CODE_SIGN_IDENTIFIER"
+
+    if [[ -z $identifier ]]; then
+        identifier=$(codesign -d --verbose=4 "$1" 2>&1 | sed -n 's/^Identifier=//p')
+        if [[ -z $identifier ]]; then
+            set_error_color
+            echo "Unable to determine the code signing identifier: '$1'" >&2
+            return 1
+        fi
     fi
+
+    echo "Identifier: $identifier"
 
     run_with_result_color codesign \
         --force \
         --deep \
         --options runtime \
         --sign "$CODE_SIGN_IDENTITY" \
-        "${identifier_options[@]}" \
+        --identifier "$identifier" \
         "$1"
 }
 
