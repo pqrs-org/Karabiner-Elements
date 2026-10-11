@@ -39,32 +39,59 @@ set_normal_color
 
 readonly CODE_SIGN_IDENTITY=$(bash $(dirname $0)/get-codesign-identity.sh)
 
+usage() {
+    echo "Usage: $0 [-i identifier] path"
+    exit 1
+}
+
+CODE_SIGN_IDENTIFIER=""
+while getopts ":i:" option; do
+    case "$option" in
+        i)
+            CODE_SIGN_IDENTIFIER="$OPTARG"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND - 1))
+[[ $# -eq 1 ]] || usage
+readonly CODE_SIGN_IDENTIFIER
+readonly TARGET_PATH="$1"
+
 if [[ -z $CODE_SIGN_IDENTITY ]]; then
     echo "Skip codesign"
     exit 0
 fi
 
 do_codesign() {
+    local identifier_options=()
+    if [[ -n $CODE_SIGN_IDENTIFIER ]]; then
+        identifier_options=(--identifier "$CODE_SIGN_IDENTIFIER")
+    fi
+
     run_with_result_color codesign \
         --force \
         --deep \
         --options runtime \
         --sign "$CODE_SIGN_IDENTITY" \
+        "${identifier_options[@]}" \
         "$1"
 }
 
-if [[ ! -e "$1" ]]; then
+if [[ ! -e "$TARGET_PATH" ]]; then
     set_error_color
-    echo "Invalid argument: '$1'"
+    echo "Invalid argument: '$TARGET_PATH'"
     exit 1
 fi
 
-if [[ -d "$1" ]]; then
+if [[ -d "$TARGET_PATH" ]]; then
     #
     # Sign with codesign
     #
 
-    cd "$1"
+    cd "$TARGET_PATH"
     find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
         #
         # output message
@@ -91,5 +118,5 @@ else
     # Sign a file
     #
 
-    do_codesign "$1"
+    do_codesign "$TARGET_PATH"
 fi
