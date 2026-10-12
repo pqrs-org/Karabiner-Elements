@@ -18,6 +18,16 @@ class constants final {
 public:
   static constexpr size_t xpc_max_message_size = 32 * 1024;
 
+  [[nodiscard]] static const std::filesystem::path& get_system_application_support_root_directory() {
+    static auto path = std::filesystem::path("/Library/Application Support/org.pqrs");
+    return path;
+  }
+
+  [[nodiscard]] static const std::filesystem::path& get_system_application_support_karabiner_elements_directory() {
+    static auto path = get_system_application_support_root_directory() / "Karabiner-Elements";
+    return path;
+  }
+
   [[nodiscard]] static const std::filesystem::path& get_tmp_directory() {
     static auto path = std::filesystem::path("/Library/Application Support/org.pqrs/tmp");
     return path;
