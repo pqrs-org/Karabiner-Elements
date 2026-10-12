@@ -10,7 +10,7 @@ public:
     // Note:
     // Updating the icon may trigger Spotlight index updates, so only call it when necessary.
     // (Avoid calling it every time, such as during core_service startup.)
-    system("'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'");
+    system("'/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'");
   }
 
   static void launch_event_viewer() {
@@ -35,7 +35,7 @@ public:
 
   static void launch_uninstaller() {
     // Use nohup because uninstaller kill the Settings Window.
-    system("/usr/bin/nohup osascript '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstaller.applescript' >/dev/null 2>&1 &");
+    system("/usr/bin/nohup osascript '/Applications/Karabiner-Elements.app/Contents/Resources/uninstaller.applescript' >/dev/null 2>&1 &");
   }
 };
 } // namespace krbn

@@ -20,13 +20,7 @@ fi
 # Set icon
 #
 
-'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'
-
-#
-# Create a backup to allow recovery if the user manually deletes Karabiner-Elements without using the uninstaller
-#
-
-tar -C /Applications -cf '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements.app.tar.gz' Karabiner-Elements.app
+'/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'
 
 #
 # Relaunch launchd-managed processes after all files have been updated

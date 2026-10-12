@@ -109,7 +109,7 @@ private:
     }
   }
 
-  static constexpr const char* karabiner_core_service_bundle_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app";
+  static constexpr const char* karabiner_core_service_bundle_path = "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Core-Service.app";
 
   static std::optional<core_service_permission_check_result> make_bundle_permission_check_result() {
     filesystem_utility::prepare_user_directories();

@@ -8,7 +8,7 @@
     <true/>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service</string>
+      <string>/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service</string>
     </array>
   </dict>
 </plist>

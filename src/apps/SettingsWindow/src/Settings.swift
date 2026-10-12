@@ -590,7 +590,7 @@ final class Settings: ObservableObject {
 
     let url = URL(
       fileURLWithPath:
-        "/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/copy_current_profile_to_system_default_profile.applescript"
+        "/Applications/Karabiner-Elements.app/Contents/Resources/copy_current_profile_to_system_default_profile.applescript"
     )
     guard let script = NSAppleScript(contentsOf: url, error: nil) else { return }
     script.executeAndReturnError(nil)
@@ -601,7 +601,7 @@ final class Settings: ObservableObject {
   func removeSystemDefaultProfile() {
     let url = URL(
       fileURLWithPath:
-        "/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/remove_system_default_profile.applescript"
+        "/Applications/Karabiner-Elements.app/Contents/Resources/remove_system_default_profile.applescript"
     )
     guard let script = NSAppleScript(contentsOf: url, error: nil) else { return }
     script.executeAndReturnError(nil)

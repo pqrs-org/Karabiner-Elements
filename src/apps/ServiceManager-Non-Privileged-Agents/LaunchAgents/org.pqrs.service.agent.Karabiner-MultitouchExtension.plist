@@ -8,7 +8,7 @@
     <true/>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension</string>
+      <string>/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension</string>
     </array>
   </dict>
 </plist>

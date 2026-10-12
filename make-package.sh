@@ -25,9 +25,16 @@ basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements"
 mkdir -p "$basedir"
 cp src/scripts/uninstall.sh "$basedir"
 cp src/scripts/uninstall_core.sh "$basedir"
-cp src/scripts/repair.sh "$basedir"
 cp files/complex_modifications_rules_example.json "$basedir"
 cp src/apps/localization/build/localizations.json "$basedir/localizations.json"
+
+basedir="pkgroot/Applications"
+mkdir -p "$basedir"
+cp -R "src/apps/EventViewer/build/Release/Karabiner-EventViewer.app" "$basedir"
+cp -R "src/apps/SettingsWindow/build/Release/Karabiner-Elements.app" "$basedir"
+
+basedir="pkgroot/Applications/Karabiner-Elements.app/Contents/Applications"
+mkdir -p "$basedir"
 cp -R "src/apps/AppIconSwitcher/build/Release/Karabiner-AppIconSwitcher.app" "$basedir"
 cp -R "src/apps/MultitouchExtension/build/Release/Karabiner-MultitouchExtension.app" "$basedir"
 cp -R "src/apps/ServiceManager-Non-Privileged-Agents/build/Release/Karabiner-Elements Non-Privileged Agents v3.app" "$basedir"
@@ -36,7 +43,7 @@ cp -R "src/apps/Updater/build/Release/Karabiner-Updater.app" "$basedir"
 cp -R "src/apps/CoreService/build/Release/Karabiner-Core-Service.app" "$basedir"
 cp -R "src/apps/ConsoleUserServer/build/Release/Karabiner-Console-User-Server.app" "$basedir"
 
-basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/scripts"
+basedir="pkgroot/Applications/Karabiner-Elements.app/Contents/Resources"
 mkdir -p "$basedir"
 cp src/scripts/copy_current_profile_to_system_default_profile.applescript "$basedir"
 cp src/scripts/remove_system_default_profile.applescript "$basedir"
@@ -45,11 +52,6 @@ cp src/scripts/uninstaller.applescript "$basedir"
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
 cp src/bin/cli/build/Release/karabiner_cli "$basedir"
-
-basedir="pkgroot/Applications"
-mkdir -p "$basedir"
-cp -R "src/apps/EventViewer/build/Release/Karabiner-EventViewer.app" "$basedir"
-cp -R "src/apps/SettingsWindow/build/Release/Karabiner-Elements.app" "$basedir"
 
 #
 # Sign with Developer ID

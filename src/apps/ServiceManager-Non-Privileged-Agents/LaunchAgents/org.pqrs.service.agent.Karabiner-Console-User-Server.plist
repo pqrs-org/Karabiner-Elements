@@ -13,7 +13,7 @@
     <true/>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Console-User-Server.app/Contents/MacOS/Karabiner-Console-User-Server</string>
+      <string>/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Console-User-Server.app/Contents/MacOS/Karabiner-Console-User-Server</string>
     </array>
   </dict>
 </plist>

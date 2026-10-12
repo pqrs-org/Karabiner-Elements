@@ -39,12 +39,6 @@ int daemon() {
   get_shared_codesign_manager()->log();
 
   //
-  // Run repair.sh
-  //
-
-  system("/bin/bash '/Library/Application Support/org.pqrs/Karabiner-Elements/repair.sh'");
-
-  //
   // Check Karabiner-Elements.app exists
   //
 
