@@ -2,11 +2,10 @@
 
 #include "constants.hpp"
 #include "logger.hpp"
+#include <array>
 #include <cerrno>
 #include <filesystem>
-#include <fstream>
 #include <optional>
-#include <string_view>
 #include <system_error>
 #include <unistd.h>
 
@@ -210,185 +209,122 @@ inline bool chown(const std::filesystem::path& path,
 // Utilities
 //
 
-namespace impl {
+inline bool prepare_system_application_support_root_directory() {
+  auto directory_path = constants::get_system_application_support_root_directory();
 
-inline void prepare_system_tmp_directory() {
+  return filesystem_utility::create_directories(directory_path) &&
+         filesystem_utility::chown(directory_path,
+                                   0,
+                                   0) &&
+         filesystem_utility::permissions(directory_path,
+                                         permissions_0755);
+}
+
+inline bool prepare_system_application_support_karabiner_elements_directory() {
+  auto directory_path = constants::get_system_application_support_karabiner_elements_directory();
+
+  return filesystem_utility::prepare_system_application_support_root_directory() &&
+         filesystem_utility::create_directories(directory_path) &&
+         filesystem_utility::chown(directory_path,
+                                   0,
+                                   0) &&
+         filesystem_utility::permissions(directory_path,
+                                         permissions_0755);
+}
+
+inline bool prepare_system_tmp_directory() {
   // /Library/Application Support/org.pqrs/tmp
   auto directory_path = constants::get_tmp_directory();
 
-  if (!krbn::filesystem_utility::create_directories(directory_path)) {
-    return;
-  }
-
-  // Reset owner and permission just in case.
-  if (!krbn::filesystem_utility::chown(directory_path,
-                                       0,
-                                       0)) {
-    return;
-  }
-  if (!krbn::filesystem_utility::permissions(directory_path,
-                                             permissions_0755)) {
-    return;
-  }
+  return filesystem_utility::prepare_system_application_support_root_directory() &&
+         filesystem_utility::create_directories(directory_path) &&
+         filesystem_utility::chown(directory_path,
+                                   0,
+                                   0) &&
+         filesystem_utility::permissions(directory_path,
+                                         permissions_0755);
 }
 
-inline void prepare_system_rootonly_directory() {
-  prepare_system_tmp_directory();
-
+inline bool prepare_system_rootonly_directory() {
   // /Library/Application Support/org.pqrs/tmp/rootonly
   auto directory_path = constants::get_rootonly_directory();
 
-  if (!krbn::filesystem_utility::create_directories(directory_path)) {
-    return;
-  }
-
-  // Reset owner and permission just in case.
-  if (!krbn::filesystem_utility::chown(directory_path,
-                                       0,
-                                       0)) {
-    return;
-  }
-  if (!krbn::filesystem_utility::permissions(directory_path,
-                                             permissions_0700)) {
-    return;
-  }
+  return filesystem_utility::prepare_system_tmp_directory() &&
+         filesystem_utility::create_directories(directory_path) &&
+         filesystem_utility::chown(directory_path,
+                                   0,
+                                   0) &&
+         filesystem_utility::permissions(directory_path,
+                                         permissions_0700);
 }
 
-inline void prepare_system_user_directory(uid_t uid) {
-  prepare_system_tmp_directory();
+inline bool prepare_system_user_directory() {
+  // /Library/Application Support/org.pqrs/tmp/user
+  auto directory_path = constants::get_system_user_directory();
 
-  {
-    // /Library/Application Support/org.pqrs/tmp/user
-    auto directory_path = constants::get_system_user_directory();
-
-    if (!krbn::filesystem_utility::create_directories(directory_path)) {
-      return;
-    }
-
-    if (!krbn::filesystem_utility::chown(directory_path,
-                                         0,
-                                         0)) {
-      return;
-    }
-    if (!krbn::filesystem_utility::permissions(directory_path,
-                                               permissions_0755)) {
-      return;
-    }
-  }
-
-  {
-    // /Library/Application Support/org.pqrs/tmp/user/<uid>
-    auto directory_path = constants::get_system_user_directory(uid);
-
-    if (!krbn::filesystem_utility::create_directories(directory_path)) {
-      return;
-    }
-
-    if (!krbn::filesystem_utility::chown(directory_path,
-                                         uid,
-                                         0)) {
-      return;
-    }
-    if (!krbn::filesystem_utility::permissions(directory_path,
-                                               permissions_0700)) {
-      return;
-    }
-  }
+  return filesystem_utility::prepare_system_tmp_directory() &&
+         filesystem_utility::create_directories(directory_path) &&
+         filesystem_utility::chown(directory_path,
+                                   0,
+                                   0) &&
+         filesystem_utility::permissions(directory_path,
+                                         permissions_0755);
 }
 
-} // namespace impl
+inline bool prepare_system_user_directory(uid_t uid) {
+  // /Library/Application Support/org.pqrs/tmp/user/<uid>
+  auto directory_path = constants::get_system_user_directory(uid);
 
-inline void prepare_system_directories(std::optional<uid_t> uid) {
-  krbn::filesystem_utility::impl::prepare_system_tmp_directory();
-  krbn::filesystem_utility::impl::prepare_system_rootonly_directory();
-  if (uid) {
-    krbn::filesystem_utility::impl::prepare_system_user_directory(*uid);
-  }
+  return filesystem_utility::prepare_system_user_directory() &&
+         filesystem_utility::create_directories(directory_path) &&
+         filesystem_utility::chown(directory_path,
+                                   uid,
+                                   0) &&
+         filesystem_utility::permissions(directory_path,
+                                         permissions_0700);
 }
 
-inline void prepare_user_directories() {
-  {
-    // ~/.config/karabiner
-    auto directory_path = constants::get_user_configuration_directory();
+inline bool prepare_system_directories(std::optional<uid_t> uid) {
+  auto result = filesystem_utility::prepare_system_rootonly_directory();
 
-    if (krbn::filesystem_utility::create_directories(directory_path) &&
-        krbn::filesystem_utility::is_directory(directory_path)) {
-      if (!krbn::filesystem_utility::permissions(directory_path,
-                                                 permissions_0700)) {
-        return;
-      }
+  if (uid.has_value()) {
+    if (!filesystem_utility::prepare_system_user_directory(*uid)) {
+      result = false;
     }
   }
 
-  {
-    // ~/.local/share/karabiner
-    auto directory_path = constants::get_user_data_directory();
-
-    if (krbn::filesystem_utility::create_directories(directory_path) &&
-        krbn::filesystem_utility::is_directory(directory_path)) {
-      if (!krbn::filesystem_utility::permissions(directory_path,
-                                                 permissions_0700)) {
-        return;
-      }
-    }
-  }
-
-  {
-    // ~/.config/karabiner/assets/complex_modifications
-    auto directory_path = constants::get_user_complex_modifications_assets_directory();
-
-    if (krbn::filesystem_utility::create_directories(directory_path) &&
-        krbn::filesystem_utility::is_directory(directory_path)) {
-      if (!krbn::filesystem_utility::permissions(directory_path,
-                                                 permissions_0700)) {
-        return;
-      }
-    }
-  }
-
-  {
-    // ~/.local/share/karabiner/log
-    auto directory_path = constants::get_user_log_directory();
-
-    if (krbn::filesystem_utility::create_directories(directory_path) &&
-        krbn::filesystem_utility::is_directory(directory_path)) {
-      if (!krbn::filesystem_utility::permissions(directory_path,
-                                                 permissions_0700)) {
-        return;
-      }
-    }
-  }
-
-  {
-    // ~/.local/share/karabiner/tmp
-    auto directory_path = constants::get_user_tmp_directory();
-
-    if (krbn::filesystem_utility::create_directories(directory_path) &&
-        krbn::filesystem_utility::is_directory(directory_path)) {
-      if (!krbn::filesystem_utility::permissions(directory_path,
-                                                 permissions_0700)) {
-        return;
-      }
-    }
-  }
+  return result;
 }
 
-[[nodiscard]] inline std::optional<std::string> read_file(const std::filesystem::path& path) {
-  std::ifstream input(path);
-  if (input) {
-    std::string code;
+inline bool prepare_user_directory(const std::filesystem::path& directory_path) {
+  return filesystem_utility::create_directories(directory_path) &&
+         filesystem_utility::is_directory(directory_path) &&
+         filesystem_utility::permissions(directory_path,
+                                         permissions_0700);
+}
 
-    input.seekg(0, std::ios::end);
-    code.reserve(input.tellg());
-    input.seekg(0, std::ios::beg);
+inline bool prepare_user_directories() {
+  std::array directory_paths{
+      // ~/.config/karabiner
+      constants::get_user_configuration_directory(),
+      // ~/.config/karabiner/assets/complex_modifications
+      constants::get_user_complex_modifications_assets_directory(),
+      // ~/.local/share/karabiner
+      constants::get_user_data_directory(),
+      // ~/.local/share/karabiner/log
+      constants::get_user_log_directory(),
+      // ~/.local/share/karabiner/tmp
+      constants::get_user_tmp_directory(),
+  };
 
-    code.assign(std::istreambuf_iterator<char>(input),
-                std::istreambuf_iterator<char>());
-
-    return code;
+  auto result = true;
+  for (const auto& directory_path : directory_paths) {
+    if (!filesystem_utility::prepare_user_directory(directory_path)) {
+      result = false;
+    }
   }
 
-  return std::nullopt;
+  return result;
 }
 
 } // namespace krbn::filesystem_utility
