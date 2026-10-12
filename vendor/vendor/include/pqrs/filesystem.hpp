@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::filesystem v3.0.0
+// pqrs::filesystem v4.0.0
 
 // (C) Copyright Takayama Fumihiko 2018.
 // Distributed under the Boost Software License, Version 1.0.
@@ -12,10 +12,12 @@
 #include <cstdint>
 #include <expected>
 #include <fcntl.h>
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <pqrs/gsl.hpp>
 #include <string>
+#include <string_view>
 #include <sys/stat.h>
 #include <system_error>
 #include <unistd.h>
@@ -24,7 +26,7 @@
 
 namespace pqrs::filesystem {
 
-[[nodiscard]] inline std::optional<uid_t> uid(const std::string& path) noexcept {
+[[nodiscard]] inline std::optional<uid_t> uid(const std::filesystem::path& path) noexcept {
   struct stat s;
   if (stat(path.c_str(), &s) == 0) {
     return s.st_uid;
@@ -32,7 +34,7 @@ namespace pqrs::filesystem {
   return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<uid_t> symlink_uid(const std::string& path) noexcept {
+[[nodiscard]] inline std::optional<uid_t> symlink_uid(const std::filesystem::path& path) noexcept {
   struct stat s;
   if (lstat(path.c_str(), &s) == 0) {
     return s.st_uid;
@@ -40,7 +42,7 @@ namespace pqrs::filesystem {
   return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<gid_t> gid(const std::string& path) noexcept {
+[[nodiscard]] inline std::optional<gid_t> gid(const std::filesystem::path& path) noexcept {
   struct stat s;
   if (stat(path.c_str(), &s) == 0) {
     return s.st_gid;
@@ -48,7 +50,7 @@ namespace pqrs::filesystem {
   return std::nullopt;
 }
 
-[[nodiscard]] inline std::optional<gid_t> symlink_gid(const std::string& path) noexcept {
+[[nodiscard]] inline std::optional<gid_t> symlink_gid(const std::filesystem::path& path) noexcept {
   struct stat s;
   if (lstat(path.c_str(), &s) == 0) {
     return s.st_gid;
@@ -56,11 +58,13 @@ namespace pqrs::filesystem {
   return std::nullopt;
 }
 
-[[nodiscard]] inline bool is_owned(const std::string& path, uid_t uid) noexcept {
+[[nodiscard]] inline bool is_owned(const std::filesystem::path& path,
+                                   uid_t uid) noexcept {
   return pqrs::filesystem::uid(path) == uid;
 }
 
-[[nodiscard]] inline bool is_symlink_owned(const std::string& path, uid_t uid) noexcept {
+[[nodiscard]] inline bool is_symlink_owned(const std::filesystem::path& path,
+                                           uid_t uid) noexcept {
   return pqrs::filesystem::symlink_uid(path) == uid;
 }
 
@@ -111,7 +115,7 @@ struct read_file_error final {
 // O_NONBLOCK avoids waiting for a FIFO writer; it does not make disk I/O asynchronous.
 // A size limit is checked both before allocation and while reading to EOF.
 [[nodiscard]] inline std::expected<not_null_shared_ptr_t<std::vector<uint8_t>>, read_file_error> read_file(
-    const std::string& path,
+    const std::filesystem::path& path,
     const read_file_options& options = {}) {
   struct file_descriptor final {
     int value;
@@ -202,4 +206,154 @@ struct read_file_error final {
   }
 }
 
+//
+// write_file_atomically
+//
+
+struct write_file_options final {
+  std::filesystem::path path;
+  std::string_view contents;
+  mode_t permissions = 0644;
+};
+
+struct write_file_error final {
+  enum class reason {
+    create_temporary_file_failed,
+    write_failed,
+    permissions_failed,
+    close_failed,
+    rename_failed,
+  };
+
+  reason type;
+  std::error_code code;
+
+  [[nodiscard]] std::string message() const {
+    switch (type) {
+      case reason::create_temporary_file_failed:
+        return "temporary file creation failed: " + code.message();
+      case reason::write_failed:
+        return "write failed: " + code.message();
+      case reason::permissions_failed:
+        return "permissions update failed: " + code.message();
+      case reason::close_failed:
+        return "close failed: " + code.message();
+      case reason::rename_failed:
+        return "rename failed: " + code.message();
+    }
+    return "unknown write error";
+  }
+};
+
+// Writes to a unique temporary file in the destination directory, then atomically
+// replaces the destination with rename(2). Existing symlinks at the destination
+// are replaced rather than followed.
+inline std::expected<void, write_file_error> write_file_atomically(
+    const write_file_options& options) {
+  struct temporary_file final {
+    int file_descriptor;
+    std::string path;
+
+    ~temporary_file() {
+      if (file_descriptor >= 0) {
+        ::close(file_descriptor);
+      }
+      if (!path.empty()) {
+        ::unlink(path.c_str());
+      }
+    }
+  };
+
+  // mkstemp replaces XXXXXX in this writable string buffer with a unique suffix.
+  // std::string::data returns a writable buffer since C++17.
+  std::string temporary_path = options.path.string() + ".tmp.XXXXXX";
+
+  auto file_descriptor = ::mkostemp(temporary_path.data(),
+                                    O_CLOEXEC);
+  if (file_descriptor < 0) {
+    return std::unexpected(write_file_error{
+        write_file_error::reason::create_temporary_file_failed,
+        {
+            errno,
+            std::generic_category(),
+        },
+    });
+  }
+
+  temporary_file file{
+      .file_descriptor = file_descriptor,
+      .path = temporary_path,
+  };
+
+  size_t offset = 0;
+  while (offset < options.contents.size()) {
+    auto size = ::write(file.file_descriptor,
+                        options.contents.data() + offset,
+                        options.contents.size() - offset);
+    if (size < 0) {
+      auto error = errno;
+      if (error == EINTR) {
+        continue;
+      }
+      return std::unexpected(write_file_error{
+          write_file_error::reason::write_failed,
+          {
+              error,
+              std::generic_category(),
+          },
+      });
+    }
+
+    if (size == 0) {
+      return std::unexpected(write_file_error{
+          write_file_error::reason::write_failed,
+          {
+              EIO,
+              std::generic_category(),
+          },
+      });
+    }
+
+    offset += static_cast<size_t>(size);
+  }
+
+  if (::fchmod(file.file_descriptor,
+               options.permissions) != 0) {
+    return std::unexpected(write_file_error{
+        write_file_error::reason::permissions_failed,
+        {
+            errno,
+            std::generic_category(),
+        },
+    });
+  }
+
+  if (::close(file.file_descriptor) != 0) {
+    file.file_descriptor = -1;
+    return std::unexpected(write_file_error{
+        write_file_error::reason::close_failed,
+        {
+            errno,
+            std::generic_category(),
+        },
+    });
+  }
+
+  file.file_descriptor = -1;
+
+  if (::rename(file.path.c_str(),
+               options.path.c_str()) != 0) {
+    return std::unexpected(write_file_error{
+        write_file_error::reason::rename_failed,
+        {
+            errno,
+            std::generic_category(),
+        },
+    });
+  }
+
+  file.path.clear();
+
+  return {};
+}
 } // namespace pqrs::filesystem
