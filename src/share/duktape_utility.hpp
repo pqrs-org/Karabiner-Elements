@@ -9,6 +9,7 @@
 #include <duktape.h>
 #include <filesystem>
 #include <memory>
+#include <pqrs/filesystem.hpp>
 #include <pqrs/gsl.hpp>
 #include <pqrs/string.hpp>
 #include <spdlog/fmt/fmt.h>
@@ -24,13 +25,13 @@ public:
 };
 
 namespace duktape_utility {
+constexpr size_t max_input_bytes = 1ULL * 1024ULL * 1024ULL; // 1MB
+
 struct eval_heap_state {
   krbn_duktape_heap_state base;
 };
 
 namespace impl {
-constexpr size_t max_input_bytes = 1ULL * 1024ULL * 1024ULL; // 1MB
-
 inline void* alloc(void* udata, duk_size_t size) {
   if (size == 0) {
     return nullptr;
@@ -276,7 +277,7 @@ inline void start_execution_timeout(eval_heap_state& heap_state) {
 }
 
 inline void check_input_size(const std::string& code) {
-  if (code.size() > max_input_bytes) {
+  if (code.size() > duktape_utility::max_input_bytes) {
     throw duktape_eval_error("javascript error: input too large");
   }
 }
@@ -288,8 +289,13 @@ struct eval_string_to_json_result {
 };
 
 inline std::string eval_file_with_fs_access(const std::filesystem::path& path) noexcept(false) {
-  if (auto code = filesystem_utility::read_file(path)) {
-    impl::check_input_size(*code);
+  if (auto result = pqrs::filesystem::read_file(path,
+                                                {
+                                                    .max_size = max_input_bytes,
+                                                })) {
+    std::string code((*result)->begin(),
+                     (*result)->end());
+    impl::check_input_size(code);
 
     auto context = impl::create_context_with_limits();
     duk_context* ctx = context.ctx.get();
@@ -354,8 +360,14 @@ inline std::string eval_file_with_fs_access(const std::filesystem::path& path) n
           duk_get_prop_string(ctx, 2, "filename");
           auto filename = duk_require_string(ctx, -1);
 
-          if (auto code = filesystem_utility::read_file(filename)) {
-            duk_push_string(ctx, code->c_str());
+          if (auto result = pqrs::filesystem::read_file(filename,
+                                                        {
+                                                            .max_size = max_input_bytes,
+                                                        })) {
+            const auto& code = **result;
+            duk_push_lstring(ctx,
+                             reinterpret_cast<const char*>(code.data()),
+                             code.size());
           } else {
             duk_type_error(ctx, "cannot find module: %s", module_id);
           }
@@ -372,7 +384,7 @@ inline std::string eval_file_with_fs_access(const std::filesystem::path& path) n
     //
 
     impl::start_execution_timeout(*context.heap_state);
-    if (duk_peval_string(ctx, code->c_str()) != 0) {
+    if (duk_peval_string(ctx, code.c_str()) != 0) {
       auto message = impl::build_eval_error_message(*context.heap_state, ctx);
       throw duktape_eval_error(message);
     }
