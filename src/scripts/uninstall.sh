@@ -3,7 +3,7 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
-bash '/Library/Application Support/org.pqrs/Karabiner-Elements/uninstall_core.sh'
+bash '/Applications/Karabiner-Elements.app/Contents/Resources/uninstall_core.sh'
 bash '/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/scripts/uninstall/remove_files.sh'
 
 killall Karabiner-Core-Service

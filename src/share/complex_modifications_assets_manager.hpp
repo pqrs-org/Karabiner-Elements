@@ -14,7 +14,7 @@ public:
 
     // Load system example file.
     if (load_system_example_file) {
-      const std::string file_path = "/Library/Application Support/org.pqrs/Karabiner-Elements/complex_modifications_rules_example.json";
+      const std::string file_path = "/Applications/Karabiner-Elements.app/Contents/Resources/complex_modifications_rules_example.json";
       try {
         auto f = std::make_shared<complex_modifications_assets_file>(file_path,
                                                                      error_handling);
