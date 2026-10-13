@@ -175,6 +175,24 @@ struct LocalizationTests {
     try write(catalog.strings, to: extendedURL)
     waitUntil { automatic!.catalog == catalog && missing.catalog == catalog }
 
+    // Use the bundled catalog while the runtime catalog has an old source
+    // version, then switch after its source version is updated.
+    let fallbackDirectory = directory.appendingPathComponent("fallback", isDirectory: true)
+    try FileManager.default.createDirectory(
+      at: fallbackDirectory, withIntermediateDirectories: true)
+    let fallbackRuntimeURL = fallbackDirectory.appendingPathComponent("localizations.json")
+    let fallbackVersionURL = fallbackDirectory.appendingPathComponent(
+      "localizations.source-version")
+    try write(autoStrings, to: fallbackRuntimeURL)
+    try Data("old".utf8).write(to: fallbackVersionURL)
+    let fallback = AppLocalization(
+      source: fallbackRuntimeURL, fallbackSource: source, expectedSourceVersion: "current",
+      automaticallyReload: false)
+    precondition(fallback.catalog == catalog)
+    try Data("current".utf8).write(to: fallbackVersionURL)
+    try fallback.reload()
+    precondition(fallback.catalog.strings == autoStrings)
+
     weak let released = automatic
     automatic = nil
     precondition(released == nil)

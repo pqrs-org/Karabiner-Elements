@@ -8,6 +8,7 @@
 #include "core_service/daemon/core_service_daemon_state_manager.hpp"
 #include "filesystem_utility.hpp"
 #include "karabiner_version.h"
+#include "localizations_utility.hpp"
 #include "logger.hpp"
 #include "process_lifecycle_manager.hpp"
 #include "services_utility.hpp"
@@ -37,6 +38,12 @@ int daemon() {
   //
 
   get_shared_codesign_manager()->log();
+
+  //
+  // Synchronize localizations.json from Karabiner-Elements.app.
+  //
+
+  localizations_utility::synchronize(karabiner_version);
 
   //
   // Check Karabiner-Elements.app exists

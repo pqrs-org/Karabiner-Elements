@@ -21,10 +21,6 @@ echo "Copy Files"
 rm -rf pkgroot
 mkdir -p pkgroot
 
-basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements"
-mkdir -p "$basedir"
-cp src/apps/localization/build/localizations.json "$basedir/localizations.json"
-
 basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 mkdir -p "$basedir"
 cp src/bin/cli/build/Release/karabiner_cli "$basedir"
@@ -46,11 +42,12 @@ cp -R "src/apps/ConsoleUserServer/build/Release/Karabiner-Console-User-Server.ap
 
 basedir="pkgroot/Applications/Karabiner-Elements.app/Contents/Resources"
 mkdir -p "$basedir"
-cp src/scripts/uninstall.sh "$basedir"
-cp src/scripts/uninstall_core.sh "$basedir"
 cp files/complex_modifications_rules_example.json "$basedir"
+cp src/apps/localization/build/localizations.json "$basedir/localizations.json"
 cp src/scripts/copy_current_profile_to_system_default_profile.applescript "$basedir"
 cp src/scripts/remove_system_default_profile.applescript "$basedir"
+cp src/scripts/uninstall_core.sh "$basedir"
+cp src/scripts/uninstall.sh "$basedir"
 cp src/scripts/uninstaller.applescript "$basedir"
 
 #

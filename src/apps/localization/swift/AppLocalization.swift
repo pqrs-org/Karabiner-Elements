@@ -20,19 +20,23 @@ struct LocalizationCatalog: Equatable, Sendable {
   init(data: Data) throws {
     let strings = try JSONDecoder().decode([String: [String: String]].self, from: data)
     guard !strings.isEmpty else { throw CocoaError(.fileReadCorruptFile) }
+
     var languages: Set<String> = []
     for (key, translations) in strings {
       // English is the fallback for every key; additional languages may be partial.
       guard !key.isEmpty, translations["en"] != nil else {
         throw CocoaError(.fileReadCorruptFile)
       }
+
       for language in translations.keys {
         guard language != "auto",
           language.range(of: "^[a-z]{2,8}(-[A-Za-z0-9]{1,8})*$", options: .regularExpression) != nil
         else { throw CocoaError(.fileReadCorruptFile) }
+
         languages.insert(language)
       }
     }
+
     self.strings = strings
     self.languages = languages.sorted()
   }
@@ -40,7 +44,20 @@ struct LocalizationCatalog: Equatable, Sendable {
 
 @MainActor
 final class AppLocalization: ObservableObject {
-  static let shared = AppLocalization()
+  private static let defaultSource = URL(
+    fileURLWithPath:
+      "/Library/Application Support/org.pqrs/Karabiner-Elements/localizations.json")
+
+  private static let bundledSource = URL(
+    fileURLWithPath:
+      "/Applications/Karabiner-Elements.app/Contents/Resources/localizations.json")
+
+  private static let currentVersion =
+    Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+
+  static let shared = AppLocalization(
+    fallbackSource: bundledSource,
+    expectedSourceVersion: currentVersion)
 
   @Published private(set) var catalog = LocalizationCatalog.empty
 
@@ -48,15 +65,23 @@ final class AppLocalization: ObservableObject {
   private var reloadTask: Task<Void, Never>?
   private let automaticallyReload: Bool
   private let source: URL
+  private let fallbackSource: URL?
+  private let sourceVersionFile: URL
+  private let expectedSourceVersion: String?
 
   init(
-    source: URL = URL(
-      fileURLWithPath:
-        "/Library/Application Support/org.pqrs/Karabiner-Elements/localizations.json"),
+    source: URL = defaultSource,
+    fallbackSource: URL? = nil,
+    expectedSourceVersion: String? = nil,
     automaticallyReload: Bool = true
   ) {
     self.source = source
+    self.fallbackSource = fallbackSource
+    sourceVersionFile = source.deletingLastPathComponent()
+      .appendingPathComponent("localizations.source-version")
+    self.expectedSourceVersion = expectedSourceVersion
     self.automaticallyReload = automaticallyReload
+
     do {
       try reload()
     } catch {
@@ -74,15 +99,37 @@ final class AppLocalization: ObservableObject {
     if automaticallyReload {
       startMonitoring()
     }
-    let updated = try LocalizationCatalog(file: source)
+
+    let updated: LocalizationCatalog
+    if !runtimeSourceVersionMatches, let fallbackSource {
+      updated = try LocalizationCatalog(file: fallbackSource)
+    } else {
+      do {
+        updated = try LocalizationCatalog(file: source)
+      } catch {
+        guard catalog == .empty, let fallbackSource else { throw error }
+        updated = try LocalizationCatalog(file: fallbackSource)
+      }
+    }
+
     if updated != catalog {
       catalog = updated
     }
   }
 
+  private var runtimeSourceVersionMatches: Bool {
+    guard let expectedSourceVersion else { return true }
+    guard let data = try? Data(contentsOf: sourceVersionFile),
+      let sourceVersion = String(data: data, encoding: .utf8)
+    else { return false }
+
+    return sourceVersion == expectedSourceVersion
+  }
+
   private func startMonitoring() {
     fileMonitors.forEach { $0.cancel() }
     fileMonitors.removeAll()
+
     // Watch the file for in-place writes and its parent for creation or replacement.
     for url in [
       source,  // /Library/Application Support/org.pqrs/Karabiner-Elements/localizations.json
