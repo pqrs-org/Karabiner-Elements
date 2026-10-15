@@ -6,7 +6,7 @@ struct LocalizationTests {
   static func main() throws {
     let source = URL(fileURLWithPath: CommandLine.arguments[1])
     let catalog = try LocalizationCatalog(file: source)
-    precondition(AppLanguage.availableLanguages(catalog: catalog) == ["en", "ja"])
+    precondition(AppLanguage.availableLanguages(catalog: catalog) == ["en", "ja", "zh-Hans"])
     let en = AppLanguage.locale(for: "en", catalog: catalog)
     let ja = AppLanguage.locale(for: "ja", catalog: catalog)
     precondition(
@@ -79,7 +79,7 @@ struct LocalizationTests {
     try write(strings, to: extendedURL)
     let extended = try LocalizationCatalog(file: extendedURL)
     precondition(
-      AppLanguage.availableLanguages(catalog: extended) == ["en", "fr", "ja", "pt-BR", "zh-Hant"])
+      AppLanguage.availableLanguages(catalog: extended) == ["en", "fr", "ja", "pt-BR", "zh-Hans", "zh-Hant"])
     for (language, translation) in [("pt-BR", "Ajustes…"), ("zh-Hant", "設定（繁體）")] {
       let locale = AppLanguage.locale(for: language, catalog: extended)
       precondition(locale.identifier == language)
@@ -119,7 +119,7 @@ struct LocalizationTests {
     )
     precondition(
       AppLanguage.availableLanguages(catalog: reloading.catalog) == [
-        "de", "en", "ja", "pt-BR", "zh-Hant",
+        "de", "en", "ja", "pt-BR", "zh-Hans", "zh-Hant",
       ])
     let good = reloading.catalog
     // Malformed and structurally invalid JSON must preserve the previous catalog.

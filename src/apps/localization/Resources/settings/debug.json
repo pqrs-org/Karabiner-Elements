@@ -2,42 +2,52 @@
     "settings.debug.agent_retry": {
         "en": "Karabiner-Console-User-Server connection: retry guidance"
         ,"ja": "Karabiner-Console-User-Serverへの接続: 再試行の案内"
+        ,"zh-Hans": "Karabiner-Console-User-Server 连接：重试指引"
     },
     "settings.debug.agents_stopped": {
         "en": "Services stopped: agents only"
         ,"ja": "サービス停止: エージェントのみ"
+        ,"zh-Hans": "服务已停止：仅代理程序 (Agents)"
     },
     "settings.debug.alerts": {
         "en": "Alert previews"
         ,"ja": "アラートのプレビュー"
+        ,"zh-Hans": "警告提示预览"
     },
     "settings.debug.category.configuration": {
         "en": "Configuration"
         ,"ja": "設定"
+        ,"zh-Hans": "配置"
     },
     "settings.debug.category.driver": {
         "en": "Driver"
         ,"ja": "ドライバー"
+        ,"zh-Hans": "驱动"
     },
     "settings.debug.category.notifications": {
         "en": "Notifications"
         ,"ja": "通知"
+        ,"zh-Hans": "通知"
     },
     "settings.debug.category.services": {
         "en": "Services and Connections"
         ,"ja": "サービス・接続"
+        ,"zh-Hans": "服务与连接"
     },
     "settings.debug.category.setup": {
         "en": "Setup"
         ,"ja": "セットアップ"
+        ,"zh-Hans": "安装向导"
     },
     "settings.debug.daemons_stopped": {
         "en": "Services stopped: daemons only"
         ,"ja": "サービス停止: デーモンのみ"
+        ,"zh-Hans": "服务已停止：仅守护进程 (Daemons)"
     },
     "settings.debug.driver_advanced": {
         "en": "Driver restart required: advanced guidance"
         ,"ja": "ドライバーの再起動が必要: 詳細な案内"
+        ,"zh-Hans": "需要重启驱动：进阶指引"
     },
     "settings.debug.instructions": {
         "en": [
@@ -47,6 +57,10 @@
         ,"ja": [
             "Optionキーを押すとサイドバーに「デバッグ」が表示されます。",
             "選択後はキーを離してアラートをプレビューできます。"
+        ]
+        ,"zh-Hans": [
+            "按住 Option 键可在边栏中显示“调试”。 ",
+            "选中后即可松开 Option 键并预览各种警告提示。"
         ]
     },
     "settings.debug.preview_hint": {
@@ -60,49 +74,65 @@
             "プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。\n",
             "プレビューを表示するとチェックが付きます。閲覧済みかどうかの印として使うために用意しています。"
         ]
+        ,"zh-Hans": [
+            "警告提示使用当前的应用程序语言和示例状态展示。 ",
+            "点击预览任意位置或按 Escape 键可关闭。预览中的操作不会更改设置。\n",
+            "打开预览时会显示勾选标记，以帮助你跟踪已查看过的预览。"
+        ]
     },
     "settings.debug.section": {
         "en": "For Developer"
         ,"ja": "開発者向け"
+        ,"zh-Hans": "开发者选项"
     },
     "settings.debug.services_stopped": {
         "en": "Services stopped: agents and daemons"
         ,"ja": "サービス停止: エージェントとデーモン"
+        ,"zh-Hans": "服务已停止：代理与守护进程"
     },
     "settings.debug.setup_agents_only": {
         "en": "Services: only non-privileged agents enabled"
         ,"ja": "サービス: 非特権エージェントのみ有効"
+        ,"zh-Hans": "服务：仅启用了非特权代理程序"
     },
     "settings.debug.setup_daemons_only": {
         "en": "Services: only privileged daemons enabled"
         ,"ja": "サービス: 特権デーモンのみ有効"
+        ,"zh-Hans": "服务：仅启用了特权守护进程"
     },
     "settings.debug.setup_driver_advanced": {
         "en": "Driver extension permission: advanced guidance"
         ,"ja": "ドライバー拡張機能の許可: 詳細な案内"
+        ,"zh-Hans": "驱动扩展权限：进阶指引"
     },
     "settings.debug.setup_driver_legacy_advanced": {
         "en": "Driver permission (macOS 13/14): advanced guidance"
         ,"ja": "ドライバーの許可（macOS 13/14）: 詳細な案内"
+        ,"zh-Hans": "驱动权限 (macOS 13/14)：进阶指引"
     },
     "settings.debug.setup_driver_macos15": {
         "en": "Driver extension permission (macOS 15)"
         ,"ja": "ドライバー拡張機能の許可（macOS 15）"
+        ,"zh-Hans": "驱动扩展权限 (macOS 15)"
     },
     "settings.debug.setup_driver_macos15_advanced": {
         "en": "Driver extension permission (macOS 15): advanced guidance"
         ,"ja": "ドライバー拡張機能の許可（macOS 15）: 詳細な案内"
+        ,"zh-Hans": "驱动扩展权限 (macOS 15)：进阶指引"
     },
     "settings.debug.setup_services_macos15": {
         "en": "Service permission (macOS 15)"
         ,"ja": "サービスの許可（macOS 15）"
+        ,"zh-Hans": "服务权限 (macOS 15)"
     },
     "settings.debug.title": {
         "en": "Debug"
         ,"ja": "デバッグ"
+        ,"zh-Hans": "调试"
     },
     "settings.debug.viewed": {
         "en": "Viewed"
         ,"ja": "閲覧済み"
+        ,"zh-Hans": "已查看"
     }
 }
