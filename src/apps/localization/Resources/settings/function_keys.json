@@ -2,5 +2,6 @@
     "settings.function_keys.system_setting": {
         "en": "Use all F1, F2, etc. keys as standard function keys:"
         ,"ja": "F1、F2などのキーを標準のファンクションキーとして使用:"
+        ,"zh-Hans": "将 F1、F2 等键用作标准功能键："
     }
 }

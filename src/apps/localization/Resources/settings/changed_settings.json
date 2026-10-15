@@ -2,69 +2,86 @@
     "settings.changed_settings.empty": {
         "en": "No settings have been changed from their default values."
         ,"ja": "デフォルト値から変更されている設定はありません。"
+        ,"zh-Hans": "所有设置均为默认值。"
     },
     "settings.changed_settings.error": {
         "en": "An error occurred."
         ,"ja": "エラーが発生しました。"
+        ,"zh-Hans": "发生错误。"
     },
     "settings.changed_settings.notification_window_prefix": {
         "en": "Notification Window"
         ,"ja": "通知ウインドウ"
+        ,"zh-Hans": "通知窗口"
     },
     "settings.changed_settings.section.complex_modifications": {
         "en": "Complex Modifications"
         ,"ja": "高度なキー変換"
+        ,"zh-Hans": "复杂修改"
     },
     "settings.changed_settings.section.global": {
         "en": "Global settings"
         ,"ja": "全体設定"
+        ,"zh-Hans": "全局设置"
     },
     "settings.changed_settings.section.machine_specific": {
         "en": "Settings specific to this machine"
         ,"ja": "このマシン固有の設定"
+        ,"zh-Hans": "本机专用设置"
     },
     "settings.changed_settings.section.parameters": {
         "en": "Parameters"
         ,"ja": "パラメータ"
+        ,"zh-Hans": "参数"
     },
     "settings.changed_settings.section.selected_profile": {
         "en": "Selected profile"
         ,"ja": "選択中のプロファイル"
+        ,"zh-Hans": "当前配置方案"
     },
     "settings.changed_settings.section.virtual_hid_keyboard": {
         "en": "Virtual keyboard"
         ,"ja": "仮想キーボード"
+        ,"zh-Hans": "虚拟键盘"
     },
     "settings.changed_settings.setting.configured_devices_count": {
         "en": "Configured device count"
         ,"ja": "個別設定のあるデバイス数"
+        ,"zh-Hans": "已配置设备数量"
     },
     "settings.changed_settings.setting.enabled_rules_count": {
         "en": "Enabled rule count"
         ,"ja": "有効なルール数"
+        ,"zh-Hans": "已启用规则数量"
     },
     "settings.changed_settings.setting.external_editor_path": {
         "en": "External editor"
         ,"ja": "外部エディタ"
+        ,"zh-Hans": "外部编辑器"
     },
     "settings.changed_settings.setting.fn_function_keys_count": {
         "en": "Changed Function Keys count"
         ,"ja": "変更したファンクションキーの件数"
+        ,"zh-Hans": "已修改的功能键数量"
     },
     "settings.changed_settings.setting.rules_count": {
         "en": "Complex Modifications rule count"
         ,"ja": "高度なキー変換のルール数"
+        ,"zh-Hans": "复杂修改规则数量"
     },
     "settings.changed_settings.setting.simple_modifications_count": {
         "en": "Simple Modifications count"
         ,"ja": "単純なキー変換の件数"
+        ,"zh-Hans": "简单修改数量"
     },
     "settings.changed_settings.setting.ui_language": {
         "en": "Language"
         ,"ja": "言語"
+        ,"zh-Hans": "语言"
     },
     "settings.changed_settings.title": {
         "en": "Changed Settings"
         ,"ja": "変更済み設定"
+        ,"zh-Hans": "已更改的设置"
     }
 }

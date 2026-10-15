@@ -2,13 +2,16 @@
     "settings.virtual_keyboard.keyboard_type_v2": {
         "en": "Keyboard type"
         ,"ja": "キーボードの種類"
+        ,"zh-Hans": "键盘类型"
     },
     "settings.virtual_keyboard.mouse_key": {
         "en": "Mouse key"
         ,"ja": "マウスキー"
+        ,"zh-Hans": "鼠标键"
     },
     "settings.virtual_keyboard.mouse_key_xy_scale": {
         "en": "Cursor speed:"
         ,"ja": "カーソル速度:"
+        ,"zh-Hans": "光标速度："
     }
 }
