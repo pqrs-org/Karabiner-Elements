@@ -2,89 +2,111 @@
     "settings.sidebar.item.changed_settings": {
         "en": "Changed Settings"
         ,"ja": "変更済み設定"
+        ,"zh-Hans": "已修改设置"
     },
     "settings.sidebar.item.complex_modifications": {
         "en": "Complex Modifications"
         ,"ja": "高度なキー変換"
+        ,"zh-Hans": "复杂修改"
     },
     "settings.sidebar.item.devices": {
         "en": "Devices"
         ,"ja": "デバイス"
+        ,"zh-Hans": "设备"
     },
     "settings.sidebar.item.expert": {
         "en": "Expert"
         ,"ja": "エキスパート向け設定"
+        ,"zh-Hans": "专家模式"
     },
     "settings.sidebar.item.function_keys": {
         "en": "Function Keys"
         ,"ja": "ファンクションキー"
+        ,"zh-Hans": "功能键"
     },
     "settings.sidebar.item.log": {
         "en": "Log"
         ,"ja": "ログ"
+        ,"zh-Hans": "日志"
     },
     "settings.sidebar.item.misc": {
         "en": "Misc"
         ,"ja": "その他"
+        ,"zh-Hans": "其他"
     },
     "settings.sidebar.item.parameters": {
         "en": "Parameters"
         ,"ja": "パラメータ"
+        ,"zh-Hans": "参数"
     },
     "settings.sidebar.item.profiles": {
         "en": "Profiles"
         ,"ja": "プロファイル"
+        ,"zh-Hans": "配置文件"
     },
     "settings.sidebar.item.quit_restart": {
         "en": "Quit, Restart"
         ,"ja": "終了・再起動"
+        ,"zh-Hans": "退出与重启"
     },
     "settings.sidebar.item.setup": {
         "en": "Setup"
         ,"ja": "セットアップ"
+        ,"zh-Hans": "安装向导"
     },
     "settings.sidebar.item.simple_modifications": {
         "en": "Simple Modifications"
         ,"ja": "単純なキー変換"
+        ,"zh-Hans": "简单修改"
     },
     "settings.sidebar.item.system_extensions": {
         "en": "System Extensions"
         ,"ja": "システム拡張"
+        ,"zh-Hans": "系统扩展"
     },
     "settings.sidebar.item.ui": {
         "en": "UI"
         ,"ja": "UI"
+        ,"zh-Hans": "界面外观"
     },
     "settings.sidebar.item.uninstall": {
         "en": "Uninstall"
         ,"ja": "アンインストール"
+        ,"zh-Hans": "卸载"
     },
     "settings.sidebar.item.update": {
         "en": "Update"
         ,"ja": "アップデート"
+        ,"zh-Hans": "软件更新"
     },
     "settings.sidebar.item.virtual_keyboard": {
         "en": "Virtual Keyboard"
         ,"ja": "仮想キーボード"
+        ,"zh-Hans": "虚拟键盘"
     },
     "settings.sidebar.reset_layout": {
         "en": "Reset window size"
         ,"ja": "ウィンドウサイズをリセット"
+        ,"zh-Hans": "重置窗口大小"
     },
     "settings.sidebar.section.configurations": {
         "en": "Configurations"
         ,"ja": "設定"
+        ,"zh-Hans": "配置"
     },
     "settings.sidebar.section.diagnostic": {
         "en": "Diagnostic"
         ,"ja": "診断"
+        ,"zh-Hans": "诊断"
     },
     "settings.sidebar.section.maintenance": {
         "en": "Maintenance"
         ,"ja": "メンテナンス"
+        ,"zh-Hans": "维护"
     },
     "settings.sidebar.section.modifications": {
         "en": "Modifications"
         ,"ja": "キー変換"
+        ,"zh-Hans": "按键修改"
     }
 }

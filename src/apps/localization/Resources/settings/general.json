@@ -2,10 +2,12 @@
     "settings.general.action.title": {
         "en": "Action"
         ,"ja": "操作"
+        ,"zh-Hans": "操作"
     },
     "settings.general.defaults.value": {
         "en": "(Default: {value})"
         ,"ja": "（デフォルト: {value}）"
+        ,"zh-Hans": "（默认值：{value}）"
     },
     "settings.general.modifier_mappings.reset_hint": {
         "en": [
@@ -24,29 +26,43 @@
             "2. Karabiner DriverKit VirtualHIDKeyboardを選択します。\n",
             "3.「デフォルトに戻す」をクリックします。"
         ]
+        ,"zh-Hans": [
+            "macOS 系统本身也会重映射修饰键。 ",
+            "建议将其恢复为默认值，并通过 Karabiner-Elements 进行配置。\n\n",
+            "你可以按照以下步骤重置 macOS 设置：\n",
+            "1. 打开“系统设置”，前往“键盘快捷键…” > “修饰键”。\n",
+            "2. 选择“Karabiner DriverKit VirtualHIDKeyboard”。\n",
+            "3. 点击“恢复默认值”按钮。"
+        ]
     },
     "settings.general.save.failed": {
         "en": "Save failed:\n{error}"
         ,"ja": "保存に失敗しました:\n{error}"
+        ,"zh-Hans": "保存失败：\n{error}"
     },
     "settings.general.shared.reorder_hint": {
         "en": "Drag this icon to reorder the list"
         ,"ja": "アイコンをドラッグしてリストを並べ替えられます"
+        ,"zh-Hans": "拖动此图标可重新调整列表顺序"
     },
     "settings.general.units.milliseconds": {
         "en": "milliseconds"
         ,"ja": "ミリ秒"
+        ,"zh-Hans": "毫秒"
     },
     "settings.general.units.percent": {
         "en": "%"
         ,"ja": "%"
+        ,"zh-Hans": "%"
     },
     "settings.general.units.points": {
         "en": "pt"
         ,"ja": "pt"
+        ,"zh-Hans": "pt"
     },
     "settings.general.window.title": {
         "en": "Karabiner-Elements Settings"
         ,"ja": "Karabiner-Elementsの設定"
+        ,"zh-Hans": "Karabiner-Elements 设置"
     }
 }

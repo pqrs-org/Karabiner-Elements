@@ -2,9 +2,11 @@
     "settings.uninstall.launch": {
         "en": "Launch uninstaller"
         ,"ja": "アンインストーラを起動"
+        ,"zh-Hans": "启动卸载程序"
     },
     "settings.uninstall.title": {
         "en": "Uninstall"
         ,"ja": "アンインストール"
+        ,"zh-Hans": "卸载"
     }
 }
