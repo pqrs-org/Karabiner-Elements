@@ -3,7 +3,7 @@
         "category_localization_key": "settings.key_picker.disable"
     },
     {
-        "label": "vk_none",
+        "label_localization_key": "settings.key_picker.key_code.vk_none",
         "not_from": true,
         "data": [
             {
@@ -15,7 +15,7 @@
         "category_localization_key": "settings.key_picker.modifiers"
     },
     {
-        "label": "caps_lock",
+        "label_localization_key": "settings.key_picker.key_code.caps_lock",
         "data": [
             {
                 "key_code": "caps_lock"
@@ -98,7 +98,7 @@
         "category_localization_key": "settings.key_picker.controls_symbols"
     },
     {
-        "label": "return_or_enter",
+        "label_localization_key": "settings.key_picker.key_code.return_or_enter",
         "data": [
             {
                 "key_code": "return_or_enter"
@@ -106,7 +106,7 @@
         ]
     },
     {
-        "label": "escape",
+        "label_localization_key": "settings.key_picker.key_code.escape",
         "data": [
             {
                 "key_code": "escape"
@@ -114,7 +114,7 @@
         ]
     },
     {
-        "label": "delete_or_backspace",
+        "label_localization_key": "settings.key_picker.key_code.delete_or_backspace",
         "data": [
             {
                 "key_code": "delete_or_backspace"
@@ -122,7 +122,7 @@
         ]
     },
     {
-        "label": "delete_forward",
+        "label_localization_key": "settings.key_picker.key_code.delete_forward",
         "data": [
             {
                 "key_code": "delete_forward"
@@ -130,7 +130,7 @@
         ]
     },
     {
-        "label": "tab",
+        "label_localization_key": "settings.key_picker.key_code.tab",
         "data": [
             {
                 "key_code": "tab"
@@ -138,7 +138,7 @@
         ]
     },
     {
-        "label": "spacebar",
+        "label_localization_key": "settings.key_picker.key_code.spacebar",
         "data": [
             {
                 "key_code": "spacebar"
@@ -146,7 +146,7 @@
         ]
     },
     {
-        "label": "hyphen (-)",
+        "label_localization_key": "settings.key_picker.key_code.hyphen",
         "data": [
             {
                 "key_code": "hyphen"
@@ -154,7 +154,7 @@
         ]
     },
     {
-        "label": "equal_sign (=)",
+        "label_localization_key": "settings.key_picker.key_code.equal_sign",
         "data": [
             {
                 "key_code": "equal_sign"
@@ -162,7 +162,7 @@
         ]
     },
     {
-        "label": "open_bracket [",
+        "label_localization_key": "settings.key_picker.key_code.open_bracket",
         "data": [
             {
                 "key_code": "open_bracket"
@@ -170,7 +170,7 @@
         ]
     },
     {
-        "label": "close_bracket ]",
+        "label_localization_key": "settings.key_picker.key_code.close_bracket",
         "data": [
             {
                 "key_code": "close_bracket"
@@ -178,7 +178,7 @@
         ]
     },
     {
-        "label": "backslash (\\)",
+        "label_localization_key": "settings.key_picker.key_code.backslash",
         "data": [
             {
                 "key_code": "backslash"
@@ -186,7 +186,7 @@
         ]
     },
     {
-        "label": "non_us_pound",
+        "label_localization_key": "settings.key_picker.key_code.non_us_pound",
         "data": [
             {
                 "key_code": "non_us_pound"
@@ -194,7 +194,7 @@
         ]
     },
     {
-        "label": "semicolon (;)",
+        "label_localization_key": "settings.key_picker.key_code.semicolon",
         "data": [
             {
                 "key_code": "semicolon"
@@ -202,7 +202,7 @@
         ]
     },
     {
-        "label": "quote (')",
+        "label_localization_key": "settings.key_picker.key_code.quote",
         "data": [
             {
                 "key_code": "quote"
@@ -210,7 +210,7 @@
         ]
     },
     {
-        "label": "grave_accent_and_tilde (`)",
+        "label_localization_key": "settings.key_picker.key_code.grave_accent_and_tilde",
         "data": [
             {
                 "key_code": "grave_accent_and_tilde"
@@ -218,7 +218,7 @@
         ]
     },
     {
-        "label": "comma (,)",
+        "label_localization_key": "settings.key_picker.key_code.comma",
         "data": [
             {
                 "key_code": "comma"
@@ -226,7 +226,7 @@
         ]
     },
     {
-        "label": "period (.)",
+        "label_localization_key": "settings.key_picker.key_code.period",
         "data": [
             {
                 "key_code": "period"
@@ -234,7 +234,7 @@
         ]
     },
     {
-        "label": "slash (/)",
+        "label_localization_key": "settings.key_picker.key_code.slash",
         "data": [
             {
                 "key_code": "slash"
@@ -242,7 +242,7 @@
         ]
     },
     {
-        "label": "non_us_backslash",
+        "label_localization_key": "settings.key_picker.key_code.non_us_backslash",
         "data": [
             {
                 "key_code": "non_us_backslash"
@@ -253,7 +253,7 @@
         "category_localization_key": "settings.key_picker.arrows"
     },
     {
-        "label": "up_arrow",
+        "label_localization_key": "settings.key_picker.key_code.up_arrow",
         "data": [
             {
                 "key_code": "up_arrow"
@@ -261,7 +261,7 @@
         ]
     },
     {
-        "label": "down_arrow",
+        "label_localization_key": "settings.key_picker.key_code.down_arrow",
         "data": [
             {
                 "key_code": "down_arrow"
@@ -269,7 +269,7 @@
         ]
     },
     {
-        "label": "left_arrow",
+        "label_localization_key": "settings.key_picker.key_code.left_arrow",
         "data": [
             {
                 "key_code": "left_arrow"
@@ -277,7 +277,7 @@
         ]
     },
     {
-        "label": "right_arrow",
+        "label_localization_key": "settings.key_picker.key_code.right_arrow",
         "data": [
             {
                 "key_code": "right_arrow"
@@ -285,7 +285,7 @@
         ]
     },
     {
-        "label": "page_up",
+        "label_localization_key": "settings.key_picker.key_code.page_up",
         "data": [
             {
                 "key_code": "page_up"
@@ -293,7 +293,7 @@
         ]
     },
     {
-        "label": "page_down",
+        "label_localization_key": "settings.key_picker.key_code.page_down",
         "data": [
             {
                 "key_code": "page_down"
@@ -301,7 +301,7 @@
         ]
     },
     {
-        "label": "home",
+        "label_localization_key": "settings.key_picker.key_code.home",
         "data": [
             {
                 "key_code": "home"
@@ -309,7 +309,7 @@
         ]
     },
     {
-        "label": "end",
+        "label_localization_key": "settings.key_picker.key_code.end",
         "data": [
             {
                 "key_code": "end"
@@ -814,7 +814,7 @@
     },
     {
         "not_from": true,
-        "label": "display_brightness_decrement",
+        "label_localization_key": "settings.key_picker.consumer_key_code.display_brightness_decrement",
         "data": [
             {
                 "consumer_key_code": "display_brightness_decrement"
@@ -823,7 +823,7 @@
     },
     {
         "not_from": true,
-        "label": "display_brightness_increment",
+        "label_localization_key": "settings.key_picker.consumer_key_code.display_brightness_increment",
         "data": [
             {
                 "consumer_key_code": "display_brightness_increment"
@@ -832,7 +832,7 @@
     },
     {
         "not_from": true,
-        "label": "mission_control",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.mission_control",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "mission_control"
@@ -841,7 +841,7 @@
     },
     {
         "not_from": true,
-        "label": "spotlight",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.spotlight",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "spotlight"
@@ -850,7 +850,7 @@
     },
     {
         "not_from": true,
-        "label": "dictation",
+        "label_localization_key": "settings.key_picker.consumer_key_code.dictation",
         "data": [
             {
                 "consumer_key_code": "dictation"
@@ -868,7 +868,7 @@
     },
     {
         "not_from": true,
-        "label": "launchpad",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.launchpad",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "launchpad"
@@ -877,7 +877,7 @@
     },
     {
         "not_from": true,
-        "label": "dashboard",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.dashboard",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "dashboard"
@@ -886,7 +886,7 @@
     },
     {
         "not_from": true,
-        "label": "illumination_down",
+        "label_localization_key": "settings.key_picker.apple_vendor_top_case_key_code.illumination_down",
         "data": [
             {
                 "apple_vendor_top_case_key_code": "illumination_down"
@@ -895,7 +895,7 @@
     },
     {
         "not_from": true,
-        "label": "illumination_up",
+        "label_localization_key": "settings.key_picker.apple_vendor_top_case_key_code.illumination_up",
         "data": [
             {
                 "apple_vendor_top_case_key_code": "illumination_up"
@@ -903,7 +903,7 @@
         ]
     },
     {
-        "label": "rewind",
+        "label_localization_key": "settings.key_picker.consumer_key_code.rewind",
         "data": [
             {
                 "consumer_key_code": "rewind"
@@ -911,7 +911,7 @@
         ]
     },
     {
-        "label": "play_or_pause",
+        "label_localization_key": "settings.key_picker.consumer_key_code.play_or_pause",
         "data": [
             {
                 "consumer_key_code": "play_or_pause"
@@ -919,7 +919,7 @@
         ]
     },
     {
-        "label": "fast_forward",
+        "label_localization_key": "settings.key_picker.consumer_key_code.fast_forward",
         "data": [
             {
                 "consumer_key_code": "fast_forward"
@@ -927,7 +927,7 @@
         ]
     },
     {
-        "label": "mute",
+        "label_localization_key": "settings.key_picker.consumer_key_code.mute",
         "data": [
             {
                 "consumer_key_code": "mute"
@@ -935,7 +935,7 @@
         ]
     },
     {
-        "label": "volume_decrement",
+        "label_localization_key": "settings.key_picker.consumer_key_code.volume_decrement",
         "data": [
             {
                 "consumer_key_code": "volume_decrement"
@@ -943,7 +943,7 @@
         ]
     },
     {
-        "label": "volume_increment",
+        "label_localization_key": "settings.key_picker.consumer_key_code.volume_increment",
         "data": [
             {
                 "consumer_key_code": "volume_increment"
@@ -968,7 +968,7 @@
         ]
     },
     {
-        "label": "eject",
+        "label_localization_key": "settings.key_picker.consumer_key_code.eject",
         "data": [
             {
                 "consumer_key_code": "eject"
@@ -977,7 +977,7 @@
     },
     {
         "not_from": true,
-        "label": "brightness_down",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.brightness_down",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "brightness_down"
@@ -986,7 +986,7 @@
     },
     {
         "not_from": true,
-        "label": "brightness_up",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.brightness_up",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "brightness_up"
@@ -995,7 +995,7 @@
     },
     {
         "not_from": true,
-        "label": "brightness_down (2)",
+        "label_localization_key": "settings.key_picker.apple_vendor_top_case_key_code.brightness_down",
         "data": [
             {
                 "apple_vendor_top_case_key_code": "brightness_down"
@@ -1004,7 +1004,7 @@
     },
     {
         "not_from": true,
-        "label": "brightness_up (2)",
+        "label_localization_key": "settings.key_picker.apple_vendor_top_case_key_code.brightness_up",
         "data": [
             {
                 "apple_vendor_top_case_key_code": "brightness_up"
@@ -1012,7 +1012,7 @@
         ]
     },
     {
-        "label": "consumer_key_code::scan_previous_track",
+        "label_localization_key": "settings.key_picker.consumer_key_code.scan_previous_track",
         "data": [
             {
                 "consumer_key_code": "scan_previous_track"
@@ -1020,7 +1020,7 @@
         ]
     },
     {
-        "label": "consumer_key_code::scan_next_track",
+        "label_localization_key": "settings.key_picker.consumer_key_code.scan_next_track",
         "data": [
             {
                 "consumer_key_code": "scan_next_track"
@@ -1029,7 +1029,7 @@
     },
     {
         "not_to": true,
-        "label": "consumer_key_code::stop",
+        "label_localization_key": "settings.key_picker.consumer_key_code.stop",
         "data": [
             {
                 "consumer_key_code": "stop"
@@ -1038,7 +1038,7 @@
     },
     {
         "not_to": true,
-        "label": "bass_boost",
+        "label_localization_key": "settings.key_picker.consumer_key_code.bass_boost",
         "data": [
             {
                 "consumer_key_code": "bass_boost"
@@ -1047,7 +1047,7 @@
     },
     {
         "not_to": true,
-        "label": "loudness",
+        "label_localization_key": "settings.key_picker.consumer_key_code.loudness",
         "data": [
             {
                 "consumer_key_code": "loudness"
@@ -1056,7 +1056,7 @@
     },
     {
         "not_to": true,
-        "label": "bass_increment",
+        "label_localization_key": "settings.key_picker.consumer_key_code.bass_increment",
         "data": [
             {
                 "consumer_key_code": "bass_increment"
@@ -1065,7 +1065,7 @@
     },
     {
         "not_to": true,
-        "label": "bass_decrement",
+        "label_localization_key": "settings.key_picker.consumer_key_code.bass_decrement",
         "data": [
             {
                 "consumer_key_code": "bass_decrement"
@@ -1076,7 +1076,7 @@
         "category_localization_key": "settings.key_picker.keypad"
     },
     {
-        "label": "keypad_num_lock",
+        "label_localization_key": "settings.key_picker.key_code.keypad_num_lock",
         "data": [
             {
                 "key_code": "keypad_num_lock"
@@ -1084,7 +1084,7 @@
         ]
     },
     {
-        "label": "keypad_slash",
+        "label_localization_key": "settings.key_picker.key_code.keypad_slash",
         "data": [
             {
                 "key_code": "keypad_slash"
@@ -1092,7 +1092,7 @@
         ]
     },
     {
-        "label": "keypad_asterisk",
+        "label_localization_key": "settings.key_picker.key_code.keypad_asterisk",
         "data": [
             {
                 "key_code": "keypad_asterisk"
@@ -1100,7 +1100,7 @@
         ]
     },
     {
-        "label": "keypad_hyphen",
+        "label_localization_key": "settings.key_picker.key_code.keypad_hyphen",
         "data": [
             {
                 "key_code": "keypad_hyphen"
@@ -1108,7 +1108,7 @@
         ]
     },
     {
-        "label": "keypad_plus",
+        "label_localization_key": "settings.key_picker.key_code.keypad_plus",
         "data": [
             {
                 "key_code": "keypad_plus"
@@ -1116,7 +1116,7 @@
         ]
     },
     {
-        "label": "keypad_enter",
+        "label_localization_key": "settings.key_picker.key_code.keypad_enter",
         "data": [
             {
                 "key_code": "keypad_enter"
@@ -1124,7 +1124,7 @@
         ]
     },
     {
-        "label": "keypad_1",
+        "label_localization_key": "settings.key_picker.key_code.keypad_1",
         "data": [
             {
                 "key_code": "keypad_1"
@@ -1132,7 +1132,7 @@
         ]
     },
     {
-        "label": "keypad_2",
+        "label_localization_key": "settings.key_picker.key_code.keypad_2",
         "data": [
             {
                 "key_code": "keypad_2"
@@ -1140,7 +1140,7 @@
         ]
     },
     {
-        "label": "keypad_3",
+        "label_localization_key": "settings.key_picker.key_code.keypad_3",
         "data": [
             {
                 "key_code": "keypad_3"
@@ -1148,7 +1148,7 @@
         ]
     },
     {
-        "label": "keypad_4",
+        "label_localization_key": "settings.key_picker.key_code.keypad_4",
         "data": [
             {
                 "key_code": "keypad_4"
@@ -1156,7 +1156,7 @@
         ]
     },
     {
-        "label": "keypad_5",
+        "label_localization_key": "settings.key_picker.key_code.keypad_5",
         "data": [
             {
                 "key_code": "keypad_5"
@@ -1164,7 +1164,7 @@
         ]
     },
     {
-        "label": "keypad_6",
+        "label_localization_key": "settings.key_picker.key_code.keypad_6",
         "data": [
             {
                 "key_code": "keypad_6"
@@ -1172,7 +1172,7 @@
         ]
     },
     {
-        "label": "keypad_7",
+        "label_localization_key": "settings.key_picker.key_code.keypad_7",
         "data": [
             {
                 "key_code": "keypad_7"
@@ -1180,7 +1180,7 @@
         ]
     },
     {
-        "label": "keypad_8",
+        "label_localization_key": "settings.key_picker.key_code.keypad_8",
         "data": [
             {
                 "key_code": "keypad_8"
@@ -1188,7 +1188,7 @@
         ]
     },
     {
-        "label": "keypad_9",
+        "label_localization_key": "settings.key_picker.key_code.keypad_9",
         "data": [
             {
                 "key_code": "keypad_9"
@@ -1196,7 +1196,7 @@
         ]
     },
     {
-        "label": "keypad_0",
+        "label_localization_key": "settings.key_picker.key_code.keypad_0",
         "data": [
             {
                 "key_code": "keypad_0"
@@ -1204,7 +1204,7 @@
         ]
     },
     {
-        "label": "keypad_period",
+        "label_localization_key": "settings.key_picker.key_code.keypad_period",
         "data": [
             {
                 "key_code": "keypad_period"
@@ -1212,7 +1212,7 @@
         ]
     },
     {
-        "label": "keypad_equal_sign",
+        "label_localization_key": "settings.key_picker.key_code.keypad_equal_sign",
         "data": [
             {
                 "key_code": "keypad_equal_sign"
@@ -1220,7 +1220,7 @@
         ]
     },
     {
-        "label": "keypad_comma",
+        "label_localization_key": "settings.key_picker.key_code.keypad_comma",
         "data": [
             {
                 "key_code": "keypad_comma"
@@ -1231,7 +1231,7 @@
         "category_localization_key": "settings.key_picker.pc"
     },
     {
-        "label": "print_screen",
+        "label_localization_key": "settings.key_picker.key_code.print_screen",
         "data": [
             {
                 "key_code": "print_screen"
@@ -1239,7 +1239,7 @@
         ]
     },
     {
-        "label": "scroll_lock",
+        "label_localization_key": "settings.key_picker.key_code.scroll_lock",
         "data": [
             {
                 "key_code": "scroll_lock"
@@ -1247,7 +1247,7 @@
         ]
     },
     {
-        "label": "pause",
+        "label_localization_key": "settings.key_picker.key_code.pause",
         "data": [
             {
                 "key_code": "pause"
@@ -1255,7 +1255,7 @@
         ]
     },
     {
-        "label": "insert",
+        "label_localization_key": "settings.key_picker.key_code.insert",
         "data": [
             {
                 "key_code": "insert"
@@ -1263,7 +1263,7 @@
         ]
     },
     {
-        "label": "application",
+        "label_localization_key": "settings.key_picker.key_code.application",
         "data": [
             {
                 "key_code": "application"
@@ -1271,7 +1271,7 @@
         ]
     },
     {
-        "label": "help",
+        "label_localization_key": "settings.key_picker.key_code.help",
         "data": [
             {
                 "key_code": "help"
@@ -1279,7 +1279,7 @@
         ]
     },
     {
-        "label": "power",
+        "label_localization_key": "settings.key_picker.key_code.power",
         "data": [
             {
                 "key_code": "power"
@@ -1288,7 +1288,7 @@
     },
     {
         "not_to": true,
-        "label": "execute",
+        "label_localization_key": "settings.key_picker.key_code.execute",
         "data": [
             {
                 "key_code": "execute"
@@ -1297,7 +1297,7 @@
     },
     {
         "not_to": true,
-        "label": "menu",
+        "label_localization_key": "settings.key_picker.key_code.menu",
         "data": [
             {
                 "key_code": "menu"
@@ -1306,7 +1306,7 @@
     },
     {
         "not_to": true,
-        "label": "select",
+        "label_localization_key": "settings.key_picker.key_code.select",
         "data": [
             {
                 "key_code": "select"
@@ -1315,7 +1315,7 @@
     },
     {
         "not_to": true,
-        "label": "stop",
+        "label_localization_key": "settings.key_picker.key_code.stop",
         "data": [
             {
                 "key_code": "stop"
@@ -1324,7 +1324,7 @@
     },
     {
         "not_to": true,
-        "label": "again",
+        "label_localization_key": "settings.key_picker.key_code.again",
         "data": [
             {
                 "key_code": "again"
@@ -1333,7 +1333,7 @@
     },
     {
         "not_to": true,
-        "label": "undo",
+        "label_localization_key": "settings.key_picker.key_code.undo",
         "data": [
             {
                 "key_code": "undo"
@@ -1342,7 +1342,7 @@
     },
     {
         "not_to": true,
-        "label": "cut",
+        "label_localization_key": "settings.key_picker.key_code.cut",
         "data": [
             {
                 "key_code": "cut"
@@ -1351,7 +1351,7 @@
     },
     {
         "not_to": true,
-        "label": "copy",
+        "label_localization_key": "settings.key_picker.key_code.copy",
         "data": [
             {
                 "key_code": "copy"
@@ -1360,7 +1360,7 @@
     },
     {
         "not_to": true,
-        "label": "paste",
+        "label_localization_key": "settings.key_picker.key_code.paste",
         "data": [
             {
                 "key_code": "paste"
@@ -1369,7 +1369,7 @@
     },
     {
         "not_to": true,
-        "label": "find",
+        "label_localization_key": "settings.key_picker.key_code.find",
         "data": [
             {
                 "key_code": "find"
@@ -1380,7 +1380,7 @@
         "category_localization_key": "settings.key_picker.international"
     },
     {
-        "label": "international1",
+        "label_localization_key": "settings.key_picker.key_code.international1",
         "data": [
             {
                 "key_code": "international1"
@@ -1389,7 +1389,7 @@
     },
     {
         "not_to": true,
-        "label": "international2",
+        "label_localization_key": "settings.key_picker.key_code.international2",
         "data": [
             {
                 "key_code": "international2"
@@ -1397,7 +1397,7 @@
         ]
     },
     {
-        "label": "international3",
+        "label_localization_key": "settings.key_picker.key_code.international3",
         "data": [
             {
                 "key_code": "international3"
@@ -1406,7 +1406,7 @@
     },
     {
         "not_to": true,
-        "label": "international4",
+        "label_localization_key": "settings.key_picker.key_code.international4",
         "data": [
             {
                 "key_code": "international4"
@@ -1415,7 +1415,7 @@
     },
     {
         "not_to": true,
-        "label": "international5",
+        "label_localization_key": "settings.key_picker.key_code.international5",
         "data": [
             {
                 "key_code": "international5"
@@ -1424,7 +1424,7 @@
     },
     {
         "not_to": true,
-        "label": "international6",
+        "label_localization_key": "settings.key_picker.key_code.international6",
         "data": [
             {
                 "key_code": "international6"
@@ -1433,7 +1433,7 @@
     },
     {
         "not_to": true,
-        "label": "international7",
+        "label_localization_key": "settings.key_picker.key_code.international7",
         "data": [
             {
                 "key_code": "international7"
@@ -1442,7 +1442,7 @@
     },
     {
         "not_to": true,
-        "label": "international8",
+        "label_localization_key": "settings.key_picker.key_code.international8",
         "data": [
             {
                 "key_code": "international8"
@@ -1451,7 +1451,7 @@
     },
     {
         "not_to": true,
-        "label": "international9",
+        "label_localization_key": "settings.key_picker.key_code.international9",
         "data": [
             {
                 "key_code": "international9"
@@ -1459,7 +1459,7 @@
         ]
     },
     {
-        "label": "lang1",
+        "label_localization_key": "settings.key_picker.key_code.lang1",
         "data": [
             {
                 "key_code": "lang1"
@@ -1467,7 +1467,7 @@
         ]
     },
     {
-        "label": "lang2",
+        "label_localization_key": "settings.key_picker.key_code.lang2",
         "data": [
             {
                 "key_code": "lang2"
@@ -1476,7 +1476,7 @@
     },
     {
         "not_to": true,
-        "label": "lang3",
+        "label_localization_key": "settings.key_picker.key_code.lang3",
         "data": [
             {
                 "key_code": "lang3"
@@ -1485,7 +1485,7 @@
     },
     {
         "not_to": true,
-        "label": "lang4",
+        "label_localization_key": "settings.key_picker.key_code.lang4",
         "data": [
             {
                 "key_code": "lang4"
@@ -1494,7 +1494,7 @@
     },
     {
         "not_to": true,
-        "label": "lang5",
+        "label_localization_key": "settings.key_picker.key_code.lang5",
         "data": [
             {
                 "key_code": "lang5"
@@ -1503,7 +1503,7 @@
     },
     {
         "not_to": true,
-        "label": "lang6",
+        "label_localization_key": "settings.key_picker.key_code.lang6",
         "data": [
             {
                 "key_code": "lang6"
@@ -1512,7 +1512,7 @@
     },
     {
         "not_to": true,
-        "label": "lang7",
+        "label_localization_key": "settings.key_picker.key_code.lang7",
         "data": [
             {
                 "key_code": "lang7"
@@ -1521,7 +1521,7 @@
     },
     {
         "not_to": true,
-        "label": "lang8",
+        "label_localization_key": "settings.key_picker.key_code.lang8",
         "data": [
             {
                 "key_code": "lang8"
@@ -1530,7 +1530,7 @@
     },
     {
         "not_to": true,
-        "label": "lang9",
+        "label_localization_key": "settings.key_picker.key_code.lang9",
         "data": [
             {
                 "key_code": "lang9"
@@ -1541,7 +1541,7 @@
         "category_localization_key": "settings.key_picker.japanese"
     },
     {
-        "label": "ABCキー（英数キー）",
+        "label_localization_key": "settings.key_picker.key_code.japanese_eisuu",
         "data": [
             {
                 "key_code": "japanese_eisuu"
@@ -1549,7 +1549,7 @@
         ]
     },
     {
-        "label": "あいうキー（かなキー）",
+        "label_localization_key": "settings.key_picker.key_code.japanese_kana",
         "data": [
             {
                 "key_code": "japanese_kana"
@@ -1557,7 +1557,7 @@
         ]
     },
     {
-        "label": "PCキーボードの無変換キー",
+        "label_localization_key": "settings.key_picker.key_code.japanese_pc_nfer",
         "not_to": true,
         "data": [
             {
@@ -1566,7 +1566,7 @@
         ]
     },
     {
-        "label": "PCキーボードの変換キー",
+        "label_localization_key": "settings.key_picker.key_code.japanese_pc_xfer",
         "not_to": true,
         "data": [
             {
@@ -1575,7 +1575,7 @@
         ]
     },
     {
-        "label": "PCキーボードのかなキー",
+        "label_localization_key": "settings.key_picker.key_code.japanese_pc_katakana",
         "not_to": true,
         "data": [
             {
@@ -1588,263 +1588,263 @@
     },
     {
         "unsafe_from": true,
-        "label": "button1",
+        "label_localization_key": "settings.key_picker.pointing_button.button1",
         "data": [{ "pointing_button": "button1" }]
     },
-    { "label": "button2", "data": [{ "pointing_button": "button2" }] },
-    { "label": "button3", "data": [{ "pointing_button": "button3" }] },
-    { "label": "button4", "data": [{ "pointing_button": "button4" }] },
-    { "label": "button5", "data": [{ "pointing_button": "button5" }] },
-    { "label": "button6", "data": [{ "pointing_button": "button6" }] },
-    { "label": "button7", "data": [{ "pointing_button": "button7" }] },
-    { "label": "button8", "data": [{ "pointing_button": "button8" }] },
-    { "label": "button9", "data": [{ "pointing_button": "button9" }] },
-    { "label": "button10", "data": [{ "pointing_button": "button10" }] },
-    { "label": "button11", "data": [{ "pointing_button": "button11" }] },
-    { "label": "button12", "data": [{ "pointing_button": "button12" }] },
-    { "label": "button13", "data": [{ "pointing_button": "button13" }] },
-    { "label": "button14", "data": [{ "pointing_button": "button14" }] },
-    { "label": "button15", "data": [{ "pointing_button": "button15" }] },
-    { "label": "button16", "data": [{ "pointing_button": "button16" }] },
-    { "label": "button17", "data": [{ "pointing_button": "button17" }] },
-    { "label": "button18", "data": [{ "pointing_button": "button18" }] },
-    { "label": "button19", "data": [{ "pointing_button": "button19" }] },
-    { "label": "button20", "data": [{ "pointing_button": "button20" }] },
-    { "label": "button21", "data": [{ "pointing_button": "button21" }] },
-    { "label": "button22", "data": [{ "pointing_button": "button22" }] },
-    { "label": "button23", "data": [{ "pointing_button": "button23" }] },
-    { "label": "button24", "data": [{ "pointing_button": "button24" }] },
-    { "label": "button25", "data": [{ "pointing_button": "button25" }] },
-    { "label": "button26", "data": [{ "pointing_button": "button26" }] },
-    { "label": "button27", "data": [{ "pointing_button": "button27" }] },
-    { "label": "button28", "data": [{ "pointing_button": "button28" }] },
-    { "label": "button29", "data": [{ "pointing_button": "button29" }] },
-    { "label": "button30", "data": [{ "pointing_button": "button30" }] },
-    { "label": "button31", "data": [{ "pointing_button": "button31" }] },
-    { "label": "button32", "data": [{ "pointing_button": "button32" }] },
-    { "label": "button33", "data": [{ "pointing_button": "button33" }] },
-    { "label": "button34", "data": [{ "pointing_button": "button34" }] },
-    { "label": "button35", "data": [{ "pointing_button": "button35" }] },
-    { "label": "button36", "data": [{ "pointing_button": "button36" }] },
-    { "label": "button37", "data": [{ "pointing_button": "button37" }] },
-    { "label": "button38", "data": [{ "pointing_button": "button38" }] },
-    { "label": "button39", "data": [{ "pointing_button": "button39" }] },
-    { "label": "button40", "data": [{ "pointing_button": "button40" }] },
-    { "label": "button41", "data": [{ "pointing_button": "button41" }] },
-    { "label": "button42", "data": [{ "pointing_button": "button42" }] },
-    { "label": "button43", "data": [{ "pointing_button": "button43" }] },
-    { "label": "button44", "data": [{ "pointing_button": "button44" }] },
-    { "label": "button45", "data": [{ "pointing_button": "button45" }] },
-    { "label": "button46", "data": [{ "pointing_button": "button46" }] },
-    { "label": "button47", "data": [{ "pointing_button": "button47" }] },
-    { "label": "button48", "data": [{ "pointing_button": "button48" }] },
-    { "label": "button49", "data": [{ "pointing_button": "button49" }] },
-    { "label": "button50", "data": [{ "pointing_button": "button50" }] },
-    { "label": "button51", "data": [{ "pointing_button": "button51" }] },
-    { "label": "button52", "data": [{ "pointing_button": "button52" }] },
-    { "label": "button53", "data": [{ "pointing_button": "button53" }] },
-    { "label": "button54", "data": [{ "pointing_button": "button54" }] },
-    { "label": "button55", "data": [{ "pointing_button": "button55" }] },
-    { "label": "button56", "data": [{ "pointing_button": "button56" }] },
-    { "label": "button57", "data": [{ "pointing_button": "button57" }] },
-    { "label": "button58", "data": [{ "pointing_button": "button58" }] },
-    { "label": "button59", "data": [{ "pointing_button": "button59" }] },
-    { "label": "button60", "data": [{ "pointing_button": "button60" }] },
-    { "label": "button61", "data": [{ "pointing_button": "button61" }] },
-    { "label": "button62", "data": [{ "pointing_button": "button62" }] },
-    { "label": "button63", "data": [{ "pointing_button": "button63" }] },
-    { "label": "button64", "data": [{ "pointing_button": "button64" }] },
-    { "label": "button65", "data": [{ "pointing_button": "button65" }] },
-    { "label": "button66", "data": [{ "pointing_button": "button66" }] },
-    { "label": "button67", "data": [{ "pointing_button": "button67" }] },
-    { "label": "button68", "data": [{ "pointing_button": "button68" }] },
-    { "label": "button69", "data": [{ "pointing_button": "button69" }] },
-    { "label": "button70", "data": [{ "pointing_button": "button70" }] },
-    { "label": "button71", "data": [{ "pointing_button": "button71" }] },
-    { "label": "button72", "data": [{ "pointing_button": "button72" }] },
-    { "label": "button73", "data": [{ "pointing_button": "button73" }] },
-    { "label": "button74", "data": [{ "pointing_button": "button74" }] },
-    { "label": "button75", "data": [{ "pointing_button": "button75" }] },
-    { "label": "button76", "data": [{ "pointing_button": "button76" }] },
-    { "label": "button77", "data": [{ "pointing_button": "button77" }] },
-    { "label": "button78", "data": [{ "pointing_button": "button78" }] },
-    { "label": "button79", "data": [{ "pointing_button": "button79" }] },
-    { "label": "button80", "data": [{ "pointing_button": "button80" }] },
-    { "label": "button81", "data": [{ "pointing_button": "button81" }] },
-    { "label": "button82", "data": [{ "pointing_button": "button82" }] },
-    { "label": "button83", "data": [{ "pointing_button": "button83" }] },
-    { "label": "button84", "data": [{ "pointing_button": "button84" }] },
-    { "label": "button85", "data": [{ "pointing_button": "button85" }] },
-    { "label": "button86", "data": [{ "pointing_button": "button86" }] },
-    { "label": "button87", "data": [{ "pointing_button": "button87" }] },
-    { "label": "button88", "data": [{ "pointing_button": "button88" }] },
-    { "label": "button89", "data": [{ "pointing_button": "button89" }] },
-    { "label": "button90", "data": [{ "pointing_button": "button90" }] },
-    { "label": "button91", "data": [{ "pointing_button": "button91" }] },
-    { "label": "button92", "data": [{ "pointing_button": "button92" }] },
-    { "label": "button93", "data": [{ "pointing_button": "button93" }] },
-    { "label": "button94", "data": [{ "pointing_button": "button94" }] },
-    { "label": "button95", "data": [{ "pointing_button": "button95" }] },
-    { "label": "button96", "data": [{ "pointing_button": "button96" }] },
-    { "label": "button97", "data": [{ "pointing_button": "button97" }] },
-    { "label": "button98", "data": [{ "pointing_button": "button98" }] },
-    { "label": "button99", "data": [{ "pointing_button": "button99" }] },
-    { "label": "button100", "data": [{ "pointing_button": "button100" }] },
-    { "label": "button101", "data": [{ "pointing_button": "button101" }] },
-    { "label": "button102", "data": [{ "pointing_button": "button102" }] },
-    { "label": "button103", "data": [{ "pointing_button": "button103" }] },
-    { "label": "button104", "data": [{ "pointing_button": "button104" }] },
-    { "label": "button105", "data": [{ "pointing_button": "button105" }] },
-    { "label": "button106", "data": [{ "pointing_button": "button106" }] },
-    { "label": "button107", "data": [{ "pointing_button": "button107" }] },
-    { "label": "button108", "data": [{ "pointing_button": "button108" }] },
-    { "label": "button109", "data": [{ "pointing_button": "button109" }] },
-    { "label": "button110", "data": [{ "pointing_button": "button110" }] },
-    { "label": "button111", "data": [{ "pointing_button": "button111" }] },
-    { "label": "button112", "data": [{ "pointing_button": "button112" }] },
-    { "label": "button113", "data": [{ "pointing_button": "button113" }] },
-    { "label": "button114", "data": [{ "pointing_button": "button114" }] },
-    { "label": "button115", "data": [{ "pointing_button": "button115" }] },
-    { "label": "button116", "data": [{ "pointing_button": "button116" }] },
-    { "label": "button117", "data": [{ "pointing_button": "button117" }] },
-    { "label": "button118", "data": [{ "pointing_button": "button118" }] },
-    { "label": "button119", "data": [{ "pointing_button": "button119" }] },
-    { "label": "button120", "data": [{ "pointing_button": "button120" }] },
-    { "label": "button121", "data": [{ "pointing_button": "button121" }] },
-    { "label": "button122", "data": [{ "pointing_button": "button122" }] },
-    { "label": "button123", "data": [{ "pointing_button": "button123" }] },
-    { "label": "button124", "data": [{ "pointing_button": "button124" }] },
-    { "label": "button125", "data": [{ "pointing_button": "button125" }] },
-    { "label": "button126", "data": [{ "pointing_button": "button126" }] },
-    { "label": "button127", "data": [{ "pointing_button": "button127" }] },
-    { "label": "button128", "data": [{ "pointing_button": "button128" }] },
-    { "label": "button129", "data": [{ "pointing_button": "button129" }] },
-    { "label": "button130", "data": [{ "pointing_button": "button130" }] },
-    { "label": "button131", "data": [{ "pointing_button": "button131" }] },
-    { "label": "button132", "data": [{ "pointing_button": "button132" }] },
-    { "label": "button133", "data": [{ "pointing_button": "button133" }] },
-    { "label": "button134", "data": [{ "pointing_button": "button134" }] },
-    { "label": "button135", "data": [{ "pointing_button": "button135" }] },
-    { "label": "button136", "data": [{ "pointing_button": "button136" }] },
-    { "label": "button137", "data": [{ "pointing_button": "button137" }] },
-    { "label": "button138", "data": [{ "pointing_button": "button138" }] },
-    { "label": "button139", "data": [{ "pointing_button": "button139" }] },
-    { "label": "button140", "data": [{ "pointing_button": "button140" }] },
-    { "label": "button141", "data": [{ "pointing_button": "button141" }] },
-    { "label": "button142", "data": [{ "pointing_button": "button142" }] },
-    { "label": "button143", "data": [{ "pointing_button": "button143" }] },
-    { "label": "button144", "data": [{ "pointing_button": "button144" }] },
-    { "label": "button145", "data": [{ "pointing_button": "button145" }] },
-    { "label": "button146", "data": [{ "pointing_button": "button146" }] },
-    { "label": "button147", "data": [{ "pointing_button": "button147" }] },
-    { "label": "button148", "data": [{ "pointing_button": "button148" }] },
-    { "label": "button149", "data": [{ "pointing_button": "button149" }] },
-    { "label": "button150", "data": [{ "pointing_button": "button150" }] },
-    { "label": "button151", "data": [{ "pointing_button": "button151" }] },
-    { "label": "button152", "data": [{ "pointing_button": "button152" }] },
-    { "label": "button153", "data": [{ "pointing_button": "button153" }] },
-    { "label": "button154", "data": [{ "pointing_button": "button154" }] },
-    { "label": "button155", "data": [{ "pointing_button": "button155" }] },
-    { "label": "button156", "data": [{ "pointing_button": "button156" }] },
-    { "label": "button157", "data": [{ "pointing_button": "button157" }] },
-    { "label": "button158", "data": [{ "pointing_button": "button158" }] },
-    { "label": "button159", "data": [{ "pointing_button": "button159" }] },
-    { "label": "button160", "data": [{ "pointing_button": "button160" }] },
-    { "label": "button161", "data": [{ "pointing_button": "button161" }] },
-    { "label": "button162", "data": [{ "pointing_button": "button162" }] },
-    { "label": "button163", "data": [{ "pointing_button": "button163" }] },
-    { "label": "button164", "data": [{ "pointing_button": "button164" }] },
-    { "label": "button165", "data": [{ "pointing_button": "button165" }] },
-    { "label": "button166", "data": [{ "pointing_button": "button166" }] },
-    { "label": "button167", "data": [{ "pointing_button": "button167" }] },
-    { "label": "button168", "data": [{ "pointing_button": "button168" }] },
-    { "label": "button169", "data": [{ "pointing_button": "button169" }] },
-    { "label": "button170", "data": [{ "pointing_button": "button170" }] },
-    { "label": "button171", "data": [{ "pointing_button": "button171" }] },
-    { "label": "button172", "data": [{ "pointing_button": "button172" }] },
-    { "label": "button173", "data": [{ "pointing_button": "button173" }] },
-    { "label": "button174", "data": [{ "pointing_button": "button174" }] },
-    { "label": "button175", "data": [{ "pointing_button": "button175" }] },
-    { "label": "button176", "data": [{ "pointing_button": "button176" }] },
-    { "label": "button177", "data": [{ "pointing_button": "button177" }] },
-    { "label": "button178", "data": [{ "pointing_button": "button178" }] },
-    { "label": "button179", "data": [{ "pointing_button": "button179" }] },
-    { "label": "button180", "data": [{ "pointing_button": "button180" }] },
-    { "label": "button181", "data": [{ "pointing_button": "button181" }] },
-    { "label": "button182", "data": [{ "pointing_button": "button182" }] },
-    { "label": "button183", "data": [{ "pointing_button": "button183" }] },
-    { "label": "button184", "data": [{ "pointing_button": "button184" }] },
-    { "label": "button185", "data": [{ "pointing_button": "button185" }] },
-    { "label": "button186", "data": [{ "pointing_button": "button186" }] },
-    { "label": "button187", "data": [{ "pointing_button": "button187" }] },
-    { "label": "button188", "data": [{ "pointing_button": "button188" }] },
-    { "label": "button189", "data": [{ "pointing_button": "button189" }] },
-    { "label": "button190", "data": [{ "pointing_button": "button190" }] },
-    { "label": "button191", "data": [{ "pointing_button": "button191" }] },
-    { "label": "button192", "data": [{ "pointing_button": "button192" }] },
-    { "label": "button193", "data": [{ "pointing_button": "button193" }] },
-    { "label": "button194", "data": [{ "pointing_button": "button194" }] },
-    { "label": "button195", "data": [{ "pointing_button": "button195" }] },
-    { "label": "button196", "data": [{ "pointing_button": "button196" }] },
-    { "label": "button197", "data": [{ "pointing_button": "button197" }] },
-    { "label": "button198", "data": [{ "pointing_button": "button198" }] },
-    { "label": "button199", "data": [{ "pointing_button": "button199" }] },
-    { "label": "button200", "data": [{ "pointing_button": "button200" }] },
-    { "label": "button201", "data": [{ "pointing_button": "button201" }] },
-    { "label": "button202", "data": [{ "pointing_button": "button202" }] },
-    { "label": "button203", "data": [{ "pointing_button": "button203" }] },
-    { "label": "button204", "data": [{ "pointing_button": "button204" }] },
-    { "label": "button205", "data": [{ "pointing_button": "button205" }] },
-    { "label": "button206", "data": [{ "pointing_button": "button206" }] },
-    { "label": "button207", "data": [{ "pointing_button": "button207" }] },
-    { "label": "button208", "data": [{ "pointing_button": "button208" }] },
-    { "label": "button209", "data": [{ "pointing_button": "button209" }] },
-    { "label": "button210", "data": [{ "pointing_button": "button210" }] },
-    { "label": "button211", "data": [{ "pointing_button": "button211" }] },
-    { "label": "button212", "data": [{ "pointing_button": "button212" }] },
-    { "label": "button213", "data": [{ "pointing_button": "button213" }] },
-    { "label": "button214", "data": [{ "pointing_button": "button214" }] },
-    { "label": "button215", "data": [{ "pointing_button": "button215" }] },
-    { "label": "button216", "data": [{ "pointing_button": "button216" }] },
-    { "label": "button217", "data": [{ "pointing_button": "button217" }] },
-    { "label": "button218", "data": [{ "pointing_button": "button218" }] },
-    { "label": "button219", "data": [{ "pointing_button": "button219" }] },
-    { "label": "button220", "data": [{ "pointing_button": "button220" }] },
-    { "label": "button221", "data": [{ "pointing_button": "button221" }] },
-    { "label": "button222", "data": [{ "pointing_button": "button222" }] },
-    { "label": "button223", "data": [{ "pointing_button": "button223" }] },
-    { "label": "button224", "data": [{ "pointing_button": "button224" }] },
-    { "label": "button225", "data": [{ "pointing_button": "button225" }] },
-    { "label": "button226", "data": [{ "pointing_button": "button226" }] },
-    { "label": "button227", "data": [{ "pointing_button": "button227" }] },
-    { "label": "button228", "data": [{ "pointing_button": "button228" }] },
-    { "label": "button229", "data": [{ "pointing_button": "button229" }] },
-    { "label": "button230", "data": [{ "pointing_button": "button230" }] },
-    { "label": "button231", "data": [{ "pointing_button": "button231" }] },
-    { "label": "button232", "data": [{ "pointing_button": "button232" }] },
-    { "label": "button233", "data": [{ "pointing_button": "button233" }] },
-    { "label": "button234", "data": [{ "pointing_button": "button234" }] },
-    { "label": "button235", "data": [{ "pointing_button": "button235" }] },
-    { "label": "button236", "data": [{ "pointing_button": "button236" }] },
-    { "label": "button237", "data": [{ "pointing_button": "button237" }] },
-    { "label": "button238", "data": [{ "pointing_button": "button238" }] },
-    { "label": "button239", "data": [{ "pointing_button": "button239" }] },
-    { "label": "button240", "data": [{ "pointing_button": "button240" }] },
-    { "label": "button241", "data": [{ "pointing_button": "button241" }] },
-    { "label": "button242", "data": [{ "pointing_button": "button242" }] },
-    { "label": "button243", "data": [{ "pointing_button": "button243" }] },
-    { "label": "button244", "data": [{ "pointing_button": "button244" }] },
-    { "label": "button245", "data": [{ "pointing_button": "button245" }] },
-    { "label": "button246", "data": [{ "pointing_button": "button246" }] },
-    { "label": "button247", "data": [{ "pointing_button": "button247" }] },
-    { "label": "button248", "data": [{ "pointing_button": "button248" }] },
-    { "label": "button249", "data": [{ "pointing_button": "button249" }] },
-    { "label": "button250", "data": [{ "pointing_button": "button250" }] },
-    { "label": "button251", "data": [{ "pointing_button": "button251" }] },
-    { "label": "button252", "data": [{ "pointing_button": "button252" }] },
-    { "label": "button253", "data": [{ "pointing_button": "button253" }] },
-    { "label": "button254", "data": [{ "pointing_button": "button254" }] },
-    { "label": "button255", "data": [{ "pointing_button": "button255" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button2", "data": [{ "pointing_button": "button2" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button3", "data": [{ "pointing_button": "button3" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button4", "data": [{ "pointing_button": "button4" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button5", "data": [{ "pointing_button": "button5" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button6", "data": [{ "pointing_button": "button6" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button7", "data": [{ "pointing_button": "button7" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button8", "data": [{ "pointing_button": "button8" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button9", "data": [{ "pointing_button": "button9" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button10", "data": [{ "pointing_button": "button10" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button11", "data": [{ "pointing_button": "button11" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button12", "data": [{ "pointing_button": "button12" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button13", "data": [{ "pointing_button": "button13" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button14", "data": [{ "pointing_button": "button14" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button15", "data": [{ "pointing_button": "button15" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button16", "data": [{ "pointing_button": "button16" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button17", "data": [{ "pointing_button": "button17" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button18", "data": [{ "pointing_button": "button18" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button19", "data": [{ "pointing_button": "button19" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button20", "data": [{ "pointing_button": "button20" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button21", "data": [{ "pointing_button": "button21" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button22", "data": [{ "pointing_button": "button22" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button23", "data": [{ "pointing_button": "button23" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button24", "data": [{ "pointing_button": "button24" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button25", "data": [{ "pointing_button": "button25" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button26", "data": [{ "pointing_button": "button26" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button27", "data": [{ "pointing_button": "button27" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button28", "data": [{ "pointing_button": "button28" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button29", "data": [{ "pointing_button": "button29" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button30", "data": [{ "pointing_button": "button30" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button31", "data": [{ "pointing_button": "button31" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button32", "data": [{ "pointing_button": "button32" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button33", "data": [{ "pointing_button": "button33" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button34", "data": [{ "pointing_button": "button34" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button35", "data": [{ "pointing_button": "button35" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button36", "data": [{ "pointing_button": "button36" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button37", "data": [{ "pointing_button": "button37" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button38", "data": [{ "pointing_button": "button38" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button39", "data": [{ "pointing_button": "button39" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button40", "data": [{ "pointing_button": "button40" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button41", "data": [{ "pointing_button": "button41" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button42", "data": [{ "pointing_button": "button42" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button43", "data": [{ "pointing_button": "button43" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button44", "data": [{ "pointing_button": "button44" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button45", "data": [{ "pointing_button": "button45" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button46", "data": [{ "pointing_button": "button46" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button47", "data": [{ "pointing_button": "button47" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button48", "data": [{ "pointing_button": "button48" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button49", "data": [{ "pointing_button": "button49" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button50", "data": [{ "pointing_button": "button50" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button51", "data": [{ "pointing_button": "button51" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button52", "data": [{ "pointing_button": "button52" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button53", "data": [{ "pointing_button": "button53" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button54", "data": [{ "pointing_button": "button54" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button55", "data": [{ "pointing_button": "button55" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button56", "data": [{ "pointing_button": "button56" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button57", "data": [{ "pointing_button": "button57" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button58", "data": [{ "pointing_button": "button58" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button59", "data": [{ "pointing_button": "button59" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button60", "data": [{ "pointing_button": "button60" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button61", "data": [{ "pointing_button": "button61" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button62", "data": [{ "pointing_button": "button62" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button63", "data": [{ "pointing_button": "button63" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button64", "data": [{ "pointing_button": "button64" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button65", "data": [{ "pointing_button": "button65" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button66", "data": [{ "pointing_button": "button66" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button67", "data": [{ "pointing_button": "button67" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button68", "data": [{ "pointing_button": "button68" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button69", "data": [{ "pointing_button": "button69" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button70", "data": [{ "pointing_button": "button70" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button71", "data": [{ "pointing_button": "button71" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button72", "data": [{ "pointing_button": "button72" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button73", "data": [{ "pointing_button": "button73" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button74", "data": [{ "pointing_button": "button74" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button75", "data": [{ "pointing_button": "button75" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button76", "data": [{ "pointing_button": "button76" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button77", "data": [{ "pointing_button": "button77" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button78", "data": [{ "pointing_button": "button78" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button79", "data": [{ "pointing_button": "button79" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button80", "data": [{ "pointing_button": "button80" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button81", "data": [{ "pointing_button": "button81" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button82", "data": [{ "pointing_button": "button82" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button83", "data": [{ "pointing_button": "button83" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button84", "data": [{ "pointing_button": "button84" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button85", "data": [{ "pointing_button": "button85" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button86", "data": [{ "pointing_button": "button86" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button87", "data": [{ "pointing_button": "button87" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button88", "data": [{ "pointing_button": "button88" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button89", "data": [{ "pointing_button": "button89" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button90", "data": [{ "pointing_button": "button90" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button91", "data": [{ "pointing_button": "button91" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button92", "data": [{ "pointing_button": "button92" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button93", "data": [{ "pointing_button": "button93" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button94", "data": [{ "pointing_button": "button94" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button95", "data": [{ "pointing_button": "button95" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button96", "data": [{ "pointing_button": "button96" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button97", "data": [{ "pointing_button": "button97" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button98", "data": [{ "pointing_button": "button98" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button99", "data": [{ "pointing_button": "button99" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button100", "data": [{ "pointing_button": "button100" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button101", "data": [{ "pointing_button": "button101" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button102", "data": [{ "pointing_button": "button102" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button103", "data": [{ "pointing_button": "button103" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button104", "data": [{ "pointing_button": "button104" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button105", "data": [{ "pointing_button": "button105" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button106", "data": [{ "pointing_button": "button106" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button107", "data": [{ "pointing_button": "button107" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button108", "data": [{ "pointing_button": "button108" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button109", "data": [{ "pointing_button": "button109" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button110", "data": [{ "pointing_button": "button110" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button111", "data": [{ "pointing_button": "button111" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button112", "data": [{ "pointing_button": "button112" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button113", "data": [{ "pointing_button": "button113" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button114", "data": [{ "pointing_button": "button114" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button115", "data": [{ "pointing_button": "button115" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button116", "data": [{ "pointing_button": "button116" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button117", "data": [{ "pointing_button": "button117" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button118", "data": [{ "pointing_button": "button118" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button119", "data": [{ "pointing_button": "button119" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button120", "data": [{ "pointing_button": "button120" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button121", "data": [{ "pointing_button": "button121" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button122", "data": [{ "pointing_button": "button122" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button123", "data": [{ "pointing_button": "button123" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button124", "data": [{ "pointing_button": "button124" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button125", "data": [{ "pointing_button": "button125" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button126", "data": [{ "pointing_button": "button126" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button127", "data": [{ "pointing_button": "button127" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button128", "data": [{ "pointing_button": "button128" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button129", "data": [{ "pointing_button": "button129" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button130", "data": [{ "pointing_button": "button130" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button131", "data": [{ "pointing_button": "button131" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button132", "data": [{ "pointing_button": "button132" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button133", "data": [{ "pointing_button": "button133" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button134", "data": [{ "pointing_button": "button134" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button135", "data": [{ "pointing_button": "button135" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button136", "data": [{ "pointing_button": "button136" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button137", "data": [{ "pointing_button": "button137" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button138", "data": [{ "pointing_button": "button138" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button139", "data": [{ "pointing_button": "button139" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button140", "data": [{ "pointing_button": "button140" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button141", "data": [{ "pointing_button": "button141" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button142", "data": [{ "pointing_button": "button142" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button143", "data": [{ "pointing_button": "button143" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button144", "data": [{ "pointing_button": "button144" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button145", "data": [{ "pointing_button": "button145" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button146", "data": [{ "pointing_button": "button146" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button147", "data": [{ "pointing_button": "button147" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button148", "data": [{ "pointing_button": "button148" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button149", "data": [{ "pointing_button": "button149" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button150", "data": [{ "pointing_button": "button150" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button151", "data": [{ "pointing_button": "button151" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button152", "data": [{ "pointing_button": "button152" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button153", "data": [{ "pointing_button": "button153" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button154", "data": [{ "pointing_button": "button154" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button155", "data": [{ "pointing_button": "button155" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button156", "data": [{ "pointing_button": "button156" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button157", "data": [{ "pointing_button": "button157" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button158", "data": [{ "pointing_button": "button158" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button159", "data": [{ "pointing_button": "button159" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button160", "data": [{ "pointing_button": "button160" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button161", "data": [{ "pointing_button": "button161" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button162", "data": [{ "pointing_button": "button162" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button163", "data": [{ "pointing_button": "button163" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button164", "data": [{ "pointing_button": "button164" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button165", "data": [{ "pointing_button": "button165" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button166", "data": [{ "pointing_button": "button166" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button167", "data": [{ "pointing_button": "button167" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button168", "data": [{ "pointing_button": "button168" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button169", "data": [{ "pointing_button": "button169" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button170", "data": [{ "pointing_button": "button170" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button171", "data": [{ "pointing_button": "button171" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button172", "data": [{ "pointing_button": "button172" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button173", "data": [{ "pointing_button": "button173" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button174", "data": [{ "pointing_button": "button174" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button175", "data": [{ "pointing_button": "button175" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button176", "data": [{ "pointing_button": "button176" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button177", "data": [{ "pointing_button": "button177" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button178", "data": [{ "pointing_button": "button178" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button179", "data": [{ "pointing_button": "button179" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button180", "data": [{ "pointing_button": "button180" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button181", "data": [{ "pointing_button": "button181" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button182", "data": [{ "pointing_button": "button182" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button183", "data": [{ "pointing_button": "button183" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button184", "data": [{ "pointing_button": "button184" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button185", "data": [{ "pointing_button": "button185" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button186", "data": [{ "pointing_button": "button186" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button187", "data": [{ "pointing_button": "button187" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button188", "data": [{ "pointing_button": "button188" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button189", "data": [{ "pointing_button": "button189" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button190", "data": [{ "pointing_button": "button190" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button191", "data": [{ "pointing_button": "button191" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button192", "data": [{ "pointing_button": "button192" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button193", "data": [{ "pointing_button": "button193" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button194", "data": [{ "pointing_button": "button194" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button195", "data": [{ "pointing_button": "button195" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button196", "data": [{ "pointing_button": "button196" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button197", "data": [{ "pointing_button": "button197" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button198", "data": [{ "pointing_button": "button198" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button199", "data": [{ "pointing_button": "button199" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button200", "data": [{ "pointing_button": "button200" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button201", "data": [{ "pointing_button": "button201" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button202", "data": [{ "pointing_button": "button202" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button203", "data": [{ "pointing_button": "button203" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button204", "data": [{ "pointing_button": "button204" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button205", "data": [{ "pointing_button": "button205" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button206", "data": [{ "pointing_button": "button206" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button207", "data": [{ "pointing_button": "button207" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button208", "data": [{ "pointing_button": "button208" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button209", "data": [{ "pointing_button": "button209" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button210", "data": [{ "pointing_button": "button210" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button211", "data": [{ "pointing_button": "button211" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button212", "data": [{ "pointing_button": "button212" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button213", "data": [{ "pointing_button": "button213" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button214", "data": [{ "pointing_button": "button214" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button215", "data": [{ "pointing_button": "button215" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button216", "data": [{ "pointing_button": "button216" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button217", "data": [{ "pointing_button": "button217" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button218", "data": [{ "pointing_button": "button218" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button219", "data": [{ "pointing_button": "button219" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button220", "data": [{ "pointing_button": "button220" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button221", "data": [{ "pointing_button": "button221" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button222", "data": [{ "pointing_button": "button222" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button223", "data": [{ "pointing_button": "button223" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button224", "data": [{ "pointing_button": "button224" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button225", "data": [{ "pointing_button": "button225" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button226", "data": [{ "pointing_button": "button226" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button227", "data": [{ "pointing_button": "button227" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button228", "data": [{ "pointing_button": "button228" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button229", "data": [{ "pointing_button": "button229" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button230", "data": [{ "pointing_button": "button230" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button231", "data": [{ "pointing_button": "button231" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button232", "data": [{ "pointing_button": "button232" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button233", "data": [{ "pointing_button": "button233" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button234", "data": [{ "pointing_button": "button234" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button235", "data": [{ "pointing_button": "button235" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button236", "data": [{ "pointing_button": "button236" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button237", "data": [{ "pointing_button": "button237" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button238", "data": [{ "pointing_button": "button238" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button239", "data": [{ "pointing_button": "button239" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button240", "data": [{ "pointing_button": "button240" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button241", "data": [{ "pointing_button": "button241" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button242", "data": [{ "pointing_button": "button242" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button243", "data": [{ "pointing_button": "button243" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button244", "data": [{ "pointing_button": "button244" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button245", "data": [{ "pointing_button": "button245" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button246", "data": [{ "pointing_button": "button246" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button247", "data": [{ "pointing_button": "button247" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button248", "data": [{ "pointing_button": "button248" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button249", "data": [{ "pointing_button": "button249" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button250", "data": [{ "pointing_button": "button250" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button251", "data": [{ "pointing_button": "button251" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button252", "data": [{ "pointing_button": "button252" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button253", "data": [{ "pointing_button": "button253" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button254", "data": [{ "pointing_button": "button254" }] },
+    { "label_localization_key": "settings.key_picker.pointing_button.button255", "data": [{ "pointing_button": "button255" }] },
     {
         "category_localization_key": "settings.key_picker.dpad"
     },
@@ -2556,354 +2556,354 @@
         "category_localization_key": "settings.key_picker.launch"
     },
     {
-        "label": "al_consumer_control_configuration (Music)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_consumer_control_configuration",
         "data": [{ "consumer_key_code": "al_consumer_control_configuration" }]
     },
     {
-        "label": "al_word_processor (Pages)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_word_processor",
         "data": [{ "consumer_key_code": "al_word_processor" }]
     },
     {
-        "label": "al_text_editor (TextEdit)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_text_editor",
         "data": [{ "consumer_key_code": "al_text_editor" }]
     },
     {
-        "label": "al_spreadsheet (Numbers)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_spreadsheet",
         "data": [{ "consumer_key_code": "al_spreadsheet" }]
     },
     {
         "not_to": true,
-        "label": "al_graphics_editor",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_graphics_editor",
         "data": [{ "consumer_key_code": "al_graphics_editor" }]
     },
     {
-        "label": "al_presentation_app (Keynote)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_presentation_app",
         "data": [{ "consumer_key_code": "al_presentation_app" }]
     },
     {
         "not_to": true,
-        "label": "al_database_app",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_database_app",
         "data": [{ "consumer_key_code": "al_database_app" }]
     },
     {
-        "label": "al_email_reader (Mail)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_email_reader",
         "data": [{ "consumer_key_code": "al_email_reader" }]
     },
     {
         "not_to": true,
-        "label": "al_newsreader",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_newsreader",
         "data": [{ "consumer_key_code": "al_newsreader" }]
     },
     {
         "not_to": true,
-        "label": "al_voicemail",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_voicemail",
         "data": [{ "consumer_key_code": "al_voicemail" }]
     },
     {
         "not_to": true,
-        "label": "al_contacts_or_address_book",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_contacts_or_address_book",
         "data": [{ "consumer_key_code": "al_contacts_or_address_book" }]
     },
     {
         "not_to": true,
-        "label": "al_Calendar_Or_Schedule",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_Calendar_Or_Schedule",
         "data": [{ "consumer_key_code": "al_Calendar_Or_Schedule" }]
     },
     {
         "not_to": true,
-        "label": "al_task_or_project_manager",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_task_or_project_manager",
         "data": [{ "consumer_key_code": "al_task_or_project_manager" }]
     },
     {
         "not_to": true,
-        "label": "al_log_or_journal_or_timecard",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_log_or_journal_or_timecard",
         "data": [{ "consumer_key_code": "al_log_or_journal_or_timecard" }]
     },
     {
         "not_to": true,
-        "label": "al_checkbook_or_finance",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_checkbook_or_finance",
         "data": [{ "consumer_key_code": "al_checkbook_or_finance" }]
     },
     {
-        "label": "al_calculator (Calculator)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_calculator",
         "data": [{ "consumer_key_code": "al_calculator" }]
     },
     {
         "not_to": true,
-        "label": "al_a_or_v_capture_or_playback",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_a_or_v_capture_or_playback",
         "data": [{ "consumer_key_code": "al_a_or_v_capture_or_playback" }]
     },
     {
-        "label": "al_local_machine_browser (Finder)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_local_machine_browser",
         "data": [{ "consumer_key_code": "al_local_machine_browser" }]
     },
     {
         "not_to": true,
-        "label": "al_lan_or_wan_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_lan_or_wan_browser",
         "data": [{ "consumer_key_code": "al_lan_or_wan_browser" }]
     },
     {
-        "label": "al_internet_browser (Safari)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_internet_browser",
         "data": [{ "consumer_key_code": "al_internet_browser" }]
     },
     {
         "not_to": true,
-        "label": "al_remote_networking_or_isp_connect",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_remote_networking_or_isp_connect",
         "data": [{ "consumer_key_code": "al_remote_networking_or_isp_connect" }]
     },
     {
         "not_to": true,
-        "label": "al_network_conference",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_network_conference",
         "data": [{ "consumer_key_code": "al_network_conference" }]
     },
     {
         "not_to": true,
-        "label": "al_network_chat",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_network_chat",
         "data": [{ "consumer_key_code": "al_network_chat" }]
     },
     {
         "not_to": true,
-        "label": "al_telephony_or_dialer",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_telephony_or_dialer",
         "data": [{ "consumer_key_code": "al_telephony_or_dialer" }]
     },
     {
         "not_to": true,
-        "label": "al_logon",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_logon",
         "data": [{ "consumer_key_code": "al_logon" }]
     },
     {
         "not_to": true,
-        "label": "al_logoff",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_logoff",
         "data": [{ "consumer_key_code": "al_logoff" }]
     },
     {
         "not_to": true,
-        "label": "al_logon_or_logoff",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_logon_or_logoff",
         "data": [{ "consumer_key_code": "al_logon_or_logoff" }]
     },
     {
         "not_to": true,
-        "label": "al_control_panel",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_control_panel",
         "data": [{ "consumer_key_code": "al_control_panel" }]
     },
     {
         "not_to": true,
-        "label": "al_command_line_processor_or_run",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_command_line_processor_or_run",
         "data": [{ "consumer_key_code": "al_command_line_processor_or_run" }]
     },
     {
         "not_to": true,
-        "label": "al_process_or_task_manager",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_process_or_task_manager",
         "data": [{ "consumer_key_code": "al_process_or_task_manager" }]
     },
     {
         "not_to": true,
-        "label": "al_select_task_or_application",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_select_task_or_application",
         "data": [{ "consumer_key_code": "al_select_task_or_application" }]
     },
     {
         "not_to": true,
-        "label": "al_next_task_or_application",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_next_task_or_application",
         "data": [{ "consumer_key_code": "al_next_task_or_application" }]
     },
     {
         "not_to": true,
-        "label": "al_previous_task_or_application",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_previous_task_or_application",
         "data": [{ "consumer_key_code": "al_previous_task_or_application" }]
     },
     {
         "not_to": true,
-        "label": "al_preemptive_halt_task_or_application",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_preemptive_halt_task_or_application",
         "data": [
             { "consumer_key_code": "al_preemptive_halt_task_or_application" }
         ]
     },
     {
         "not_to": true,
-        "label": "al_integrated_help_center",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_integrated_help_center",
         "data": [{ "consumer_key_code": "al_integrated_help_center" }]
     },
     {
         "not_to": true,
-        "label": "al_documents",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_documents",
         "data": [{ "consumer_key_code": "al_documents" }]
     },
     {
         "not_to": true,
-        "label": "al_thesaurus",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_thesaurus",
         "data": [{ "consumer_key_code": "al_thesaurus" }]
     },
     {
-        "label": "al_dictionary (Dictionary)",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_dictionary",
         "data": [{ "consumer_key_code": "al_dictionary" }]
     },
     {
         "not_to": true,
-        "label": "al_desktop",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_desktop",
         "data": [{ "consumer_key_code": "al_desktop" }]
     },
     {
         "not_to": true,
-        "label": "al_spell_check",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_spell_check",
         "data": [{ "consumer_key_code": "al_spell_check" }]
     },
     {
         "not_to": true,
-        "label": "al_grammer_check",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_grammer_check",
         "data": [{ "consumer_key_code": "al_grammer_check" }]
     },
     {
         "not_to": true,
-        "label": "al_wireless_status",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_wireless_status",
         "data": [{ "consumer_key_code": "al_wireless_status" }]
     },
     {
         "not_to": true,
-        "label": "al_keyboard_layout",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_keyboard_layout",
         "data": [{ "consumer_key_code": "al_keyboard_layout" }]
     },
     {
         "not_to": true,
-        "label": "al_virus_protection",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_virus_protection",
         "data": [{ "consumer_key_code": "al_virus_protection" }]
     },
     {
         "not_to": true,
-        "label": "al_encryption",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_encryption",
         "data": [{ "consumer_key_code": "al_encryption" }]
     },
     {
         "not_to": true,
-        "label": "al_screen_saver",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_screen_saver",
         "data": [{ "consumer_key_code": "al_screen_saver" }]
     },
     {
         "not_to": true,
-        "label": "al_alarms",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_alarms",
         "data": [{ "consumer_key_code": "al_alarms" }]
     },
     {
         "not_to": true,
-        "label": "al_clock",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_clock",
         "data": [{ "consumer_key_code": "al_clock" }]
     },
     {
         "not_to": true,
-        "label": "al_file_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_file_browser",
         "data": [{ "consumer_key_code": "al_file_browser" }]
     },
     {
         "not_to": true,
-        "label": "al_power_status",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_power_status",
         "data": [{ "consumer_key_code": "al_power_status" }]
     },
     {
         "not_to": true,
-        "label": "al_image_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_image_browser",
         "data": [{ "consumer_key_code": "al_image_browser" }]
     },
     {
         "not_to": true,
-        "label": "al_audio_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_audio_browser",
         "data": [{ "consumer_key_code": "al_audio_browser" }]
     },
     {
         "not_to": true,
-        "label": "al_movie_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_movie_browser",
         "data": [{ "consumer_key_code": "al_movie_browser" }]
     },
     {
         "not_to": true,
-        "label": "al_digital_rights_manager",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_digital_rights_manager",
         "data": [{ "consumer_key_code": "al_digital_rights_manager" }]
     },
     {
         "not_to": true,
-        "label": "al_digital_wallet",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_digital_wallet",
         "data": [{ "consumer_key_code": "al_digital_wallet" }]
     },
     {
         "not_to": true,
-        "label": "al_instant_messaging",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_instant_messaging",
         "data": [{ "consumer_key_code": "al_instant_messaging" }]
     },
     {
         "not_to": true,
-        "label": "al_oem_feature_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_oem_feature_browser",
         "data": [{ "consumer_key_code": "al_oem_feature_browser" }]
     },
     {
         "not_to": true,
-        "label": "al_oem_help",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_oem_help",
         "data": [{ "consumer_key_code": "al_oem_help" }]
     },
     {
         "not_to": true,
-        "label": "al_online_community",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_online_community",
         "data": [{ "consumer_key_code": "al_online_community" }]
     },
     {
         "not_to": true,
-        "label": "al_entertainment_content_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_entertainment_content_browser",
         "data": [{ "consumer_key_code": "al_entertainment_content_browser" }]
     },
     {
         "not_to": true,
-        "label": "al_online_shopping_browswer",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_online_shopping_browswer",
         "data": [{ "consumer_key_code": "al_online_shopping_browswer" }]
     },
     {
         "not_to": true,
-        "label": "al_smart_card_information_or_help",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_smart_card_information_or_help",
         "data": [{ "consumer_key_code": "al_smart_card_information_or_help" }]
     },
     {
         "not_to": true,
-        "label": "al_market_monitor_or_finance_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_market_monitor_or_finance_browser",
         "data": [
             { "consumer_key_code": "al_market_monitor_or_finance_browser" }
         ]
     },
     {
         "not_to": true,
-        "label": "al_customized_corporate_news_browser",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_customized_corporate_news_browser",
         "data": [
             { "consumer_key_code": "al_customized_corporate_news_browser" }
         ]
     },
     {
         "not_to": true,
-        "label": "al_online_activity_browswer",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_online_activity_browswer",
         "data": [{ "consumer_key_code": "al_online_activity_browswer" }]
     },
     {
         "not_to": true,
-        "label": "al_research_or_search_browswer",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_research_or_search_browswer",
         "data": [{ "consumer_key_code": "al_research_or_search_browswer" }]
     },
     {
         "not_to": true,
-        "label": "al_audio_player",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_audio_player",
         "data": [{ "consumer_key_code": "al_audio_player" }]
     },
     {
         "not_to": true,
-        "label": "al_message_status",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_message_status",
         "data": [{ "consumer_key_code": "al_message_status" }]
     },
     {
         "not_to": true,
-        "label": "al_contact_sync",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_contact_sync",
         "data": [{ "consumer_key_code": "al_contact_sync" }]
     },
     {
         "not_to": true,
-        "label": "al_navigation",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_navigation",
         "data": [{ "consumer_key_code": "al_navigation" }]
     },
     {
         "not_to": true,
-        "label": "al_contextaware_desktop_assistant",
+        "label_localization_key": "settings.key_picker.consumer_key_code.al_contextaware_desktop_assistant",
         "data": [{ "consumer_key_code": "al_contextaware_desktop_assistant" }]
     },
     {
@@ -2911,59 +2911,59 @@
     },
     {
         "not_to": true,
-        "label": "ac_search",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_search",
         "data": [{ "consumer_key_code": "ac_search" }]
     },
     {
         "not_to": true,
-        "label": "ac_home",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_home",
         "data": [{ "consumer_key_code": "ac_home" }]
     },
     {
         "not_to": true,
-        "label": "ac_back",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_back",
         "data": [{ "consumer_key_code": "ac_back" }]
     },
     {
         "not_to": true,
-        "label": "ac_forward",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_forward",
         "data": [{ "consumer_key_code": "ac_forward" }]
     },
     {
         "not_to": true,
-        "label": "ac_refresh",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_refresh",
         "data": [{ "consumer_key_code": "ac_refresh" }]
     },
     {
         "not_to": true,
-        "label": "ac_bookmarks",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_bookmarks",
         "data": [{ "consumer_key_code": "ac_bookmarks" }]
     },
     {
         "not_to": true,
-        "label": "ac_zoom_in",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_zoom_in",
         "data": [{ "consumer_key_code": "ac_zoom_in" }]
     },
     {
         "not_to": true,
-        "label": "ac_zoom_out",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_zoom_out",
         "data": [{ "consumer_key_code": "ac_zoom_out" }]
     },
     {
         "not_to": true,
-        "label": "ac_keyboard_layout_select",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_keyboard_layout_select",
         "data": [{ "consumer_key_code": "ac_keyboard_layout_select" }]
     },
     {
-        "label": "ac_desktop_show_all_windows",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_desktop_show_all_windows",
         "data": [{ "consumer_key_code": "ac_desktop_show_all_windows" }]
     },
     {
-        "label": "ac_soft_key_left",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_soft_key_left",
         "data": [{ "consumer_key_code": "ac_soft_key_left" }]
     },
     {
-        "label": "ac_desktop_show_all_applications",
+        "label_localization_key": "settings.key_picker.consumer_key_code.ac_desktop_show_all_applications",
         "data": [{ "consumer_key_code": "ac_desktop_show_all_applications" }]
     },
     {
@@ -2971,132 +2971,132 @@
     },
     {
         "not_to": true,
-        "label": "menu_pick",
+        "label_localization_key": "settings.key_picker.consumer_key_code.menu_pick",
         "data": [{ "consumer_key_code": "menu_pick" }]
     },
     {
         "not_to": true,
-        "label": "menu_up",
+        "label_localization_key": "settings.key_picker.consumer_key_code.menu_up",
         "data": [{ "consumer_key_code": "menu_up" }]
     },
     {
         "not_to": true,
-        "label": "menu_down",
+        "label_localization_key": "settings.key_picker.consumer_key_code.menu_down",
         "data": [{ "consumer_key_code": "menu_down" }]
     },
     {
         "not_to": true,
-        "label": "menu_left",
+        "label_localization_key": "settings.key_picker.consumer_key_code.menu_left",
         "data": [{ "consumer_key_code": "menu_left" }]
     },
     {
         "not_to": true,
-        "label": "menu_right",
+        "label_localization_key": "settings.key_picker.consumer_key_code.menu_right",
         "data": [{ "consumer_key_code": "menu_right" }]
     },
     {
         "not_to": true,
-        "label": "menu_escape",
+        "label_localization_key": "settings.key_picker.consumer_key_code.menu_escape",
         "data": [{ "consumer_key_code": "menu_escape" }]
     },
     {
         "not_to": true,
-        "label": "menu_value_increase",
+        "label_localization_key": "settings.key_picker.consumer_key_code.menu_value_increase",
         "data": [{ "consumer_key_code": "menu_value_increase" }]
     },
     {
         "not_to": true,
-        "label": "menu_value_decrease",
+        "label_localization_key": "settings.key_picker.consumer_key_code.menu_value_decrease",
         "data": [{ "consumer_key_code": "menu_value_decrease" }]
     },
     {
         "not_to": true,
-        "label": "data_on_screen",
+        "label_localization_key": "settings.key_picker.consumer_key_code.data_on_screen",
         "data": [{ "consumer_key_code": "data_on_screen" }]
     },
     {
         "not_to": true,
-        "label": "closed_caption",
+        "label_localization_key": "settings.key_picker.consumer_key_code.closed_caption",
         "data": [{ "consumer_key_code": "closed_caption" }]
     },
     {
         "not_to": true,
-        "label": "closed_caption_select",
+        "label_localization_key": "settings.key_picker.consumer_key_code.closed_caption_select",
         "data": [{ "consumer_key_code": "closed_caption_select" }]
     },
     {
         "not_to": true,
-        "label": "vcr_or_tv",
+        "label_localization_key": "settings.key_picker.consumer_key_code.vcr_or_tv",
         "data": [{ "consumer_key_code": "vcr_or_tv" }]
     },
     {
         "not_to": true,
-        "label": "broadcast_mode",
+        "label_localization_key": "settings.key_picker.consumer_key_code.broadcast_mode",
         "data": [{ "consumer_key_code": "broadcast_mode" }]
     },
     {
         "not_to": true,
-        "label": "snapshot",
+        "label_localization_key": "settings.key_picker.consumer_key_code.snapshot",
         "data": [{ "consumer_key_code": "snapshot" }]
     },
     {
         "not_to": true,
-        "label": "still",
+        "label_localization_key": "settings.key_picker.consumer_key_code.still",
         "data": [{ "consumer_key_code": "still" }]
     },
     {
         "not_to": true,
-        "label": "picture_in_picture_toggle",
+        "label_localization_key": "settings.key_picker.consumer_key_code.picture_in_picture_toggle",
         "data": [{ "consumer_key_code": "picture_in_picture_toggle" }]
     },
     {
         "not_to": true,
-        "label": "picture_in_picture_swap",
+        "label_localization_key": "settings.key_picker.consumer_key_code.picture_in_picture_swap",
         "data": [{ "consumer_key_code": "picture_in_picture_swap" }]
     },
     {
         "not_to": true,
-        "label": "red_menu_button",
+        "label_localization_key": "settings.key_picker.consumer_key_code.red_menu_button",
         "data": [{ "consumer_key_code": "red_menu_button" }]
     },
     {
         "not_to": true,
-        "label": "green_menu_button",
+        "label_localization_key": "settings.key_picker.consumer_key_code.green_menu_button",
         "data": [{ "consumer_key_code": "green_menu_button" }]
     },
     {
         "not_to": true,
-        "label": "blue_menu_button",
+        "label_localization_key": "settings.key_picker.consumer_key_code.blue_menu_button",
         "data": [{ "consumer_key_code": "blue_menu_button" }]
     },
     {
         "not_to": true,
-        "label": "yellow_menu_button",
+        "label_localization_key": "settings.key_picker.consumer_key_code.yellow_menu_button",
         "data": [{ "consumer_key_code": "yellow_menu_button" }]
     },
     {
         "not_to": true,
-        "label": "aspect",
+        "label_localization_key": "settings.key_picker.consumer_key_code.aspect",
         "data": [{ "consumer_key_code": "aspect" }]
     },
     {
         "not_to": true,
-        "label": "three_dimensional_mode_select",
+        "label_localization_key": "settings.key_picker.consumer_key_code.three_dimensional_mode_select",
         "data": [{ "consumer_key_code": "three_dimensional_mode_select" }]
     },
     {
         "not_to": true,
-        "label": "microphone",
+        "label_localization_key": "settings.key_picker.consumer_key_code.microphone",
         "data": [{ "consumer_key_code": "microphone" }]
     },
     {
         "not_to": true,
-        "label": "selection",
+        "label_localization_key": "settings.key_picker.consumer_key_code.selection",
         "data": [{ "consumer_key_code": "selection" }]
     },
     {
         "not_to": true,
-        "label": "system_app_menu",
+        "label_localization_key": "settings.key_picker.generic_desktop.system_app_menu",
         "data": [{ "generic_desktop": "system_app_menu" }]
     },
     {
@@ -3104,7 +3104,7 @@
     },
     {
         "not_to": true,
-        "label": "system_sleep",
+        "label_localization_key": "settings.key_picker.generic_desktop.system_sleep",
         "data": [
             {
                 "generic_desktop": "system_sleep"
@@ -3116,7 +3116,7 @@
     },
     {
         "not_to": true,
-        "label": "keypad_equal_sign_as400",
+        "label_localization_key": "settings.key_picker.key_code.keypad_equal_sign_as400",
         "data": [
             {
                 "key_code": "keypad_equal_sign_as400"
@@ -3125,7 +3125,7 @@
     },
     {
         "not_to": true,
-        "label": "locking_caps_lock",
+        "label_localization_key": "settings.key_picker.key_code.locking_caps_lock",
         "data": [
             {
                 "key_code": "locking_caps_lock"
@@ -3134,7 +3134,7 @@
     },
     {
         "not_to": true,
-        "label": "locking_num_lock",
+        "label_localization_key": "settings.key_picker.key_code.locking_num_lock",
         "data": [
             {
                 "key_code": "locking_num_lock"
@@ -3143,7 +3143,7 @@
     },
     {
         "not_to": true,
-        "label": "locking_scroll_lock",
+        "label_localization_key": "settings.key_picker.key_code.locking_scroll_lock",
         "data": [
             {
                 "key_code": "locking_scroll_lock"
@@ -3152,7 +3152,7 @@
     },
     {
         "not_to": true,
-        "label": "alternate_erase",
+        "label_localization_key": "settings.key_picker.key_code.alternate_erase",
         "data": [
             {
                 "key_code": "alternate_erase"
@@ -3161,7 +3161,7 @@
     },
     {
         "not_to": true,
-        "label": "sys_req_or_attention",
+        "label_localization_key": "settings.key_picker.key_code.sys_req_or_attention",
         "data": [
             {
                 "key_code": "sys_req_or_attention"
@@ -3170,7 +3170,7 @@
     },
     {
         "not_to": true,
-        "label": "cancel",
+        "label_localization_key": "settings.key_picker.key_code.cancel",
         "data": [
             {
                 "key_code": "cancel"
@@ -3179,7 +3179,7 @@
     },
     {
         "not_to": true,
-        "label": "clear",
+        "label_localization_key": "settings.key_picker.key_code.clear",
         "data": [
             {
                 "key_code": "clear"
@@ -3188,7 +3188,7 @@
     },
     {
         "not_to": true,
-        "label": "prior",
+        "label_localization_key": "settings.key_picker.key_code.prior",
         "data": [
             {
                 "key_code": "prior"
@@ -3206,7 +3206,7 @@
     },
     {
         "not_to": true,
-        "label": "separator",
+        "label_localization_key": "settings.key_picker.key_code.separator",
         "data": [
             {
                 "key_code": "separator"
@@ -3215,7 +3215,7 @@
     },
     {
         "not_to": true,
-        "label": "out",
+        "label_localization_key": "settings.key_picker.key_code.out",
         "data": [
             {
                 "key_code": "out"
@@ -3224,7 +3224,7 @@
     },
     {
         "not_to": true,
-        "label": "oper",
+        "label_localization_key": "settings.key_picker.key_code.oper",
         "data": [
             {
                 "key_code": "oper"
@@ -3233,7 +3233,7 @@
     },
     {
         "not_to": true,
-        "label": "clear_or_again",
+        "label_localization_key": "settings.key_picker.key_code.clear_or_again",
         "data": [
             {
                 "key_code": "clear_or_again"
@@ -3242,7 +3242,7 @@
     },
     {
         "not_to": true,
-        "label": "cr_sel_or_props",
+        "label_localization_key": "settings.key_picker.key_code.cr_sel_or_props",
         "data": [
             {
                 "key_code": "cr_sel_or_props"
@@ -3251,7 +3251,7 @@
     },
     {
         "not_to": true,
-        "label": "ex_sel",
+        "label_localization_key": "settings.key_picker.key_code.ex_sel",
         "data": [
             {
                 "key_code": "ex_sel"
@@ -3397,7 +3397,7 @@
         ]
     },
     {
-        "label": "key_code::display_brightness_decrement",
+        "label_localization_key": "settings.key_picker.key_code.display_brightness_decrement",
         "not_from": true,
         "data": [
             {
@@ -3406,7 +3406,7 @@
         ]
     },
     {
-        "label": "key_code::display_brightness_increment",
+        "label_localization_key": "settings.key_picker.key_code.display_brightness_increment",
         "not_from": true,
         "data": [
             {
@@ -3415,7 +3415,7 @@
         ]
     },
     {
-        "label": "key_code::rewind",
+        "label_localization_key": "settings.key_picker.key_code.rewind",
         "not_from": true,
         "data": [
             {
@@ -3424,7 +3424,7 @@
         ]
     },
     {
-        "label": "key_code::play_or_pause",
+        "label_localization_key": "settings.key_picker.key_code.play_or_pause",
         "not_from": true,
         "data": [
             {
@@ -3433,7 +3433,7 @@
         ]
     },
     {
-        "label": "key_code::fastforward",
+        "label_localization_key": "settings.key_picker.key_code.fastforward",
         "not_from": true,
         "data": [
             {
@@ -3442,7 +3442,7 @@
         ]
     },
     {
-        "label": "consumer_key_code::fastforward",
+        "label_localization_key": "settings.key_picker.consumer_key_code.fastforward",
         "data": [
             {
                 "consumer_key_code": "fastforward"
@@ -3450,7 +3450,7 @@
         ]
     },
     {
-        "label": "key_code::mute",
+        "label_localization_key": "settings.key_picker.key_code.mute",
         "data": [
             {
                 "key_code": "mute"
@@ -3458,7 +3458,7 @@
         ]
     },
     {
-        "label": "key_code::volume_decrement",
+        "label_localization_key": "settings.key_picker.key_code.volume_decrement",
         "data": [
             {
                 "key_code": "volume_decrement"
@@ -3466,7 +3466,7 @@
         ]
     },
     {
-        "label": "key_code::volume_increment",
+        "label_localization_key": "settings.key_picker.key_code.volume_increment",
         "data": [
             {
                 "key_code": "volume_increment"
@@ -3475,7 +3475,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_display_brightness_decrement",
+        "label_localization_key": "settings.key_picker.key_code.apple_display_brightness_decrement",
         "data": [
             {
                 "key_code": "apple_display_brightness_decrement"
@@ -3484,7 +3484,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_display_brightness_increment",
+        "label_localization_key": "settings.key_picker.key_code.apple_display_brightness_increment",
         "data": [
             {
                 "key_code": "apple_display_brightness_increment"
@@ -3493,7 +3493,7 @@
     },
     {
         "not_from": true,
-        "label": "key_code::dashboard",
+        "label_localization_key": "settings.key_picker.key_code.dashboard",
         "data": [
             {
                 "key_code": "dashboard"
@@ -3502,7 +3502,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_vendor_keyboard_key_code function",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.function",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "function"
@@ -3511,7 +3511,7 @@
     },
     {
         "not_from": true,
-        "label": "key_code::launchpad",
+        "label_localization_key": "settings.key_picker.key_code.launchpad",
         "data": [
             {
                 "key_code": "launchpad"
@@ -3520,7 +3520,7 @@
     },
     {
         "not_from": true,
-        "label": "key_code::mission_control",
+        "label_localization_key": "settings.key_picker.key_code.mission_control",
         "data": [
             {
                 "key_code": "mission_control"
@@ -3529,7 +3529,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_vendor_keyboard_key_code expose_desktop",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.expose_desktop",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "expose_desktop"
@@ -3538,7 +3538,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_vendor_keyboard_key_code language",
+        "label_localization_key": "settings.key_picker.apple_vendor_keyboard_key_code.language",
         "data": [
             {
                 "apple_vendor_keyboard_key_code": "language"
@@ -3546,7 +3546,7 @@
         ]
     },
     {
-        "label": "key_code::fn",
+        "label_localization_key": "settings.key_picker.key_code.fn",
         "data": [
             {
                 "key_code": "fn"
@@ -3555,7 +3555,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_top_case_display_brightness_decrement",
+        "label_localization_key": "settings.key_picker.key_code.apple_top_case_display_brightness_decrement",
         "data": [
             {
                 "key_code": "apple_top_case_display_brightness_decrement"
@@ -3564,7 +3564,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_top_case_display_brightness_increment",
+        "label_localization_key": "settings.key_picker.key_code.apple_top_case_display_brightness_increment",
         "data": [
             {
                 "key_code": "apple_top_case_display_brightness_increment"
@@ -3573,7 +3573,7 @@
     },
     {
         "not_from": true,
-        "label": "apple_vendor_top_case video_mirror",
+        "label_localization_key": "settings.key_picker.apple_vendor_top_case_key_code.video_mirror",
         "data": [
             {
                 "apple_vendor_top_case_key_code": "video_mirror"
@@ -3582,7 +3582,7 @@
     },
     {
         "not_from": true,
-        "label": "illumination_toggle",
+        "label_localization_key": "settings.key_picker.apple_vendor_top_case_key_code.illumination_toggle",
         "data": [
             {
                 "apple_vendor_top_case_key_code": "illumination_toggle"
@@ -3591,7 +3591,7 @@
     },
     {
         "not_from": true,
-        "label": "illumination_decrement",
+        "label_localization_key": "settings.key_picker.key_code.illumination_decrement",
         "data": [
             {
                 "key_code": "illumination_decrement"
@@ -3600,7 +3600,7 @@
     },
     {
         "not_from": true,
-        "label": "illumination_increment",
+        "label_localization_key": "settings.key_picker.key_code.illumination_increment",
         "data": [
             {
                 "key_code": "illumination_increment"

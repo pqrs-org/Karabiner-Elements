@@ -2,13 +2,16 @@
     "settings.profiles.add": {
         "en": "Add new profile"
         ,"ja": "新しいプロファイルを追加"
+        ,"zh-Hans": "添加新配置方案"
     },
     "settings.profiles.name": {
         "en": "Profile name:"
         ,"ja": "プロファイル名:"
+        ,"zh-Hans": "配置方案名称："
     },
     "settings.profiles.name_placeholder": {
         "en": "Profile name"
         ,"ja": "プロファイル名"
+        ,"zh-Hans": "配置方案名称"
     }
 }

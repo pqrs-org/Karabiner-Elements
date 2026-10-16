@@ -11,6 +11,8 @@ struct SimpleModificationDefinitionsTests {
     let catalog = try LocalizationCatalog(
       file: URL(fileURLWithPath: "../../../src/apps/localization/build/localizations.json"))
     let en = Locale(identifier: "en")
+    let ja = Locale(identifier: "ja")
+    let zhHans = Locale(identifier: "zh-Hans")
     let rows = try JSONSerialization.jsonObject(with: data) as! [[String: Any]]
 
     // Every key referenced by the bundled picker definitions must have a translation.
@@ -18,6 +20,7 @@ struct SimpleModificationDefinitionsTests {
       for field in ["label_localization_key", "category_localization_key"] {
         if let key = row[field] as? String {
           precondition(catalog.strings[key]?["en"] != nil, "Missing translation: \(key)")
+          precondition(catalog.strings[key]?["zh-Hans"] != nil, "Missing zh-Hans translation: \(key)")
         }
       }
     }
@@ -49,10 +52,17 @@ struct SimpleModificationDefinitionsTests {
     precondition(AppLanguage.text(fn, locale: en, catalog: catalog) == "fn (globe)")
     precondition(definitions.fromCategories.categories.contains { $0.include(label: fn) })
 
-    // Literal key names and unrecognized configuration JSON must remain readable.
+    // Localizing key names preserves English/Japanese display and event-based lookup.
     let capsLock = definitions.fromCategories.findLabel(jsonString: #"{"key_code":"caps_lock"}"#)
-    precondition(capsLock == "caps_lock")
+    precondition(capsLock == "settings.key_picker.key_code.caps_lock")
     precondition(AppLanguage.text(capsLock, locale: en, catalog: catalog) == "caps_lock")
+    precondition(AppLanguage.text(capsLock, locale: ja, catalog: catalog) == "caps_lock")
+    precondition(AppLanguage.text(capsLock, locale: zhHans, catalog: catalog) == "大写锁定键（caps_lock）")
+
+    // Literal key names and unrecognized configuration JSON must remain readable.
+    let letter = definitions.fromCategories.findLabel(jsonString: #"{"key_code":"a"}"#)
+    precondition(letter == "a")
+    precondition(AppLanguage.text(letter, locale: zhHans, catalog: catalog) == "a")
     let custom = #"{"key_code":"unknown_custom_key"}"#
     precondition(definitions.fromCategories.findLabel(jsonString: custom) == custom)
 
