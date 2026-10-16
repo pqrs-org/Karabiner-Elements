@@ -10,7 +10,7 @@
         ]
         ,"zh-Hans": [
             "Karabiner-Core-Service 需要使用辅助功能。\n",
-            "请在系统设置的“隐私与安全性”中允许访问。"
+            "请在“系统设置”的“隐私与安全”中授予该权限。"
         ]
     },
     "settings.setup.accessibility.permission": {
@@ -21,7 +21,7 @@
     "settings.setup.accessibility_required": {
         "en": "Please configure Accessibility first"
         ,"ja": "先にアクセシビリティを設定してください"
-        ,"zh-Hans": "请先设置辅助功能权限"
+        ,"zh-Hans": "请先配置辅助功能"
     },
     "settings.setup.completed.accessibility": {
         "en": "Accessibility access is allowed."
@@ -31,7 +31,7 @@
     "settings.setup.completed.driver": {
         "en": "Driver Extension is allowed."
         ,"ja": "ドライバー機能拡張は許可されています。"
-        ,"zh-Hans": "已允许驱动程序扩展。"
+        ,"zh-Hans": "已授予驱动程序扩展权限。"
     },
     "settings.setup.completed.input_monitoring": {
         "en": [
@@ -43,29 +43,29 @@
             "（アクセシビリティの許可により、取得が許可されている場合もあります。）"
         ]
         ,"zh-Hans": [
-            "已允许获取输入事件。\n",
-            "（也可能已通过辅助功能权限获得授权。）"
+            "已允许捕获输入事件。\n",
+            "（该权限也可能通过辅助功能权限间接授予。）"
         ]
     },
     "settings.setup.completed.services": {
         "en": "Background services are enabled."
         ,"ja": "バックグラウンドサービスは有効です。"
-        ,"zh-Hans": "已启用后台服务。"
+        ,"zh-Hans": "后台服务已启用。"
     },
     "settings.setup.configuration.parse_error": {
         "en": "karabiner.json couldn't be loaded due to a parse error"
         ,"ja": "構文エラーのためkarabiner.jsonを読み込めませんでした"
-        ,"zh-Hans": "karabiner.json 存在语法错误，无法加载"
+        ,"zh-Hans": "由于解析错误，无法加载 karabiner.json"
     },
     "settings.setup.configuration.parse_error_hint": {
         "en": "It looks like the file was edited manually and now contains invalid JSON."
         ,"ja": "手動で編集されたファイルに、無効なJSONが含まれているようです。"
-        ,"zh-Hans": "此文件可能经过手动编辑，导致 JSON 格式无效。"
+        ,"zh-Hans": "该文件似乎经过手动编辑，目前的内容不符合 JSON 格式。"
     },
     "settings.setup.configuration.permission_error": {
         "en": "karabiner.json couldn't be loaded because access was denied"
         ,"ja": "アクセスが拒否されたためkarabiner.jsonを読み込めませんでした"
-        ,"zh-Hans": "访问被拒绝，无法加载 karabiner.json"
+        ,"zh-Hans": "由于访问被拒绝，无法加载 karabiner.json"
     },
     "settings.setup.configuration.permission_error_hint": {
         "en": [
@@ -79,9 +79,9 @@
             "その後、Karabiner-Elementsを再起動してください。"
         ]
         ,"zh-Hans": [
-            "请将 karabiner.json 移到 Karabiner-Elements 可以访问的位置，",
+            "将 karabiner.json 移至 Karabiner-Elements 可以访问的位置，",
             "或为 Karabiner-Elements 及其后台服务授予“完全磁盘访问权限”。",
-            "然后重新启动 Karabiner-Elements。"
+            "然后重启 Karabiner-Elements。"
         ]
     },
     "settings.setup.connection.agent_retry": {
@@ -95,7 +95,7 @@
         ]
         ,"zh-Hans": [
             "无法建立连接。",
-            "请打开系统设置，将 Karabiner-Elements Non-Privileged Agents v3 关闭后再重新开启。"
+            "请打开“系统设置”，先停用 Karabiner-Elements Non-Privileged Agents v3，再重新启用。"
         ]
     },
     "settings.setup.connection.agent_waiting": {
@@ -118,34 +118,34 @@
             "他社製セキュリティソフトウェアがKarabiner-VirtualHIDDevice-Daemonとの通信を妨げている可能性があります。"
         ]
         ,"zh-Hans": [
-            "如果此提示持续出现，",
+            "如果此提示一直显示，",
             "可能是第三方安全软件阻止了与 Karabiner-VirtualHIDDevice-Daemon 的通信。"
         ]
     },
     "settings.setup.connection.virtual_hid_waiting": {
         "en": "Waiting for a connection from Karabiner-Core-Service to Karabiner-VirtualHIDDevice-Daemon"
         ,"ja": "Karabiner-Core-ServiceからKarabiner-VirtualHIDDevice-Daemonへの接続を待っています"
-        ,"zh-Hans": "正在等待 Karabiner-Core-Service 连接到 Karabiner-VirtualHIDDevice-Daemon"
+        ,"zh-Hans": "正在等待 Karabiner-Core-Service 与 Karabiner-VirtualHIDDevice-Daemon 建立连接"
     },
     "settings.setup.driver.activate": {
         "en": "Activate driver"
         ,"ja": "ドライバーを有効化"
-        ,"zh-Hans": "启用驱动程序"
+        ,"zh-Hans": "激活驱动"
     },
     "settings.setup.driver.activated": {
         "en": "Driver was successfully activated."
         ,"ja": "ドライバーを有効化しました。"
-        ,"zh-Hans": "驱动程序已启用。"
+        ,"zh-Hans": "驱动已成功激活。"
     },
     "settings.setup.driver.activating": {
         "en": "Activating ..."
         ,"ja": "有効化中…"
-        ,"zh-Hans": "正在启用…"
+        ,"zh-Hans": "正在激活…"
     },
     "settings.setup.driver.activation_failed": {
         "en": "Activation failed. (error: {status})"
         ,"ja": "有効化に失敗しました。（エラー: {status}）"
-        ,"zh-Hans": "启用失败。（错误：{status}）"
+        ,"zh-Hans": "激活失败。（错误：{status}）"
     },
     "settings.setup.driver.allow": {
         "en": "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Driver Extensions."
@@ -155,7 +155,7 @@
     "settings.setup.driver.deactivate": {
         "en": "Deactivate driver"
         ,"ja": "ドライバーを無効化"
-        ,"zh-Hans": "停用驱动程序"
+        ,"zh-Hans": "停用驱动"
     },
     "settings.setup.driver.deactivate_hint": {
         "en": [
@@ -167,14 +167,14 @@
             "次の手順で仮想ドライバーをいったん無効にしてみてください。"
         ]
         ,"zh-Hans": [
-            "如果重新启动 macOS 后仍然出现此提示，",
-            "请尝试按以下步骤暂时停用虚拟驱动程序。"
+            "如果重启 macOS 后仍出现此提示，",
+            "请尝试按以下步骤停用一次虚拟驱动。"
         ]
     },
     "settings.setup.driver.deactivated": {
         "en": "Driver was successfully deactivated."
         ,"ja": "ドライバーを無効化しました。"
-        ,"zh-Hans": "驱动程序已停用。"
+        ,"zh-Hans": "驱动已成功停用。"
     },
     "settings.setup.driver.deactivating": {
         "en": "Deactivating ..."
@@ -196,14 +196,14 @@
             "（管理者パスワードが必要です。）"
         ]
         ,"zh-Hans": [
-            "1. 点击下方按钮，停用驱动程序。\n",
-            "（需要输入管理员密码。）"
+            "1. 点击以下按钮停用驱动。\n",
+            "（需要管理员密码。）"
         ]
     },
     "settings.setup.driver.manual_driver_load_step_002_restart": {
         "en": "2. Restart macOS."
         ,"ja": "2. macOSを再起動します。"
-        ,"zh-Hans": "2. 重新启动 macOS。"
+        ,"zh-Hans": "2. 重启 macOS。"
     },
     "settings.setup.driver.manual_driver_load_step_003_automatic_load": {
         "en": [
@@ -215,14 +215,14 @@
             "「ドライバ機能拡張」の設定が表示されます。"
         ]
         ,"zh-Hans": [
-            "3. 重新启动后，驱动程序会自动加载，",
-            "并显示“驱动程序扩展”设置。"
+            "3. 重启后，驱动会自动加载，",
+            "“驱动程序扩展”设置也会随之出现。"
         ]
     },
     "settings.setup.driver.missing_extensions": {
         "en": "If the Driver Extensions is not displayed on Extensions."
         ,"ja": "機能拡張に「ドライバ機能拡張」が表示されない場合"
-        ,"zh-Hans": "如果“扩展”中未显示“驱动程序扩展”"
+        ,"zh-Hans": "“扩展”中未显示“驱动程序扩展”时"
     },
     "settings.setup.driver.missing_extensions_description": {
         "en": [
@@ -234,59 +234,59 @@
             "システム設定の「ログイン項目と機能拡張」に「ドライバ機能拡張」が表示されないことがあります。"
         ]
         ,"zh-Hans": [
-            "如果 macOS 在启动初期未能加载驱动程序，",
-            "系统设置的“登录项与扩展”中可能不会显示“驱动程序扩展”。"
+            "如果 macOS 在启动初期未能加载驱动，",
+            "“驱动程序扩展”可能不会出现在“系统设置”的“登录项与扩展”中。"
         ]
     },
     "settings.setup.driver.not_loaded": {
         "en": "The virtual keyboard and mouse driver is not loaded."
         ,"ja": "仮想キーボード・マウスドライバーが読み込まれていません。"
-        ,"zh-Hans": "虚拟键盘和鼠标驱动程序尚未加载。"
+        ,"zh-Hans": "虚拟键盘和鼠标驱动未加载。"
     },
     "settings.setup.driver.outdated": {
         "en": "The current virtual keyboard and mouse driver is outdated."
         ,"ja": "現在の仮想キーボード・マウスドライバーは古いバージョンです。"
-        ,"zh-Hans": "当前的虚拟键盘和鼠标驱动程序版本过旧。"
+        ,"zh-Hans": "当前的虚拟键盘和鼠标驱动版本过旧。"
     },
     "settings.setup.driver.permission": {
         "en": "Please grant permission for a Driver Extension"
         ,"ja": "ドライバー機能拡張を許可してください"
-        ,"zh-Hans": "请允许驱动程序扩展"
+        ,"zh-Hans": "请授予驱动程序扩展权限"
     },
     "settings.setup.driver.reactivate_hint": {
         "en": "In such cases, reactivating the driver may increase the chances of it loading successfully."
         ,"ja": "この場合は、ドライバーを再度有効にすると正常に読み込まれる可能性があります。"
-        ,"zh-Hans": "遇到这种情况，重新启用驱动程序可能有助于成功加载。"
+        ,"zh-Hans": "遇到这种情况，重新激活驱动可能会提高加载成功率。"
     },
     "settings.setup.driver.reactivate_steps": {
         "en": "How to reactivate driver:"
         ,"ja": "ドライバーを再度有効にする手順:"
-        ,"zh-Hans": "重新启用驱动程序的步骤："
+        ,"zh-Hans": "如何重新激活驱动："
     },
     "settings.setup.driver.restart_did_not_help": {
         "en": "If this message still appears after restarting macOS."
         ,"ja": "macOSを再起動してもこのメッセージが表示される場合"
-        ,"zh-Hans": "如果重新启动 macOS 后仍然出现此提示"
+        ,"zh-Hans": "重启 macOS 后仍出现此提示时"
     },
     "settings.setup.driver.restart_required": {
         "en": "macOS restart required"
         ,"ja": "macOSの再起動が必要です"
-        ,"zh-Hans": "需要重新启动 macOS"
+        ,"zh-Hans": "需要重启 macOS"
     },
     "settings.setup.driver.restart_to_upgrade": {
         "en": "Please restart macOS to upgrade the driver."
         ,"ja": "ドライバーを更新するため、macOSを再起動してください。"
-        ,"zh-Hans": "请重新启动 macOS，以更新驱动程序。"
+        ,"zh-Hans": "请重启 macOS 以升级驱动。"
     },
     "settings.setup.driver_legacy.allow": {
         "en": "Please allow \".Karabiner-VirtualHIDDevice-Manager\" on Privacy & Security System Settings."
         ,"ja": "システム設定の「プライバシーとセキュリティ」で「.Karabiner-VirtualHIDDevice-Manager」を許可してください。"
-        ,"zh-Hans": "请在系统设置的“隐私与安全性”中允许“.Karabiner-VirtualHIDDevice-Manager”。"
+        ,"zh-Hans": "请在“系统设置”的“隐私与安全”中允许“.Karabiner-VirtualHIDDevice-Manager”。"
     },
     "settings.setup.driver_legacy.missing_allow": {
         "en": "If the Allow button is not displayed on Privacy & Security."
         ,"ja": "「プライバシーとセキュリティ」に「許可」ボタンが表示されない場合"
-        ,"zh-Hans": "如果“隐私与安全性”中未显示“允许”按钮"
+        ,"zh-Hans": "“隐私与安全”中未显示“允许”按钮时"
     },
     "settings.setup.driver_legacy.missing_allow_description": {
         "en": [
@@ -298,8 +298,8 @@
             "システム設定の「プライバシーとセキュリティ」に「許可」ボタンが表示されないことがあります。"
         ]
         ,"zh-Hans": [
-            "如果 macOS 在启动初期未能加载驱动程序，",
-            "系统设置的“隐私与安全性”中可能不会显示“允许”按钮。"
+            "如果 macOS 在启动初期未能加载驱动，",
+            "“允许”按钮可能不会出现在“系统设置”的“隐私与安全”中。"
         ]
     },
     "settings.setup.driver_legacy.permission": {
@@ -310,12 +310,12 @@
     "settings.setup.driver_legacy.reinstall_hint": {
         "en": "In this case, you need to reinstall the driver in order for the button to appear."
         ,"ja": "この場合は、ボタンを表示するためにドライバーを再インストールする必要があります。"
-        ,"zh-Hans": "遇到这种情况，需要重新安装驱动程序，才能显示该按钮。"
+        ,"zh-Hans": "遇到这种情况，需要重新安装驱动，才能显示“允许”按钮。"
     },
     "settings.setup.driver_legacy.reinstall_steps": {
         "en": "How to reinstall driver:"
         ,"ja": "ドライバーを再インストールする手順:"
-        ,"zh-Hans": "重新安装驱动程序的步骤："
+        ,"zh-Hans": "如何重新安装驱动："
     },
     "settings.setup.driver_legacy.reinstallation_step_001_deactivate": {
         "en": [
@@ -327,29 +327,29 @@
             "（管理者パスワードが必要です。）"
         ]
         ,"zh-Hans": [
-            "1. 点击下方按钮，停用驱动程序。\n",
-            "（需要输入管理员密码。）"
+            "1. 点击以下按钮停用驱动。\n",
+            "（需要管理员密码。）"
         ]
     },
     "settings.setup.driver_legacy.reinstallation_step_002_restart": {
         "en": "2. Restart macOS."
         ,"ja": "2. macOSを再起動します。"
-        ,"zh-Hans": "2. 重新启动 macOS。"
+        ,"zh-Hans": "2. 重启 macOS。"
     },
     "settings.setup.driver_legacy.reinstallation_step_003_activate": {
         "en": "3. Press the following button to activate driver."
         ,"ja": "3. 次のボタンを押してドライバーを有効にします。"
-        ,"zh-Hans": "3. 点击下方按钮，启用驱动程序。"
+        ,"zh-Hans": "3. 点击以下按钮激活驱动。"
     },
     "settings.setup.driver_legacy.reinstallation_step_004_blocked": {
         "en": "4. \"System Extension Blocked\" alert is shown."
         ,"ja": "4.「機能拡張がブロックされました」という警告が表示されます。"
-        ,"zh-Hans": "4. 系统会显示“系统扩展被阻止”（System Extension Blocked）提示。"
+        ,"zh-Hans": "4. 系统将弹出“系统扩展被阻止”的警告。"
     },
     "settings.setup.driver_legacy.reinstallation_step_005_allow": {
         "en": "5. Open Privacy & Security System Settings and press the allow button."
         ,"ja": "5. システム設定の「プライバシーとセキュリティ」を開き、「許可」ボタンを押します。"
-        ,"zh-Hans": "5. 打开系统设置的“隐私与安全性”，点击“允许”按钮。"
+        ,"zh-Hans": "5. 打开“系统设置”的“隐私与安全”，点击“允许”按钮。"
     },
     "settings.setup.input_monitoring.description": {
         "en": [
@@ -361,8 +361,8 @@
             "システム設定の「プライバシーとセキュリティ」で許可してください。"
         ]
         ,"zh-Hans": [
-            "Karabiner-Core-Service 需要输入监控权限。\n",
-            "请在系统设置的“隐私与安全性”中允许访问。"
+            "Karabiner-Core-Service 需要“输入监控”权限。\n",
+            "请在“系统设置”的“隐私与安全”中授予该权限。"
         ]
     },
     "settings.setup.input_monitoring.permission": {
@@ -383,7 +383,7 @@
     "settings.setup.item.input_monitoring": {
         "en": "Capture Input Events"
         ,"ja": "入力イベントの取得"
-        ,"zh-Hans": "获取输入事件"
+        ,"zh-Hans": "捕获输入事件"
     },
     "settings.setup.item.services": {
         "en": "Background Services"
@@ -398,7 +398,7 @@
     "settings.setup.keyboard_type.change_later": {
         "en": "Note: You can change it later from the Virtual Keyboard settings."
         ,"ja": "後から「仮想キーボード」の設定で変更できます。"
-        ,"zh-Hans": "提示：之后可以在“虚拟键盘”设置中更改。"
+        ,"zh-Hans": "注：之后也可在“虚拟键盘”设置中更改。"
     },
     "settings.setup.keyboard_type.description": {
         "en": [
@@ -409,8 +409,8 @@
             "物理キーボードの配列にかかわらず、ここで選択したキーボードの種類がKarabiner-Elementsで使用されます。"
         ]
         ,"zh-Hans": [
-            "无论实际使用的键盘是什么类型，",
-            "Karabiner-Elements 都会使用此处选择的键盘类型。"
+            "无论实际使用哪种键盘，",
+            "Karabiner-Elements 都会采用此处选择的键盘类型。"
         ]
     },
     "settings.setup.keyboard_type.iso": {
@@ -421,7 +421,7 @@
     "settings.setup.keyboard_type.jis": {
         "en": "JIS (Japanese)"
         ,"ja": "JIS（日本語）"
-        ,"zh-Hans": "JIS（日语）"
+        ,"zh-Hans": "JIS（日文键盘）"
     },
     "settings.setup.keyboard_type.label": {
         "en": "Keyboard type:"
@@ -436,27 +436,27 @@
     "settings.setup.open_accessibility": {
         "en": "Go to Accessibility Setup"
         ,"ja": "アクセシビリティの設定に進む"
-        ,"zh-Hans": "前往设置辅助功能权限"
+        ,"zh-Hans": "前往“辅助功能”设置"
     },
     "settings.setup.open_services": {
         "en": "Go to Background Services Setup"
         ,"ja": "バックグラウンドサービスの設定に進む"
-        ,"zh-Hans": "前往设置后台服务"
+        ,"zh-Hans": "前往“后台服务”设置"
     },
     "settings.setup.services.description": {
         "en": "You need to permit the background services to use Karabiner-Elements."
         ,"ja": "Karabiner-Elementsを使用するには、バックグラウンドサービスの実行を許可する必要があります。"
-        ,"zh-Hans": "使用 Karabiner-Elements 需要允许后台服务运行。"
+        ,"zh-Hans": "你需要允许后台服务运行才能使用 Karabiner-Elements。"
     },
     "settings.setup.services.enable_hint": {
         "en": "Please enable the following items from System Settings > General > Login Items & Extensions."
         ,"ja": "システム設定 > 一般 > ログイン項目と機能拡張で、次の項目を有効にしてください。"
-        ,"zh-Hans": "请在“系统设置 > 通用 > 登录项与扩展”中启用以下项目。"
+        ,"zh-Hans": "请在“系统设置” > “通用” > “登录项与扩展”中启用以下项目。"
     },
     "settings.setup.services.not_running": {
         "en": "Some background services are not running"
         ,"ja": "一部のバックグラウンドサービスが実行されていません"
-        ,"zh-Hans": "部分后台服务未运行"
+        ,"zh-Hans": "部分后台服务未在运行"
     },
     "settings.setup.services.permission": {
         "en": "Please enable background services"
@@ -473,14 +473,14 @@
             "バックグラウンドサービスをいったん無効にしてから、再度有効にしてみてください。"
         ]
         ,"zh-Hans": [
-            "后台服务已启用，但其中一部分未运行。\n",
-            "请尝试先停用后台服务，然后再重新启用。"
+            "后台服务虽已启用，但部分服务尚未运行。\n",
+            "请尝试先停用后台服务，再重新启用。"
         ]
     },
     "settings.setup.services_required": {
         "en": "Please configure Background Services first"
         ,"ja": "先にバックグラウンドサービスを設定してください"
-        ,"zh-Hans": "请先设置后台服务"
+        ,"zh-Hans": "请先配置后台服务"
     },
     "settings.setup.system_settings.open": {
         "en": "Open System Settings…"
@@ -495,16 +495,16 @@
     "settings.setup.system_settings.open_function_keys": {
         "en": "Open System Settings > Function Keys…"
         ,"ja": "システム設定 > ファンクションキーを開く…"
-        ,"zh-Hans": "打开“系统设置 > 功能键”…"
+        ,"zh-Hans": "打开“系统设置” > “功能键”…"
     },
     "settings.setup.system_settings.open_login_items": {
         "en": "Open System Settings > General > Login Items & Extensions"
         ,"ja": "システム設定 > 一般 > ログイン項目と機能拡張を開く"
-        ,"zh-Hans": "打开“系统设置 > 通用 > 登录项与扩展”"
+        ,"zh-Hans": "打开“系统设置” > “通用” > “登录项与扩展”"
     },
     "settings.setup.system_settings.open_privacy": {
         "en": "Open Privacy & Security System Settings…"
         ,"ja": "システム設定の「プライバシーとセキュリティ」を開く…"
-        ,"zh-Hans": "打开系统设置的“隐私与安全性”…"
+        ,"zh-Hans": "打开“隐私与安全”设置…"
     }
 }

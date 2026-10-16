@@ -17,7 +17,7 @@
     "settings.sidebar.item.expert": {
         "en": "Expert"
         ,"ja": "エキスパート向け設定"
-        ,"zh-Hans": "高级设置"
+        ,"zh-Hans": "专家模式"
     },
     "settings.sidebar.item.function_keys": {
         "en": "Function Keys"
@@ -52,7 +52,7 @@
     "settings.sidebar.item.setup": {
         "en": "Setup"
         ,"ja": "セットアップ"
-        ,"zh-Hans": "初始设置"
+        ,"zh-Hans": "设置向导"
     },
     "settings.sidebar.item.simple_modifications": {
         "en": "Simple Modifications"
@@ -67,7 +67,7 @@
     "settings.sidebar.item.ui": {
         "en": "UI"
         ,"ja": "UI"
-        ,"zh-Hans": "界面"
+        ,"zh-Hans": "界面外观"
     },
     "settings.sidebar.item.uninstall": {
         "en": "Uninstall"
@@ -77,7 +77,7 @@
     "settings.sidebar.item.update": {
         "en": "Update"
         ,"ja": "アップデート"
-        ,"zh-Hans": "更新"
+        ,"zh-Hans": "软件更新"
     },
     "settings.sidebar.item.virtual_keyboard": {
         "en": "Virtual Keyboard"
@@ -92,7 +92,7 @@
     "settings.sidebar.section.configurations": {
         "en": "Configurations"
         ,"ja": "設定"
-        ,"zh-Hans": "设置"
+        ,"zh-Hans": "配置"
     },
     "settings.sidebar.section.diagnostic": {
         "en": "Diagnostic"

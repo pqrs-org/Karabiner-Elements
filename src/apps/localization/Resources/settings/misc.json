@@ -11,15 +11,15 @@
             "そのファイルでkarabiner.jsonを上書きすると以前の状態に戻せます。"
         ]
         ,"zh-Hans": [
-            "复制 karabiner.json 即可备份设置或将设置迁移到另一台电脑。",
-            "automatic_backups 文件夹中也保存了备份，",
-            "用其中的备份文件覆盖 karabiner.json 即可恢复到之前的状态。"
+            "复制 karabiner.json 即可备份设置，或将设置迁移到另一台电脑。",
+            "automatic_backups 文件夹中也保存了自动备份，",
+            "可用其中一个备份覆盖 karabiner.json，恢复到之前的状态。"
         ]
     },
     "settings.misc.enable_multitouch_extension": {
         "en": "Enable Multitouch Extension"
         ,"ja": "マルチタッチ拡張を有効にする"
-        ,"zh-Hans": "启用多点触控扩展"
+        ,"zh-Hans": "启用多点触控扩展（Multitouch Extension）"
     },
     "settings.misc.export_import": {
         "en": "Export & Import"
@@ -42,15 +42,15 @@
             "別のMacにKarabiner-Elementsの設定を移行しても、マルチタッチ拡張の有効・無効の状態は引き継がれません。"
         ]
         ,"zh-Hans": [
-            "此设置仅对当前硬件生效。",
+            "此设置专用于当前硬件。",
             "将 Karabiner-Elements 设置导入另一台 Mac 时，",
-            "不会迁移多点触控扩展的启用状态。"
+            "多点触控扩展的启用状态不会随之迁移。"
         ]
     },
     "settings.misc.multitouch_menu_hint": {
         "en": "You can also open the Multitouch Extension settings from the menu."
         ,"ja": "マルチタッチ拡張の設定はメニューからも開けます。"
-        ,"zh-Hans": "也可以从菜单打开多点触控扩展设置。"
+        ,"zh-Hans": "也可以从菜单栏打开多点触控扩展设置。"
     },
     "settings.misc.multitouch_title": {
         "en": "Extra tool: Multitouch Extension"
@@ -87,7 +87,7 @@
             "（管理者権限が必要です）"
         ]
         ,"zh-Hans": [
-            "设置系统默认配置后，即使尚未登录，也能使用 Karabiner-Elements。",
+            "设置系统默认配置后，登录前也能使用 Karabiner-Elements。",
             "（此操作需要管理员权限）"
         ]
     }

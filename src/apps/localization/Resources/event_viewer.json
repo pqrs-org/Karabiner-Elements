@@ -12,7 +12,7 @@
     "event_viewer.capture.input_start_hint": {
         "en": "Press Start capture to begin capturing input events."
         ,"ja": "「取得を開始」を押すと、入力イベントの取得が始まります。"
-        ,"zh-Hans": "点击“开始捕获”以捕获输入事件。"
+        ,"zh-Hans": "点击“开始捕获”，即可开始捕获输入事件。"
     },
     "event_viewer.capture.raw_events": {
         "en": "raw input events"
@@ -32,7 +32,7 @@
     "event_viewer.capture.raw_events_select": {
         "en": "Select a device to start capturing raw input events."
         ,"ja": "未加工の入力イベントを取得するデバイスを選択してください。"
-        ,"zh-Hans": "选择设备以开始捕获原始输入事件。"
+        ,"zh-Hans": "选择设备，即可开始捕获原始输入事件。"
     },
     "event_viewer.capture.raw_records": {
         "en": "raw input records"
@@ -52,7 +52,7 @@
     "event_viewer.capture.raw_records_select": {
         "en": "Select a device to start capturing raw input records."
         ,"ja": "未加工の入力レコードを取得するデバイスを選択してください。"
-        ,"zh-Hans": "选择设备以开始捕获原始输入记录。"
+        ,"zh-Hans": "选择设备，即可开始捕获原始输入记录。"
     },
     "event_viewer.capture.reports_description": {
         "en": [
@@ -65,12 +65,16 @@
             "Karabiner-Elementsが通常使用する入力値には含まれないイベントが見つかる場合があります。\n",
             "キーを押してここに変化が現れる場合、そのキーをKarabiner-Elementsでサポートできる可能性があります。"
         ]
-        ,"zh-Hans": "输入报告可用于查看 HID 硬件直接发送的信号，其中可能包含 Karabiner-Elements 常规输入数据中未显示的事件。\n如果按键时这里的数据发生变化，Karabiner-Elements 就可能支持该按键。"
+        ,"zh-Hans": [
+            "通过输入报告，可以直接观察 HID 硬件发送的信号。",
+            "其中可能包含 Karabiner-Elements 通常使用的输入值未涵盖的事件。\n",
+            "如果按下某个按键时，此处能检测到变化，Karabiner-Elements 就可能支持该按键。"
+        ]
     },
     "event_viewer.capture.select_device": {
         "en": "Select the device whose {subject} you want to inspect."
         ,"ja": "{subject}を確認するデバイスを選択してください。"
-        ,"zh-Hans": "选择要查看{subject}的设备。"
+        ,"zh-Hans": "请选择要查看 {subject} 的设备。"
     },
     "event_viewer.capture.start": {
         "en": "Start capture"
@@ -80,7 +84,7 @@
     "event_viewer.capture.start_hint": {
         "en": "Press Start capture to begin capturing {subject}."
         ,"ja": "「取得を開始」を押すと、{subject}の取得が始まります。"
-        ,"zh-Hans": "点击“开始捕获”以捕获{subject}。"
+        ,"zh-Hans": "点击“开始捕获”，即可开始捕获 {subject}。"
     },
     "event_viewer.capture.stop": {
         "en": "Stop capture"
@@ -95,7 +99,7 @@
     "event_viewer.capture.test_input": {
         "en": "Type here to test input"
         ,"ja": "ここに入力して動作を確認"
-        ,"zh-Hans": "在此输入以测试"
+        ,"zh-Hans": "在此输入进行测试"
     },
     "event_viewer.capture.unknown_events": {
         "en": "Capture unknown events"
@@ -110,12 +114,12 @@
     "event_viewer.devices.empty": {
         "en": "No devices connected."
         ,"ja": "デバイスが接続されていません。"
-        ,"zh-Hans": "没有连接的设备。"
+        ,"zh-Hans": "未连接任何设备。"
     },
     "event_viewer.events.from": {
         "en": "from {product}"
         ,"ja": "入力元: {product}"
-        ,"zh-Hans": "来自 {product}"
+        ,"zh-Hans": "来源：{product}"
     },
     "event_viewer.events.integer_value": {
         "en": "integer value: "
@@ -125,22 +129,22 @@
     "event_viewer.events.unsupported_usage": {
         "en": "Unsupported HID usage"
         ,"ja": "未対応のHID usage"
-        ,"zh-Hans": "不支持的 HID 用途"
+        ,"zh-Hans": "不支持的 HID 用途（usage）"
     },
     "event_viewer.events.usage": {
         "en": "usage: "
         ,"ja": "usage: "
-        ,"zh-Hans": "用途："
+        ,"zh-Hans": "用途（usage）："
     },
     "event_viewer.events.usage_page": {
         "en": "usage page: "
         ,"ja": "usage page: "
-        ,"zh-Hans": "用途页："
+        ,"zh-Hans": "用途页（usage page）："
     },
     "event_viewer.frontmost.bundle_identifier": {
         "en": "Bundle Identifier: "
         ,"ja": "バンドル識別子: "
-        ,"zh-Hans": "应用标识符："
+        ,"zh-Hans": "应用标识符（Bundle Identifier）："
     },
     "event_viewer.frontmost.detection_source": {
         "en": "Detection Source: "
@@ -165,12 +169,12 @@
     "event_viewer.input_monitoring.hint": {
         "en": "Please allow on Privacy & Security System Settings."
         ,"ja": "システム設定の「プライバシーとセキュリティ」で許可してください。"
-        ,"zh-Hans": "请在系统设置的“隐私与安全性”中允许访问。"
+        ,"zh-Hans": "请在“系统设置”的“隐私与安全”中授予该权限。"
     },
     "event_viewer.input_monitoring.open_settings": {
         "en": "Open Privacy & Security System Settings…"
         ,"ja": "「プライバシーとセキュリティ」を開く…"
-        ,"zh-Hans": "打开系统设置的“隐私与安全性”…"
+        ,"zh-Hans": "打开“隐私与安全”设置…"
     },
     "event_viewer.input_monitoring.title": {
         "en": "Please allow Karabiner-EventViewer to monitor input events"
@@ -201,7 +205,10 @@
             "他のアプリでキーボード入力のセキュリティが保護されています。（パスワード入力欄が開いているなど）\n",
             "保護されている間はイベントビューアではイベントを取得できません。"
         ]
-        ,"zh-Hans": "其他应用已启用“安全键盘输入”（例如正在显示密码输入框）。\n此保护启用期间，事件查看器无法捕获输入事件。"
+        ,"zh-Hans": [
+            "其他应用已启用“安全键盘输入”（例如正在显示密码输入框）。\n",
+            "此保护启用期间，事件查看器无法捕获输入事件。"
+        ]
     },
     "event_viewer.secure_input.title": {
         "en": "Secure Keyboard Entry is enabled in another application"
@@ -216,12 +223,12 @@
     "event_viewer.settings.stay_on_top": {
         "en": "Force EventViewer to stay on top of other windows"
         ,"ja": "イベントビューアを他のウィンドウより手前に表示"
-        ,"zh-Hans": "让事件查看器始终显示在其他窗口上方"
+        ,"zh-Hans": "始终将事件查看器窗口置于其他窗口上方"
     },
     "event_viewer.settings.window_behavior": {
         "en": "Window behavior"
         ,"ja": "ウィンドウの動作"
-        ,"zh-Hans": "窗口行为"
+        ,"zh-Hans": "窗口显示方式"
     },
     "event_viewer.sidebar.devices": {
         "en": "Devices"

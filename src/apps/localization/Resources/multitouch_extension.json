@@ -7,12 +7,15 @@
         ,"ja": [
             "マルチタッチ拡張を無効にするには、Karabiner-Elements設定の「その他」タブで設定してください。"
         ]
-        ,"zh-Hans": "要停用多点触控扩展，请在 Karabiner-Elements 设置的“其他”页面中关闭它。"
+        ,"zh-Hans": [
+            "若要停用多点触控扩展，",
+            "请在 Karabiner-Elements 设置的“其他”页面中进行配置。"
+        ]
     },
     "multitouch_extension.action.restart": {
         "en": "Restart app"
         ,"ja": "アプリを再起動"
-        ,"zh-Hans": "重新启动应用"
+        ,"zh-Hans": "重启应用"
     },
     "multitouch_extension.action.title": {
         "en": "Action"
@@ -32,32 +35,32 @@
     "multitouch_extension.advanced.palm_hint": {
         "en": "Increasing this value makes touches less likely to be detected as palm touches."
         ,"ja": "この値を大きくすると、手のひらとして検出されにくくなります。"
-        ,"zh-Hans": "增大此值可减少将触摸识别为手掌接触的情况。"
+        ,"zh-Hans": "增大此值后，触摸更不容易被判定为手掌接触。"
     },
     "multitouch_extension.advanced.relaunch": {
         "en": "Relaunch after wake from sleep"
         ,"ja": "スリープから復帰したら再起動"
-        ,"zh-Hans": "从睡眠唤醒后重新启动"
+        ,"zh-Hans": "从睡眠唤醒后自动重启本应用"
     },
     "multitouch_extension.advanced.relaunch_wait": {
         "en": "Wait before relaunch:"
         ,"ja": "再起動までの待ち時間:"
-        ,"zh-Hans": "重新启动前等待："
+        ,"zh-Hans": "应用重启前等待时间："
     },
     "multitouch_extension.advanced.release_delay": {
         "en": "Release detection delay:"
         ,"ja": "離れたことを検出する遅延:"
-        ,"zh-Hans": "松开检测延迟："
+        ,"zh-Hans": "手指抬起检测延迟："
     },
     "multitouch_extension.advanced.release_hint": {
         "en": "Increasing this value keeps fingers registered as touching even if they are unintentionally lifted."
         ,"ja": "この値を大きくすると、意図せず指が離れた場合も接触判定を継続します。"
-        ,"zh-Hans": "增大此值可在手指意外抬起时，短暂维持触摸状态。"
+        ,"zh-Hans": "增大此值后，即使手指意外短暂抬起，仍会将其判定为正在触摸。"
     },
     "multitouch_extension.advanced.sleep": {
         "en": "Sleep handling"
         ,"ja": "スリープ時の動作"
-        ,"zh-Hans": "睡眠处理"
+        ,"zh-Hans": "睡眠与唤醒"
     },
     "multitouch_extension.advanced.touch_delay": {
         "en": "Touch detection delay:"
@@ -107,7 +110,7 @@
     "multitouch_extension.count.half": {
         "en": "half"
         ,"ja": "1/2領域"
-        ,"zh-Hans": "半区"
+        ,"zh-Hans": "1/2 区域"
     },
     "multitouch_extension.count.left": {
         "en": "left: {count}"
@@ -127,17 +130,17 @@
     "multitouch_extension.count.palm_half": {
         "en": "palm-half"
         ,"ja": "手のひら1/2領域"
-        ,"zh-Hans": "手掌半区"
+        ,"zh-Hans": "手掌 1/2 区域"
     },
     "multitouch_extension.count.palm_total": {
         "en": "palm-total"
         ,"ja": "手のひら合計"
-        ,"zh-Hans": "手掌总数"
+        ,"zh-Hans": "手掌总计"
     },
     "multitouch_extension.count.quarter": {
         "en": "quarter"
         ,"ja": "1/4領域"
-        ,"zh-Hans": "四分区"
+        ,"zh-Hans": "1/4 区域"
     },
     "multitouch_extension.count.right": {
         "en": "right: {count}"
@@ -147,7 +150,7 @@
     "multitouch_extension.count.total": {
         "en": "total"
         ,"ja": "合計"
-        ,"zh-Hans": "总数"
+        ,"zh-Hans": "总计"
     },
     "multitouch_extension.count.upper": {
         "en": "upper: {count}"
@@ -177,7 +180,7 @@
     "multitouch_extension.log.empty": {
         "en": "Nothing detected yet"
         ,"ja": "まだ検出されていません"
-        ,"zh-Hans": "尚未检测到触摸"
+        ,"zh-Hans": "尚未检测到任何触摸"
     },
     "multitouch_extension.log.time": {
         "en": "Time"
@@ -192,17 +195,17 @@
     "multitouch_extension.power.display_sleep": {
         "en": "Keep user-interactive activity running while the display sleeps"
         ,"ja": "ディスプレイのスリープ中も高優先度アクティビティを維持する"
-        ,"zh-Hans": "显示器睡眠时仍保持用户交互活动"
+        ,"zh-Hans": "显示器睡眠时仍保持应用活跃"
     },
     "multitouch_extension.power.enable": {
         "en": "Enable user-interactive activity for better responsiveness to user input"
         ,"ja": "ユーザー操作への応答性を高めるため、高優先度のアクティビティを有効にする"
-        ,"zh-Hans": "启用用户交互活动以提高输入响应速度"
+        ,"zh-Hans": "保持应用活跃，提高输入响应速度"
     },
     "multitouch_extension.power.warning": {
         "en": "Enabling this setting consumes battery power and may prevent the system from sleeping."
         ,"ja": "この設定を有効にするとバッテリーを消費し、システムのスリープを妨げる場合があります。"
-        ,"zh-Hans": "启用此设置会增加耗电量，并可能阻止系统进入睡眠。"
+        ,"zh-Hans": "启用此设置会消耗电池电量，并可能阻止系统进入睡眠。"
     },
     "multitouch_extension.tab.advanced": {
         "en": "Advanced"
@@ -217,7 +220,7 @@
     "multitouch_extension.tab.main": {
         "en": "Main"
         ,"ja": "基本"
-        ,"zh-Hans": "主要"
+        ,"zh-Hans": "基本"
     },
     "multitouch_extension.tab.power": {
         "en": "Power"
@@ -227,7 +230,7 @@
     "multitouch_extension.tab.restart": {
         "en": "Restart"
         ,"ja": "再起動"
-        ,"zh-Hans": "重新启动"
+        ,"zh-Hans": "重启"
     },
     "multitouch_extension.units.seconds": {
         "en": "seconds"

@@ -12,7 +12,7 @@
     "shared.action.clear": {
         "en": "Clear"
         ,"ja": "消去"
-        ,"zh-Hans": "清空"
+        ,"zh-Hans": "清除"
     },
     "shared.action.copy_to_pasteboard": {
         "en": "Copy to pasteboard"
@@ -117,12 +117,12 @@
     "shared.value.off": {
         "en": "Off"
         ,"ja": "無効"
-        ,"zh-Hans": "关闭"
+        ,"zh-Hans": "关"
     },
     "shared.value.on": {
         "en": "On"
         ,"ja": "有効"
-        ,"zh-Hans": "开启"
+        ,"zh-Hans": "开"
     },
     "shared.value.unknown": {
         "en": "Unknown"

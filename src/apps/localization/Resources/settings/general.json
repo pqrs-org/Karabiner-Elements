@@ -27,12 +27,12 @@
             "3.「デフォルトに戻す」をクリックします。"
         ]
         ,"zh-Hans": [
-            "macOS 也在重新映射修饰键。",
-            "建议先恢复默认设置，再通过 Karabiner-Elements 配置。\n\n",
+            "macOS 也可以修改修饰键映射。",
+            "建议先恢复默认值，再通过 Karabiner-Elements 进行配置。\n\n",
             "可按以下步骤重置 macOS 设置：\n",
-            "1. 打开“系统设置”，进入“键盘快捷键…”>“修饰键”。\n",
-            "2. 选择 Karabiner DriverKit VirtualHIDKeyboard。\n",
-            "3. 点击“恢复默认设置”。"
+            "1. 打开“系统设置”，前往“键盘” > “键盘快捷键…” > “修饰键”。\n",
+            "2. 选择“Karabiner DriverKit VirtualHIDKeyboard”。\n",
+            "3. 点击“恢复默认”按钮。"
         ]
     },
     "settings.general.save.failed": {

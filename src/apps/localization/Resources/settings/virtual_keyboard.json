@@ -12,6 +12,6 @@
     "settings.virtual_keyboard.mouse_key_xy_scale": {
         "en": "Cursor speed:"
         ,"ja": "カーソル速度:"
-        ,"zh-Hans": "光标速度："
+        ,"zh-Hans": "鼠标指针移动速度："
     }
 }

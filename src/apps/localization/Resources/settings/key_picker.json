@@ -2,82 +2,82 @@
     "settings.key_picker.alias_left_alt": {
         "en": "left_alt (equal to `left_option`)"
         ,"ja": "left_alt（`left_option`と同じ）"
-        ,"zh-Hans": "left_alt（等同于 `left_option`）"
+        ,"zh-Hans": "左 Option（left_alt，等同于 `left_option`）"
     },
     "settings.key_picker.alias_left_gui": {
         "en": "left_gui (equal to `left_command`)"
         ,"ja": "left_gui（`left_command`と同じ）"
-        ,"zh-Hans": "left_gui（等同于 `left_command`）"
+        ,"zh-Hans": "左 Command（left_gui，等同于 `left_command`）"
     },
     "settings.key_picker.alias_right_alt": {
         "en": "right_alt (equal to `right_option`)"
         ,"ja": "right_alt（`right_option`と同じ）"
-        ,"zh-Hans": "right_alt（等同于 `right_option`）"
+        ,"zh-Hans": "右 Option（right_alt，等同于 `right_option`）"
     },
     "settings.key_picker.alias_right_gui": {
         "en": "right_gui (equal to `right_command`)"
         ,"ja": "right_gui（`right_command`と同じ）"
-        ,"zh-Hans": "right_gui（等同于 `right_command`）"
+        ,"zh-Hans": "右 Command（right_gui，等同于 `right_command`）"
     },
     "settings.key_picker.alias_vk_consumer_brightness_down": {
         "en": "vk_consumer_brightness_down (equal to `display_brightness_decrement`)"
         ,"ja": "vk_consumer_brightness_down（`display_brightness_decrement`と同じ）"
-        ,"zh-Hans": "vk_consumer_brightness_down（等同于 `display_brightness_decrement`）"
+        ,"zh-Hans": "调低屏幕亮度（vk_consumer_brightness_down，等同于 `display_brightness_decrement`）"
     },
     "settings.key_picker.alias_vk_consumer_brightness_up": {
         "en": "vk_consumer_brightness_up (equal to `display_brightness_increment`)"
         ,"ja": "vk_consumer_brightness_up（`display_brightness_increment`と同じ）"
-        ,"zh-Hans": "vk_consumer_brightness_up（等同于 `display_brightness_increment`）"
+        ,"zh-Hans": "调高屏幕亮度（vk_consumer_brightness_up，等同于 `display_brightness_increment`）"
     },
     "settings.key_picker.alias_vk_consumer_illumination_down": {
         "en": "vk_consumer_illumination_down (equal to `illumination_decrement`)"
         ,"ja": "vk_consumer_illumination_down（`illumination_decrement`と同じ）"
-        ,"zh-Hans": "vk_consumer_illumination_down（等同于 `illumination_decrement`）"
+        ,"zh-Hans": "调低键盘背光亮度（vk_consumer_illumination_down，等同于 `illumination_decrement`）"
     },
     "settings.key_picker.alias_vk_consumer_illumination_up": {
         "en": "vk_consumer_illumination_up (equal to `illumination_increment`)"
         ,"ja": "vk_consumer_illumination_up（`illumination_increment`と同じ）"
-        ,"zh-Hans": "vk_consumer_illumination_up（等同于 `illumination_increment`）"
+        ,"zh-Hans": "调高键盘背光亮度（vk_consumer_illumination_up，等同于 `illumination_increment`）"
     },
     "settings.key_picker.alias_vk_consumer_next": {
         "en": "vk_consumer_next (equal to `fast_forward`)"
         ,"ja": "vk_consumer_next（`fast_forward`と同じ）"
-        ,"zh-Hans": "vk_consumer_next（等同于 `fast_forward`）"
+        ,"zh-Hans": "快进（vk_consumer_next，等同于 `fast_forward`）"
     },
     "settings.key_picker.alias_vk_consumer_play": {
         "en": "vk_consumer_play (equal to `play`)"
         ,"ja": "vk_consumer_play（`play`と同じ）"
-        ,"zh-Hans": "vk_consumer_play（等同于 `play`）"
+        ,"zh-Hans": "播放（vk_consumer_play，等同于 `play`）"
     },
     "settings.key_picker.alias_vk_consumer_previous": {
         "en": "vk_consumer_previous (equal to `rewind`)"
         ,"ja": "vk_consumer_previous（`rewind`と同じ）"
-        ,"zh-Hans": "vk_consumer_previous（等同于 `rewind`）"
+        ,"zh-Hans": "快退（vk_consumer_previous，等同于 `rewind`）"
     },
     "settings.key_picker.alias_vk_dashboard": {
         "en": "vk_dashboard (equal to `dashboard`)"
         ,"ja": "vk_dashboard（`dashboard`と同じ）"
-        ,"zh-Hans": "vk_dashboard（等同于 `dashboard`）"
+        ,"zh-Hans": "仪表盘（vk_dashboard，等同于 `dashboard`）"
     },
     "settings.key_picker.alias_vk_launchpad": {
         "en": "vk_launchpad (equal to `launchpad`)"
         ,"ja": "vk_launchpad（`launchpad`と同じ）"
-        ,"zh-Hans": "vk_launchpad（等同于 `launchpad`）"
+        ,"zh-Hans": "启动台（vk_launchpad，等同于 `launchpad`）"
     },
     "settings.key_picker.alias_vk_mission_control": {
         "en": "vk_mission_control (equal to `mission_control`)"
         ,"ja": "vk_mission_control（`mission_control`と同じ）"
-        ,"zh-Hans": "vk_mission_control（等同于 `mission_control`）"
+        ,"zh-Hans": "调度中心（vk_mission_control，等同于 `mission_control`）"
     },
     "settings.key_picker.alias_volume_down": {
         "en": "volume_down (equal to `volume_decrement`)"
         ,"ja": "volume_down（`volume_decrement`と同じ）"
-        ,"zh-Hans": "volume_down（等同于 `volume_decrement`）"
+        ,"zh-Hans": "调低音量（volume_down，等同于 `volume_decrement`）"
     },
     "settings.key_picker.alias_volume_up": {
         "en": "volume_up (equal to `volume_increment`)"
         ,"ja": "volume_up（`volume_increment`と同じ）"
-        ,"zh-Hans": "volume_up（等同于 `volume_increment`）"
+        ,"zh-Hans": "调高音量（volume_up，等同于 `volume_increment`）"
     },
     "settings.key_picker.arrows": {
         "en": "Arrow keys"
@@ -87,32 +87,32 @@
     "settings.key_picker.controls_symbols": {
         "en": "Controls and symbols"
         ,"ja": "制御キーと記号"
-        ,"zh-Hans": "控制键和符号键"
+        ,"zh-Hans": "控制键与符号"
     },
     "settings.key_picker.cursor_first_center": {
         "en": "Set mouse cursor position to the center of the first screen"
         ,"ja": "マウスカーソルを1番目のスクリーンの中央に移動"
-        ,"zh-Hans": "将鼠标指针移到第 1 个屏幕的中央"
+        ,"zh-Hans": "将鼠标指针移动到第 1 个屏幕的中心"
     },
     "settings.key_picker.cursor_first_origin": {
         "en": "Set mouse cursor position to (0,0) of the first screen"
         ,"ja": "マウスカーソルを1番目のスクリーンの (0,0) に移動"
-        ,"zh-Hans": "将鼠标指针移到第 1 个屏幕的 (0,0) 位置"
+        ,"zh-Hans": "将鼠标指针移动到第 1 个屏幕的坐标（0,0）"
     },
     "settings.key_picker.cursor_second_center": {
         "en": "Set mouse cursor position to the center of the second screen"
         ,"ja": "マウスカーソルを2番目のスクリーンの中央に移動"
-        ,"zh-Hans": "将鼠标指针移到第 2 个屏幕的中央"
+        ,"zh-Hans": "将鼠标指针移动到第 2 个屏幕的中心"
     },
     "settings.key_picker.cursor_second_origin": {
         "en": "Set mouse cursor position to (0,0) of the second screen"
         ,"ja": "マウスカーソルを2番目のスクリーンの (0,0) に移動"
-        ,"zh-Hans": "将鼠标指针移到第 2 个屏幕的 (0,0) 位置"
+        ,"zh-Hans": "将鼠标指针移动到第 2 个屏幕的坐标（0,0）"
     },
     "settings.key_picker.cursor_window_center": {
         "en": "Set mouse cursor position to the center of the focused window"
         ,"ja": "マウスカーソルをフォーカス中のウィンドウの中央に移動"
-        ,"zh-Hans": "将鼠标指针移到当前窗口的中央"
+        ,"zh-Hans": "将鼠标指针移动到当前活动窗口的中心"
     },
     "settings.key_picker.desktop": {
         "en": "Generic desktop keys"
@@ -122,27 +122,27 @@
     "settings.key_picker.disable": {
         "en": "Disable this key"
         ,"ja": "このキーを無効にする"
-        ,"zh-Hans": "禁用此键"
+        ,"zh-Hans": "停用此按键"
     },
     "settings.key_picker.do_not_disturb": {
         "en": "do_not_disturb (available on macOS 14 and later)"
         ,"ja": "do_not_disturb（macOS 14以降で使用可能）"
-        ,"zh-Hans": "do_not_disturb（适用于 macOS 14 及更高版本）"
+        ,"zh-Hans": "勿扰模式（do_not_disturb，适用于 macOS 14 及更高版本）"
     },
     "settings.key_picker.double_click_center": {
         "en": "CGEvent double click (center button)"
         ,"ja": "CGEventのダブルクリック（中央ボタン）"
-        ,"zh-Hans": "CGEvent 双击（鼠标中键）"
+        ,"zh-Hans": "CGEvent 双击（中键）"
     },
     "settings.key_picker.double_click_left": {
         "en": "CGEvent double click (left button)"
         ,"ja": "CGEventのダブルクリック（左ボタン）"
-        ,"zh-Hans": "CGEvent 双击（鼠标左键）"
+        ,"zh-Hans": "CGEvent 双击（左键）"
     },
     "settings.key_picker.double_click_right": {
         "en": "CGEvent double click (right button)"
         ,"ja": "CGEventのダブルクリック（右ボタン）"
-        ,"zh-Hans": "CGEvent 双击（鼠标右键）"
+        ,"zh-Hans": "CGEvent 双击（右键）"
     },
     "settings.key_picker.dpad": {
         "en": "D-pad"
@@ -172,7 +172,7 @@
     "settings.key_picker.fn_globe": {
         "en": "fn (globe)"
         ,"ja": "fn（地球儀）"
-        ,"zh-Hans": "fn（地球仪）"
+        ,"zh-Hans": "Fn（地球仪键）"
     },
     "settings.key_picker.function": {
         "en": "Function keys"
@@ -182,32 +182,32 @@
     "settings.key_picker.gui": {
         "en": "Generic GUI application control keys"
         ,"ja": "汎用GUIアプリ操作キー"
-        ,"zh-Hans": "通用图形界面应用控制键"
+        ,"zh-Hans": "通用应用控制键（GUI）"
     },
     "settings.key_picker.inherit": {
         "en": "--- (Use the \"For all devices\" setting)"
         ,"ja": "---（「すべてのデバイス」の設定を使用）"
-        ,"zh-Hans": "---（使用“所有设备”的设置）"
+        ,"zh-Hans": "---（使用“所有设备通用设置”）"
     },
     "settings.key_picker.inherit_category": {
         "en": "Use the \"For all devices\" setting"
         ,"ja": "「すべてのデバイス」の設定を使用"
-        ,"zh-Hans": "使用“所有设备”的设置"
+        ,"zh-Hans": "使用“所有设备通用设置”"
     },
     "settings.key_picker.international": {
         "en": "International keys"
         ,"ja": "各国語のキー"
-        ,"zh-Hans": "各国语言按键"
+        ,"zh-Hans": "国际键盘按键"
     },
     "settings.key_picker.japanese": {
         "en": "Japanese"
         ,"ja": "日本語"
-        ,"zh-Hans": "日语"
+        ,"zh-Hans": "日文按键"
     },
     "settings.key_picker.keypad": {
         "en": "Keypad keys"
         ,"ja": "テンキー"
-        ,"zh-Hans": "数字小键盘按键"
+        ,"zh-Hans": "数字小键盘"
     },
     "settings.key_picker.launch": {
         "en": "Application launch keys"
@@ -242,12 +242,12 @@
     "settings.key_picker.lock_key": {
         "en": "Lock key on Magic Keyboard without Touch ID"
         ,"ja": "Touch ID非搭載Magic Keyboardのロックキー"
-        ,"zh-Hans": "不带 Touch ID 的妙控键盘上的锁定键"
+        ,"zh-Hans": "不带触控 ID 的妙控键盘上的锁屏键"
     },
     "settings.key_picker.media": {
         "en": "Media controls"
         ,"ja": "メディア操作"
-        ,"zh-Hans": "媒体控制"
+        ,"zh-Hans": "媒体控制键"
     },
     "settings.key_picker.modifiers": {
         "en": "Modifier keys"
@@ -262,17 +262,17 @@
     "settings.key_picker.mouse_down": {
         "en": "mouse down"
         ,"ja": "マウス移動: 下"
-        ,"zh-Hans": "向下移动鼠标"
+        ,"zh-Hans": "鼠标向下移动"
     },
     "settings.key_picker.mouse_down_fast": {
         "en": "mouse down (fast)"
         ,"ja": "マウス移動: 下（速い）"
-        ,"zh-Hans": "向下移动鼠标（快速）"
+        ,"zh-Hans": "鼠标向下移动（快速）"
     },
     "settings.key_picker.mouse_down_slow": {
         "en": "mouse down (slow)"
         ,"ja": "マウス移動: 下（遅い）"
-        ,"zh-Hans": "向下移动鼠标（慢速）"
+        ,"zh-Hans": "鼠标向下移动（慢速）"
     },
     "settings.key_picker.mouse_keys": {
         "en": "Mouse keys"
@@ -282,47 +282,47 @@
     "settings.key_picker.mouse_left": {
         "en": "mouse left"
         ,"ja": "マウス移動: 左"
-        ,"zh-Hans": "向左移动鼠标"
+        ,"zh-Hans": "鼠标向左移动"
     },
     "settings.key_picker.mouse_left_fast": {
         "en": "mouse left (fast)"
         ,"ja": "マウス移動: 左（速い）"
-        ,"zh-Hans": "向左移动鼠标（快速）"
+        ,"zh-Hans": "鼠标向左移动（快速）"
     },
     "settings.key_picker.mouse_left_slow": {
         "en": "mouse left (slow)"
         ,"ja": "マウス移動: 左（遅い）"
-        ,"zh-Hans": "向左移动鼠标（慢速）"
+        ,"zh-Hans": "鼠标向左移动（慢速）"
     },
     "settings.key_picker.mouse_right": {
         "en": "mouse right"
         ,"ja": "マウス移動: 右"
-        ,"zh-Hans": "向右移动鼠标"
+        ,"zh-Hans": "鼠标向右移动"
     },
     "settings.key_picker.mouse_right_fast": {
         "en": "mouse right (fast)"
         ,"ja": "マウス移動: 右（速い）"
-        ,"zh-Hans": "向右移动鼠标（快速）"
+        ,"zh-Hans": "鼠标向右移动（快速）"
     },
     "settings.key_picker.mouse_right_slow": {
         "en": "mouse right (slow)"
         ,"ja": "マウス移動: 右（遅い）"
-        ,"zh-Hans": "向右移动鼠标（慢速）"
+        ,"zh-Hans": "鼠标向右移动（慢速）"
     },
     "settings.key_picker.mouse_up": {
         "en": "mouse up"
         ,"ja": "マウス移動: 上"
-        ,"zh-Hans": "向上移动鼠标"
+        ,"zh-Hans": "鼠标向上移动"
     },
     "settings.key_picker.mouse_up_fast": {
         "en": "mouse up (fast)"
         ,"ja": "マウス移動: 上（速い）"
-        ,"zh-Hans": "向上移动鼠标（快速）"
+        ,"zh-Hans": "鼠标向上移动（快速）"
     },
     "settings.key_picker.mouse_up_slow": {
         "en": "mouse up (slow)"
         ,"ja": "マウス移動: 上（遅い）"
-        ,"zh-Hans": "向上移动鼠标（慢速）"
+        ,"zh-Hans": "鼠标向上移动（慢速）"
     },
     "settings.key_picker.numbers": {
         "en": "Number keys"
@@ -342,7 +342,7 @@
     "settings.key_picker.rare_return": {
         "en": "rarely used return (HID usage 0x9e)"
         ,"ja": "ごく稀に使われるreturn（HID usage 0x9e）"
-        ,"zh-Hans": "很少使用的回车键（HID usage 0x9e）"
+        ,"zh-Hans": "较少使用的回车键（return，HID 用途 0x9e）"
     },
     "settings.key_picker.remote": {
         "en": "Remote control buttons"
@@ -432,7 +432,7 @@
     "settings.key_picker.sleep": {
         "en": "Sleep (IOKit Power Management Sleep System)"
         ,"ja": "スリープ（IOKit Power Management Sleep System）"
-        ,"zh-Hans": "睡眠（IOKit Power Management Sleep System）"
+        ,"zh-Hans": "睡眠（IOKit 电源管理）"
     },
     "settings.key_picker.software": {
         "en": "Software function"
@@ -467,12 +467,12 @@
     "settings.key_picker.sticky_fn": {
         "en": "sticky fn"
         ,"ja": "fnの複合キー"
-        ,"zh-Hans": "粘滞 fn 键"
+        ,"zh-Hans": "粘滞 Fn 键"
     },
     "settings.key_picker.sticky_fn_no_hold": {
         "en": "sticky fn (pressing and holding down is disabled)"
         ,"ja": "fnの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞 fn 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞 Fn 键（不支持按住操作）"
     },
     "settings.key_picker.sticky_left_command": {
         "en": "sticky left_command"
@@ -482,7 +482,7 @@
     "settings.key_picker.sticky_left_command_no_hold": {
         "en": "sticky left_command (pressing and holding down is disabled)"
         ,"ja": "左コマンドの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞左 Command 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞左 Command 键（不支持按住操作）"
     },
     "settings.key_picker.sticky_left_control": {
         "en": "sticky left_control"
@@ -492,7 +492,7 @@
     "settings.key_picker.sticky_left_control_no_hold": {
         "en": "sticky left_control (pressing and holding down is disabled)"
         ,"ja": "左コントロールの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞左 Control 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞左 Control 键（不支持按住操作）"
     },
     "settings.key_picker.sticky_left_option": {
         "en": "sticky left_option"
@@ -502,7 +502,7 @@
     "settings.key_picker.sticky_left_option_no_hold": {
         "en": "sticky left_option (pressing and holding down is disabled)"
         ,"ja": "左オプションの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞左 Option 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞左 Option 键（不支持按住操作）"
     },
     "settings.key_picker.sticky_left_shift": {
         "en": "sticky left_shift"
@@ -512,7 +512,7 @@
     "settings.key_picker.sticky_left_shift_no_hold": {
         "en": "sticky left_shift (pressing and holding down is disabled)"
         ,"ja": "左シフトの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞左 Shift 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞左 Shift 键（不支持按住操作）"
     },
     "settings.key_picker.sticky_right_command": {
         "en": "sticky right_command"
@@ -522,7 +522,7 @@
     "settings.key_picker.sticky_right_command_no_hold": {
         "en": "sticky right_command (pressing and holding down is disabled)"
         ,"ja": "右コマンドの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞右 Command 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞右 Command 键（不支持按住操作）"
     },
     "settings.key_picker.sticky_right_control": {
         "en": "sticky right_control"
@@ -532,7 +532,7 @@
     "settings.key_picker.sticky_right_control_no_hold": {
         "en": "sticky right_control (pressing and holding down is disabled)"
         ,"ja": "右コントロールの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞右 Control 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞右 Control 键（不支持按住操作）"
     },
     "settings.key_picker.sticky_right_option": {
         "en": "sticky right_option"
@@ -542,7 +542,7 @@
     "settings.key_picker.sticky_right_option_no_hold": {
         "en": "sticky right_option (pressing and holding down is disabled)"
         ,"ja": "右オプションの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞右 Option 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞右 Option 键（不支持按住操作）"
     },
     "settings.key_picker.sticky_right_shift": {
         "en": "sticky right_shift"
@@ -552,11 +552,11 @@
     "settings.key_picker.sticky_right_shift_no_hold": {
         "en": "sticky right_shift (pressing and holding down is disabled)"
         ,"ja": "右シフトの複合キー（押したままにする操作は無効）"
-        ,"zh-Hans": "粘滞右 Shift 键（禁用按住操作）"
+        ,"zh-Hans": "粘滞右 Shift 键（不支持按住操作）"
     },
     "settings.key_picker.touch_id": {
         "en": "Touch ID on Magic Keyboard"
         ,"ja": "Magic KeyboardのTouch ID"
-        ,"zh-Hans": "妙控键盘上的 Touch ID"
+        ,"zh-Hans": "妙控键盘上的触控 ID"
     }
 }

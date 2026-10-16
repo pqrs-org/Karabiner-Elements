@@ -17,7 +17,7 @@
     "settings.update.title": {
         "en": "Update"
         ,"ja": "アップデート"
-        ,"zh-Hans": "更新"
+        ,"zh-Hans": "软件更新"
     },
     "settings.update.version": {
         "en": "Karabiner-Elements version {version}"

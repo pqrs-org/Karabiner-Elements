@@ -2,7 +2,7 @@
     "settings.expert.cgeventtap_fallback": {
         "en": "CGEventTap fallback"
         ,"ja": "CGEventTapフォールバック"
-        ,"zh-Hans": "CGEventTap 备用方案"
+        ,"zh-Hans": "CGEventTap 后备方案"
     },
     "settings.expert.delay_milliseconds_before_open_device": {
         "en": "Delay to grab device"
@@ -33,7 +33,7 @@
     "settings.expert.enable_cgeventtap_fallback": {
         "en": "Enable CGEventTap fallback"
         ,"ja": "CGEventTapフォールバックを有効にする"
-        ,"zh-Hans": "启用 CGEventTap 备用方案"
+        ,"zh-Hans": "启用 CGEventTap 后备方案"
     },
     "settings.expert.fallback_description": {
         "en": [
@@ -48,7 +48,7 @@
         ,"zh-Hans": [
             "启用此设置后，",
             "对于无法通过 HID 输入捕获处理的设备，",
-            "Karabiner-Core-Service 会使用 CGEventTap 作为备用方案。"
+            "Karabiner-Core-Service 会使用 CGEventTap 作为后备方案。"
         ]
     },
     "settings.expert.filter_description": {
@@ -67,7 +67,7 @@
         ,"zh-Hans": [
             "启用此设置后，将忽略以下事件：\n",
             "- 任天堂 Pro 手柄（USB 连接）：\n",
-            "    - 按钮事件：即使没有按下任何按钮，也会持续高频发送按下和松开事件。\n",
+            "    - 按键事件：即使没有按下任何按键，也会持续高频发送按下和松开事件。\n",
             "    - 摇杆事件：即使完全没有移动摇杆，也会持续发送随机方向的倾斜事件。"
         ]
     },
@@ -86,8 +86,8 @@
             "修飾キーの順序が変わる場合は、この設定をオフにしてみてください。"
         ]
         ,"zh-Hans": [
-            "如果键盘支持硬件宏，并且会同时发送多个按键，",
-            "遇到修饰键顺序改变的情况时，可以尝试关闭此设置。"
+            "如果键盘使用硬件宏同时发送多个按键，",
+            "且出现修饰键顺序变化，可尝试关闭此设置。"
         ]
     },
     "settings.expert.modify_pointing_by_default": {
@@ -123,8 +123,8 @@
         ]
         ,"zh-Hans": [
             "Karabiner-Elements 会延迟发送 macOS 睡眠快捷键的按下事件",
-            "（command+option+power、command+option+eject，或登录窗口中的 escape）。\n",
-            "这样可以防止松开快捷键时产生的事件让 Mac 在睡眠后立即被唤醒。"
+            "（Command+Option+电源键、Command+Option+推出键，或登录窗口中的 Esc）。\n",
+            "这样可防止松开快捷键时产生的事件让 Mac 刚进入睡眠就被唤醒。"
         ]
     },
     "settings.expert.sleep_delay_disabled_hint": {
@@ -135,12 +135,12 @@
     "settings.expert.title": {
         "en": "Expert mode"
         ,"ja": "エキスパート向けモード"
-        ,"zh-Hans": "高级模式"
+        ,"zh-Hans": "专家模式"
     },
     "settings.expert.unsafe_banner": {
         "en": "The unsafe configuration is enabled, so the safeguard feature is currently inactive."
         ,"ja": "安全でない設定が有効になっているため、保護機能は現在無効です。"
-        ,"zh-Hans": "已允许不安全的配置，当前保护功能未生效。"
+        ,"zh-Hans": "已启用不安全配置，当前保护功能未生效。"
     },
     "settings.expert.unsafe_description": {
         "en": [
@@ -159,10 +159,10 @@
             "- 単純なキー変換タブで左クリックを変更する。"
         ]
         ,"zh-Hans": [
-            "允许不安全的配置会关闭设置界面中的保护功能。\n",
+            "不安全配置会停用设置界面中的保护功能。\n",
             "除非已准备好通过另一台电脑远程停止 Karabiner-Elements，否则不要启用此选项。",
             "（例如，使用屏幕共享）\n\n",
-            "允许不安全的配置后，可进行以下操作：\n",
+            "启用不安全配置后，可进行以下操作：\n",
             "- 在“设备”页面启用 Apple 指针设备。\n",
             "- 在“简单修改”页面修改鼠标左键。"
         ]
@@ -170,6 +170,6 @@
     "settings.expert.unsafe_ui": {
         "en": "Allow unsafe configuration"
         ,"ja": "安全保護を無効にした設定を許可"
-        ,"zh-Hans": "允许不安全的配置"
+        ,"zh-Hans": "允许不安全配置"
     }
 }

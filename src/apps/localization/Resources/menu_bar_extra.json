@@ -12,7 +12,7 @@
     "menu_bar_extra.launch_event_viewer": {
         "en": "Launch EventViewer…"
         ,"ja": "イベントビューアを起動…"
-        ,"zh-Hans": "打开事件查看器…"
+        ,"zh-Hans": "打开事件查看器（EventViewer）…"
     },
     "menu_bar_extra.multitouch_settings": {
         "en": "Multitouch Extension Settings…"
@@ -37,7 +37,7 @@
     "menu_bar_extra.restart": {
         "en": "Restart Karabiner-Elements"
         ,"ja": "Karabiner-Elementsを再起動"
-        ,"zh-Hans": "重新启动 Karabiner-Elements"
+        ,"zh-Hans": "重启 Karabiner-Elements"
     },
     "menu_bar_extra.settings": {
         "en": "Settings…"

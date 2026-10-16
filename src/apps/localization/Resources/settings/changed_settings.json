@@ -37,7 +37,7 @@
     "settings.changed_settings.section.selected_profile": {
         "en": "Selected profile"
         ,"ja": "選択中のプロファイル"
-        ,"zh-Hans": "当前配置方案"
+        ,"zh-Hans": "当前选中的配置方案"
     },
     "settings.changed_settings.section.virtual_hid_keyboard": {
         "en": "Virtual keyboard"
@@ -62,7 +62,7 @@
     "settings.changed_settings.setting.fn_function_keys_count": {
         "en": "Changed Function Keys count"
         ,"ja": "変更したファンクションキーの件数"
-        ,"zh-Hans": "已修改的功能键数量"
+        ,"zh-Hans": "已更改的功能键数量"
     },
     "settings.changed_settings.setting.rules_count": {
         "en": "Complex Modifications rule count"
@@ -72,7 +72,7 @@
     "settings.changed_settings.setting.simple_modifications_count": {
         "en": "Simple Modifications count"
         ,"ja": "単純なキー変換の件数"
-        ,"zh-Hans": "简单修改数量"
+        ,"zh-Hans": "简单修改项数量"
     },
     "settings.changed_settings.setting.ui_language": {
         "en": "Language"

@@ -7,7 +7,7 @@
     "settings.debug.agents_stopped": {
         "en": "Services stopped: agents only"
         ,"ja": "サービス停止: エージェントのみ"
-        ,"zh-Hans": "服务已停止：仅用户代理"
+        ,"zh-Hans": "服务已停止：仅代理进程"
     },
     "settings.debug.alerts": {
         "en": "Alert previews"
@@ -37,17 +37,17 @@
     "settings.debug.category.setup": {
         "en": "Setup"
         ,"ja": "セットアップ"
-        ,"zh-Hans": "初始设置"
+        ,"zh-Hans": "设置向导"
     },
     "settings.debug.daemons_stopped": {
         "en": "Services stopped: daemons only"
         ,"ja": "サービス停止: デーモンのみ"
-        ,"zh-Hans": "服务已停止：仅后台守护进程"
+        ,"zh-Hans": "服务已停止：仅守护进程"
     },
     "settings.debug.driver_advanced": {
         "en": "Driver restart required: advanced guidance"
         ,"ja": "ドライバーの再起動が必要: 詳細な案内"
-        ,"zh-Hans": "需要重新启动驱动：高级指引"
+        ,"zh-Hans": "需要重启驱动：高级指引"
     },
     "settings.debug.instructions": {
         "en": [
@@ -58,7 +58,10 @@
             "Optionキーを押すとサイドバーに「デバッグ」が表示されます。",
             "選択後はキーを離してアラートをプレビューできます。"
         ]
-        ,"zh-Hans": "按住 Option 键可在侧栏显示“调试”。选中后可松开 Option 键并预览提示。"
+        ,"zh-Hans": [
+            "按住 Option 键可在边栏中显示“调试”。",
+            "选中“调试”后，即可松开 Option 键并预览提示。"
+        ]
     },
     "settings.debug.preview_hint": {
         "en": [
@@ -71,7 +74,11 @@
             "プレビュー内をクリックするかEscapeキーを押すと閉じます。プレビューの操作で設定は変更されません。\n",
             "プレビューを表示するとチェックが付きます。閲覧済みかどうかの印として使うために用意しています。"
         ]
-        ,"zh-Hans": "提示预览使用当前应用语言和示例状态。点击预览任意位置或按 Escape 键即可关闭。预览中的操作不会更改设置。\n打开预览后会显示勾选标记，方便记录已查看的内容。"
+        ,"zh-Hans": [
+            "提示预览会使用当前应用语言和示例状态。",
+            "点击预览中的任意位置，或按 Esc 键即可关闭。预览中的操作不会更改设置。\n",
+            "打开预览后会显示勾选标记，方便识别已查看的预览。"
+        ]
     },
     "settings.debug.section": {
         "en": "For Developer"
@@ -81,22 +88,22 @@
     "settings.debug.services_stopped": {
         "en": "Services stopped: agents and daemons"
         ,"ja": "サービス停止: エージェントとデーモン"
-        ,"zh-Hans": "服务已停止：用户代理和后台守护进程"
+        ,"zh-Hans": "服务已停止：代理进程与守护进程"
     },
     "settings.debug.setup_agents_only": {
         "en": "Services: only non-privileged agents enabled"
         ,"ja": "サービス: 非特権エージェントのみ有効"
-        ,"zh-Hans": "服务：仅启用了非特权用户代理"
+        ,"zh-Hans": "服务：仅启用了非特权代理进程"
     },
     "settings.debug.setup_daemons_only": {
         "en": "Services: only privileged daemons enabled"
         ,"ja": "サービス: 特権デーモンのみ有効"
-        ,"zh-Hans": "服务：仅启用了特权后台守护进程"
+        ,"zh-Hans": "服务：仅启用了特权守护进程"
     },
     "settings.debug.setup_driver_advanced": {
         "en": "Driver extension permission: advanced guidance"
         ,"ja": "ドライバー拡張機能の許可: 詳細な案内"
-        ,"zh-Hans": "驱动扩展权限：高级指引"
+        ,"zh-Hans": "驱动程序扩展权限：高级指引"
     },
     "settings.debug.setup_driver_legacy_advanced": {
         "en": "Driver permission (macOS 13/14): advanced guidance"
@@ -106,12 +113,12 @@
     "settings.debug.setup_driver_macos15": {
         "en": "Driver extension permission (macOS 15)"
         ,"ja": "ドライバー拡張機能の許可（macOS 15）"
-        ,"zh-Hans": "驱动扩展权限（macOS 15）"
+        ,"zh-Hans": "驱动程序扩展权限（macOS 15）"
     },
     "settings.debug.setup_driver_macos15_advanced": {
         "en": "Driver extension permission (macOS 15): advanced guidance"
         ,"ja": "ドライバー拡張機能の許可（macOS 15）: 詳細な案内"
-        ,"zh-Hans": "驱动扩展权限（macOS 15）：高级指引"
+        ,"zh-Hans": "驱动程序扩展权限（macOS 15）：高级指引"
     },
     "settings.debug.setup_services_macos15": {
         "en": "Service permission (macOS 15)"

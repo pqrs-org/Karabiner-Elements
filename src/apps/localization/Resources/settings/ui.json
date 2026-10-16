@@ -14,8 +14,8 @@
             "Dockのアイコンを更新するには、アプリをいったん終了してから開き直してください。"
         ]
         ,"zh-Hans": [
-            "应用图标的更改需要几秒钟才能生效。\n",
-            "要更新 Dock 中的图标，需要退出并重新打开应用。"
+            "更改应用图标后，需要几秒钟才能生效。\n",
+            "要更新程序坞（Dock）中的图标，请退出并重新打开应用。"
         ]
     },
     "settings.ui.appearance": {
@@ -54,7 +54,7 @@
         ]
         ,"zh-Hans": [
             "什么是通知窗口？\n\n",
-            "通知窗口会显示粘滞修饰键的状态和复杂修改发出的消息。"
+            "通知窗口会显示粘滞修饰键的状态，以及“复杂修改”发出的消息。"
         ]
     },
     "settings.ui.notification_window": {
@@ -75,7 +75,7 @@
     "settings.ui.notification_window_respect_screen_visible_frame": {
         "en": "Keep the window outside the Dock area"
         ,"ja": "ウィンドウをDockの領域外に表示"
-        ,"zh-Hans": "让窗口避开 Dock 区域"
+        ,"zh-Hans": "让窗口避开程序坞（Dock）区域"
     },
     "settings.ui.notification_window_show_icon": {
         "en": "Show application icon"
@@ -115,7 +115,7 @@
     "settings.ui.show_additional_menu_items": {
         "en": "Show additional menu items"
         ,"ja": "追加のメニュー項目を表示"
-        ,"zh-Hans": "显示更多菜单项"
+        ,"zh-Hans": "显示其他菜单项"
     },
     "settings.ui.show_in_menu_bar": {
         "en": "Show icon in menu bar"
@@ -135,7 +135,7 @@
     "settings.ui.text_color": {
         "en": "Text color"
         ,"ja": "文字色"
-        ,"zh-Hans": "文字颜色"
+        ,"zh-Hans": "文本颜色"
     },
     "settings.ui.use_system_color": {
         "en": "Use the system color"
