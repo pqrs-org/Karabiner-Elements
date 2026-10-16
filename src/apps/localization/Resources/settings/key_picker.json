@@ -79,10 +79,715 @@
         ,"ja": "volume_up（`volume_increment`と同じ）"
         ,"zh-Hans": "调高音量（volume_up，等同于 `volume_increment`）"
     },
+    "settings.key_picker.apple_vendor_keyboard_key_code.brightness_down": {
+        "en": "brightness_down"
+        ,"ja": "brightness_down"
+        ,"zh-Hans": "调低屏幕亮度（brightness_down）"
+    },
+    "settings.key_picker.apple_vendor_keyboard_key_code.brightness_up": {
+        "en": "brightness_up"
+        ,"ja": "brightness_up"
+        ,"zh-Hans": "调高屏幕亮度（brightness_up）"
+    },
+    "settings.key_picker.apple_vendor_keyboard_key_code.dashboard": {
+        "en": "dashboard"
+        ,"ja": "dashboard"
+        ,"zh-Hans": "仪表盘（dashboard）"
+    },
+    "settings.key_picker.apple_vendor_keyboard_key_code.expose_desktop": {
+        "en": "apple_vendor_keyboard_key_code expose_desktop"
+        ,"ja": "apple_vendor_keyboard_key_code expose_desktop"
+        ,"zh-Hans": "显示桌面（apple_vendor_keyboard_key_code expose_desktop）"
+    },
+    "settings.key_picker.apple_vendor_keyboard_key_code.function": {
+        "en": "apple_vendor_keyboard_key_code function"
+        ,"ja": "apple_vendor_keyboard_key_code function"
+        ,"zh-Hans": "Fn 功能键（apple_vendor_keyboard_key_code function）"
+    },
+    "settings.key_picker.apple_vendor_keyboard_key_code.language": {
+        "en": "apple_vendor_keyboard_key_code language"
+        ,"ja": "apple_vendor_keyboard_key_code language"
+        ,"zh-Hans": "切换输入语言（apple_vendor_keyboard_key_code language）"
+    },
+    "settings.key_picker.apple_vendor_keyboard_key_code.launchpad": {
+        "en": "launchpad"
+        ,"ja": "launchpad"
+        ,"zh-Hans": "启动台（launchpad）"
+    },
+    "settings.key_picker.apple_vendor_keyboard_key_code.mission_control": {
+        "en": "mission_control"
+        ,"ja": "mission_control"
+        ,"zh-Hans": "调度中心（mission_control）"
+    },
+    "settings.key_picker.apple_vendor_keyboard_key_code.spotlight": {
+        "en": "spotlight"
+        ,"ja": "spotlight"
+        ,"zh-Hans": "聚焦（spotlight）"
+    },
+    "settings.key_picker.apple_vendor_top_case_key_code.brightness_down": {
+        "en": "brightness_down (2)"
+        ,"ja": "brightness_down (2)"
+        ,"zh-Hans": "调低屏幕亮度（brightness_down，变体 2）"
+    },
+    "settings.key_picker.apple_vendor_top_case_key_code.brightness_up": {
+        "en": "brightness_up (2)"
+        ,"ja": "brightness_up (2)"
+        ,"zh-Hans": "调高屏幕亮度（brightness_up，变体 2）"
+    },
+    "settings.key_picker.apple_vendor_top_case_key_code.illumination_down": {
+        "en": "illumination_down"
+        ,"ja": "illumination_down"
+        ,"zh-Hans": "调低键盘背光亮度（illumination_down）"
+    },
+    "settings.key_picker.apple_vendor_top_case_key_code.illumination_toggle": {
+        "en": "illumination_toggle"
+        ,"ja": "illumination_toggle"
+        ,"zh-Hans": "打开／关闭键盘背光（illumination_toggle）"
+    },
+    "settings.key_picker.apple_vendor_top_case_key_code.illumination_up": {
+        "en": "illumination_up"
+        ,"ja": "illumination_up"
+        ,"zh-Hans": "调高键盘背光亮度（illumination_up）"
+    },
+    "settings.key_picker.apple_vendor_top_case_key_code.video_mirror": {
+        "en": "apple_vendor_top_case video_mirror"
+        ,"ja": "apple_vendor_top_case video_mirror"
+        ,"zh-Hans": "切换屏幕镜像（apple_vendor_top_case video_mirror）"
+    },
     "settings.key_picker.arrows": {
         "en": "Arrow keys"
         ,"ja": "矢印キー"
         ,"zh-Hans": "方向键"
+    },
+    "settings.key_picker.consumer_key_code.ac_back": {
+        "en": "ac_back"
+        ,"ja": "ac_back"
+        ,"zh-Hans": "后退（ac_back）"
+    },
+    "settings.key_picker.consumer_key_code.ac_bookmarks": {
+        "en": "ac_bookmarks"
+        ,"ja": "ac_bookmarks"
+        ,"zh-Hans": "书签（ac_bookmarks）"
+    },
+    "settings.key_picker.consumer_key_code.ac_desktop_show_all_applications": {
+        "en": "ac_desktop_show_all_applications"
+        ,"ja": "ac_desktop_show_all_applications"
+        ,"zh-Hans": "显示所有应用（ac_desktop_show_all_applications）"
+    },
+    "settings.key_picker.consumer_key_code.ac_desktop_show_all_windows": {
+        "en": "ac_desktop_show_all_windows"
+        ,"ja": "ac_desktop_show_all_windows"
+        ,"zh-Hans": "显示所有窗口（ac_desktop_show_all_windows）"
+    },
+    "settings.key_picker.consumer_key_code.ac_forward": {
+        "en": "ac_forward"
+        ,"ja": "ac_forward"
+        ,"zh-Hans": "前进（ac_forward）"
+    },
+    "settings.key_picker.consumer_key_code.ac_home": {
+        "en": "ac_home"
+        ,"ja": "ac_home"
+        ,"zh-Hans": "主页（ac_home）"
+    },
+    "settings.key_picker.consumer_key_code.ac_keyboard_layout_select": {
+        "en": "ac_keyboard_layout_select"
+        ,"ja": "ac_keyboard_layout_select"
+        ,"zh-Hans": "选择键盘布局（ac_keyboard_layout_select）"
+    },
+    "settings.key_picker.consumer_key_code.ac_refresh": {
+        "en": "ac_refresh"
+        ,"ja": "ac_refresh"
+        ,"zh-Hans": "刷新（ac_refresh）"
+    },
+    "settings.key_picker.consumer_key_code.ac_search": {
+        "en": "ac_search"
+        ,"ja": "ac_search"
+        ,"zh-Hans": "搜索（ac_search）"
+    },
+    "settings.key_picker.consumer_key_code.ac_soft_key_left": {
+        "en": "ac_soft_key_left"
+        ,"ja": "ac_soft_key_left"
+        ,"zh-Hans": "左软键（ac_soft_key_left）"
+    },
+    "settings.key_picker.consumer_key_code.ac_zoom_in": {
+        "en": "ac_zoom_in"
+        ,"ja": "ac_zoom_in"
+        ,"zh-Hans": "放大（ac_zoom_in）"
+    },
+    "settings.key_picker.consumer_key_code.ac_zoom_out": {
+        "en": "ac_zoom_out"
+        ,"ja": "ac_zoom_out"
+        ,"zh-Hans": "缩小（ac_zoom_out）"
+    },
+    "settings.key_picker.consumer_key_code.al_Calendar_Or_Schedule": {
+        "en": "al_Calendar_Or_Schedule"
+        ,"ja": "al_Calendar_Or_Schedule"
+        ,"zh-Hans": "打开日历或日程应用（al_Calendar_Or_Schedule）"
+    },
+    "settings.key_picker.consumer_key_code.al_a_or_v_capture_or_playback": {
+        "en": "al_a_or_v_capture_or_playback"
+        ,"ja": "al_a_or_v_capture_or_playback"
+        ,"zh-Hans": "打开音视频采集或播放应用（al_a_or_v_capture_or_playback）"
+    },
+    "settings.key_picker.consumer_key_code.al_alarms": {
+        "en": "al_alarms"
+        ,"ja": "al_alarms"
+        ,"zh-Hans": "打开闹钟应用（al_alarms）"
+    },
+    "settings.key_picker.consumer_key_code.al_audio_browser": {
+        "en": "al_audio_browser"
+        ,"ja": "al_audio_browser"
+        ,"zh-Hans": "打开音频浏览器（al_audio_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_audio_player": {
+        "en": "al_audio_player"
+        ,"ja": "al_audio_player"
+        ,"zh-Hans": "打开音频播放器（al_audio_player）"
+    },
+    "settings.key_picker.consumer_key_code.al_calculator": {
+        "en": "al_calculator (Calculator)"
+        ,"ja": "al_calculator (Calculator)"
+        ,"zh-Hans": "打开计算器（al_calculator，计算器 Calculator）"
+    },
+    "settings.key_picker.consumer_key_code.al_checkbook_or_finance": {
+        "en": "al_checkbook_or_finance"
+        ,"ja": "al_checkbook_or_finance"
+        ,"zh-Hans": "打开支票簿或财务应用（al_checkbook_or_finance）"
+    },
+    "settings.key_picker.consumer_key_code.al_clock": {
+        "en": "al_clock"
+        ,"ja": "al_clock"
+        ,"zh-Hans": "打开时钟应用（al_clock）"
+    },
+    "settings.key_picker.consumer_key_code.al_command_line_processor_or_run": {
+        "en": "al_command_line_processor_or_run"
+        ,"ja": "al_command_line_processor_or_run"
+        ,"zh-Hans": "打开命令行或运行工具（al_command_line_processor_or_run）"
+    },
+    "settings.key_picker.consumer_key_code.al_consumer_control_configuration": {
+        "en": "al_consumer_control_configuration (Music)"
+        ,"ja": "al_consumer_control_configuration (Music)"
+        ,"zh-Hans": "打开媒体控制设置（al_consumer_control_configuration，音乐 Music）"
+    },
+    "settings.key_picker.consumer_key_code.al_contact_sync": {
+        "en": "al_contact_sync"
+        ,"ja": "al_contact_sync"
+        ,"zh-Hans": "同步联系人（al_contact_sync）"
+    },
+    "settings.key_picker.consumer_key_code.al_contacts_or_address_book": {
+        "en": "al_contacts_or_address_book"
+        ,"ja": "al_contacts_or_address_book"
+        ,"zh-Hans": "打开联系人或通讯录（al_contacts_or_address_book）"
+    },
+    "settings.key_picker.consumer_key_code.al_contextaware_desktop_assistant": {
+        "en": "al_contextaware_desktop_assistant"
+        ,"ja": "al_contextaware_desktop_assistant"
+        ,"zh-Hans": "打开情境感知桌面助手（al_contextaware_desktop_assistant）"
+    },
+    "settings.key_picker.consumer_key_code.al_control_panel": {
+        "en": "al_control_panel"
+        ,"ja": "al_control_panel"
+        ,"zh-Hans": "打开控制面板（al_control_panel）"
+    },
+    "settings.key_picker.consumer_key_code.al_customized_corporate_news_browser": {
+        "en": "al_customized_corporate_news_browser"
+        ,"ja": "al_customized_corporate_news_browser"
+        ,"zh-Hans": "查看定制企业新闻（al_customized_corporate_news_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_database_app": {
+        "en": "al_database_app"
+        ,"ja": "al_database_app"
+        ,"zh-Hans": "打开数据库应用（al_database_app）"
+    },
+    "settings.key_picker.consumer_key_code.al_desktop": {
+        "en": "al_desktop"
+        ,"ja": "al_desktop"
+        ,"zh-Hans": "显示桌面（al_desktop）"
+    },
+    "settings.key_picker.consumer_key_code.al_dictionary": {
+        "en": "al_dictionary (Dictionary)"
+        ,"ja": "al_dictionary (Dictionary)"
+        ,"zh-Hans": "打开词典（al_dictionary，词典 Dictionary）"
+    },
+    "settings.key_picker.consumer_key_code.al_digital_rights_manager": {
+        "en": "al_digital_rights_manager"
+        ,"ja": "al_digital_rights_manager"
+        ,"zh-Hans": "打开数字版权管理工具（al_digital_rights_manager）"
+    },
+    "settings.key_picker.consumer_key_code.al_digital_wallet": {
+        "en": "al_digital_wallet"
+        ,"ja": "al_digital_wallet"
+        ,"zh-Hans": "打开数字钱包（al_digital_wallet）"
+    },
+    "settings.key_picker.consumer_key_code.al_documents": {
+        "en": "al_documents"
+        ,"ja": "al_documents"
+        ,"zh-Hans": "打开文档浏览器（al_documents）"
+    },
+    "settings.key_picker.consumer_key_code.al_email_reader": {
+        "en": "al_email_reader (Mail)"
+        ,"ja": "al_email_reader (Mail)"
+        ,"zh-Hans": "打开邮件应用（al_email_reader，邮件 Mail）"
+    },
+    "settings.key_picker.consumer_key_code.al_encryption": {
+        "en": "al_encryption"
+        ,"ja": "al_encryption"
+        ,"zh-Hans": "打开加密管理工具（al_encryption）"
+    },
+    "settings.key_picker.consumer_key_code.al_entertainment_content_browser": {
+        "en": "al_entertainment_content_browser"
+        ,"ja": "al_entertainment_content_browser"
+        ,"zh-Hans": "浏览娱乐内容（al_entertainment_content_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_file_browser": {
+        "en": "al_file_browser"
+        ,"ja": "al_file_browser"
+        ,"zh-Hans": "打开文件浏览器（al_file_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_grammer_check": {
+        "en": "al_grammer_check"
+        ,"ja": "al_grammer_check"
+        ,"zh-Hans": "打开语法检查工具（al_grammer_check）"
+    },
+    "settings.key_picker.consumer_key_code.al_graphics_editor": {
+        "en": "al_graphics_editor"
+        ,"ja": "al_graphics_editor"
+        ,"zh-Hans": "打开图形编辑器（al_graphics_editor）"
+    },
+    "settings.key_picker.consumer_key_code.al_image_browser": {
+        "en": "al_image_browser"
+        ,"ja": "al_image_browser"
+        ,"zh-Hans": "打开图像浏览器（al_image_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_instant_messaging": {
+        "en": "al_instant_messaging"
+        ,"ja": "al_instant_messaging"
+        ,"zh-Hans": "打开即时通讯应用（al_instant_messaging）"
+    },
+    "settings.key_picker.consumer_key_code.al_integrated_help_center": {
+        "en": "al_integrated_help_center"
+        ,"ja": "al_integrated_help_center"
+        ,"zh-Hans": "打开集成帮助中心（al_integrated_help_center）"
+    },
+    "settings.key_picker.consumer_key_code.al_internet_browser": {
+        "en": "al_internet_browser (Safari)"
+        ,"ja": "al_internet_browser (Safari)"
+        ,"zh-Hans": "打开网页浏览器（al_internet_browser，Safari 浏览器）"
+    },
+    "settings.key_picker.consumer_key_code.al_keyboard_layout": {
+        "en": "al_keyboard_layout"
+        ,"ja": "al_keyboard_layout"
+        ,"zh-Hans": "打开键盘布局管理工具（al_keyboard_layout）"
+    },
+    "settings.key_picker.consumer_key_code.al_lan_or_wan_browser": {
+        "en": "al_lan_or_wan_browser"
+        ,"ja": "al_lan_or_wan_browser"
+        ,"zh-Hans": "打开局域网或广域网浏览器（al_lan_or_wan_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_local_machine_browser": {
+        "en": "al_local_machine_browser (Finder)"
+        ,"ja": "al_local_machine_browser (Finder)"
+        ,"zh-Hans": "打开本机文件浏览器（al_local_machine_browser，访达 Finder）"
+    },
+    "settings.key_picker.consumer_key_code.al_log_or_journal_or_timecard": {
+        "en": "al_log_or_journal_or_timecard"
+        ,"ja": "al_log_or_journal_or_timecard"
+        ,"zh-Hans": "打开日志、日记或工时记录应用（al_log_or_journal_or_timecard）"
+    },
+    "settings.key_picker.consumer_key_code.al_logoff": {
+        "en": "al_logoff"
+        ,"ja": "al_logoff"
+        ,"zh-Hans": "退出登录（al_logoff）"
+    },
+    "settings.key_picker.consumer_key_code.al_logon": {
+        "en": "al_logon"
+        ,"ja": "al_logon"
+        ,"zh-Hans": "登录（al_logon）"
+    },
+    "settings.key_picker.consumer_key_code.al_logon_or_logoff": {
+        "en": "al_logon_or_logoff"
+        ,"ja": "al_logon_or_logoff"
+        ,"zh-Hans": "登录／退出登录（al_logon_or_logoff）"
+    },
+    "settings.key_picker.consumer_key_code.al_market_monitor_or_finance_browser": {
+        "en": "al_market_monitor_or_finance_browser"
+        ,"ja": "al_market_monitor_or_finance_browser"
+        ,"zh-Hans": "查看市场行情或财经信息（al_market_monitor_or_finance_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_message_status": {
+        "en": "al_message_status"
+        ,"ja": "al_message_status"
+        ,"zh-Hans": "查看消息状态（al_message_status）"
+    },
+    "settings.key_picker.consumer_key_code.al_movie_browser": {
+        "en": "al_movie_browser"
+        ,"ja": "al_movie_browser"
+        ,"zh-Hans": "打开视频浏览器（al_movie_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_navigation": {
+        "en": "al_navigation"
+        ,"ja": "al_navigation"
+        ,"zh-Hans": "打开导航应用（al_navigation）"
+    },
+    "settings.key_picker.consumer_key_code.al_network_chat": {
+        "en": "al_network_chat"
+        ,"ja": "al_network_chat"
+        ,"zh-Hans": "打开网络聊天应用（al_network_chat）"
+    },
+    "settings.key_picker.consumer_key_code.al_network_conference": {
+        "en": "al_network_conference"
+        ,"ja": "al_network_conference"
+        ,"zh-Hans": "打开网络会议应用（al_network_conference）"
+    },
+    "settings.key_picker.consumer_key_code.al_newsreader": {
+        "en": "al_newsreader"
+        ,"ja": "al_newsreader"
+        ,"zh-Hans": "打开新闻阅读器（al_newsreader）"
+    },
+    "settings.key_picker.consumer_key_code.al_next_task_or_application": {
+        "en": "al_next_task_or_application"
+        ,"ja": "al_next_task_or_application"
+        ,"zh-Hans": "切换到下一个任务或应用（al_next_task_or_application）"
+    },
+    "settings.key_picker.consumer_key_code.al_oem_feature_browser": {
+        "en": "al_oem_feature_browser"
+        ,"ja": "al_oem_feature_browser"
+        ,"zh-Hans": "查看厂商功能介绍（al_oem_feature_browser）"
+    },
+    "settings.key_picker.consumer_key_code.al_oem_help": {
+        "en": "al_oem_help"
+        ,"ja": "al_oem_help"
+        ,"zh-Hans": "打开厂商帮助（al_oem_help）"
+    },
+    "settings.key_picker.consumer_key_code.al_online_activity_browswer": {
+        "en": "al_online_activity_browswer"
+        ,"ja": "al_online_activity_browswer"
+        ,"zh-Hans": "查看在线活动（al_online_activity_browswer）"
+    },
+    "settings.key_picker.consumer_key_code.al_online_community": {
+        "en": "al_online_community"
+        ,"ja": "al_online_community"
+        ,"zh-Hans": "打开在线社区（al_online_community）"
+    },
+    "settings.key_picker.consumer_key_code.al_online_shopping_browswer": {
+        "en": "al_online_shopping_browswer"
+        ,"ja": "al_online_shopping_browswer"
+        ,"zh-Hans": "打开网上购物网站（al_online_shopping_browswer）"
+    },
+    "settings.key_picker.consumer_key_code.al_power_status": {
+        "en": "al_power_status"
+        ,"ja": "al_power_status"
+        ,"zh-Hans": "查看电源状态（al_power_status）"
+    },
+    "settings.key_picker.consumer_key_code.al_preemptive_halt_task_or_application": {
+        "en": "al_preemptive_halt_task_or_application"
+        ,"ja": "al_preemptive_halt_task_or_application"
+        ,"zh-Hans": "强制停止任务或应用（al_preemptive_halt_task_or_application）"
+    },
+    "settings.key_picker.consumer_key_code.al_presentation_app": {
+        "en": "al_presentation_app (Keynote)"
+        ,"ja": "al_presentation_app (Keynote)"
+        ,"zh-Hans": "打开演示文稿应用（al_presentation_app，Keynote 讲演）"
+    },
+    "settings.key_picker.consumer_key_code.al_previous_task_or_application": {
+        "en": "al_previous_task_or_application"
+        ,"ja": "al_previous_task_or_application"
+        ,"zh-Hans": "切换到上一个任务或应用（al_previous_task_or_application）"
+    },
+    "settings.key_picker.consumer_key_code.al_process_or_task_manager": {
+        "en": "al_process_or_task_manager"
+        ,"ja": "al_process_or_task_manager"
+        ,"zh-Hans": "打开进程或任务管理器（al_process_or_task_manager）"
+    },
+    "settings.key_picker.consumer_key_code.al_remote_networking_or_isp_connect": {
+        "en": "al_remote_networking_or_isp_connect"
+        ,"ja": "al_remote_networking_or_isp_connect"
+        ,"zh-Hans": "打开远程联网或 ISP 连接工具（al_remote_networking_or_isp_connect）"
+    },
+    "settings.key_picker.consumer_key_code.al_research_or_search_browswer": {
+        "en": "al_research_or_search_browswer"
+        ,"ja": "al_research_or_search_browswer"
+        ,"zh-Hans": "打开研究或搜索工具（al_research_or_search_browswer）"
+    },
+    "settings.key_picker.consumer_key_code.al_screen_saver": {
+        "en": "al_screen_saver"
+        ,"ja": "al_screen_saver"
+        ,"zh-Hans": "启动屏幕保护程序（al_screen_saver）"
+    },
+    "settings.key_picker.consumer_key_code.al_select_task_or_application": {
+        "en": "al_select_task_or_application"
+        ,"ja": "al_select_task_or_application"
+        ,"zh-Hans": "选择任务或应用（al_select_task_or_application）"
+    },
+    "settings.key_picker.consumer_key_code.al_smart_card_information_or_help": {
+        "en": "al_smart_card_information_or_help"
+        ,"ja": "al_smart_card_information_or_help"
+        ,"zh-Hans": "查看智能卡信息或帮助（al_smart_card_information_or_help）"
+    },
+    "settings.key_picker.consumer_key_code.al_spell_check": {
+        "en": "al_spell_check"
+        ,"ja": "al_spell_check"
+        ,"zh-Hans": "打开拼写检查工具（al_spell_check）"
+    },
+    "settings.key_picker.consumer_key_code.al_spreadsheet": {
+        "en": "al_spreadsheet (Numbers)"
+        ,"ja": "al_spreadsheet (Numbers)"
+        ,"zh-Hans": "打开电子表格应用（al_spreadsheet，Numbers 表格）"
+    },
+    "settings.key_picker.consumer_key_code.al_task_or_project_manager": {
+        "en": "al_task_or_project_manager"
+        ,"ja": "al_task_or_project_manager"
+        ,"zh-Hans": "打开任务或项目管理应用（al_task_or_project_manager）"
+    },
+    "settings.key_picker.consumer_key_code.al_telephony_or_dialer": {
+        "en": "al_telephony_or_dialer"
+        ,"ja": "al_telephony_or_dialer"
+        ,"zh-Hans": "打开电话或拨号应用（al_telephony_or_dialer）"
+    },
+    "settings.key_picker.consumer_key_code.al_text_editor": {
+        "en": "al_text_editor (TextEdit)"
+        ,"ja": "al_text_editor (TextEdit)"
+        ,"zh-Hans": "打开文本编辑器（al_text_editor，文本编辑 TextEdit）"
+    },
+    "settings.key_picker.consumer_key_code.al_thesaurus": {
+        "en": "al_thesaurus"
+        ,"ja": "al_thesaurus"
+        ,"zh-Hans": "打开同义词词典（al_thesaurus）"
+    },
+    "settings.key_picker.consumer_key_code.al_virus_protection": {
+        "en": "al_virus_protection"
+        ,"ja": "al_virus_protection"
+        ,"zh-Hans": "打开病毒防护应用（al_virus_protection）"
+    },
+    "settings.key_picker.consumer_key_code.al_voicemail": {
+        "en": "al_voicemail"
+        ,"ja": "al_voicemail"
+        ,"zh-Hans": "打开语音信箱（al_voicemail）"
+    },
+    "settings.key_picker.consumer_key_code.al_wireless_status": {
+        "en": "al_wireless_status"
+        ,"ja": "al_wireless_status"
+        ,"zh-Hans": "查看无线网络状态（al_wireless_status）"
+    },
+    "settings.key_picker.consumer_key_code.al_word_processor": {
+        "en": "al_word_processor (Pages)"
+        ,"ja": "al_word_processor (Pages)"
+        ,"zh-Hans": "打开文字处理应用（al_word_processor，Pages 文稿）"
+    },
+    "settings.key_picker.consumer_key_code.aspect": {
+        "en": "aspect"
+        ,"ja": "aspect"
+        ,"zh-Hans": "选择画面宽高比（aspect）"
+    },
+    "settings.key_picker.consumer_key_code.bass_boost": {
+        "en": "bass_boost"
+        ,"ja": "bass_boost"
+        ,"zh-Hans": "低音增强（bass_boost）"
+    },
+    "settings.key_picker.consumer_key_code.bass_decrement": {
+        "en": "bass_decrement"
+        ,"ja": "bass_decrement"
+        ,"zh-Hans": "减弱低音（bass_decrement）"
+    },
+    "settings.key_picker.consumer_key_code.bass_increment": {
+        "en": "bass_increment"
+        ,"ja": "bass_increment"
+        ,"zh-Hans": "增强低音（bass_increment）"
+    },
+    "settings.key_picker.consumer_key_code.blue_menu_button": {
+        "en": "blue_menu_button"
+        ,"ja": "blue_menu_button"
+        ,"zh-Hans": "蓝色菜单键（blue_menu_button）"
+    },
+    "settings.key_picker.consumer_key_code.broadcast_mode": {
+        "en": "broadcast_mode"
+        ,"ja": "broadcast_mode"
+        ,"zh-Hans": "选择广播模式（broadcast_mode）"
+    },
+    "settings.key_picker.consumer_key_code.closed_caption": {
+        "en": "closed_caption"
+        ,"ja": "closed_caption"
+        ,"zh-Hans": "隐藏式字幕（closed_caption）"
+    },
+    "settings.key_picker.consumer_key_code.closed_caption_select": {
+        "en": "closed_caption_select"
+        ,"ja": "closed_caption_select"
+        ,"zh-Hans": "选择隐藏式字幕（closed_caption_select）"
+    },
+    "settings.key_picker.consumer_key_code.data_on_screen": {
+        "en": "data_on_screen"
+        ,"ja": "data_on_screen"
+        ,"zh-Hans": "显示屏幕信息（data_on_screen）"
+    },
+    "settings.key_picker.consumer_key_code.dictation": {
+        "en": "dictation"
+        ,"ja": "dictation"
+        ,"zh-Hans": "听写（dictation）"
+    },
+    "settings.key_picker.consumer_key_code.display_brightness_decrement": {
+        "en": "display_brightness_decrement"
+        ,"ja": "display_brightness_decrement"
+        ,"zh-Hans": "调低屏幕亮度（display_brightness_decrement）"
+    },
+    "settings.key_picker.consumer_key_code.display_brightness_increment": {
+        "en": "display_brightness_increment"
+        ,"ja": "display_brightness_increment"
+        ,"zh-Hans": "调高屏幕亮度（display_brightness_increment）"
+    },
+    "settings.key_picker.consumer_key_code.eject": {
+        "en": "eject"
+        ,"ja": "eject"
+        ,"zh-Hans": "推出键（eject）"
+    },
+    "settings.key_picker.consumer_key_code.fast_forward": {
+        "en": "fast_forward"
+        ,"ja": "fast_forward"
+        ,"zh-Hans": "快进（fast_forward）"
+    },
+    "settings.key_picker.consumer_key_code.fastforward": {
+        "en": "consumer_key_code::fastforward"
+        ,"ja": "consumer_key_code::fastforward"
+        ,"zh-Hans": "快进（consumer_key_code::fastforward）"
+    },
+    "settings.key_picker.consumer_key_code.green_menu_button": {
+        "en": "green_menu_button"
+        ,"ja": "green_menu_button"
+        ,"zh-Hans": "绿色菜单键（green_menu_button）"
+    },
+    "settings.key_picker.consumer_key_code.loudness": {
+        "en": "loudness"
+        ,"ja": "loudness"
+        ,"zh-Hans": "响度补偿（loudness）"
+    },
+    "settings.key_picker.consumer_key_code.menu_down": {
+        "en": "menu_down"
+        ,"ja": "menu_down"
+        ,"zh-Hans": "在菜单中向下移动（menu_down）"
+    },
+    "settings.key_picker.consumer_key_code.menu_escape": {
+        "en": "menu_escape"
+        ,"ja": "menu_escape"
+        ,"zh-Hans": "退出菜单（menu_escape）"
+    },
+    "settings.key_picker.consumer_key_code.menu_left": {
+        "en": "menu_left"
+        ,"ja": "menu_left"
+        ,"zh-Hans": "在菜单中向左移动（menu_left）"
+    },
+    "settings.key_picker.consumer_key_code.menu_pick": {
+        "en": "menu_pick"
+        ,"ja": "menu_pick"
+        ,"zh-Hans": "确认菜单选项（menu_pick）"
+    },
+    "settings.key_picker.consumer_key_code.menu_right": {
+        "en": "menu_right"
+        ,"ja": "menu_right"
+        ,"zh-Hans": "在菜单中向右移动（menu_right）"
+    },
+    "settings.key_picker.consumer_key_code.menu_up": {
+        "en": "menu_up"
+        ,"ja": "menu_up"
+        ,"zh-Hans": "在菜单中向上移动（menu_up）"
+    },
+    "settings.key_picker.consumer_key_code.menu_value_decrease": {
+        "en": "menu_value_decrease"
+        ,"ja": "menu_value_decrease"
+        ,"zh-Hans": "减小菜单数值（menu_value_decrease）"
+    },
+    "settings.key_picker.consumer_key_code.menu_value_increase": {
+        "en": "menu_value_increase"
+        ,"ja": "menu_value_increase"
+        ,"zh-Hans": "增大菜单数值（menu_value_increase）"
+    },
+    "settings.key_picker.consumer_key_code.microphone": {
+        "en": "microphone"
+        ,"ja": "microphone"
+        ,"zh-Hans": "麦克风（microphone）"
+    },
+    "settings.key_picker.consumer_key_code.mute": {
+        "en": "mute"
+        ,"ja": "mute"
+        ,"zh-Hans": "静音（mute）"
+    },
+    "settings.key_picker.consumer_key_code.picture_in_picture_swap": {
+        "en": "picture_in_picture_swap"
+        ,"ja": "picture_in_picture_swap"
+        ,"zh-Hans": "交换画中画画面（picture_in_picture_swap）"
+    },
+    "settings.key_picker.consumer_key_code.picture_in_picture_toggle": {
+        "en": "picture_in_picture_toggle"
+        ,"ja": "picture_in_picture_toggle"
+        ,"zh-Hans": "打开／关闭画中画（picture_in_picture_toggle）"
+    },
+    "settings.key_picker.consumer_key_code.play_or_pause": {
+        "en": "play_or_pause"
+        ,"ja": "play_or_pause"
+        ,"zh-Hans": "播放／暂停（play_or_pause）"
+    },
+    "settings.key_picker.consumer_key_code.red_menu_button": {
+        "en": "red_menu_button"
+        ,"ja": "red_menu_button"
+        ,"zh-Hans": "红色菜单键（red_menu_button）"
+    },
+    "settings.key_picker.consumer_key_code.rewind": {
+        "en": "rewind"
+        ,"ja": "rewind"
+        ,"zh-Hans": "快退（rewind）"
+    },
+    "settings.key_picker.consumer_key_code.scan_next_track": {
+        "en": "consumer_key_code::scan_next_track"
+        ,"ja": "consumer_key_code::scan_next_track"
+        ,"zh-Hans": "下一曲（consumer_key_code::scan_next_track）"
+    },
+    "settings.key_picker.consumer_key_code.scan_previous_track": {
+        "en": "consumer_key_code::scan_previous_track"
+        ,"ja": "consumer_key_code::scan_previous_track"
+        ,"zh-Hans": "上一曲（consumer_key_code::scan_previous_track）"
+    },
+    "settings.key_picker.consumer_key_code.selection": {
+        "en": "selection"
+        ,"ja": "selection"
+        ,"zh-Hans": "选择（selection）"
+    },
+    "settings.key_picker.consumer_key_code.snapshot": {
+        "en": "snapshot"
+        ,"ja": "snapshot"
+        ,"zh-Hans": "抓拍（snapshot）"
+    },
+    "settings.key_picker.consumer_key_code.still": {
+        "en": "still"
+        ,"ja": "still"
+        ,"zh-Hans": "静止画面（still）"
+    },
+    "settings.key_picker.consumer_key_code.stop": {
+        "en": "consumer_key_code::stop"
+        ,"ja": "consumer_key_code::stop"
+        ,"zh-Hans": "停止播放（consumer_key_code::stop）"
+    },
+    "settings.key_picker.consumer_key_code.three_dimensional_mode_select": {
+        "en": "three_dimensional_mode_select"
+        ,"ja": "three_dimensional_mode_select"
+        ,"zh-Hans": "选择 3D 模式（three_dimensional_mode_select）"
+    },
+    "settings.key_picker.consumer_key_code.vcr_or_tv": {
+        "en": "vcr_or_tv"
+        ,"ja": "vcr_or_tv"
+        ,"zh-Hans": "切换录像机／电视（vcr_or_tv）"
+    },
+    "settings.key_picker.consumer_key_code.volume_decrement": {
+        "en": "volume_decrement"
+        ,"ja": "volume_decrement"
+        ,"zh-Hans": "调低音量（volume_decrement）"
+    },
+    "settings.key_picker.consumer_key_code.volume_increment": {
+        "en": "volume_increment"
+        ,"ja": "volume_increment"
+        ,"zh-Hans": "调高音量（volume_increment）"
+    },
+    "settings.key_picker.consumer_key_code.yellow_menu_button": {
+        "en": "yellow_menu_button"
+        ,"ja": "yellow_menu_button"
+        ,"zh-Hans": "黄色菜单键（yellow_menu_button）"
     },
     "settings.key_picker.controls_symbols": {
         "en": "Controls and symbols"
@@ -179,6 +884,16 @@
         ,"ja": "ファンクションキー"
         ,"zh-Hans": "功能键"
     },
+    "settings.key_picker.generic_desktop.system_app_menu": {
+        "en": "system_app_menu"
+        ,"ja": "system_app_menu"
+        ,"zh-Hans": "系统应用菜单（system_app_menu）"
+    },
+    "settings.key_picker.generic_desktop.system_sleep": {
+        "en": "system_sleep"
+        ,"ja": "system_sleep"
+        ,"zh-Hans": "系统睡眠（system_sleep）"
+    },
     "settings.key_picker.gui": {
         "en": "Generic GUI application control keys"
         ,"ja": "汎用GUIアプリ操作キー"
@@ -203,6 +918,611 @@
         "en": "Japanese"
         ,"ja": "日本語"
         ,"zh-Hans": "日文按键"
+    },
+    "settings.key_picker.key_code.again": {
+        "en": "again"
+        ,"ja": "again"
+        ,"zh-Hans": "再次执行（again）"
+    },
+    "settings.key_picker.key_code.alternate_erase": {
+        "en": "alternate_erase"
+        ,"ja": "alternate_erase"
+        ,"zh-Hans": "备用擦除键（alternate_erase）"
+    },
+    "settings.key_picker.key_code.apple_display_brightness_decrement": {
+        "en": "apple_display_brightness_decrement"
+        ,"ja": "apple_display_brightness_decrement"
+        ,"zh-Hans": "调低屏幕亮度（apple_display_brightness_decrement）"
+    },
+    "settings.key_picker.key_code.apple_display_brightness_increment": {
+        "en": "apple_display_brightness_increment"
+        ,"ja": "apple_display_brightness_increment"
+        ,"zh-Hans": "调高屏幕亮度（apple_display_brightness_increment）"
+    },
+    "settings.key_picker.key_code.apple_top_case_display_brightness_decrement": {
+        "en": "apple_top_case_display_brightness_decrement"
+        ,"ja": "apple_top_case_display_brightness_decrement"
+        ,"zh-Hans": "调低屏幕亮度（apple_top_case_display_brightness_decrement）"
+    },
+    "settings.key_picker.key_code.apple_top_case_display_brightness_increment": {
+        "en": "apple_top_case_display_brightness_increment"
+        ,"ja": "apple_top_case_display_brightness_increment"
+        ,"zh-Hans": "调高屏幕亮度（apple_top_case_display_brightness_increment）"
+    },
+    "settings.key_picker.key_code.application": {
+        "en": "application"
+        ,"ja": "application"
+        ,"zh-Hans": "应用菜单键（application）"
+    },
+    "settings.key_picker.key_code.backslash": {
+        "en": "backslash (\\)"
+        ,"ja": "backslash (\\)"
+        ,"zh-Hans": "反斜杠键（backslash）"
+    },
+    "settings.key_picker.key_code.cancel": {
+        "en": "cancel"
+        ,"ja": "cancel"
+        ,"zh-Hans": "取消（cancel）"
+    },
+    "settings.key_picker.key_code.caps_lock": {
+        "en": "caps_lock"
+        ,"ja": "caps_lock"
+        ,"zh-Hans": "大写锁定键（caps_lock）"
+    },
+    "settings.key_picker.key_code.clear": {
+        "en": "clear"
+        ,"ja": "clear"
+        ,"zh-Hans": "清除（clear）"
+    },
+    "settings.key_picker.key_code.clear_or_again": {
+        "en": "clear_or_again"
+        ,"ja": "clear_or_again"
+        ,"zh-Hans": "清除／再次执行（clear_or_again）"
+    },
+    "settings.key_picker.key_code.close_bracket": {
+        "en": "close_bracket ]"
+        ,"ja": "close_bracket ]"
+        ,"zh-Hans": "右方括号 ]（close_bracket）"
+    },
+    "settings.key_picker.key_code.comma": {
+        "en": "comma (,)"
+        ,"ja": "comma (,)"
+        ,"zh-Hans": "逗号 ,（comma）"
+    },
+    "settings.key_picker.key_code.copy": {
+        "en": "copy"
+        ,"ja": "copy"
+        ,"zh-Hans": "复制（copy）"
+    },
+    "settings.key_picker.key_code.cr_sel_or_props": {
+        "en": "cr_sel_or_props"
+        ,"ja": "cr_sel_or_props"
+        ,"zh-Hans": "光标选择／属性键（cr_sel_or_props）"
+    },
+    "settings.key_picker.key_code.cut": {
+        "en": "cut"
+        ,"ja": "cut"
+        ,"zh-Hans": "剪切（cut）"
+    },
+    "settings.key_picker.key_code.dashboard": {
+        "en": "key_code::dashboard"
+        ,"ja": "key_code::dashboard"
+        ,"zh-Hans": "仪表盘（key_code::dashboard）"
+    },
+    "settings.key_picker.key_code.delete_forward": {
+        "en": "delete_forward"
+        ,"ja": "delete_forward"
+        ,"zh-Hans": "向前删除键（delete_forward）"
+    },
+    "settings.key_picker.key_code.delete_or_backspace": {
+        "en": "delete_or_backspace"
+        ,"ja": "delete_or_backspace"
+        ,"zh-Hans": "退格键（delete_or_backspace）"
+    },
+    "settings.key_picker.key_code.display_brightness_decrement": {
+        "en": "key_code::display_brightness_decrement"
+        ,"ja": "key_code::display_brightness_decrement"
+        ,"zh-Hans": "调低屏幕亮度（key_code::display_brightness_decrement）"
+    },
+    "settings.key_picker.key_code.display_brightness_increment": {
+        "en": "key_code::display_brightness_increment"
+        ,"ja": "key_code::display_brightness_increment"
+        ,"zh-Hans": "调高屏幕亮度（key_code::display_brightness_increment）"
+    },
+    "settings.key_picker.key_code.down_arrow": {
+        "en": "down_arrow"
+        ,"ja": "down_arrow"
+        ,"zh-Hans": "下箭头键（down_arrow）"
+    },
+    "settings.key_picker.key_code.end": {
+        "en": "end"
+        ,"ja": "end"
+        ,"zh-Hans": "移至末尾（end）"
+    },
+    "settings.key_picker.key_code.equal_sign": {
+        "en": "equal_sign (=)"
+        ,"ja": "equal_sign (=)"
+        ,"zh-Hans": "等号 =（equal_sign）"
+    },
+    "settings.key_picker.key_code.escape": {
+        "en": "escape"
+        ,"ja": "escape"
+        ,"zh-Hans": "Esc 键（escape）"
+    },
+    "settings.key_picker.key_code.ex_sel": {
+        "en": "ex_sel"
+        ,"ja": "ex_sel"
+        ,"zh-Hans": "扩展选择键（ex_sel）"
+    },
+    "settings.key_picker.key_code.execute": {
+        "en": "execute"
+        ,"ja": "execute"
+        ,"zh-Hans": "执行（execute）"
+    },
+    "settings.key_picker.key_code.fastforward": {
+        "en": "key_code::fastforward"
+        ,"ja": "key_code::fastforward"
+        ,"zh-Hans": "快进（key_code::fastforward）"
+    },
+    "settings.key_picker.key_code.find": {
+        "en": "find"
+        ,"ja": "find"
+        ,"zh-Hans": "查找（find）"
+    },
+    "settings.key_picker.key_code.fn": {
+        "en": "key_code::fn"
+        ,"ja": "key_code::fn"
+        ,"zh-Hans": "Fn 功能键（key_code::fn）"
+    },
+    "settings.key_picker.key_code.grave_accent_and_tilde": {
+        "en": "grave_accent_and_tilde (`)"
+        ,"ja": "grave_accent_and_tilde (`)"
+        ,"zh-Hans": "重音符 `／波浪号 ~（grave_accent_and_tilde）"
+    },
+    "settings.key_picker.key_code.help": {
+        "en": "help"
+        ,"ja": "help"
+        ,"zh-Hans": "帮助（help）"
+    },
+    "settings.key_picker.key_code.home": {
+        "en": "home"
+        ,"ja": "home"
+        ,"zh-Hans": "移至开头（home）"
+    },
+    "settings.key_picker.key_code.hyphen": {
+        "en": "hyphen (-)"
+        ,"ja": "hyphen (-)"
+        ,"zh-Hans": "连字符 -（hyphen）"
+    },
+    "settings.key_picker.key_code.illumination_decrement": {
+        "en": "illumination_decrement"
+        ,"ja": "illumination_decrement"
+        ,"zh-Hans": "调低键盘背光亮度（illumination_decrement）"
+    },
+    "settings.key_picker.key_code.illumination_increment": {
+        "en": "illumination_increment"
+        ,"ja": "illumination_increment"
+        ,"zh-Hans": "调高键盘背光亮度（illumination_increment）"
+    },
+    "settings.key_picker.key_code.insert": {
+        "en": "insert"
+        ,"ja": "insert"
+        ,"zh-Hans": "插入键（insert）"
+    },
+    "settings.key_picker.key_code.international1": {
+        "en": "international1"
+        ,"ja": "international1"
+        ,"zh-Hans": "国际键 1（international1）"
+    },
+    "settings.key_picker.key_code.international2": {
+        "en": "international2"
+        ,"ja": "international2"
+        ,"zh-Hans": "国际键 2（international2）"
+    },
+    "settings.key_picker.key_code.international3": {
+        "en": "international3"
+        ,"ja": "international3"
+        ,"zh-Hans": "国际键 3（international3）"
+    },
+    "settings.key_picker.key_code.international4": {
+        "en": "international4"
+        ,"ja": "international4"
+        ,"zh-Hans": "国际键 4（international4）"
+    },
+    "settings.key_picker.key_code.international5": {
+        "en": "international5"
+        ,"ja": "international5"
+        ,"zh-Hans": "国际键 5（international5）"
+    },
+    "settings.key_picker.key_code.international6": {
+        "en": "international6"
+        ,"ja": "international6"
+        ,"zh-Hans": "国际键 6（international6）"
+    },
+    "settings.key_picker.key_code.international7": {
+        "en": "international7"
+        ,"ja": "international7"
+        ,"zh-Hans": "国际键 7（international7）"
+    },
+    "settings.key_picker.key_code.international8": {
+        "en": "international8"
+        ,"ja": "international8"
+        ,"zh-Hans": "国际键 8（international8）"
+    },
+    "settings.key_picker.key_code.international9": {
+        "en": "international9"
+        ,"ja": "international9"
+        ,"zh-Hans": "国际键 9（international9）"
+    },
+    "settings.key_picker.key_code.japanese_eisuu": {
+        "en": "ABCキー（英数キー）"
+        ,"ja": "ABCキー（英数キー）"
+        ,"zh-Hans": "英数键（japanese_eisuu）"
+    },
+    "settings.key_picker.key_code.japanese_kana": {
+        "en": "あいうキー（かなキー）"
+        ,"ja": "あいうキー（かなキー）"
+        ,"zh-Hans": "假名键（japanese_kana）"
+    },
+    "settings.key_picker.key_code.japanese_pc_katakana": {
+        "en": "PCキーボードのかなキー"
+        ,"ja": "PCキーボードのかなキー"
+        ,"zh-Hans": "PC 日文键盘假名键（japanese_pc_katakana）"
+    },
+    "settings.key_picker.key_code.japanese_pc_nfer": {
+        "en": "PCキーボードの無変換キー"
+        ,"ja": "PCキーボードの無変換キー"
+        ,"zh-Hans": "PC 日文键盘无转换键（japanese_pc_nfer）"
+    },
+    "settings.key_picker.key_code.japanese_pc_xfer": {
+        "en": "PCキーボードの変換キー"
+        ,"ja": "PCキーボードの変換キー"
+        ,"zh-Hans": "PC 日文键盘转换键（japanese_pc_xfer）"
+    },
+    "settings.key_picker.key_code.keypad_0": {
+        "en": "keypad_0"
+        ,"ja": "keypad_0"
+        ,"zh-Hans": "数字小键盘 0（keypad_0）"
+    },
+    "settings.key_picker.key_code.keypad_1": {
+        "en": "keypad_1"
+        ,"ja": "keypad_1"
+        ,"zh-Hans": "数字小键盘 1（keypad_1）"
+    },
+    "settings.key_picker.key_code.keypad_2": {
+        "en": "keypad_2"
+        ,"ja": "keypad_2"
+        ,"zh-Hans": "数字小键盘 2（keypad_2）"
+    },
+    "settings.key_picker.key_code.keypad_3": {
+        "en": "keypad_3"
+        ,"ja": "keypad_3"
+        ,"zh-Hans": "数字小键盘 3（keypad_3）"
+    },
+    "settings.key_picker.key_code.keypad_4": {
+        "en": "keypad_4"
+        ,"ja": "keypad_4"
+        ,"zh-Hans": "数字小键盘 4（keypad_4）"
+    },
+    "settings.key_picker.key_code.keypad_5": {
+        "en": "keypad_5"
+        ,"ja": "keypad_5"
+        ,"zh-Hans": "数字小键盘 5（keypad_5）"
+    },
+    "settings.key_picker.key_code.keypad_6": {
+        "en": "keypad_6"
+        ,"ja": "keypad_6"
+        ,"zh-Hans": "数字小键盘 6（keypad_6）"
+    },
+    "settings.key_picker.key_code.keypad_7": {
+        "en": "keypad_7"
+        ,"ja": "keypad_7"
+        ,"zh-Hans": "数字小键盘 7（keypad_7）"
+    },
+    "settings.key_picker.key_code.keypad_8": {
+        "en": "keypad_8"
+        ,"ja": "keypad_8"
+        ,"zh-Hans": "数字小键盘 8（keypad_8）"
+    },
+    "settings.key_picker.key_code.keypad_9": {
+        "en": "keypad_9"
+        ,"ja": "keypad_9"
+        ,"zh-Hans": "数字小键盘 9（keypad_9）"
+    },
+    "settings.key_picker.key_code.keypad_asterisk": {
+        "en": "keypad_asterisk"
+        ,"ja": "keypad_asterisk"
+        ,"zh-Hans": "数字小键盘乘号 *（keypad_asterisk）"
+    },
+    "settings.key_picker.key_code.keypad_comma": {
+        "en": "keypad_comma"
+        ,"ja": "keypad_comma"
+        ,"zh-Hans": "数字小键盘逗号 ,（keypad_comma）"
+    },
+    "settings.key_picker.key_code.keypad_enter": {
+        "en": "keypad_enter"
+        ,"ja": "keypad_enter"
+        ,"zh-Hans": "数字小键盘回车键（keypad_enter）"
+    },
+    "settings.key_picker.key_code.keypad_equal_sign": {
+        "en": "keypad_equal_sign"
+        ,"ja": "keypad_equal_sign"
+        ,"zh-Hans": "数字小键盘等号 =（keypad_equal_sign）"
+    },
+    "settings.key_picker.key_code.keypad_equal_sign_as400": {
+        "en": "keypad_equal_sign_as400"
+        ,"ja": "keypad_equal_sign_as400"
+        ,"zh-Hans": "AS/400 数字小键盘等号键（keypad_equal_sign_as400）"
+    },
+    "settings.key_picker.key_code.keypad_hyphen": {
+        "en": "keypad_hyphen"
+        ,"ja": "keypad_hyphen"
+        ,"zh-Hans": "数字小键盘减号 -（keypad_hyphen）"
+    },
+    "settings.key_picker.key_code.keypad_num_lock": {
+        "en": "keypad_num_lock"
+        ,"ja": "keypad_num_lock"
+        ,"zh-Hans": "数字锁定键（keypad_num_lock）"
+    },
+    "settings.key_picker.key_code.keypad_period": {
+        "en": "keypad_period"
+        ,"ja": "keypad_period"
+        ,"zh-Hans": "数字小键盘小数点 .（keypad_period）"
+    },
+    "settings.key_picker.key_code.keypad_plus": {
+        "en": "keypad_plus"
+        ,"ja": "keypad_plus"
+        ,"zh-Hans": "数字小键盘加号 +（keypad_plus）"
+    },
+    "settings.key_picker.key_code.keypad_slash": {
+        "en": "keypad_slash"
+        ,"ja": "keypad_slash"
+        ,"zh-Hans": "数字小键盘除号 /（keypad_slash）"
+    },
+    "settings.key_picker.key_code.lang1": {
+        "en": "lang1"
+        ,"ja": "lang1"
+        ,"zh-Hans": "语言键 1（lang1）"
+    },
+    "settings.key_picker.key_code.lang2": {
+        "en": "lang2"
+        ,"ja": "lang2"
+        ,"zh-Hans": "语言键 2（lang2）"
+    },
+    "settings.key_picker.key_code.lang3": {
+        "en": "lang3"
+        ,"ja": "lang3"
+        ,"zh-Hans": "语言键 3（lang3）"
+    },
+    "settings.key_picker.key_code.lang4": {
+        "en": "lang4"
+        ,"ja": "lang4"
+        ,"zh-Hans": "语言键 4（lang4）"
+    },
+    "settings.key_picker.key_code.lang5": {
+        "en": "lang5"
+        ,"ja": "lang5"
+        ,"zh-Hans": "语言键 5（lang5）"
+    },
+    "settings.key_picker.key_code.lang6": {
+        "en": "lang6"
+        ,"ja": "lang6"
+        ,"zh-Hans": "语言键 6（lang6）"
+    },
+    "settings.key_picker.key_code.lang7": {
+        "en": "lang7"
+        ,"ja": "lang7"
+        ,"zh-Hans": "语言键 7（lang7）"
+    },
+    "settings.key_picker.key_code.lang8": {
+        "en": "lang8"
+        ,"ja": "lang8"
+        ,"zh-Hans": "语言键 8（lang8）"
+    },
+    "settings.key_picker.key_code.lang9": {
+        "en": "lang9"
+        ,"ja": "lang9"
+        ,"zh-Hans": "语言键 9（lang9）"
+    },
+    "settings.key_picker.key_code.launchpad": {
+        "en": "key_code::launchpad"
+        ,"ja": "key_code::launchpad"
+        ,"zh-Hans": "启动台（key_code::launchpad）"
+    },
+    "settings.key_picker.key_code.left_arrow": {
+        "en": "left_arrow"
+        ,"ja": "left_arrow"
+        ,"zh-Hans": "左箭头键（left_arrow）"
+    },
+    "settings.key_picker.key_code.locking_caps_lock": {
+        "en": "locking_caps_lock"
+        ,"ja": "locking_caps_lock"
+        ,"zh-Hans": "锁定式大写锁定键（locking_caps_lock）"
+    },
+    "settings.key_picker.key_code.locking_num_lock": {
+        "en": "locking_num_lock"
+        ,"ja": "locking_num_lock"
+        ,"zh-Hans": "锁定式数字锁定键（locking_num_lock）"
+    },
+    "settings.key_picker.key_code.locking_scroll_lock": {
+        "en": "locking_scroll_lock"
+        ,"ja": "locking_scroll_lock"
+        ,"zh-Hans": "锁定式滚动锁定键（locking_scroll_lock）"
+    },
+    "settings.key_picker.key_code.menu": {
+        "en": "menu"
+        ,"ja": "menu"
+        ,"zh-Hans": "菜单（menu）"
+    },
+    "settings.key_picker.key_code.mission_control": {
+        "en": "key_code::mission_control"
+        ,"ja": "key_code::mission_control"
+        ,"zh-Hans": "调度中心（key_code::mission_control）"
+    },
+    "settings.key_picker.key_code.mute": {
+        "en": "key_code::mute"
+        ,"ja": "key_code::mute"
+        ,"zh-Hans": "静音（key_code::mute）"
+    },
+    "settings.key_picker.key_code.non_us_backslash": {
+        "en": "non_us_backslash"
+        ,"ja": "non_us_backslash"
+        ,"zh-Hans": "非美式键盘反斜杠键（non_us_backslash）"
+    },
+    "settings.key_picker.key_code.non_us_pound": {
+        "en": "non_us_pound"
+        ,"ja": "non_us_pound"
+        ,"zh-Hans": "非美式键盘 # 键（non_us_pound）"
+    },
+    "settings.key_picker.key_code.open_bracket": {
+        "en": "open_bracket ["
+        ,"ja": "open_bracket ["
+        ,"zh-Hans": "左方括号 [（open_bracket）"
+    },
+    "settings.key_picker.key_code.oper": {
+        "en": "oper"
+        ,"ja": "oper"
+        ,"zh-Hans": "Oper 特殊键（oper）"
+    },
+    "settings.key_picker.key_code.out": {
+        "en": "out"
+        ,"ja": "out"
+        ,"zh-Hans": "Out 特殊键（out）"
+    },
+    "settings.key_picker.key_code.page_down": {
+        "en": "page_down"
+        ,"ja": "page_down"
+        ,"zh-Hans": "向下翻页（page_down）"
+    },
+    "settings.key_picker.key_code.page_up": {
+        "en": "page_up"
+        ,"ja": "page_up"
+        ,"zh-Hans": "向上翻页（page_up）"
+    },
+    "settings.key_picker.key_code.paste": {
+        "en": "paste"
+        ,"ja": "paste"
+        ,"zh-Hans": "粘贴（paste）"
+    },
+    "settings.key_picker.key_code.pause": {
+        "en": "pause"
+        ,"ja": "pause"
+        ,"zh-Hans": "暂停键（pause）"
+    },
+    "settings.key_picker.key_code.period": {
+        "en": "period (.)"
+        ,"ja": "period (.)"
+        ,"zh-Hans": "句点 .（period）"
+    },
+    "settings.key_picker.key_code.play_or_pause": {
+        "en": "key_code::play_or_pause"
+        ,"ja": "key_code::play_or_pause"
+        ,"zh-Hans": "播放／暂停（key_code::play_or_pause）"
+    },
+    "settings.key_picker.key_code.power": {
+        "en": "power"
+        ,"ja": "power"
+        ,"zh-Hans": "电源键（power）"
+    },
+    "settings.key_picker.key_code.print_screen": {
+        "en": "print_screen"
+        ,"ja": "print_screen"
+        ,"zh-Hans": "截屏键（print_screen）"
+    },
+    "settings.key_picker.key_code.prior": {
+        "en": "prior"
+        ,"ja": "prior"
+        ,"zh-Hans": "Prior 特殊键（prior）"
+    },
+    "settings.key_picker.key_code.quote": {
+        "en": "quote (')"
+        ,"ja": "quote (')"
+        ,"zh-Hans": "单引号 '（quote）"
+    },
+    "settings.key_picker.key_code.return_or_enter": {
+        "en": "return_or_enter"
+        ,"ja": "return_or_enter"
+        ,"zh-Hans": "回车键（return_or_enter）"
+    },
+    "settings.key_picker.key_code.rewind": {
+        "en": "key_code::rewind"
+        ,"ja": "key_code::rewind"
+        ,"zh-Hans": "快退（key_code::rewind）"
+    },
+    "settings.key_picker.key_code.right_arrow": {
+        "en": "right_arrow"
+        ,"ja": "right_arrow"
+        ,"zh-Hans": "右箭头键（right_arrow）"
+    },
+    "settings.key_picker.key_code.scroll_lock": {
+        "en": "scroll_lock"
+        ,"ja": "scroll_lock"
+        ,"zh-Hans": "滚动锁定键（scroll_lock）"
+    },
+    "settings.key_picker.key_code.select": {
+        "en": "select"
+        ,"ja": "select"
+        ,"zh-Hans": "选择（select）"
+    },
+    "settings.key_picker.key_code.semicolon": {
+        "en": "semicolon (;)"
+        ,"ja": "semicolon (;)"
+        ,"zh-Hans": "分号 ;（semicolon）"
+    },
+    "settings.key_picker.key_code.separator": {
+        "en": "separator"
+        ,"ja": "separator"
+        ,"zh-Hans": "分隔键（separator）"
+    },
+    "settings.key_picker.key_code.slash": {
+        "en": "slash (/)"
+        ,"ja": "slash (/)"
+        ,"zh-Hans": "斜杠 /（slash）"
+    },
+    "settings.key_picker.key_code.spacebar": {
+        "en": "spacebar"
+        ,"ja": "spacebar"
+        ,"zh-Hans": "空格键（spacebar）"
+    },
+    "settings.key_picker.key_code.stop": {
+        "en": "stop"
+        ,"ja": "stop"
+        ,"zh-Hans": "停止（stop）"
+    },
+    "settings.key_picker.key_code.sys_req_or_attention": {
+        "en": "sys_req_or_attention"
+        ,"ja": "sys_req_or_attention"
+        ,"zh-Hans": "系统请求／注意键（sys_req_or_attention）"
+    },
+    "settings.key_picker.key_code.tab": {
+        "en": "tab"
+        ,"ja": "tab"
+        ,"zh-Hans": "Tab 制表键（tab）"
+    },
+    "settings.key_picker.key_code.undo": {
+        "en": "undo"
+        ,"ja": "undo"
+        ,"zh-Hans": "撤销（undo）"
+    },
+    "settings.key_picker.key_code.up_arrow": {
+        "en": "up_arrow"
+        ,"ja": "up_arrow"
+        ,"zh-Hans": "上箭头键（up_arrow）"
+    },
+    "settings.key_picker.key_code.vk_none": {
+        "en": "vk_none"
+        ,"ja": "vk_none"
+        ,"zh-Hans": "不输出按键（vk_none）"
+    },
+    "settings.key_picker.key_code.volume_decrement": {
+        "en": "key_code::volume_decrement"
+        ,"ja": "key_code::volume_decrement"
+        ,"zh-Hans": "调低音量（key_code::volume_decrement）"
+    },
+    "settings.key_picker.key_code.volume_increment": {
+        "en": "key_code::volume_increment"
+        ,"ja": "key_code::volume_increment"
+        ,"zh-Hans": "调高音量（key_code::volume_increment）"
     },
     "settings.key_picker.keypad": {
         "en": "Keypad keys"
@@ -338,6 +1658,1281 @@
         "en": "Keys in pc keyboards"
         ,"ja": "PCキーボードのキー"
         ,"zh-Hans": "PC 键盘按键"
+    },
+    "settings.key_picker.pointing_button.button1": {
+        "en": "button1"
+        ,"ja": "button1"
+        ,"zh-Hans": "鼠标按键 1（button1）"
+    },
+    "settings.key_picker.pointing_button.button10": {
+        "en": "button10"
+        ,"ja": "button10"
+        ,"zh-Hans": "鼠标按键 10（button10）"
+    },
+    "settings.key_picker.pointing_button.button100": {
+        "en": "button100"
+        ,"ja": "button100"
+        ,"zh-Hans": "鼠标按键 100（button100）"
+    },
+    "settings.key_picker.pointing_button.button101": {
+        "en": "button101"
+        ,"ja": "button101"
+        ,"zh-Hans": "鼠标按键 101（button101）"
+    },
+    "settings.key_picker.pointing_button.button102": {
+        "en": "button102"
+        ,"ja": "button102"
+        ,"zh-Hans": "鼠标按键 102（button102）"
+    },
+    "settings.key_picker.pointing_button.button103": {
+        "en": "button103"
+        ,"ja": "button103"
+        ,"zh-Hans": "鼠标按键 103（button103）"
+    },
+    "settings.key_picker.pointing_button.button104": {
+        "en": "button104"
+        ,"ja": "button104"
+        ,"zh-Hans": "鼠标按键 104（button104）"
+    },
+    "settings.key_picker.pointing_button.button105": {
+        "en": "button105"
+        ,"ja": "button105"
+        ,"zh-Hans": "鼠标按键 105（button105）"
+    },
+    "settings.key_picker.pointing_button.button106": {
+        "en": "button106"
+        ,"ja": "button106"
+        ,"zh-Hans": "鼠标按键 106（button106）"
+    },
+    "settings.key_picker.pointing_button.button107": {
+        "en": "button107"
+        ,"ja": "button107"
+        ,"zh-Hans": "鼠标按键 107（button107）"
+    },
+    "settings.key_picker.pointing_button.button108": {
+        "en": "button108"
+        ,"ja": "button108"
+        ,"zh-Hans": "鼠标按键 108（button108）"
+    },
+    "settings.key_picker.pointing_button.button109": {
+        "en": "button109"
+        ,"ja": "button109"
+        ,"zh-Hans": "鼠标按键 109（button109）"
+    },
+    "settings.key_picker.pointing_button.button11": {
+        "en": "button11"
+        ,"ja": "button11"
+        ,"zh-Hans": "鼠标按键 11（button11）"
+    },
+    "settings.key_picker.pointing_button.button110": {
+        "en": "button110"
+        ,"ja": "button110"
+        ,"zh-Hans": "鼠标按键 110（button110）"
+    },
+    "settings.key_picker.pointing_button.button111": {
+        "en": "button111"
+        ,"ja": "button111"
+        ,"zh-Hans": "鼠标按键 111（button111）"
+    },
+    "settings.key_picker.pointing_button.button112": {
+        "en": "button112"
+        ,"ja": "button112"
+        ,"zh-Hans": "鼠标按键 112（button112）"
+    },
+    "settings.key_picker.pointing_button.button113": {
+        "en": "button113"
+        ,"ja": "button113"
+        ,"zh-Hans": "鼠标按键 113（button113）"
+    },
+    "settings.key_picker.pointing_button.button114": {
+        "en": "button114"
+        ,"ja": "button114"
+        ,"zh-Hans": "鼠标按键 114（button114）"
+    },
+    "settings.key_picker.pointing_button.button115": {
+        "en": "button115"
+        ,"ja": "button115"
+        ,"zh-Hans": "鼠标按键 115（button115）"
+    },
+    "settings.key_picker.pointing_button.button116": {
+        "en": "button116"
+        ,"ja": "button116"
+        ,"zh-Hans": "鼠标按键 116（button116）"
+    },
+    "settings.key_picker.pointing_button.button117": {
+        "en": "button117"
+        ,"ja": "button117"
+        ,"zh-Hans": "鼠标按键 117（button117）"
+    },
+    "settings.key_picker.pointing_button.button118": {
+        "en": "button118"
+        ,"ja": "button118"
+        ,"zh-Hans": "鼠标按键 118（button118）"
+    },
+    "settings.key_picker.pointing_button.button119": {
+        "en": "button119"
+        ,"ja": "button119"
+        ,"zh-Hans": "鼠标按键 119（button119）"
+    },
+    "settings.key_picker.pointing_button.button12": {
+        "en": "button12"
+        ,"ja": "button12"
+        ,"zh-Hans": "鼠标按键 12（button12）"
+    },
+    "settings.key_picker.pointing_button.button120": {
+        "en": "button120"
+        ,"ja": "button120"
+        ,"zh-Hans": "鼠标按键 120（button120）"
+    },
+    "settings.key_picker.pointing_button.button121": {
+        "en": "button121"
+        ,"ja": "button121"
+        ,"zh-Hans": "鼠标按键 121（button121）"
+    },
+    "settings.key_picker.pointing_button.button122": {
+        "en": "button122"
+        ,"ja": "button122"
+        ,"zh-Hans": "鼠标按键 122（button122）"
+    },
+    "settings.key_picker.pointing_button.button123": {
+        "en": "button123"
+        ,"ja": "button123"
+        ,"zh-Hans": "鼠标按键 123（button123）"
+    },
+    "settings.key_picker.pointing_button.button124": {
+        "en": "button124"
+        ,"ja": "button124"
+        ,"zh-Hans": "鼠标按键 124（button124）"
+    },
+    "settings.key_picker.pointing_button.button125": {
+        "en": "button125"
+        ,"ja": "button125"
+        ,"zh-Hans": "鼠标按键 125（button125）"
+    },
+    "settings.key_picker.pointing_button.button126": {
+        "en": "button126"
+        ,"ja": "button126"
+        ,"zh-Hans": "鼠标按键 126（button126）"
+    },
+    "settings.key_picker.pointing_button.button127": {
+        "en": "button127"
+        ,"ja": "button127"
+        ,"zh-Hans": "鼠标按键 127（button127）"
+    },
+    "settings.key_picker.pointing_button.button128": {
+        "en": "button128"
+        ,"ja": "button128"
+        ,"zh-Hans": "鼠标按键 128（button128）"
+    },
+    "settings.key_picker.pointing_button.button129": {
+        "en": "button129"
+        ,"ja": "button129"
+        ,"zh-Hans": "鼠标按键 129（button129）"
+    },
+    "settings.key_picker.pointing_button.button13": {
+        "en": "button13"
+        ,"ja": "button13"
+        ,"zh-Hans": "鼠标按键 13（button13）"
+    },
+    "settings.key_picker.pointing_button.button130": {
+        "en": "button130"
+        ,"ja": "button130"
+        ,"zh-Hans": "鼠标按键 130（button130）"
+    },
+    "settings.key_picker.pointing_button.button131": {
+        "en": "button131"
+        ,"ja": "button131"
+        ,"zh-Hans": "鼠标按键 131（button131）"
+    },
+    "settings.key_picker.pointing_button.button132": {
+        "en": "button132"
+        ,"ja": "button132"
+        ,"zh-Hans": "鼠标按键 132（button132）"
+    },
+    "settings.key_picker.pointing_button.button133": {
+        "en": "button133"
+        ,"ja": "button133"
+        ,"zh-Hans": "鼠标按键 133（button133）"
+    },
+    "settings.key_picker.pointing_button.button134": {
+        "en": "button134"
+        ,"ja": "button134"
+        ,"zh-Hans": "鼠标按键 134（button134）"
+    },
+    "settings.key_picker.pointing_button.button135": {
+        "en": "button135"
+        ,"ja": "button135"
+        ,"zh-Hans": "鼠标按键 135（button135）"
+    },
+    "settings.key_picker.pointing_button.button136": {
+        "en": "button136"
+        ,"ja": "button136"
+        ,"zh-Hans": "鼠标按键 136（button136）"
+    },
+    "settings.key_picker.pointing_button.button137": {
+        "en": "button137"
+        ,"ja": "button137"
+        ,"zh-Hans": "鼠标按键 137（button137）"
+    },
+    "settings.key_picker.pointing_button.button138": {
+        "en": "button138"
+        ,"ja": "button138"
+        ,"zh-Hans": "鼠标按键 138（button138）"
+    },
+    "settings.key_picker.pointing_button.button139": {
+        "en": "button139"
+        ,"ja": "button139"
+        ,"zh-Hans": "鼠标按键 139（button139）"
+    },
+    "settings.key_picker.pointing_button.button14": {
+        "en": "button14"
+        ,"ja": "button14"
+        ,"zh-Hans": "鼠标按键 14（button14）"
+    },
+    "settings.key_picker.pointing_button.button140": {
+        "en": "button140"
+        ,"ja": "button140"
+        ,"zh-Hans": "鼠标按键 140（button140）"
+    },
+    "settings.key_picker.pointing_button.button141": {
+        "en": "button141"
+        ,"ja": "button141"
+        ,"zh-Hans": "鼠标按键 141（button141）"
+    },
+    "settings.key_picker.pointing_button.button142": {
+        "en": "button142"
+        ,"ja": "button142"
+        ,"zh-Hans": "鼠标按键 142（button142）"
+    },
+    "settings.key_picker.pointing_button.button143": {
+        "en": "button143"
+        ,"ja": "button143"
+        ,"zh-Hans": "鼠标按键 143（button143）"
+    },
+    "settings.key_picker.pointing_button.button144": {
+        "en": "button144"
+        ,"ja": "button144"
+        ,"zh-Hans": "鼠标按键 144（button144）"
+    },
+    "settings.key_picker.pointing_button.button145": {
+        "en": "button145"
+        ,"ja": "button145"
+        ,"zh-Hans": "鼠标按键 145（button145）"
+    },
+    "settings.key_picker.pointing_button.button146": {
+        "en": "button146"
+        ,"ja": "button146"
+        ,"zh-Hans": "鼠标按键 146（button146）"
+    },
+    "settings.key_picker.pointing_button.button147": {
+        "en": "button147"
+        ,"ja": "button147"
+        ,"zh-Hans": "鼠标按键 147（button147）"
+    },
+    "settings.key_picker.pointing_button.button148": {
+        "en": "button148"
+        ,"ja": "button148"
+        ,"zh-Hans": "鼠标按键 148（button148）"
+    },
+    "settings.key_picker.pointing_button.button149": {
+        "en": "button149"
+        ,"ja": "button149"
+        ,"zh-Hans": "鼠标按键 149（button149）"
+    },
+    "settings.key_picker.pointing_button.button15": {
+        "en": "button15"
+        ,"ja": "button15"
+        ,"zh-Hans": "鼠标按键 15（button15）"
+    },
+    "settings.key_picker.pointing_button.button150": {
+        "en": "button150"
+        ,"ja": "button150"
+        ,"zh-Hans": "鼠标按键 150（button150）"
+    },
+    "settings.key_picker.pointing_button.button151": {
+        "en": "button151"
+        ,"ja": "button151"
+        ,"zh-Hans": "鼠标按键 151（button151）"
+    },
+    "settings.key_picker.pointing_button.button152": {
+        "en": "button152"
+        ,"ja": "button152"
+        ,"zh-Hans": "鼠标按键 152（button152）"
+    },
+    "settings.key_picker.pointing_button.button153": {
+        "en": "button153"
+        ,"ja": "button153"
+        ,"zh-Hans": "鼠标按键 153（button153）"
+    },
+    "settings.key_picker.pointing_button.button154": {
+        "en": "button154"
+        ,"ja": "button154"
+        ,"zh-Hans": "鼠标按键 154（button154）"
+    },
+    "settings.key_picker.pointing_button.button155": {
+        "en": "button155"
+        ,"ja": "button155"
+        ,"zh-Hans": "鼠标按键 155（button155）"
+    },
+    "settings.key_picker.pointing_button.button156": {
+        "en": "button156"
+        ,"ja": "button156"
+        ,"zh-Hans": "鼠标按键 156（button156）"
+    },
+    "settings.key_picker.pointing_button.button157": {
+        "en": "button157"
+        ,"ja": "button157"
+        ,"zh-Hans": "鼠标按键 157（button157）"
+    },
+    "settings.key_picker.pointing_button.button158": {
+        "en": "button158"
+        ,"ja": "button158"
+        ,"zh-Hans": "鼠标按键 158（button158）"
+    },
+    "settings.key_picker.pointing_button.button159": {
+        "en": "button159"
+        ,"ja": "button159"
+        ,"zh-Hans": "鼠标按键 159（button159）"
+    },
+    "settings.key_picker.pointing_button.button16": {
+        "en": "button16"
+        ,"ja": "button16"
+        ,"zh-Hans": "鼠标按键 16（button16）"
+    },
+    "settings.key_picker.pointing_button.button160": {
+        "en": "button160"
+        ,"ja": "button160"
+        ,"zh-Hans": "鼠标按键 160（button160）"
+    },
+    "settings.key_picker.pointing_button.button161": {
+        "en": "button161"
+        ,"ja": "button161"
+        ,"zh-Hans": "鼠标按键 161（button161）"
+    },
+    "settings.key_picker.pointing_button.button162": {
+        "en": "button162"
+        ,"ja": "button162"
+        ,"zh-Hans": "鼠标按键 162（button162）"
+    },
+    "settings.key_picker.pointing_button.button163": {
+        "en": "button163"
+        ,"ja": "button163"
+        ,"zh-Hans": "鼠标按键 163（button163）"
+    },
+    "settings.key_picker.pointing_button.button164": {
+        "en": "button164"
+        ,"ja": "button164"
+        ,"zh-Hans": "鼠标按键 164（button164）"
+    },
+    "settings.key_picker.pointing_button.button165": {
+        "en": "button165"
+        ,"ja": "button165"
+        ,"zh-Hans": "鼠标按键 165（button165）"
+    },
+    "settings.key_picker.pointing_button.button166": {
+        "en": "button166"
+        ,"ja": "button166"
+        ,"zh-Hans": "鼠标按键 166（button166）"
+    },
+    "settings.key_picker.pointing_button.button167": {
+        "en": "button167"
+        ,"ja": "button167"
+        ,"zh-Hans": "鼠标按键 167（button167）"
+    },
+    "settings.key_picker.pointing_button.button168": {
+        "en": "button168"
+        ,"ja": "button168"
+        ,"zh-Hans": "鼠标按键 168（button168）"
+    },
+    "settings.key_picker.pointing_button.button169": {
+        "en": "button169"
+        ,"ja": "button169"
+        ,"zh-Hans": "鼠标按键 169（button169）"
+    },
+    "settings.key_picker.pointing_button.button17": {
+        "en": "button17"
+        ,"ja": "button17"
+        ,"zh-Hans": "鼠标按键 17（button17）"
+    },
+    "settings.key_picker.pointing_button.button170": {
+        "en": "button170"
+        ,"ja": "button170"
+        ,"zh-Hans": "鼠标按键 170（button170）"
+    },
+    "settings.key_picker.pointing_button.button171": {
+        "en": "button171"
+        ,"ja": "button171"
+        ,"zh-Hans": "鼠标按键 171（button171）"
+    },
+    "settings.key_picker.pointing_button.button172": {
+        "en": "button172"
+        ,"ja": "button172"
+        ,"zh-Hans": "鼠标按键 172（button172）"
+    },
+    "settings.key_picker.pointing_button.button173": {
+        "en": "button173"
+        ,"ja": "button173"
+        ,"zh-Hans": "鼠标按键 173（button173）"
+    },
+    "settings.key_picker.pointing_button.button174": {
+        "en": "button174"
+        ,"ja": "button174"
+        ,"zh-Hans": "鼠标按键 174（button174）"
+    },
+    "settings.key_picker.pointing_button.button175": {
+        "en": "button175"
+        ,"ja": "button175"
+        ,"zh-Hans": "鼠标按键 175（button175）"
+    },
+    "settings.key_picker.pointing_button.button176": {
+        "en": "button176"
+        ,"ja": "button176"
+        ,"zh-Hans": "鼠标按键 176（button176）"
+    },
+    "settings.key_picker.pointing_button.button177": {
+        "en": "button177"
+        ,"ja": "button177"
+        ,"zh-Hans": "鼠标按键 177（button177）"
+    },
+    "settings.key_picker.pointing_button.button178": {
+        "en": "button178"
+        ,"ja": "button178"
+        ,"zh-Hans": "鼠标按键 178（button178）"
+    },
+    "settings.key_picker.pointing_button.button179": {
+        "en": "button179"
+        ,"ja": "button179"
+        ,"zh-Hans": "鼠标按键 179（button179）"
+    },
+    "settings.key_picker.pointing_button.button18": {
+        "en": "button18"
+        ,"ja": "button18"
+        ,"zh-Hans": "鼠标按键 18（button18）"
+    },
+    "settings.key_picker.pointing_button.button180": {
+        "en": "button180"
+        ,"ja": "button180"
+        ,"zh-Hans": "鼠标按键 180（button180）"
+    },
+    "settings.key_picker.pointing_button.button181": {
+        "en": "button181"
+        ,"ja": "button181"
+        ,"zh-Hans": "鼠标按键 181（button181）"
+    },
+    "settings.key_picker.pointing_button.button182": {
+        "en": "button182"
+        ,"ja": "button182"
+        ,"zh-Hans": "鼠标按键 182（button182）"
+    },
+    "settings.key_picker.pointing_button.button183": {
+        "en": "button183"
+        ,"ja": "button183"
+        ,"zh-Hans": "鼠标按键 183（button183）"
+    },
+    "settings.key_picker.pointing_button.button184": {
+        "en": "button184"
+        ,"ja": "button184"
+        ,"zh-Hans": "鼠标按键 184（button184）"
+    },
+    "settings.key_picker.pointing_button.button185": {
+        "en": "button185"
+        ,"ja": "button185"
+        ,"zh-Hans": "鼠标按键 185（button185）"
+    },
+    "settings.key_picker.pointing_button.button186": {
+        "en": "button186"
+        ,"ja": "button186"
+        ,"zh-Hans": "鼠标按键 186（button186）"
+    },
+    "settings.key_picker.pointing_button.button187": {
+        "en": "button187"
+        ,"ja": "button187"
+        ,"zh-Hans": "鼠标按键 187（button187）"
+    },
+    "settings.key_picker.pointing_button.button188": {
+        "en": "button188"
+        ,"ja": "button188"
+        ,"zh-Hans": "鼠标按键 188（button188）"
+    },
+    "settings.key_picker.pointing_button.button189": {
+        "en": "button189"
+        ,"ja": "button189"
+        ,"zh-Hans": "鼠标按键 189（button189）"
+    },
+    "settings.key_picker.pointing_button.button19": {
+        "en": "button19"
+        ,"ja": "button19"
+        ,"zh-Hans": "鼠标按键 19（button19）"
+    },
+    "settings.key_picker.pointing_button.button190": {
+        "en": "button190"
+        ,"ja": "button190"
+        ,"zh-Hans": "鼠标按键 190（button190）"
+    },
+    "settings.key_picker.pointing_button.button191": {
+        "en": "button191"
+        ,"ja": "button191"
+        ,"zh-Hans": "鼠标按键 191（button191）"
+    },
+    "settings.key_picker.pointing_button.button192": {
+        "en": "button192"
+        ,"ja": "button192"
+        ,"zh-Hans": "鼠标按键 192（button192）"
+    },
+    "settings.key_picker.pointing_button.button193": {
+        "en": "button193"
+        ,"ja": "button193"
+        ,"zh-Hans": "鼠标按键 193（button193）"
+    },
+    "settings.key_picker.pointing_button.button194": {
+        "en": "button194"
+        ,"ja": "button194"
+        ,"zh-Hans": "鼠标按键 194（button194）"
+    },
+    "settings.key_picker.pointing_button.button195": {
+        "en": "button195"
+        ,"ja": "button195"
+        ,"zh-Hans": "鼠标按键 195（button195）"
+    },
+    "settings.key_picker.pointing_button.button196": {
+        "en": "button196"
+        ,"ja": "button196"
+        ,"zh-Hans": "鼠标按键 196（button196）"
+    },
+    "settings.key_picker.pointing_button.button197": {
+        "en": "button197"
+        ,"ja": "button197"
+        ,"zh-Hans": "鼠标按键 197（button197）"
+    },
+    "settings.key_picker.pointing_button.button198": {
+        "en": "button198"
+        ,"ja": "button198"
+        ,"zh-Hans": "鼠标按键 198（button198）"
+    },
+    "settings.key_picker.pointing_button.button199": {
+        "en": "button199"
+        ,"ja": "button199"
+        ,"zh-Hans": "鼠标按键 199（button199）"
+    },
+    "settings.key_picker.pointing_button.button2": {
+        "en": "button2"
+        ,"ja": "button2"
+        ,"zh-Hans": "鼠标按键 2（button2）"
+    },
+    "settings.key_picker.pointing_button.button20": {
+        "en": "button20"
+        ,"ja": "button20"
+        ,"zh-Hans": "鼠标按键 20（button20）"
+    },
+    "settings.key_picker.pointing_button.button200": {
+        "en": "button200"
+        ,"ja": "button200"
+        ,"zh-Hans": "鼠标按键 200（button200）"
+    },
+    "settings.key_picker.pointing_button.button201": {
+        "en": "button201"
+        ,"ja": "button201"
+        ,"zh-Hans": "鼠标按键 201（button201）"
+    },
+    "settings.key_picker.pointing_button.button202": {
+        "en": "button202"
+        ,"ja": "button202"
+        ,"zh-Hans": "鼠标按键 202（button202）"
+    },
+    "settings.key_picker.pointing_button.button203": {
+        "en": "button203"
+        ,"ja": "button203"
+        ,"zh-Hans": "鼠标按键 203（button203）"
+    },
+    "settings.key_picker.pointing_button.button204": {
+        "en": "button204"
+        ,"ja": "button204"
+        ,"zh-Hans": "鼠标按键 204（button204）"
+    },
+    "settings.key_picker.pointing_button.button205": {
+        "en": "button205"
+        ,"ja": "button205"
+        ,"zh-Hans": "鼠标按键 205（button205）"
+    },
+    "settings.key_picker.pointing_button.button206": {
+        "en": "button206"
+        ,"ja": "button206"
+        ,"zh-Hans": "鼠标按键 206（button206）"
+    },
+    "settings.key_picker.pointing_button.button207": {
+        "en": "button207"
+        ,"ja": "button207"
+        ,"zh-Hans": "鼠标按键 207（button207）"
+    },
+    "settings.key_picker.pointing_button.button208": {
+        "en": "button208"
+        ,"ja": "button208"
+        ,"zh-Hans": "鼠标按键 208（button208）"
+    },
+    "settings.key_picker.pointing_button.button209": {
+        "en": "button209"
+        ,"ja": "button209"
+        ,"zh-Hans": "鼠标按键 209（button209）"
+    },
+    "settings.key_picker.pointing_button.button21": {
+        "en": "button21"
+        ,"ja": "button21"
+        ,"zh-Hans": "鼠标按键 21（button21）"
+    },
+    "settings.key_picker.pointing_button.button210": {
+        "en": "button210"
+        ,"ja": "button210"
+        ,"zh-Hans": "鼠标按键 210（button210）"
+    },
+    "settings.key_picker.pointing_button.button211": {
+        "en": "button211"
+        ,"ja": "button211"
+        ,"zh-Hans": "鼠标按键 211（button211）"
+    },
+    "settings.key_picker.pointing_button.button212": {
+        "en": "button212"
+        ,"ja": "button212"
+        ,"zh-Hans": "鼠标按键 212（button212）"
+    },
+    "settings.key_picker.pointing_button.button213": {
+        "en": "button213"
+        ,"ja": "button213"
+        ,"zh-Hans": "鼠标按键 213（button213）"
+    },
+    "settings.key_picker.pointing_button.button214": {
+        "en": "button214"
+        ,"ja": "button214"
+        ,"zh-Hans": "鼠标按键 214（button214）"
+    },
+    "settings.key_picker.pointing_button.button215": {
+        "en": "button215"
+        ,"ja": "button215"
+        ,"zh-Hans": "鼠标按键 215（button215）"
+    },
+    "settings.key_picker.pointing_button.button216": {
+        "en": "button216"
+        ,"ja": "button216"
+        ,"zh-Hans": "鼠标按键 216（button216）"
+    },
+    "settings.key_picker.pointing_button.button217": {
+        "en": "button217"
+        ,"ja": "button217"
+        ,"zh-Hans": "鼠标按键 217（button217）"
+    },
+    "settings.key_picker.pointing_button.button218": {
+        "en": "button218"
+        ,"ja": "button218"
+        ,"zh-Hans": "鼠标按键 218（button218）"
+    },
+    "settings.key_picker.pointing_button.button219": {
+        "en": "button219"
+        ,"ja": "button219"
+        ,"zh-Hans": "鼠标按键 219（button219）"
+    },
+    "settings.key_picker.pointing_button.button22": {
+        "en": "button22"
+        ,"ja": "button22"
+        ,"zh-Hans": "鼠标按键 22（button22）"
+    },
+    "settings.key_picker.pointing_button.button220": {
+        "en": "button220"
+        ,"ja": "button220"
+        ,"zh-Hans": "鼠标按键 220（button220）"
+    },
+    "settings.key_picker.pointing_button.button221": {
+        "en": "button221"
+        ,"ja": "button221"
+        ,"zh-Hans": "鼠标按键 221（button221）"
+    },
+    "settings.key_picker.pointing_button.button222": {
+        "en": "button222"
+        ,"ja": "button222"
+        ,"zh-Hans": "鼠标按键 222（button222）"
+    },
+    "settings.key_picker.pointing_button.button223": {
+        "en": "button223"
+        ,"ja": "button223"
+        ,"zh-Hans": "鼠标按键 223（button223）"
+    },
+    "settings.key_picker.pointing_button.button224": {
+        "en": "button224"
+        ,"ja": "button224"
+        ,"zh-Hans": "鼠标按键 224（button224）"
+    },
+    "settings.key_picker.pointing_button.button225": {
+        "en": "button225"
+        ,"ja": "button225"
+        ,"zh-Hans": "鼠标按键 225（button225）"
+    },
+    "settings.key_picker.pointing_button.button226": {
+        "en": "button226"
+        ,"ja": "button226"
+        ,"zh-Hans": "鼠标按键 226（button226）"
+    },
+    "settings.key_picker.pointing_button.button227": {
+        "en": "button227"
+        ,"ja": "button227"
+        ,"zh-Hans": "鼠标按键 227（button227）"
+    },
+    "settings.key_picker.pointing_button.button228": {
+        "en": "button228"
+        ,"ja": "button228"
+        ,"zh-Hans": "鼠标按键 228（button228）"
+    },
+    "settings.key_picker.pointing_button.button229": {
+        "en": "button229"
+        ,"ja": "button229"
+        ,"zh-Hans": "鼠标按键 229（button229）"
+    },
+    "settings.key_picker.pointing_button.button23": {
+        "en": "button23"
+        ,"ja": "button23"
+        ,"zh-Hans": "鼠标按键 23（button23）"
+    },
+    "settings.key_picker.pointing_button.button230": {
+        "en": "button230"
+        ,"ja": "button230"
+        ,"zh-Hans": "鼠标按键 230（button230）"
+    },
+    "settings.key_picker.pointing_button.button231": {
+        "en": "button231"
+        ,"ja": "button231"
+        ,"zh-Hans": "鼠标按键 231（button231）"
+    },
+    "settings.key_picker.pointing_button.button232": {
+        "en": "button232"
+        ,"ja": "button232"
+        ,"zh-Hans": "鼠标按键 232（button232）"
+    },
+    "settings.key_picker.pointing_button.button233": {
+        "en": "button233"
+        ,"ja": "button233"
+        ,"zh-Hans": "鼠标按键 233（button233）"
+    },
+    "settings.key_picker.pointing_button.button234": {
+        "en": "button234"
+        ,"ja": "button234"
+        ,"zh-Hans": "鼠标按键 234（button234）"
+    },
+    "settings.key_picker.pointing_button.button235": {
+        "en": "button235"
+        ,"ja": "button235"
+        ,"zh-Hans": "鼠标按键 235（button235）"
+    },
+    "settings.key_picker.pointing_button.button236": {
+        "en": "button236"
+        ,"ja": "button236"
+        ,"zh-Hans": "鼠标按键 236（button236）"
+    },
+    "settings.key_picker.pointing_button.button237": {
+        "en": "button237"
+        ,"ja": "button237"
+        ,"zh-Hans": "鼠标按键 237（button237）"
+    },
+    "settings.key_picker.pointing_button.button238": {
+        "en": "button238"
+        ,"ja": "button238"
+        ,"zh-Hans": "鼠标按键 238（button238）"
+    },
+    "settings.key_picker.pointing_button.button239": {
+        "en": "button239"
+        ,"ja": "button239"
+        ,"zh-Hans": "鼠标按键 239（button239）"
+    },
+    "settings.key_picker.pointing_button.button24": {
+        "en": "button24"
+        ,"ja": "button24"
+        ,"zh-Hans": "鼠标按键 24（button24）"
+    },
+    "settings.key_picker.pointing_button.button240": {
+        "en": "button240"
+        ,"ja": "button240"
+        ,"zh-Hans": "鼠标按键 240（button240）"
+    },
+    "settings.key_picker.pointing_button.button241": {
+        "en": "button241"
+        ,"ja": "button241"
+        ,"zh-Hans": "鼠标按键 241（button241）"
+    },
+    "settings.key_picker.pointing_button.button242": {
+        "en": "button242"
+        ,"ja": "button242"
+        ,"zh-Hans": "鼠标按键 242（button242）"
+    },
+    "settings.key_picker.pointing_button.button243": {
+        "en": "button243"
+        ,"ja": "button243"
+        ,"zh-Hans": "鼠标按键 243（button243）"
+    },
+    "settings.key_picker.pointing_button.button244": {
+        "en": "button244"
+        ,"ja": "button244"
+        ,"zh-Hans": "鼠标按键 244（button244）"
+    },
+    "settings.key_picker.pointing_button.button245": {
+        "en": "button245"
+        ,"ja": "button245"
+        ,"zh-Hans": "鼠标按键 245（button245）"
+    },
+    "settings.key_picker.pointing_button.button246": {
+        "en": "button246"
+        ,"ja": "button246"
+        ,"zh-Hans": "鼠标按键 246（button246）"
+    },
+    "settings.key_picker.pointing_button.button247": {
+        "en": "button247"
+        ,"ja": "button247"
+        ,"zh-Hans": "鼠标按键 247（button247）"
+    },
+    "settings.key_picker.pointing_button.button248": {
+        "en": "button248"
+        ,"ja": "button248"
+        ,"zh-Hans": "鼠标按键 248（button248）"
+    },
+    "settings.key_picker.pointing_button.button249": {
+        "en": "button249"
+        ,"ja": "button249"
+        ,"zh-Hans": "鼠标按键 249（button249）"
+    },
+    "settings.key_picker.pointing_button.button25": {
+        "en": "button25"
+        ,"ja": "button25"
+        ,"zh-Hans": "鼠标按键 25（button25）"
+    },
+    "settings.key_picker.pointing_button.button250": {
+        "en": "button250"
+        ,"ja": "button250"
+        ,"zh-Hans": "鼠标按键 250（button250）"
+    },
+    "settings.key_picker.pointing_button.button251": {
+        "en": "button251"
+        ,"ja": "button251"
+        ,"zh-Hans": "鼠标按键 251（button251）"
+    },
+    "settings.key_picker.pointing_button.button252": {
+        "en": "button252"
+        ,"ja": "button252"
+        ,"zh-Hans": "鼠标按键 252（button252）"
+    },
+    "settings.key_picker.pointing_button.button253": {
+        "en": "button253"
+        ,"ja": "button253"
+        ,"zh-Hans": "鼠标按键 253（button253）"
+    },
+    "settings.key_picker.pointing_button.button254": {
+        "en": "button254"
+        ,"ja": "button254"
+        ,"zh-Hans": "鼠标按键 254（button254）"
+    },
+    "settings.key_picker.pointing_button.button255": {
+        "en": "button255"
+        ,"ja": "button255"
+        ,"zh-Hans": "鼠标按键 255（button255）"
+    },
+    "settings.key_picker.pointing_button.button26": {
+        "en": "button26"
+        ,"ja": "button26"
+        ,"zh-Hans": "鼠标按键 26（button26）"
+    },
+    "settings.key_picker.pointing_button.button27": {
+        "en": "button27"
+        ,"ja": "button27"
+        ,"zh-Hans": "鼠标按键 27（button27）"
+    },
+    "settings.key_picker.pointing_button.button28": {
+        "en": "button28"
+        ,"ja": "button28"
+        ,"zh-Hans": "鼠标按键 28（button28）"
+    },
+    "settings.key_picker.pointing_button.button29": {
+        "en": "button29"
+        ,"ja": "button29"
+        ,"zh-Hans": "鼠标按键 29（button29）"
+    },
+    "settings.key_picker.pointing_button.button3": {
+        "en": "button3"
+        ,"ja": "button3"
+        ,"zh-Hans": "鼠标按键 3（button3）"
+    },
+    "settings.key_picker.pointing_button.button30": {
+        "en": "button30"
+        ,"ja": "button30"
+        ,"zh-Hans": "鼠标按键 30（button30）"
+    },
+    "settings.key_picker.pointing_button.button31": {
+        "en": "button31"
+        ,"ja": "button31"
+        ,"zh-Hans": "鼠标按键 31（button31）"
+    },
+    "settings.key_picker.pointing_button.button32": {
+        "en": "button32"
+        ,"ja": "button32"
+        ,"zh-Hans": "鼠标按键 32（button32）"
+    },
+    "settings.key_picker.pointing_button.button33": {
+        "en": "button33"
+        ,"ja": "button33"
+        ,"zh-Hans": "鼠标按键 33（button33）"
+    },
+    "settings.key_picker.pointing_button.button34": {
+        "en": "button34"
+        ,"ja": "button34"
+        ,"zh-Hans": "鼠标按键 34（button34）"
+    },
+    "settings.key_picker.pointing_button.button35": {
+        "en": "button35"
+        ,"ja": "button35"
+        ,"zh-Hans": "鼠标按键 35（button35）"
+    },
+    "settings.key_picker.pointing_button.button36": {
+        "en": "button36"
+        ,"ja": "button36"
+        ,"zh-Hans": "鼠标按键 36（button36）"
+    },
+    "settings.key_picker.pointing_button.button37": {
+        "en": "button37"
+        ,"ja": "button37"
+        ,"zh-Hans": "鼠标按键 37（button37）"
+    },
+    "settings.key_picker.pointing_button.button38": {
+        "en": "button38"
+        ,"ja": "button38"
+        ,"zh-Hans": "鼠标按键 38（button38）"
+    },
+    "settings.key_picker.pointing_button.button39": {
+        "en": "button39"
+        ,"ja": "button39"
+        ,"zh-Hans": "鼠标按键 39（button39）"
+    },
+    "settings.key_picker.pointing_button.button4": {
+        "en": "button4"
+        ,"ja": "button4"
+        ,"zh-Hans": "鼠标按键 4（button4）"
+    },
+    "settings.key_picker.pointing_button.button40": {
+        "en": "button40"
+        ,"ja": "button40"
+        ,"zh-Hans": "鼠标按键 40（button40）"
+    },
+    "settings.key_picker.pointing_button.button41": {
+        "en": "button41"
+        ,"ja": "button41"
+        ,"zh-Hans": "鼠标按键 41（button41）"
+    },
+    "settings.key_picker.pointing_button.button42": {
+        "en": "button42"
+        ,"ja": "button42"
+        ,"zh-Hans": "鼠标按键 42（button42）"
+    },
+    "settings.key_picker.pointing_button.button43": {
+        "en": "button43"
+        ,"ja": "button43"
+        ,"zh-Hans": "鼠标按键 43（button43）"
+    },
+    "settings.key_picker.pointing_button.button44": {
+        "en": "button44"
+        ,"ja": "button44"
+        ,"zh-Hans": "鼠标按键 44（button44）"
+    },
+    "settings.key_picker.pointing_button.button45": {
+        "en": "button45"
+        ,"ja": "button45"
+        ,"zh-Hans": "鼠标按键 45（button45）"
+    },
+    "settings.key_picker.pointing_button.button46": {
+        "en": "button46"
+        ,"ja": "button46"
+        ,"zh-Hans": "鼠标按键 46（button46）"
+    },
+    "settings.key_picker.pointing_button.button47": {
+        "en": "button47"
+        ,"ja": "button47"
+        ,"zh-Hans": "鼠标按键 47（button47）"
+    },
+    "settings.key_picker.pointing_button.button48": {
+        "en": "button48"
+        ,"ja": "button48"
+        ,"zh-Hans": "鼠标按键 48（button48）"
+    },
+    "settings.key_picker.pointing_button.button49": {
+        "en": "button49"
+        ,"ja": "button49"
+        ,"zh-Hans": "鼠标按键 49（button49）"
+    },
+    "settings.key_picker.pointing_button.button5": {
+        "en": "button5"
+        ,"ja": "button5"
+        ,"zh-Hans": "鼠标按键 5（button5）"
+    },
+    "settings.key_picker.pointing_button.button50": {
+        "en": "button50"
+        ,"ja": "button50"
+        ,"zh-Hans": "鼠标按键 50（button50）"
+    },
+    "settings.key_picker.pointing_button.button51": {
+        "en": "button51"
+        ,"ja": "button51"
+        ,"zh-Hans": "鼠标按键 51（button51）"
+    },
+    "settings.key_picker.pointing_button.button52": {
+        "en": "button52"
+        ,"ja": "button52"
+        ,"zh-Hans": "鼠标按键 52（button52）"
+    },
+    "settings.key_picker.pointing_button.button53": {
+        "en": "button53"
+        ,"ja": "button53"
+        ,"zh-Hans": "鼠标按键 53（button53）"
+    },
+    "settings.key_picker.pointing_button.button54": {
+        "en": "button54"
+        ,"ja": "button54"
+        ,"zh-Hans": "鼠标按键 54（button54）"
+    },
+    "settings.key_picker.pointing_button.button55": {
+        "en": "button55"
+        ,"ja": "button55"
+        ,"zh-Hans": "鼠标按键 55（button55）"
+    },
+    "settings.key_picker.pointing_button.button56": {
+        "en": "button56"
+        ,"ja": "button56"
+        ,"zh-Hans": "鼠标按键 56（button56）"
+    },
+    "settings.key_picker.pointing_button.button57": {
+        "en": "button57"
+        ,"ja": "button57"
+        ,"zh-Hans": "鼠标按键 57（button57）"
+    },
+    "settings.key_picker.pointing_button.button58": {
+        "en": "button58"
+        ,"ja": "button58"
+        ,"zh-Hans": "鼠标按键 58（button58）"
+    },
+    "settings.key_picker.pointing_button.button59": {
+        "en": "button59"
+        ,"ja": "button59"
+        ,"zh-Hans": "鼠标按键 59（button59）"
+    },
+    "settings.key_picker.pointing_button.button6": {
+        "en": "button6"
+        ,"ja": "button6"
+        ,"zh-Hans": "鼠标按键 6（button6）"
+    },
+    "settings.key_picker.pointing_button.button60": {
+        "en": "button60"
+        ,"ja": "button60"
+        ,"zh-Hans": "鼠标按键 60（button60）"
+    },
+    "settings.key_picker.pointing_button.button61": {
+        "en": "button61"
+        ,"ja": "button61"
+        ,"zh-Hans": "鼠标按键 61（button61）"
+    },
+    "settings.key_picker.pointing_button.button62": {
+        "en": "button62"
+        ,"ja": "button62"
+        ,"zh-Hans": "鼠标按键 62（button62）"
+    },
+    "settings.key_picker.pointing_button.button63": {
+        "en": "button63"
+        ,"ja": "button63"
+        ,"zh-Hans": "鼠标按键 63（button63）"
+    },
+    "settings.key_picker.pointing_button.button64": {
+        "en": "button64"
+        ,"ja": "button64"
+        ,"zh-Hans": "鼠标按键 64（button64）"
+    },
+    "settings.key_picker.pointing_button.button65": {
+        "en": "button65"
+        ,"ja": "button65"
+        ,"zh-Hans": "鼠标按键 65（button65）"
+    },
+    "settings.key_picker.pointing_button.button66": {
+        "en": "button66"
+        ,"ja": "button66"
+        ,"zh-Hans": "鼠标按键 66（button66）"
+    },
+    "settings.key_picker.pointing_button.button67": {
+        "en": "button67"
+        ,"ja": "button67"
+        ,"zh-Hans": "鼠标按键 67（button67）"
+    },
+    "settings.key_picker.pointing_button.button68": {
+        "en": "button68"
+        ,"ja": "button68"
+        ,"zh-Hans": "鼠标按键 68（button68）"
+    },
+    "settings.key_picker.pointing_button.button69": {
+        "en": "button69"
+        ,"ja": "button69"
+        ,"zh-Hans": "鼠标按键 69（button69）"
+    },
+    "settings.key_picker.pointing_button.button7": {
+        "en": "button7"
+        ,"ja": "button7"
+        ,"zh-Hans": "鼠标按键 7（button7）"
+    },
+    "settings.key_picker.pointing_button.button70": {
+        "en": "button70"
+        ,"ja": "button70"
+        ,"zh-Hans": "鼠标按键 70（button70）"
+    },
+    "settings.key_picker.pointing_button.button71": {
+        "en": "button71"
+        ,"ja": "button71"
+        ,"zh-Hans": "鼠标按键 71（button71）"
+    },
+    "settings.key_picker.pointing_button.button72": {
+        "en": "button72"
+        ,"ja": "button72"
+        ,"zh-Hans": "鼠标按键 72（button72）"
+    },
+    "settings.key_picker.pointing_button.button73": {
+        "en": "button73"
+        ,"ja": "button73"
+        ,"zh-Hans": "鼠标按键 73（button73）"
+    },
+    "settings.key_picker.pointing_button.button74": {
+        "en": "button74"
+        ,"ja": "button74"
+        ,"zh-Hans": "鼠标按键 74（button74）"
+    },
+    "settings.key_picker.pointing_button.button75": {
+        "en": "button75"
+        ,"ja": "button75"
+        ,"zh-Hans": "鼠标按键 75（button75）"
+    },
+    "settings.key_picker.pointing_button.button76": {
+        "en": "button76"
+        ,"ja": "button76"
+        ,"zh-Hans": "鼠标按键 76（button76）"
+    },
+    "settings.key_picker.pointing_button.button77": {
+        "en": "button77"
+        ,"ja": "button77"
+        ,"zh-Hans": "鼠标按键 77（button77）"
+    },
+    "settings.key_picker.pointing_button.button78": {
+        "en": "button78"
+        ,"ja": "button78"
+        ,"zh-Hans": "鼠标按键 78（button78）"
+    },
+    "settings.key_picker.pointing_button.button79": {
+        "en": "button79"
+        ,"ja": "button79"
+        ,"zh-Hans": "鼠标按键 79（button79）"
+    },
+    "settings.key_picker.pointing_button.button8": {
+        "en": "button8"
+        ,"ja": "button8"
+        ,"zh-Hans": "鼠标按键 8（button8）"
+    },
+    "settings.key_picker.pointing_button.button80": {
+        "en": "button80"
+        ,"ja": "button80"
+        ,"zh-Hans": "鼠标按键 80（button80）"
+    },
+    "settings.key_picker.pointing_button.button81": {
+        "en": "button81"
+        ,"ja": "button81"
+        ,"zh-Hans": "鼠标按键 81（button81）"
+    },
+    "settings.key_picker.pointing_button.button82": {
+        "en": "button82"
+        ,"ja": "button82"
+        ,"zh-Hans": "鼠标按键 82（button82）"
+    },
+    "settings.key_picker.pointing_button.button83": {
+        "en": "button83"
+        ,"ja": "button83"
+        ,"zh-Hans": "鼠标按键 83（button83）"
+    },
+    "settings.key_picker.pointing_button.button84": {
+        "en": "button84"
+        ,"ja": "button84"
+        ,"zh-Hans": "鼠标按键 84（button84）"
+    },
+    "settings.key_picker.pointing_button.button85": {
+        "en": "button85"
+        ,"ja": "button85"
+        ,"zh-Hans": "鼠标按键 85（button85）"
+    },
+    "settings.key_picker.pointing_button.button86": {
+        "en": "button86"
+        ,"ja": "button86"
+        ,"zh-Hans": "鼠标按键 86（button86）"
+    },
+    "settings.key_picker.pointing_button.button87": {
+        "en": "button87"
+        ,"ja": "button87"
+        ,"zh-Hans": "鼠标按键 87（button87）"
+    },
+    "settings.key_picker.pointing_button.button88": {
+        "en": "button88"
+        ,"ja": "button88"
+        ,"zh-Hans": "鼠标按键 88（button88）"
+    },
+    "settings.key_picker.pointing_button.button89": {
+        "en": "button89"
+        ,"ja": "button89"
+        ,"zh-Hans": "鼠标按键 89（button89）"
+    },
+    "settings.key_picker.pointing_button.button9": {
+        "en": "button9"
+        ,"ja": "button9"
+        ,"zh-Hans": "鼠标按键 9（button9）"
+    },
+    "settings.key_picker.pointing_button.button90": {
+        "en": "button90"
+        ,"ja": "button90"
+        ,"zh-Hans": "鼠标按键 90（button90）"
+    },
+    "settings.key_picker.pointing_button.button91": {
+        "en": "button91"
+        ,"ja": "button91"
+        ,"zh-Hans": "鼠标按键 91（button91）"
+    },
+    "settings.key_picker.pointing_button.button92": {
+        "en": "button92"
+        ,"ja": "button92"
+        ,"zh-Hans": "鼠标按键 92（button92）"
+    },
+    "settings.key_picker.pointing_button.button93": {
+        "en": "button93"
+        ,"ja": "button93"
+        ,"zh-Hans": "鼠标按键 93（button93）"
+    },
+    "settings.key_picker.pointing_button.button94": {
+        "en": "button94"
+        ,"ja": "button94"
+        ,"zh-Hans": "鼠标按键 94（button94）"
+    },
+    "settings.key_picker.pointing_button.button95": {
+        "en": "button95"
+        ,"ja": "button95"
+        ,"zh-Hans": "鼠标按键 95（button95）"
+    },
+    "settings.key_picker.pointing_button.button96": {
+        "en": "button96"
+        ,"ja": "button96"
+        ,"zh-Hans": "鼠标按键 96（button96）"
+    },
+    "settings.key_picker.pointing_button.button97": {
+        "en": "button97"
+        ,"ja": "button97"
+        ,"zh-Hans": "鼠标按键 97（button97）"
+    },
+    "settings.key_picker.pointing_button.button98": {
+        "en": "button98"
+        ,"ja": "button98"
+        ,"zh-Hans": "鼠标按键 98（button98）"
+    },
+    "settings.key_picker.pointing_button.button99": {
+        "en": "button99"
+        ,"ja": "button99"
+        ,"zh-Hans": "鼠标按键 99（button99）"
     },
     "settings.key_picker.rare_return": {
         "en": "rarely used return (HID usage 0x9e)"
