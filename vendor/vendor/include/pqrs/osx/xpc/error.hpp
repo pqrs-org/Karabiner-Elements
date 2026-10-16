@@ -66,9 +66,4 @@ inline std::error_code make_error_code(errc value) noexcept {
   };
 }
 
-struct error_info final {
-  std::error_code code;
-  std::string message;
-};
-
 } // namespace pqrs::osx::xpc

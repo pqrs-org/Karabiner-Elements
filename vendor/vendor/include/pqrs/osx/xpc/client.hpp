@@ -8,8 +8,11 @@
 
 namespace pqrs::osx::xpc {
 
-// Signals and completions run on the supplied dispatcher. Defer destruction
-// until signal delivery has returned. Unexpected exceptions stop processing.
+// Signals and completions run on the supplied dispatcher.
+// connection_retry_scheduled reports failures that this client retries
+// automatically.
+// On client_recovery_required, defer destruction until signal delivery has
+// returned, then follow client_recovery_request::recommended_action.
 class client final : private impl::transport<client_options> {
 public:
   client(std::weak_ptr<pqrs::dispatcher::dispatcher> dispatcher,
@@ -22,10 +25,10 @@ public:
   using impl::transport<client_options>::async_request_parameters;
   using impl::transport<client_options>::async_send;
   using impl::transport<client_options>::async_start;
-  using impl::transport<client_options>::connection_failed;
+  using impl::transport<client_options>::client_recovery_required;
+  using impl::transport<client_options>::connection_retry_scheduled;
   using impl::transport<client_options>::dispatcher_thread;
   using impl::transport<client_options>::enqueue_to_dispatcher;
-  using impl::transport<client_options>::error_occurred;
   using impl::transport<client_options>::message_received;
   using impl::transport<client_options>::peer_interrupted;
   using impl::transport<client_options>::peer_invalidated;

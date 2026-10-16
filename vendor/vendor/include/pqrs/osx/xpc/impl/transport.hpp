@@ -4,9 +4,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
+#include "../client_recovery.hpp"
 #include "../connection.hpp"
 #include "../dictionary.hpp"
 #include "../error.hpp"
+#include "../listener_recovery.hpp"
 #include "../options.hpp"
 #include "../peer.hpp"
 #include "../peers.hpp"
@@ -31,6 +33,18 @@
 namespace pqrs::osx::xpc::impl {
 
 template <typename Options>
+struct transport_role_storage;
+
+template <>
+struct transport_role_storage<listener_options> final {
+  connection listener;
+};
+
+template <>
+struct transport_role_storage<client_options> final {
+};
+
+template <typename Options>
 class transport : public pqrs::dispatcher::extra::dispatcher_client {
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard constructor_guard_{*this};
 
@@ -38,17 +52,19 @@ public:
   // All signals and completions run on the supplied dispatcher.
   // started means activated locally, not that launchd has confirmed registration.
   // Terminal failure: this transport stops processing work. Pending operations
-  // are abandoned; the owner must reconcile application state when recreating it.
+  // are abandoned; the owner must follow the emitted recovery request.
   // Handlers must not throw and must enqueue destruction/reinitialization, rather
   // than destroying this transport during signal emission.
-  nod::signal<void(const error_info&)> error_occurred;
+  nod::signal<void(const client_recovery_request&)> client_recovery_required;
   nod::signal<void()> listener_started;
-  // Terminal listener failure. This transport cannot be started again; its
-  // owner must defer destruction and create a replacement listener.
-  nod::signal<void(const std::error_code&)> listener_terminated;
-  // The client could not establish or re-establish a ready peer session.
+  // Terminal listener failure. This transport cannot be started again.
+  // recommended_action tells the owner how to restore the service after
+  // deferring this transport's destruction until signal delivery has returned.
+  nod::signal<void(const listener_recovery_request&)> listener_recovery_required;
+  // The client could not establish or re-establish a ready peer session and
+  // will retry automatically. Terminal failures require owner recovery instead.
   // peer_invalidated is also emitted when a created peer is invalidated.
-  nod::signal<void(const std::error_code&)> connection_failed;
+  nod::signal<void(const std::error_code&)> connection_retry_scheduled;
   nod::signal<void(peer_id)> peer_ready;
   nod::signal<void(peer_id)> peer_interrupted;
   nod::signal<void(peer_id, const std::error_code&)> peer_invalidated;
@@ -83,7 +99,9 @@ public:
         queue_,
         ^{
           *alive_ = false;
-          listener_.cancel();
+          if constexpr (is_listener()) {
+            role_storage_.listener.cancel();
+          }
           peers_.clear();
         });
 
@@ -109,13 +127,15 @@ public:
   }
 
   // For anonymous listeners, after listener_started.
-  [[nodiscard]] object copy_endpoint() const {
+  [[nodiscard]] object copy_endpoint() const
+    requires(std::is_same_v<Options, listener_options>)
+  {
     __block object result;
 
     dispatch_sync(
         queue_,
         ^{
-          result = listener_.copy_endpoint();
+          result = role_storage_.listener.copy_endpoint();
         });
 
     return result;
@@ -289,14 +309,26 @@ private:
       stopped_ = true;
       failed_->store(true);
       // Stop potentially partially updated state without replaying messages.
-      listener_.cancel();
+      if constexpr (is_listener()) {
+        role_storage_.listener.cancel();
+      }
       peers_.clear();
 
       enqueue_to_dispatcher([this] {
         try {
-          error_info error{make_error_code(errc::unexpected_exception),
-                           "Unexpected XPC transport exception"};
-          error_occurred(error);
+          if constexpr (is_listener()) {
+            listener_recovery_request request{
+                .error = make_error_code(errc::unexpected_exception),
+                .recommended_action = listener_recovery_action::recreate_listener,
+            };
+            listener_recovery_required(request);
+          } else {
+            client_recovery_request request{
+                .error = make_error_code(errc::unexpected_exception),
+                .recommended_action = client_recovery_action::recreate_client,
+            };
+            client_recovery_required(request);
+          }
         } catch (...) {
           std::fputs("XPC transport error creation or notification threw an exception\n",
                      stderr);
@@ -308,13 +340,83 @@ private:
     }
   }
 
-  void terminate_listener(const std::error_code& error) {
+  [[nodiscard]] listener_recovery_action recommended_listener_recovery_action(errc error) const noexcept
+    requires(std::is_same_v<Options, listener_options>)
+  {
+    if (error == errc::invalid_signing_requirement) {
+      return listener_recovery_action::correct_configuration;
+    }
+
+    if (error == errc::connection_invalid &&
+        !options_.listener_parameters.service_name.empty()) {
+      return listener_recovery_action::restart_process;
+    }
+
+    return listener_recovery_action::recreate_listener;
+  }
+
+  [[nodiscard]] client_recovery_action recommended_client_recovery_action(errc error) const noexcept
+    requires(std::is_same_v<Options, client_options>)
+  {
+    switch (error) {
+      case errc::signature_rejected:
+        return client_recovery_action::recreate_client_after_peer_update;
+
+      case errc::invalid_signing_requirement:
+        return client_recovery_action::correct_configuration;
+
+      default:
+        return client_recovery_action::recreate_client;
+    }
+  }
+
+  void terminate_listener(errc error)
+    requires(std::is_same_v<Options, listener_options>)
+  {
+    if (stopped_) {
+      return;
+    }
+
     stopped_ = true;
-    listener_.cancel();
+    role_storage_.listener.cancel();
     peers_.clear();
 
-    enqueue_notification([this, error] {
-      listener_terminated(error);
+    listener_recovery_request request{
+        .error = make_error_code(error),
+        .recommended_action = recommended_listener_recovery_action(error),
+    };
+
+    enqueue_notification([this, request] {
+      listener_recovery_required(request);
+    });
+  }
+
+  void terminate_client(errc error,
+                        std::optional<peer_id> invalidated_peer = std::nullopt)
+    requires(std::is_same_v<Options, client_options>)
+  {
+    if (stopped_) {
+      return;
+    }
+
+    stopped_ = true;
+
+    // Invalidation is performed after stopped_ is set so a terminal peer
+    // failure cannot schedule an automatic connection retry.
+    if (invalidated_peer) {
+      invalidate(*invalidated_peer,
+                 error);
+    }
+
+    peers_.clear();
+
+    client_recovery_request request{
+        .error = make_error_code(error),
+        .recommended_action = recommended_client_recovery_action(error),
+    };
+
+    enqueue_notification([this, request] {
+      client_recovery_required(request);
     });
   }
 
@@ -434,21 +536,25 @@ private:
     }
   }
 
-  void start_listener() {
-    listener_ = connection::create_listener(options_,
-                                            queue_);
-    if (!listener_.get()) {
-      terminate_listener(make_error_code(errc::connection_invalid));
+  void start_listener()
+    requires(std::is_same_v<Options, listener_options>)
+  {
+    auto& listener = role_storage_.listener;
+
+    listener = connection::create_listener(options_,
+                                           queue_);
+    if (!listener.get()) {
+      terminate_listener(errc::connection_invalid);
       return;
     }
 
-    if (!apply_peer_signing_requirement(listener_)) {
-      terminate_listener(make_error_code(errc::invalid_signing_requirement));
+    if (!apply_peer_signing_requirement(listener)) {
+      terminate_listener(errc::invalid_signing_requirement);
       return;
     }
 
     auto alive = alive_;
-    listener_.set_event_handler(
+    listener.set_event_handler(
         ^(xpc_object_t event) {
           if (!*alive) {
             return;
@@ -456,29 +562,40 @@ private:
 
           run_guarded([&] {
             if (xpc_get_type(event) == XPC_TYPE_CONNECTION) {
+              // Take ownership before checking the limit so a rejected suspended
+              // connection is resumed, cancelled, and released by RAII.
+              auto peer_connection = connection::from_peer(static_cast<xpc_connection_t>(event));
+
+              if (stopped_ ||
+                  peers_.size() >= options_.listener_parameters.max_peer_count) {
+                return;
+              }
+
               // Reject this connection if its signing requirement cannot be applied.
-              if (!add_peer(connection::from_peer(static_cast<xpc_connection_t>(event)))) {
+              if (!add_peer(std::move(peer_connection))) {
                 return;
               }
             } else {
-              terminate_listener(make_error_code(connection_error(event)));
+              terminate_listener(connection_error(event));
             }
           });
         });
 
-    listener_.resume();
+    listener.resume();
 
     enqueue_notification([this] {
       listener_started();
     });
   }
 
-  void start_client() {
+  void start_client()
+    requires(std::is_same_v<Options, client_options>)
+  {
     auto connection = connection::create_client(options_,
                                                 queue_);
     if (!connection.get()) {
       enqueue_notification([this] {
-        connection_failed(make_error_code(errc::connection_invalid));
+        connection_retry_scheduled(make_error_code(errc::connection_invalid));
       });
 
       reconnect_at_ = std::chrono::steady_clock::now() + reconnect_interval();
@@ -487,12 +604,7 @@ private:
 
     auto added_peer = add_peer(std::move(connection));
     if (!added_peer) {
-      stopped_ = true;
-
-      auto error = make_error_code(added_peer.error());
-      enqueue_notification([this, error] {
-        connection_failed(error);
-      });
+      terminate_client(added_peer.error());
     }
   }
 
@@ -760,7 +872,9 @@ private:
     if constexpr (!is_listener()) {
       if (error == errc::signature_rejected) {
         // A client-side signing requirement cannot become satisfied by retrying.
-        stopped_ = true;
+        terminate_client(error,
+                         id);
+        return;
       }
     }
 
@@ -824,9 +938,10 @@ private:
 
       auto error = make_error_code(reason);
       if constexpr (!is_listener()) {
-        if (!was_ready_for_communication) {
+        if (!stopped_ &&
+            !was_ready_for_communication) {
           enqueue_notification([this, error] {
-            connection_failed(error);
+            connection_retry_scheduled(error);
           });
         }
       }
@@ -842,7 +957,8 @@ private:
                            error);
         });
 
-        if (!is_listener()) {
+        if (!is_listener() &&
+            !stopped_) {
           reconnect_at_ = std::chrono::steady_clock::now() + reconnect_interval();
         }
       }
@@ -901,7 +1017,7 @@ private:
   pqrs::not_null_shared_ptr_t<std::atomic<bool>> failed_{std::make_shared<std::atomic<bool>>(false)};
   bool stopped_{false}; // only accessed on queue_; set after a terminal failure
   bool started_{false};
-  connection listener_;
+  [[no_unique_address]] transport_role_storage<Options> role_storage_;
   peers peers_;
   uint64_t next_request_id_{0};
   std::chrono::steady_clock::time_point reconnect_at_{};

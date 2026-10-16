@@ -7,6 +7,7 @@
 #include "peer.hpp"
 #include "types.hpp"
 #include <chrono>
+#include <cstddef>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -15,9 +16,7 @@ namespace pqrs::osx::xpc {
 
 // Owns peer connections and allocates IDs that are not reused after removal.
 // Reuse after uint64_t wraparound is intentionally permitted.
-// Peer count is intentionally unlimited. In normal production use, a signing
-// requirement restricts admission to trusted processes and limits untrusted
-// processes from consuming peer resources.
+// The listener transport enforces its configured peer limit before calling add.
 // All operations and access to returned peers must run on the transport queue.
 class peers final {
 public:
@@ -53,6 +52,10 @@ public:
 
   [[nodiscard]] bool empty() const noexcept {
     return peers_.empty();
+  }
+
+  [[nodiscard]] size_t size() const noexcept {
+    return peers_.size();
   }
 
   struct tick_actions final {

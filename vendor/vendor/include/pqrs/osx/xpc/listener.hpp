@@ -10,9 +10,10 @@ namespace pqrs::osx::xpc {
 
 // Signals and completions run on the supplied dispatcher.
 // A listener starts at most once.
-// On listener_terminated, defer destruction until signal delivery has returned,
-// then create a replacement listener if continued service is required.
-// Unexpected exceptions also stop processing.
+// On listener_recovery_required, defer destruction until signal delivery has
+// returned, then follow listener_recovery_request::recommended_action if
+// continued service is required.
+// Unexpected exceptions also stop processing and require owner recovery.
 class listener final : private impl::transport<listener_options> {
 public:
   listener(std::weak_ptr<pqrs::dispatcher::dispatcher> dispatcher,
@@ -28,8 +29,7 @@ public:
   using impl::transport<listener_options>::copy_endpoint;
   using impl::transport<listener_options>::dispatcher_thread;
   using impl::transport<listener_options>::enqueue_to_dispatcher;
-  using impl::transport<listener_options>::error_occurred;
-  using impl::transport<listener_options>::listener_terminated;
+  using impl::transport<listener_options>::listener_recovery_required;
   using impl::transport<listener_options>::listener_started;
   using impl::transport<listener_options>::message_received;
   using impl::transport<listener_options>::peer_interrupted;
