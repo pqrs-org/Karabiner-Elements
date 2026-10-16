@@ -7,6 +7,7 @@
 #include "filesystem_utility.hpp"
 #include "hid_event_system_monitor.hpp"
 #include "logger.hpp"
+#include "process_lifecycle_manager.hpp"
 #include "receiver.hpp"
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/session.hpp>
@@ -79,16 +80,39 @@ private:
       });
     });
 
-    receiver_->listener_terminated.connect([this](const std::error_code& error) {
-      logger::get_logger()->error("core_service daemon XPC listener terminated: {0}",
-                                  error.message());
-
-      enqueue_to_dispatcher(
-          [this] {
-            start_receiver(current_console_user_id_);
-          },
-          when_now() + std::chrono::seconds(1));
+    receiver_->listener_recovery_required.connect([this](const auto& request) {
+      handle_listener_recovery_request(request);
     });
+  }
+
+  void handle_listener_recovery_request(const pqrs::osx::xpc::listener_recovery_request& request) {
+    logger::get_logger()->error("core_service daemon XPC listener recovery is required: {0}",
+                                request.error.message());
+
+    switch (request.recommended_action) {
+      case pqrs::osx::xpc::listener_recovery_action::recreate_listener:
+        // Defer destruction of the failed listener until signal delivery has
+        // returned, then create a fresh listener in this process.
+        enqueue_to_dispatcher(
+            [this] {
+              start_receiver(current_console_user_id_);
+            },
+            when_now() + std::chrono::seconds(1));
+        break;
+
+      case pqrs::osx::xpc::listener_recovery_action::restart_process:
+        // A named listener that has lost its Mach service registration needs a
+        // fresh process. Let launchd restart this KeepAlive job.
+        process_lifecycle_manager::async_request_termination();
+        break;
+
+      case pqrs::osx::xpc::listener_recovery_action::correct_configuration:
+        // The options are compiled into the application and cannot be corrected
+        // at runtime. Stop this unusable process rather than retrying forever in
+        // process with the same configuration.
+        process_lifecycle_manager::async_request_termination();
+        break;
+    }
   }
 
   void enqueue_ensure_base_directories() {

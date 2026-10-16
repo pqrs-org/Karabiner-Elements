@@ -105,7 +105,7 @@ public:
         });
       });
 
-      client_->connection_failed.connect([this](const auto& error_code) {
+      client_->connection_retry_scheduled.connect([this](const auto& error_code) {
         logger::get_logger()->debug("{0} connect_failed: {1}",
                                     parameters_.client_name,
                                     error_code.message());
@@ -131,13 +131,13 @@ public:
         handle_peer_closed(peer_id);
       });
 
-      client_->error_occurred.connect([this, client_generation](const auto& error) {
-        logger::get_logger()->debug("{0} error: {1}",
+      client_->client_recovery_required.connect([this, client_generation](const auto& request) {
+        logger::get_logger()->debug("{0} recovery required: {1}",
                                     parameters_.client_name,
-                                    error.message);
+                                    request.error.message());
 
-        handle_transport_error(error.code,
-                               client_generation);
+        handle_client_recovery_request(request,
+                                       client_generation);
       });
 
       client_->message_received.connect([this](auto, auto&& buffer) {
@@ -223,22 +223,21 @@ protected:
   }
 
 private:
-  void handle_transport_error(const std::error_code& error_code,
-                              std::uint64_t client_generation) {
+  void handle_client_recovery_request(const xpc::client_recovery_request& request,
+                                      std::uint64_t client_generation) {
     if (peer_id_) {
       handle_peer_closed(*peer_id_);
     } else {
-      enqueue_to_dispatcher([this, error_code] {
-        connect_failed(error_code);
+      enqueue_to_dispatcher([this, error = request.error] {
+        connect_failed(error);
       });
     }
 
-    // error_occurred is terminal for pqrs::osx::xpc::client. Defer its
-    // destruction until signal delivery has returned, then replace it. The
-    // generation check prevents a delayed restart from replacing a client that
-    // was explicitly stopped and started again in the meantime.
+    // client_recovery_required is terminal for this client instance. Defer its
+    // destruction until signal delivery has returned. Retrying with an invalid
+    // configuration cannot recover, so leave the wrapper stopped in that case.
     enqueue_to_dispatcher(
-        [this, client_generation] {
+        [this, client_generation, action = request.recommended_action] {
           if (!running_ ||
               client_generation_ != client_generation) {
             return;
@@ -246,6 +245,13 @@ private:
 
           peer_id_.reset();
           client_ = nullptr;
+
+          if (action == xpc::client_recovery_action::correct_configuration) {
+            running_ = false;
+            logger::get_logger()->error("{0} stopped because its XPC configuration is invalid.",
+                                        parameters_.client_name);
+            return;
+          }
 
           logger::get_logger()->debug("{0} is restarting after a terminal error.",
                                       parameters_.client_name);

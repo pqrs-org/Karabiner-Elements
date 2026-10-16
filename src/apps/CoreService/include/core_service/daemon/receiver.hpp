@@ -35,7 +35,7 @@ public:
   // Signals (invoked from the shared dispatcher thread)
 
   nod::signal<void(std::optional<uid_t>)> console_user_id_changed;
-  nod::signal<void(const std::error_code&)> listener_terminated;
+  nod::signal<void(const xpc::listener_recovery_request&)> listener_recovery_required;
 
   // Methods
 
@@ -82,8 +82,8 @@ public:
             logger::get_logger()->debug("receiver: listener_started");
           });
 
-          server_->listener_terminated.connect([this](const auto& error) {
-            listener_terminated(error);
+          server_->listener_recovery_required.connect([this](const auto& request) {
+            listener_recovery_required(request);
           });
 
           server_->peer_ready.connect([](auto) {
@@ -101,13 +101,6 @@ public:
                                         error_code.message());
 
             handle_peer_closed(peer_id);
-          });
-
-          server_->error_occurred.connect([this](const auto& error) {
-            logger::get_logger()->error("receiver: error_occurred: {0}",
-                                        error.message);
-
-            listener_terminated(error.code);
           });
 
           server_->message_received.connect([](auto, auto&&) {
