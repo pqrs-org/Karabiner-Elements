@@ -4,6 +4,7 @@ struct ComplexModificationsAssetsView: View {
   @AppLocalizationContext private var localized
   @ObservedObject private var contentViewStates = ContentViewStates.shared
   @ObservedObject private var assetFiles = ComplexModificationsAssetFiles.shared
+  @ObservedObject private var settings = Settings.shared
   @State private var search = ""
   @State private var hoverRuleId: UUID?
 
@@ -61,6 +62,18 @@ struct ComplexModificationsAssetsView: View {
                               lineWidth: 2
                             )
                         )
+                      }
+
+                      if settings.configuration.selectedProfile.complexModifications.rules.contains(
+                        where: {
+                          $0.enabled && $0.description == assetRule.description
+                        })
+                      {
+                        Label(
+                          localized("settings.complex_modifications.assets.enabled"),
+                          systemImage: "checkmark.circle.fill"
+                        )
+                        .foregroundColor(.green)
                       }
 
                       Button(

@@ -11,6 +11,10 @@
         "en": "Add your own rule using JavaScript"
         ,"ja": "JavaScriptでルールを作成"
     },
+    "settings.complex_modifications.assets.enabled": {
+        "en": "Enabled"
+        ,"ja": "有効"
+    },
     "settings.complex_modifications.assets.imported_at": {
         "en": "Imported at {date}"
         ,"ja": "取り込み日時: {date}"
