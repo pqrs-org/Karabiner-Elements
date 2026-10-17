@@ -71,10 +71,10 @@ final class ContentViewStates: ObservableObject {
       // There are multiple reasons why Settings might not be able to connect to
       // Karabiner-Console-User-Server.
       //
-      // 1. org.pqrs.service.daemon.Karabiner-Core-Service is not enabled, so
+      // 1. org.pqrs.service.daemon.Karabiner-Core-Service-v3 is not enabled, so
       //    /Library/Application Support/org.pqrs/tmp/user/XXX has not been created yet and
       //    Karabiner-Console-User-Server cannot bind its socket.
-      // 2. org.pqrs.service.agent.Karabiner-Console-User-Server is disabled and does
+      // 2. org.pqrs.service.agent.Karabiner-Console-User-Server-v3 is disabled and does
       //    not start.
       // 3. Karabiner-Console-User-Server is still starting up and has not bound its socket yet.
       //

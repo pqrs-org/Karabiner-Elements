@@ -3,19 +3,17 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.service.daemon.Karabiner-Core-Service</string>
+    <string>org.pqrs.service.agent.Karabiner-Console-User-Server-v3</string>
     <key>MachServices</key>
     <dict>
-      <key>org.pqrs.Karabiner-Core-Service.daemon</key>
+      <key>org.pqrs.Karabiner-Console-User-Server</key>
       <true/>
     </dict>
     <key>KeepAlive</key>
     <true/>
-    <key>ProcessType</key>
-    <string>Interactive</string>
     <key>ProgramArguments</key>
     <array>
-      <string>/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service</string>
+      <string>/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Console-User-Server.app/Contents/MacOS/Karabiner-Console-User-Server</string>
     </array>
   </dict>
 </plist>

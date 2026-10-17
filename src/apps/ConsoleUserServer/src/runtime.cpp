@@ -89,11 +89,18 @@ void console_user_server_start(console_user_server_terminated_callback callback)
   // Register services
   //
 
-  krbn::services_utility::bootout_and_disable_old_agents();
   // Register services when console_user_server starts to avoid missing registrations,
   // for example when new services are added in an update.
   krbn::services_utility::register_core_daemons();
   krbn::services_utility::register_core_agents();
+
+  // launchd keeps the registered job definition rather than reading an updated
+  // plist each time it starts a process. If an update replaces the executable
+  // at the same path, an old job can therefore launch this new binary with the
+  // old label, arguments, and other plist settings. Register the replacement
+  // job before booting out old labels, because booting out the job that launched
+  // this process may terminate it immediately.
+  krbn::services_utility::bootout_and_disable_old_agents();
 
   //
   // Create directories

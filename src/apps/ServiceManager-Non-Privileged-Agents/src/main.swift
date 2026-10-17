@@ -14,20 +14,20 @@ enum Subcommand: String {
 }
 
 RunLoop.main.perform {
-  let coreAgentServiceNames = [
-    "org.pqrs.service.agent.Karabiner-Core-Service",
+  let coreAgentPlistNames = [
+    "org.pqrs.service.agent.Karabiner-Core-Service-v3.plist",
     // unregisterCoreAgents may be invoked by Karabiner-Console-User-Server.
     // Unregistering its own service can terminate the caller before the operation completes,
     // so unregister Karabiner-Console-User-Server last.
-    "org.pqrs.service.agent.Karabiner-Console-User-Server",
+    "org.pqrs.service.agent.Karabiner-Console-User-Server-v3.plist",
   ]
 
-  let coreAgents = coreAgentServiceNames.map {
-    SMAppService.agent(plistName: "\($0).plist")
+  let coreAgents = coreAgentPlistNames.map {
+    SMAppService.agent(plistName: $0)
   }
 
   let multitouchExtensionAgentService = SMAppService.agent(
-    plistName: "org.pqrs.service.agent.Karabiner-MultitouchExtension.plist")
+    plistName: "org.pqrs.service.agent.Karabiner-MultitouchExtension-v3.plist")
 
   var allServices: [SMAppService] = []
   for s in coreAgents {
@@ -70,15 +70,20 @@ RunLoop.main.perform {
 
     case .running:
       var exitCode: Int32 = 0
-      for n in coreAgentServiceNames {
-        // A non-resident agent that runs only once
-        if n == "org.pqrs.service.agent.Karabiner-Core-Service" {
+      for plistName in coreAgentPlistNames {
+        guard
+          let label = ServiceManagementHelper.launchdLabel(
+            plistName: plistName,
+            directoryName: "LaunchAgents"
+          )
+        else {
+          exitCode = 1
           continue
         }
 
-        n.withCString {
+        label.withCString {
           if !krbn_agent_running($0) {
-            print("\(n) is not running")
+            print("\(label) is not running")
             exitCode = 1
           }
         }

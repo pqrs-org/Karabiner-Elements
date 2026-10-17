@@ -66,7 +66,7 @@ inline void unregister_core_agents() {
 
 inline void restart_console_user_server_agent() {
   auto domain_target = pqrs::osx::launchctl::make_gui_domain_target();
-  auto service_name = pqrs::osx::launchctl::service_name("org.pqrs.service.agent.Karabiner-Console-User-Server");
+  auto service_name = pqrs::osx::launchctl::service_name("org.pqrs.service.agent.Karabiner-Console-User-Server-v3");
 
   auto flags = pqrs::osx::launchctl::kickstart_flags::kill |
                pqrs::osx::launchctl::kickstart_flags::background;
@@ -110,9 +110,10 @@ inline void bootout_and_disable_old_agents() {
            "org.pqrs.service.agent.karabiner_console_user_server",
            "org.pqrs.service.agent.karabiner_grabber",
            "org.pqrs.service.agent.karabiner_session_monitor",
-           // The current label is `org.pqrs.service.agent.Karabiner-Core-Service-rev2`,
-           // so boot out and disable the former label.
            "org.pqrs.service.agent.Karabiner-Core-Service",
+           "org.pqrs.service.agent.Karabiner-Core-Service-rev2",
+           "org.pqrs.service.agent.Karabiner-Console-User-Server",
+           "org.pqrs.service.agent.Karabiner-MultitouchExtension",
            "org.pqrs.service.agent.Karabiner-Menu",
            "org.pqrs.service.agent.Karabiner-NotificationWindow",
        }) {

@@ -3,12 +3,12 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.pqrs.service.agent.Karabiner-Core-Service-rev2</string>
+    <string>org.pqrs.service.agent.Karabiner-MultitouchExtension-v3</string>
     <key>KeepAlive</key>
     <true/>
     <key>ProgramArguments</key>
     <array>
-      <string>/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service</string>
+      <string>/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-MultitouchExtension.app/Contents/MacOS/Karabiner-MultitouchExtension</string>
     </array>
   </dict>
 </plist>

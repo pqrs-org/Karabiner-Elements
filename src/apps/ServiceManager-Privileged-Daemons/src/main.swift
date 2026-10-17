@@ -11,13 +11,13 @@ enum Subcommand: String {
 }
 
 RunLoop.main.perform {
-  let coreDaemonServiceNames = [
-    "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon",
-    "org.pqrs.service.daemon.Karabiner-Core-Service",
+  let coreDaemonPlistNames = [
+    "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon.plist",
+    "org.pqrs.service.daemon.Karabiner-Core-Service-v3.plist",
   ]
 
-  let coreDaemons = coreDaemonServiceNames.map {
-    SMAppService.daemon(plistName: "\($0).plist")
+  let coreDaemons = coreDaemonPlistNames.map {
+    SMAppService.daemon(plistName: $0)
   }
 
   var allServices: [SMAppService] = []
@@ -52,10 +52,20 @@ RunLoop.main.perform {
 
     case .running:
       var exitCode: Int32 = 0
-      for n in coreDaemonServiceNames {
-        n.withCString {
+      for plistName in coreDaemonPlistNames {
+        guard
+          let label = ServiceManagementHelper.launchdLabel(
+            plistName: plistName,
+            directoryName: "LaunchDaemons"
+          )
+        else {
+          exitCode = 1
+          continue
+        }
+
+        label.withCString {
           if !krbn_daemon_running($0) {
-            print("\(n) is not running")
+            print("\(label) is not running")
             exitCode = 1
           }
         }

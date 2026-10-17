@@ -1,6 +1,37 @@
+import Foundation
 import ServiceManagement
 
 struct ServiceManagementHelper {
+  static func launchdLabel(
+    plistName: String,
+    directoryName: String
+  ) -> String? {
+    let url = Bundle.main.bundleURL
+      .appendingPathComponent("Contents/Library", isDirectory: true)
+      .appendingPathComponent(directoryName, isDirectory: true)
+      .appendingPathComponent(plistName, isDirectory: false)
+
+    do {
+      let data = try Data(contentsOf: url)
+      guard
+        let dictionary = try PropertyListSerialization.propertyList(
+          from: data,
+          options: [],
+          format: nil
+        ) as? [String: Any],
+        let label = dictionary["Label"] as? String
+      else {
+        print("Label is missing in \(url.path)")
+        return nil
+      }
+
+      return label
+    } catch {
+      print("Unable to read \(url.path): \(error)")
+      return nil
+    }
+  }
+
   static func register(services: [SMAppService]) {
     for s in services {
       // Regarding daemons, performing the following steps causes inconsistencies in the user approval database,
