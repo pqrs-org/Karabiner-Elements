@@ -21,10 +21,6 @@ echo "Copy Files"
 rm -rf pkgroot
 mkdir -p pkgroot
 
-basedir="pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
-mkdir -p "$basedir"
-cp src/bin/cli/build/Release/karabiner_cli "$basedir"
-
 basedir="pkgroot/Applications"
 mkdir -p "$basedir"
 cp -R "src/apps/EventViewer/build/Release/Karabiner-EventViewer.app" "$basedir"
@@ -32,6 +28,7 @@ cp -R "src/apps/SettingsWindow/build/Release/Karabiner-Elements.app" "$basedir"
 
 basedir="pkgroot/Applications/Karabiner-Elements.app/Contents/Helpers"
 mkdir -p "$basedir"
+karabiner_cli_path="$basedir/karabiner_cli"
 cp -R "src/apps/AppIconSwitcher/build/Release/Karabiner-AppIconSwitcher.app" "$basedir"
 cp -R "src/apps/MultitouchExtension/build/Release/Karabiner-MultitouchExtension.app" "$basedir"
 cp -R "src/apps/ServiceManager-Non-Privileged-Agents/build/Release/Karabiner-Elements Non-Privileged Agents v3.app" "$basedir"
@@ -39,6 +36,7 @@ cp -R "src/apps/ServiceManager-Privileged-Daemons/build/Release/Karabiner-Elemen
 cp -R "src/apps/Updater/build/Release/Karabiner-Updater.app" "$basedir"
 cp -R "src/apps/CoreService/build/Release/Karabiner-Core-Service.app" "$basedir"
 cp -R "src/apps/ConsoleUserServer/build/Release/Karabiner-Console-User-Server.app" "$basedir"
+cp src/bin/cli/build/Release/karabiner_cli "$karabiner_cli_path"
 
 basedir="pkgroot/Applications/Karabiner-Elements.app/Contents/Resources"
 mkdir -p "$basedir"
@@ -54,8 +52,8 @@ cp src/scripts/uninstaller.applescript "$basedir"
 # Sign with Developer ID
 #
 
+bash scripts/codesign.sh -i org.pqrs.Karabiner-CLI "$karabiner_cli_path"
 bash scripts/codesign.sh "pkgroot"
-bash scripts/codesign.sh -i org.pqrs.Karabiner-CLI "pkgroot/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli"
 
 #
 # Update file permissions
