@@ -6,8 +6,8 @@
 
 namespace krbn::services_utility {
 
-static constexpr const char* daemons_path = "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3";
-static constexpr const char* agents_path = "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3";
+static constexpr const char* daemons_path = "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3";
+static constexpr const char* agents_path = "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3";
 
 inline std::optional<int> run_command(const char* path,
                                       std::string_view argument) {

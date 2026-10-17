@@ -30,7 +30,7 @@ mkdir -p "$basedir"
 cp -R "src/apps/EventViewer/build/Release/Karabiner-EventViewer.app" "$basedir"
 cp -R "src/apps/SettingsWindow/build/Release/Karabiner-Elements.app" "$basedir"
 
-basedir="pkgroot/Applications/Karabiner-Elements.app/Contents/Applications"
+basedir="pkgroot/Applications/Karabiner-Elements.app/Contents/Helpers"
 mkdir -p "$basedir"
 cp -R "src/apps/AppIconSwitcher/build/Release/Karabiner-AppIconSwitcher.app" "$basedir"
 cp -R "src/apps/MultitouchExtension/build/Release/Karabiner-MultitouchExtension.app" "$basedir"

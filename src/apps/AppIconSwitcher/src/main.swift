@@ -4,12 +4,12 @@ let appIconNumber = String(format: "%03d", krbn_get_app_icon_number())
 
 for file in [
   "/Applications/Karabiner-Elements.app",
-  "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Core-Service.app",
-  "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Elements Non-Privileged Agents v3.app",
-  "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Elements Privileged Daemons v3.app",
-  "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Console-User-Server.app",
-  "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Updater.app",
-  "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Updater.app/Contents/Frameworks/Sparkle.framework/Updater.app",
+  "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Core-Service.app",
+  "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Non-Privileged Agents v3.app",
+  "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app",
+  "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Console-User-Server.app",
+  "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Updater.app",
+  "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Updater.app/Contents/Frameworks/Sparkle.framework/Updater.app",
 ] {
   let iconName = "\(appIconNumber)-KarabinerElements.icns"
   setIcon(iconName: iconName, file: String(file))
@@ -23,7 +23,7 @@ setIcon(
 setIcon(
   iconName: "\(appIconNumber)-MultitouchExtension.icns",
   file: String(
-    "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-MultitouchExtension.app"
+    "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-MultitouchExtension.app"
   )
 )
 

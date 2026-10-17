@@ -27,7 +27,7 @@ private:
     system("/usr/bin/killall Karabiner-Updater");
 
     pqrs::osx::workspace::open_application_by_bundle_path(
-        "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Updater.app",
+        "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Updater.app",
         pqrs::osx::workspace::open_configuration{
             .activates = activates,
             .adds_to_recent_items = false,

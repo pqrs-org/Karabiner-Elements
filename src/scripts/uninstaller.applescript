@@ -4,7 +4,7 @@ try
         try
             do shell script "test -f '/Applications/Karabiner-Elements.app/Contents/Resources/uninstall.sh'"
             try
-                do shell script "'/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3' unregister-core-agents"
+                do shell script "'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3' unregister-core-agents"
 
                 do shell script "bash '/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/scripts/uninstall/deactivate_driver.sh'"
 

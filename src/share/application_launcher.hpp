@@ -10,7 +10,7 @@ public:
     // Note:
     // Updating the icon may trigger Spotlight index updates, so only call it when necessary.
     // (Avoid calling it every time, such as during core_service startup.)
-    system("'/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'");
+    system("'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'");
   }
 
   static void launch_event_viewer() {

@@ -4,7 +4,7 @@ import SwiftUI
 public class AppIcon: Identifiable, Equatable {
   private static let appIconSwitcherBundle = Bundle(
     path:
-      "/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-AppIconSwitcher.app"
+      "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-AppIconSwitcher.app"
   )
 
   nonisolated public let id: Int32

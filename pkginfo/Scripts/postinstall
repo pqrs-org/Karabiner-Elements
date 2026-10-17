@@ -20,7 +20,7 @@ fi
 # Set icon
 #
 
-'/Applications/Karabiner-Elements.app/Contents/Applications/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'
+'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'
 
 #
 # Relaunch launchd-managed processes after all files have been updated
@@ -44,5 +44,15 @@ killall karabiner_grabber
 killall karabiner_session_monitor
 killall Karabiner-Menu
 killall Karabiner-NotificationWindow
+
+#
+# Register launchd services from the newly installed application.
+#
+
+# SMAppService registration makes the services visible to launchd. The
+# privileged daemons still require approval in System Settings before launchd
+# can start them.
+'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Privileged Daemons v3.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v3' register-core-daemons
+'/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Elements Non-Privileged Agents v3.app/Contents/MacOS/Karabiner-Elements Non-Privileged Agents v3' register-core-agents
 
 exit 0
