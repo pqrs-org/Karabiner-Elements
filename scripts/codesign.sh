@@ -69,7 +69,14 @@ do_codesign() {
     local identifier="$CODE_SIGN_IDENTIFIER"
 
     if [[ -z $identifier ]]; then
-        identifier=$(codesign -d --verbose=4 "$1" 2>&1 | sed -n 's/^Identifier=//p')
+        if [[ -d $1 && -f $1/Contents/Info.plist ]]; then
+            identifier=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Contents/Info.plist")
+        elif [[ -d $1 && -f $1/Resources/Info.plist ]]; then
+            identifier=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Resources/Info.plist")
+        else
+            identifier=$(codesign -d --verbose=4 "$1" 2>&1 | sed -n 's/^Identifier=//p')
+        fi
+
         if [[ -z $identifier ]]; then
             set_error_color
             echo "Unable to determine the code signing identifier: '$1'" >&2
@@ -81,11 +88,37 @@ do_codesign() {
 
     run_with_result_color codesign \
         --force \
-        --deep \
         --options runtime \
         --sign "$CODE_SIGN_IDENTITY" \
         --identifier "$identifier" \
         "$1"
+}
+
+find_code_paths() {
+    {
+        find * \
+            -type d \
+            \( \
+            -name '*.app' \
+            -o -name '*.appex' \
+            -o -name '*.framework' \
+            -o -name '*.plugin' \
+            -o -name '*.xpc' \
+            \)
+
+        find * \
+            -type f \
+            \( \
+            -name '*.dylib' \
+            -o -path '*/bin/*' \
+            \)
+
+        find * -type f -perm -111 -print0 | while IFS= read -r -d '' f; do
+            if file -b "$f" | grep -q 'Mach-O'; then
+                printf '%s\n' "$f"
+            fi
+        done
+    } | sort -ru
 }
 
 if [[ ! -e "$TARGET_PATH" ]]; then
@@ -96,11 +129,13 @@ fi
 
 if [[ -d "$TARGET_PATH" ]]; then
     #
-    # Sign with codesign
+    # Sign nested code before its containing bundles. Do not use --deep here
+    # because an explicit --identifier would also be applied to all nested code
+    # and overwrite each bundle's CFBundleIdentifier.
     #
 
     cd "$TARGET_PATH"
-    find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
+    find_code_paths | while IFS= read -r f; do
         #
         # output message
         #
@@ -118,7 +153,7 @@ if [[ -d "$TARGET_PATH" ]]; then
     # Verify nested codesign (--deep)
     #
 
-    find * -name '*.app' -or -path '*/bin/*' | sort -r | while read f; do
+    find_code_paths | while IFS= read -r f; do
         run_with_result_color codesign --verify --deep "$f"
     done
 else
