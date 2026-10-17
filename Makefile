@@ -46,13 +46,16 @@ notarize:
 staple:
 	xcrun stapler staple Karabiner-Elements-$(VERSION).dmg
 
-format: clang-format swift-format ruff-format localization-format
+format: clang-format swift-format shell-format ruff-format localization-format
 
 clang-format:
 	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
 
 swift-format:
 	find src/apps tests -name '*.swift' -print0 | xargs -0 swift-format -i
+
+shell-format:
+	git ls-files -z -- '*.sh' 'pkginfo/Scripts/*' | xargs -0 shfmt -w -i 4 -ci
 
 ruff-format:
 	git ls-files -z -- '*.py' ':(exclude)vendor/**' ':(exclude)docs/vendor/**' | xargs -0 ruff format
