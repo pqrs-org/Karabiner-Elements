@@ -25,7 +25,7 @@ struct VirtualKeyboardView: View {
                 step: 10,
                 width: 50)
 
-              Text("%")
+              AppLocalizedText("settings.general.units.percent")
             }
           }
           .padding()
