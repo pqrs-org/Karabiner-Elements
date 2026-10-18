@@ -44,15 +44,39 @@ CODE_SIGN_IDENTITY=$(bash "$SCRIPT_DIRECTORY/get-codesign-identity.sh")
 readonly CODE_SIGN_IDENTITY
 
 usage() {
-    echo "Usage: $0 [-i identifier] path"
-    exit 1
+    local exit_status="${1:-1}"
+
+    cat <<EOF
+Usage: $0 [-h] [-t] [-i identifier] path
+
+Sign a file or the code contained in a directory.
+
+Options:
+  -h             Show this help.
+  -i identifier  Use identifier for the specified target. Nested code keeps
+                 the identifier from its bundle metadata or existing signature.
+  -t             Sign only the specified target. For a directory, the target
+                 must be a code bundle. Nested code is not re-signed, but the
+                 completed bundle is still verified recursively.
+
+Without -t, code found under a directory is signed from the inside out, and
+the specified directory is signed last when it is itself a code bundle.
+EOF
+    exit "$exit_status"
 }
 
 CODE_SIGN_IDENTIFIER=""
-while getopts ":i:" option; do
+SIGN_TARGET_ONLY=false
+while getopts ":hi:t" option; do
     case "$option" in
+        h)
+            usage 0
+            ;;
         i)
             CODE_SIGN_IDENTIFIER="$OPTARG"
+            ;;
+        t)
+            SIGN_TARGET_ONLY=true
             ;;
         *)
             usage
@@ -62,6 +86,7 @@ done
 shift $((OPTIND - 1))
 [[ $# -eq 1 ]] || usage
 readonly CODE_SIGN_IDENTIFIER
+readonly SIGN_TARGET_ONLY
 readonly TARGET_PATH="$1"
 
 do_codesign() {
@@ -69,6 +94,8 @@ do_codesign() {
     local identifier="${2:-}"
 
     if [[ -z $identifier ]]; then
+        # If no identifier is explicitly specified, preserve the current
+        # identifier from the bundle metadata or the existing code signature.
         if [[ -d $path && -f $path/Contents/Info.plist ]]; then
             identifier=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$path/Contents/Info.plist")
         elif [[ -d $path && -f $path/Resources/Info.plist ]]; then
@@ -152,31 +179,38 @@ if [[ -d "$TARGET_PATH" ]]; then
     # and overwrite each bundle's CFBundleIdentifier.
     #
 
-    cd "$TARGET_PATH"
     code_paths=()
-    while IFS= read -r f; do
-        code_paths+=("$f")
-    done < <(find_code_paths)
+    cd "$TARGET_PATH"
 
-    for f in "${code_paths[@]}"; do
-        #
-        # output message
-        #
+    if [[ $SIGN_TARGET_ONLY == false ]]; then
+        while IFS= read -r f; do
+            code_paths+=("$f")
+        done < <(find_code_paths)
 
-        echo "code sign $f"
+        for f in "${code_paths[@]}"; do
+            #
+            # output message
+            #
 
-        #
-        # codesign
-        #
+            echo "code sign $f"
 
-        do_codesign "$f"
-    done
+            #
+            # codesign
+            #
+
+            do_codesign "$f"
+        done
+    fi
 
     # If the specified directory is itself a code bundle, sign it after all
     # nested code so its resource seal includes the final nested signatures.
     if is_code_bundle .; then
         echo "code sign ."
         do_codesign . "$CODE_SIGN_IDENTIFIER"
+    elif [[ $SIGN_TARGET_ONLY == true ]]; then
+        set_error_color
+        echo "The target-only option requires a code bundle or a file: '$TARGET_PATH'" >&2
+        exit 1
     fi
 
     #
