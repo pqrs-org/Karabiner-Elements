@@ -13,7 +13,5 @@ codesign: all
 	bash ../../../scripts/codesign.sh build/Release
 
 install: codesign
-	sudo rsync -a --delete \
-		build/Release/Karabiner-Core-Service.app \
-		'/Library/Application Support/org.pqrs/Karabiner-Elements'
+	bash ../../../scripts/replace-helper-for-development.sh build/Release/Karabiner-Core-Service.app
 	-sudo killall Karabiner-Core-Service

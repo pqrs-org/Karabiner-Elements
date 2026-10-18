@@ -26,10 +26,7 @@ xcode:
 
 install:
 	bash ../../../scripts/codesign.sh build/Release
-	sudo rsync -a --delete \
-		build/Release/Karabiner-Updater.app \
-		'/Library/Application Support/org.pqrs/Karabiner-Elements'
-	sudo chown -R root:wheel '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app'
+	bash ../../../scripts/replace-helper-for-development.sh build/Release/Karabiner-Updater.app
 
 log:
 	/usr/bin/log stream --predicate 'subsystem:^org.pqrs.Karabiner-Updater' --info --debug

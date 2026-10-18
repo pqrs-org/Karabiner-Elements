@@ -13,7 +13,4 @@ xcode:
 
 install:
 	bash ../../../scripts/codesign.sh build/Release
-
-	sudo rsync -a --delete \
-		build/Release/Karabiner-AppIconSwitcher.app \
-		'/Library/Application Support/org.pqrs/Karabiner-Elements'
+	bash ../../../scripts/replace-helper-for-development.sh build/Release/Karabiner-AppIconSwitcher.app

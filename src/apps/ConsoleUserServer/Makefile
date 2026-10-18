@@ -14,7 +14,5 @@ codesign: all
 
 install: codesign
 	$(MAKE) -C ../localization install
-	sudo rsync -a --delete \
-		build/Release/Karabiner-Console-User-Server.app/ \
-		'/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Console-User-Server.app'
+	bash ../../../scripts/replace-helper-for-development.sh build/Release/Karabiner-Console-User-Server.app
 	-sudo killall Karabiner-Console-User-Server

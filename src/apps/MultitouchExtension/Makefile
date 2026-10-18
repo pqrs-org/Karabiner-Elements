@@ -17,10 +17,7 @@ run:
 
 install:
 	bash ../../../scripts/codesign.sh build/Release
-
-	sudo rsync -a --delete \
-		build/Release/Karabiner-MultitouchExtension.app \
-		'/Library/Application Support/org.pqrs/Karabiner-Elements'
+	bash ../../../scripts/replace-helper-for-development.sh build/Release/Karabiner-MultitouchExtension.app
 	-sudo killall Karabiner-MultitouchExtension
 
 log:
