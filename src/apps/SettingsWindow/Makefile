@@ -21,7 +21,5 @@ codesign: all
 
 install: codesign
 	$(MAKE) -C ../localization install
-	sudo rsync -a --delete \
-		build/Release/Karabiner-Elements.app \
-		/Applications
-	sudo chown -R root:wheel /Applications/Karabiner-Elements.app
+	bash ../../../scripts/replace-main-application-for-development.sh \
+		build/Release/Karabiner-Elements.app
