@@ -37,16 +37,35 @@ run_with_result_color() {
 
 set_normal_color
 
-readonly CODE_SIGN_IDENTITY=$(bash $(dirname $0)/get-installer-codesign-identity.sh)
+SCRIPT_DIRECTORY=$(cd "$(dirname "$0")" && pwd)
+readonly SCRIPT_DIRECTORY
 
-if [[ -z $CODE_SIGN_IDENTITY ]]; then
-    echo "Skip codesign"
-    exit 0
+CODE_SIGN_IDENTITY=$(bash "$SCRIPT_DIRECTORY/get-installer-codesign-identity.sh")
+readonly CODE_SIGN_IDENTITY
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 path"
+    exit 1
 fi
 
-if [ ! -e "$1" ]; then
+readonly TARGET_PATH="$1"
+
+if [[ ! -e $TARGET_PATH ]]; then
     set_error_color
-    echo "Invalid argument: '$1'"
+    echo "Invalid argument: '$TARGET_PATH'"
+    exit 1
+fi
+
+if [[ -z $CODE_SIGN_IDENTITY ]]; then
+    # CI explicitly opts into unsigned artifacts so it can validate the build
+    # without access to signing certificates.
+    if [[ ${PQRS_ORG_ALLOW_MISSING_CODE_SIGN_IDENTITIES:-} == true ]]; then
+        echo "Skip codesign"
+        exit 0
+    fi
+
+    set_error_color
+    echo "A valid installer signing identity is required." >&2
     exit 1
 fi
 
@@ -54,7 +73,7 @@ fi
 # Sign with codesign
 #
 
-if run_with_result_color productsign --sign "$CODE_SIGN_IDENTITY" "$1" "$1".signed; then
-    mv "$1".signed "$1"
+if run_with_result_color productsign --sign "$CODE_SIGN_IDENTITY" "$TARGET_PATH" "$TARGET_PATH".signed; then
+    mv "$TARGET_PATH".signed "$TARGET_PATH"
 fi
-rm -f "$1".signed
+rm -f "$TARGET_PATH".signed

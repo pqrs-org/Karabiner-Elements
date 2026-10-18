@@ -12,8 +12,9 @@ jobs:
   build:
     runs-on: macos-latest
     env:
-      PQRS_ORG_CODE_SIGN_IDENTITY: dummy
-      PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY: dummy
+      PQRS_ORG_ALLOW_MISSING_CODE_SIGN_IDENTITIES: "true"
+      PQRS_ORG_CODE_SIGN_IDENTITY: "dummy"
+      PQRS_ORG_INSTALLER_CODE_SIGN_IDENTITY: "dummy"
 
     steps:
       - uses: actions/checkout@v6

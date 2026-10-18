@@ -37,7 +37,11 @@ run_with_result_color() {
 
 set_normal_color
 
-readonly CODE_SIGN_IDENTITY=$(bash $(dirname $0)/get-codesign-identity.sh)
+SCRIPT_DIRECTORY=$(cd "$(dirname "$0")" && pwd)
+readonly SCRIPT_DIRECTORY
+
+CODE_SIGN_IDENTITY=$(bash "$SCRIPT_DIRECTORY/get-codesign-identity.sh")
+readonly CODE_SIGN_IDENTITY
 
 usage() {
     echo "Usage: $0 [-i identifier] path"
@@ -60,26 +64,22 @@ shift $((OPTIND - 1))
 readonly CODE_SIGN_IDENTIFIER
 readonly TARGET_PATH="$1"
 
-if [[ -z $CODE_SIGN_IDENTITY ]]; then
-    echo "Skip codesign"
-    exit 0
-fi
-
 do_codesign() {
-    local identifier="$CODE_SIGN_IDENTIFIER"
+    local path="$1"
+    local identifier="${2:-}"
 
     if [[ -z $identifier ]]; then
-        if [[ -d $1 && -f $1/Contents/Info.plist ]]; then
-            identifier=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Contents/Info.plist")
-        elif [[ -d $1 && -f $1/Resources/Info.plist ]]; then
-            identifier=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Resources/Info.plist")
+        if [[ -d $path && -f $path/Contents/Info.plist ]]; then
+            identifier=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$path/Contents/Info.plist")
+        elif [[ -d $path && -f $path/Resources/Info.plist ]]; then
+            identifier=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$path/Resources/Info.plist")
         else
-            identifier=$(codesign -d --verbose=4 "$1" 2>&1 | sed -n 's/^Identifier=//p')
+            identifier=$(codesign -d --verbose=4 "$path" 2>&1 | sed -n 's/^Identifier=//p')
         fi
 
         if [[ -z $identifier ]]; then
             set_error_color
-            echo "Unable to determine the code signing identifier: '$1'" >&2
+            echo "Unable to determine the code signing identifier: '$path'" >&2
             return 1
         fi
     fi
@@ -91,12 +91,12 @@ do_codesign() {
         --options runtime \
         --sign "$CODE_SIGN_IDENTITY" \
         --identifier "$identifier" \
-        "$1"
+        "$path"
 }
 
 find_code_paths() {
     {
-        find * \
+        find . -mindepth 1 \
             -type d \
             \( \
             -name '*.app' \
@@ -106,14 +106,14 @@ find_code_paths() {
             -o -name '*.xpc' \
             \)
 
-        find * \
+        find . -mindepth 1 \
             -type f \
             \( \
             -name '*.dylib' \
             -o -path '*/bin/*' \
             \)
 
-        find * -type f -perm -111 -print0 | while IFS= read -r -d '' f; do
+        find . -mindepth 1 -type f -perm -111 -print0 | while IFS= read -r -d '' f; do
             if file -b "$f" | grep -q 'Mach-O'; then
                 printf '%s\n' "$f"
             fi
@@ -121,9 +121,27 @@ find_code_paths() {
     } | sort -ru
 }
 
+is_code_bundle() {
+    [[ -d $1 ]] &&
+        { [[ -f $1/Contents/Info.plist ]] || [[ -f $1/Resources/Info.plist ]]; }
+}
+
 if [[ ! -e "$TARGET_PATH" ]]; then
     set_error_color
     echo "Invalid argument: '$TARGET_PATH'"
+    exit 1
+fi
+
+if [[ -z $CODE_SIGN_IDENTITY ]]; then
+    # CI explicitly opts into unsigned artifacts so it can validate the build
+    # without access to signing certificates.
+    if [[ ${PQRS_ORG_ALLOW_MISSING_CODE_SIGN_IDENTITIES:-} == true ]]; then
+        echo "Skip codesign"
+        exit 0
+    fi
+
+    set_error_color
+    echo "A valid code signing identity is required." >&2
     exit 1
 fi
 
@@ -135,7 +153,12 @@ if [[ -d "$TARGET_PATH" ]]; then
     #
 
     cd "$TARGET_PATH"
-    find_code_paths | while IFS= read -r f; do
+    code_paths=()
+    while IFS= read -r f; do
+        code_paths+=("$f")
+    done < <(find_code_paths)
+
+    for f in "${code_paths[@]}"; do
         #
         # output message
         #
@@ -149,17 +172,29 @@ if [[ -d "$TARGET_PATH" ]]; then
         do_codesign "$f"
     done
 
+    # If the specified directory is itself a code bundle, sign it after all
+    # nested code so its resource seal includes the final nested signatures.
+    if is_code_bundle .; then
+        echo "code sign ."
+        do_codesign . "$CODE_SIGN_IDENTIFIER"
+    fi
+
     #
     # Verify nested codesign (--deep)
     #
 
-    find_code_paths | while IFS= read -r f; do
-        run_with_result_color codesign --verify --deep "$f"
-    done
+    if is_code_bundle .; then
+        run_with_result_color codesign --verify --deep --strict .
+    else
+        for f in "${code_paths[@]}"; do
+            run_with_result_color codesign --verify --deep --strict "$f"
+        done
+    fi
 else
     #
     # Sign a file
     #
 
-    do_codesign "$TARGET_PATH"
+    do_codesign "$TARGET_PATH" "$CODE_SIGN_IDENTIFIER"
+    run_with_result_color codesign --verify --strict "$TARGET_PATH"
 fi
