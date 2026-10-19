@@ -2,105 +2,131 @@
     "shared.action.add_item": {
         "en": "Add item"
         ,"ja": "項目を追加"
+        ,"zh-Hans": "添加项目"
     },
     "shared.action.cancel": {
         "en": "Cancel"
         ,"ja": "キャンセル"
+        ,"zh-Hans": "取消"
     },
     "shared.action.clear": {
         "en": "Clear"
         ,"ja": "消去"
+        ,"zh-Hans": "清除"
     },
     "shared.action.copy_to_pasteboard": {
         "en": "Copy to pasteboard"
         ,"ja": "クリップボードにコピー"
+        ,"zh-Hans": "复制到剪贴板"
     },
     "shared.action.dismiss": {
         "en": "Dismiss"
         ,"ja": "閉じる"
+        ,"zh-Hans": "关闭"
     },
     "shared.action.duplicate": {
         "en": "Duplicate"
         ,"ja": "複製"
+        ,"zh-Hans": "创建副本"
     },
     "shared.action.edit": {
         "en": "Edit"
         ,"ja": "編集"
+        ,"zh-Hans": "编辑"
     },
     "shared.action.enable": {
         "en": "Enable"
         ,"ja": "有効にする"
+        ,"zh-Hans": "启用"
     },
     "shared.action.enable_all": {
         "en": "Enable All"
         ,"ja": "すべて有効にする"
+        ,"zh-Hans": "全部启用"
     },
     "shared.action.import": {
         "en": "Import"
         ,"ja": "取り込む"
+        ,"zh-Hans": "导入"
     },
     "shared.action.refresh": {
         "en": "Refresh"
         ,"ja": "更新"
+        ,"zh-Hans": "刷新"
     },
     "shared.action.rename": {
         "en": "Rename"
         ,"ja": "名前を変更"
+        ,"zh-Hans": "重命名"
     },
     "shared.action.save": {
         "en": "Save"
         ,"ja": "保存"
+        ,"zh-Hans": "保存"
     },
     "shared.find": {
         "en": "Find"
         ,"ja": "検索"
+        ,"zh-Hans": "查找"
     },
     "shared.find.next": {
         "en": "Find Next"
         ,"ja": "次を検索"
+        ,"zh-Hans": "查找下一个"
     },
     "shared.find.previous": {
         "en": "Find Previous"
         ,"ja": "前を検索"
+        ,"zh-Hans": "查找上一个"
     },
     "shared.find.show": {
         "en": "Find…"
         ,"ja": "検索…"
+        ,"zh-Hans": "查找…"
     },
     "shared.language.auto": {
         "en": "Auto"
         ,"ja": "自動"
+        ,"zh-Hans": "跟随系统"
     },
     "shared.language.title": {
         "en": "Language"
         ,"ja": "言語"
+        ,"zh-Hans": "语言"
     },
     "shared.section.advanced": {
         "en": "Advanced"
         ,"ja": "詳細"
+        ,"zh-Hans": "高级"
     },
     "shared.status.loading": {
         "en": "Loading..."
         ,"ja": "読み込み中…"
+        ,"zh-Hans": "正在加载…"
     },
     "shared.system_settings.opening": {
         "en": "Opening System Settings"
         ,"ja": "システム設定を開いています"
+        ,"zh-Hans": "正在打开系统设置"
     },
     "shared.validation.number_range": {
         "en": "must be between {lower} and {upper}"
         ,"ja": "{lower}から{upper}の範囲で入力してください"
+        ,"zh-Hans": "必须介于 {lower} 和 {upper} 之间"
     },
     "shared.value.off": {
         "en": "Off"
         ,"ja": "無効"
+        ,"zh-Hans": "关"
     },
     "shared.value.on": {
         "en": "On"
         ,"ja": "有効"
+        ,"zh-Hans": "开"
     },
     "shared.value.unknown": {
         "en": "Unknown"
         ,"ja": "不明"
+        ,"zh-Hans": "未知"
     }
 }
