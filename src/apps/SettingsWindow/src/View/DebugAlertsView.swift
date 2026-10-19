@@ -148,14 +148,14 @@ struct DebugAlertsView: View {
       case .driverVersion: return "settings.setup.driver.restart_required"
       case .driverVersionAdvanced: return "settings.debug.driver_advanced"
       case .setupServices: return "settings.setup.services.permission"
-      case .setupAccessibility: return "settings.setup.accessibility.permission"
+      case .setupAccessibility: return SetupAccessibilityLocalizationKey.permission
       case .setupInputMonitoring: return "settings.setup.input_monitoring.permission"
       case .setupDriver: return "settings.setup.driver.permission"
       case .setupDriverAdvanced: return "settings.debug.setup_driver_advanced"
       case .setupDriverLegacy: return "settings.setup.driver_legacy.permission"
       case .setupDriverLegacyAdvanced: return "settings.debug.setup_driver_legacy_advanced"
       case .setupServicesRequired: return "settings.setup.services_required"
-      case .setupAccessibilityRequired: return "settings.setup.accessibility_required"
+      case .setupAccessibilityRequired: return SetupAccessibilityLocalizationKey.required
       case .setupAgentsOnly: return "settings.debug.setup_agents_only"
       case .setupDaemonsOnly: return "settings.debug.setup_daemons_only"
       case .setupServicesMacOS15: return "settings.debug.setup_services_macos15"

@@ -21,6 +21,10 @@
         "en": "Accessibility access is allowed."
         ,"ja": "アクセシビリティへのアクセスは許可されています。"
     },
+    "settings.setup.completed.device_control_and_data_access": {
+        "en": "Device control and data access are allowed."
+        ,"ja": "デバイスの制御とデータへのアクセスは許可されています。"
+    },
     "settings.setup.completed.driver": {
         "en": "Driver Extension is allowed."
         ,"ja": "ドライバー機能拡張は許可されています。"
@@ -33,6 +37,16 @@
         ,"ja": [
             "入力イベントの取得は許可されています。\n",
             "（アクセシビリティの許可により、取得が許可されている場合もあります。）"
+        ]
+    },
+    "settings.setup.completed.input_monitoring_macos27": {
+        "en": [
+            "Input event capture is allowed.\n",
+            "(It may be granted via Device Control and Data Access permission.)"
+        ]
+        ,"ja": [
+            "入力イベントの取得は許可されています。\n",
+            "（「デバイスの制御とデータへのアクセス」の許可により、取得が許可されている場合もあります。）"
         ]
     },
     "settings.setup.completed.services": {
@@ -94,6 +108,24 @@
     "settings.setup.connection.virtual_hid_waiting": {
         "en": "Waiting for a connection from Karabiner-Core-Service to Karabiner-VirtualHIDDevice-Daemon"
         ,"ja": "Karabiner-Core-ServiceからKarabiner-VirtualHIDDevice-Daemonへの接続を待っています"
+    },
+    "settings.setup.device_control_and_data_access.description": {
+        "en": [
+            "Karabiner-Core-Service requires device control and data access.\n",
+            "Please allow it in System Settings > Privacy & Security > Device Control and Data Access."
+        ]
+        ,"ja": [
+            "Karabiner-Core-Serviceはデバイスの制御とデータへのアクセスを必要とします。\n",
+            "システム設定 > プライバシーとセキュリティ > デバイスの制御とデータへのアクセスで許可してください。"
+        ]
+    },
+    "settings.setup.device_control_and_data_access.permission": {
+        "en": "Please allow device control and data access"
+        ,"ja": "デバイスの制御とデータへのアクセスを許可してください"
+    },
+    "settings.setup.device_control_and_data_access_required": {
+        "en": "Please configure Device Control and Data Access first"
+        ,"ja": "先に「デバイスの制御とデータへのアクセス」を設定してください"
     },
     "settings.setup.driver.activate": {
         "en": "Activate driver"
@@ -285,6 +317,10 @@
         "en": "Accessibility"
         ,"ja": "アクセシビリティ"
     },
+    "settings.setup.item.device_control_and_data_access": {
+        "en": "Device Control and Data Access"
+        ,"ja": "デバイスの制御とデータへのアクセス"
+    },
     "settings.setup.item.driver": {
         "en": "Driver Extension"
         ,"ja": "ドライバー機能拡張"
@@ -334,6 +370,10 @@
         "en": "Go to Accessibility Setup"
         ,"ja": "アクセシビリティの設定に進む"
     },
+    "settings.setup.open_device_control_and_data_access": {
+        "en": "Go to Device Control and Data Access Setup"
+        ,"ja": "「デバイスの制御とデータへのアクセス」の設定に進む"
+    },
     "settings.setup.open_services": {
         "en": "Go to Background Services Setup"
         ,"ja": "バックグラウンドサービスの設定に進む"
@@ -371,6 +411,10 @@
     "settings.setup.system_settings.open": {
         "en": "Open System Settings…"
         ,"ja": "システム設定を開く…"
+    },
+    "settings.setup.system_settings.open_device_control_and_data_access": {
+        "en": "Open Device Control and Data Access Settings…"
+        ,"ja": "「デバイスの制御とデータへのアクセス」の設定を開く…"
     },
     "settings.setup.system_settings.open_extensions": {
         "en": "Open Login Items & Extensions Settings…"

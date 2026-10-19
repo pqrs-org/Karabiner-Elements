@@ -11,7 +11,7 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
   var title: String {
     switch self {
     case .services: return "settings.setup.item.services"
-    case .accessibility: return "settings.setup.item.accessibility"
+    case .accessibility: return SetupAccessibilityLocalizationKey.item
     // Depending on the macOS version, granting Accessibility permission may also allow Input Monitoring.
     // In that case, both requirements are considered completed once Accessibility is granted, so if we call it
     // "Input Monitoring", users may wonder why it is marked as completed even though they did not explicitly
@@ -200,9 +200,9 @@ struct SetupView: View {
     case .services:
       return "settings.setup.completed.services"
     case .accessibility:
-      return "settings.setup.completed.accessibility"
+      return SetupAccessibilityLocalizationKey.completed
     case .inputMonitoring:
-      return "settings.setup.completed.input_monitoring"
+      return SetupAccessibilityLocalizationKey.completedInputMonitoring
     case .driverExtension:
       return "settings.setup.completed.driver"
     }
@@ -249,7 +249,7 @@ struct SetupView: View {
   private func setupAccessibilityFirstView() -> some View {
     VStack(alignment: .leading, spacing: 20.0) {
       AppLocalizedLabel(
-        "settings.setup.accessibility_required",
+        SetupAccessibilityLocalizationKey.required,
         systemImage: "lightbulb"
       )
       .font(.system(size: 24))
@@ -258,7 +258,7 @@ struct SetupView: View {
         selectedItem = .accessibility
       } label: {
         AppLocalizedConstrainedLabel(
-          "settings.setup.open_accessibility",
+          SetupAccessibilityLocalizationKey.openSetup,
           systemImage: "arrow.left.circle.fill"
         )
       }
