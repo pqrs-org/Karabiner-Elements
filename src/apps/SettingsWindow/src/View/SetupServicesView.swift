@@ -20,7 +20,7 @@ struct SetupServicesView: View {
     if let debugLoginItemsImageOverride {
       loginItemsImage = debugLoginItemsImageOverride
     } else if #available(macOS 26.0, *) {
-      loginItemsImage = "login-items-macos26"
+      loginItemsImage = "login-items-macos27"
     } else {
       loginItemsImage = "login-items-macos15"
     }
