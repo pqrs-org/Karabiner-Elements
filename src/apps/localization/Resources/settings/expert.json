@@ -2,14 +2,17 @@
     "settings.expert.cgeventtap_fallback": {
         "en": "CGEventTap fallback"
         ,"ja": "CGEventTapフォールバック"
+        ,"zh-Hans": "CGEventTap 后备方案"
     },
     "settings.expert.delay_milliseconds_before_open_device": {
         "en": "Delay to grab device"
         ,"ja": "デバイスを占有するまでの遅延"
+        ,"zh-Hans": "捕获设备前的延迟"
     },
     "settings.expert.delay_milliseconds_before_sleep_shortcut": {
         "en": "Delay before sending sleep shortcut key-down events"
         ,"ja": "スリープショートカットのキー押下イベントを送信するまでの遅延"
+        ,"zh-Hans": "发送睡眠快捷键按下事件前的延迟"
     },
     "settings.expert.device_delay_warning": {
         "en": [
@@ -21,10 +24,15 @@
             "遅延が短すぎる場合（例：0）、Karabiner-Elementsの終了後にデバイスが使用できなくなります。\n",
             "（macOSの問題です。デバイスを抜き差しすると解消します。）"
         ]
+        ,"zh-Hans": [
+            "设置过短的延迟（例如 0）将导致退出 Karabiner-Elements 后设备不可用。\n",
+            "（这是 macOS 本身的问题，重新插拔设备即可解决。）"
+        ]
     },
     "settings.expert.enable_cgeventtap_fallback": {
         "en": "Enable CGEventTap fallback"
         ,"ja": "CGEventTapフォールバックを有効にする"
+        ,"zh-Hans": "启用 CGEventTap 后备方案"
     },
     "settings.expert.fallback_description": {
         "en": [
@@ -35,6 +43,10 @@
         ,"ja": [
             "この設定を有効にすると、HID入力の取得で処理できないデバイスに対して、",
             "Karabiner-Core-ServiceがCGEventTapを代替手段として使用します。"
+        ]
+        ,"zh-Hans": [
+            "启用此设置后，",
+            "Karabiner-Core-Service 将对无法通过 HID 输入捕获处理的设备使用 CGEventTap 作为后备方案。"
         ]
     },
     "settings.expert.filter_description": {
@@ -50,10 +62,17 @@
             "    - 何も押していなくても高頻度でオン・オフが送信され続けるボタンのイベント。\n",
             "    - スティックを動かしていなくてもランダムな方向の傾きが送信され続けるスティックのイベント。"
         ]
+        ,"zh-Hans": [
+            "启用此设置后，将忽略以下事件：\n",
+            "- Nintendo Switch Pro 控制器（USB 连接）：\n",
+            "    - 按键：因为即使未按下任何按键，也会持续以高频发送开/关事件。\n",
+            "    - 摇杆：因为即使摇杆完全未移动，也会持续发送随机方向的倾斜事件。"
+        ]
     },
     "settings.expert.filter_useless_events_from_specific_devices": {
         "en": "Filter useless events from specific devices"
         ,"ja": "特定のデバイスからの不要なイベントを除外"
+        ,"zh-Hans": "过滤特定设备的无用事件"
     },
     "settings.expert.modifier_order_hint": {
         "en": [
@@ -64,22 +83,30 @@
             "ハードウェアマクロに対応したキーボードで複数のキーを同時に送信したとき、",
             "修飾キーの順序が変わる場合は、この設定をオフにしてみてください。"
         ]
+        ,"zh-Hans": [
+            "如果你的键盘支持硬件宏并能一次发送多个按键，",
+            "且你发现修饰键顺序发生改变，请尝试关闭此设置。"
+        ]
     },
     "settings.expert.modify_pointing_by_default": {
         "en": "Modify events for pointing devices by default"
         ,"ja": "ポインティングデバイスのイベントをデフォルトで変更する"
+        ,"zh-Hans": "默认修改指针设备的事件"
     },
     "settings.expert.options": {
         "en": "Options"
         ,"ja": "オプション"
+        ,"zh-Hans": "选项"
     },
     "settings.expert.pointing_devices": {
         "en": "Pointing devices"
         ,"ja": "ポインティングデバイス"
+        ,"zh-Hans": "指针设备"
     },
     "settings.expert.reorder_same_timestamp_input_events_to_prioritize_modifiers": {
         "en": "Reorder same timestamp input events to prioritize modifiers"
         ,"ja": "同じタイムスタンプの入力イベントを並べ替えて修飾キーを優先"
+        ,"zh-Hans": "重新排序相同时间戳的输入事件以优先处理修饰键"
     },
     "settings.expert.sleep_delay_description": {
         "en": [
@@ -92,18 +119,26 @@
             "（command+option+power、command+option+eject、またはログイン画面でのescape）\n",
             "これにより、キーを離したイベントでMacがすぐにスリープから復帰することを防ぎます。"
         ]
+        ,"zh-Hans": [
+            "Karabiner-Elements 会延迟 macOS 睡眠快捷键的按键按下事件",
+            "（command+option+电源键、command+option+光驱弹出键，或在登录窗口按下 escape）。\n",
+            "这可以防止释放快捷键的事件在睡眠后立即唤醒 Mac。"
+        ]
     },
     "settings.expert.sleep_delay_disabled_hint": {
         "en": "0 disables delay"
         ,"ja": "0で遅延を無効化します"
+        ,"zh-Hans": "设为 0 可禁用延迟"
     },
     "settings.expert.title": {
         "en": "Expert mode"
         ,"ja": "エキスパート向けモード"
+        ,"zh-Hans": "专家模式"
     },
     "settings.expert.unsafe_banner": {
         "en": "The unsafe configuration is enabled, so the safeguard feature is currently inactive."
         ,"ja": "安全でない設定が有効になっているため、保護機能は現在無効です。"
+        ,"zh-Hans": "已启用非安全配置，因此保护机制当前处于未激活状态。"
     },
     "settings.expert.unsafe_description": {
         "en": [
@@ -121,9 +156,17 @@
             "- デバイスタブでApple製ポインティングデバイスを有効にする。\n",
             "- 単純なキー変換タブで左クリックを変更する。"
         ]
+        ,"zh-Hans": [
+            "非安全配置会禁用配置界面上的保护机制。\n",
+            "除非你已准备好从远程设备（例如通过屏幕共享）停止 Karabiner-Elements，否则请勿启用非安全配置。\n\n",
+            "非安全配置允许执行以下操作：\n",
+            "- 允许在“设备”标签页中启用 Apple 指针设备。\n",
+            "- 允许在“简单修改”标签页中修改鼠标左键点击。"
+        ]
     },
     "settings.expert.unsafe_ui": {
         "en": "Allow unsafe configuration"
         ,"ja": "安全保護を無効にした設定を許可"
+        ,"zh-Hans": "允许非安全配置"
     }
 }

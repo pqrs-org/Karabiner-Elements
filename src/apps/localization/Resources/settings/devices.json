@@ -2,193 +2,241 @@
     "settings.devices.address": {
         "en": "Device Address: {address}"
         ,"ja": "デバイスアドレス: {address}"
+        ,"zh-Hans": "设备地址：{address}"
     },
     "settings.devices.all": {
         "en": "For all devices"
         ,"ja": "すべてのデバイス"
+        ,"zh-Hans": "所有设备通用设置"
     },
     "settings.devices.apple_pointing_unsupported": {
         "en": "Apple pointing devices are not supported"
         ,"ja": "Apple製ポインティングデバイスはサポートされていません"
+        ,"zh-Hans": "不支持 Apple 指针设备"
     },
     "settings.devices.caps_lock_led": {
         "en": "Manipulate caps lock LED"
         ,"ja": "caps lock LEDを制御"
+        ,"zh-Hans": "控制大写锁定 (Caps Lock) 指示灯"
     },
     "settings.devices.disable_built_in": {
         "en": "Disable the built-in keyboard while this device is connected"
         ,"ja": "このデバイスの接続中は内蔵キーボードを無効にする"
+        ,"zh-Hans": "当连接此设备时禁用内建键盘"
     },
     "settings.devices.disconnected_count": {
         "en": "There are {count} other settings for devices that are not currently connected"
         ,"ja": "現在接続されていないデバイスの設定がほかに{count}件あります"
+        ,"zh-Hans": "还有 {count} 个当前未连接设备的其他设置"
     },
     "settings.devices.fallback_hint": {
         "en": "Key events from this device are handled via the CGEventTap fallback"
         ,"ja": "このデバイスのキーイベントはCGEventTapフォールバックで処理されます"
+        ,"zh-Hans": "来自此设备的按键事件通过 CGEventTap 后备方案处理"
     },
     "settings.devices.gamepad.continued_interval": {
         "en": "Continued movement interval milliseconds:"
         ,"ja": "移動を継続する間隔（ミリ秒）:"
+        ,"zh-Hans": "持续移动间隔（毫秒）："
     },
     "settings.devices.gamepad.continued_threshold": {
         "en": "Continued movement absolute magnitude threshold:"
         ,"ja": "移動を継続する絶対値のしきい値:"
+        ,"zh-Hans": "持续移动绝对幅度阈值："
     },
     "settings.devices.gamepad.deadzone": {
         "en": "deadzone:"
         ,"ja": "デッドゾーン:"
+        ,"zh-Hans": "死区："
     },
     "settings.devices.gamepad.delta_threshold": {
         "en": "Delta magnitude detection threshold:"
         ,"ja": "変化量の検出しきい値:"
+        ,"zh-Hans": "增量幅度检测阈值："
     },
     "settings.devices.gamepad.horizontal_formula": {
         "en": "horizontal wheel formula"
         ,"ja": "横ホイールの式"
+        ,"zh-Hans": "横向滚轮计算公式"
     },
     "settings.devices.gamepad.invalid_formula": {
         "en": "Invalid formula"
         ,"ja": "無効な式"
+        ,"zh-Hans": "无效公式"
     },
     "settings.devices.gamepad.others": {
         "en": "Others"
         ,"ja": "その他"
+        ,"zh-Hans": "其他"
     },
     "settings.devices.gamepad.reset_formula": {
         "en": "Reset to the default formula"
         ,"ja": "デフォルトの式に戻す"
+        ,"zh-Hans": "恢复为默认公式"
     },
     "settings.devices.gamepad.swap_sticks": {
         "en": "Swap gamepad XY and wheels sticks"
         ,"ja": "ゲームパッドのXYスティックとホイール用スティックを交換"
+        ,"zh-Hans": "交换手柄 XY 摇杆与滚轮摇杆"
     },
     "settings.devices.gamepad.vertical_formula": {
         "en": "vertical wheel formula"
         ,"ja": "縦ホイールの式"
+        ,"zh-Hans": "纵向滚轮计算公式"
     },
     "settings.devices.gamepad.wheels_stick": {
         "en": "Wheels stick"
         ,"ja": "ホイール用スティック"
+        ,"zh-Hans": "滚轮摇杆"
     },
     "settings.devices.gamepad.x_formula": {
         "en": "X formula"
         ,"ja": "X軸の式"
+        ,"zh-Hans": "X 轴计算公式"
     },
     "settings.devices.gamepad.xy_stick": {
         "en": "XY stick"
         ,"ja": "XYスティック"
+        ,"zh-Hans": "XY 摇杆"
     },
     "settings.devices.gamepad.y_formula": {
         "en": "Y formula"
         ,"ja": "Y軸の式"
+        ,"zh-Hans": "Y 轴计算公式"
     },
     "settings.devices.ignore_vendor_events": {
         "en": "Ignore vendor events"
         ,"ja": "ベンダー固有のイベントを無視"
+        ,"zh-Hans": "忽略厂商自定义事件"
     },
     "settings.devices.internal_keyboard_trackpad": {
         "en": "Apple Internal Keyboard / Trackpad"
         ,"ja": "Apple内蔵キーボード / トラックパッド"
+        ,"zh-Hans": "Apple 内建键盘 / 触控板"
     },
     "settings.devices.modify_events": {
         "en": "Modify events"
         ,"ja": "イベントを変更"
+        ,"zh-Hans": "修改事件"
     },
     "settings.devices.mouse.discard_horizontal_wheel": {
         "en": "Discard mouse horizontal wheel"
         ,"ja": "マウスの横ホイールを無視"
+        ,"zh-Hans": "忽略鼠标横向滚轮"
     },
     "settings.devices.mouse.discard_vertical_wheel": {
         "en": "Discard mouse vertical wheel"
         ,"ja": "マウスの縦ホイールを無視"
+        ,"zh-Hans": "忽略鼠标纵向滚轮"
     },
     "settings.devices.mouse.discard_x": {
         "en": "Discard mouse X"
         ,"ja": "マウスのX軸の移動を無視"
+        ,"zh-Hans": "忽略鼠标 X 轴移动"
     },
     "settings.devices.mouse.discard_y": {
         "en": "Discard mouse Y"
         ,"ja": "マウスのY軸の移動を無視"
+        ,"zh-Hans": "忽略鼠标 Y 轴移动"
     },
     "settings.devices.mouse.flags": {
         "en": "Mouse Flags"
         ,"ja": "マウスの動作設定"
+        ,"zh-Hans": "鼠标行为标志"
     },
     "settings.devices.mouse.flip_horizontal_wheel": {
         "en": "Flip mouse horizontal wheel"
         ,"ja": "マウスの横ホイールを反転"
+        ,"zh-Hans": "反转鼠标横向滚轮"
     },
     "settings.devices.mouse.flip_vertical_wheel": {
         "en": "Flip mouse vertical wheel"
         ,"ja": "マウスの縦ホイールを反転"
+        ,"zh-Hans": "反转鼠标纵向滚轮"
     },
     "settings.devices.mouse.flip_x": {
         "en": "Flip mouse X"
         ,"ja": "マウスのX軸を反転"
+        ,"zh-Hans": "反转鼠标 X 轴移动"
     },
     "settings.devices.mouse.flip_y": {
         "en": "Flip mouse Y"
         ,"ja": "マウスのY軸を反転"
+        ,"zh-Hans": "反转鼠标 Y 轴移动"
     },
     "settings.devices.mouse.multiplier": {
         "en": "Multiplier"
         ,"ja": "倍率"
+        ,"zh-Hans": "倍率"
     },
     "settings.devices.mouse.swap_wheels": {
         "en": "Swap mouse wheels"
         ,"ja": "マウスの縦ホイールと横ホイールを交換"
+        ,"zh-Hans": "交换鼠标纵向与横向滚轮"
     },
     "settings.devices.mouse.swap_xy": {
         "en": "Swap mouse X and Y"
         ,"ja": "マウスのX軸とY軸を交換"
+        ,"zh-Hans": "交换鼠标 X 轴与 Y 轴"
     },
     "settings.devices.mouse.wheels_multiplier": {
         "en": "Wheels multiplier:"
         ,"ja": "ホイールの倍率:"
+        ,"zh-Hans": "滚轮倍率："
     },
     "settings.devices.mouse.xy_multiplier": {
         "en": "XY movement multiplier:"
         ,"ja": "XY移動の倍率:"
+        ,"zh-Hans": "XY 移动倍率："
     },
     "settings.devices.no_manufacturer_name": {
         "en": "No manufacturer name"
         ,"ja": "メーカー名なし"
+        ,"zh-Hans": "无制造商名称"
     },
     "settings.devices.no_product_name": {
         "en": "No product name"
         ,"ja": "製品名なし"
+        ,"zh-Hans": "无产品名称"
     },
     "settings.devices.open_gamepad_settings": {
         "en": "Open game pad settings"
         ,"ja": "ゲームパッド設定を開く"
+        ,"zh-Hans": "打开游戏手柄设置"
     },
     "settings.devices.open_mouse_settings": {
         "en": "Open mouse settings"
         ,"ja": "マウス設定を開く"
+        ,"zh-Hans": "打开鼠标设置"
     },
     "settings.devices.product_id": {
         "en": "Product ID: {decimal} ({hex})"
         ,"ja": "製品ID: {decimal}({hex})"
+        ,"zh-Hans": "产品 ID：{decimal} ({hex})"
     },
     "settings.devices.remove_disconnected": {
         "en": "Remove settings for currently disconnected devices ({count})"
         ,"ja": "現在接続されていないデバイスの設定を削除（{count}件）"
+        ,"zh-Hans": "移除当前未连接设备的设置（{count} 项）"
     },
     "settings.devices.swap_iso_keys": {
         "en": "Swap ISO layout-specific keys (e.g., `~ / §± / ^° / ² ↔ \\| / <>)"
         ,"ja": "ISO配列固有のキーを交換（例: `~ / §± / ^° / ² ↔ \\| / <>）"
+        ,"zh-Hans": "交换 ISO 键盘布局特定按键（例如：`~ / §± / ^° / ² ↔ \\| / <>）"
     },
     "settings.devices.treat_as_built_in": {
         "en": "Treat as a built-in keyboard"
         ,"ja": "内蔵キーボードとして扱う"
+        ,"zh-Hans": "视作内建键盘"
     },
     "settings.devices.vendor_events_hint": {
         "en": "It is recommended to enable \"Ignore vendor events\" for non-Apple devices"
         ,"ja": "Apple製以外のデバイスでは「ベンダー固有のイベントを無視」を有効にすることをおすすめします。"
+        ,"zh-Hans": "建议对非 Apple 设备启用“忽略厂商自定义事件”"
     },
     "settings.devices.vendor_id": {
         "en": "Vendor ID: {decimal} ({hex})"
         ,"ja": "ベンダーID: {decimal}({hex})"
+        ,"zh-Hans": "厂商 ID：{decimal} ({hex})"
     }
 }
