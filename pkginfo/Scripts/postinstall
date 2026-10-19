@@ -26,12 +26,17 @@ fi
 # Relaunch launchd-managed processes after all files have been updated
 #
 
-# The v3 Core Service daemon uses a new label. Stop and disable the old job so
-# its cached definition cannot reclaim the Mach service.
-launchctl bootout system/org.pqrs.service.daemon.Karabiner-Core-Service
-launchctl disable system/org.pqrs.service.daemon.Karabiner-Core-Service
+# The v3 daemons use new labels. Stop and disable the old jobs so registrations
+# owned by an older service manager cannot keep running after its app is removed.
+for service_name in \
+    org.pqrs.service.daemon.Karabiner-Core-Service \
+    org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon; do
+    launchctl bootout "system/$service_name"
+    launchctl disable "system/$service_name"
+done
 
 killall Karabiner-Core-Service
+killall Karabiner-VirtualHIDDevice-Daemon
 killall Karabiner-Console-User-Server
 # Karabiner-Elements is the setting window.
 killall Karabiner-Elements

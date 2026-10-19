@@ -12,7 +12,7 @@ enum Subcommand: String {
 
 RunLoop.main.perform {
   let coreDaemonPlistNames = [
-    "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon.plist",
+    "org.pqrs.service.daemon.Karabiner-VirtualHIDDevice-Daemon-v3.plist",
     "org.pqrs.service.daemon.Karabiner-Core-Service-v3.plist",
   ]
 

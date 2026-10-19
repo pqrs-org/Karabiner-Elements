@@ -3,6 +3,62 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
+#
+# Unregister services installed by previous versions while their service
+# manager bundles still exist.
+#
+
+for service_manager in \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons v2.app/Contents/MacOS/Karabiner-Elements Privileged Daemons v2' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons.app/Contents/MacOS/Karabiner-Elements Privileged Daemons'; do
+    if [ -x "$service_manager" ]; then
+        "$service_manager" unregister-core-daemons
+        break
+    fi
+done
+
+#
+# Unload launchd jobs installed by previous versions.
+#
+
+if [ -f /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist ]; then
+    launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist
+fi
+
+if [ -f /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist ]; then
+    launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist
+fi
+
+if [ -f /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist ]; then
+    launchctl bootout system /Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist
+fi
+
+#
+# Remove the legacy VirtualHIDDevice (kext) before uninstall_core.sh removes the
+# directory containing its uninstall script.
+#
+
+if [ -f '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstall-Karabiner-VirtualHIDDevice.sh' ]; then
+    bash '/Library/Application Support/org.pqrs/Karabiner-Elements/scripts/uninstall-Karabiner-VirtualHIDDevice.sh'
+
+    #
+    # Remove '/Library/StagedExtensions/Library/Application Support/org.pqrs/Karabiner-VirtualHIDDevice'
+    #
+
+    kextcache -prune-staging
+fi
+
+#
+# Clear immutable flags used until Karabiner-Elements 14.10.0.
+#
+
+chflags nouchg,noschg /Applications/Karabiner-Elements.app
+chflags nouchg,noschg /Applications/Karabiner-EventViewer.app
+
+#
+# Remove the installed application files.
+#
+
 for uninstall_script in \
     '/Applications/Karabiner-Elements.app/Contents/Resources/uninstall_core.sh' \
     '/Library/Application Support/org.pqrs/Karabiner-Elements/uninstall_core.sh'; do
@@ -11,5 +67,18 @@ for uninstall_script in \
         break
     fi
 done
+
+#
+# Remove launchd property lists installed by previous versions.
+#
+
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_grabber.plist'
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.agent.karabiner_observer.plist'
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist'
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.karabiner_session_monitor.plist'
+rm -f '/Library/LaunchAgents/org.pqrs.karabiner.NotificationWindow.plist'
+rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_grabber.plist'
+rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_kextd.plist'
+rm -f '/Library/LaunchDaemons/org.pqrs.karabiner.karabiner_observer.plist'
 
 exit 0
