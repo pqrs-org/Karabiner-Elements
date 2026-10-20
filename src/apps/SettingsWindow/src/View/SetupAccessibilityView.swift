@@ -1,100 +1,133 @@
 import SwiftUI
 
-enum SetupAccessibilityLocalizationKey {
-  static var completed: String {
+enum SetupAccessibilityPresentation {
+  // Case names indicate the first supported macOS version that uses each presentation.
+  // The image asset may have been captured on a later version with the same layout.
+  case macOS13
+  case macOS27
+
+  static var current: Self {
     if #available(macOS 27.0, *) {
-      "settings.setup.completed.device_control_and_data_access"
+      .macOS27
     } else {
+      .macOS13
+    }
+  }
+
+  var completedLocalizationKey: String {
+    switch self {
+    case .macOS27:
+      "settings.setup.completed.device_control_and_data_access"
+    case .macOS13:
       "settings.setup.completed.accessibility"
     }
   }
 
-  static var completedInputMonitoring: String {
-    if #available(macOS 27.0, *) {
+  var completedInputMonitoringLocalizationKey: String {
+    switch self {
+    case .macOS27:
       "settings.setup.completed.input_monitoring_macos27"
-    } else {
+    case .macOS13:
       "settings.setup.completed.input_monitoring"
     }
   }
 
-  static var description: String {
-    if #available(macOS 27.0, *) {
+  var descriptionLocalizationKey: String {
+    switch self {
+    case .macOS27:
       "settings.setup.device_control_and_data_access.description"
-    } else {
+    case .macOS13:
       "settings.setup.accessibility.description"
     }
   }
 
-  static var item: String {
-    if #available(macOS 27.0, *) {
+  var imageName: String {
+    switch self {
+    case .macOS27:
+      "device-control-and-data-access"
+    case .macOS13:
+      "accessibility-macos26"
+    }
+  }
+
+  var itemLocalizationKey: String {
+    switch self {
+    case .macOS27:
       "settings.setup.item.device_control_and_data_access"
-    } else {
+    case .macOS13:
       "settings.setup.item.accessibility"
     }
   }
 
-  static var openSetup: String {
-    if #available(macOS 27.0, *) {
+  var openSetupLocalizationKey: String {
+    switch self {
+    case .macOS27:
       "settings.setup.open_device_control_and_data_access"
-    } else {
+    case .macOS13:
       "settings.setup.open_accessibility"
     }
   }
 
-  static var permission: String {
-    if #available(macOS 27.0, *) {
+  var openSystemSettingsLocalizationKey: String {
+    switch self {
+    case .macOS27:
+      "settings.setup.system_settings.open_device_control_and_data_access"
+    case .macOS13:
+      "settings.setup.system_settings.open_privacy"
+    }
+  }
+
+  var permissionLocalizationKey: String {
+    switch self {
+    case .macOS27:
       "settings.setup.device_control_and_data_access.permission"
-    } else {
+    case .macOS13:
       "settings.setup.accessibility.permission"
     }
   }
 
-  static var required: String {
-    if #available(macOS 27.0, *) {
+  var requiredLocalizationKey: String {
+    switch self {
+    case .macOS27:
       "settings.setup.device_control_and_data_access_required"
-    } else {
+    case .macOS13:
       "settings.setup.accessibility_required"
     }
   }
 }
 
 struct SetupAccessibilityView: View {
-  private let accessibilityImage: String
-  private let openSystemSettingsLocalizationKey: String
+  private let presentation: SetupAccessibilityPresentation
 
-  init(showsCloseButton: Bool = false) {
-    if #available(macOS 27.0, *) {
-      accessibilityImage = "device-control-and-data-access"
-      openSystemSettingsLocalizationKey =
-        "settings.setup.system_settings.open_device_control_and_data_access"
-    } else {
-      accessibilityImage = "accessibility-macos26"
-      openSystemSettingsLocalizationKey = "settings.setup.system_settings.open_privacy"
-    }
+  init(
+    showsCloseButton: Bool = false,
+    presentation: SetupAccessibilityPresentation = .current
+  ) {
+    self.presentation = presentation
   }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 20.0) {
       AppLocalizedLabel(
-        SetupAccessibilityLocalizationKey.permission,
+        presentation.permissionLocalizationKey,
         systemImage: "lightbulb"
       )
       .font(.system(size: 24))
 
       AppLocalizedText(
-        SetupAccessibilityLocalizationKey.description
+        presentation.descriptionLocalizationKey
       )
 
       OpenSystemSettingsButton(
         url: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
         label: {
           AppLocalizedConstrainedLabel(
-            openSystemSettingsLocalizationKey,
+            presentation.openSystemSettingsLocalizationKey,
             systemImage: "arrow.forward.circle.fill")
         }
       )
 
-      Image(decorative: accessibilityImage)
+      Image(decorative: presentation.imageName)
         .resizable()
         .scaledToFit()
         .border(Color.gray, width: 1)

@@ -58,19 +58,26 @@ struct DebugAlertsView: View {
     // .setup
     //
     case setupServices
-    case setupAccessibility
+    case setupAccessibilityMacOS13
+    case setupAccessibilityMacOS27
+    case setupAccessibilityCompletedMacOS13
+    case setupAccessibilityCompletedMacOS27
     case setupInputMonitoring
-    case setupDriver
-    case setupDriverAdvanced
-    case setupDriverLegacy
-    case setupDriverLegacyAdvanced
-    case setupServicesRequired
-    case setupAccessibilityRequired
-    case setupAgentsOnly
-    case setupDaemonsOnly
-    case setupServicesMacOS15
+    case setupInputMonitoringCompletedMacOS13
+    case setupInputMonitoringCompletedMacOS27
+    case setupDriverMacOS13
+    case setupDriverMacOS13Advanced
     case setupDriverMacOS15
     case setupDriverMacOS15Advanced
+    case setupDriverMacOS26
+    case setupDriverMacOS26Advanced
+    case setupServicesRequired
+    case setupAccessibilityRequiredMacOS13
+    case setupAccessibilityRequiredMacOS27
+    case setupAgentsOnly
+    case setupDaemonsOnly
+    case setupServicesMacOS13
+    case setupServicesMacOS26
     //
     // .notifications
     //
@@ -87,10 +94,16 @@ struct DebugAlertsView: View {
         return .services
       case .virtualHidWaiting, .driverWaiting, .driverVersion, .driverVersionAdvanced:
         return .driver
-      case .setupServices, .setupAccessibility, .setupInputMonitoring,
-        .setupDriver, .setupDriverAdvanced, .setupDriverLegacy, .setupDriverLegacyAdvanced,
-        .setupServicesRequired, .setupAccessibilityRequired, .setupAgentsOnly, .setupDaemonsOnly,
-        .setupServicesMacOS15, .setupDriverMacOS15, .setupDriverMacOS15Advanced:
+      case .setupServices, .setupAccessibilityMacOS13, .setupAccessibilityMacOS27,
+        .setupAccessibilityCompletedMacOS13, .setupAccessibilityCompletedMacOS27,
+        .setupInputMonitoring, .setupInputMonitoringCompletedMacOS13,
+        .setupInputMonitoringCompletedMacOS27,
+        .setupDriverMacOS13, .setupDriverMacOS13Advanced,
+        .setupDriverMacOS15, .setupDriverMacOS15Advanced,
+        .setupDriverMacOS26, .setupDriverMacOS26Advanced,
+        .setupServicesRequired, .setupAccessibilityRequiredMacOS13,
+        .setupAccessibilityRequiredMacOS27, .setupAgentsOnly, .setupDaemonsOnly,
+        .setupServicesMacOS13, .setupServicesMacOS26:
         return .setup
       case .profileChangedToast, .rulesChangedToast:
         return .notifications
@@ -104,31 +117,86 @@ struct DebugAlertsView: View {
     var setup: SetupPreview? {
       switch self {
       case .setupServices: return SetupPreview(debugItem: .services)
-      case .setupAccessibility: return SetupPreview(debugItem: .accessibility)
-      case .setupInputMonitoring: return SetupPreview(debugItem: .inputMonitoring)
-      case .setupDriver: return SetupPreview(debugItem: .driverExtension)
-      case .setupDriverAdvanced:
-        return SetupPreview(debugItem: .driverExtension, debugShowingAdvanced: true)
-      case .setupDriverLegacy:
-        return SetupPreview(debugItem: .driverExtension, debugLegacyDriver: true)
-      case .setupDriverLegacyAdvanced:
+      case .setupAccessibilityMacOS13:
         return SetupPreview(
-          debugItem: .driverExtension, debugShowingAdvanced: true, debugLegacyDriver: true)
+          debugItem: .accessibility,
+          debugAccessibilityPresentation: .macOS13)
+      case .setupAccessibilityMacOS27:
+        return SetupPreview(
+          debugItem: .accessibility,
+          debugAccessibilityPresentation: .macOS27)
+      case .setupAccessibilityCompletedMacOS13:
+        return SetupPreview(
+          debugItem: .accessibility,
+          debugCompleted: true,
+          debugAccessibilityPresentation: .macOS13)
+      case .setupAccessibilityCompletedMacOS27:
+        return SetupPreview(
+          debugItem: .accessibility,
+          debugCompleted: true,
+          debugAccessibilityPresentation: .macOS27)
+      case .setupInputMonitoring: return SetupPreview(debugItem: .inputMonitoring)
+      case .setupInputMonitoringCompletedMacOS13:
+        return SetupPreview(
+          debugItem: .inputMonitoring,
+          debugCompleted: true,
+          debugAccessibilityPresentation: .macOS13)
+      case .setupInputMonitoringCompletedMacOS27:
+        return SetupPreview(
+          debugItem: .inputMonitoring,
+          debugCompleted: true,
+          debugAccessibilityPresentation: .macOS27)
+      case .setupDriverMacOS13:
+        return SetupPreview(
+          debugItem: .driverExtension,
+          debugDriverPresentation: .macOS13)
+      case .setupDriverMacOS13Advanced:
+        return SetupPreview(
+          debugItem: .driverExtension,
+          debugShowingAdvanced: true,
+          debugDriverPresentation: .macOS13)
+      case .setupDriverMacOS15:
+        return SetupPreview(
+          debugItem: .driverExtension,
+          debugDriverPresentation: .macOS15)
+      case .setupDriverMacOS15Advanced:
+        return SetupPreview(
+          debugItem: .driverExtension,
+          debugShowingAdvanced: true,
+          debugDriverPresentation: .macOS15)
+      case .setupDriverMacOS26:
+        return SetupPreview(
+          debugItem: .driverExtension,
+          debugDriverPresentation: .macOS26)
+      case .setupDriverMacOS26Advanced:
+        return SetupPreview(
+          debugItem: .driverExtension,
+          debugShowingAdvanced: true,
+          debugDriverPresentation: .macOS26)
       case .setupServicesRequired:
         return SetupPreview(debugItem: .accessibility, debugWaitingForPrerequisite: true)
-      case .setupAccessibilityRequired:
-        return SetupPreview(debugItem: .inputMonitoring, debugWaitingForPrerequisite: true)
+      case .setupAccessibilityRequiredMacOS13:
+        return SetupPreview(
+          debugItem: .inputMonitoring,
+          debugWaitingForPrerequisite: true,
+          debugAccessibilityPresentation: .macOS13)
+      case .setupAccessibilityRequiredMacOS27:
+        return SetupPreview(
+          debugItem: .inputMonitoring,
+          debugWaitingForPrerequisite: true,
+          debugAccessibilityPresentation: .macOS27)
       case .setupAgentsOnly:
         return SetupPreview(debugItem: .services, debugAgentsEnabled: true)
       case .setupDaemonsOnly:
         return SetupPreview(debugItem: .services, debugDaemonsEnabled: true)
-      case .setupServicesMacOS15:
-        return SetupPreview(debugItem: .services, debugMacOS15Images: true)
-      case .setupDriverMacOS15:
-        return SetupPreview(debugItem: .driverExtension, debugMacOS15Images: true)
-      case .setupDriverMacOS15Advanced:
+      case .setupServicesMacOS13:
         return SetupPreview(
-          debugItem: .driverExtension, debugShowingAdvanced: true, debugMacOS15Images: true)
+          debugItem: .services,
+          debugServicesPresentation: .macOS13)
+      case .setupServicesMacOS26:
+        return SetupPreview(
+          debugItem: .services,
+          debugServicesPresentation: .macOS26)
       default: return nil
       }
     }
@@ -148,21 +216,59 @@ struct DebugAlertsView: View {
       case .driverVersion: return "settings.setup.driver.restart_required"
       case .driverVersionAdvanced: return "settings.debug.driver_advanced"
       case .setupServices: return "settings.setup.services.permission"
-      case .setupAccessibility: return SetupAccessibilityLocalizationKey.permission
+      case .setupAccessibilityMacOS13:
+        return SetupAccessibilityPresentation.macOS13.permissionLocalizationKey
+      case .setupAccessibilityMacOS27:
+        return SetupAccessibilityPresentation.macOS27.permissionLocalizationKey
+      case .setupAccessibilityCompletedMacOS13:
+        return SetupAccessibilityPresentation.macOS13.completedLocalizationKey
+      case .setupAccessibilityCompletedMacOS27:
+        return SetupAccessibilityPresentation.macOS27.completedLocalizationKey
       case .setupInputMonitoring: return "settings.setup.input_monitoring.permission"
-      case .setupDriver: return "settings.setup.driver.permission"
-      case .setupDriverAdvanced: return "settings.debug.setup_driver_advanced"
-      case .setupDriverLegacy: return "settings.setup.driver_legacy.permission"
-      case .setupDriverLegacyAdvanced: return "settings.debug.setup_driver_legacy_advanced"
+      case .setupInputMonitoringCompletedMacOS13:
+        return SetupAccessibilityPresentation.macOS13.completedInputMonitoringLocalizationKey
+      case .setupInputMonitoringCompletedMacOS27:
+        return SetupAccessibilityPresentation.macOS27.completedInputMonitoringLocalizationKey
+      case .setupDriverMacOS13: return "settings.setup.driver_legacy.permission"
+      case .setupDriverMacOS13Advanced: return "settings.debug.setup_driver_advanced"
+      case .setupDriverMacOS15: return "settings.setup.driver.permission"
+      case .setupDriverMacOS15Advanced: return "settings.debug.setup_driver_advanced"
+      case .setupDriverMacOS26: return "settings.setup.driver.permission"
+      case .setupDriverMacOS26Advanced: return "settings.debug.setup_driver_advanced"
       case .setupServicesRequired: return "settings.setup.services_required"
-      case .setupAccessibilityRequired: return SetupAccessibilityLocalizationKey.required
+      case .setupAccessibilityRequiredMacOS13:
+        return SetupAccessibilityPresentation.macOS13.requiredLocalizationKey
+      case .setupAccessibilityRequiredMacOS27:
+        return SetupAccessibilityPresentation.macOS27.requiredLocalizationKey
       case .setupAgentsOnly: return "settings.debug.setup_agents_only"
       case .setupDaemonsOnly: return "settings.debug.setup_daemons_only"
-      case .setupServicesMacOS15: return "settings.debug.setup_services_macos15"
-      case .setupDriverMacOS15: return "settings.debug.setup_driver_macos15"
-      case .setupDriverMacOS15Advanced: return "settings.debug.setup_driver_macos15_advanced"
+      case .setupServicesMacOS13, .setupServicesMacOS26:
+        return "settings.setup.services.permission"
       case .profileChangedToast: return "settings.complex_modifications.editor.profile_changed"
       case .rulesChangedToast: return "settings.complex_modifications.editor.rules_changed"
+      }
+    }
+
+    var macOSVersionRange: String? {
+      switch self {
+      case .setupAccessibilityMacOS13, .setupAccessibilityCompletedMacOS13,
+        .setupInputMonitoringCompletedMacOS13, .setupAccessibilityRequiredMacOS13:
+        "macOS 13–26"
+      case .setupDriverMacOS13, .setupDriverMacOS13Advanced:
+        "macOS 13–14"
+      case .setupServicesMacOS13:
+        "macOS 13–25"
+      case .setupDriverMacOS15, .setupDriverMacOS15Advanced:
+        "macOS 15–25"
+      case .setupDriverMacOS26, .setupDriverMacOS26Advanced:
+        "macOS 26+"
+      case .setupServicesMacOS26:
+        "macOS 26+"
+      case .setupAccessibilityMacOS27, .setupAccessibilityCompletedMacOS27,
+        .setupInputMonitoringCompletedMacOS27, .setupAccessibilityRequiredMacOS27:
+        "macOS 27+"
+      default:
+        nil
       }
     }
   }
@@ -238,8 +344,13 @@ struct DebugAlertsView: View {
         viewedAlerts.insert(alert)
         preview.alert = alert
       } label: {
-        AppLocalizedConstrainedText(alert.title)
-          .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(spacing: 0) {
+          AppLocalizedConstrainedText(alert.title)
+          if let macOSVersionRange = alert.macOSVersionRange {
+            Text(verbatim: " (\(macOSVersionRange))")
+          }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
     }
   }
@@ -285,10 +396,16 @@ struct DebugAlertsView: View {
       DriverVersionMismatchedAlertView()
     case .driverVersionAdvanced:
       DriverVersionMismatchedAlertView(showingAdvanced: true)
-    case .setupServices, .setupAccessibility, .setupInputMonitoring,
-      .setupDriver, .setupDriverAdvanced, .setupDriverLegacy, .setupDriverLegacyAdvanced,
-      .setupServicesRequired, .setupAccessibilityRequired, .setupAgentsOnly, .setupDaemonsOnly,
-      .setupServicesMacOS15, .setupDriverMacOS15, .setupDriverMacOS15Advanced,
+    case .setupServices, .setupAccessibilityMacOS13, .setupAccessibilityMacOS27,
+      .setupAccessibilityCompletedMacOS13, .setupAccessibilityCompletedMacOS27,
+      .setupInputMonitoring, .setupInputMonitoringCompletedMacOS13,
+      .setupInputMonitoringCompletedMacOS27,
+      .setupDriverMacOS13, .setupDriverMacOS13Advanced,
+      .setupDriverMacOS15, .setupDriverMacOS15Advanced,
+      .setupDriverMacOS26, .setupDriverMacOS26Advanced,
+      .setupServicesRequired, .setupAccessibilityRequiredMacOS13,
+      .setupAccessibilityRequiredMacOS27, .setupAgentsOnly, .setupDaemonsOnly,
+      .setupServicesMacOS13, .setupServicesMacOS26,
       .profileChangedToast, .rulesChangedToast:
       EmptyView()  // Setup and toast previews use their normal presentation instead.
     }

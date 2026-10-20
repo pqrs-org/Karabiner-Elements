@@ -1,19 +1,45 @@
 import SwiftUI
 
+enum SetupDriverPresentation {
+  // Case names indicate the first supported macOS version that uses each presentation.
+  // The image asset may have been captured on a later version with the same layout.
+  case macOS13
+  case macOS15
+  case macOS26
+
+  static var current: Self {
+    if #available(macOS 26.0, *) {
+      .macOS26
+    } else if #available(macOS 15.0, *) {
+      .macOS15
+    } else {
+      .macOS13
+    }
+  }
+
+  var imageName: String {
+    switch self {
+    case .macOS13:
+      "dext-allow-macos14"
+    case .macOS15:
+      "driver-extensions-macos15"
+    case .macOS26:
+      "driver-extensions-macos26"
+    }
+  }
+}
+
 struct SetupDriverExtensionView: View {
   @State private var showingAdvanced = false
 
   private let driverExtensionsImage: String
 
-  init(showingAdvanced: Bool = false, debugDriverExtensionsImageOverride: String? = nil) {
+  init(
+    showingAdvanced: Bool = false,
+    presentation: SetupDriverPresentation = .current
+  ) {
     _showingAdvanced = State(initialValue: showingAdvanced)
-    if let debugDriverExtensionsImageOverride {
-      driverExtensionsImage = debugDriverExtensionsImageOverride
-    } else if #available(macOS 26.0, *) {
-      driverExtensionsImage = "driver-extensions-macos26"
-    } else {
-      driverExtensionsImage = "driver-extensions-macos15"
-    }
+    driverExtensionsImage = presentation.imageName
   }
 
   var body: some View {

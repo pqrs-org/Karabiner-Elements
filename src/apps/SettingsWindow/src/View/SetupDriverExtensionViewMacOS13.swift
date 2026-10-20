@@ -1,11 +1,16 @@
 import SwiftUI
 
 // For macOS 13, macOS 14
-struct SetupDriverExtensionViewMacOS14: View {
+struct SetupDriverExtensionViewMacOS13: View {
   @State private var showingAdvanced = false
+  private let driverExtensionImage: String
 
-  init(showingAdvanced: Bool = false) {
+  init(
+    showingAdvanced: Bool = false,
+    presentation: SetupDriverPresentation = .macOS13
+  ) {
     _showingAdvanced = State(initialValue: showingAdvanced)
+    driverExtensionImage = presentation.imageName
   }
 
   var body: some View {
@@ -34,7 +39,7 @@ struct SetupDriverExtensionViewMacOS14: View {
             }
           )
 
-          Image(decorative: "dext-allow-macos14")
+          Image(decorative: driverExtensionImage)
             .resizable()
             .scaledToFit()
             .frame(height: 300)

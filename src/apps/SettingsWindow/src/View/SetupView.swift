@@ -8,10 +8,10 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
 
   var id: Self { self }
 
-  var title: String {
+  func title(accessibilityPresentation: SetupAccessibilityPresentation) -> String {
     switch self {
     case .services: return "settings.setup.item.services"
-    case .accessibility: return SetupAccessibilityLocalizationKey.item
+    case .accessibility: return accessibilityPresentation.itemLocalizationKey
     // Depending on the macOS version, granting Accessibility permission may also allow Input Monitoring.
     // In that case, both requirements are considered completed once Accessibility is granted, so if we call it
     // "Input Monitoring", users may wonder why it is marked as completed even though they did not explicitly
@@ -40,29 +40,35 @@ enum SetupItem: String, CaseIterable, Identifiable, Hashable {
 
 struct SetupPreview {
   let debugItem: SetupItem
+  let debugCompleted: Bool
   let debugShowingAdvanced: Bool
-  let debugLegacyDriver: Bool
   let debugWaitingForPrerequisite: Bool
   let debugAgentsEnabled: Bool
   let debugDaemonsEnabled: Bool
-  let debugMacOS15Images: Bool
+  let debugServicesPresentation: SetupServicesPresentation?
+  let debugDriverPresentation: SetupDriverPresentation?
+  let debugAccessibilityPresentation: SetupAccessibilityPresentation?
 
   init(
     debugItem: SetupItem,
+    debugCompleted: Bool = false,
     debugShowingAdvanced: Bool = false,
-    debugLegacyDriver: Bool = false,
     debugWaitingForPrerequisite: Bool = false,
     debugAgentsEnabled: Bool = false,
     debugDaemonsEnabled: Bool = false,
-    debugMacOS15Images: Bool = false
+    debugServicesPresentation: SetupServicesPresentation? = nil,
+    debugDriverPresentation: SetupDriverPresentation? = nil,
+    debugAccessibilityPresentation: SetupAccessibilityPresentation? = nil
   ) {
     self.debugItem = debugItem
+    self.debugCompleted = debugCompleted
     self.debugShowingAdvanced = debugShowingAdvanced
-    self.debugLegacyDriver = debugLegacyDriver
     self.debugWaitingForPrerequisite = debugWaitingForPrerequisite
     self.debugAgentsEnabled = debugAgentsEnabled
     self.debugDaemonsEnabled = debugDaemonsEnabled
-    self.debugMacOS15Images = debugMacOS15Images
+    self.debugServicesPresentation = debugServicesPresentation
+    self.debugDriverPresentation = debugDriverPresentation
+    self.debugAccessibilityPresentation = debugAccessibilityPresentation
   }
 }
 
@@ -79,7 +85,23 @@ struct SetupView: View {
   }
 
   private func itemCompleted(_ item: SetupItem) -> Bool {
-    debugPreview == nil && contentViewStates.setupItemCompleted(item)
+    if let debugPreview {
+      return debugPreview.debugCompleted && item == debugPreview.debugItem
+    }
+
+    return contentViewStates.setupItemCompleted(item)
+  }
+
+  private var accessibilityPresentation: SetupAccessibilityPresentation {
+    debugPreview?.debugAccessibilityPresentation ?? .current
+  }
+
+  private var servicesPresentation: SetupServicesPresentation {
+    debugPreview?.debugServicesPresentation ?? .current
+  }
+
+  private var driverPresentation: SetupDriverPresentation {
+    debugPreview?.debugDriverPresentation ?? .current
   }
 
   var body: some View {
@@ -87,7 +109,7 @@ struct SetupView: View {
       List(SetupItem.allCases, selection: $selectedItem) { item in
         Label(
           title: {
-            AppLocalizedText(item.title)
+            AppLocalizedText(item.title(accessibilityPresentation: accessibilityPresentation))
               .lineLimit(nil)
           },
           icon: {
@@ -118,13 +140,12 @@ struct SetupView: View {
                   : LocalServicesGuidanceContext(
                     coreDaemonsEnabled: debugPreview?.debugDaemonsEnabled,
                     coreAgentsEnabled: debugPreview?.debugAgentsEnabled),
-                debugLoginItemsImageOverride: debugPreview?.debugMacOS15Images == true
-                  ? "login-items-macos15" : nil)
+                presentation: servicesPresentation)
             case .accessibility:
               if setupItemWaitingForAnotherSetup(.accessibility) {
                 setupServicesFirstView()
               } else {
-                SetupAccessibilityView()
+                SetupAccessibilityView(presentation: accessibilityPresentation)
               }
             case .inputMonitoring:
               if setupItemWaitingForAnotherSetup(.inputMonitoring) {
@@ -136,17 +157,14 @@ struct SetupView: View {
               if setupItemWaitingForAnotherSetup(.driverExtension) {
                 setupServicesFirstView()
               } else {
-                if debugPreview?.debugLegacyDriver == true {
-                  SetupDriverExtensionViewMacOS14(
-                    showingAdvanced: debugPreview?.debugShowingAdvanced ?? false)
-                } else if #available(macOS 15.0, *) {
+                if driverPresentation == .macOS13 {
+                  SetupDriverExtensionViewMacOS13(
+                    showingAdvanced: debugPreview?.debugShowingAdvanced ?? false,
+                    presentation: driverPresentation)
+                } else {
                   SetupDriverExtensionView(
                     showingAdvanced: debugPreview?.debugShowingAdvanced ?? false,
-                    debugDriverExtensionsImageOverride: debugPreview?.debugMacOS15Images == true
-                      ? "driver-extensions-macos15" : nil)
-                } else {
-                  SetupDriverExtensionViewMacOS14(
-                    showingAdvanced: debugPreview?.debugShowingAdvanced ?? false)
+                    presentation: driverPresentation)
                 }
               }
             }
@@ -200,9 +218,9 @@ struct SetupView: View {
     case .services:
       return "settings.setup.completed.services"
     case .accessibility:
-      return SetupAccessibilityLocalizationKey.completed
+      return accessibilityPresentation.completedLocalizationKey
     case .inputMonitoring:
-      return SetupAccessibilityLocalizationKey.completedInputMonitoring
+      return accessibilityPresentation.completedInputMonitoringLocalizationKey
     case .driverExtension:
       return "settings.setup.completed.driver"
     }
@@ -249,7 +267,7 @@ struct SetupView: View {
   private func setupAccessibilityFirstView() -> some View {
     VStack(alignment: .leading, spacing: 20.0) {
       AppLocalizedLabel(
-        SetupAccessibilityLocalizationKey.required,
+        accessibilityPresentation.requiredLocalizationKey,
         systemImage: "lightbulb"
       )
       .font(.system(size: 24))
@@ -258,7 +276,7 @@ struct SetupView: View {
         selectedItem = .accessibility
       } label: {
         AppLocalizedConstrainedLabel(
-          SetupAccessibilityLocalizationKey.openSetup,
+          accessibilityPresentation.openSetupLocalizationKey,
           systemImage: "arrow.left.circle.fill"
         )
       }

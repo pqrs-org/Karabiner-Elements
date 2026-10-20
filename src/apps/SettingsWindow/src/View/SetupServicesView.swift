@@ -1,6 +1,30 @@
 import ServiceManagement
 import SwiftUI
 
+enum SetupServicesPresentation {
+  // Case names indicate the first supported macOS version that uses each presentation.
+  // The image asset may have been captured on a later version with the same layout.
+  case macOS13
+  case macOS26
+
+  static var current: Self {
+    if #available(macOS 26.0, *) {
+      .macOS26
+    } else {
+      .macOS13
+    }
+  }
+
+  var imageName: String {
+    switch self {
+    case .macOS13:
+      "login-items-macos15"
+    case .macOS26:
+      "login-items-macos27"
+    }
+  }
+}
+
 struct SetupServicesView: View {
   @ObservedObject private var contentViewStates = ContentViewStates.shared
 
@@ -14,16 +38,10 @@ struct SetupServicesView: View {
 
   init(
     debugGuidanceContextOverride: LocalServicesGuidanceContext? = nil,
-    debugLoginItemsImageOverride: String? = nil
+    presentation: SetupServicesPresentation = .current
   ) {
     self.debugGuidanceContextOverride = debugGuidanceContextOverride
-    if let debugLoginItemsImageOverride {
-      loginItemsImage = debugLoginItemsImageOverride
-    } else if #available(macOS 26.0, *) {
-      loginItemsImage = "login-items-macos27"
-    } else {
-      loginItemsImage = "login-items-macos15"
-    }
+    loginItemsImage = presentation.imageName
   }
 
   var body: some View {
