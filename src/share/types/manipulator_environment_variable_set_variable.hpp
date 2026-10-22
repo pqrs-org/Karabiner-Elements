@@ -175,13 +175,21 @@ namespace std {
 template <>
 struct hash<krbn::manipulator_environment_variable_set_variable> final {
   std::size_t operator()(const krbn::manipulator_environment_variable_set_variable& value) const {
+    // Hash expressions by their string, consistent with exprtk_utility::compare used in operator==.
+    auto expression_string = [](const std::shared_ptr<krbn::exprtk_utility::expression_wrapper>& e) -> std::optional<std::string> {
+      if (e) {
+        return e->get_expression_string();
+      }
+      return std::nullopt;
+    };
+
     std::size_t h = 0;
 
     pqrs::hash::combine(h, value.get_name());
     pqrs::hash::combine(h, value.get_value());
-    pqrs::hash::combine(h, value.get_expression());
+    pqrs::hash::combine(h, expression_string(value.get_expression()));
     pqrs::hash::combine(h, value.get_key_up_value());
-    pqrs::hash::combine(h, value.get_key_up_expression());
+    pqrs::hash::combine(h, expression_string(value.get_key_up_expression()));
     pqrs::hash::combine(h, value.get_type());
 
     return h;

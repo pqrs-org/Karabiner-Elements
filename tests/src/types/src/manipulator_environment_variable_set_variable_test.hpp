@@ -79,6 +79,17 @@ void run_manipulator_environment_variable_set_variable_test() {
     expect(expression_key_up_only != full);
     expect(unset != full);
 
+    {
+      // Equal objects must have equal hashes, even when the expressions are separately compiled.
+      t expression_full_copy("n",
+                             std::nullopt,
+                             krbn::exprtk_utility::compile("system.now.milliseconds"),
+                             std::nullopt,
+                             krbn::exprtk_utility::compile("system.now.milliseconds + 1000"));
+      expect(expression_full == expression_full_copy);
+      expect(std::hash<t>{}(expression_full) == std::hash<t>{}(expression_full_copy));
+    }
+
     expect(nlohmann::json::object({{"type", "set"}}) == nlohmann::json(empty));
     expect(nlohmann::json::object({
                {"name", "n"},
