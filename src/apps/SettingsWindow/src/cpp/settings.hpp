@@ -74,12 +74,14 @@ void krbn_services_bootout_and_disable_old_agents(void);
 void krbn_services_restart_console_user_server_agent(void);
 void krbn_services_unregister_all_agents(void);
 typedef enum {
-  krbn_service_enabled_state_unknown,
-  krbn_service_enabled_state_disabled,
-  krbn_service_enabled_state_enabled,
-} krbn_service_enabled_state;
-krbn_service_enabled_state krbn_services_daemons_enabled(void);
-krbn_service_enabled_state krbn_services_agents_enabled(void);
+  krbn_service_state_unknown,
+  krbn_service_state_false,
+  krbn_service_state_true,
+} krbn_service_state;
+krbn_service_state krbn_services_daemons_enabled(void);
+krbn_service_state krbn_services_agents_enabled(void);
+krbn_service_state krbn_services_daemons_running(void);
+krbn_service_state krbn_services_agents_running(void);
 
 void krbn_updater_check_for_updates_stable_only(void);
 void krbn_updater_check_for_updates_with_beta_version(void);

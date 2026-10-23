@@ -169,18 +169,30 @@ void krbn_services_unregister_all_agents() {
   krbn::services_utility::unregister_all_agents();
 }
 
-krbn_service_enabled_state krbn_services_daemons_enabled() {
-  if (auto enabled = krbn::services_utility::core_daemons_enabled()) {
-    return *enabled ? krbn_service_enabled_state_enabled : krbn_service_enabled_state_disabled;
+namespace {
+krbn_service_state make_service_state(const std::optional<bool>& value) {
+  if (value.has_value()) {
+    return *value ? krbn_service_state_true : krbn_service_state_false;
   }
-  return krbn_service_enabled_state_unknown;
+
+  return krbn_service_state_unknown;
+}
+} // namespace
+
+krbn_service_state krbn_services_daemons_enabled() {
+  return make_service_state(krbn::services_utility::core_daemons_enabled());
 }
 
-krbn_service_enabled_state krbn_services_agents_enabled() {
-  if (auto enabled = krbn::services_utility::core_agents_enabled()) {
-    return *enabled ? krbn_service_enabled_state_enabled : krbn_service_enabled_state_disabled;
-  }
-  return krbn_service_enabled_state_unknown;
+krbn_service_state krbn_services_agents_enabled() {
+  return make_service_state(krbn::services_utility::core_agents_enabled());
+}
+
+krbn_service_state krbn_services_daemons_running() {
+  return make_service_state(krbn::services_utility::core_daemons_running());
+}
+
+krbn_service_state krbn_services_agents_running() {
+  return make_service_state(krbn::services_utility::core_agents_running());
 }
 
 void krbn_updater_check_for_updates_stable_only() {
