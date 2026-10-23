@@ -151,6 +151,42 @@ import Foundation
     try await waitUntil { state.setupItemCompleted(.services) }
     precondition(ServiceStatus.queryCount == daemonQueries)
     precondition(state.localServicesGuidanceContext.coreDaemonsEnabled == true)
+
+    // If background items are enabled but launchd has not bootstrapped their jobs,
+    // retry registration at the registration polling interval until they are running.
+    ServiceStatus.daemonsEnabled = true
+    ServiceStatus.agentsEnabled = true
+    ServiceStatus.daemonsAreRunning = false
+    ServiceStatus.agentsAreRunning = false
+    let servicesRegister = ServicesRegister(interval: .milliseconds(50))
+    let daemonRegistrations = ServiceStatus.daemonRegistrationCount
+    let agentRegistrations = ServiceStatus.agentRegistrationCount
+    servicesRegister.start()
+    try await waitUntil {
+      ServiceStatus.daemonRegistrationCount > daemonRegistrations
+        && ServiceStatus.agentRegistrationCount > agentRegistrations
+    }
+
+    let initialDaemonRegistrations = ServiceStatus.daemonRegistrationCount
+    let initialAgentRegistrations = ServiceStatus.agentRegistrationCount
+    try await waitUntil {
+      ServiceStatus.daemonRegistrationCount > initialDaemonRegistrations
+        && ServiceStatus.agentRegistrationCount > initialAgentRegistrations
+    }
+
+    let daemonRunningQueries = ServiceStatus.daemonRunningQueryCount
+    let agentRunningQueries = ServiceStatus.agentRunningQueryCount
+    ServiceStatus.daemonsAreRunning = true
+    ServiceStatus.agentsAreRunning = true
+    try await waitUntil {
+      ServiceStatus.daemonRunningQueryCount > daemonRunningQueries
+        && ServiceStatus.agentRunningQueryCount > agentRunningQueries
+    }
+    let settledDaemonRegistrations = ServiceStatus.daemonRegistrationCount
+    let settledAgentRegistrations = ServiceStatus.agentRegistrationCount
+    try await Task.sleep(for: .milliseconds(150))
+    precondition(ServiceStatus.daemonRegistrationCount == settledDaemonRegistrations)
+    precondition(ServiceStatus.agentRegistrationCount == settledAgentRegistrations)
     print("Settings services state tests passed")
   }
 }

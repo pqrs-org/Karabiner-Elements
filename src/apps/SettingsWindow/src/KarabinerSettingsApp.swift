@@ -27,17 +27,10 @@ struct KarabinerSettingsApp: App {
     krbn_services_bootout_and_disable_old_agents()
 
     //
-    // If Karabiner-Elements was manually terminated just before, the agents are in an unregistered state.
-    // So we should enable them once before checking the status.
-    //
-
-    krbn_services_register_core_daemons()
-    krbn_services_register_core_agents()
-
-    //
     // Setup CoreServiceClient
     //
 
+    ServicesRegister.shared.start()
     SettingsConsoleUserServerClient.shared.start()
 
     //

@@ -44,8 +44,14 @@ final class ServiceStatus: @unchecked Sendable {
   private let lock = NSLock()
   private var daemons: Bool? = false
   private var agents: Bool? = false
+  private var daemonsRunning: Bool? = true
+  private var agentsRunning: Bool? = true
   private var calls = 0
   private var agentCalls = 0
+  private var daemonRunningCalls = 0
+  private var agentRunningCalls = 0
+  private var daemonRegistrations = 0
+  private var agentRegistrations = 0
   private var activeCalls = 0
   private var maximumActiveCalls = 0
   private var nextQueryGate: QueryGate?
@@ -59,8 +65,20 @@ final class ServiceStatus: @unchecked Sendable {
     get { shared.lock.withLock { shared.agents } }
     set { shared.lock.withLock { shared.agents = newValue } }
   }
+  static var daemonsAreRunning: Bool? {
+    get { shared.lock.withLock { shared.daemonsRunning } }
+    set { shared.lock.withLock { shared.daemonsRunning = newValue } }
+  }
+  static var agentsAreRunning: Bool? {
+    get { shared.lock.withLock { shared.agentsRunning } }
+    set { shared.lock.withLock { shared.agentsRunning = newValue } }
+  }
   static var queryCount: Int { shared.lock.withLock { shared.calls } }
   static var agentQueryCount: Int { shared.lock.withLock { shared.agentCalls } }
+  static var daemonRunningQueryCount: Int { shared.lock.withLock { shared.daemonRunningCalls } }
+  static var agentRunningQueryCount: Int { shared.lock.withLock { shared.agentRunningCalls } }
+  static var daemonRegistrationCount: Int { shared.lock.withLock { shared.daemonRegistrations } }
+  static var agentRegistrationCount: Int { shared.lock.withLock { shared.agentRegistrations } }
   static var maxConcurrentCalls: Int { shared.lock.withLock { shared.maximumActiveCalls } }
   static func blockNextQuery() -> QueryGate {
     let gate = QueryGate()
@@ -71,7 +89,7 @@ final class ServiceStatus: @unchecked Sendable {
     return gate
   }
 
-  static func read(daemons: Bool) -> krbn_service_enabled_state {
+  static func readEnabled(daemons: Bool) -> krbn_service_state {
     precondition(!Thread.isMainThread, "Service queries must not block the UI thread")
     let (value, gate) = shared.lock.withLock {
       shared.activeCalls += 1
@@ -84,15 +102,51 @@ final class ServiceStatus: @unchecked Sendable {
     gate?.waitForRelease()
     shared.lock.withLock { shared.activeCalls -= 1 }
     switch value {
-    case true?: return krbn_service_enabled_state_enabled
-    case false?: return krbn_service_enabled_state_disabled
-    case nil: return krbn_service_enabled_state_unknown
+    case true?: return krbn_service_state_true
+    case false?: return krbn_service_state_false
+    case nil: return krbn_service_state_unknown
+    }
+  }
+
+  static func readRunning(daemons: Bool) -> krbn_service_state {
+    precondition(!Thread.isMainThread, "Service queries must not block the UI thread")
+    let value = shared.lock.withLock {
+      if daemons {
+        shared.daemonRunningCalls += 1
+      } else {
+        shared.agentRunningCalls += 1
+      }
+      return daemons ? shared.daemonsRunning : shared.agentsRunning
+    }
+    switch value {
+    case true?: return krbn_service_state_true
+    case false?: return krbn_service_state_false
+    case nil: return krbn_service_state_unknown
+    }
+  }
+
+  static func register(daemons: Bool) {
+    precondition(!Thread.isMainThread, "Service registration must not block the UI thread")
+    shared.lock.withLock {
+      if daemons {
+        shared.daemonRegistrations += 1
+      } else {
+        shared.agentRegistrations += 1
+      }
     }
   }
 }
 @_cdecl("krbn_console_user_server_client_connected")
 @MainActor func mockConsoleUserServerConnected() -> Bool { ServiceStatus.connected }
 @_cdecl("krbn_services_daemons_enabled")
-func mockDaemonsEnabled() -> krbn_service_enabled_state { ServiceStatus.read(daemons: true) }
+func mockDaemonsEnabled() -> krbn_service_state { ServiceStatus.readEnabled(daemons: true) }
 @_cdecl("krbn_services_agents_enabled")
-func mockAgentsEnabled() -> krbn_service_enabled_state { ServiceStatus.read(daemons: false) }
+func mockAgentsEnabled() -> krbn_service_state { ServiceStatus.readEnabled(daemons: false) }
+@_cdecl("krbn_services_daemons_running")
+func mockDaemonsRunning() -> krbn_service_state { ServiceStatus.readRunning(daemons: true) }
+@_cdecl("krbn_services_agents_running")
+func mockAgentsRunning() -> krbn_service_state { ServiceStatus.readRunning(daemons: false) }
+@_cdecl("krbn_services_register_core_daemons")
+func mockRegisterCoreDaemons() { ServiceStatus.register(daemons: true) }
+@_cdecl("krbn_services_register_core_agents")
+func mockRegisterCoreAgents() { ServiceStatus.register(daemons: false) }

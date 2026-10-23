@@ -5,7 +5,9 @@ all:
 		../../../src/apps/SettingsWindow/src/SettingsWindowGuidance.swift \
 		../../../src/apps/SettingsWindow/src/SettingsWindowAlertState.swift \
 		../../../src/apps/SettingsWindow/src/ContentViewStates.swift \
+		../../../src/apps/SettingsWindow/src/ServiceState.swift \
 		../../../src/apps/SettingsWindow/src/SettingsConsoleUserServerClient.swift \
+		../../../src/apps/SettingsWindow/src/ServicesRegister.swift \
 		support.swift test.swift -o build/settings_services_state_test
 	build/settings_services_state_test
 

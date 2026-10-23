@@ -25,8 +25,8 @@ final class SettingsConsoleUserServerClient {
   private var consoleUserServerClientReady = false
   private let servicesStatusQueue = DispatchQueue(
     label: "org.pqrs.Karabiner-Elements.Settings.services-status", qos: .utility)
-  private var servicesQueryInFlight = false
-  private var servicesQueryPending = false
+  private var servicesStatusQueryInFlight = false
+  private var servicesStatusQueryPending = false
   private var servicesQueryGeneration = UUID()
   private var coreDaemonsOnceEnabled = false
   private var coreAgentsOnceEnabled = false
@@ -105,24 +105,24 @@ final class SettingsConsoleUserServerClient {
     // locally so ContentViewStates can open SetupServicesView as a fallback.
     // These calls launch processes and wait for them. Keep them off MainActor and
     // coalesce requests arriving during a query into one follow-up, without a queue backlog.
-    // Once enabled, stop checking each service group for this Settings process's lifetime.
     guard !coreDaemonsOnceEnabled || !coreAgentsOnceEnabled else { return }
-    guard !servicesQueryInFlight else {
-      servicesQueryPending = true
+    guard !servicesStatusQueryInFlight else {
+      servicesStatusQueryPending = true
       return
     }
-    servicesQueryInFlight = true
+    servicesStatusQueryInFlight = true
     let generation = servicesQueryGeneration
     let daemonsOnceEnabled = coreDaemonsOnceEnabled
     let agentsOnceEnabled = coreAgentsOnceEnabled
     servicesStatusQueue.async { [weak self] in
       let daemonsEnabled =
-        daemonsOnceEnabled ? true : Self.enabledValue(krbn_services_daemons_enabled())
+        daemonsOnceEnabled ? true : krbn_services_daemons_enabled().boolValue
       let agentsEnabled =
-        agentsOnceEnabled ? true : Self.enabledValue(krbn_services_agents_enabled())
+        agentsOnceEnabled ? true : krbn_services_agents_enabled().boolValue
+
       Task { @MainActor [weak self] in
         guard let self else { return }
-        self.servicesQueryInFlight = false
+        self.servicesStatusQueryInFlight = false
         if self.servicesQueryGeneration == generation {
           self.coreDaemonsOnceEnabled = daemonsEnabled == true
           self.coreAgentsOnceEnabled = agentsEnabled == true
@@ -130,19 +130,11 @@ final class SettingsConsoleUserServerClient {
             coreDaemonsEnabled: daemonsEnabled,
             coreAgentsEnabled: agentsEnabled)
         }
-        if self.servicesQueryPending {
-          self.servicesQueryPending = false
+        if self.servicesStatusQueryPending {
+          self.servicesStatusQueryPending = false
           self.updateLocalServicesGuidanceContext()
         }
       }
-    }
-  }
-
-  private nonisolated static func enabledValue(_ state: krbn_service_enabled_state) -> Bool? {
-    switch state {
-    case krbn_service_enabled_state_enabled: true
-    case krbn_service_enabled_state_disabled: false
-    default: nil  // Query failures must not be treated as disabled services.
     }
   }
 }
