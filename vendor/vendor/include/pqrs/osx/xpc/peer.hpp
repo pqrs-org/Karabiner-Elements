@@ -5,6 +5,7 @@
 // (See https://www.boost.org/LICENSE_1_0.txt)
 
 #include "connection.hpp"
+#include "peer_context.hpp"
 #include "types.hpp"
 #include <algorithm>
 #include <chrono>
@@ -39,6 +40,13 @@ public:
     return connection_;
   }
 
+  [[nodiscard]] peer_context make_context(peer_id id) const noexcept {
+    return peer_context{
+        .id = id,
+        .identity = identity_,
+    };
+  }
+
   [[nodiscard]] bool ready_for_communication() const noexcept {
     return ready_for_communication_;
   }
@@ -48,6 +56,10 @@ public:
       return false;
     }
 
+    // Query the identity only after communication with the remote peer has
+    // succeeded. Before the handshake, a client connection may not yet have a
+    // remote peer whose identity can be used.
+    identity_ = connection_.get_peer_identity();
     ready_for_communication_ = true;
     connection_interrupted_ = false;
     return true;
@@ -59,6 +71,7 @@ public:
     }
 
     session_ = std::make_shared<session_identity>();
+    identity_.reset();
     connection_interrupted_ = true;
     ready_for_communication_ = false;
     handshake_retry_at_ = handshake_retry_at;
@@ -112,6 +125,8 @@ public:
 
 private:
   connection connection_;
+
+  std::optional<peer_identity> identity_;
 
   // The transport has established that this peer can exchange application messages.
   // Set by the handshake, or by a server message received before the handshake

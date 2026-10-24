@@ -13,6 +13,7 @@
 #include "../peer.hpp"
 #include "../peers.hpp"
 #include "../reply_token.hpp"
+#include "../request_context.hpp"
 #include "../types.hpp"
 #include <atomic>
 #include <chrono>
@@ -65,11 +66,11 @@ public:
   // will retry automatically. Terminal failures require owner recovery instead.
   // peer_invalidated is also emitted when a created peer is invalidated.
   nod::signal<void(const std::error_code&)> connection_retry_scheduled;
-  nod::signal<void(peer_id)> peer_ready;
-  nod::signal<void(peer_id)> peer_interrupted;
-  nod::signal<void(peer_id, const std::error_code&)> peer_invalidated;
-  nod::signal<void(peer_id, std::shared_ptr<const std::vector<uint8_t>>)> message_received;
-  nod::signal<void(peer_id, reply_token, std::shared_ptr<const std::vector<uint8_t>>)> request_received;
+  nod::signal<void(const peer_context&)> peer_ready;
+  nod::signal<void(const peer_context&)> peer_interrupted;
+  nod::signal<void(const peer_context&, const std::error_code&)> peer_invalidated;
+  nod::signal<void(const peer_context&, std::shared_ptr<const std::vector<uint8_t>>)> message_received;
+  nod::signal<void(const request_context&, std::shared_ptr<const std::vector<uint8_t>>)> request_received;
 
   transport(std::weak_ptr<pqrs::dispatcher::dispatcher> dispatcher,
             const Options& options)
@@ -660,8 +661,9 @@ private:
       return;
     }
 
-    enqueue_notification([this, id] {
-      peer_ready(id);
+    auto context = peer.make_context(id);
+    enqueue_notification([this, context] {
+      peer_ready(context);
     });
   }
 
@@ -745,15 +747,20 @@ private:
           .session = target_peer.get_session(),
       });
 
-      enqueue_notification([this, id, token, data] {
-        request_received(id,
-                         token,
+      auto context = request_context{
+          .peer = target_peer.make_context(id),
+          .reply = token,
+      };
+
+      enqueue_notification([this, context, data] {
+        request_received(context,
                          data);
       });
 
     } else {
-      enqueue_notification([this, id, data] {
-        message_received(id,
+      auto context = target_peer.make_context(id);
+      enqueue_notification([this, context, data] {
+        message_received(context,
                          data);
       });
     }
@@ -923,6 +930,7 @@ private:
                  peer_failure_action action) {
     if (auto found_peer = peers_.find(id); found_peer) {
       auto was_ready_for_communication = found_peer->ready_for_communication();
+      auto context = found_peer->make_context(id);
 
       if (action == peer_failure_action::interrupt &&
           !found_peer->mark_connection_interrupted(std::chrono::steady_clock::now() + reconnect_interval())) {
@@ -947,13 +955,13 @@ private:
       }
 
       if (action == peer_failure_action::interrupt) {
-        enqueue_notification([this, id] {
-          peer_interrupted(id);
+        enqueue_notification([this, context] {
+          peer_interrupted(context);
         });
 
       } else {
-        enqueue_notification([this, id, error] {
-          peer_invalidated(id,
+        enqueue_notification([this, context, error] {
+          peer_invalidated(context,
                            error);
         });
 

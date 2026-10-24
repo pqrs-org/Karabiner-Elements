@@ -1,6 +1,6 @@
 #pragma once
 
-// pqrs::osx::xpc v3.0.0
+// pqrs::osx::xpc v4.0.0
 
 // (C) Copyright Takayama Fumihiko 2026.
 // Distributed under the Boost Software License, Version 1.0.
@@ -10,3 +10,6 @@
 #include "xpc/client_recovery.hpp"
 #include "xpc/listener.hpp"
 #include "xpc/listener_recovery.hpp"
+#include "xpc/peer_context.hpp"
+#include "xpc/peer_identity.hpp"
+#include "xpc/request_context.hpp"

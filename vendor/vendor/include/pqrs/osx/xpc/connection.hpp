@@ -7,13 +7,17 @@
 #include "dictionary.hpp"
 #include "object.hpp"
 #include "options.hpp"
+#include "peer_identity.hpp"
 #include <cerrno>
 #include <dispatch/dispatch.h>
+#include <optional>
 #include <string>
 #include <utility>
 #include <xpc/xpc.h>
 
 namespace pqrs::osx::xpc {
+
+class peer;
 
 // Owns a connection and cancels it before releasing it. Operations, including
 // destruction, must be serialized by the caller with the event handler.
@@ -183,6 +187,21 @@ public:
   }
 
 private:
+  friend class peer;
+
+  // Call only after communication with the remote peer has succeeded.
+  [[nodiscard]] std::optional<peer_identity> get_peer_identity() const noexcept {
+    if (auto connection = get()) {
+      return peer_identity(
+          xpc_connection_get_euid(connection),
+          xpc_connection_get_egid(connection),
+          xpc_connection_get_asid(connection),
+          xpc_connection_get_pid(connection));
+    }
+
+    return std::nullopt;
+  }
+
   static connection create_mach_service(const char* name,
                                         dispatch_queue_t queue,
                                         uint64_t flags) noexcept {
