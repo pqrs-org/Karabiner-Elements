@@ -35,20 +35,20 @@ for service_name in \
     launchctl disable "system/$service_name"
 done
 
-killall Karabiner-Core-Service
-killall Karabiner-VirtualHIDDevice-Daemon
-killall Karabiner-Console-User-Server
-# Karabiner-Elements is the setting window.
-killall Karabiner-Elements
-killall Karabiner-EventViewer
-killall Karabiner-MultitouchExtension
+# On macOS 13, SIGTERM may leave some processes running.
+killall -KILL Karabiner-Core-Service
+killall -KILL Karabiner-VirtualHIDDevice-Daemon
+killall -KILL Karabiner-Console-User-Server
+killall -KILL Karabiner-Elements
+killall -KILL Karabiner-EventViewer
+killall -KILL Karabiner-MultitouchExtension
 
 # Terminate deprecated processes as well, since they may have been running before the update.
-killall karabiner_console_user_server
-killall karabiner_grabber
-killall karabiner_session_monitor
-killall Karabiner-Menu
-killall Karabiner-NotificationWindow
+killall -KILL karabiner_console_user_server
+killall -KILL karabiner_grabber
+killall -KILL karabiner_session_monitor
+killall -KILL Karabiner-Menu
+killall -KILL Karabiner-NotificationWindow
 
 #
 # Register launchd services from the newly installed application.

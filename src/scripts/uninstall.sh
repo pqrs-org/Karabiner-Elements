@@ -8,10 +8,11 @@ export PATH
 bash '/Applications/Karabiner-Elements.app/Contents/Resources/uninstall_core.sh'
 bash '/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/scripts/uninstall/remove_files.sh'
 
-killall Karabiner-Core-Service
-killall Karabiner-Console-User-Server
-killall Karabiner-Elements
-killall Karabiner-EventViewer
-killall Karabiner-MultitouchExtension
+# On macOS 13, SIGTERM may leave some processes running.
+killall -KILL Karabiner-Core-Service
+killall -KILL Karabiner-Console-User-Server
+killall -KILL Karabiner-Elements
+killall -KILL Karabiner-EventViewer
+killall -KILL Karabiner-MultitouchExtension
 
 exit 0

@@ -15,4 +15,4 @@ codesign: all
 install: codesign
 	$(MAKE) -C ../localization install
 	bash ../../../scripts/replace-helper-for-development.sh build/Release/Karabiner-Console-User-Server.app
-	-sudo killall Karabiner-Console-User-Server
+	-sudo killall -KILL Karabiner-Console-User-Server

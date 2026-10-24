@@ -24,7 +24,7 @@ public:
 private:
   static void launch_updater(const std::string& argument,
                              bool activates) {
-    system("/usr/bin/killall Karabiner-Updater");
+    system("/usr/bin/killall -KILL Karabiner-Updater");
 
     pqrs::osx::workspace::open_application_by_bundle_path(
         "/Applications/Karabiner-Elements.app/Contents/Helpers/Karabiner-Updater.app",

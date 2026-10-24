@@ -18,7 +18,7 @@ run:
 install:
 	bash ../../../scripts/codesign.sh build/Release
 	bash ../../../scripts/replace-helper-for-development.sh build/Release/Karabiner-MultitouchExtension.app
-	-sudo killall Karabiner-MultitouchExtension
+	-sudo killall -KILL Karabiner-MultitouchExtension
 
 log:
 	/usr/bin/log stream --predicate 'subsystem == "org.pqrs.Karabiner-MultitouchExtension"' --info --debug

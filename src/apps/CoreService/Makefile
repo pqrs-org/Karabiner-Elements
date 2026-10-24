@@ -14,4 +14,4 @@ codesign: all
 
 install: codesign
 	bash ../../../scripts/replace-helper-for-development.sh build/Release/Karabiner-Core-Service.app
-	-sudo killall Karabiner-Core-Service
+	-sudo killall -KILL Karabiner-Core-Service
