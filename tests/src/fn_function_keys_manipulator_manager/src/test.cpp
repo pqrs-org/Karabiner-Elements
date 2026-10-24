@@ -31,9 +31,11 @@ int main() {
     auto manager = std::make_shared<krbn::core_service::daemon::device_grabber_details::fn_function_keys_manipulator_manager>();
 
     auto notification_message_manager = std::make_shared<krbn::notification_message_manager>();
+    auto caps_lock_led_override_manager = std::make_shared<krbn::caps_lock_led_override_manager>();
     auto post_event_to_virtual_devices_manipulator = std::make_shared<krbn::manipulator::manipulators::post_event_to_virtual_devices::post_event_to_virtual_devices>(
         std::weak_ptr<krbn::console_user_server_peer>(),
-        notification_message_manager);
+        notification_message_manager,
+        caps_lock_led_override_manager);
     auto post_event_to_virtual_devices_manipulator_manager = std::make_shared<krbn::manipulator::manipulator_manager>();
     post_event_to_virtual_devices_manipulator_manager->push_back_manipulator(post_event_to_virtual_devices_manipulator);
 
