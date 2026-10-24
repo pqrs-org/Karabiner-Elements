@@ -9,7 +9,7 @@ end
 
 count = 0
 full_output = ''
-open("| #{command} 2>&1") do |f|
+IO.popen(command, err: [:child, :out]) do |f|
   while l = f.gets
     full_output += l
 
