@@ -65,30 +65,28 @@ public:
             listener_recovery_required(request);
           });
 
-          server_->peer_ready.connect([](auto) {
+          server_->peer_ready.connect([](const auto&) {
             // Do nothing
           });
 
-          server_->peer_interrupted.connect([](auto) {
+          server_->peer_interrupted.connect([](const auto&) {
             // Do nothing
           });
 
-          server_->peer_invalidated.connect([](auto peer_id,
+          server_->peer_invalidated.connect([](const auto& context,
                                                const auto& error_code) {
             logger::get_logger()->debug("receiver: peer_invalidated ({0}): {1}",
-                                        peer_id,
+                                        context.id,
                                         error_code.message());
           });
 
-          server_->message_received.connect([](auto, auto&&) {
+          server_->message_received.connect([](const auto&, auto&&) {
             // Do nothing
           });
 
-          server_->request_received.connect([this](auto peer_id,
-                                                   auto reply,
+          server_->request_received.connect([this](const auto& context,
                                                    auto&& buffer) {
-            handle_request(peer_id,
-                           reply,
+            handle_request(context,
                            buffer);
           });
 
@@ -199,20 +197,27 @@ private:
                   });
   }
 
-  void handle_request(xpc::peer_id peer_id,
-                      xpc::reply_token reply,
+  void handle_request(const xpc::request_context& context,
                       std::shared_ptr<const std::vector<uint8_t>> buffer) {
+    auto peer_id = context.peer.id;
+    auto reply = context.reply;
+
     if (buffer->empty()) {
+      server_->async_cancel_peer(peer_id);
+      return;
+    }
+
+    // This listener serves processes running as the console user, such as
+    // Settings, EventViewer, and the CLI. Core Service Daemon sends requests
+    // over the existing CoreService connection and does not connect here.
+    if (!context.peer.identity ||
+        context.peer.identity->get_euid() != geteuid()) {
       server_->async_cancel_peer(peer_id);
       return;
     }
 
     try {
       nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
-      if (json.at("uid").get<uid_t>() != geteuid()) {
-        server_->async_cancel_peer(peer_id);
-        return;
-      }
 
       switch (json.at("operation_type").get<operation_type>()) {
         case operation_type::get_settings_window_guidance:

@@ -15,7 +15,6 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/xpc.hpp>
 #include <string>
-#include <unistd.h>
 #include <utility>
 #include <vector>
 
@@ -95,8 +94,8 @@ public:
               },
           }));
 
-      client_->peer_ready.connect([this](auto peer_id) {
-        peer_id_ = peer_id;
+      client_->peer_ready.connect([this](const auto& context) {
+        peer_id_ = context.id;
         logger::get_logger()->debug("{0} is connected.",
                                     parameters_.client_name);
 
@@ -115,20 +114,20 @@ public:
         });
       });
 
-      client_->peer_interrupted.connect([this](auto peer_id) {
+      client_->peer_interrupted.connect([this](const auto& context) {
         logger::get_logger()->debug("{0} is interrupted.",
                                     parameters_.client_name);
 
-        handle_peer_closed(peer_id);
+        handle_peer_closed(context.id);
       });
 
-      client_->peer_invalidated.connect([this](auto peer_id,
+      client_->peer_invalidated.connect([this](const auto& context,
                                                const auto& error_code) {
         logger::get_logger()->debug("{0} peer_invalidated: {1}",
                                     parameters_.client_name,
                                     error_code.message());
 
-        handle_peer_closed(peer_id);
+        handle_peer_closed(context.id);
       });
 
       client_->client_recovery_required.connect([this, client_generation](const auto& request) {
@@ -140,7 +139,7 @@ public:
                                        client_generation);
       });
 
-      client_->message_received.connect([this](auto, auto&& buffer) {
+      client_->message_received.connect([this](const auto&, auto&& buffer) {
         enqueue_to_dispatcher([this, buffer] {
           if (!buffer->empty()) {
             handle_message(buffer);
@@ -148,14 +147,14 @@ public:
         });
       });
 
-      client_->request_received.connect([this](auto, auto reply,
+      client_->request_received.connect([this](const auto& context,
                                                auto&& buffer) {
         // Reply before handling the message, since some handlers run synchronous helper commands
         // such as service registration, which may exceed the request timeout and close the peer.
         // This response means the request has been accepted, not fully processed.
         if (client_) {
           client_->async_reply(
-              reply,
+              context.reply,
               std::make_shared<const std::vector<uint8_t>>(nlohmann::json::to_msgpack(nlohmann::json{
                   {"operation_type", operation_type::none},
               })));
@@ -191,9 +190,6 @@ protected:
       }
       return;
     }
-
-    // The listener checks this UID against the active console account.
-    json["uid"] = getuid();
 
     client_->async_request(
         xpc::client::async_request_parameters{

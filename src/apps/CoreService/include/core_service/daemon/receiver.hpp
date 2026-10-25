@@ -86,32 +86,30 @@ public:
             listener_recovery_required(request);
           });
 
-          server_->peer_ready.connect([](auto) {
+          server_->peer_ready.connect([](const auto&) {
             // Do nothing
           });
 
-          server_->peer_interrupted.connect([this](auto peer_id) {
-            handle_peer_closed(peer_id);
+          server_->peer_interrupted.connect([this](const auto& context) {
+            handle_peer_closed(context.id);
           });
 
-          server_->peer_invalidated.connect([this](auto peer_id,
+          server_->peer_invalidated.connect([this](const auto& context,
                                                    const auto& error_code) {
             logger::get_logger()->debug("receiver: peer_invalidated ({0}): {1}",
-                                        peer_id,
+                                        context.id,
                                         error_code.message());
 
-            handle_peer_closed(peer_id);
+            handle_peer_closed(context.id);
           });
 
-          server_->message_received.connect([](auto, auto&&) {
+          server_->message_received.connect([](const auto&, auto&&) {
             // Do nothing
           });
 
-          server_->request_received.connect([this](auto peer_id,
-                                                   auto reply,
+          server_->request_received.connect([this](const auto& context,
                                                    auto&& buffer) {
-            handle_request(peer_id,
-                           reply,
+            handle_request(context,
                            buffer);
           });
 
@@ -205,20 +203,29 @@ private:
     }
   }
 
-  void handle_request(xpc::peer_id peer_id,
-                      xpc::reply_token reply,
+  void handle_request(const xpc::request_context& context,
                       std::shared_ptr<const std::vector<uint8_t>> buffer) {
+    auto peer_id = context.peer.id;
+    auto reply = context.reply;
+
     if (buffer->empty()) {
       server_->async_cancel_peer(peer_id);
       return;
     }
+
+    if (!context.peer.identity) {
+      server_->async_cancel_peer(peer_id);
+      return;
+    }
+
+    auto peer_euid = context.peer.identity->get_euid();
 
     try {
       nlohmann::json json = nlohmann::json::from_msgpack(*buffer);
 
       auto operation_type_value = json.at("operation_type").get<operation_type>();
       if (operation_type_value == operation_type::console_user_id_changed) {
-        auto uid = json.at("uid").get<uid_t>();
+        auto uid = peer_euid;
 
         if (!json.at("on_console").get<bool>()) {
           // A Console User Server for a user who is no longer on the console can
@@ -253,7 +260,7 @@ private:
       }
 
       if (!current_console_user_id_ ||
-          json.at("uid").get<uid_t>() != *current_console_user_id_) {
+          peer_euid != *current_console_user_id_) {
         server_->async_cancel_peer(peer_id);
         return;
       }

@@ -42,7 +42,7 @@ make install
       For that reason, responsibilities are split so that tasks such as launching external processes are handled by `Karabiner-Console-User-Server` rather than by `Karabiner-Core-Service`.
 - `Karabiner-Console-User-Server`
     - It informs `Karabiner-Core-Service` of the user currently using the console.
-      The console UID is included in the authenticated XPC protocol and is used to reject ordinary requests from other user accounts.
+      `Karabiner-Core-Service` obtains the UID from the authenticated XPC peer identity and uses it to reject ordinary requests from other user accounts.
     - The methods for accurately detecting the console user, including when multiple people are logged in through Screen Sharing, are very limited.
       Karabiner-Elements uses the Core Graphics API `CGSessionCopyCurrentDictionary` for this purpose.
       To use this API, it must be launched from a GUI session. Specifically, it needs to be started from LaunchAgents.
@@ -70,7 +70,7 @@ make install
 `Karabiner-Console-User-Server`
 
 1.  Run `Karabiner-Console-User-Server` as a LaunchAgent in the GUI session.
-2.  `Karabiner-Console-User-Server` monitors the window server session state and sends the state and its UID to `Karabiner-Core-Service` over XPC.
+2.  `Karabiner-Console-User-Server` monitors the window server session state and sends it to `Karabiner-Core-Service` over XPC. `Karabiner-Core-Service` obtains the UID from the XPC peer identity.
 3.  When the console UID changes, `Karabiner-Core-Service` recreates its receiver with the new UID. `Karabiner-Console-User-Server` reconnects and repeats the notification.
 4.  After `Karabiner-Core-Service` confirms the bound console UID, `Karabiner-Console-User-Server` starts its regular CoreService client components, menu bar menu, and notification window UI.
 5.  `Karabiner-Console-User-Server` also provides an XPC Mach service for Settings and EventViewer requests.
