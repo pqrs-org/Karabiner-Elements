@@ -30,8 +30,7 @@ RunLoop.main.perform {
 
     switch Subcommand(rawValue: subcommand) {
     case .registerCoreDaemons:
-      ServiceManagementHelper.register(services: coreDaemons)
-      exit(0)
+      exit(ServiceManagementHelper.register(services: coreDaemons) ? 0 : 1)
 
     case .unregisterCoreDaemons:
       ServiceManagementHelper.unregister(services: coreDaemons)

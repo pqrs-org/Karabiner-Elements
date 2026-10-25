@@ -32,37 +32,70 @@ struct ServiceManagementHelper {
     }
   }
 
-  static func register(services: [SMAppService]) {
-    for s in services {
-      // Regarding daemons, performing the following steps causes inconsistencies in the user approval database,
-      // so the process will not start again until it is unregistered and then registered again.
-      //
-      // 1. Register a daemon.
-      // 2. Approve the daemon.
-      // 3. The database is reset using `sfltool resetbtm`.
-      // 4. Restart macOS.
-      //
-      // When this happens, the service status becomes .notFound.
-      // So, if the service status is .notFound, we call unregister before register to avoid this issue.
-      //
-      // Another case where it becomes .notFound is when it has never actually been registered before.
-      // Even in this case, calling unregister will not have any negative impact.
+  static func register(services: [SMAppService]) -> Bool {
+    // backgroundtaskmanagementd may not discover a newly installed helper app
+    // immediately. Retry services affected by this transient .notFound state
+    // up to 10 times at one-second intervals.
+    let maxRetryCount = 10
+    var retryCount = 0
+    var pendingServices = services
+    var firstAttempt = true
 
-      if s.status == .notFound {
-        unregister(services: [s])
+    while true {
+      var retryCandidates: [SMAppService] = []
+
+      for s in pendingServices {
+        let notFound = s.status == .notFound
+
+        // Regarding daemons, performing the following steps causes inconsistencies in the user approval database,
+        // so the process will not start again until it is unregistered and then registered again.
+        //
+        // 1. Register a daemon.
+        // 2. Approve the daemon.
+        // 3. The database is reset using `sfltool resetbtm`.
+        // 4. Restart macOS.
+        //
+        // When this happens, the service status becomes .notFound.
+        // So, if the service status is .notFound, we call unregister before register to avoid this issue.
+        //
+        // Another case where it becomes .notFound is when it has never actually been registered before.
+        // Even in this case, calling unregister will not have any negative impact.
+
+        if firstAttempt && notFound {
+          unregister(services: [s])
+        }
+
+        do {
+          try s.register()
+          print("Successfully registered \(s)")
+        } catch {
+          // Note:
+          // When calling `SMAppService.daemon.register`, if user approval has not been granted, an `Operation not permitted` error will be returned.
+          // To call `register` for all agents and daemons, the loop continues even if an error occurs.
+          // The final service status determines the return value.
+          print("Unable to register \(error)")
+        }
+
+        if !registered(s) && (notFound || s.status == .notFound) {
+          retryCandidates.append(s)
+        }
       }
 
-      do {
-        try s.register()
-        print("Successfully registered \(s)")
-      } catch {
-        // Note:
-        // When calling `SMAppService.daemon.register`, if user approval has not been granted, an `Operation not permitted` error will be returned.
-        // To call `register` for all agents and daemons, the loop continues even if an error occurs.
-        // Therefore, only log output will be performed here.
-        print("Unable to register \(error)")
+      if retryCandidates.isEmpty || retryCount >= maxRetryCount {
+        break
       }
+
+      Thread.sleep(forTimeInterval: 1)
+      retryCount += 1
+      pendingServices = retryCandidates
+      firstAttempt = false
     }
+
+    return services.allSatisfy(registered)
+  }
+
+  private static func registered(_ service: SMAppService) -> Bool {
+    service.status == .enabled || service.status == .requiresApproval
   }
 
   static func unregister(services: [SMAppService]) {

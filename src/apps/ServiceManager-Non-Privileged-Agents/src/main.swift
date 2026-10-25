@@ -40,8 +40,7 @@ RunLoop.main.perform {
 
     switch Subcommand(rawValue: subcommand) {
     case .registerCoreAgents:
-      ServiceManagementHelper.register(services: coreAgents)
-      exit(0)
+      exit(ServiceManagementHelper.register(services: coreAgents) ? 0 : 1)
 
     case .unregisterCoreAgents:
       ServiceManagementHelper.unregister(services: coreAgents)
@@ -57,8 +56,8 @@ RunLoop.main.perform {
       }
 
     case .registerMultitouchExtensionAgent:
-      ServiceManagementHelper.register(services: [multitouchExtensionAgentService])
-      exit(0)
+      exit(
+        ServiceManagementHelper.register(services: [multitouchExtensionAgentService]) ? 0 : 1)
 
     case .unregisterMultitouchExtensionAgent:
       ServiceManagementHelper.unregister(services: [multitouchExtensionAgentService])
