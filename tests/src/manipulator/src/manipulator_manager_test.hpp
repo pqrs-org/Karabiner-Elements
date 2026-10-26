@@ -100,6 +100,7 @@ void run_manipulator_manager_test() {
              std::string("json/needs_virtual_hid_pointing_test3.json"),
              std::string("json/needs_virtual_hid_pointing_test4.json"),
              std::string("json/needs_virtual_hid_pointing_test5.json"),
+             std::string("json/needs_virtual_hid_pointing_test6.json"),
          }) {
       auto json = krbn::unit_testing::json_helper::load_jsonc(file_name);
       auto manager = std::make_shared<krbn::manipulator::manipulator_manager>();
@@ -116,7 +117,8 @@ void run_manipulator_manager_test() {
       if (file_name == "json/needs_virtual_hid_pointing_test2.json" ||
           file_name == "json/needs_virtual_hid_pointing_test3.json" ||
           file_name == "json/needs_virtual_hid_pointing_test4.json" ||
-          file_name == "json/needs_virtual_hid_pointing_test5.json") {
+          file_name == "json/needs_virtual_hid_pointing_test5.json" ||
+          file_name == "json/needs_virtual_hid_pointing_test6.json") {
         expect(manager->needs_virtual_hid_pointing());
       }
 

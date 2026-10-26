@@ -74,6 +74,24 @@
     },
     {
         "input": {
+            "type": "basic",
+            "from": {
+                "simultaneous": [
+                    { "key_code": "a" },
+                    { "key_code": "b" }
+                ],
+                "simultaneous_options": {
+                    "to_after_key_up": [
+                        { "set_caps_lock_led": "on" }
+                    ]
+                }
+            },
+            "to": [{ "key_code": "c" }]
+        },
+        "expected": true
+    },
+    {
+        "input": {
             "type": "mouse_motion_and_wheel_to_key",
             "from": { "source": "xy" },
             "to": {

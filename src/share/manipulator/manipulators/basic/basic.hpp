@@ -775,7 +775,8 @@ private:
     if (manipulator::any_event_definition_matches(predicate,
                                                   to_,
                                                   to_after_key_up_,
-                                                  to_if_alone_)) {
+                                                  to_if_alone_,
+                                                  from_.get_simultaneous_options()->get_to_after_key_up())) {
       return true;
     }
 

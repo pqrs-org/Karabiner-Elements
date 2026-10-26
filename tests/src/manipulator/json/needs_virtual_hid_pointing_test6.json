@@ -1,0 +1,19 @@
+[
+    {
+        "type": "basic",
+        "from": {
+            "simultaneous": [
+                { "key_code": "a" },
+                { "key_code": "b" }
+            ],
+            "simultaneous_options": {
+                "to_after_key_up": [
+                    { "pointing_button": "button1" }
+                ]
+            }
+        },
+        "to": [
+            { "key_code": "c" }
+        ]
+    }
+]
