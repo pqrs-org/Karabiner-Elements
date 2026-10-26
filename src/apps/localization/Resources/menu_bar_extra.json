@@ -2,37 +2,46 @@
     "menu_bar_extra.check_for_beta_updates": {
         "en": "Check for beta updates…"
         ,"ja": "ベータ版のアップデートを確認…"
+        ,"zh-Hans": "检查测试版更新…"
     },
     "menu_bar_extra.check_for_updates": {
         "en": "Check for updates…"
         ,"ja": "アップデートを確認…"
+        ,"zh-Hans": "检查更新…"
     },
     "menu_bar_extra.launch_event_viewer": {
         "en": "Launch EventViewer…"
         ,"ja": "イベントビューアを起動…"
+        ,"zh-Hans": "打开事件查看器（EventViewer）…"
     },
     "menu_bar_extra.multitouch_settings": {
         "en": "Multitouch Extension Settings…"
         ,"ja": "マルチタッチ拡張の設定…"
+        ,"zh-Hans": "多点触控扩展设置…"
     },
     "menu_bar_extra.profiles": {
         "en": "Profiles"
         ,"ja": "プロファイル"
+        ,"zh-Hans": "配置方案"
     },
     "menu_bar_extra.quit": {
         "en": "Quit Karabiner-Elements"
         ,"ja": "Karabiner-Elementsを終了"
+        ,"zh-Hans": "退出 Karabiner-Elements"
     },
     "menu_bar_extra.quit_confirmation": {
         "en": "Are you sure you want to quit?"
         ,"ja": "終了してもよろしいですか？"
+        ,"zh-Hans": "确定要退出吗？"
     },
     "menu_bar_extra.restart": {
         "en": "Restart Karabiner-Elements"
         ,"ja": "Karabiner-Elementsを再起動"
+        ,"zh-Hans": "重启 Karabiner-Elements"
     },
     "menu_bar_extra.settings": {
         "en": "Settings…"
         ,"ja": "設定…"
+        ,"zh-Hans": "设置…"
     }
 }
