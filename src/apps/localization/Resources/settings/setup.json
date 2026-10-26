@@ -31,6 +31,7 @@
     "settings.setup.completed.device_control_and_data_access": {
         "en": "Device control and data access are allowed."
         ,"ja": "デバイスの制御とデータへのアクセスは許可されています。"
+        ,"zh-Hans": "已允许控制设备和访问数据。"
     },
     "settings.setup.completed.driver": {
         "en": "Driver Extension is allowed."
@@ -59,6 +60,10 @@
         ,"ja": [
             "入力イベントの取得は許可されています。\n",
             "（「デバイスの制御とデータへのアクセス」の許可により、取得が許可されている場合もあります。）"
+        ]
+        ,"zh-Hans": [
+            "已允许捕获输入事件。\n",
+            "（该权限也可能通过“设备控制和数据访问”权限间接授予。）"
         ]
     },
     "settings.setup.completed.services": {
@@ -150,14 +155,20 @@
             "Karabiner-Core-Serviceはデバイスの制御とデータへのアクセスを必要とします。\n",
             "システム設定 > プライバシーとセキュリティ > デバイスの制御とデータへのアクセスで許可してください。"
         ]
+        ,"zh-Hans": [
+            "Karabiner-Core-Service 需要控制设备和访问数据。\n",
+            "请在“系统设置” > “隐私与安全” > “设备控制和数据访问”中允许。"
+        ]
     },
     "settings.setup.device_control_and_data_access.permission": {
         "en": "Please allow device control and data access"
         ,"ja": "デバイスの制御とデータへのアクセスを許可してください"
+        ,"zh-Hans": "请允许控制设备和访问数据"
     },
     "settings.setup.device_control_and_data_access_required": {
         "en": "Please configure Device Control and Data Access first"
         ,"ja": "先に「デバイスの制御とデータへのアクセス」を設定してください"
+        ,"zh-Hans": "请先配置“设备控制和数据访问”"
     },
     "settings.setup.driver.activate": {
         "en": "Activate driver"
@@ -410,6 +421,7 @@
     "settings.setup.item.device_control_and_data_access": {
         "en": "Device Control and Data Access"
         ,"ja": "デバイスの制御とデータへのアクセス"
+        ,"zh-Hans": "设备控制和数据访问"
     },
     "settings.setup.item.driver": {
         "en": "Driver Extension"
@@ -477,6 +489,7 @@
     "settings.setup.open_device_control_and_data_access": {
         "en": "Go to Device Control and Data Access Setup"
         ,"ja": "「デバイスの制御とデータへのアクセス」の設定に進む"
+        ,"zh-Hans": "前往“设备控制和数据访问”设置"
     },
     "settings.setup.open_services": {
         "en": "Go to Background Services Setup"
@@ -530,6 +543,7 @@
     "settings.setup.system_settings.open_device_control_and_data_access": {
         "en": "Open Device Control and Data Access Settings…"
         ,"ja": "「デバイスの制御とデータへのアクセス」の設定を開く…"
+        ,"zh-Hans": "打开“设备控制和数据访问”设置…"
     },
     "settings.setup.system_settings.open_extensions": {
         "en": "Open Login Items & Extensions Settings…"
