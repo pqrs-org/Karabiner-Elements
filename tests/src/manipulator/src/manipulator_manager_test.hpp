@@ -133,4 +133,18 @@ void run_manipulator_manager_test() {
       expect(manager.needs_virtual_hid_pointing() == test.at("expected").get<bool>()) << test;
     }
   };
+
+  "uses_caps_lock_led_override"_test = [] {
+    for (const auto& test : krbn::unit_testing::json_helper::load_jsonc("json/uses_caps_lock_led_override.jsonc")) {
+      auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>();
+      auto m = krbn::manipulator::manipulator_factory::make_manipulator(test.at("input"), parameters);
+      krbn::manipulator::manipulator_manager manager;
+      manager.push_back_manipulator(m);
+
+      expect(manager.uses_caps_lock_led_override() == test.at("expected").get<bool>()) << test;
+
+      manager.invalidate_manipulators();
+      expect(!manager.uses_caps_lock_led_override());
+    }
+  };
 }

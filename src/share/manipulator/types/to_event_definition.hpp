@@ -5,6 +5,7 @@
 #include "manipulator/condition_factory.hpp"
 #include "manipulator/condition_manager.hpp"
 #include "modifier_definition.hpp"
+#include <algorithm>
 #include <set>
 
 namespace krbn::manipulator {
@@ -174,6 +175,10 @@ public:
     return false;
   }
 
+  [[nodiscard]] bool uses_caps_lock_led_override() const {
+    return event_definition_.get_type() == event_definition::type::set_caps_lock_led;
+  }
+
   std::vector<momentary_switch_event> make_modifier_events() const {
     std::vector<momentary_switch_event> events;
 
@@ -206,4 +211,14 @@ private:
 };
 
 typedef std::vector<pqrs::not_null_shared_ptr_t<to_event_definition>> to_event_definitions;
+
+template <typename Predicate, typename... EventDefinitions>
+[[nodiscard]] bool any_event_definition_matches(const Predicate& predicate,
+                                                const EventDefinitions&... event_definitions) {
+  return (std::ranges::any_of(event_definitions,
+                              [&](const auto& definition) {
+                                return predicate(*definition);
+                              }) ||
+          ...);
+}
 } // namespace krbn::manipulator

@@ -64,6 +64,13 @@ public:
       return false;
     }
 
+    [[nodiscard]] bool uses_caps_lock_led_override() const {
+      if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
+        return manipulator_manager->uses_caps_lock_led_override();
+      }
+      return false;
+    }
+
     [[nodiscard]] std::optional<absolute_time_point> make_input_event_time_stamp_with_input_delay() const {
       if (auto input_event_queue = weak_input_event_queue_.lock()) {
         if (!input_event_queue->get_entries().empty()) {
@@ -134,6 +141,16 @@ public:
                        std::end(connections_),
                        [](auto& c) {
                          return c.needs_virtual_hid_pointing();
+                       });
+  }
+
+  [[nodiscard]] bool uses_caps_lock_led_override() const {
+    std::lock_guard<std::mutex> lock(connections_mutex_);
+
+    return std::any_of(std::begin(connections_),
+                       std::end(connections_),
+                       [](auto& c) {
+                         return c.uses_caps_lock_led_override();
                        });
   }
 

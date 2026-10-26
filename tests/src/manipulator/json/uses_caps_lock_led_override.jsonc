@@ -1,0 +1,85 @@
+[
+    {
+        "input": {
+            "type": "basic",
+            "from": { "key_code": "a" },
+            "to": [{ "key_code": "b" }]
+        },
+        "expected": false
+    },
+    {
+        "input": {
+            "type": "basic",
+            "from": { "key_code": "a" },
+            "to": [{ "set_caps_lock_led": "on" }]
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "basic",
+            "from": { "key_code": "a" },
+            "to_after_key_up": [{ "set_caps_lock_led": "off" }]
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "basic",
+            "from": { "key_code": "a" },
+            "to_if_alone": [{ "set_caps_lock_led": "auto" }]
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "basic",
+            "from": { "key_code": "a" },
+            "to_if_held_down": [{ "set_caps_lock_led": "on" }]
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "basic",
+            "from": { "key_code": "a" },
+            "to_if_other_key_pressed": [
+                {
+                    "other_keys": [{ "key_code": "b" }],
+                    "to": [{ "set_caps_lock_led": "on" }]
+                }
+            ]
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "basic",
+            "from": { "key_code": "a" },
+            "to_delayed_action": {
+                "to_if_invoked": [{ "set_caps_lock_led": "on" }]
+            }
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "basic",
+            "from": { "key_code": "a" },
+            "to_delayed_action": {
+                "to_if_canceled": [{ "set_caps_lock_led": "off" }]
+            }
+        },
+        "expected": true
+    },
+    {
+        "input": {
+            "type": "mouse_motion_and_wheel_to_key",
+            "from": { "source": "xy" },
+            "to": {
+                "up": [{ "set_caps_lock_led": "on" }]
+            }
+        },
+        "expected": true
+    }
+]

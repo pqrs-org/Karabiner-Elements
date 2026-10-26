@@ -115,17 +115,21 @@ public:
   }
 
   [[nodiscard]] bool needs_virtual_hid_pointing() const {
-    for (const auto& events : {to_if_invoked_,
-                               to_if_canceled_}) {
-      if (std::any_of(std::begin(events),
-                      std::end(events),
-                      [](auto& e) {
-                        return e->needs_virtual_hid_pointing();
-                      })) {
-        return true;
-      }
-    }
-    return false;
+    return manipulator::any_event_definition_matches(
+        [](const auto& definition) {
+          return definition.needs_virtual_hid_pointing();
+        },
+        to_if_invoked_,
+        to_if_canceled_);
+  }
+
+  [[nodiscard]] bool uses_caps_lock_led_override() const {
+    return manipulator::any_event_definition_matches(
+        [](const auto& definition) {
+          return definition.uses_caps_lock_led_override();
+        },
+        to_if_invoked_,
+        to_if_canceled_);
   }
 
 private:

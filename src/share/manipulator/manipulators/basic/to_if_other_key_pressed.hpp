@@ -209,18 +209,29 @@ public:
   }
 
   [[nodiscard]] bool needs_virtual_hid_pointing() const {
+    return any_output_definition_matches([](const auto& definition) {
+      return definition.needs_virtual_hid_pointing();
+    });
+  }
+
+  [[nodiscard]] bool uses_caps_lock_led_override() const {
+    return any_output_definition_matches([](const auto& definition) {
+      return definition.uses_caps_lock_led_override();
+    });
+  }
+
+private:
+  template <typename Predicate>
+  [[nodiscard]] bool any_output_definition_matches(const Predicate& predicate) const {
     for (const auto& entry : entries_) {
-      if (std::ranges::any_of(entry->get_to(),
-                              [](auto& e) {
-                                return e->needs_virtual_hid_pointing();
-                              })) {
+      if (manipulator::any_event_definition_matches(predicate,
+                                                    entry->get_to())) {
         return true;
       }
     }
     return false;
   }
 
-private:
   void reset() {
     from_manipulated_original_event_.reset();
     from_device_id_ = std::nullopt;

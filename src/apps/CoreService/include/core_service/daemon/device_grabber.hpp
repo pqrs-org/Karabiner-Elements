@@ -530,6 +530,10 @@ public:
                                                         system_preferences_properties_);
           update_complex_modifications_manipulators();
 
+          if (!manipulator_managers_connector_.uses_caps_lock_led_override()) {
+            caps_lock_led_override_manager_->async_clear_override();
+          }
+
           update_virtual_hid_keyboard();
           update_virtual_hid_pointing();
 
@@ -955,7 +959,10 @@ private:
     std::optional<led_state> state;
 
     // `set_caps_lock_led` in complex modifications takes precedence over the actual caps lock state.
-    if (caps_lock_led_override_manager_) {
+    // Ignore overrides from invalid manipulators that remain active after a configuration reload
+    // in order to finish delayed actions or release events.
+    if (caps_lock_led_override_manager_ &&
+        manipulator_managers_connector_.uses_caps_lock_led_override()) {
       state = caps_lock_led_override_manager_->get_override();
     }
 

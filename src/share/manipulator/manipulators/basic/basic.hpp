@@ -705,37 +705,15 @@ public:
   }
 
   bool needs_virtual_hid_pointing() const override {
-    for (const auto& events : {to_,
-                               to_after_key_up_,
-                               to_if_alone_}) {
-      if (std::any_of(std::begin(events),
-                      std::end(events),
-                      [](auto& e) {
-                        return e->needs_virtual_hid_pointing();
-                      })) {
-        return true;
-      }
-    }
+    return any_output_definition_matches([](const auto& definition) {
+      return definition.needs_virtual_hid_pointing();
+    });
+  }
 
-    if (to_if_held_down_) {
-      if (to_if_held_down_->needs_virtual_hid_pointing()) {
-        return true;
-      }
-    }
-
-    if (to_if_other_key_pressed_) {
-      if (to_if_other_key_pressed_->needs_virtual_hid_pointing()) {
-        return true;
-      }
-    }
-
-    if (to_delayed_action_) {
-      if (to_delayed_action_->needs_virtual_hid_pointing()) {
-        return true;
-      }
-    }
-
-    return false;
+  [[nodiscard]] bool uses_caps_lock_led_override() const override {
+    return any_output_definition_matches([](const auto& definition) {
+      return definition.uses_caps_lock_led_override();
+    });
   }
 
   void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry& front_input_event,
@@ -792,6 +770,30 @@ public:
   }
 
 private:
+  template <typename Predicate>
+  [[nodiscard]] bool any_output_definition_matches(const Predicate& predicate) const {
+    if (manipulator::any_event_definition_matches(predicate,
+                                                  to_,
+                                                  to_after_key_up_,
+                                                  to_if_alone_)) {
+      return true;
+    }
+
+    if (to_if_held_down_ && predicate(*to_if_held_down_)) {
+      return true;
+    }
+
+    if (to_if_other_key_pressed_ && predicate(*to_if_other_key_pressed_)) {
+      return true;
+    }
+
+    if (to_delayed_action_ && predicate(*to_delayed_action_)) {
+      return true;
+    }
+
+    return false;
+  }
+
   [[nodiscard]] bool all_from_events_found(const std::vector<manipulated_original_event::from_event>& from_events) const {
     for (const auto& d : from_.get_event_definitions()) {
       if (std::ranges::none_of(from_events,

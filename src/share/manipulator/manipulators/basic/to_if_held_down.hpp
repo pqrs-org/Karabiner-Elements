@@ -129,11 +129,19 @@ public:
   }
 
   [[nodiscard]] bool needs_virtual_hid_pointing() const {
-    return std::any_of(std::begin(to_),
-                       std::end(to_),
-                       [](auto& e) {
-                         return e->needs_virtual_hid_pointing();
-                       });
+    return manipulator::any_event_definition_matches(
+        [](const auto& definition) {
+          return definition.needs_virtual_hid_pointing();
+        },
+        to_);
+  }
+
+  [[nodiscard]] bool uses_caps_lock_led_override() const {
+    return manipulator::any_event_definition_matches(
+        [](const auto& definition) {
+          return definition.uses_caps_lock_led_override();
+        },
+        to_);
   }
 
 private:

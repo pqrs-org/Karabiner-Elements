@@ -252,14 +252,15 @@ public:
   }
 
   [[nodiscard]] bool needs_virtual_hid_pointing() const noexcept override {
-    for (const auto& events : to_) {
-      if (std::ranges::any_of(events, [](const auto& event) {
-            return event->needs_virtual_hid_pointing();
-          })) {
-        return true;
-      }
-    }
-    return false;
+    return any_output_definition_matches([](const auto& definition) {
+      return definition.needs_virtual_hid_pointing();
+    });
+  }
+
+  [[nodiscard]] bool uses_caps_lock_led_override() const noexcept override {
+    return any_output_definition_matches([](const auto& definition) {
+      return definition.uses_caps_lock_led_override();
+    });
   }
 
   void handle_device_keys_and_pointing_buttons_are_released_event(const event_queue::entry&,
@@ -289,6 +290,18 @@ public:
   }
 
 private:
+  template <typename Predicate>
+  [[nodiscard]] bool any_output_definition_matches(const Predicate& predicate) const noexcept {
+    for (const auto& definitions : to_) {
+      if (manipulator::any_event_definition_matches(predicate,
+                                                    definitions)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   enum class source {
     none,
     xy,

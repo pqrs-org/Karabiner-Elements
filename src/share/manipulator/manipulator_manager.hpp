@@ -193,10 +193,25 @@ public:
   [[nodiscard]] bool needs_virtual_hid_pointing() const {
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
+    // Include invalid manipulators that remain active after a configuration reload because they
+    // might still need the virtual pointing device to finish delayed actions or release events.
     return std::any_of(std::begin(manipulators_),
                        std::end(manipulators_),
                        [](auto& m) {
                          return m->needs_virtual_hid_pointing();
+                       });
+  }
+
+  [[nodiscard]] bool uses_caps_lock_led_override() const {
+    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
+    // Unlike `needs_virtual_hid_pointing`, only the current configuration may control the LED.
+    // Exclude invalid manipulators so that their delayed actions cannot keep an old override active.
+    return std::any_of(std::begin(manipulators_),
+                       std::end(manipulators_),
+                       [](auto& m) {
+                         return m->get_validity() == validity::valid &&
+                                m->uses_caps_lock_led_override();
                        });
   }
 
