@@ -125,6 +125,37 @@ def print_coverage(resources):
         print(f"{language:<8}  {count} / {total}  {count / total:.1%}")
 
 
+def print_missing_translations(resources):
+    languages = sorted(
+        {
+            language
+            for strings in resources.values()
+            for translations in strings.values()
+            for language in translations
+            if language != "en"
+        }
+    )
+    missing = {
+        language: sorted(
+            key
+            for strings in resources.values()
+            for key, translations in strings.items()
+            if language not in translations
+        )
+        for language in languages
+    }
+    if not any(missing.values()):
+        return
+
+    print()
+    print("Missing translations:")
+    for language, keys in missing.items():
+        if keys:
+            print(f"{language}:")
+            for key in keys:
+                print(f"  {key}")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Validate, format, or compile translation resources"
@@ -146,6 +177,7 @@ if __name__ == "__main__":
             path.write_text(format_strings(strings), encoding="utf-8")
     else:
         print_coverage(resources)
+        print_missing_translations(resources)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(

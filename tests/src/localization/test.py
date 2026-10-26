@@ -109,8 +109,29 @@ class LocalizationResourcesTests(unittest.TestCase):
                     ["en", "2", "/", "2", "100.0%"],
                     ["fr", "1", "/", "2", "50.0%"],
                     ["ja", "1", "/", "2", "50.0%"],
+                    [],
+                    ["Missing", "translations:"],
+                    ["fr:"],
+                    ["setting"],
+                    ["ja:"],
+                    ["setting"],
                 ],
             )
+
+    def test_no_missing_translations_are_not_printed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            (directory / "shared.json").write_text(
+                '{"first":{"en":"First","ja":"最初"},'
+                '"second":{"en":"Second","ja":"次"}}'
+            )
+            result = subprocess.run(
+                ["/usr/bin/python3", str(SCRIPT), "--directory", temporary],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            self.assertNotIn("Missing translations", result.stdout)
 
     def test_translation_arrays(self):
         strings = {
