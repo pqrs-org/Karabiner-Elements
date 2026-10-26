@@ -959,7 +959,8 @@ private:
       state = caps_lock_led_override_manager_->get_override();
     }
 
-    if (!state && last_caps_lock_state_) {
+    if (!state &&
+        last_caps_lock_state_) {
       state = *last_caps_lock_state_ ? led_state::on : led_state::off;
     }
 

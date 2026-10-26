@@ -58,14 +58,14 @@ int main() {
   "caps_lock_led_override_manager on and off"_test = [] {
     auto c = manager_test_context();
 
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::on);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::on);
     c.flush_immediate_dispatcher_jobs();
 
     expect(c.get_manager().get_override() == krbn::led_state::on);
     expect(c.get_changes().size() == 1_ul);
     expect(c.get_changes().back() == krbn::led_state::on);
 
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::off);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::off);
     c.flush_immediate_dispatcher_jobs();
 
     expect(c.get_manager().get_override() == krbn::led_state::off);
@@ -76,8 +76,8 @@ int main() {
   "caps_lock_led_override_manager auto removes the override"_test = [] {
     auto c = manager_test_context();
 
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::on);
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::automatic);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::on);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::automatic);
     c.flush_immediate_dispatcher_jobs();
 
     expect(c.get_manager().get_override() == std::nullopt);
@@ -88,7 +88,7 @@ int main() {
   "caps_lock_led_override_manager async_clear_override"_test = [] {
     auto c = manager_test_context();
 
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::off);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::off);
     c.get_manager().async_clear_override();
     c.flush_immediate_dispatcher_jobs();
 
@@ -101,14 +101,14 @@ int main() {
     auto c = manager_test_context();
 
     // `auto` while no override is set must not emit a signal.
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::automatic);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::automatic);
     c.flush_immediate_dispatcher_jobs();
 
     expect(c.get_changes().empty());
 
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::on);
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::on);
-    c.get_manager().async_set_override(krbn::caps_lock_led_value::on);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::on);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::on);
+    c.get_manager().async_set_override(krbn::set_caps_lock_led_value::on);
     c.flush_immediate_dispatcher_jobs();
 
     expect(c.get_manager().get_override() == krbn::led_state::on);

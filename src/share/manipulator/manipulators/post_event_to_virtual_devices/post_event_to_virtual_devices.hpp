@@ -217,7 +217,7 @@ public:
           break;
 
         case event_queue::event::type::set_caps_lock_led:
-          if (auto value = front_input_event.get_event().get_if<caps_lock_led_value>()) {
+          if (auto value = front_input_event.get_event().get_if<set_caps_lock_led_value>()) {
             if (front_input_event.get_event_type() == event_type::key_down) {
               if (auto m = weak_caps_lock_led_override_manager_.lock()) {
                 m->async_set_override(*value);

@@ -191,10 +191,10 @@ void run_event_definition_test() {
     }
     // set_caps_lock_led
     {
-      for (const auto& [name, expected] : std::vector<std::pair<std::string, krbn::caps_lock_led_value>>{
-               {"on", krbn::caps_lock_led_value::on},
-               {"off", krbn::caps_lock_led_value::off},
-               {"auto", krbn::caps_lock_led_value::automatic},
+      for (const auto& [name, expected] : std::vector<std::pair<std::string, krbn::set_caps_lock_led_value>>{
+               {"on", krbn::set_caps_lock_led_value::on},
+               {"off", krbn::set_caps_lock_led_value::off},
+               {"auto", krbn::set_caps_lock_led_value::automatic},
            }) {
         auto json = nlohmann::json::object({
             {"set_caps_lock_led", name},
@@ -202,12 +202,12 @@ void run_event_definition_test() {
 
         krbn::manipulator::to_event_definition event_definition(json);
         expect(event_definition.get_event_definition().get_type() == krbn::manipulator::event_definition::type::set_caps_lock_led);
-        expect(*(event_definition.get_event_definition().get_if<krbn::caps_lock_led_value>()) == expected);
+        expect(*(event_definition.get_event_definition().get_if<krbn::set_caps_lock_led_value>()) == expected);
 
         // The event definition must be convertible into an event_queue::event.
         auto e = event_definition.get_event_definition().to_event();
         expect(e->get_type() == krbn::event_queue::event::type::set_caps_lock_led);
-        expect(*(e->get_if<krbn::caps_lock_led_value>()) == expected);
+        expect(*(e->get_if<krbn::set_caps_lock_led_value>()) == expected);
 
         // to_json and make_from_json must round-trip.
         expect(krbn::event_queue::event::make_from_json(e->to_json()) == *e);

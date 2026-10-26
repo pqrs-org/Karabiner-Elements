@@ -40,7 +40,7 @@ public:
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For type::select_input_source
                                manipulator_environment_variable_set_variable,            // For type::set_variable
                                notification_message,                                     // For type::set_notification_message
-                               caps_lock_led_value,                                      // For type::set_caps_lock_led
+                               set_caps_lock_led_value,                                  // For type::set_caps_lock_led
                                mouse_key,                                                // For type::mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For type::sticky_modifier
                                software_function,                                        // For type::software_function
@@ -86,7 +86,7 @@ public:
       case type::set_notification_message:
         return event_queue::event::make_set_notification_message_event(std::get<notification_message>(value_));
       case type::set_caps_lock_led:
-        return event_queue::event::make_set_caps_lock_led_event(std::get<caps_lock_led_value>(value_));
+        return event_queue::event::make_set_caps_lock_led_event(std::get<set_caps_lock_led_value>(value_));
       case type::mouse_key:
         return event_queue::event::make_mouse_key_event(std::get<mouse_key>(value_));
       case type::sticky_modifier:
@@ -296,7 +296,7 @@ public:
       type_ = type::set_caps_lock_led;
 
       try {
-        value_ = value.get<caps_lock_led_value>();
+        value_ = value.get<set_caps_lock_led_value>();
       } catch (const pqrs::json::unmarshal_error& e) {
         throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
       }

@@ -32,7 +32,7 @@ int main() {
     auto input_event_queue = std::make_shared<krbn::event_queue::queue>();
     auto output_event_queue = std::make_shared<krbn::event_queue::queue>();
 
-    auto manipulate = [&](krbn::caps_lock_led_value value, krbn::event_type event_type) {
+    auto manipulate = [&](krbn::set_caps_lock_led_value value, krbn::event_type event_type) {
       auto e = krbn::event_queue::event::make_set_caps_lock_led_event(value);
       krbn::event_queue::entry entry(krbn::device_id(1),
                                      krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
@@ -57,18 +57,18 @@ int main() {
 
     expect(caps_lock_led_override_manager->get_override() == std::nullopt);
 
-    manipulate(krbn::caps_lock_led_value::on, krbn::event_type::key_down);
+    manipulate(krbn::set_caps_lock_led_value::on, krbn::event_type::key_down);
     expect(caps_lock_led_override_manager->get_override() == krbn::led_state::on);
 
     // key_up must not change the override, otherwise every `set_caps_lock_led` would
     // be undone as soon as the key is released.
-    manipulate(krbn::caps_lock_led_value::off, krbn::event_type::key_up);
+    manipulate(krbn::set_caps_lock_led_value::off, krbn::event_type::key_up);
     expect(caps_lock_led_override_manager->get_override() == krbn::led_state::on);
 
-    manipulate(krbn::caps_lock_led_value::off, krbn::event_type::key_down);
+    manipulate(krbn::set_caps_lock_led_value::off, krbn::event_type::key_down);
     expect(caps_lock_led_override_manager->get_override() == krbn::led_state::off);
 
-    manipulate(krbn::caps_lock_led_value::automatic, krbn::event_type::key_down);
+    manipulate(krbn::set_caps_lock_led_value::automatic, krbn::event_type::key_down);
     expect(caps_lock_led_override_manager->get_override() == std::nullopt);
 
     // The events are forwarded to the output queue like the other virtual events.

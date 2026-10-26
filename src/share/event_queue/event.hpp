@@ -52,7 +52,7 @@ public:
                                std::vector<pqrs::osx::input_source_selector::specifier>, // For select_input_source
                                manipulator_environment_variable_set_variable,            // For set_variable
                                notification_message,                                     // For set_notification_message
-                               caps_lock_led_value,                                      // For set_caps_lock_led
+                               set_caps_lock_led_value,                                  // For set_caps_lock_led
                                mouse_key,                                                // For mouse_key
                                std::pair<modifier_flag, sticky_modifier_type>,           // For sticky_modifier
                                software_function,                                        // For software_function
@@ -90,7 +90,7 @@ public:
           } else if (key == "set_notification_message") {
             result.value_ = value.get<notification_message>();
           } else if (key == "set_caps_lock_led") {
-            result.value_ = value.get<caps_lock_led_value>();
+            result.value_ = value.get<set_caps_lock_led_value>();
           } else if (key == "mouse_key") {
             result.value_ = value.get<mouse_key>();
           } else if (key == "sticky_modifier") {
@@ -171,7 +171,7 @@ public:
         break;
 
       case type::set_caps_lock_led:
-        if (auto v = get_if<caps_lock_led_value>()) {
+        if (auto v = get_if<set_caps_lock_led_value>()) {
           json["set_caps_lock_led"] = *v;
         }
         break;
@@ -272,7 +272,7 @@ public:
     return e;
   }
 
-  static event make_set_caps_lock_led_event(caps_lock_led_value value) {
+  static event make_set_caps_lock_led_event(set_caps_lock_led_value value) {
     event e;
     e.type_ = type::set_caps_lock_led;
     e.value_ = value;
