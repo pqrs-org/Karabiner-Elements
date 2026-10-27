@@ -23,5 +23,6 @@
         "**/build/": true,
         "**/pkgroot/": true,
         "**/vendor/": true
-    }
+    },
+    "cmake.sourceDirectory": "/Users/minwang/Downloads/3130/a1/Karabiner-Elements/tests/src/device_properties"
 }

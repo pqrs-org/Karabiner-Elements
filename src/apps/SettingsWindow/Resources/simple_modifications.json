@@ -178,20 +178,20 @@
         ]
     },
     {
-    "label": "pipe (|)",
-    "not_from": true,
-    "data": [
-        {
-            "key_code": "backslash",
-            "modifiers": ["left_shift"]
-        }
-    ]
-    },
-    {
         "label": "backslash (\\)",
         "data": [
             {
                 "key_code": "backslash"
+            }
+        ]
+    },
+    {
+        "label": "pipe (|)",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "backslash",
+                "modifiers": ["left_shift"]
             }
         ]
     },
