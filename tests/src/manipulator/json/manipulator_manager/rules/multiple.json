@@ -29,9 +29,7 @@
         "from": {
             "key_code": "tab",
             "modifiers": {
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         },
         "to": [
@@ -71,9 +69,7 @@
             "key_code": "f1",
             "modifiers": {
                 "mandatory": [],
-                "optional": [
-                    "any"
-                ]
+                "optional": ["any"]
             }
         }
     }

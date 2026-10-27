@@ -85,7 +85,9 @@ struct LocalizationTests {
     try write(strings, to: extendedURL)
     let extended = try LocalizationCatalog(file: extendedURL)
     precondition(
-      AppLanguage.availableLanguages(catalog: extended) == ["en", "fr", "ja", "pt-BR", "zh-Hans", "zh-Hant"])
+      AppLanguage.availableLanguages(catalog: extended) == [
+        "en", "fr", "ja", "pt-BR", "zh-Hans", "zh-Hant",
+      ])
     for (language, translation) in [("pt-BR", "Ajustes…"), ("zh-Hant", "設定（繁體）")] {
       let locale = AppLanguage.locale(for: language, catalog: extended)
       precondition(locale.identifier == language)

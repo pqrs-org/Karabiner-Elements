@@ -1591,260 +1591,1022 @@
         "label_localization_key": "settings.key_picker.pointing_button.button1",
         "data": [{ "pointing_button": "button1" }]
     },
-    { "label_localization_key": "settings.key_picker.pointing_button.button2", "data": [{ "pointing_button": "button2" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button3", "data": [{ "pointing_button": "button3" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button4", "data": [{ "pointing_button": "button4" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button5", "data": [{ "pointing_button": "button5" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button6", "data": [{ "pointing_button": "button6" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button7", "data": [{ "pointing_button": "button7" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button8", "data": [{ "pointing_button": "button8" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button9", "data": [{ "pointing_button": "button9" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button10", "data": [{ "pointing_button": "button10" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button11", "data": [{ "pointing_button": "button11" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button12", "data": [{ "pointing_button": "button12" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button13", "data": [{ "pointing_button": "button13" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button14", "data": [{ "pointing_button": "button14" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button15", "data": [{ "pointing_button": "button15" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button16", "data": [{ "pointing_button": "button16" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button17", "data": [{ "pointing_button": "button17" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button18", "data": [{ "pointing_button": "button18" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button19", "data": [{ "pointing_button": "button19" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button20", "data": [{ "pointing_button": "button20" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button21", "data": [{ "pointing_button": "button21" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button22", "data": [{ "pointing_button": "button22" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button23", "data": [{ "pointing_button": "button23" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button24", "data": [{ "pointing_button": "button24" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button25", "data": [{ "pointing_button": "button25" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button26", "data": [{ "pointing_button": "button26" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button27", "data": [{ "pointing_button": "button27" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button28", "data": [{ "pointing_button": "button28" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button29", "data": [{ "pointing_button": "button29" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button30", "data": [{ "pointing_button": "button30" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button31", "data": [{ "pointing_button": "button31" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button32", "data": [{ "pointing_button": "button32" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button33", "data": [{ "pointing_button": "button33" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button34", "data": [{ "pointing_button": "button34" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button35", "data": [{ "pointing_button": "button35" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button36", "data": [{ "pointing_button": "button36" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button37", "data": [{ "pointing_button": "button37" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button38", "data": [{ "pointing_button": "button38" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button39", "data": [{ "pointing_button": "button39" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button40", "data": [{ "pointing_button": "button40" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button41", "data": [{ "pointing_button": "button41" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button42", "data": [{ "pointing_button": "button42" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button43", "data": [{ "pointing_button": "button43" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button44", "data": [{ "pointing_button": "button44" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button45", "data": [{ "pointing_button": "button45" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button46", "data": [{ "pointing_button": "button46" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button47", "data": [{ "pointing_button": "button47" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button48", "data": [{ "pointing_button": "button48" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button49", "data": [{ "pointing_button": "button49" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button50", "data": [{ "pointing_button": "button50" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button51", "data": [{ "pointing_button": "button51" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button52", "data": [{ "pointing_button": "button52" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button53", "data": [{ "pointing_button": "button53" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button54", "data": [{ "pointing_button": "button54" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button55", "data": [{ "pointing_button": "button55" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button56", "data": [{ "pointing_button": "button56" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button57", "data": [{ "pointing_button": "button57" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button58", "data": [{ "pointing_button": "button58" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button59", "data": [{ "pointing_button": "button59" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button60", "data": [{ "pointing_button": "button60" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button61", "data": [{ "pointing_button": "button61" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button62", "data": [{ "pointing_button": "button62" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button63", "data": [{ "pointing_button": "button63" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button64", "data": [{ "pointing_button": "button64" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button65", "data": [{ "pointing_button": "button65" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button66", "data": [{ "pointing_button": "button66" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button67", "data": [{ "pointing_button": "button67" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button68", "data": [{ "pointing_button": "button68" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button69", "data": [{ "pointing_button": "button69" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button70", "data": [{ "pointing_button": "button70" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button71", "data": [{ "pointing_button": "button71" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button72", "data": [{ "pointing_button": "button72" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button73", "data": [{ "pointing_button": "button73" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button74", "data": [{ "pointing_button": "button74" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button75", "data": [{ "pointing_button": "button75" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button76", "data": [{ "pointing_button": "button76" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button77", "data": [{ "pointing_button": "button77" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button78", "data": [{ "pointing_button": "button78" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button79", "data": [{ "pointing_button": "button79" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button80", "data": [{ "pointing_button": "button80" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button81", "data": [{ "pointing_button": "button81" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button82", "data": [{ "pointing_button": "button82" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button83", "data": [{ "pointing_button": "button83" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button84", "data": [{ "pointing_button": "button84" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button85", "data": [{ "pointing_button": "button85" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button86", "data": [{ "pointing_button": "button86" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button87", "data": [{ "pointing_button": "button87" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button88", "data": [{ "pointing_button": "button88" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button89", "data": [{ "pointing_button": "button89" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button90", "data": [{ "pointing_button": "button90" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button91", "data": [{ "pointing_button": "button91" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button92", "data": [{ "pointing_button": "button92" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button93", "data": [{ "pointing_button": "button93" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button94", "data": [{ "pointing_button": "button94" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button95", "data": [{ "pointing_button": "button95" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button96", "data": [{ "pointing_button": "button96" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button97", "data": [{ "pointing_button": "button97" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button98", "data": [{ "pointing_button": "button98" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button99", "data": [{ "pointing_button": "button99" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button100", "data": [{ "pointing_button": "button100" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button101", "data": [{ "pointing_button": "button101" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button102", "data": [{ "pointing_button": "button102" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button103", "data": [{ "pointing_button": "button103" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button104", "data": [{ "pointing_button": "button104" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button105", "data": [{ "pointing_button": "button105" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button106", "data": [{ "pointing_button": "button106" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button107", "data": [{ "pointing_button": "button107" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button108", "data": [{ "pointing_button": "button108" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button109", "data": [{ "pointing_button": "button109" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button110", "data": [{ "pointing_button": "button110" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button111", "data": [{ "pointing_button": "button111" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button112", "data": [{ "pointing_button": "button112" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button113", "data": [{ "pointing_button": "button113" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button114", "data": [{ "pointing_button": "button114" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button115", "data": [{ "pointing_button": "button115" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button116", "data": [{ "pointing_button": "button116" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button117", "data": [{ "pointing_button": "button117" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button118", "data": [{ "pointing_button": "button118" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button119", "data": [{ "pointing_button": "button119" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button120", "data": [{ "pointing_button": "button120" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button121", "data": [{ "pointing_button": "button121" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button122", "data": [{ "pointing_button": "button122" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button123", "data": [{ "pointing_button": "button123" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button124", "data": [{ "pointing_button": "button124" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button125", "data": [{ "pointing_button": "button125" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button126", "data": [{ "pointing_button": "button126" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button127", "data": [{ "pointing_button": "button127" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button128", "data": [{ "pointing_button": "button128" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button129", "data": [{ "pointing_button": "button129" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button130", "data": [{ "pointing_button": "button130" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button131", "data": [{ "pointing_button": "button131" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button132", "data": [{ "pointing_button": "button132" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button133", "data": [{ "pointing_button": "button133" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button134", "data": [{ "pointing_button": "button134" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button135", "data": [{ "pointing_button": "button135" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button136", "data": [{ "pointing_button": "button136" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button137", "data": [{ "pointing_button": "button137" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button138", "data": [{ "pointing_button": "button138" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button139", "data": [{ "pointing_button": "button139" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button140", "data": [{ "pointing_button": "button140" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button141", "data": [{ "pointing_button": "button141" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button142", "data": [{ "pointing_button": "button142" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button143", "data": [{ "pointing_button": "button143" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button144", "data": [{ "pointing_button": "button144" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button145", "data": [{ "pointing_button": "button145" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button146", "data": [{ "pointing_button": "button146" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button147", "data": [{ "pointing_button": "button147" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button148", "data": [{ "pointing_button": "button148" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button149", "data": [{ "pointing_button": "button149" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button150", "data": [{ "pointing_button": "button150" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button151", "data": [{ "pointing_button": "button151" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button152", "data": [{ "pointing_button": "button152" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button153", "data": [{ "pointing_button": "button153" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button154", "data": [{ "pointing_button": "button154" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button155", "data": [{ "pointing_button": "button155" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button156", "data": [{ "pointing_button": "button156" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button157", "data": [{ "pointing_button": "button157" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button158", "data": [{ "pointing_button": "button158" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button159", "data": [{ "pointing_button": "button159" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button160", "data": [{ "pointing_button": "button160" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button161", "data": [{ "pointing_button": "button161" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button162", "data": [{ "pointing_button": "button162" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button163", "data": [{ "pointing_button": "button163" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button164", "data": [{ "pointing_button": "button164" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button165", "data": [{ "pointing_button": "button165" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button166", "data": [{ "pointing_button": "button166" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button167", "data": [{ "pointing_button": "button167" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button168", "data": [{ "pointing_button": "button168" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button169", "data": [{ "pointing_button": "button169" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button170", "data": [{ "pointing_button": "button170" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button171", "data": [{ "pointing_button": "button171" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button172", "data": [{ "pointing_button": "button172" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button173", "data": [{ "pointing_button": "button173" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button174", "data": [{ "pointing_button": "button174" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button175", "data": [{ "pointing_button": "button175" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button176", "data": [{ "pointing_button": "button176" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button177", "data": [{ "pointing_button": "button177" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button178", "data": [{ "pointing_button": "button178" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button179", "data": [{ "pointing_button": "button179" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button180", "data": [{ "pointing_button": "button180" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button181", "data": [{ "pointing_button": "button181" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button182", "data": [{ "pointing_button": "button182" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button183", "data": [{ "pointing_button": "button183" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button184", "data": [{ "pointing_button": "button184" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button185", "data": [{ "pointing_button": "button185" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button186", "data": [{ "pointing_button": "button186" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button187", "data": [{ "pointing_button": "button187" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button188", "data": [{ "pointing_button": "button188" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button189", "data": [{ "pointing_button": "button189" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button190", "data": [{ "pointing_button": "button190" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button191", "data": [{ "pointing_button": "button191" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button192", "data": [{ "pointing_button": "button192" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button193", "data": [{ "pointing_button": "button193" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button194", "data": [{ "pointing_button": "button194" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button195", "data": [{ "pointing_button": "button195" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button196", "data": [{ "pointing_button": "button196" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button197", "data": [{ "pointing_button": "button197" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button198", "data": [{ "pointing_button": "button198" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button199", "data": [{ "pointing_button": "button199" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button200", "data": [{ "pointing_button": "button200" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button201", "data": [{ "pointing_button": "button201" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button202", "data": [{ "pointing_button": "button202" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button203", "data": [{ "pointing_button": "button203" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button204", "data": [{ "pointing_button": "button204" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button205", "data": [{ "pointing_button": "button205" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button206", "data": [{ "pointing_button": "button206" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button207", "data": [{ "pointing_button": "button207" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button208", "data": [{ "pointing_button": "button208" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button209", "data": [{ "pointing_button": "button209" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button210", "data": [{ "pointing_button": "button210" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button211", "data": [{ "pointing_button": "button211" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button212", "data": [{ "pointing_button": "button212" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button213", "data": [{ "pointing_button": "button213" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button214", "data": [{ "pointing_button": "button214" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button215", "data": [{ "pointing_button": "button215" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button216", "data": [{ "pointing_button": "button216" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button217", "data": [{ "pointing_button": "button217" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button218", "data": [{ "pointing_button": "button218" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button219", "data": [{ "pointing_button": "button219" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button220", "data": [{ "pointing_button": "button220" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button221", "data": [{ "pointing_button": "button221" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button222", "data": [{ "pointing_button": "button222" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button223", "data": [{ "pointing_button": "button223" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button224", "data": [{ "pointing_button": "button224" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button225", "data": [{ "pointing_button": "button225" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button226", "data": [{ "pointing_button": "button226" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button227", "data": [{ "pointing_button": "button227" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button228", "data": [{ "pointing_button": "button228" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button229", "data": [{ "pointing_button": "button229" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button230", "data": [{ "pointing_button": "button230" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button231", "data": [{ "pointing_button": "button231" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button232", "data": [{ "pointing_button": "button232" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button233", "data": [{ "pointing_button": "button233" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button234", "data": [{ "pointing_button": "button234" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button235", "data": [{ "pointing_button": "button235" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button236", "data": [{ "pointing_button": "button236" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button237", "data": [{ "pointing_button": "button237" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button238", "data": [{ "pointing_button": "button238" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button239", "data": [{ "pointing_button": "button239" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button240", "data": [{ "pointing_button": "button240" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button241", "data": [{ "pointing_button": "button241" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button242", "data": [{ "pointing_button": "button242" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button243", "data": [{ "pointing_button": "button243" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button244", "data": [{ "pointing_button": "button244" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button245", "data": [{ "pointing_button": "button245" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button246", "data": [{ "pointing_button": "button246" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button247", "data": [{ "pointing_button": "button247" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button248", "data": [{ "pointing_button": "button248" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button249", "data": [{ "pointing_button": "button249" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button250", "data": [{ "pointing_button": "button250" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button251", "data": [{ "pointing_button": "button251" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button252", "data": [{ "pointing_button": "button252" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button253", "data": [{ "pointing_button": "button253" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button254", "data": [{ "pointing_button": "button254" }] },
-    { "label_localization_key": "settings.key_picker.pointing_button.button255", "data": [{ "pointing_button": "button255" }] },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button2",
+        "data": [{ "pointing_button": "button2" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button3",
+        "data": [{ "pointing_button": "button3" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button4",
+        "data": [{ "pointing_button": "button4" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button5",
+        "data": [{ "pointing_button": "button5" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button6",
+        "data": [{ "pointing_button": "button6" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button7",
+        "data": [{ "pointing_button": "button7" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button8",
+        "data": [{ "pointing_button": "button8" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button9",
+        "data": [{ "pointing_button": "button9" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button10",
+        "data": [{ "pointing_button": "button10" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button11",
+        "data": [{ "pointing_button": "button11" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button12",
+        "data": [{ "pointing_button": "button12" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button13",
+        "data": [{ "pointing_button": "button13" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button14",
+        "data": [{ "pointing_button": "button14" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button15",
+        "data": [{ "pointing_button": "button15" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button16",
+        "data": [{ "pointing_button": "button16" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button17",
+        "data": [{ "pointing_button": "button17" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button18",
+        "data": [{ "pointing_button": "button18" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button19",
+        "data": [{ "pointing_button": "button19" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button20",
+        "data": [{ "pointing_button": "button20" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button21",
+        "data": [{ "pointing_button": "button21" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button22",
+        "data": [{ "pointing_button": "button22" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button23",
+        "data": [{ "pointing_button": "button23" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button24",
+        "data": [{ "pointing_button": "button24" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button25",
+        "data": [{ "pointing_button": "button25" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button26",
+        "data": [{ "pointing_button": "button26" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button27",
+        "data": [{ "pointing_button": "button27" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button28",
+        "data": [{ "pointing_button": "button28" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button29",
+        "data": [{ "pointing_button": "button29" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button30",
+        "data": [{ "pointing_button": "button30" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button31",
+        "data": [{ "pointing_button": "button31" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button32",
+        "data": [{ "pointing_button": "button32" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button33",
+        "data": [{ "pointing_button": "button33" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button34",
+        "data": [{ "pointing_button": "button34" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button35",
+        "data": [{ "pointing_button": "button35" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button36",
+        "data": [{ "pointing_button": "button36" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button37",
+        "data": [{ "pointing_button": "button37" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button38",
+        "data": [{ "pointing_button": "button38" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button39",
+        "data": [{ "pointing_button": "button39" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button40",
+        "data": [{ "pointing_button": "button40" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button41",
+        "data": [{ "pointing_button": "button41" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button42",
+        "data": [{ "pointing_button": "button42" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button43",
+        "data": [{ "pointing_button": "button43" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button44",
+        "data": [{ "pointing_button": "button44" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button45",
+        "data": [{ "pointing_button": "button45" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button46",
+        "data": [{ "pointing_button": "button46" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button47",
+        "data": [{ "pointing_button": "button47" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button48",
+        "data": [{ "pointing_button": "button48" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button49",
+        "data": [{ "pointing_button": "button49" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button50",
+        "data": [{ "pointing_button": "button50" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button51",
+        "data": [{ "pointing_button": "button51" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button52",
+        "data": [{ "pointing_button": "button52" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button53",
+        "data": [{ "pointing_button": "button53" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button54",
+        "data": [{ "pointing_button": "button54" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button55",
+        "data": [{ "pointing_button": "button55" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button56",
+        "data": [{ "pointing_button": "button56" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button57",
+        "data": [{ "pointing_button": "button57" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button58",
+        "data": [{ "pointing_button": "button58" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button59",
+        "data": [{ "pointing_button": "button59" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button60",
+        "data": [{ "pointing_button": "button60" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button61",
+        "data": [{ "pointing_button": "button61" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button62",
+        "data": [{ "pointing_button": "button62" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button63",
+        "data": [{ "pointing_button": "button63" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button64",
+        "data": [{ "pointing_button": "button64" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button65",
+        "data": [{ "pointing_button": "button65" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button66",
+        "data": [{ "pointing_button": "button66" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button67",
+        "data": [{ "pointing_button": "button67" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button68",
+        "data": [{ "pointing_button": "button68" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button69",
+        "data": [{ "pointing_button": "button69" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button70",
+        "data": [{ "pointing_button": "button70" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button71",
+        "data": [{ "pointing_button": "button71" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button72",
+        "data": [{ "pointing_button": "button72" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button73",
+        "data": [{ "pointing_button": "button73" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button74",
+        "data": [{ "pointing_button": "button74" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button75",
+        "data": [{ "pointing_button": "button75" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button76",
+        "data": [{ "pointing_button": "button76" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button77",
+        "data": [{ "pointing_button": "button77" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button78",
+        "data": [{ "pointing_button": "button78" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button79",
+        "data": [{ "pointing_button": "button79" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button80",
+        "data": [{ "pointing_button": "button80" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button81",
+        "data": [{ "pointing_button": "button81" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button82",
+        "data": [{ "pointing_button": "button82" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button83",
+        "data": [{ "pointing_button": "button83" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button84",
+        "data": [{ "pointing_button": "button84" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button85",
+        "data": [{ "pointing_button": "button85" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button86",
+        "data": [{ "pointing_button": "button86" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button87",
+        "data": [{ "pointing_button": "button87" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button88",
+        "data": [{ "pointing_button": "button88" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button89",
+        "data": [{ "pointing_button": "button89" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button90",
+        "data": [{ "pointing_button": "button90" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button91",
+        "data": [{ "pointing_button": "button91" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button92",
+        "data": [{ "pointing_button": "button92" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button93",
+        "data": [{ "pointing_button": "button93" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button94",
+        "data": [{ "pointing_button": "button94" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button95",
+        "data": [{ "pointing_button": "button95" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button96",
+        "data": [{ "pointing_button": "button96" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button97",
+        "data": [{ "pointing_button": "button97" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button98",
+        "data": [{ "pointing_button": "button98" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button99",
+        "data": [{ "pointing_button": "button99" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button100",
+        "data": [{ "pointing_button": "button100" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button101",
+        "data": [{ "pointing_button": "button101" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button102",
+        "data": [{ "pointing_button": "button102" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button103",
+        "data": [{ "pointing_button": "button103" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button104",
+        "data": [{ "pointing_button": "button104" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button105",
+        "data": [{ "pointing_button": "button105" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button106",
+        "data": [{ "pointing_button": "button106" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button107",
+        "data": [{ "pointing_button": "button107" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button108",
+        "data": [{ "pointing_button": "button108" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button109",
+        "data": [{ "pointing_button": "button109" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button110",
+        "data": [{ "pointing_button": "button110" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button111",
+        "data": [{ "pointing_button": "button111" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button112",
+        "data": [{ "pointing_button": "button112" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button113",
+        "data": [{ "pointing_button": "button113" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button114",
+        "data": [{ "pointing_button": "button114" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button115",
+        "data": [{ "pointing_button": "button115" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button116",
+        "data": [{ "pointing_button": "button116" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button117",
+        "data": [{ "pointing_button": "button117" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button118",
+        "data": [{ "pointing_button": "button118" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button119",
+        "data": [{ "pointing_button": "button119" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button120",
+        "data": [{ "pointing_button": "button120" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button121",
+        "data": [{ "pointing_button": "button121" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button122",
+        "data": [{ "pointing_button": "button122" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button123",
+        "data": [{ "pointing_button": "button123" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button124",
+        "data": [{ "pointing_button": "button124" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button125",
+        "data": [{ "pointing_button": "button125" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button126",
+        "data": [{ "pointing_button": "button126" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button127",
+        "data": [{ "pointing_button": "button127" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button128",
+        "data": [{ "pointing_button": "button128" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button129",
+        "data": [{ "pointing_button": "button129" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button130",
+        "data": [{ "pointing_button": "button130" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button131",
+        "data": [{ "pointing_button": "button131" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button132",
+        "data": [{ "pointing_button": "button132" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button133",
+        "data": [{ "pointing_button": "button133" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button134",
+        "data": [{ "pointing_button": "button134" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button135",
+        "data": [{ "pointing_button": "button135" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button136",
+        "data": [{ "pointing_button": "button136" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button137",
+        "data": [{ "pointing_button": "button137" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button138",
+        "data": [{ "pointing_button": "button138" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button139",
+        "data": [{ "pointing_button": "button139" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button140",
+        "data": [{ "pointing_button": "button140" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button141",
+        "data": [{ "pointing_button": "button141" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button142",
+        "data": [{ "pointing_button": "button142" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button143",
+        "data": [{ "pointing_button": "button143" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button144",
+        "data": [{ "pointing_button": "button144" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button145",
+        "data": [{ "pointing_button": "button145" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button146",
+        "data": [{ "pointing_button": "button146" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button147",
+        "data": [{ "pointing_button": "button147" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button148",
+        "data": [{ "pointing_button": "button148" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button149",
+        "data": [{ "pointing_button": "button149" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button150",
+        "data": [{ "pointing_button": "button150" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button151",
+        "data": [{ "pointing_button": "button151" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button152",
+        "data": [{ "pointing_button": "button152" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button153",
+        "data": [{ "pointing_button": "button153" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button154",
+        "data": [{ "pointing_button": "button154" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button155",
+        "data": [{ "pointing_button": "button155" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button156",
+        "data": [{ "pointing_button": "button156" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button157",
+        "data": [{ "pointing_button": "button157" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button158",
+        "data": [{ "pointing_button": "button158" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button159",
+        "data": [{ "pointing_button": "button159" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button160",
+        "data": [{ "pointing_button": "button160" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button161",
+        "data": [{ "pointing_button": "button161" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button162",
+        "data": [{ "pointing_button": "button162" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button163",
+        "data": [{ "pointing_button": "button163" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button164",
+        "data": [{ "pointing_button": "button164" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button165",
+        "data": [{ "pointing_button": "button165" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button166",
+        "data": [{ "pointing_button": "button166" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button167",
+        "data": [{ "pointing_button": "button167" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button168",
+        "data": [{ "pointing_button": "button168" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button169",
+        "data": [{ "pointing_button": "button169" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button170",
+        "data": [{ "pointing_button": "button170" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button171",
+        "data": [{ "pointing_button": "button171" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button172",
+        "data": [{ "pointing_button": "button172" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button173",
+        "data": [{ "pointing_button": "button173" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button174",
+        "data": [{ "pointing_button": "button174" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button175",
+        "data": [{ "pointing_button": "button175" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button176",
+        "data": [{ "pointing_button": "button176" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button177",
+        "data": [{ "pointing_button": "button177" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button178",
+        "data": [{ "pointing_button": "button178" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button179",
+        "data": [{ "pointing_button": "button179" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button180",
+        "data": [{ "pointing_button": "button180" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button181",
+        "data": [{ "pointing_button": "button181" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button182",
+        "data": [{ "pointing_button": "button182" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button183",
+        "data": [{ "pointing_button": "button183" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button184",
+        "data": [{ "pointing_button": "button184" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button185",
+        "data": [{ "pointing_button": "button185" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button186",
+        "data": [{ "pointing_button": "button186" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button187",
+        "data": [{ "pointing_button": "button187" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button188",
+        "data": [{ "pointing_button": "button188" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button189",
+        "data": [{ "pointing_button": "button189" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button190",
+        "data": [{ "pointing_button": "button190" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button191",
+        "data": [{ "pointing_button": "button191" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button192",
+        "data": [{ "pointing_button": "button192" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button193",
+        "data": [{ "pointing_button": "button193" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button194",
+        "data": [{ "pointing_button": "button194" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button195",
+        "data": [{ "pointing_button": "button195" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button196",
+        "data": [{ "pointing_button": "button196" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button197",
+        "data": [{ "pointing_button": "button197" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button198",
+        "data": [{ "pointing_button": "button198" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button199",
+        "data": [{ "pointing_button": "button199" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button200",
+        "data": [{ "pointing_button": "button200" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button201",
+        "data": [{ "pointing_button": "button201" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button202",
+        "data": [{ "pointing_button": "button202" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button203",
+        "data": [{ "pointing_button": "button203" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button204",
+        "data": [{ "pointing_button": "button204" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button205",
+        "data": [{ "pointing_button": "button205" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button206",
+        "data": [{ "pointing_button": "button206" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button207",
+        "data": [{ "pointing_button": "button207" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button208",
+        "data": [{ "pointing_button": "button208" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button209",
+        "data": [{ "pointing_button": "button209" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button210",
+        "data": [{ "pointing_button": "button210" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button211",
+        "data": [{ "pointing_button": "button211" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button212",
+        "data": [{ "pointing_button": "button212" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button213",
+        "data": [{ "pointing_button": "button213" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button214",
+        "data": [{ "pointing_button": "button214" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button215",
+        "data": [{ "pointing_button": "button215" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button216",
+        "data": [{ "pointing_button": "button216" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button217",
+        "data": [{ "pointing_button": "button217" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button218",
+        "data": [{ "pointing_button": "button218" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button219",
+        "data": [{ "pointing_button": "button219" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button220",
+        "data": [{ "pointing_button": "button220" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button221",
+        "data": [{ "pointing_button": "button221" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button222",
+        "data": [{ "pointing_button": "button222" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button223",
+        "data": [{ "pointing_button": "button223" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button224",
+        "data": [{ "pointing_button": "button224" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button225",
+        "data": [{ "pointing_button": "button225" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button226",
+        "data": [{ "pointing_button": "button226" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button227",
+        "data": [{ "pointing_button": "button227" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button228",
+        "data": [{ "pointing_button": "button228" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button229",
+        "data": [{ "pointing_button": "button229" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button230",
+        "data": [{ "pointing_button": "button230" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button231",
+        "data": [{ "pointing_button": "button231" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button232",
+        "data": [{ "pointing_button": "button232" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button233",
+        "data": [{ "pointing_button": "button233" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button234",
+        "data": [{ "pointing_button": "button234" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button235",
+        "data": [{ "pointing_button": "button235" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button236",
+        "data": [{ "pointing_button": "button236" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button237",
+        "data": [{ "pointing_button": "button237" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button238",
+        "data": [{ "pointing_button": "button238" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button239",
+        "data": [{ "pointing_button": "button239" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button240",
+        "data": [{ "pointing_button": "button240" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button241",
+        "data": [{ "pointing_button": "button241" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button242",
+        "data": [{ "pointing_button": "button242" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button243",
+        "data": [{ "pointing_button": "button243" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button244",
+        "data": [{ "pointing_button": "button244" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button245",
+        "data": [{ "pointing_button": "button245" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button246",
+        "data": [{ "pointing_button": "button246" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button247",
+        "data": [{ "pointing_button": "button247" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button248",
+        "data": [{ "pointing_button": "button248" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button249",
+        "data": [{ "pointing_button": "button249" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button250",
+        "data": [{ "pointing_button": "button250" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button251",
+        "data": [{ "pointing_button": "button251" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button252",
+        "data": [{ "pointing_button": "button252" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button253",
+        "data": [{ "pointing_button": "button253" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button254",
+        "data": [{ "pointing_button": "button254" }]
+    },
+    {
+        "label_localization_key": "settings.key_picker.pointing_button.button255",
+        "data": [{ "pointing_button": "button255" }]
+    },
     {
         "category_localization_key": "settings.key_picker.dpad"
     },

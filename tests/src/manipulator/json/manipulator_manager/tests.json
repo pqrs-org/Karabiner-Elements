@@ -1,25 +1,19 @@
 [
     {
         "description": "spacebar -> tab",
-        "rules": [
-            "json/manipulator_manager/rules/spacebar_to_tab.json"
-        ],
+        "rules": ["json/manipulator_manager/rules/spacebar_to_tab.json"],
         "input_event_queue": "json/manipulator_manager/input_event_queue/spacebar_to_tab.json",
         "expected_event_queue": "json/manipulator_manager/expected_event_queue/spacebar_to_tab.json"
     },
     {
         "description": "spacebar -> tab (key_up only)",
-        "rules": [
-            "json/manipulator_manager/rules/spacebar_to_tab.json"
-        ],
+        "rules": ["json/manipulator_manager/rules/spacebar_to_tab.json"],
         "input_event_queue": "json/manipulator_manager/input_event_queue/spacebar_to_tab_key_up.json",
         "expected_event_queue": "json/manipulator_manager/expected_event_queue/spacebar_to_tab_key_up.json"
     },
     {
         "description": "multiple",
-        "rules": [
-            "json/manipulator_manager/rules/multiple.json"
-        ],
+        "rules": ["json/manipulator_manager/rules/multiple.json"],
         "input_event_queue": "json/manipulator_manager/input_event_queue/multiple.json",
         "expected_event_queue": "json/manipulator_manager/expected_event_queue/multiple.json"
     },
@@ -52,17 +46,13 @@
     },
     {
         "description": "modifiers",
-        "rules": [
-            "json/manipulator_manager/rules/fn_spacebar_to_fn_tab.json"
-        ],
+        "rules": ["json/manipulator_manager/rules/fn_spacebar_to_fn_tab.json"],
         "input_event_queue": "json/manipulator_manager/input_event_queue/modifiers.json",
         "expected_event_queue": "json/manipulator_manager/expected_event_queue/modifiers.json"
     },
     {
         "description": "invalidate_manipulators_1",
-        "rules": [
-            "json/manipulator_manager/rules/spacebar_to_tab.json"
-        ],
+        "rules": ["json/manipulator_manager/rules/spacebar_to_tab.json"],
         "input_event_queue": "json/manipulator_manager/input_event_queue/invalidate_manipulators_1.json",
         "expected_event_queue": "json/manipulator_manager/expected_event_queue/invalidate_manipulators_1.json"
     }

@@ -56,8 +56,7 @@
         "type": "basic"
     },
     {
-        "description":
-            "left_shift+f4 -> right_shift,right_control (from: modifier+key)",
+        "description": "left_shift+f4 -> right_shift,right_control (from: modifier+key)",
         "from": {
             "key_code": "f4",
             "modifiers": {

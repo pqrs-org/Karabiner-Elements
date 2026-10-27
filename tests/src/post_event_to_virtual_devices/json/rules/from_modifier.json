@@ -51,8 +51,7 @@
         ]
     },
     {
-        "description":
-            "left_command -> fn+right_option (modifier -> modifier+modifier)",
+        "description": "left_command -> fn+right_option (modifier -> modifier+modifier)",
         "type": "basic",
         "from": {
             "key_code": "left_command",
@@ -69,8 +68,7 @@
         ]
     },
     {
-        "description":
-            "right_command+right_option -> f5 (modifier+modifier -> key)",
+        "description": "right_command+right_option -> f5 (modifier+modifier -> key)",
         "type": "basic",
         "from": {
             "key_code": "right_option",
@@ -87,8 +85,7 @@
         ]
     },
     {
-        "description":
-            "right_control+right_option -> left_shift (modifier+modifier -> modifier)",
+        "description": "right_control+right_option -> left_shift (modifier+modifier -> modifier)",
         "type": "basic",
         "from": {
             "key_code": "right_option",
@@ -105,8 +102,7 @@
         ]
     },
     {
-        "description":
-            "right_control+right_command -> left_shift+f7 (modifier+modifier -> modifier+key)",
+        "description": "right_control+right_command -> left_shift+f7 (modifier+modifier -> modifier+key)",
         "type": "basic",
         "from": {
             "key_code": "right_command",
@@ -123,8 +119,7 @@
         ]
     },
     {
-        "description":
-            "right_command+right_control -> left_shift+left_option (modifier+modifier -> modifier+modifier)",
+        "description": "right_command+right_control -> left_shift+left_option (modifier+modifier -> modifier+modifier)",
         "type": "basic",
         "from": {
             "key_code": "right_control",

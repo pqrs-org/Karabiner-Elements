@@ -20,7 +20,8 @@ struct SimpleModificationDefinitionsTests {
       for field in ["label_localization_key", "category_localization_key"] {
         if let key = row[field] as? String {
           precondition(catalog.strings[key]?["en"] != nil, "Missing translation: \(key)")
-          precondition(catalog.strings[key]?["zh-Hans"] != nil, "Missing zh-Hans translation: \(key)")
+          precondition(
+            catalog.strings[key]?["zh-Hans"] != nil, "Missing zh-Hans translation: \(key)")
         }
       }
     }

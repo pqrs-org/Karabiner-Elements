@@ -46,7 +46,7 @@ notarize:
 staple:
 	xcrun stapler staple Karabiner-Elements-$(VERSION).dmg
 
-format: clang-format swift-format shell-format ruff-format localization-format
+format: clang-format swift-format shell-format ruff-format prettier-format localization-format
 
 clang-format:
 	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
@@ -59,6 +59,23 @@ shell-format:
 
 ruff-format:
 	git ls-files -z -- '*.py' ':(exclude)vendor/**' ':(exclude)docs/vendor/**' | xargs -0 ruff format
+
+prettier-format:
+	git ls-files -z -- \
+		'*.json' \
+		'*.md' \
+		':(exclude)vendor/**' \
+		':(exclude)docs/vendor/**' \
+		':(exclude)**/*.icon/icon.json' \
+		':(exclude)**/Assets.xcassets/**' \
+		':(exclude)src/apps/localization/Resources/**' \
+		':(exclude)tests/src/complex_modifications_assets/json/complex_modifications/broken.json' \
+		':(exclude)tests/src/complex_modifications_assets/json/complex_modifications/broken_link.json' \
+		':(exclude)tests/src/complex_modifications_assets/json/complex_modifications/link.json' \
+		':(exclude)tests/src/complex_modifications_assets/json/lint/assets/broken.json' \
+		':(exclude)tests/src/core_configuration/json/broken.json' \
+		':(exclude)tests/src/post_event_to_virtual_devices/json/expected_post_event_to_virtual_devices_queue/**' | \
+		xargs -0 prettier --write
 
 localization-format:
 	$(MAKE) -C src/apps/localization format

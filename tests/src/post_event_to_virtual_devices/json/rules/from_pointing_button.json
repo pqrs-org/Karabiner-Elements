@@ -16,8 +16,7 @@
         ]
     },
     {
-        "description":
-            "button11 -> left_command+button12 (button to modifier+button)",
+        "description": "button11 -> left_command+button12 (button to modifier+button)",
         "type": "basic",
         "from": {
             "pointing_button": "button11",
@@ -33,8 +32,7 @@
         ]
     },
     {
-        "description":
-            "left_control+button12 -> button13 (modifier+button to button)",
+        "description": "left_control+button12 -> button13 (modifier+button to button)",
         "type": "basic",
         "from": {
             "pointing_button": "button12",
@@ -50,8 +48,7 @@
         ]
     },
     {
-        "description":
-            "right_control+button13 -> left_option+button14 (modifier+button to modifier+button)",
+        "description": "right_control+button13 -> left_option+button14 (modifier+button to modifier+button)",
         "type": "basic",
         "from": {
             "pointing_button": "button13",

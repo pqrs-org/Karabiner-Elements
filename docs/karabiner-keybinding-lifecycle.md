@@ -14,8 +14,8 @@ For a typical complex modification rule, the path is:
 4. Matching manipulator emits one or more `to` events.
 5. `post_event_to_virtual_devices` schedules output events.
 6. Events are dispatched either:
-   - to virtual HID (key/mouse reports), or
-   - to `console_user_server` (shell command, send user command, input source change, software function).
+    - to virtual HID (key/mouse reports), or
+    - to `console_user_server` (shell command, send user command, input source change, software function).
 
 That split is central to understanding Karabiner internals.
 
@@ -182,16 +182,16 @@ Common causes:
 For newcomers, this order gives the fastest mental model:
 
 1. event definition parsing
-   - `src/share/manipulator/types/event_definition.hpp`
-   - `src/share/manipulator/types/to_event_definition.hpp`
+    - `src/share/manipulator/types/event_definition.hpp`
+    - `src/share/manipulator/types/to_event_definition.hpp`
 2. output dispatch manipulator
-   - `src/share/manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp`
-   - `src/share/manipulator/manipulators/post_event_to_virtual_devices/queue.hpp`
+    - `src/share/manipulator/manipulators/post_event_to_virtual_devices/post_event_to_virtual_devices.hpp`
+    - `src/share/manipulator/manipulators/post_event_to_virtual_devices/queue.hpp`
 3. user-context client/server boundary
-   - `src/share/console_user_server_client.hpp`
-   - `src/apps/ConsoleUserServer/include/console_user_server/receiver.hpp`
+    - `src/share/console_user_server_client.hpp`
+    - `src/apps/ConsoleUserServer/include/console_user_server/receiver.hpp`
 4. operation-specific handlers
-   - e.g. `send_user_command_handler.hpp`, shell command handler, software function handler
+    - e.g. `send_user_command_handler.hpp`, shell command handler, software function handler
 
 ## 9) Practical debugging mindset
 

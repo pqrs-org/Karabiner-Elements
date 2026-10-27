@@ -1,12 +1,7 @@
 {
     "description": "Single JSON rule",
-    "description_notes": [
-        "example 1",
-        "example 2"
-    ],
-    "maintainers": [
-        "tekezo"
-    ],
+    "description_notes": ["example 1", "example 2"],
+    "maintainers": ["tekezo"],
     "manipulators": [
         {
             "from": {

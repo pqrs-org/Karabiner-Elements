@@ -1,7 +1,6 @@
 [
     {
-        "description":
-            "fn+up_arrow to fn+page_up (from modifiers == to modifiers)",
+        "description": "fn+up_arrow to fn+page_up (from modifiers == to modifiers)",
         "type": "basic",
         "from": {
             "key_code": "up_arrow",
@@ -34,8 +33,7 @@
         ]
     },
     {
-        "description":
-            "control+u to shift+control+a,delete_or_backspace (multiple to keys)",
+        "description": "control+u to shift+control+a,delete_or_backspace (multiple to keys)",
         "type": "basic",
         "from": {
             "key_code": "u",
@@ -55,8 +53,7 @@
         ]
     },
     {
-        "description":
-            "control+f1 to shift+control+a,delete_or_backspace,vk_none (multiple to keys)",
+        "description": "control+f1 to shift+control+a,delete_or_backspace,vk_none (multiple to keys)",
         "type": "basic",
         "from": {
             "key_code": "f1",
