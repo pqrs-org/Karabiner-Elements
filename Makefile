@@ -61,6 +61,9 @@ ruff-format:
 	git ls-files -z -- '*.py' ':(exclude)vendor/**' ':(exclude)docs/vendor/**' | xargs -0 ruff format
 
 prettier-format:
+	@echo "Formatting JSON and Markdown with Prettier..."
+	@prettier_log=$$(mktemp); \
+	trap 'rm -f "$$prettier_log"' EXIT; \
 	git ls-files -z -- \
 		'*.json' \
 		'*.md' \
@@ -75,7 +78,10 @@ prettier-format:
 		':(exclude)tests/src/complex_modifications_assets/json/lint/assets/broken.json' \
 		':(exclude)tests/src/core_configuration/json/broken.json' \
 		':(exclude)tests/src/post_event_to_virtual_devices/json/expected_post_event_to_virtual_devices_queue/**' | \
-		xargs -0 prettier --write
+		xargs -0 prettier --write > "$$prettier_log"; \
+	prettier_status=$$?; \
+	sed '/ (unchanged)$$/d' "$$prettier_log"; \
+	exit $$prettier_status
 
 localization-format:
 	$(MAKE) -C src/apps/localization format
