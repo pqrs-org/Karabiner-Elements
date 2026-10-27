@@ -14,6 +14,10 @@
         ,"ja": "JavaScriptでルールを作成"
         ,"zh-Hans": "使用 JavaScript 添加自定义规则"
     },
+    "settings.complex_modifications.assets.enabled": {
+        "en": "Enabled"
+        ,"ja": "有効"
+    },
     "settings.complex_modifications.assets.imported_at": {
         "en": "Imported at {date}"
         ,"ja": "取り込み日時: {date}"
