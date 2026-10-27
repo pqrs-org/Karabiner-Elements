@@ -10,6 +10,7 @@
     - Moved maintenance scripts into `/Applications/Karabiner-Elements.app/Contents/Resources`.
 - ✨ New Features
     - Added Japanese localization.
+    - Add Simplified Chinese (zh-Hans) translations (Thanks to @maodun96 and @msuadOf)
     - Added [`mouse_motion_and_wheel_to_key`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/other-types/mouse-motion-and-wheel-to-key/) (Thanks to @BenjaminVanRyseghem)
     - Added [`set_caps_lock_led`](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to/set-caps-lock-led/) to complex modifications, which allows the caps lock LED to be turned on or off independently of the caps lock state. (Thanks to @anandghegde)
     - Added `system.ui_language` to variables.
