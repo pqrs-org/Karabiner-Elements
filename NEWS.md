@@ -19,6 +19,7 @@
     - Fixed an issue where ISO layout-specific keys (e.g., `` `~ `` / `§±` / `^°` / `²` ↔ `\|` / `<>`, depending on the layout) could produce the wrong characters when CGEventTap fallback was enabled.
 - ⚡️ Improvements
     - Improved text and other UI elements for macOS 27.
+    - Added markers for enabled rules in the Complex Modifications assets list. (Thanks to @dhffdh)
     - Changed inter-process communication between Karabiner-Elements processes from UNIX domain sockets to XPC.
     - Fixed an issue where selection indicators in the Simple Modifications key picker were not displayed on macOS 27.
     - EventViewer now displays caps lock LED state changes with an appropriate name instead of "Unsupported HID usage".

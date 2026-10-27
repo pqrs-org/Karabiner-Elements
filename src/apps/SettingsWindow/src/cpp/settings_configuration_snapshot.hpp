@@ -169,6 +169,7 @@ private:
           {"description_notes", rule->get_description_notes()},
           {"enabled", rule->get_enabled()},
           {"code_string", rule->get_code_string()},
+          {"comparison_key", rule->get_comparison_key()},
           {"search_text", rule->get_search_text()},
           {"code_type", rule->get_code_type() == krbn::core_configuration::details::complex_modifications_rule::code_type::javascript ? "javascript" : "json"},
       });

@@ -16,20 +16,6 @@ struct ComplexModificationsAssetFile: Identifiable, Decodable {
     case assetRules
   }
 
-  init(
-    _ filePath: String,
-    _ title: String,
-    _ userFile: Bool,
-    _ importedAt: Date,
-    _ assetRules: [ComplexModificationsAssetRule]
-  ) {
-    self.filePath = filePath
-    self.title = title
-    self.userFile = userFile
-    self.importedAt = importedAt
-    self.assetRules = assetRules
-  }
-
   public func match(_ search: String) -> Bool {
     if title.range(of: search, options: .caseInsensitive) != nil {
       return true

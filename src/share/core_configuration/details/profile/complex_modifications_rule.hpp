@@ -235,6 +235,30 @@ public:
     return search_text_;
   }
 
+  // Returns a stable key for determining whether two rules perform the same
+  // mappings. JavaScript source is compared directly so generating the key
+  // never evaluates it.
+  [[nodiscard]] std::string get_comparison_key() const {
+    if (code_type_ == code_type::javascript) {
+      return nlohmann::json({
+                                {"code_type", "javascript"},
+                                {"source", code_string_},
+                            })
+          .dump();
+    }
+
+    auto manipulators = nlohmann::json::array();
+    for (const auto& manipulator : manipulators_) {
+      manipulators.push_back(manipulator->to_json());
+    }
+
+    return nlohmann::json({
+                              {"code_type", "json"},
+                              {"manipulators", std::move(manipulators)},
+                          })
+        .dump();
+  }
+
 private:
   static void append_search_text(const std::string& value,
                                  std::string& search_text) {

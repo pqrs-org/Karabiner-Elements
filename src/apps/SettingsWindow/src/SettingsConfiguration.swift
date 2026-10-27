@@ -123,6 +123,9 @@ struct SettingsConfiguration: Decodable {
     let descriptionNotes: [String]
     var enabled: Bool
     let codeString: String
+    // Used to match this configured rule with a rule in the assets list.
+    // It represents the manipulators for JSON rules and the source for JavaScript rules.
+    let comparisonKey: String
     let searchText: String
     let codeType: CodeType
 
@@ -134,6 +137,7 @@ struct SettingsConfiguration: Decodable {
       case descriptionNotes
       case enabled
       case codeString
+      case comparisonKey
       case searchText
       case codeType
     }
@@ -144,6 +148,7 @@ struct SettingsConfiguration: Decodable {
       descriptionNotes: [String],
       enabled: Bool,
       codeString: String,
+      comparisonKey: String,
       searchText: String,
       codeType: CodeType
     ) {
@@ -152,6 +157,7 @@ struct SettingsConfiguration: Decodable {
       self.descriptionNotes = descriptionNotes
       self.enabled = enabled
       self.codeString = codeString
+      self.comparisonKey = comparisonKey
       self.searchText = searchText
       self.codeType = codeType
     }

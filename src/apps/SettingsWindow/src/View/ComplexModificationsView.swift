@@ -60,6 +60,7 @@ struct ComplexModificationsView: View {
               descriptionNotes: [],
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
+              comparisonKey: "",
               searchText: "",
               codeType: .json
             )
@@ -86,6 +87,7 @@ struct ComplexModificationsView: View {
               descriptionNotes: [],
               enabled: true,
               codeString: String(utf8String: buffer) ?? "",
+              comparisonKey: "",
               searchText: "",
               codeType: .javascript
             )

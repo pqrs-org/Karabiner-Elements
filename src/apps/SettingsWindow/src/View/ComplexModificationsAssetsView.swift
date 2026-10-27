@@ -31,10 +31,15 @@ struct ComplexModificationsAssetsView: View {
         .padding(.top, 10.0)
 
         HStack(alignment: .center) {
-          Image(systemName: "magnifyingglass")
-            .foregroundColor(.gray)
+          AppLocalizedText("settings.complex_modifications.assets.enabled_hint")
 
-          TextField(localized("shared.find"), text: $search)
+          Spacer()
+
+          SearchField(
+            text: $search,
+            placeholderKey: "settings.complex_modifications.assets.filter"
+          )
+          .frame(width: 300)
         }
 
         List {
@@ -47,34 +52,33 @@ struct ComplexModificationsAssetsView: View {
               ) {
                 VStack(alignment: .leading, spacing: 4.0) {
                   ForEach($assetFile.assetRules) { $assetRule in
-                    HStack(alignment: .center, spacing: 16.0) {
-                      ComplexModificationsRuleDescriptionView(
-                        description: assetRule.description,
-                        descriptionNotes: assetRule.descriptionNotes
-                      )
-                      .frame(maxWidth: .infinity, alignment: .leading)
-                      .if(hoverRuleId == assetRule.id) {
-                        $0.overlay(
-                          RoundedRectangle(cornerRadius: 2)
-                            .inset(by: -4)
-                            .stroke(
-                              Color.accentColor,
-                              lineWidth: 2
-                            )
-                        )
-                      }
-
-                      if settings.configuration.selectedProfile.complexModifications.rules.contains(
+                    let enabled =
+                      settings.configuration.selectedProfile.complexModifications.rules.contains(
                         where: {
-                          $0.enabled && $0.description == assetRule.description
+                          $0.enabled && $0.comparisonKey == assetRule.comparisonKey
                         })
-                      {
-                        Label(
-                          localized("settings.complex_modifications.assets.enabled"),
-                          systemImage: "checkmark.circle.fill"
+
+                    HStack(alignment: .center, spacing: 16.0) {
+                      Label {
+                        ComplexModificationsRuleDescriptionView(
+                          description: assetRule.description,
+                          descriptionNotes: assetRule.descriptionNotes
                         )
-                        .foregroundColor(.green)
+                        .if(hoverRuleId == assetRule.id) {
+                          $0.overlay(
+                            RoundedRectangle(cornerRadius: 2)
+                              .inset(by: -4)
+                              .stroke(
+                                Color.accentColor,
+                                lineWidth: 2
+                              )
+                          )
+                        }
+                      } icon: {
+                        Text(enabled ? "◉" : "○")
+                          .foregroundColor(enabled ? .accentColor : .primary)
                       }
+                      .frame(maxWidth: .infinity, alignment: .leading)
 
                       Button(
                         action: {

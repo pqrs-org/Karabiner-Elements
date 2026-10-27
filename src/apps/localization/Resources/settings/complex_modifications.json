@@ -14,9 +14,15 @@
         ,"ja": "JavaScriptでルールを作成"
         ,"zh-Hans": "使用 JavaScript 添加自定义规则"
     },
-    "settings.complex_modifications.assets.enabled": {
-        "en": "Enabled"
-        ,"ja": "有効"
+    "settings.complex_modifications.assets.enabled_hint": {
+        "en": "Enabled rules are marked with ◉."
+        ,"ja": "有効化されている設定には◉がついています。"
+        ,"zh-Hans": "已启用的规则会显示◉标记。"
+    },
+    "settings.complex_modifications.assets.filter": {
+        "en": "Filter"
+        ,"ja": "絞り込み"
+        ,"zh-Hans": "筛选"
     },
     "settings.complex_modifications.assets.imported_at": {
         "en": "Imported at {date}"

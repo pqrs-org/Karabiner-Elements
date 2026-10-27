@@ -37,6 +37,7 @@ public:
             {"rule_index", rule_index},
             {"description", rules[rule_index]->get_description()},
             {"description_notes", rules[rule_index]->get_description_notes()},
+            {"comparison_key", rules[rule_index]->get_comparison_key()},
         });
       }
 

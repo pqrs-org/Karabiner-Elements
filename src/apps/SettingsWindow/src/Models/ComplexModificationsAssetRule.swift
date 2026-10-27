@@ -6,18 +6,15 @@ struct ComplexModificationsAssetRule: Identifiable, Decodable {
   var ruleIndex: Int
   var description: String
   var descriptionNotes: [String]
+  // Used to determine whether this asset rule is enabled in the selected profile.
+  // It represents the manipulators for JSON rules and the source for JavaScript rules.
+  var comparisonKey: String
 
   private enum CodingKeys: String, CodingKey {
     case filePath
     case ruleIndex
     case description
     case descriptionNotes
-  }
-
-  init(_ filePath: String, _ ruleIndex: Int, _ description: String, _ descriptionNotes: [String]) {
-    self.filePath = filePath
-    self.ruleIndex = ruleIndex
-    self.description = description
-    self.descriptionNotes = descriptionNotes
+    case comparisonKey
   }
 }

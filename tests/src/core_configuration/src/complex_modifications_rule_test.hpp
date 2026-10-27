@@ -146,6 +146,48 @@ void run_complex_modifications_rule_test() {
       expect(expected == rule.get_search_text());
     }
 
+    // comparison_key
+    {
+      auto manipulator = R"(
+
+{
+  "type": "basic",
+  "from": { "key_code": "f1" },
+  "to": [{ "key_code": "f2" }]
+}
+
+)"_json;
+      auto make_json_rule = [&](const std::string& description, bool enabled) {
+        return rule_t(
+            nlohmann::json::object({
+                {"description", description},
+                {"enabled", enabled},
+                {"manipulators", nlohmann::json::array({manipulator})},
+            }),
+            std::make_shared<parameters_t>(),
+            krbn::core_configuration::error_handling::strict);
+      };
+
+      auto rule1 = make_json_rule("first description", true);
+      auto rule2 = make_json_rule("second description", false);
+      expect(rule1.get_comparison_key() == rule2.get_comparison_key());
+
+      auto throwing_javascript = "throw new Error('must not execute');"s;
+      rule_t disabled_javascript(
+          nlohmann::json::object({
+              {"enabled", false},
+              {"eval_js", throwing_javascript},
+          }),
+          std::make_shared<parameters_t>(),
+          krbn::core_configuration::error_handling::strict);
+      expect(disabled_javascript.get_comparison_key() ==
+             nlohmann::json({
+                                {"code_type", "javascript"},
+                                {"source", throwing_javascript},
+                            })
+                 .dump());
+    }
+
     //
     // eval_js
     //
