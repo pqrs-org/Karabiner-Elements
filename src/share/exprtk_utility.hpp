@@ -11,6 +11,7 @@
 
 #include "logger.hpp"
 #include <exprtk/exprtk.hpp>
+#include <functional>
 #include <iostream>
 #include <pqrs/gsl.hpp>
 
@@ -183,16 +184,50 @@ private:
   mutable std::mutex mutex_;
 };
 
-inline pqrs::not_null_shared_ptr_t<expression_wrapper> compile(const std::string& expression_string) {
-  return std::make_shared<expression_wrapper>(expression_string);
-}
-
-inline bool compare(const std::shared_ptr<expression_wrapper>& a,
-                    const std::shared_ptr<expression_wrapper>& b) {
-  if (!a || !b) {
-    return !a && !b;
+// A shared compiled expression with value semantics.
+//
+// expression_wrapper contains mutable evaluation state and therefore has to be
+// shared, but the identity of a compiled expression is its source string rather
+// than the address of that state.
+class compiled_expression final {
+public:
+  explicit compiled_expression(pqrs::not_null_shared_ptr_t<expression_wrapper> expression) noexcept
+      : expression_(std::move(expression)) {
   }
-  return a->get_expression_string() == b->get_expression_string();
+
+  [[nodiscard]] expression_wrapper& get_expression_wrapper() const noexcept {
+    return *expression_.get();
+  }
+
+  [[nodiscard]] const std::string& get_expression_string() const noexcept {
+    return expression_->get_expression_string();
+  }
+
+  [[nodiscard]] std::weak_ptr<expression_wrapper> make_weak_ptr() const noexcept {
+    return pqrs::make_weak(expression_);
+  }
+
+  bool operator==(const compiled_expression& other) const noexcept {
+    return get_expression_string() == other.get_expression_string();
+  }
+
+private:
+  pqrs::not_null_shared_ptr_t<expression_wrapper> expression_;
+};
+
+inline compiled_expression compile(const std::string& expression_string) {
+  return compiled_expression(
+      pqrs::not_null_shared_ptr_t<expression_wrapper>(
+          std::make_shared<expression_wrapper>(expression_string)));
 }
 
 } // namespace krbn::exprtk_utility
+
+namespace std {
+template <>
+struct hash<krbn::exprtk_utility::compiled_expression> final {
+  std::size_t operator()(const krbn::exprtk_utility::compiled_expression& value) const {
+    return std::hash<std::string>{}(value.get_expression_string());
+  }
+};
+} // namespace std

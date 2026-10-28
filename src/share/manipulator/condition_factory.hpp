@@ -36,7 +36,9 @@ inline pqrs::not_null_shared_ptr_t<conditions::base> make_condition(const nlohma
   } else if (type == "expression_if" ||
              type == "expression_unless") {
     auto c = std::make_shared<conditions::expression>(json);
-    get_shared_condition_expression_manager()->insert(c->get_expression());
+    if (const auto& expression = c->get_expression()) {
+      get_shared_condition_expression_manager()->insert(*expression);
+    }
     return c;
   } else if (type == "frontmost_application_if" ||
              type == "frontmost_application_unless") {

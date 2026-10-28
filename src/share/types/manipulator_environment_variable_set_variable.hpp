@@ -12,20 +12,24 @@ public:
     unset,
   };
 
+  struct initialization_parameters final {
+    std::optional<std::string> name;
+    std::optional<manipulator_environment_variable_value> value;
+    std::optional<exprtk_utility::compiled_expression> expression;
+    std::optional<manipulator_environment_variable_value> key_up_value;
+    std::optional<exprtk_utility::compiled_expression> key_up_expression;
+    type type = type::set;
+  };
+
   manipulator_environment_variable_set_variable() = default;
 
-  manipulator_environment_variable_set_variable(std::optional<std::string> name,
-                                                std::optional<manipulator_environment_variable_value> value,
-                                                std::shared_ptr<exprtk_utility::expression_wrapper> expression,
-                                                std::optional<manipulator_environment_variable_value> key_up_value,
-                                                std::shared_ptr<exprtk_utility::expression_wrapper> key_up_expression,
-                                                type type = type::set)
-      : name_(name),
-        value_(value),
-        expression_(expression),
-        key_up_value_(key_up_value),
-        key_up_expression_(key_up_expression),
-        type_(type) {
+  explicit manipulator_environment_variable_set_variable(const initialization_parameters& parameters)
+      : name_(parameters.name),
+        value_(parameters.value),
+        expression_(parameters.expression),
+        key_up_value_(parameters.key_up_value),
+        key_up_expression_(parameters.key_up_expression),
+        type_(parameters.type) {
   }
 
   [[nodiscard]] std::optional<std::string> get_name() const {
@@ -44,12 +48,12 @@ public:
     value_ = value;
   }
 
-  [[nodiscard]] std::shared_ptr<exprtk_utility::expression_wrapper> get_expression() const {
+  [[nodiscard]] const std::optional<exprtk_utility::compiled_expression>& get_expression() const {
     return expression_;
   }
 
-  void set_expression(std::shared_ptr<exprtk_utility::expression_wrapper> value) {
-    expression_ = value;
+  void set_expression(std::optional<exprtk_utility::compiled_expression> value) {
+    expression_ = std::move(value);
   }
 
   [[nodiscard]] std::optional<manipulator_environment_variable_value> get_key_up_value() const {
@@ -60,12 +64,12 @@ public:
     key_up_value_ = value;
   }
 
-  [[nodiscard]] std::shared_ptr<exprtk_utility::expression_wrapper> get_key_up_expression() const {
+  [[nodiscard]] const std::optional<exprtk_utility::compiled_expression>& get_key_up_expression() const {
     return key_up_expression_;
   }
 
-  void set_key_up_expression(std::shared_ptr<exprtk_utility::expression_wrapper> value) {
-    key_up_expression_ = value;
+  void set_key_up_expression(std::optional<exprtk_utility::compiled_expression> value) {
+    key_up_expression_ = std::move(value);
   }
 
   [[nodiscard]] type get_type() const {
@@ -79,9 +83,9 @@ public:
   bool operator==(const manipulator_environment_variable_set_variable& other) const {
     return name_ == other.name_ &&
            value_ == other.value_ &&
-           exprtk_utility::compare(expression_, other.expression_) &&
+           expression_ == other.expression_ &&
            key_up_value_ == other.key_up_value_ &&
-           exprtk_utility::compare(key_up_expression_, other.key_up_expression_) &&
+           key_up_expression_ == other.key_up_expression_ &&
            type_ == other.type_;
   }
 
@@ -92,9 +96,9 @@ public:
 private:
   std::optional<std::string> name_;
   std::optional<manipulator_environment_variable_value> value_;
-  std::shared_ptr<exprtk_utility::expression_wrapper> expression_;
+  std::optional<exprtk_utility::compiled_expression> expression_;
   std::optional<manipulator_environment_variable_value> key_up_value_;
-  std::shared_ptr<exprtk_utility::expression_wrapper> key_up_expression_;
+  std::optional<exprtk_utility::compiled_expression> key_up_expression_;
   type type_{manipulator_environment_variable_set_variable::type::set};
 };
 
@@ -109,7 +113,7 @@ inline void to_json(nlohmann::json& json, const manipulator_environment_variable
     json["value"] = *v;
   }
 
-  if (auto v = m.get_expression()) {
+  if (const auto& v = m.get_expression()) {
     json["expression"] = json_utility::marshal_string(v->get_expression_string());
   }
 
@@ -117,7 +121,7 @@ inline void to_json(nlohmann::json& json, const manipulator_environment_variable
     json["key_up_value"] = *v;
   }
 
-  if (auto v = m.get_key_up_expression()) {
+  if (const auto& v = m.get_key_up_expression()) {
     json["key_up_expression"] = json_utility::marshal_string(v->get_expression_string());
   }
 
@@ -175,21 +179,13 @@ namespace std {
 template <>
 struct hash<krbn::manipulator_environment_variable_set_variable> final {
   std::size_t operator()(const krbn::manipulator_environment_variable_set_variable& value) const {
-    // Hash expressions by their string, consistent with exprtk_utility::compare used in operator==.
-    auto expression_string = [](const std::shared_ptr<krbn::exprtk_utility::expression_wrapper>& e) -> std::optional<std::string> {
-      if (e) {
-        return e->get_expression_string();
-      }
-      return std::nullopt;
-    };
-
     std::size_t h = 0;
 
     pqrs::hash::combine(h, value.get_name());
     pqrs::hash::combine(h, value.get_value());
-    pqrs::hash::combine(h, expression_string(value.get_expression()));
+    pqrs::hash::combine(h, value.get_expression());
     pqrs::hash::combine(h, value.get_key_up_value());
-    pqrs::hash::combine(h, expression_string(value.get_key_up_expression()));
+    pqrs::hash::combine(h, value.get_key_up_expression());
     pqrs::hash::combine(h, value.get_type());
 
     return h;

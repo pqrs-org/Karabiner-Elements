@@ -28,13 +28,13 @@ public:
   }
 
   void apply_to_expression_variable(const std::string& variable_name,
-                                    pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> expression) const {
+                                    exprtk_utility::expression_wrapper& expression) const {
     if (auto v = get_if<int64_t>()) {
-      expression->set_variable(variable_name, *v);
+      expression.set_variable(variable_name, *v);
     } else if (auto v = get_if<bool>()) {
-      expression->set_variable(variable_name, *v);
+      expression.set_variable(variable_name, *v);
     } else if (auto v = get_if<std::string>()) {
-      expression->set_variable(variable_name, *v);
+      expression.set_variable(variable_name, *v);
     }
   }
 

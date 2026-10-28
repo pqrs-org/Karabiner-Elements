@@ -126,14 +126,18 @@ public:
     set_variable("system.now.milliseconds", manipulator_environment_variable_value(now_int64));
   }
 
-  void apply_to_expression_variable(pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> expression) const {
+  void apply_to_expression_variable(exprtk_utility::expression_wrapper& expression) const {
     for (const auto& name : unset_variable_names_) {
-      expression->unset_variable(name);
+      expression.unset_variable(name);
     }
 
     for (const auto& [name, value] : variables_) {
       value.apply_to_expression_variable(name, expression);
     }
+  }
+
+  void apply_to_expression_variable(const exprtk_utility::compiled_expression& expression) const {
+    apply_to_expression_variable(expression.get_expression_wrapper());
   }
 
   [[nodiscard]] pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> get_core_configuration() const {

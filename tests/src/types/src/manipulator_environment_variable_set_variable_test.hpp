@@ -11,62 +11,43 @@ void run_manipulator_environment_variable_set_variable_test() {
     using value_t = krbn::manipulator_environment_variable_value;
 
     t empty;
-    t full("n",
-           value_t("v"),
-           nullptr,
-           value_t("kuv"),
-           nullptr);
-    t name_only("n",
-                std::nullopt,
-                nullptr,
-                std::nullopt,
-                nullptr);
-    t value_only(std::nullopt,
-                 value_t("v"),
-                 nullptr,
-                 std::nullopt,
-                 nullptr);
-    t key_up_value_only(std::nullopt,
-                        std::nullopt,
-                        nullptr,
-                        value_t("kuv"),
-                        nullptr);
-    t no_name(std::nullopt,
-              value_t("v"),
-              nullptr,
-              value_t("kuv"),
-              nullptr);
-    t no_value("n",
-               std::nullopt,
-               nullptr,
-               value_t("kuv"),
-               nullptr);
-    t no_key_up_value("n",
-                      value_t("v"),
-                      nullptr,
-                      std::nullopt,
-                      nullptr);
-    t expression_full("n",
-                      std::nullopt,
-                      krbn::exprtk_utility::compile("system.now.milliseconds"),
-                      std::nullopt,
-                      krbn::exprtk_utility::compile("system.now.milliseconds + 1000"));
-    t expression_only("n",
-                      std::nullopt,
-                      krbn::exprtk_utility::compile("system.now.milliseconds"),
-                      std::nullopt,
-                      nullptr);
-    t expression_key_up_only("n",
-                             std::nullopt,
-                             nullptr,
-                             std::nullopt,
-                             krbn::exprtk_utility::compile("system.now.milliseconds + 1000"));
-    t unset("u",
-            std::nullopt,
-            nullptr,
-            std::nullopt,
-            nullptr,
-            t::type::unset);
+    t full({
+        .name = "n",
+        .value = value_t("v"),
+        .key_up_value = value_t("kuv"),
+    });
+    t name_only({.name = "n"});
+    t value_only({.value = value_t("v")});
+    t key_up_value_only({.key_up_value = value_t("kuv")});
+    t no_name({
+        .value = value_t("v"),
+        .key_up_value = value_t("kuv"),
+    });
+    t no_value({
+        .name = "n",
+        .key_up_value = value_t("kuv"),
+    });
+    t no_key_up_value({
+        .name = "n",
+        .value = value_t("v"),
+    });
+    t expression_full({
+        .name = "n",
+        .expression = krbn::exprtk_utility::compile("system.now.milliseconds"),
+        .key_up_expression = krbn::exprtk_utility::compile("system.now.milliseconds + 1000"),
+    });
+    t expression_only({
+        .name = "n",
+        .expression = krbn::exprtk_utility::compile("system.now.milliseconds"),
+    });
+    t expression_key_up_only({
+        .name = "n",
+        .key_up_expression = krbn::exprtk_utility::compile("system.now.milliseconds + 1000"),
+    });
+    t unset({
+        .name = "u",
+        .type = t::type::unset,
+    });
 
     expect(empty == empty);
     expect(full == full);
@@ -81,11 +62,11 @@ void run_manipulator_environment_variable_set_variable_test() {
 
     {
       // Equal objects must have equal hashes, even when the expressions are separately compiled.
-      t expression_full_copy("n",
-                             std::nullopt,
-                             krbn::exprtk_utility::compile("system.now.milliseconds"),
-                             std::nullopt,
-                             krbn::exprtk_utility::compile("system.now.milliseconds + 1000"));
+      t expression_full_copy({
+          .name = "n",
+          .expression = krbn::exprtk_utility::compile("system.now.milliseconds"),
+          .key_up_expression = krbn::exprtk_utility::compile("system.now.milliseconds + 1000"),
+      });
       expect(expression_full == expression_full_copy);
       expect(std::hash<t>{}(expression_full) == std::hash<t>{}(expression_full_copy));
     }

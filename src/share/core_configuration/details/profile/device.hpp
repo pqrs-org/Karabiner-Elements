@@ -664,11 +664,12 @@ cos(radian) * m;
 
   [[nodiscard]] static bool validate_stick_formula(const std::string& formula) {
     auto expression = krbn::exprtk_utility::compile(formula);
-    expression->set_variable("radian", 0.0);
-    expression->set_variable("delta_magnitude", 0.1);
-    expression->set_variable("absolute_magnitude", 0.5);
-    expression->set_variable("continued_movement", 1.0);
-    return !std::isnan(expression->value());
+    auto& expression_wrapper = expression.get_expression_wrapper();
+    expression_wrapper.set_variable("radian", 0.0);
+    expression_wrapper.set_variable("delta_magnitude", 0.1);
+    expression_wrapper.set_variable("absolute_magnitude", 0.5);
+    expression_wrapper.set_variable("continued_movement", 1.0);
+    return !std::isnan(expression_wrapper.value());
   }
 
   template <typename T>

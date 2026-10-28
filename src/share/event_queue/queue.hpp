@@ -127,12 +127,12 @@ public:
                 if (auto v = set_variable->get_value()) {
                   manipulator_environment_.set_variable(*n, *v);
                 }
-                if (auto v = set_variable->get_expression()) {
+                if (const auto& v = set_variable->get_expression()) {
                   manipulator_environment_.set_variable_system_now_milliseconds();
-                  manipulator_environment_.apply_to_expression_variable(v);
+                  manipulator_environment_.apply_to_expression_variable(*v);
 
                   manipulator_environment_.set_variable(*n,
-                                                        manipulator_environment_variable_value(v->value<int64_t>()));
+                                                        manipulator_environment_variable_value(v->get_expression_wrapper().value<int64_t>()));
                 }
                 break;
 
@@ -149,12 +149,12 @@ public:
                 if (auto v = set_variable->get_key_up_value()) {
                   manipulator_environment_.set_variable(*n, *v);
                 }
-                if (auto v = set_variable->get_key_up_expression()) {
+                if (const auto& v = set_variable->get_key_up_expression()) {
                   manipulator_environment_.set_variable_system_now_milliseconds();
-                  manipulator_environment_.apply_to_expression_variable(v);
+                  manipulator_environment_.apply_to_expression_variable(*v);
 
                   manipulator_environment_.set_variable(*n,
-                                                        manipulator_environment_variable_value(v->value<int64_t>()));
+                                                        manipulator_environment_variable_value(v->get_expression_wrapper().value<int64_t>()));
                 }
                 break;
               case manipulator_environment_variable_set_variable::type::unset:

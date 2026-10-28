@@ -102,11 +102,11 @@ inline nlohmann::json marshal_string(const std::string value) {
   return lines;
 }
 
-inline pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> unmarshal_expression_string(const std::string& key,
-                                                                                                   const nlohmann::json& value) {
+inline exprtk_utility::compiled_expression unmarshal_expression_string(const std::string& key,
+                                                                       const nlohmann::json& value) {
   auto s = unmarshal_string(key, value);
   auto e = exprtk_utility::compile(s);
-  if (std::isnan(e->value())) {
+  if (std::isnan(e.get_expression_wrapper().value())) {
     throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: invalid expression `{1}`", key, value));
   }
   return e;

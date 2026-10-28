@@ -408,14 +408,14 @@ public:
 
 private:
   std::pair<double, double> xy_hid_values() const {
-    auto x = x_formula_->value();
+    auto x = x_formula_.get_expression_wrapper().value();
     if (std::isnan(x)) {
       logger::get_logger()->error("game_pad_stick_converter x_formula returns nan: {0}",
                                   x_formula_string_);
       x = 0.0;
     }
 
-    auto y = y_formula_->value();
+    auto y = y_formula_.get_expression_wrapper().value();
     if (std::isnan(y)) {
       logger::get_logger()->error("game_pad_stick_converter y_formula returns nan: {0}",
                                   y_formula_string_);
@@ -426,14 +426,14 @@ private:
   }
 
   std::pair<double, double> wheels_hid_values() const {
-    auto h = horizontal_wheel_formula_->value();
+    auto h = horizontal_wheel_formula_.get_expression_wrapper().value();
     if (std::isnan(h)) {
       logger::get_logger()->error("game_pad_stick_converter horizontal_wheel_formula returns nan: {0}",
                                   horizontal_wheel_formula_string_);
       h = 0.0;
     }
 
-    auto v = vertical_wheel_formula_->value();
+    auto v = vertical_wheel_formula_.get_expression_wrapper().value();
     if (std::isnan(v)) {
       logger::get_logger()->error("game_pad_stick_converter vertical_wheel_formula returns nan: {0}",
                                   vertical_wheel_formula_string_);
@@ -502,10 +502,11 @@ private:
       }
 
       for (auto&& f : {x_formula_, y_formula_}) {
-        f->set_variable("radian", radian);
-        f->set_variable("delta_magnitude", delta_magnitude);
-        f->set_variable("absolute_magnitude", absolute_magnitude);
-        f->set_variable("continued_movement", continued_movement);
+        auto& expression_wrapper = f.get_expression_wrapper();
+        expression_wrapper.set_variable("radian", radian);
+        expression_wrapper.set_variable("delta_magnitude", delta_magnitude);
+        expression_wrapper.set_variable("absolute_magnitude", absolute_magnitude);
+        expression_wrapper.set_variable("continued_movement", continued_movement);
       }
     }
 
@@ -527,10 +528,11 @@ private:
       }
 
       for (auto&& f : {vertical_wheel_formula_, horizontal_wheel_formula_}) {
-        f->set_variable("radian", radian);
-        f->set_variable("delta_magnitude", delta_magnitude);
-        f->set_variable("absolute_magnitude", absolute_magnitude);
-        f->set_variable("continued_movement", continued_movement);
+        auto& expression_wrapper = f.get_expression_wrapper();
+        expression_wrapper.set_variable("radian", radian);
+        expression_wrapper.set_variable("delta_magnitude", delta_magnitude);
+        expression_wrapper.set_variable("absolute_magnitude", absolute_magnitude);
+        expression_wrapper.set_variable("continued_movement", continued_movement);
       }
     }
 
@@ -625,10 +627,10 @@ private:
   std::string y_formula_string_;
   std::string vertical_wheel_formula_string_;
   std::string horizontal_wheel_formula_string_;
-  pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> x_formula_;
-  pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> y_formula_;
-  pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> vertical_wheel_formula_;
-  pqrs::not_null_shared_ptr_t<exprtk_utility::expression_wrapper> horizontal_wheel_formula_;
+  exprtk_utility::compiled_expression x_formula_;
+  exprtk_utility::compiled_expression y_formula_;
+  exprtk_utility::compiled_expression vertical_wheel_formula_;
+  exprtk_utility::compiled_expression horizontal_wheel_formula_;
 
   // Construct after potentially throwing members; destruction requires detach.
   pqrs::dispatcher::extra::timer continued_movement_timer_{*this};

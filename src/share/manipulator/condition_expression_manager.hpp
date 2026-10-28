@@ -16,11 +16,12 @@ namespace krbn::manipulator {
 
 class condition_expression_manager final {
 public:
-  void insert(std::weak_ptr<exprtk_utility::expression_wrapper> expression) {
-    expressions_.push_back(expression);
+  void insert(const exprtk_utility::compiled_expression& expression) {
+    auto weak_ptr = expression.make_weak_ptr();
+    expressions_.push_back(weak_ptr);
 
     // Set variables for new instance.
-    if (auto shared_ptr = expression.lock()) {
+    if (auto shared_ptr = weak_ptr.lock()) {
       for (auto&& [name, value] : variables_) {
         shared_ptr->set_variable(name, value);
       }
@@ -66,7 +67,7 @@ public:
   void apply_environment_variables(const manipulator::manipulator_environment& manipulator_environment) {
     std::erase_if(expressions_, [&](auto&& weak_ptr) {
       if (auto shared_ptr = weak_ptr.lock()) {
-        manipulator_environment.apply_to_expression_variable(shared_ptr);
+        manipulator_environment.apply_to_expression_variable(*shared_ptr);
 
         return false;
       }

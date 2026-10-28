@@ -50,7 +50,7 @@ public:
   bool is_fulfilled(const condition_context& condition_context,
                     const manipulator_environment& manipulator_environment) const override {
     if (expression_) {
-      auto value = expression_->value();
+      auto value = expression_->get_expression_wrapper().value();
       if (std::isnan(value)) {
         return false;
       }
@@ -66,12 +66,12 @@ public:
     return false;
   }
 
-  [[nodiscard]] std::shared_ptr<exprtk_utility::expression_wrapper> get_expression() const {
+  [[nodiscard]] const std::optional<exprtk_utility::compiled_expression>& get_expression() const {
     return expression_;
   }
 
 private:
   type type_{type::expression_if};
-  std::shared_ptr<exprtk_utility::expression_wrapper> expression_;
+  std::optional<exprtk_utility::compiled_expression> expression_;
 };
 } // namespace krbn::manipulator::conditions

@@ -442,12 +442,10 @@ private:
           if (device_grabber_) {
             for (const auto& [k, v] : json.at("variables").items()) {
               device_grabber_->async_post_set_variable_event(
-                  manipulator_environment_variable_set_variable(
-                      k,
-                      v.get<manipulator_environment_variable_value>(),
-                      nullptr,
-                      std::nullopt,
-                      nullptr));
+                  manipulator_environment_variable_set_variable({
+                      .name = k,
+                      .value = v.get<manipulator_environment_variable_value>(),
+                  }));
             }
           }
           async_respond_none(reply);
@@ -464,13 +462,10 @@ private:
                     }
 
                     device_grabber_->async_post_set_variable_event(
-                        manipulator_environment_variable_set_variable(
-                            name,
-                            std::nullopt,
-                            nullptr,
-                            std::nullopt,
-                            nullptr,
-                            manipulator_environment_variable_set_variable::type::unset));
+                        manipulator_environment_variable_set_variable({
+                            .name = name,
+                            .type = manipulator_environment_variable_set_variable::type::unset,
+                        }));
                   }
 
                   async_respond_none(reply);
@@ -719,72 +714,56 @@ private:
   void set_focused_ui_element_variables() {
     if (device_grabber_) {
       device_grabber_->async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.role_string",
-              manipulator_environment_variable_value(focused_ui_element_.get_role().value_or("")),
-              nullptr,
-              std::nullopt,
-              nullptr));
+          manipulator_environment_variable_set_variable({
+              .name = "accessibility.focused_ui_element.role_string",
+              .value = manipulator_environment_variable_value(focused_ui_element_.get_role().value_or("")),
+          }));
 
       device_grabber_->async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.subrole_string",
-              manipulator_environment_variable_value(focused_ui_element_.get_subrole().value_or("")),
-              nullptr,
-              std::nullopt,
-              nullptr));
+          manipulator_environment_variable_set_variable({
+              .name = "accessibility.focused_ui_element.subrole_string",
+              .value = manipulator_environment_variable_value(focused_ui_element_.get_subrole().value_or("")),
+          }));
 
       device_grabber_->async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.title_string",
-              manipulator_environment_variable_value(focused_ui_element_.get_title().value_or("")),
-              nullptr,
-              std::nullopt,
-              nullptr));
+          manipulator_environment_variable_set_variable({
+              .name = "accessibility.focused_ui_element.title_string",
+              .value = manipulator_environment_variable_value(focused_ui_element_.get_title().value_or("")),
+          }));
 
       device_grabber_->async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.window_title_string",
-              manipulator_environment_variable_value(focused_ui_element_.get_window_title().value_or("")),
-              nullptr,
-              std::nullopt,
-              nullptr));
+          manipulator_environment_variable_set_variable({
+              .name = "accessibility.focused_ui_element.window_title_string",
+              .value = manipulator_environment_variable_value(focused_ui_element_.get_window_title().value_or("")),
+          }));
 
       device_grabber_->async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.window_position_x",
-              manipulator_environment_variable_value(
+          manipulator_environment_variable_set_variable({
+              .name = "accessibility.focused_ui_element.window_position_x",
+              .value = manipulator_environment_variable_value(
                   static_cast<int64_t>(focused_ui_element_.get_window_position_x().value_or(0))),
-              nullptr,
-              std::nullopt,
-              nullptr));
+          }));
 
       device_grabber_->async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.window_position_y",
-              manipulator_environment_variable_value(
+          manipulator_environment_variable_set_variable({
+              .name = "accessibility.focused_ui_element.window_position_y",
+              .value = manipulator_environment_variable_value(
                   static_cast<int64_t>(focused_ui_element_.get_window_position_y().value_or(0))),
-              nullptr,
-              std::nullopt,
-              nullptr));
+          }));
 
       device_grabber_->async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.window_size_width",
-              manipulator_environment_variable_value(
+          manipulator_environment_variable_set_variable({
+              .name = "accessibility.focused_ui_element.window_size_width",
+              .value = manipulator_environment_variable_value(
                   static_cast<int64_t>(focused_ui_element_.get_window_size_width().value_or(0))),
-              nullptr,
-              std::nullopt,
-              nullptr));
+          }));
 
       device_grabber_->async_post_set_variable_event(
-          manipulator_environment_variable_set_variable(
-              "accessibility.focused_ui_element.window_size_height",
-              manipulator_environment_variable_value(
+          manipulator_environment_variable_set_variable({
+              .name = "accessibility.focused_ui_element.window_size_height",
+              .value = manipulator_environment_variable_value(
                   static_cast<int64_t>(focused_ui_element_.get_window_size_height().value_or(0))),
-              nullptr,
-              std::nullopt,
-              nullptr));
+          }));
     }
   }
 
@@ -810,13 +789,10 @@ private:
     if (device_grabber_) {
       for (const auto& name : multitouch_extension_environment_variable_names) {
         device_grabber_->async_post_set_variable_event(
-            manipulator_environment_variable_set_variable(
-                name,
-                std::nullopt,
-                nullptr,
-                std::nullopt,
-                nullptr,
-                manipulator_environment_variable_set_variable::type::unset));
+            manipulator_environment_variable_set_variable({
+                .name = name,
+                .type = manipulator_environment_variable_set_variable::type::unset,
+            }));
       }
     }
   }
