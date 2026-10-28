@@ -27,6 +27,7 @@
     - JavaScript-based Complex Modifications rules are no longer evaluated while disabled.
     - Limited the maximum size of `karabiner.json` to 64 MB.
     - Limited JavaScript `console.log` output to 1 MB.
+    - Improved internal handling of expressions used by `set_variable` to ensure consistent equality and hashing. (Thanks to @monsterlag)
 
 ## Karabiner-Elements 16.3.0
 
