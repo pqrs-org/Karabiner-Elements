@@ -186,16 +186,6 @@
         ]
     },
     {
-        "label": "pipe (|)",
-        "not_from": true,
-        "data": [
-            {
-                "key_code": "backslash",
-                "modifiers": ["left_shift"]
-            }
-        ]
-    },
-    {
         "label_localization_key": "settings.key_picker.key_code.non_us_pound",
         "data": [
             {
@@ -617,6 +607,471 @@
         "data": [
             {
                 "key_code": "0"
+            }
+        ]
+    },
+    {
+        "category_localization_key": "settings.key_picker.shift_keys"
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.grave_accent_and_tilde",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "grave_accent_and_tilde",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.grave_accent_and_tilde",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "grave_accent_and_tilde",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.1",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "1",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.1",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "1",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.2",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "2",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.2",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "2",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.3",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "3",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.3",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "3",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.4",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "4",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.4",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "4",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.5",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "5",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.5",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "5",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.6",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "6",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.6",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "6",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.7",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "7",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.7",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "7",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.8",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "8",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.8",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "8",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.9",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "9",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.9",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "9",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.0",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "0",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.0",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "0",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.hyphen",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "hyphen",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.hyphen",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "hyphen",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.equal_sign",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "equal_sign",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.equal_sign",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "equal_sign",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.open_bracket",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "open_bracket",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.open_bracket",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "open_bracket",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.close_bracket",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "close_bracket",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.close_bracket",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "close_bracket",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.backslash",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "backslash",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.backslash",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "backslash",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.semicolon",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "semicolon",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.semicolon",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "semicolon",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.quote",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "quote",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.quote",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "quote",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.comma",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "comma",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.comma",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "comma",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.period",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "period",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.period",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "period",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.slash",
+        "not_to": true,
+        "data": [
+            {
+                "key_code": "slash",
+                "modifiers": {
+                    "mandatory": ["shift"]
+                }
+            }
+        ]
+    },
+    {
+        "label_localization_key": "settings.key_picker.shift_key.slash",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "slash",
+                "modifiers": ["shift"]
             }
         ]
     },

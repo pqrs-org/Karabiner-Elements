@@ -3024,6 +3024,116 @@
         ,"ja": "スクロール: 上（遅い）"
         ,"zh-Hans": "向上滚动（慢速）"
     },
+    "settings.key_picker.shift_key.0": {
+        "en": "shift + 0"
+        ,"ja": "シフト + 0"
+        ,"zh-Hans": "Shift + 0"
+    },
+    "settings.key_picker.shift_key.1": {
+        "en": "shift + 1"
+        ,"ja": "シフト + 1"
+        ,"zh-Hans": "Shift + 1"
+    },
+    "settings.key_picker.shift_key.2": {
+        "en": "shift + 2"
+        ,"ja": "シフト + 2"
+        ,"zh-Hans": "Shift + 2"
+    },
+    "settings.key_picker.shift_key.3": {
+        "en": "shift + 3"
+        ,"ja": "シフト + 3"
+        ,"zh-Hans": "Shift + 3"
+    },
+    "settings.key_picker.shift_key.4": {
+        "en": "shift + 4"
+        ,"ja": "シフト + 4"
+        ,"zh-Hans": "Shift + 4"
+    },
+    "settings.key_picker.shift_key.5": {
+        "en": "shift + 5"
+        ,"ja": "シフト + 5"
+        ,"zh-Hans": "Shift + 5"
+    },
+    "settings.key_picker.shift_key.6": {
+        "en": "shift + 6"
+        ,"ja": "シフト + 6"
+        ,"zh-Hans": "Shift + 6"
+    },
+    "settings.key_picker.shift_key.7": {
+        "en": "shift + 7"
+        ,"ja": "シフト + 7"
+        ,"zh-Hans": "Shift + 7"
+    },
+    "settings.key_picker.shift_key.8": {
+        "en": "shift + 8"
+        ,"ja": "シフト + 8"
+        ,"zh-Hans": "Shift + 8"
+    },
+    "settings.key_picker.shift_key.9": {
+        "en": "shift + 9"
+        ,"ja": "シフト + 9"
+        ,"zh-Hans": "Shift + 9"
+    },
+    "settings.key_picker.shift_key.backslash": {
+        "en": "shift + backslash (\\)"
+        ,"ja": "シフト + backslash (\\)"
+        ,"zh-Hans": "Shift + 反斜杠键（backslash）"
+    },
+    "settings.key_picker.shift_key.close_bracket": {
+        "en": "shift + close_bracket ]"
+        ,"ja": "シフト + close_bracket ]"
+        ,"zh-Hans": "Shift + 右方括号 ]（close_bracket）"
+    },
+    "settings.key_picker.shift_key.comma": {
+        "en": "shift + comma (,)"
+        ,"ja": "シフト + comma (,)"
+        ,"zh-Hans": "Shift + 逗号 ,（comma）"
+    },
+    "settings.key_picker.shift_key.equal_sign": {
+        "en": "shift + equal_sign (=)"
+        ,"ja": "シフト + equal_sign (=)"
+        ,"zh-Hans": "Shift + 等号 =（equal_sign）"
+    },
+    "settings.key_picker.shift_key.grave_accent_and_tilde": {
+        "en": "shift + grave_accent_and_tilde (`)"
+        ,"ja": "シフト + grave_accent_and_tilde (`)"
+        ,"zh-Hans": "Shift + 重音符 `／波浪号 ~（grave_accent_and_tilde）"
+    },
+    "settings.key_picker.shift_key.hyphen": {
+        "en": "shift + hyphen (-)"
+        ,"ja": "シフト + hyphen (-)"
+        ,"zh-Hans": "Shift + 连字符 -（hyphen）"
+    },
+    "settings.key_picker.shift_key.open_bracket": {
+        "en": "shift + open_bracket ["
+        ,"ja": "シフト + open_bracket ["
+        ,"zh-Hans": "Shift + 左方括号 [（open_bracket）"
+    },
+    "settings.key_picker.shift_key.period": {
+        "en": "shift + period (.)"
+        ,"ja": "シフト + period (.)"
+        ,"zh-Hans": "Shift + 句点 .（period）"
+    },
+    "settings.key_picker.shift_key.quote": {
+        "en": "shift + quote (')"
+        ,"ja": "シフト + quote (')"
+        ,"zh-Hans": "Shift + 单引号 '（quote）"
+    },
+    "settings.key_picker.shift_key.semicolon": {
+        "en": "shift + semicolon (;)"
+        ,"ja": "シフト + semicolon (;)"
+        ,"zh-Hans": "Shift + 分号 ;（semicolon）"
+    },
+    "settings.key_picker.shift_key.slash": {
+        "en": "shift + slash (/)"
+        ,"ja": "シフト + slash (/)"
+        ,"zh-Hans": "Shift + 斜杠 /（slash）"
+    },
+    "settings.key_picker.shift_keys": {
+        "en": "Shift + keys"
+        ,"ja": "Shift + キー"
+        ,"zh-Hans": "Shift + 按键"
+    },
     "settings.key_picker.sleep": {
         "en": "Sleep (IOKit Power Management Sleep System)"
         ,"ja": "スリープ（IOKit Power Management Sleep System）"
