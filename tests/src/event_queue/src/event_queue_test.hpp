@@ -565,5 +565,25 @@ void run_event_queue_test() {
     using event = krbn::event_queue::event;
     expect(std::hash<event>{}(a_event) !=
            std::hash<event>{}(b_event));
+
+    pqrs::osx::input_source_selector::specifier specifier1;
+    specifier1.set_language("^en$");
+    pqrs::osx::input_source_selector::specifier specifier2;
+    specifier2.set_language("^en$");
+    auto select_input_source_event1 = event::make_select_input_source_event({specifier1});
+    auto select_input_source_event2 = event::make_select_input_source_event({specifier2});
+    expect(select_input_source_event1 == select_input_source_event2);
+    expect(std::hash<event>{}(select_input_source_event1) ==
+           std::hash<event>{}(select_input_source_event2));
+
+    auto sticky_modifier_event1 = event::make_sticky_modifier_event(
+        krbn::modifier_flag::left_command,
+        krbn::sticky_modifier_type::toggle);
+    auto sticky_modifier_event2 = event::make_sticky_modifier_event(
+        krbn::modifier_flag::left_command,
+        krbn::sticky_modifier_type::toggle);
+    expect(sticky_modifier_event1 == sticky_modifier_event2);
+    expect(std::hash<event>{}(sticky_modifier_event1) ==
+           std::hash<event>{}(sticky_modifier_event2));
   };
 }

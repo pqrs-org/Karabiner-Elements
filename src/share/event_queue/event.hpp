@@ -4,7 +4,6 @@
 
 #include "core_configuration/core_configuration.hpp"
 #include "device_properties.hpp"
-#include "hash.hpp"
 #include "manipulator/manipulator_environment.hpp"
 #include "types.hpp"
 #include <gsl/gsl>
