@@ -11,17 +11,19 @@ int main(int argc, const char* argv[]) {
   }
 
   std::string expression_string(argv[1]);
-  auto expression = krbn::exprtk_utility::compile(expression_string);
-  if (auto compile_error = expression->get_compile_error()) {
+  auto compiled_expression = krbn::exprtk_utility::compile(expression_string);
+  auto& expression = compiled_expression.get_expression_wrapper();
+
+  if (auto compile_error = expression.get_compile_error()) {
     std::cout << "compile_error: " << *compile_error << std::endl;
   }
 
-  expression->set_variable("example_variable", 42.0);
-  expression->set_variable("example_string", "exmaple");
+  expression.set_variable("example_variable", 42.0);
+  expression.set_variable("example_string", "exmaple");
 
   std::cout << expression_string
             << " = "
-            << expression->value()
+            << expression.value()
             << std::endl;
 
   return 0;
