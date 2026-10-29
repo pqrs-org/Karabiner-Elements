@@ -186,6 +186,16 @@
         ]
     },
     {
+        "label": "pipe (|)",
+        "not_from": true,
+        "data": [
+            {
+                "key_code": "backslash",
+                "modifiers": ["left_shift"]
+            }
+        ]
+    },
+    {
         "label_localization_key": "settings.key_picker.key_code.non_us_pound",
         "data": [
             {
