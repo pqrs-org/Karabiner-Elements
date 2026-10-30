@@ -8,8 +8,8 @@ overwrite_expected_results:
 
 update_input_jsons:
 	/usr/bin/python3 ../../scripts/update_tests_input_json.py \
-		json/manipulator_manager/input_event_queue/*.json
+		json/manipulator_manager/test_cases/*_input.jsonc
 	prettier --write \
-		json/manipulator_manager/input_event_queue/*.json
+		json/manipulator_manager/test_cases/*_input.jsonc
 
 include ../Makefile.rules

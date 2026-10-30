@@ -2,20 +2,20 @@
     {
         "description": "spacebar -> tab",
         "rules": ["json/manipulator_manager/rules/spacebar_to_tab.json"],
-        "input_event_queue": "json/manipulator_manager/input_event_queue/spacebar_to_tab.json",
-        "expected_event_queue": "json/manipulator_manager/expected_event_queue/spacebar_to_tab.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/spacebar_to_tab_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/spacebar_to_tab_result.json"
     },
     {
         "description": "spacebar -> tab (key_up only)",
         "rules": ["json/manipulator_manager/rules/spacebar_to_tab.json"],
-        "input_event_queue": "json/manipulator_manager/input_event_queue/spacebar_to_tab_key_up.json",
-        "expected_event_queue": "json/manipulator_manager/expected_event_queue/spacebar_to_tab_key_up.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/spacebar_to_tab_key_up_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/spacebar_to_tab_key_up_result.json"
     },
     {
         "description": "multiple",
         "rules": ["json/manipulator_manager/rules/multiple.json"],
-        "input_event_queue": "json/manipulator_manager/input_event_queue/multiple.json",
-        "expected_event_queue": "json/manipulator_manager/expected_event_queue/multiple.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/multiple_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/multiple_result.json"
     },
     {
         "description": "device_ungrabbed_event_1",
@@ -23,8 +23,8 @@
             "json/manipulator_manager/rules/spacebar_to_tab.json",
             "json/manipulator_manager/rules/tab_to_escape.json"
         ],
-        "input_event_queue": "json/manipulator_manager/input_event_queue/device_ungrabbed_event_1.json",
-        "expected_event_queue": "json/manipulator_manager/expected_event_queue/device_ungrabbed_event_1.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/device_ungrabbed_event_1_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/device_ungrabbed_event_1_result.json"
     },
     {
         "description": "device_ungrabbed_event_2",
@@ -32,8 +32,8 @@
             "json/manipulator_manager/rules/spacebar_to_tab.json",
             "json/manipulator_manager/rules/tab_to_escape.json"
         ],
-        "input_event_queue": "json/manipulator_manager/input_event_queue/device_ungrabbed_event_2.json",
-        "expected_event_queue": "json/manipulator_manager/expected_event_queue/device_ungrabbed_event_2.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/device_ungrabbed_event_2_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/device_ungrabbed_event_2_result.json"
     },
     {
         "description": "device_ungrabbed_event_3",
@@ -41,19 +41,19 @@
             "json/manipulator_manager/rules/spacebar_to_tab.json",
             "json/manipulator_manager/rules/tab_to_escape.json"
         ],
-        "input_event_queue": "json/manipulator_manager/input_event_queue/device_ungrabbed_event_3.json",
-        "expected_event_queue": "json/manipulator_manager/expected_event_queue/device_ungrabbed_event_3.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/device_ungrabbed_event_3_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/device_ungrabbed_event_3_result.json"
     },
     {
         "description": "modifiers",
         "rules": ["json/manipulator_manager/rules/fn_spacebar_to_fn_tab.json"],
-        "input_event_queue": "json/manipulator_manager/input_event_queue/modifiers.json",
-        "expected_event_queue": "json/manipulator_manager/expected_event_queue/modifiers.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/modifiers_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/modifiers_result.json"
     },
     {
         "description": "invalidate_manipulators_1",
         "rules": ["json/manipulator_manager/rules/spacebar_to_tab.json"],
-        "input_event_queue": "json/manipulator_manager/input_event_queue/invalidate_manipulators_1.json",
-        "expected_event_queue": "json/manipulator_manager/expected_event_queue/invalidate_manipulators_1.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/invalidate_manipulators_1_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/invalidate_manipulators_1_result.json"
     }
 ]
