@@ -2,992 +2,992 @@
     {
         "description": "generic_1",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/generic_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/generic_1.json"
+        "input_event_queue": "json/test_cases/generic_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/generic_1_result.json"
     },
     {
         "description": "same_modifier_twice_from_different_devices_1",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/same_modifier_twice_from_different_devices_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_1.json"
+        "input_event_queue": "json/test_cases/same_modifier_twice_from_different_devices_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/same_modifier_twice_from_different_devices_1_result.json"
     },
     {
         "description": "same_modifier_twice_from_different_devices_2",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/same_modifier_twice_from_different_devices_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/same_modifier_twice_from_different_devices_2.json"
+        "input_event_queue": "json/test_cases/same_modifier_twice_from_different_devices_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/same_modifier_twice_from_different_devices_2_result.json"
     },
     {
         "description": "stop_keyboard_repeat_1",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_1.json"
+        "input_event_queue": "json/test_cases/stop_keyboard_repeat_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/stop_keyboard_repeat_1_result.json"
     },
     {
         "description": "stop_keyboard_repeat_2",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_2.json"
+        "input_event_queue": "json/test_cases/stop_keyboard_repeat_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/stop_keyboard_repeat_2_result.json"
     },
     {
         "description": "stop_keyboard_repeat_3",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/stop_keyboard_repeat_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/stop_keyboard_repeat_3.json"
+        "input_event_queue": "json/test_cases/stop_keyboard_repeat_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/stop_keyboard_repeat_3_result.json"
     },
     {
         "description": "device_ungrabbed_event_1",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_1.json"
+        "input_event_queue": "json/test_cases/device_ungrabbed_event_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/device_ungrabbed_event_1_result.json"
     },
     {
         "description": "device_ungrabbed_event_2",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_2.json"
+        "input_event_queue": "json/test_cases/device_ungrabbed_event_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/device_ungrabbed_event_2_result.json"
     },
     {
         "description": "device_ungrabbed_event_3",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/device_ungrabbed_event_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_ungrabbed_event_3.json"
+        "input_event_queue": "json/test_cases/device_ungrabbed_event_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/device_ungrabbed_event_3_result.json"
     },
     {
         "description": "wait_between_events_1",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/wait_between_events_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_between_events_1.json"
+        "input_event_queue": "json/test_cases/wait_between_events_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/wait_between_events_1_result.json"
     },
     {
         "description": "delay macOS sleep shortcut by default",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/sleep_shortcut_delay_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sleep_shortcut_delay_1.json"
+        "input_event_queue": "json/test_cases/sleep_shortcut_delay_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sleep_shortcut_delay_1_result.json"
     },
     {
         "description": "disable macOS sleep shortcut delay",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/sleep_shortcut_delay_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sleep_shortcut_delay_2.json"
+        "input_event_queue": "json/test_cases/sleep_shortcut_delay_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sleep_shortcut_delay_2_result.json"
     },
     {
         "description": "delay Escape at the macOS login window",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/sleep_shortcut_delay_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sleep_shortcut_delay_3.json"
+        "input_event_queue": "json/test_cases/sleep_shortcut_delay_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sleep_shortcut_delay_3_result.json"
     },
     {
         "description": "wait_between_events_2 (key_up and single)",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/wait_between_events_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/wait_between_events_2.json"
+        "input_event_queue": "json/test_cases/wait_between_events_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/wait_between_events_2_result.json"
     },
     {
         "description": "collapse_lazy_events_1",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/collapse_lazy_events_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/collapse_lazy_events_1.json"
+        "input_event_queue": "json/test_cases/collapse_lazy_events_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/collapse_lazy_events_1_result.json"
     },
     {
         "description": "caps_lock_1",
         "rules": ["json/rules/empty.json"],
-        "input_event_queue": "json/input_event_queue/caps_lock_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/caps_lock_1.json"
+        "input_event_queue": "json/test_cases/caps_lock_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/caps_lock_1_result.json"
     },
     {
         "description": "not_changed_1",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/not_changed_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/not_changed_1.json"
+        "input_event_queue": "json/test_cases/not_changed_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/not_changed_1_result.json"
     },
     {
         "description": "sort_events_1 (f1,f2 -> left_shift+f2)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/sort_events_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_1.json"
+        "input_event_queue": "json/test_cases/sort_events_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sort_events_1_result.json"
     },
     {
         "description": "sort_events_2 (f2,f1 -> left_shift+f2)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/sort_events_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_2.json"
+        "input_event_queue": "json/test_cases/sort_events_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sort_events_2_result.json"
     },
     {
         "description": "sort_events_3 (do not reorder if the timestamps are different)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/sort_events_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_3.json"
+        "input_event_queue": "json/test_cases/sort_events_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sort_events_3_result.json"
     },
     {
         "description": "sort_events_4 (modify left_shift+f5 to spacebar after reordering)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/sort_events_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_4.json"
+        "input_event_queue": "json/test_cases/sort_events_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sort_events_4_result.json"
     },
     {
         "description": "sort_events_5 (do not modify left_shift+f5 unless reordering)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/sort_events_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_5.json"
+        "input_event_queue": "json/test_cases/sort_events_5_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sort_events_5_result.json"
     },
     {
         "description": "sort_events_6 (do not reorder unless reorder_same_timestamp_input_events_to_prioritize_modifiers == true)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/sort_events_6.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sort_events_6.json"
+        "input_event_queue": "json/test_cases/sort_events_6_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sort_events_6_result.json"
     },
     {
         "description": "f1 -> f2 (key to key)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/key_to_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_key_1.json"
+        "input_event_queue": "json/test_cases/key_to_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/key_to_key_1_result.json"
     },
     {
         "description": "key_code:20000 -> key_code:20001 (key to key)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/key_to_key_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_key_2.json"
+        "input_event_queue": "json/test_cases/key_to_key_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/key_to_key_2_result.json"
     },
     {
         "description": "f2 -> left_shift (key to modifier)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/key_to_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_1.json"
+        "input_event_queue": "json/test_cases/key_to_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/key_to_modifier_1_result.json"
     },
     {
         "description": "f3 -> left_command+spacebar (key to modifier+key)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/key_to_modifier_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_key_1.json"
+        "input_event_queue": "json/test_cases/key_to_modifier_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/key_to_modifier_key_1_result.json"
     },
     {
         "description": "f4 -> left_command+left_option (key to modifier+modifier)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/key_to_modifier_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/key_to_modifier_modifier_1.json"
+        "input_event_queue": "json/test_cases/key_to_modifier_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/key_to_modifier_modifier_1_result.json"
     },
     {
         "description": "left_shift+f5 -> spacebar (modifier+key to key)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/modifier_key_to_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_key_1.json"
+        "input_event_queue": "json/test_cases/modifier_key_to_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_key_to_key_1_result.json"
     },
     {
         "description": "left_command+f6 -> fn (modifier+key to modifier)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/modifier_key_to_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_1.json"
+        "input_event_queue": "json/test_cases/modifier_key_to_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_key_to_modifier_1_result.json"
     },
     {
         "description": "right_option+f7 -> right_command+spacebar (modifier+key to modifier+key)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/modifier_key_to_modifier_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_key_1.json"
+        "input_event_queue": "json/test_cases/modifier_key_to_modifier_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_key_to_modifier_key_1_result.json"
     },
     {
         "description": "right_option+f8 -> right_command+right_control (modifier+key to modifier+modifier)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/modifier_key_to_modifier_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_key_to_modifier_modifier_1.json"
+        "input_event_queue": "json/test_cases/modifier_key_to_modifier_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_key_to_modifier_modifier_1_result.json"
     },
     {
         "description": "caps_lock+f9 -> f10 (modifier+key (caps_lock) to key)",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/caps_lock_key_to_key_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/caps_lock_key_to_key_1.json"
+        "input_event_queue": "json/test_cases/caps_lock_key_to_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/caps_lock_key_to_key_1_result.json"
     },
     {
         "description": "caps_lock+f9 -> f10 (modifier+key (caps_lock) to key) holding caps_lock down",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/caps_lock_key_to_key_2.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/caps_lock_key_to_key_2.json"
+        "input_event_queue": "json/test_cases/caps_lock_key_to_key_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/caps_lock_key_to_key_2_result.json"
     },
     {
         "description": "caps_lock+f11 -> caps_lock+left_option+f12 (modifier+key (caps_lock) to modifier+key (keep caps_lock))",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/caps_lock_key_to_key_3.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/caps_lock_key_to_key_3.json"
+        "input_event_queue": "json/test_cases/caps_lock_key_to_key_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/caps_lock_key_to_key_3_result.json"
     },
     {
         "description": "right_shift -> f1 (modifier -> key)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_to_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_key_1.json"
+        "input_event_queue": "json/test_cases/modifier_to_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_to_key_1_result.json"
     },
     {
         "description": "left_shift -> fn (modifier -> modifier)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_to_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_1.json"
+        "input_event_queue": "json/test_cases/modifier_to_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_to_modifier_1_result.json"
     },
     {
         "description": "left_control -> fn+f3 (modifier -> modifier+key)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_to_modifier_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_key_1.json"
+        "input_event_queue": "json/test_cases/modifier_to_modifier_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_to_modifier_key_1_result.json"
     },
     {
         "description": "left_command -> fn+right_option (modifier -> modifier+modifier)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_to_modifier_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_to_modifier_modifier_1.json"
+        "input_event_queue": "json/test_cases/modifier_to_modifier_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_to_modifier_modifier_1_result.json"
     },
     {
         "description": "right_command+right_option -> f5 (modifier+modifier -> key)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_key_1.json"
+        "input_event_queue": "json/test_cases/modifier_modifier_to_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_modifier_to_key_1_result.json"
     },
     {
         "description": "right_control+right_option -> left_shift (modifier+modifier -> modifier) (1)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_1.json"
+        "input_event_queue": "json/test_cases/modifier_modifier_to_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_modifier_to_modifier_1_result.json"
     },
     {
         "description": "right_control+right_option -> left_shift (modifier+modifier -> modifier) (2)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_modifier_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_2.json"
+        "input_event_queue": "json/test_cases/modifier_modifier_to_modifier_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_modifier_to_modifier_2_result.json"
     },
     {
         "description": "right_control+right_command -> left_shift+f7 (modifier+modifier -> modifier+key)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_modifier_key_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_key_1.json"
+        "input_event_queue": "json/test_cases/modifier_modifier_to_modifier_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_modifier_to_modifier_key_1_result.json"
     },
     {
         "description": "right_command+right_control -> left_shift+left_option (modifier+modifier -> modifier+modifier)",
         "rules": ["json/rules/from_modifier.json"],
-        "input_event_queue": "json/input_event_queue/modifier_modifier_to_modifier_modifier_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_modifier_to_modifier_modifier_1.json"
+        "input_event_queue": "json/test_cases/modifier_modifier_to_modifier_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_modifier_to_modifier_modifier_1_result.json"
     },
     {
         "description": "button10 -> button11 (button to button)",
         "rules": ["json/rules/from_pointing_button.json"],
-        "input_event_queue": "json/input_event_queue/pointing_button_to_pointing_button_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_pointing_button_1.json"
+        "input_event_queue": "json/test_cases/pointing_button_to_pointing_button_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_button_to_pointing_button_1_result.json"
     },
     {
         "description": "button11 -> left_command+button12 (button to modifier+button)",
         "rules": ["json/rules/from_pointing_button.json"],
-        "input_event_queue": "json/input_event_queue/pointing_button_to_modifier_pointing_button_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_modifier_pointing_button_1.json"
+        "input_event_queue": "json/test_cases/pointing_button_to_modifier_pointing_button_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_button_to_modifier_pointing_button_1_result.json"
     },
     {
         "description": "button11 -> left_command+button12 (with key event)",
         "rules": ["json/rules/from_pointing_button.json"],
-        "input_event_queue": "json/input_event_queue/pointing_button_to_modifier_pointing_button_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_button_to_modifier_pointing_button_2.json"
+        "input_event_queue": "json/test_cases/pointing_button_to_modifier_pointing_button_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_button_to_modifier_pointing_button_2_result.json"
     },
     {
         "description": "left_control+button12 -> button13 (modifier+button to button)",
         "rules": ["json/rules/from_pointing_button.json"],
-        "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_pointing_button_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_1.json"
+        "input_event_queue": "json/test_cases/modifier_pointing_button_to_pointing_button_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_pointing_button_to_pointing_button_1_result.json"
     },
     {
         "description": "left_control+button12 -> button13 (with key event)",
         "rules": ["json/rules/from_pointing_button.json"],
-        "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_pointing_button_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_2.json"
+        "input_event_queue": "json/test_cases/modifier_pointing_button_to_pointing_button_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_pointing_button_to_pointing_button_2_result.json"
     },
     {
         "description": "left_control+button12 -> button13 (a key event between pointing_button events)",
         "rules": ["json/rules/from_pointing_button.json"],
-        "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_pointing_button_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_pointing_button_3.json"
+        "input_event_queue": "json/test_cases/modifier_pointing_button_to_pointing_button_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_pointing_button_to_pointing_button_3_result.json"
     },
     {
         "description": "right_control+button13 -> left_option+button14 (modifier+button to modifier+button)",
         "rules": ["json/rules/from_pointing_button.json"],
-        "input_event_queue": "json/input_event_queue/modifier_pointing_button_to_modifier_pointing_button_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/modifier_pointing_button_to_modifier_pointing_button_1.json"
+        "input_event_queue": "json/test_cases/modifier_pointing_button_to_modifier_pointing_button_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/modifier_pointing_button_to_modifier_pointing_button_1_result.json"
     },
     {
         "description": "to_if_alone_1",
         "rules": ["json/rules/to_if_alone.json"],
-        "input_event_queue": "json/input_event_queue/to_if_alone_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_1.json"
+        "input_event_queue": "json/test_cases/to_if_alone_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_1_result.json"
     },
     {
         "description": "to_if_alone_2",
         "rules": ["json/rules/to_if_alone.json"],
-        "input_event_queue": "json/input_event_queue/to_if_alone_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_2.json"
+        "input_event_queue": "json/test_cases/to_if_alone_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_2_result.json"
     },
     {
         "description": "to_if_alone_3",
         "rules": ["json/rules/to_if_alone.json"],
-        "input_event_queue": "json/input_event_queue/to_if_alone_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_3.json"
+        "input_event_queue": "json/test_cases/to_if_alone_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_3_result.json"
     },
     {
         "description": "to_if_alone_4",
         "rules": ["json/rules/to_if_alone.json"],
-        "input_event_queue": "json/input_event_queue/to_if_alone_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_4.json"
+        "input_event_queue": "json/test_cases/to_if_alone_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_4_result.json"
     },
     {
         "description": "to_if_alone_5 (command+escape -> left_control (spacebar))",
         "rules": ["json/rules/to_if_alone.json"],
-        "input_event_queue": "json/input_event_queue/to_if_alone_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_5.json"
+        "input_event_queue": "json/test_cases/to_if_alone_5_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_5_result.json"
     },
     {
         "description": "to_if_alone_6 (shift+tab -> return_or_enter (spacebar))",
         "rules": ["json/rules/to_if_alone.json"],
-        "input_event_queue": "json/input_event_queue/to_if_alone_6.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_6.json"
+        "input_event_queue": "json/test_cases/to_if_alone_6_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_6_result.json"
     },
     {
         "description": "to_if_alone_7 restore key down modifier flags",
         "rules": ["json/rules/to_if_alone.json"],
-        "input_event_queue": "json/input_event_queue/to_if_alone_7.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_7.json"
+        "input_event_queue": "json/test_cases/to_if_alone_7_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_7_result.json"
     },
     {
         "description": "to_if_alone_8 restore key down modifier flags (with from mandatory modifiers)",
         "rules": ["json/rules/to_if_alone.json"],
-        "input_event_queue": "json/input_event_queue/to_if_alone_8.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_alone_8.json"
+        "input_event_queue": "json/test_cases/to_if_alone_8_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_8_result.json"
     },
     {
         "description": "to_after_key_up_1",
         "rules": ["json/rules/to_after_key_up.json"],
-        "input_event_queue": "json/input_event_queue/to_after_key_up_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_1.json"
+        "input_event_queue": "json/test_cases/to_after_key_up_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_after_key_up_1_result.json"
     },
     {
         "description": "to_after_key_up_2",
         "rules": ["json/rules/to_after_key_up.json"],
-        "input_event_queue": "json/input_event_queue/to_after_key_up_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_2.json"
+        "input_event_queue": "json/test_cases/to_after_key_up_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_after_key_up_2_result.json"
     },
     {
         "description": "to_after_key_up_3",
         "rules": ["json/rules/to_after_key_up.json"],
-        "input_event_queue": "json/input_event_queue/to_after_key_up_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_3.json"
+        "input_event_queue": "json/test_cases/to_after_key_up_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_after_key_up_3_result.json"
     },
     {
         "description": "to_after_key_up_4 (modifier in `to_after_key_up`)",
         "rules": ["json/rules/to_after_key_up.json"],
-        "input_event_queue": "json/input_event_queue/to_after_key_up_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_4.json"
+        "input_event_queue": "json/test_cases/to_after_key_up_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_after_key_up_4_result.json"
     },
     {
         "description": "to_after_key_up_5 (modifier in `to_after_key_up`)",
         "rules": ["json/rules/to_after_key_up.json"],
-        "input_event_queue": "json/input_event_queue/to_after_key_up_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_after_key_up_5.json"
+        "input_event_queue": "json/test_cases/to_after_key_up_5_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_after_key_up_5_result.json"
     },
     {
         "description": "to_if_held_down_1 (canceled by self)",
         "rules": ["json/rules/to_if_held_down.json"],
-        "input_event_queue": "json/input_event_queue/to_if_held_down_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_1.json"
+        "input_event_queue": "json/test_cases/to_if_held_down_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_held_down_1_result.json"
     },
     {
         "description": "to_if_held_down_2 (canceled by another key)",
         "rules": ["json/rules/to_if_held_down.json"],
-        "input_event_queue": "json/input_event_queue/to_if_held_down_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_2.json"
+        "input_event_queue": "json/test_cases/to_if_held_down_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_held_down_2_result.json"
     },
     {
         "description": "to_if_held_down_3 (invoked key_down)",
         "rules": ["json/rules/to_if_held_down.json"],
-        "input_event_queue": "json/input_event_queue/to_if_held_down_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_3.json"
+        "input_event_queue": "json/test_cases/to_if_held_down_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_held_down_3_result.json"
     },
     {
         "description": "to_if_held_down_4 (invoked key_down,key_up)",
         "rules": ["json/rules/to_if_held_down.json"],
-        "input_event_queue": "json/input_event_queue/to_if_held_down_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_4.json"
+        "input_event_queue": "json/test_cases/to_if_held_down_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_held_down_4_result.json"
     },
     {
         "description": "to_if_held_down_5 (with `to_`)",
         "rules": ["json/rules/to_if_held_down.json"],
-        "input_event_queue": "json/input_event_queue/to_if_held_down_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_5.json"
+        "input_event_queue": "json/test_cases/to_if_held_down_5_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_held_down_5_result.json"
     },
     {
         "description": "to_if_held_down_6 (from: modifier+key)",
         "rules": ["json/rules/to_if_held_down.json"],
-        "input_event_queue": "json/input_event_queue/to_if_held_down_6.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_6.json"
+        "input_event_queue": "json/test_cases/to_if_held_down_6_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_held_down_6_result.json"
     },
     {
         "description": "to_if_held_down_7 (from: modifier+key, to modifier)",
         "rules": ["json/rules/to_if_held_down.json"],
-        "input_event_queue": "json/input_event_queue/to_if_held_down_7.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_held_down_7.json"
+        "input_event_queue": "json/test_cases/to_if_held_down_7_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_held_down_7_result.json"
     },
     {
         "description": "to_conditions (no repeat)",
         "rules": ["json/rules/to_conditions.json"],
-        "input_event_queue": "json/input_event_queue/to_conditions_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_conditions_1.json"
+        "input_event_queue": "json/test_cases/to_conditions_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_conditions_1_result.json"
     },
     {
         "description": "to_conditions (f11_pressed == false)",
         "rules": ["json/rules/to_conditions.json"],
-        "input_event_queue": "json/input_event_queue/to_conditions_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_conditions_2.json"
+        "input_event_queue": "json/test_cases/to_conditions_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_conditions_2_result.json"
     },
     {
         "description": "to_conditions (f11_pressed == true)",
         "rules": ["json/rules/to_conditions.json"],
-        "input_event_queue": "json/input_event_queue/to_conditions_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_conditions_3.json"
+        "input_event_queue": "json/test_cases/to_conditions_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_conditions_3_result.json"
     },
     {
         "description": "to_delayed_action (no invoke, no cancel)",
         "rules": ["json/rules/to_delayed_action.jsonc"],
-        "input_event_queue": "json/input_event_queue/to_delayed_action_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_1.json"
+        "input_event_queue": "json/test_cases/to_delayed_action_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_delayed_action_1_result.json"
     },
     {
         "description": "to_delayed_action (invoke)",
         "rules": ["json/rules/to_delayed_action.jsonc"],
-        "input_event_queue": "json/input_event_queue/to_delayed_action_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_2.json"
+        "input_event_queue": "json/test_cases/to_delayed_action_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_delayed_action_2_result.json"
     },
     {
         "description": "to_delayed_action (cancel)",
         "rules": ["json/rules/to_delayed_action.jsonc"],
-        "input_event_queue": "json/input_event_queue/to_delayed_action_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_3.json"
+        "input_event_queue": "json/test_cases/to_delayed_action_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_delayed_action_3_result.json"
     },
     {
         "description": "to_delayed_action (cancel by ignored device)",
         "rules": ["json/rules/to_delayed_action.jsonc"],
-        "input_event_queue": "json/input_event_queue/to_delayed_action_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_4.json"
+        "input_event_queue": "json/test_cases/to_delayed_action_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_delayed_action_4_result.json"
     },
     {
         "description": "to_delayed_action (from.mandatory is released)",
         "rules": ["json/rules/to_delayed_action.jsonc"],
-        "input_event_queue": "json/input_event_queue/to_delayed_action_5.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_5.json"
+        "input_event_queue": "json/test_cases/to_delayed_action_5_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_delayed_action_5_result.json"
     },
     {
         "description": "to_delayed_action (from.mandatory is pressed)",
         "rules": ["json/rules/to_delayed_action.jsonc"],
-        "input_event_queue": "json/input_event_queue/to_delayed_action_6.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_6.json"
+        "input_event_queue": "json/test_cases/to_delayed_action_6_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_delayed_action_6_result.json"
     },
     {
         "description": "to_delayed_action cx",
         "rules": ["json/rules/to_delayed_action_cx.json"],
-        "input_event_queue": "json/input_event_queue/to_delayed_action_cx_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_delayed_action_cx_1.json"
+        "input_event_queue": "json/test_cases/to_delayed_action_cx_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_delayed_action_cx_1_result.json"
     },
     {
         "description": "fn+up_arrow to fn+page_up (from modifiers == to modifiers)",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/from_modifiers_equal_to_modifiers_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_equal_to_modifiers_1.json"
+        "input_event_queue": "json/test_cases/from_modifiers_equal_to_modifiers_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_modifiers_equal_to_modifiers_1_result.json"
     },
     {
         "description": "fn+up_arrow to fn+page_up (from modifiers == to modifiers) (release fn before up_arrow)",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/from_modifiers_equal_to_modifiers_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_equal_to_modifiers_2.json"
+        "input_event_queue": "json/test_cases/from_modifiers_equal_to_modifiers_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_modifiers_equal_to_modifiers_2_result.json"
     },
     {
         "description": "pointing_device_event",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_1.json"
+        "input_event_queue": "json/test_cases/pointing_device_event_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_device_event_1_result.json"
     },
     {
         "description": "pointing_device_event and key repeat",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_2.json"
+        "input_event_queue": "json/test_cases/pointing_device_event_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_device_event_2_result.json"
     },
     {
         "description": "pointing_device_event (pointing_button and pointing_motion)",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_3.json"
+        "input_event_queue": "json/test_cases/pointing_device_event_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_device_event_3_result.json"
     },
     {
         "description": "pointing_device_event_from_event_tap",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_from_event_tap_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_1.json"
+        "input_event_queue": "json/test_cases/pointing_device_event_from_event_tap_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_device_event_from_event_tap_1_result.json"
     },
     {
         "description": "pointing_device_event_from_event_tap and key repeat",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_from_event_tap_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_2.json"
+        "input_event_queue": "json/test_cases/pointing_device_event_from_event_tap_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_device_event_from_event_tap_2_result.json"
     },
     {
         "description": "pointing_device_event_from_event_tap and pointing_button",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/pointing_device_event_from_event_tap_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/pointing_device_event_from_event_tap_3.json"
+        "input_event_queue": "json/test_cases/pointing_device_event_from_event_tap_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/pointing_device_event_from_event_tap_3_result.json"
     },
     {
         "description": "control+p to up_arrow (from modifiers.optional) / control-p, tab",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/from_modifiers_optional_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_1.json"
+        "input_event_queue": "json/test_cases/from_modifiers_optional_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_modifiers_optional_1_result.json"
     },
     {
         "description": "control+p to up_arrow (from modifiers.optional) / control-option-p",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/from_modifiers_optional_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_2.json"
+        "input_event_queue": "json/test_cases/from_modifiers_optional_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_modifiers_optional_2_result.json"
     },
     {
         "description": "control+p to up_arrow (from modifiers.optional) / control-shift-p",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/from_modifiers_optional_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_3.json"
+        "input_event_queue": "json/test_cases/from_modifiers_optional_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_modifiers_optional_3_result.json"
     },
     {
         "description": "control+p to up_arrow (from modifiers.optional) lazy modifiers",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/from_modifiers_optional_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_modifiers_optional_4.json"
+        "input_event_queue": "json/test_cases/from_modifiers_optional_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_modifiers_optional_4_result.json"
     },
     {
         "description": "control+u to shift+control+a,delete_or_backspace (multiple to keys)",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/multiple_to_keys_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/multiple_to_keys_1.json"
+        "input_event_queue": "json/test_cases/multiple_to_keys_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/multiple_to_keys_1_result.json"
     },
     {
         "description": "control+f1 to shift+control+a,delete_or_backspace,vk_none (multiple to keys)",
         "rules": ["json/rules/complex_modifications.json"],
-        "input_event_queue": "json/input_event_queue/multiple_to_keys_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/multiple_to_keys_2.json"
+        "input_event_queue": "json/test_cases/multiple_to_keys_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/multiple_to_keys_2_result.json"
     },
     {
         "description": "device_keys_and_pointing_buttons_are_released_1",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/device_keys_and_pointing_buttons_are_released_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_keys_and_pointing_buttons_are_released_1.json"
+        "input_event_queue": "json/test_cases/device_keys_and_pointing_buttons_are_released_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/device_keys_and_pointing_buttons_are_released_1_result.json"
     },
     {
         "description": "device_keys_and_pointing_buttons_are_released_2",
         "rules": ["json/rules/from_key.json"],
-        "input_event_queue": "json/input_event_queue/device_keys_and_pointing_buttons_are_released_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/device_keys_and_pointing_buttons_are_released_2.json"
+        "input_event_queue": "json/test_cases/device_keys_and_pointing_buttons_are_released_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/device_keys_and_pointing_buttons_are_released_2_result.json"
     },
     {
         "description": "lazy_1",
         "rules": ["json/rules/lazy.json"],
-        "input_event_queue": "json/input_event_queue/lazy_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/lazy_1.json"
+        "input_event_queue": "json/test_cases/lazy_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/lazy_1_result.json"
     },
     {
         "description": "lazy_2 (with to_if_alone)",
         "rules": ["json/rules/lazy.json"],
-        "input_event_queue": "json/input_event_queue/lazy_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/lazy_2.json"
+        "input_event_queue": "json/test_cases/lazy_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/lazy_2_result.json"
     },
     {
         "description": "repeat_1",
         "rules": ["json/rules/repeat.json"],
-        "input_event_queue": "json/input_event_queue/repeat_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/repeat_1.json"
+        "input_event_queue": "json/test_cases/repeat_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_1_result.json"
     },
     {
         "description": "repeat_2",
         "rules": ["json/rules/repeat.json"],
-        "input_event_queue": "json/input_event_queue/repeat_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/repeat_2.json"
+        "input_event_queue": "json/test_cases/repeat_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_2_result.json"
     },
     {
         "description": "hold_down_milliseconds_1",
         "rules": ["json/rules/hold_down_milliseconds.json"],
-        "input_event_queue": "json/input_event_queue/hold_down_milliseconds_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/hold_down_milliseconds_1.json"
+        "input_event_queue": "json/test_cases/hold_down_milliseconds_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/hold_down_milliseconds_1_result.json"
     },
     {
         "description": "from_any_1",
         "rules": ["json/rules/from_any.json"],
-        "input_event_queue": "json/input_event_queue/from_any_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_any_1.json"
+        "input_event_queue": "json/test_cases/from_any_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_any_1_result.json"
     },
     {
         "description": "mouse_key_1",
         "rules": ["json/rules/mouse_key.json"],
-        "input_event_queue": "json/input_event_queue/mouse_key_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_1.json"
+        "input_event_queue": "json/test_cases/mouse_key_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_key_1_result.json"
     },
     {
         "description": "mouse_key_2",
         "rules": ["json/rules/mouse_key.json"],
-        "input_event_queue": "json/input_event_queue/mouse_key_2.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_2.json"
+        "input_event_queue": "json/test_cases/mouse_key_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_key_2_result.json"
     },
     {
         "description": "mouse_key_3",
         "rules": ["json/rules/mouse_key.json"],
-        "input_event_queue": "json/input_event_queue/mouse_key_3.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_3.json"
+        "input_event_queue": "json/test_cases/mouse_key_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_key_3_result.json"
     },
     {
         "description": "mouse_key_4 (speed_multiplier)",
         "rules": ["json/rules/mouse_key.json"],
-        "input_event_queue": "json/input_event_queue/mouse_key_4.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_key_4.json"
+        "input_event_queue": "json/test_cases/mouse_key_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_key_4_result.json"
     },
     {
         "description": "simultaneous_1",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_1.json"
+        "input_event_queue": "json/test_cases/simultaneous_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_1_result.json"
     },
     {
         "description": "simultaneous_2",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_2.json"
+        "input_event_queue": "json/test_cases/simultaneous_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_2_result.json"
     },
     {
         "description": "simultaneous_3 (multiple devices)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_3.json"
+        "input_event_queue": "json/test_cases/simultaneous_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_3_result.json"
     },
     {
         "description": "simultaneous_4 (key is released)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_4.json"
+        "input_event_queue": "json/test_cases/simultaneous_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_4_result.json"
     },
     {
         "description": "simultaneous_5 (key is released, then pressed)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_5.json"
+        "input_event_queue": "json/test_cases/simultaneous_5_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_5_result.json"
     },
     {
         "description": "simultaneous_6 (with modifier)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_6.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_6.json"
+        "input_event_queue": "json/test_cases/simultaneous_6_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_6_result.json"
     },
     {
         "description": "simultaneous_7 (with modifier)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_7.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_7.json"
+        "input_event_queue": "json/test_cases/simultaneous_7_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_7_result.json"
     },
     {
         "description": "simultaneous_8 (modifier is released)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_8.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_8.json"
+        "input_event_queue": "json/test_cases/simultaneous_8_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_8_result.json"
     },
     {
         "description": "simultaneous_9 (simultaneous_threshold_milliseconds)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_9.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_9.json"
+        "input_event_queue": "json/test_cases/simultaneous_9_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_9_result.json"
     },
     {
         "description": "simultaneous_10 (invalid events)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_10.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_10.json"
+        "input_event_queue": "json/test_cases/simultaneous_10_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_10_result.json"
     },
     {
         "description": "simultaneous_11 (not continued events)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_11.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_11.json"
+        "input_event_queue": "json/test_cases/simultaneous_11_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_11_result.json"
     },
     {
         "description": "simultaneous_12 (key_up in continued events)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_12.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_12.json"
+        "input_event_queue": "json/test_cases/simultaneous_12_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_12_result.json"
     },
     {
         "description": "simultaneous_13 (multiple from events)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_13.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_13.json"
+        "input_event_queue": "json/test_cases/simultaneous_13_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_13_result.json"
     },
     {
         "description": "simultaneous_14 (multiple from events is released)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_14.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_14.json"
+        "input_event_queue": "json/test_cases/simultaneous_14_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_14_result.json"
     },
     {
         "description": "simultaneous_15 (pointing_motion)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_15.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_15.json"
+        "input_event_queue": "json/test_cases/simultaneous_15_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_15_result.json"
     },
     {
         "description": "simultaneous_16 (to_if_held_down)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_16.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_16.json"
+        "input_event_queue": "json/test_cases/simultaneous_16_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_16_result.json"
     },
     {
         "description": "simultaneous_17 (to_if_alone)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_17.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_17.json"
+        "input_event_queue": "json/test_cases/simultaneous_17_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_17_result.json"
     },
     {
         "description": "simultaneous_18 (key_down_order)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_18.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_18.json"
+        "input_event_queue": "json/test_cases/simultaneous_18_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_18_result.json"
     },
     {
         "description": "simultaneous_19 (key_down_order)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_19.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_19.json"
+        "input_event_queue": "json/test_cases/simultaneous_19_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_19_result.json"
     },
     {
         "description": "simultaneous_20 (key_down_order, key_up_order)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_20.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_20.json"
+        "input_event_queue": "json/test_cases/simultaneous_20_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_20_result.json"
     },
     {
         "description": "simultaneous_21 (key_down_order, key_up_order)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_21.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_21.json"
+        "input_event_queue": "json/test_cases/simultaneous_21_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_21_result.json"
     },
     {
         "description": "simultaneous_22 (key_down_order, key_up_order)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_22.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_22.json"
+        "input_event_queue": "json/test_cases/simultaneous_22_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_22_result.json"
     },
     {
         "description": "simultaneous_23 (key_down_order, key_up_order)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_23.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_23.json"
+        "input_event_queue": "json/test_cases/simultaneous_23_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_23_result.json"
     },
     {
         "description": "simultaneous_24 (simple_vi_mode)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_24.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_24.json"
+        "input_event_queue": "json/test_cases/simultaneous_24_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_24_result.json"
     },
     {
         "description": "simultaneous_25 (key_up_when)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_25.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_25.json"
+        "input_event_queue": "json/test_cases/simultaneous_25_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_25_result.json"
     },
     {
         "description": "simultaneous_26 (detect_key_down_uninterruptedly)",
         "rules": ["json/rules/simultaneous.json"],
-        "input_event_queue": "json/input_event_queue/simultaneous_26.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/simultaneous_26.json"
+        "input_event_queue": "json/test_cases/simultaneous_26_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/simultaneous_26_result.json"
     },
     {
         "description": "halt_1 (to_if_held_down, halted)",
         "rules": ["json/rules/halt.jsonc"],
-        "input_event_queue": "json/input_event_queue/halt_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_1.json"
+        "input_event_queue": "json/test_cases/halt_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/halt_1_result.json"
     },
     {
         "description": "halt_2 (to_if_held_down, not halted)",
         "rules": ["json/rules/halt.jsonc"],
-        "input_event_queue": "json/input_event_queue/halt_2.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_2.json"
+        "input_event_queue": "json/test_cases/halt_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/halt_2_result.json"
     },
     {
         "description": "halt_3 (to_if_alone, halted)",
         "rules": ["json/rules/halt.jsonc"],
-        "input_event_queue": "json/input_event_queue/halt_3.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_3.json"
+        "input_event_queue": "json/test_cases/halt_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/halt_3_result.json"
     },
     {
         "description": "halt_4 (to_if_alone, not halted)",
         "rules": ["json/rules/halt.jsonc"],
-        "input_event_queue": "json/input_event_queue/halt_4.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_4.json"
+        "input_event_queue": "json/test_cases/halt_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/halt_4_result.json"
     },
     {
         "description": "halt_5 (simultaneous_options)",
         "rules": ["json/rules/halt.jsonc"],
-        "input_event_queue": "json/input_event_queue/halt_5.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_5.json"
+        "input_event_queue": "json/test_cases/halt_5_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/halt_5_result.json"
     },
     {
         "description": "halt_6 (with modifiers)",
         "rules": ["json/rules/halt.jsonc"],
-        "input_event_queue": "json/input_event_queue/halt_6.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_6.json"
+        "input_event_queue": "json/test_cases/halt_6_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/halt_6_result.json"
     },
     {
         "description": "halt_7 (with from modifiers)",
         "rules": ["json/rules/halt.jsonc"],
-        "input_event_queue": "json/input_event_queue/halt_7.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/halt_7.json"
+        "input_event_queue": "json/test_cases/halt_7_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/halt_7_result.json"
     },
     {
         "description": "f10 to mute (fn function keys)",
         "rules": ["json/rules/fn_function_keys.json"],
-        "input_event_queue": "json/input_event_queue/fn_function_keys_1.json",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/fn_function_keys_1.json"
+        "input_event_queue": "json/test_cases/fn_function_keys_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/fn_function_keys_1_result.json"
     },
     {
         "description": "sticky modifier",
         "rules": ["json/rules/sticky_modifier.json"],
-        "input_event_queue": "json/input_event_queue/sticky_modifier_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sticky_modifier_1.json"
+        "input_event_queue": "json/test_cases/sticky_modifier_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sticky_modifier_1_result.json"
     },
     {
         "description": "sticky modifier",
         "rules": ["json/rules/sticky_modifier.json"],
-        "input_event_queue": "json/input_event_queue/sticky_modifier_2.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sticky_modifier_2.json"
+        "input_event_queue": "json/test_cases/sticky_modifier_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sticky_modifier_2_result.json"
     },
     {
         "description": "sticky modifier",
         "rules": ["json/rules/sticky_modifier.json"],
-        "input_event_queue": "json/input_event_queue/sticky_modifier_3.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/sticky_modifier_3.json"
+        "input_event_queue": "json/test_cases/sticky_modifier_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/sticky_modifier_3_result.json"
     },
     {
         "description": "set_variable",
         "rules": ["json/rules/set_variable.jsonc"],
-        "input_event_queue": "json/input_event_queue/set_variable_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_1.json"
+        "input_event_queue": "json/test_cases/set_variable_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/set_variable_1_result.json"
     },
     {
         "description": "set_variable (key_up_value)",
         "rules": ["json/rules/set_variable.jsonc"],
-        "input_event_queue": "json/input_event_queue/set_variable_2.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_2.json"
+        "input_event_queue": "json/test_cases/set_variable_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/set_variable_2_result.json"
     },
     {
         "description": "set_variable (expression)",
         "rules": ["json/rules/set_variable.jsonc"],
-        "input_event_queue": "json/input_event_queue/set_variable_3.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_3.json"
+        "input_event_queue": "json/test_cases/set_variable_3_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/set_variable_3_result.json"
     },
     {
         "description": "set_variable (expression and unset)",
         "rules": ["json/rules/set_variable.jsonc"],
-        "input_event_queue": "json/input_event_queue/set_variable_4.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_4.json"
+        "input_event_queue": "json/test_cases/set_variable_4_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/set_variable_4_result.json"
     },
     {
         "description": "set_variable (a variable shared between two expressions)",
         "rules": ["json/rules/set_variable.jsonc"],
-        "input_event_queue": "json/input_event_queue/set_variable_5.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/set_variable_5.json"
+        "input_event_queue": "json/test_cases/set_variable_5_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/set_variable_5_result.json"
     },
     {
         "description": "mouse_basic_1",
         "rules": ["json/rules/mouse_basic.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_basic_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_basic_1.json"
+        "input_event_queue": "json/test_cases/mouse_basic_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_basic_1_result.json"
     },
     {
         "description": "specify modifiers order",
         "rules": ["json/rules/vk_none.jsonc"],
-        "input_event_queue": "json/input_event_queue/vk_none_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/vk_none_1.json"
+        "input_event_queue": "json/test_cases/vk_none_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/vk_none_1_result.json"
     },
     {
         "description": "integer_value",
         "rules": ["json/rules/integer_value.jsonc"],
-        "input_event_queue": "json/input_event_queue/integer_value_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/integer_value_1.json"
+        "input_event_queue": "json/test_cases/integer_value_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/integer_value_1_result.json"
     },
     {
         "description": "from_event_1",
         "rules": ["json/rules/from_event.jsonc"],
-        "input_event_queue": "json/input_event_queue/from_event_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_event_1.json"
+        "input_event_queue": "json/test_cases/from_event_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_event_1_result.json"
     },
     {
         "description": "from_event_2",
         "rules": ["json/rules/from_event.jsonc"],
-        "input_event_queue": "json/input_event_queue/from_event_2.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/from_event_2.json"
+        "input_event_queue": "json/test_cases/from_event_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/from_event_2_result.json"
     },
     {
         "description": "to_if_other_key_pressed_1",
         "rules": ["json/rules/to_if_other_key_pressed.jsonc"],
-        "input_event_queue": "json/input_event_queue/to_if_other_key_pressed_1.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_other_key_pressed_1.json"
+        "input_event_queue": "json/test_cases/to_if_other_key_pressed_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_other_key_pressed_1_result.json"
     },
     {
         "description": "to_if_other_key_pressed_2 (multiple devices)",
         "rules": ["json/rules/to_if_other_key_pressed.jsonc"],
-        "input_event_queue": "json/input_event_queue/to_if_other_key_pressed_2.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/to_if_other_key_pressed_2.json"
+        "input_event_queue": "json/test_cases/to_if_other_key_pressed_2_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_other_key_pressed_2_result.json"
     },
     {
         "description": "Mouse motion: default deadline, output order, cancellation and unmapped direction",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_default_window.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_default_window.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_default_window_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_default_window_result.json"
     },
     {
         "description": "Mouse motion: custom interval discards surplus and subthreshold totals",
         "rules": [
             "json/rules/mouse_motion_and_wheel_to_key_custom_intervals.jsonc"
         ],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_custom_window.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_custom_window.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_custom_window_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_custom_window_result.json"
     },
     {
         "description": "Mouse motion: nearest direction, horizontal ties and large signed totals",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key_directions.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_directions.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_directions.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_directions_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_directions_result.json"
     },
     {
         "description": "Mouse motion: sampling windows and totals are independent per device",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key_directions.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_devices.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_devices.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_devices_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_devices_result.json"
     },
     {
         "description": "Wheels: shared deadline starts on either axis and thresholds apply independently",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_wheels.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_wheels.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_wheels_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_wheels_result.json"
     },
     {
         "description": "Wheel axis selection: horizontal_wheel preserves pointer motion and the other wheel axis",
         "rules": [
             "json/rules/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough.jsonc"
         ],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough_result.json"
     },
     {
         "description": "Wheel axis selection: vertical_wheel preserves pointer motion and the other wheel axis",
         "rules": [
             "json/rules/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.jsonc"
         ],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough_result.json"
     },
     {
         "description": "Wheels: signed accumulation cancels reversals and maps all four directions",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_wheel_signs.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_wheel_signs.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_wheel_signs_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_wheel_signs_result.json"
     },
     {
         "description": "Pointer and tilt have independent windows; vertical scrolling passes immediately",
@@ -995,73 +995,73 @@
             "json/rules/mouse_motion_and_wheel_to_key_directions.jsonc",
             "json/rules/mouse_motion_and_wheel_to_key_horizontal_wheel_passthrough.jsonc"
         ],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_xy_and_tilt.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_xy_and_tilt.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_xy_and_tilt_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_xy_and_tilt_result.json"
     },
     {
         "description": "Separate horizontal and vertical rules retain their own intervals",
         "rules": [
             "json/rules/mouse_motion_and_wheel_to_key_custom_intervals.jsonc"
         ],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_separate_wheel_rules.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_separate_wheel_rules.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_separate_wheel_rules_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_separate_wheel_rules_result.json"
     },
     {
         "description": "Fn condition with empty to: pointer motion is consumed; wheel values pass through",
         "rules": [
             "json/rules/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.jsonc"
         ],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_consume_xy.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_consume_xy.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_consume_xy_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_consume_xy_result.json"
     },
     {
         "description": "Fn eligibility: latched through release or repress; next window falls back to the plain rule",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_fn_window.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_fn_window.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_fn_window_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_fn_window_result.json"
     },
     {
         "description": "Input conditions stay latched per device and are checked again next window",
         "rules": [
             "json/rules/mouse_motion_and_wheel_to_key_vertical_wheel_passthrough.jsonc"
         ],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_input_conditions.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_input_conditions.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_input_conditions_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_input_conditions_result.json"
     },
     {
         "description": "Pending windows: cancel on disconnect or invalidation; retain on key/button release",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_cancellation.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_cancellation.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_cancellation_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_cancellation_result.json"
     },
     {
         "description": "Modifiers: capture initial state, exclude later presses and restore actual state",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_modifiers.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_modifiers.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_modifiers_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_modifiers_result.json"
     },
     {
         "description": "Wheels share the initial modifier snapshot; the next window captures new modifiers",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_wheel_modifiers.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_wheel_modifiers.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_wheel_modifiers_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_wheel_modifiers_result.json"
     },
     {
         "description": "Output conditions are evaluated at the window deadline",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_output_conditions.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_output_conditions.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_output_conditions_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_output_conditions_result.json"
     },
     {
         "description": "Cooldown: fixed expiry, per-device isolation, cancellation, and no-output windows",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key_cooldown.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_cooldown_xy.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_cooldown_xy.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_cooldown_xy_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_cooldown_xy_result.json"
     },
     {
         "description": "Cooldown: shared wheel suppression preserves pointer motion and rechecks modifiers afterward",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key_cooldown.jsonc"],
-        "input_event_queue": "json/input_event_queue/mouse_motion_and_wheel_to_key_cooldown_wheels.jsonc",
-        "expected_post_event_to_virtual_devices_queue": "json/expected_post_event_to_virtual_devices_queue/mouse_motion_and_wheel_to_key_cooldown_wheels.json"
+        "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_cooldown_wheels_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_cooldown_wheels_result.json"
     }
 ]

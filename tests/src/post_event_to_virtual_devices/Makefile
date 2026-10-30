@@ -7,9 +7,7 @@ overwrite_expected_results:
 	./build/overwrite_expected_results
 
 update_input_jsons:
-	/usr/bin/python3 ../../scripts/update_tests_input_json.py \
-		json/input_event_queue/*.json
 	prettier --write \
-		json/input_event_queue/*.json
+		json/test_cases/*_input.jsonc
 
 include ../Makefile.rules
