@@ -1,83 +1,9 @@
 [
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": [
-                "left_shift"
-            ]
-        },
-        "time_stamp": 5,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 10,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "f4"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 15,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 20,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "f5"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 25,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "f5"
-                }
-            ],
-            "modifiers": [
-                "left_shift"
-            ]
-        },
-        "time_stamp": 10002,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "f5"
-                },
-                {
-                    "key_code": "tab"
-                }
-            ],
-            "modifiers": [
-                "left_shift"
-            ]
-        },
-        "time_stamp": 10007,
-        "type": "keyboard_input"
-    }
+    { "keyboard_input": { "keys": [],                                              "modifiers": ["left_shift"] }, "time_stamp": 5,     "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                                              "modifiers": [] },             "time_stamp": 10,    "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "f4" }],                          "modifiers": [] },             "time_stamp": 15,    "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                                              "modifiers": [] },             "time_stamp": 20,    "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "f5" }],                          "modifiers": [] },             "time_stamp": 25,    "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "f5" }],                          "modifiers": ["left_shift"] }, "time_stamp": 10002, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [ { "key_code": "f5" }, { "key_code": "tab" } ], "modifiers": ["left_shift"] }, "time_stamp": 10007, "type": "keyboard_input" }
 ]

@@ -1,55 +1,7 @@
 [
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": [
-                "right_shift"
-            ]
-        },
-        "time_stamp": 5,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 10,
-        "type": "keyboard_input"
-    },
-    {
-        "pointing_input": {
-            "buttons": [],
-            "horizontal_wheel": 0,
-            "vertical_wheel": 0,
-            "x": 12,
-            "y": 0
-        },
-        "time_stamp": 4,
-        "type": "pointing_input"
-    },
-    {
-        "pointing_input": {
-            "buttons": [
-                "button1"
-            ],
-            "horizontal_wheel": 0,
-            "vertical_wheel": 0,
-            "x": 0,
-            "y": 0
-        },
-        "time_stamp": 15,
-        "type": "pointing_input"
-    },
-    {
-        "pointing_input": {
-            "buttons": [],
-            "horizontal_wheel": 0,
-            "vertical_wheel": 0,
-            "x": 0,
-            "y": 0
-        },
-        "time_stamp": 20,
-        "type": "pointing_input"
-    }
+    { "keyboard_input": { "keys": [], "modifiers": ["right_shift"] },                                           "time_stamp": 5,  "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [], "modifiers": [] },                                                        "time_stamp": 10, "type": "keyboard_input" },
+    { "pointing_input": { "buttons": [], "horizontal_wheel": 0, "vertical_wheel": 0, "x": 12, "y": 0 },         "time_stamp": 4,  "type": "pointing_input" },
+    { "pointing_input": { "buttons": ["button1"], "horizontal_wheel": 0, "vertical_wheel": 0, "x": 0, "y": 0 }, "time_stamp": 15, "type": "pointing_input" },
+    { "pointing_input": { "buttons": [], "horizontal_wheel": 0, "vertical_wheel": 0, "x": 0, "y": 0 },          "time_stamp": 20, "type": "pointing_input" }
 ]

@@ -1,62 +1,8 @@
 [
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "f2"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 5,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 10002,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "tab"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 10007,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 10012,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "f2"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 10017,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [],
-            "modifiers": []
-        },
-        "time_stamp": 20002,
-        "type": "keyboard_input"
-    }
+    { "keyboard_input": { "keys": [{ "key_code": "f2" }],  "modifiers": [] }, "time_stamp": 5,     "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                      "modifiers": [] }, "time_stamp": 10002, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "tab" }], "modifiers": [] }, "time_stamp": 10007, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                      "modifiers": [] }, "time_stamp": 10012, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "f2" }],  "modifiers": [] }, "time_stamp": 10017, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                      "modifiers": [] }, "time_stamp": 20002, "type": "keyboard_input" }
 ]

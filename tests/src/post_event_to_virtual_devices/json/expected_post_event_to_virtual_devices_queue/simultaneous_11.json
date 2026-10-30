@@ -1,74 +1,7 @@
 [
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "a"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 5,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "a"
-                },
-                {
-                    "key_code": "spacebar"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 10,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "a"
-                },
-                {
-                    "key_code": "spacebar"
-                },
-                {
-                    "key_code": "s"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 15,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "spacebar"
-                },
-                {
-                    "key_code": "s"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 20,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "spacebar"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 10,
-        "type": "keyboard_input"
-    }
+    { "keyboard_input": { "keys": [{ "key_code": "a" }],                                                    "modifiers": [] }, "time_stamp": 5,  "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [ { "key_code": "a" }, { "key_code": "spacebar" } ],                      "modifiers": [] }, "time_stamp": 10, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [ { "key_code": "a" }, { "key_code": "spacebar" }, { "key_code": "s" } ], "modifiers": [] }, "time_stamp": 15, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [ { "key_code": "spacebar" }, { "key_code": "s" } ],                      "modifiers": [] }, "time_stamp": 20, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "spacebar" }],                                             "modifiers": [] }, "time_stamp": 10, "type": "keyboard_input" }
 ]

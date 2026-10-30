@@ -1,29 +1,4 @@
 [
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "u"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 5,
-        "type": "keyboard_input"
-    },
-    {
-        "keyboard_input": {
-            "keys": [
-                {
-                    "key_code": "u"
-                },
-                {
-                    "key_code": "i"
-                }
-            ],
-            "modifiers": []
-        },
-        "time_stamp": 10,
-        "type": "keyboard_input"
-    }
+    { "keyboard_input": { "keys": [{ "key_code": "u" }],                        "modifiers": [] }, "time_stamp": 5,  "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [ { "key_code": "u" }, { "key_code": "i" } ], "modifiers": [] }, "time_stamp": 10, "type": "keyboard_input" }
 ]
