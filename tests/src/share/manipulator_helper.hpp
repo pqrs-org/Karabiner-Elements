@@ -268,7 +268,14 @@ public:
         if (overwrite_expected_results) {
           std::ofstream ofs(*s);
           expect(static_cast<bool>(ofs));
-          ofs << nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events()).dump(4) << std::endl;
+
+          auto json = nlohmann::json(post_event_to_virtual_devices_manipulator->get_queue().get_events());
+          ofs << json_helper::dump_aligned_array(json,
+                                                 {"keys",
+                                                  "modifiers",
+                                                  "time_stamp",
+                                                  "type"})
+              << std::endl;
         }
 
         std::ifstream ifs(*s);
