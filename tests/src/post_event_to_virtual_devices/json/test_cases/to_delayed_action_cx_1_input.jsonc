@@ -1,221 +1,72 @@
 [
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "left_control"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
+        "event": { "momentary_switch_event": { "key_code": "left_control" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 2 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "left_control"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "left_control" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-x",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "x"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
+        "event": { "momentary_switch_event": { "key_code": "x" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 4 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "x"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-x", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "x" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-x",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "x"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 6
-        },
+        "event": { "momentary_switch_event": { "key_code": "x" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 6 },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "x"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-x", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "x" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-x C-f",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "f"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 8
-        },
+        "event": { "momentary_switch_event": { "key_code": "f" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 8 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "f"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-x C-f", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "f" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-x C-f",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "f"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 10
-        },
+        "event": { "momentary_switch_event": { "key_code": "f" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 10 },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "f"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-x C-f", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "f" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-f (Post C-f)",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "f"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 12
-        },
+        "event": { "momentary_switch_event": { "key_code": "f" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 12 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "f"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-f (Post C-f)", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "f" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-f (Post C-f)",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "f"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 14
-        },
+        "event": { "momentary_switch_event": { "key_code": "f" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 14 },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "f"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-f (Post C-f)", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "f" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-x",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "x"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 16
-        },
+        "event": { "momentary_switch_event": { "key_code": "x" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 16 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "x"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-x", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "x" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-x",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "x"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 18
-        },
+        "event": { "momentary_switch_event": { "key_code": "x" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 18 },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "x"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-x", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "x" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
-        "description": "C-x C-f12 (Do nothing)",
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "f12"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 20
-        },
+        "event": { "momentary_switch_event": { "key_code": "f12" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 20 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "f12"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "description": "C-x C-f12 (Do nothing)", "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "f12" }, "type": "momentary_switch_event" }, "validity": true
     }
 ]

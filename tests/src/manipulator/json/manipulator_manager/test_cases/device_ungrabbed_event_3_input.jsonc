@@ -1,118 +1,44 @@
 [
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 100
-        },
+        "event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 100 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "valid": true
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" }, "valid": true
     },
     {
         "device_id": 2,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 200
-        },
+        "event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 200 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "valid": true
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" }, "valid": true
     },
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 300
-        },
+        "event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 300 },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "valid": true
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" }, "valid": true
     },
     {
         "device_id": 1,
-        "event": {
-            "type": "device_ungrabbed"
-        },
-        "event_time_stamp": {
-            "time_stamp": 400
-        },
+        "event": { "type": "device_ungrabbed" },
+        "event_time_stamp": { "time_stamp": 400 },
         "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "device_ungrabbed"
-        },
-        "state": "virtual_event",
-        "valid": true
+        "lazy": false, "original_event": { "type": "device_ungrabbed" }, "state": "virtual_event", "valid": true
     },
     {
         "device_id": 2,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 600
-        },
+        "event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 600 },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "valid": true
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" }, "valid": true
     },
     {
         "device_id": 3,
-        "event": {
-            "type": "device_ungrabbed"
-        },
-        "event_time_stamp": {
-            "time_stamp": 700
-        },
+        "event": { "type": "device_ungrabbed" },
+        "event_time_stamp": { "time_stamp": 700 },
         "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "device_ungrabbed"
-        },
-        "state": "virtual_event",
-        "valid": true
+        "lazy": false, "original_event": { "type": "device_ungrabbed" }, "state": "virtual_event", "valid": true
     }
 ]

@@ -1,71 +1,23 @@
 [
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "tab"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "input_delay_duration": 0,
-            "time_stamp": 100
-        },
+        "event": { "momentary_switch_event": { "key_code": "tab" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "input_delay_duration": 0, "time_stamp": 100 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "state": "manipulated",
-        "validity": 1
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" }, "state": "manipulated", "validity": 1
     },
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "tab"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "input_delay_duration": 0,
-            "time_stamp": 200
-        },
+        "event": { "momentary_switch_event": { "key_code": "tab" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "input_delay_duration": 0, "time_stamp": 200 },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "state": "manipulated",
-        "validity": 1
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" }, "state": "manipulated", "validity": 1
     },
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "input_delay_duration": 0,
-            "time_stamp": 300
-        },
+        "event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "input_delay_duration": 0, "time_stamp": 300 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "spacebar"
-            },
-            "type": "momentary_switch_event"
-        },
-        "state": "original",
-        "validity": 1
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" }, "state": "original", "validity": 1
     }
 ]

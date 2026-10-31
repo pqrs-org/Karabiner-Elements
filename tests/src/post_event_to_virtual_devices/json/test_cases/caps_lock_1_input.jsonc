@@ -2,130 +2,54 @@
     // caps_lock key_down
     {
         "device_id": 1,
-        "event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "caps_lock"
-            }
-        },
+        "event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "caps_lock" } },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "caps_lock"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
-        "validity": true
+        "event_time_stamp": { "time_stamp": 2 },
+        "lazy": false, "original_event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "caps_lock" } }, "validity": true
     },
 
     // caps_lock key_up
     {
         "device_id": 1,
-        "event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "caps_lock"
-            }
-        },
+        "event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "caps_lock" } },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "caps_lock"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
-        "validity": true
+        "event_time_stamp": { "time_stamp": 4 },
+        "lazy": false, "original_event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "caps_lock" } }, "validity": true
     },
 
     // We have to use caps_lock_state_changed to modify caps_lock state after sending caps_lock key.
     {
         "device_id": 0,
-        "event": {
-            "type": "caps_lock_state_changed",
-            "caps_lock_state_changed": 1
-        },
+        "event": { "type": "caps_lock_state_changed", "caps_lock_state_changed": 1 },
         "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "caps_lock_state_changed",
-            "caps_lock_state_changed": 1
-        },
-        "event_time_stamp": {
-            "time_stamp": 6
-        },
-        "validity": true
+        "event_time_stamp": { "time_stamp": 6 },
+        "lazy": false, "original_event": { "type": "caps_lock_state_changed", "caps_lock_state_changed": 1 }, "validity": true
     },
 
     // caps_lock key_down
     {
         "device_id": 1,
-        "event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "caps_lock"
-            }
-        },
+        "event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "caps_lock" } },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "caps_lock"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 8
-        },
-        "validity": true
+        "event_time_stamp": { "time_stamp": 8 },
+        "lazy": false, "original_event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "caps_lock" } }, "validity": true
     },
 
     // caps_lock key_up
     {
         "device_id": 1,
-        "event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "caps_lock"
-            }
-        },
+        "event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "caps_lock" } },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "caps_lock"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 10
-        },
-        "validity": true
+        "event_time_stamp": { "time_stamp": 10 },
+        "lazy": false, "original_event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "caps_lock" } }, "validity": true
     },
 
     // We have to use caps_lock_state_changed to modify caps_lock state after sending caps_lock key.
     {
         "device_id": 0,
-        "event": {
-            "type": "caps_lock_state_changed",
-            "caps_lock_state_changed": 1
-        },
+        "event": { "type": "caps_lock_state_changed", "caps_lock_state_changed": 1 },
         "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "caps_lock_state_changed",
-            "caps_lock_state_changed": 1
-        },
-        "event_time_stamp": {
-            "time_stamp": 12
-        },
-        "validity": true
+        "event_time_stamp": { "time_stamp": 12 },
+        "lazy": false, "original_event": { "type": "caps_lock_state_changed", "caps_lock_state_changed": 1 }, "validity": true
     }
 ]

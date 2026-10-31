@@ -4,34 +4,11 @@
     // Only horizontal_wheel is consumed; x/y and vertical_wheel pass immediately.
     {
         "device_id": 1,
-        "event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 3,
-                "y": 4,
-                "vertical_wheel": 10,
-                "horizontal_wheel": 1
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 100
-        },
+        "event": { "type": "pointing_motion", "pointing_motion": { "x": 3, "y": 4, "vertical_wheel": 10, "horizontal_wheel": 1 } },
+        "event_time_stamp": { "time_stamp": 100 },
         "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "pointing_motion",
-            "pointing_motion": {
-                "x": 3,
-                "y": 4,
-                "vertical_wheel": 10,
-                "horizontal_wheel": 1
-            }
-        },
-        "validity": true
+        "lazy": false, "original_event": { "type": "pointing_motion", "pointing_motion": { "x": 3, "y": 4, "vertical_wheel": 10, "horizontal_wheel": 1 } }, "validity": true
     },
     // After 50ms, emit right_arrow for the consumed horizontal delta.
-    {
-        "action": "invoke_dispatcher",
-        "time_stamp": 150
-    }
+    { "action": "invoke_dispatcher", "time_stamp": 150 }
 ]

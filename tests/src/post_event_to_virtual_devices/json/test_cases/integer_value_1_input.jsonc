@@ -5,47 +5,17 @@
 
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
+        "event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 2 },
         "event_type": "key_down",
-        "event_integer_value": 1,
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "event_integer_value": 1, "lazy": false, "original_event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
+        "event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 4 },
         "event_type": "key_up",
-        "event_integer_value": 0,
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "event_integer_value": 0, "lazy": false, "original_event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" }, "validity": true
     },
 
     //
@@ -54,47 +24,17 @@
 
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 6
-        },
+        "event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 6 },
         "event_type": "key_down",
-        "event_integer_value": 2,
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "event_integer_value": 2, "lazy": false, "original_event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 8
-        },
+        "event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 8 },
         "event_type": "key_up",
-        "event_integer_value": 0,
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "event_integer_value": 0, "lazy": false, "original_event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" }, "validity": true
     },
 
     //
@@ -103,47 +43,17 @@
 
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 10
-        },
+        "event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 10 },
         "event_type": "key_down",
-        "event_integer_value": 4,
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "event_integer_value": 4, "lazy": false, "original_event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 12
-        },
+        "event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 12 },
         "event_type": "key_up",
-        "event_integer_value": 0,
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "event_integer_value": 0, "lazy": false, "original_event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" }, "validity": true
     },
 
     //
@@ -152,46 +62,16 @@
 
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 14
-        },
+        "event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 14 },
         "event_type": "key_down",
-        "event_integer_value": 5,
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "event_integer_value": 5, "lazy": false, "original_event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 16
-        },
+        "event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 16 },
         "event_type": "key_up",
-        "event_integer_value": 0,
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "pointing_button": "button3"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "event_integer_value": 0, "lazy": false, "original_event": { "momentary_switch_event": { "pointing_button": "button3" }, "type": "momentary_switch_event" }, "validity": true
     }
 ]

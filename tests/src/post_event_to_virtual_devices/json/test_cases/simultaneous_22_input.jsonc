@@ -1,54 +1,19 @@
 [
+    { "pause_manipulation": true },
     {
-        "pause_manipulation": true
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "u" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 2 },
+        "event_type": "key_down",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "u" }, "type": "momentary_switch_event" }, "validity": true
     },
     {
         "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "u"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
+        "event": { "momentary_switch_event": { "key_code": "i" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 4 },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "u"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "i" }, "type": "momentary_switch_event" }, "validity": true
     },
-    {
-        "device_id": 1,
-        "event": {
-            "momentary_switch_event": {
-                "key_code": "i"
-            },
-            "type": "momentary_switch_event"
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
-        "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "momentary_switch_event": {
-                "key_code": "i"
-            },
-            "type": "momentary_switch_event"
-        },
-        "validity": true
-    },
-    {
-        "pause_manipulation": false
-    },
-    {
-        "action": "manipulate",
-        "time_stamp": 10000
-    }
+    { "pause_manipulation": false },
+    { "action": "manipulate", "time_stamp": 10000 }
 ]

@@ -2,62 +2,26 @@
     // left_shift key_down
     {
         "device_id": 1,
-        "event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "left_shift"
-            }
-        },
+        "event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "left_shift" } },
         "event_type": "key_down",
-        "lazy": false,
-        "original_event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "left_shift"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 2
-        },
-        "validity": true
+        "event_time_stamp": { "time_stamp": 2 },
+        "lazy": false, "original_event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "left_shift" } }, "validity": true
     },
 
     // left_shift key_up
     {
         "device_id": 1,
-        "event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "left_shift"
-            }
-        },
+        "event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "left_shift" } },
         "event_type": "key_up",
-        "lazy": false,
-        "original_event": {
-            "type": "momentary_switch_event",
-            "momentary_switch_event": {
-                "key_code": "left_shift"
-            }
-        },
-        "event_time_stamp": {
-            "time_stamp": 4
-        },
-        "validity": true
+        "event_time_stamp": { "time_stamp": 4 },
+        "lazy": false, "original_event": { "type": "momentary_switch_event", "momentary_switch_event": { "key_code": "left_shift" } }, "validity": true
     },
 
     {
         "device_id": 1,
-        "event": {
-            "type": "device_keys_and_pointing_buttons_are_released"
-        },
-        "event_time_stamp": {
-            "time_stamp": 6
-        },
+        "event": { "type": "device_keys_and_pointing_buttons_are_released" },
+        "event_time_stamp": { "time_stamp": 6 },
         "event_type": "single",
-        "lazy": false,
-        "original_event": {
-            "type": "device_keys_and_pointing_buttons_are_released"
-        },
-        "validity": true
+        "lazy": false, "original_event": { "type": "device_keys_and_pointing_buttons_are_released" }, "validity": true
     }
 ]
