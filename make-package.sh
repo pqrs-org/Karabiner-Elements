@@ -10,7 +10,7 @@ version=$(cat version)
 #
 
 echo "make build"
-ruby scripts/reduce-logs.rb 'make build' || exit 99
+/usr/bin/python3 scripts/reduce-logs.py 'make build' || exit 99
 
 #
 # Copy files
