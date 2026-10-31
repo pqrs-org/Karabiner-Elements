@@ -46,7 +46,7 @@ notarize:
 staple:
 	xcrun stapler staple Karabiner-Elements-$(VERSION).dmg
 
-format: clang-format swift-format shell-format ruff-format prettier-format localization-format
+format: clang-format swift-format shell-format ruff-format prettier-format test-json-format localization-format
 
 clang-format:
 	git ls-files -z -- $(CLANG_FORMAT_FILES) | xargs -0 clang-format -i
@@ -77,11 +77,17 @@ prettier-format:
 		':(exclude)tests/src/complex_modifications_assets/json/complex_modifications/link.json' \
 		':(exclude)tests/src/complex_modifications_assets/json/lint/assets/broken.json' \
 		':(exclude)tests/src/core_configuration/json/broken.json' \
-		':(exclude)tests/src/post_event_to_virtual_devices/json/expected_post_event_to_virtual_devices_queue/**' | \
+		':(exclude)tests/src/manipulator/json/manipulator_manager/test_cases/**' \
+		':(exclude)tests/src/post_event_to_virtual_devices/json/test_cases/**' | \
 		xargs -0 prettier --write > "$$prettier_log"; \
 	prettier_status=$$?; \
 	sed '/ (unchanged)$$/d' "$$prettier_log"; \
 	exit $$prettier_status
+
+test-json-format: ruff-format prettier-format
+	/usr/bin/python3 tests/scripts/format_test_json.py \
+		tests/src/manipulator/json/manipulator_manager/test_cases \
+		tests/src/post_event_to_virtual_devices/json/test_cases
 
 localization-format:
 	$(MAKE) -C src/apps/localization format
