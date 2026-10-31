@@ -6,6 +6,17 @@ import json
 import pathlib
 import sys
 
+SEPARATE_PROPERTY_KEYS = {
+    "device_id",
+    "event",
+    "event_time_stamp",
+    "event_type",
+}
+
+RESULT_ALIGNMENT_KEYS = ("keys", "modifiers", "time_stamp", "type")
+
+TEST_JSON_PATTERNS = ("*_input.jsonc", "*_result.json")
+
 
 def find_compactable_object_spans(text):
     spans = []
@@ -176,25 +187,22 @@ def get_property_key(property_text):
 
 
 def format_top_level_object(text):
-    properties = split_object_properties(text)
-    separate_keys = {
-        "device_id",
-        "event",
-        "event_time_stamp",
-        "event_type",
-    }
+    properties = [
+        (get_property_key(property_text), property_text)
+        for property_text in split_object_properties(text)
+    ]
 
-    if not any(get_property_key(p) in separate_keys for p in properties):
+    if not any(key in SEPARATE_PROPERTY_KEYS for key, _ in properties):
         return collapse_whitespace(text)
 
     lines = []
     other_properties = []
 
-    for p in properties:
-        if get_property_key(p) in separate_keys:
-            lines.append(p)
+    for key, property_text in properties:
+        if key in SEPARATE_PROPERTY_KEYS:
+            lines.append(property_text)
         else:
-            other_properties.append(p)
+            other_properties.append(property_text)
 
     if other_properties:
         lines.append(", ".join(other_properties))
@@ -208,19 +216,19 @@ def format_input_jsonc(text):
     return text
 
 
-def pqrs_multi_line(value):
+def needs_inner_spaces(value):
     if isinstance(value, dict):
         if not value:
             return False
         if len(value) == 1:
-            return pqrs_multi_line(next(iter(value.values())))
+            return needs_inner_spaces(next(iter(value.values())))
         return True
 
     if isinstance(value, list):
         if not value:
             return False
         if len(value) == 1:
-            return pqrs_multi_line(value[0])
+            return needs_inner_spaces(value[0])
         return any(isinstance(v, (dict, list)) for v in value)
 
     return False
@@ -238,7 +246,7 @@ def dump_single_line(value):
 
     if isinstance(value, list):
         values = ", ".join(dump_single_line(v) for v in value)
-        if pqrs_multi_line(value):
+        if needs_inner_spaces(value):
             return "[ " + values + " ]"
         return "[" + values + "]"
 
@@ -265,7 +273,7 @@ def format_result_json(value):
     if not lines:
         return "[\n]\n"
 
-    for key in ("keys", "modifiers", "time_stamp", "type"):
+    for key in RESULT_ALIGNMENT_KEYS:
         align_key(lines, key)
 
     body = ",\n".join(f"    {line}" for line in lines)
@@ -277,12 +285,7 @@ def is_event_queue(value):
         return False
 
     first = value[0]
-    return isinstance(first, dict) and {
-        "device_id",
-        "event",
-        "event_time_stamp",
-        "event_type",
-    }.issubset(first)
+    return isinstance(first, dict) and SEPARATE_PROPERTY_KEYS.issubset(first)
 
 
 def format_event_queue_json(value):
@@ -308,17 +311,20 @@ def format_path(path):
         path.write_text(formatted, encoding="utf-8")
 
 
+def find_test_json_paths(path):
+    if not path.is_dir():
+        return [path]
+
+    return sorted(
+        test_json_path
+        for pattern in TEST_JSON_PATTERNS
+        for test_json_path in path.rglob(pattern)
+    )
+
+
 def main(paths):
     for path_string in paths:
-        path = pathlib.Path(path_string)
-
-        if path.is_dir():
-            test_json_paths = sorted(
-                [*path.rglob("*_input.jsonc"), *path.rglob("*_result.json")]
-            )
-            for test_json_path in test_json_paths:
-                format_path(test_json_path)
-        else:
+        for path in find_test_json_paths(pathlib.Path(path_string)):
             format_path(path)
 
 
