@@ -2,8 +2,8 @@
     {
         "description": "spacebar -> tab",
         "rules": ["json/manipulator_manager/rules/spacebar_to_tab.json"],
-        "input_event_queue": "json/manipulator_manager/test_cases/spacebar_to_tab_input.jsonc",
-        "expected_event_queue": "json/manipulator_manager/test_cases/spacebar_to_tab_result.json"
+        "input_event_queue": "json/manipulator_manager/test_cases/spacebar_to_tab_1_input.jsonc",
+        "expected_event_queue": "json/manipulator_manager/test_cases/spacebar_to_tab_1_result.json"
     },
     {
         "description": "spacebar -> tab (key_up only)",

@@ -11,14 +11,17 @@ public:
           const event_queue::event& event,
           event_type event_type,
           const event_queue::event& original_event,
-          bool lazy) : device_id_(device_id),
-                       event_(event),
-                       event_type_(event_type),
-                       original_event_(original_event),
-                       lazy_(lazy) {
+          bool lazy,
+          bool release_when_other_key_is_pressed) : device_id_(device_id),
+                                                    event_(event),
+                                                    event_type_(event_type),
+                                                    original_event_(original_event),
+                                                    lazy_(lazy),
+                                                    release_when_other_key_is_pressed_(release_when_other_key_is_pressed) {
     }
 
-    event_queue::entry make_entry(const event_queue::event_time_stamp& event_time_stamp) const {
+    event_queue::entry make_entry(const event_queue::event_time_stamp& event_time_stamp,
+                                  bool force_non_lazy = false) const {
       return event_queue::entry(device_id_,
                                 event_time_stamp,
                                 event_,
@@ -26,7 +29,11 @@ public:
                                 std::nullopt,
                                 original_event_,
                                 event_queue::state::manipulated,
-                                lazy_);
+                                force_non_lazy ? false : lazy_);
+    }
+
+    [[nodiscard]] bool get_release_when_other_key_is_pressed() const {
+      return release_when_other_key_is_pressed_;
     }
 
   private:
@@ -35,6 +42,7 @@ public:
     event_type event_type_;
     event_queue::event original_event_;
     bool lazy_;
+    bool release_when_other_key_is_pressed_;
   };
 
   [[nodiscard]] const std::vector<entry>& get_events() const {
@@ -45,12 +53,30 @@ public:
                           const event_queue::event& event,
                           event_type event_type,
                           const event_queue::event& original_event,
-                          bool lazy) {
+                          bool lazy,
+                          bool release_when_other_key_is_pressed = false) {
     events_.emplace_back(device_id,
                          event,
                          event_type,
                          original_event,
-                         lazy);
+                         lazy,
+                         release_when_other_key_is_pressed);
+  }
+
+  std::vector<entry> extract_events_when_other_key_is_pressed() {
+    std::vector<entry> result;
+
+    auto it = std::begin(events_);
+    while (it != std::end(events_)) {
+      if (it->get_release_when_other_key_is_pressed()) {
+        result.push_back(*it);
+        it = events_.erase(it);
+      } else {
+        ++it;
+      }
+    }
+
+    return result;
   }
 
   void clear_events() {

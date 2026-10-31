@@ -606,6 +606,30 @@
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_2_result.json"
     },
     {
+        "description": "repeat with modifiers",
+        "rules": ["json/rules/repeat.json"],
+        "input_event_queue": "json/test_cases/repeat_with_modifiers_1_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_with_modifiers_1_result.json"
+    },
+    {
+        "description": "interrupt repeat with modifiers by another key",
+        "rules": ["json/rules/repeat.json"],
+        "input_event_queue": "json/test_cases/repeat_with_modifiers_interrupted_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_with_modifiers_interrupted_result.json"
+    },
+    {
+        "description": "do not interrupt repeat with modifiers by an invalid event",
+        "rules": ["json/rules/repeat.json"],
+        "input_event_queue": "json/test_cases/repeat_with_modifiers_invalid_event_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_with_modifiers_invalid_event_result.json"
+    },
+    {
+        "description": "do not interrupt repeat with modifiers by a consumed event",
+        "rules": ["json/rules/repeat.json"],
+        "input_event_queue": "json/test_cases/repeat_with_modifiers_consumed_event_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_with_modifiers_consumed_event_result.json"
+    },
+    {
         "description": "hold_down_milliseconds_1",
         "rules": ["json/rules/hold_down_milliseconds.json"],
         "input_event_queue": "json/test_cases/hold_down_milliseconds_1_input.jsonc",

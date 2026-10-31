@@ -23,5 +23,36 @@
                 "repeat": false
             }
         ]
+    },
+    {
+        "description": "a -> shift+1",
+        "type": "basic",
+        "from": {
+            "key_code": "a"
+        },
+        "to": [
+            {
+                "key_code": "1",
+                "modifiers": ["shift"]
+            }
+        ]
+    },
+    {
+        "description": "disable f5",
+        "type": "basic",
+        "from": {
+            "key_code": "f5",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [
+            {
+                "set_variable": {
+                    "name": "repeat_test_consumed",
+                    "value": true
+                }
+            }
+        ]
     }
 ]

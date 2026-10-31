@@ -171,11 +171,14 @@ inline void post_events_at_key_down(const to_event_definitions& to_events,
       auto to_modifier_events = to->make_modifier_events();
 
       bool is_modifier_key_event = false;
+      bool is_repeatable_key_event = false;
       if (auto e = event->get_if<momentary_switch_event>()) {
         if (e->modifier_flag()) {
           is_modifier_key_event = true;
         } else if (e->caps_lock()) {
           is_modifier_key_event = true;
+        } else {
+          is_repeatable_key_event = e->interrupts_key_repeat();
         }
       }
       if (auto e = event->get_if<mouse_key>()) {
@@ -246,14 +249,17 @@ inline void post_events_at_key_down(const to_event_definitions& to_events,
 
       {
         for (const auto& e : to_modifier_events) {
-          if (it == std::end(filtered_to_events) - 1 && is_modifier_key_event) {
+          if (it == std::end(filtered_to_events) - 1 &&
+              (is_modifier_key_event ||
+               (is_repeatable_key_event && to->get_repeat()))) {
             auto pair = base::make_lazy_modifier_key_event(e, event_type::key_up);
 
             current_manipulated_original_event.get_events_at_key_up().emplace_back_event(device_id,
                                                                                          pair.first,
                                                                                          pair.second,
                                                                                          original_event,
-                                                                                         true);
+                                                                                         true,
+                                                                                         is_repeatable_key_event && to->get_repeat());
           } else {
             base::post_lazy_modifier_key_event(e,
                                                event_type::key_up,
@@ -279,6 +285,18 @@ inline void post_events_at_key_up(manipulated_original_event::manipulated_origin
     output_event_queue.push_back_entry(e.make_entry(t));
   }
   current_manipulated_original_event.get_events_at_key_up().clear_events();
+}
+
+inline void post_events_at_key_up_when_other_key_is_pressed(
+    manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
+    const event_queue::event_time_stamp& event_time_stamp,
+    absolute_time_duration& time_stamp_delay,
+    event_queue::queue& output_event_queue) {
+  for (const auto& e : current_manipulated_original_event.get_events_at_key_up().extract_events_when_other_key_is_pressed()) {
+    auto t = event_time_stamp;
+    t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
+    output_event_queue.push_back_entry(e.make_entry(t, true));
+  }
 }
 
 inline void post_extra_to_events(const to_event_definitions& to_events,

@@ -131,6 +131,10 @@ public:
                 std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
                 for (auto&& m : manipulators_) {
+                  m->handle_input_event(front_input_event);
+                }
+
+                for (auto&& m : manipulators_) {
                   auto r = m->manipulate(front_input_event,
                                          *input_event_queue,
                                          output_event_queue,
@@ -152,6 +156,15 @@ public:
           }
 
           if (input_event_queue->get_front_event().get_validity() == validity::valid) {
+            {
+              std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
+              for (auto&& m : manipulators_) {
+                m->handle_unmanipulated_event(front_input_event,
+                                              *output_event_queue);
+              }
+            }
+
             output_event_queue->push_back_entry(input_event_queue->get_front_event());
           }
 

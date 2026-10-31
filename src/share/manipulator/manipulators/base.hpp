@@ -16,6 +16,13 @@ public:
 
   virtual bool already_manipulated(const event_queue::entry& front_input_event) = 0;
 
+  virtual void handle_input_event(const event_queue::entry& front_input_event) {
+  }
+
+  virtual void handle_unmanipulated_event(const event_queue::entry& front_input_event,
+                                          event_queue::queue& output_event_queue) {
+  }
+
   virtual manipulate_result manipulate(event_queue::entry& front_input_event,
                                        const event_queue::queue& input_event_queue,
                                        std::shared_ptr<event_queue::queue> output_event_queue,

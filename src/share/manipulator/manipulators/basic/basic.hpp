@@ -170,14 +170,51 @@ public:
     return false;
   }
 
+  void handle_input_event(const event_queue::entry& front_input_event) override {
+    unset_alone_if_needed(front_input_event.get_device_id(),
+                          front_input_event.get_event(),
+                          front_input_event.get_event_type(),
+                          front_input_event.get_original_event());
+  }
+
+  void handle_unmanipulated_event(const event_queue::entry& front_input_event,
+                                  event_queue::queue& output_event_queue) override {
+    if (front_input_event.get_event_type() != event_type::key_down) {
+      return;
+    }
+
+    auto momentary_switch_event = front_input_event.get_event().get_if<krbn::momentary_switch_event>();
+    if (!momentary_switch_event ||
+        !momentary_switch_event->interrupts_key_repeat()) {
+      return;
+    }
+
+    manipulated_original_event::from_event from_event(front_input_event.get_device_id(),
+                                                      front_input_event.get_event(),
+                                                      front_input_event.get_original_event());
+    absolute_time_duration time_stamp_delay(0);
+
+    for (auto&& e : manipulated_original_events_) {
+      if (!e->from_event_exists(from_event)) {
+        event_sender::post_events_at_key_up_when_other_key_is_pressed(
+            *e,
+            front_input_event.get_event_time_stamp(),
+            time_stamp_delay,
+            output_event_queue);
+      }
+    }
+
+    if (time_stamp_delay > absolute_time_duration(0)) {
+      // Keep the next key after all key_up events, including modifier key_up.
+      output_event_queue.increase_time_stamp_delay(time_stamp_delay);
+    }
+  }
+
   manipulate_result manipulate(event_queue::entry& front_input_event,
                                const event_queue::queue& input_event_queue,
                                std::shared_ptr<event_queue::queue> output_event_queue,
                                absolute_time_point now) override {
     if (output_event_queue) {
-      unset_alone_if_needed(front_input_event.get_event(),
-                            front_input_event.get_event_type());
-
       if (to_if_held_down_) {
         to_if_held_down_->cancel(front_input_event);
       }
@@ -737,8 +774,10 @@ public:
 
   void handle_pointing_device_event_from_event_tap(const event_queue::entry& front_input_event,
                                                    event_queue::queue& output_event_queue) override {
-    unset_alone_if_needed(front_input_event.get_original_event(),
-                          front_input_event.get_event_type());
+    unset_alone_if_needed(front_input_event.get_device_id(),
+                          front_input_event.get_original_event(),
+                          front_input_event.get_event_type(),
+                          front_input_event.get_original_event());
   }
 
   [[nodiscard]] const from_event_definition& get_from() const {
@@ -808,8 +847,10 @@ private:
     return true;
   }
 
-  void unset_alone_if_needed(const event_queue::event& event,
-                             event_type event_type) {
+  void unset_alone_if_needed(device_id device_id,
+                             const event_queue::event& event,
+                             event_type event_type,
+                             const event_queue::event& original_event) {
     if (event.get_if<momentary_switch_event>()) {
       if (event_type == event_type::key_down) {
         goto run;
@@ -826,8 +867,14 @@ private:
     return;
 
   run:
+    manipulated_original_event::from_event from_event(device_id,
+                                                      event,
+                                                      original_event);
+
     for (auto& e : manipulated_original_events_) {
-      e->unset_alone();
+      if (!e->from_event_exists(from_event)) {
+        e->unset_alone();
+      }
     }
   }
 
