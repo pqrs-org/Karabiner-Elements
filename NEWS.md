@@ -29,6 +29,7 @@
     - Limited the maximum size of `karabiner.json` to 64 MB.
     - Limited JavaScript `console.log` output to 1 MB.
     - Improved internal handling of expressions used by `set_variable` to ensure consistent equality and hashing. (Thanks to @monsterlag)
+    - Improved key repeat for mappings with modifiers so that the modifiers remain active while the key is repeating.
 
 ## Karabiner-Elements 16.3.0
 
