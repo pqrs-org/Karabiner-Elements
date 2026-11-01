@@ -1,0 +1,34 @@
+[
+    {
+        "description": "a -> shift+1",
+        "type": "basic",
+        "from": { "key_code": "a" },
+        "to": [{ "key_code": "1", "modifiers": ["shift"] }]
+    },
+    {
+        "description": "b -> f1 if alone",
+        "type": "basic",
+        "from": { "key_code": "b" },
+        "to_if_alone": [{ "key_code": "f1" }]
+    },
+    {
+        "description": "c -> f2 after key up",
+        "type": "basic",
+        "from": { "key_code": "c" },
+        "to_after_key_up": [{ "key_code": "f2" }]
+    },
+    {
+        "description": "d -> f3 if held down",
+        "type": "basic",
+        "from": { "key_code": "d" },
+        "to_if_held_down": [{ "key_code": "f3" }]
+    },
+    {
+        "description": "e -> f4 after delay",
+        "type": "basic",
+        "from": { "key_code": "e" },
+        "to_delayed_action": {
+            "to_if_invoked": [{ "key_code": "f4" }]
+        }
+    }
+]

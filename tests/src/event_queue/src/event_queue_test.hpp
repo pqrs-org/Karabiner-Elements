@@ -52,15 +52,16 @@ void run_event_queue_test() {
   using namespace boost::ut::literals;
 
   "entry"_test = [] {
-    krbn::event_queue::entry entry1(krbn::device_id(1),
-                                    krbn::event_queue::event_time_stamp(krbn::absolute_time_point(100),
-                                                                        krbn::absolute_time_duration(10)),
-                                    a_event,
-                                    krbn::event_type::key_down,
-                                    krbn::event_integer_value::value_t(1),
-                                    a_event,
-                                    krbn::event_queue::state::original,
-                                    false);
+    krbn::event_queue::entry entry1({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(100),
+                                                                krbn::absolute_time_duration(10)),
+        .event = a_event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = a_event,
+        .state = krbn::event_queue::state::original,
+    });
     auto entry2 = entry1;
     expect(entry1 == entry2);
 
@@ -446,46 +447,51 @@ void run_event_queue_test() {
   };
 
   "needs_swap"_test = [] {
-    krbn::event_queue::entry spacebar_down(krbn::device_id(1),
-                                           krbn::event_queue::event_time_stamp(
-                                               krbn::absolute_time_point(100)),
-                                           spacebar_event,
-                                           krbn::event_type::key_down,
-                                           krbn::event_integer_value::value_t(1),
-                                           spacebar_event,
-                                           krbn::event_queue::state::original);
-    krbn::event_queue::entry right_shift_down(krbn::device_id(1),
-                                              krbn::event_queue::event_time_stamp(
-                                                  krbn::absolute_time_point(100)),
-                                              right_shift_event,
-                                              krbn::event_type::key_down,
-                                              krbn::event_integer_value::value_t(1),
-                                              right_shift_event,
-                                              krbn::event_queue::state::original);
-    krbn::event_queue::entry escape_down(krbn::device_id(1),
-                                         krbn::event_queue::event_time_stamp(
-                                             krbn::absolute_time_point(200)),
-                                         escape_event,
-                                         krbn::event_type::key_down,
-                                         krbn::event_integer_value::value_t(1),
-                                         escape_event,
-                                         krbn::event_queue::state::original);
-    krbn::event_queue::entry spacebar_up(krbn::device_id(1),
-                                         krbn::event_queue::event_time_stamp(
-                                             krbn::absolute_time_point(300)),
-                                         spacebar_event,
-                                         krbn::event_type::key_up,
-                                         krbn::event_integer_value::value_t(0),
-                                         spacebar_event,
-                                         krbn::event_queue::state::original);
-    krbn::event_queue::entry right_shift_up(krbn::device_id(1),
-                                            krbn::event_queue::event_time_stamp(
-                                                krbn::absolute_time_point(300)),
-                                            right_shift_event,
-                                            krbn::event_type::key_up,
-                                            krbn::event_integer_value::value_t(0),
-                                            right_shift_event,
-                                            krbn::event_queue::state::original);
+    krbn::event_queue::entry spacebar_down({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(100)),
+        .event = spacebar_event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = spacebar_event,
+        .state = krbn::event_queue::state::original,
+    });
+    krbn::event_queue::entry right_shift_down({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(100)),
+        .event = right_shift_event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = right_shift_event,
+        .state = krbn::event_queue::state::original,
+    });
+    krbn::event_queue::entry escape_down({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(200)),
+        .event = escape_event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = escape_event,
+        .state = krbn::event_queue::state::original,
+    });
+    krbn::event_queue::entry spacebar_up({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(300)),
+        .event = spacebar_event,
+        .event_type = krbn::event_type::key_up,
+        .event_integer_value = krbn::event_integer_value::value_t(0),
+        .original_event = spacebar_event,
+        .state = krbn::event_queue::state::original,
+    });
+    krbn::event_queue::entry right_shift_up({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(300)),
+        .event = right_shift_event,
+        .event_type = krbn::event_type::key_up,
+        .event_integer_value = krbn::event_integer_value::value_t(0),
+        .original_event = right_shift_event,
+        .state = krbn::event_queue::state::original,
+    });
 
     expect(krbn::event_queue::queue::needs_swap(spacebar_down, spacebar_down) == false);
     expect(krbn::event_queue::queue::needs_swap(spacebar_down, escape_down) == false);

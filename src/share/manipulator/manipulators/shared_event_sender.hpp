@@ -9,13 +9,15 @@ inline void post_active_modifier_flags(const std::vector<modifier_flag_manager::
                                        const event_queue::event& original_event,
                                        event_queue::queue& output_event_queue) {
   for (const auto& f : active_modifier_flags) {
-    base::post_lazy_modifier_key_event(momentary_switch_event(f.get_modifier_flag()),
-                                       f.get_count() > 0 ? event_type::key_down : event_type::key_up,
-                                       f.get_device_id(),
-                                       event_time_stamp,
-                                       time_stamp_delay,
-                                       original_event,
-                                       output_event_queue);
+    base::post_lazy_modifier_key_event({
+        .momentary_switch_event = momentary_switch_event(f.get_modifier_flag()),
+        .event_type = f.get_count() > 0 ? event_type::key_down : event_type::key_up,
+        .device_id = f.get_device_id(),
+        .event_time_stamp = event_time_stamp,
+        .time_stamp_delay = time_stamp_delay,
+        .original_event = original_event,
+        .output_event_queue = output_event_queue,
+    });
   }
 }
 
@@ -34,13 +36,15 @@ inline void post_tap(const to_event_definition& to,
     //
 
     for (const auto& e : to_modifier_events) {
-      base::post_lazy_modifier_key_event(e,
-                                         event_type::key_down,
-                                         device_id,
-                                         event_time_stamp,
-                                         time_stamp_delay,
-                                         original_event,
-                                         output_event_queue);
+      base::post_lazy_modifier_key_event({
+          .momentary_switch_event = e,
+          .event_type = event_type::key_down,
+          .device_id = device_id,
+          .event_time_stamp = event_time_stamp,
+          .time_stamp_delay = time_stamp_delay,
+          .original_event = original_event,
+          .output_event_queue = output_event_queue,
+      });
     }
 
     //
@@ -51,14 +55,15 @@ inline void post_tap(const to_event_definition& to,
       auto t = event_time_stamp;
       t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-      output_event_queue.emplace_back_entry(device_id,
-                                            t,
-                                            *event,
-                                            event_type::key_down,
-                                            std::nullopt,
-                                            original_event,
-                                            event_queue::state::manipulated,
-                                            to.get_lazy());
+      output_event_queue.emplace_back_entry({
+          .device_id = device_id,
+          .event_time_stamp = t,
+          .event = *event,
+          .event_type = event_type::key_down,
+          .original_event = original_event,
+          .state = event_queue::state::manipulated,
+          .lazy = to.get_lazy(),
+      });
     }
 
     //
@@ -71,14 +76,15 @@ inline void post_tap(const to_event_definition& to,
       auto t = event_time_stamp;
       t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-      output_event_queue.emplace_back_entry(device_id,
-                                            t,
-                                            *event,
-                                            event_type::key_up,
-                                            std::nullopt,
-                                            original_event,
-                                            event_queue::state::manipulated,
-                                            to.get_lazy());
+      output_event_queue.emplace_back_entry({
+          .device_id = device_id,
+          .event_time_stamp = t,
+          .event = *event,
+          .event_type = event_type::key_up,
+          .original_event = original_event,
+          .state = event_queue::state::manipulated,
+          .lazy = to.get_lazy(),
+      });
     }
 
     //
@@ -86,13 +92,15 @@ inline void post_tap(const to_event_definition& to,
     //
 
     for (const auto& e : to_modifier_events) {
-      base::post_lazy_modifier_key_event(e,
-                                         event_type::key_up,
-                                         device_id,
-                                         event_time_stamp,
-                                         time_stamp_delay,
-                                         original_event,
-                                         output_event_queue);
+      base::post_lazy_modifier_key_event({
+          .momentary_switch_event = e,
+          .event_type = event_type::key_up,
+          .device_id = device_id,
+          .event_time_stamp = event_time_stamp,
+          .time_stamp_delay = time_stamp_delay,
+          .original_event = original_event,
+          .output_event_queue = output_event_queue,
+      });
     }
   }
 }

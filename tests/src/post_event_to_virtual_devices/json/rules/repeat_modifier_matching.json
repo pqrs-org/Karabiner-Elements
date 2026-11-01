@@ -1,0 +1,45 @@
+[
+    {
+        "description": "control+e -> command+right_arrow",
+        "type": "basic",
+        "from": {
+            "key_code": "e",
+            "modifiers": {
+                "mandatory": ["control"]
+            }
+        },
+        "to": [
+            {
+                "key_code": "right_arrow",
+                "modifiers": ["command"]
+            }
+        ]
+    },
+    {
+        "description": "control+f -> right_arrow",
+        "type": "basic",
+        "from": {
+            "key_code": "f",
+            "modifiers": {
+                "mandatory": ["control"]
+            }
+        },
+        "to": [{ "key_code": "right_arrow" }]
+    },
+    {
+        "description": "control+command+f -> command+shift+open_bracket",
+        "type": "basic",
+        "from": {
+            "key_code": "f",
+            "modifiers": {
+                "mandatory": ["control", "command"]
+            }
+        },
+        "to": [
+            {
+                "key_code": "open_bracket",
+                "modifiers": ["command", "shift"]
+            }
+        ]
+    }
+]

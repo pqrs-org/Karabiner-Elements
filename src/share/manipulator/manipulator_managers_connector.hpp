@@ -27,14 +27,20 @@ public:
       return weak_output_event_queue_;
     }
 
+    [[nodiscard]] std::weak_ptr<manipulator_manager> get_weak_manipulator_manager() const {
+      return weak_manipulator_manager_;
+    }
+
     void manipulate(absolute_time_point now,
-                    pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) const {
+                    pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration,
+                    std::shared_ptr<const manipulators::deferred_output_session> deferred_output_session) const {
       if (auto manipulator_manager = weak_manipulator_manager_.lock()) {
         while (true) {
           auto processed = manipulator_manager->manipulate(weak_input_event_queue_,
                                                            weak_output_event_queue_,
                                                            now,
-                                                           core_configuration);
+                                                           core_configuration,
+                                                           deferred_output_session);
           if (!processed) {
             break;
           }
@@ -112,9 +118,60 @@ public:
                   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) const {
     std::lock_guard<std::mutex> lock(connections_mutex_);
 
-    for (auto&& c : connections_) {
-      c.manipulate(now,
-                   core_configuration);
+    for (std::size_t current_index = 0; current_index < connections_.size(); ++current_index) {
+      struct group final {
+        std::vector<std::weak_ptr<manipulators::base>> manipulators;
+        std::vector<std::weak_ptr<event_queue::queue>> skipped_output_queues;
+      };
+
+      std::vector<group> groups;
+
+      for (std::size_t owner_index = 0; owner_index <= current_index; ++owner_index) {
+        if (auto manager = connections_[owner_index].get_weak_manipulator_manager().lock()) {
+          group g{
+              .manipulators = manager->make_weak_manipulators(),
+          };
+
+          // Deferred events owned by an upstream manager are posted directly
+          // into the current manager's output queue. Keep the modifier state of
+          // every skipped queue in sync with those events.
+          for (std::size_t queue_index = owner_index; queue_index < current_index; ++queue_index) {
+            g.skipped_output_queues.push_back(connections_[queue_index].get_weak_output_event_queue());
+          }
+
+          groups.push_back(std::move(g));
+        }
+      }
+
+      auto deferred_output_session = std::make_shared<manipulators::deferred_output_session>(
+          [groups](const event_queue::entry& event,
+                   event_queue::queue& target_queue) {
+            for (const auto& group : groups) {
+              auto first_new_entry = target_queue.get_entries().size();
+
+              for (const auto& weak_manipulator : group.manipulators) {
+                if (auto manipulator = weak_manipulator.lock()) {
+                  manipulator->post_deferred_modifier_key_up_events(
+                      event,
+                      target_queue,
+                      manipulators::deferred_modifier_key_up_event_scope::all);
+                }
+              }
+
+              const auto& entries = target_queue.get_entries();
+              for (std::size_t i = first_new_entry; i < entries.size(); ++i) {
+                for (const auto& weak_queue : group.skipped_output_queues) {
+                  if (auto queue = weak_queue.lock()) {
+                    queue->apply_modifier_state(entries[i]);
+                  }
+                }
+              }
+            }
+          });
+
+      connections_[current_index].manipulate(now,
+                                             core_configuration,
+                                             deferred_output_session);
     }
   }
 

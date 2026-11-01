@@ -1,0 +1,10 @@
+[
+    { "keyboard_input": { "keys": [],                              "modifiers": ["left_control"] },                 "time_stamp": 5,  "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                              "modifiers": [] },                               "time_stamp": 10, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                              "modifiers": ["left_command"] },                 "time_stamp": 15, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "right_arrow" }], "modifiers": ["left_command"] },                 "time_stamp": 20, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "right_arrow" }], "modifiers": ["left_control", "left_command"] }, "time_stamp": 25, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "right_arrow" }], "modifiers": ["left_control"] },                 "time_stamp": 30, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "right_arrow" }], "modifiers": [] },                               "time_stamp": 35, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                              "modifiers": [] },                               "time_stamp": 8,  "type": "keyboard_input" }
+]

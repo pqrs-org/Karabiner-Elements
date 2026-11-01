@@ -79,7 +79,8 @@ public:
   manipulate_result manipulate(event_queue::entry& front_input_event,
                                const event_queue::queue& input_event_queue,
                                std::shared_ptr<event_queue::queue> output_event_queue,
-                               absolute_time_point now) override {
+                               absolute_time_point now,
+                               std::shared_ptr<const deferred_output_session> deferred_output_session = nullptr) override {
     if (output_event_queue) {
       // ----------------------------------------
 
@@ -107,7 +108,9 @@ public:
           from_mandatory_modifiers_ = from_mandatory_modifiers;
           device_id_ = front_input_event.get_device_id();
           original_event_ = front_input_event.get_original_event();
+          front_input_event_ = front_input_event;
           weak_output_event_queue_ = output_event_queue;
+          deferred_output_session_ = deferred_output_session;
 
           return manipulate_result::manipulated;
         }
@@ -145,60 +148,72 @@ public:
 private:
   std::shared_ptr<std::unordered_set<modifier_flag>> test_conditions(const event_queue::entry& front_input_event,
                                                                      std::shared_ptr<event_queue::queue> output_event_queue) const {
-    manipulator::conditions::condition_context condition_context{
-        .device_id = front_input_event.get_device_id(),
-        .state = front_input_event.get_state(),
-    };
+    auto condition_context = manipulator::conditions::make_device_and_state_condition_context(front_input_event);
     if (!condition_manager_.is_fulfilled(condition_context,
                                          output_event_queue->get_manipulator_environment())) {
       return nullptr;
     }
 
-    return from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager());
+    return from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager_for_matching());
   }
 
   void post_events(const pointing_motion& pointing_motion) {
     if (auto output_event_queue = weak_output_event_queue_.lock()) {
-      event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
-      absolute_time_duration time_stamp_delay(0);
+      auto post = [&](event_queue::queue& queue) {
+        event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
+        absolute_time_duration time_stamp_delay(0);
 
-      // Post from_mandatory_modifiers key_up
+        // Post from_mandatory_modifiers key_up
 
-      if (from_mandatory_modifiers_) {
-        base::post_lazy_modifier_key_events(*from_mandatory_modifiers_,
-                                            event_type::key_up,
-                                            device_id_,
-                                            event_time_stamp,
-                                            time_stamp_delay,
-                                            original_event_,
-                                            *output_event_queue);
-      }
+        if (from_mandatory_modifiers_) {
+          base::post_lazy_modifier_key_events({
+              .modifiers = *from_mandatory_modifiers_,
+              .event_type = event_type::key_up,
+              .device_id = device_id_,
+              .event_time_stamp = event_time_stamp,
+              .time_stamp_delay = time_stamp_delay,
+              .original_event = original_event_,
+              .output_event_queue = queue,
+          });
+        }
 
-      // Post new event
+        // Post new event
 
-      {
-        auto t = event_time_stamp;
-        t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
+        {
+          auto t = event_time_stamp;
+          t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
 
-        output_event_queue->emplace_back_entry(device_id_,
-                                               t,
-                                               event_queue::event(pointing_motion),
-                                               event_type::single,
-                                               std::nullopt,
-                                               original_event_,
-                                               event_queue::state::manipulated);
-      }
+          queue.emplace_back_entry({
+              .device_id = device_id_,
+              .event_time_stamp = t,
+              .event = event_queue::event(pointing_motion),
+              .event_type = event_type::single,
+              .original_event = original_event_,
+              .state = event_queue::state::manipulated,
+          });
+        }
 
-      // Post from_mandatory_modifiers key_down
+        // Post from_mandatory_modifiers key_down
 
-      if (from_mandatory_modifiers_) {
-        base::post_lazy_modifier_key_events(*from_mandatory_modifiers_,
-                                            event_type::key_down,
-                                            device_id_,
-                                            event_time_stamp,
-                                            time_stamp_delay,
-                                            original_event_,
-                                            *output_event_queue);
+        if (from_mandatory_modifiers_) {
+          base::post_lazy_modifier_key_events({
+              .modifiers = *from_mandatory_modifiers_,
+              .event_type = event_type::key_down,
+              .device_id = device_id_,
+              .event_time_stamp = event_time_stamp,
+              .time_stamp_delay = time_stamp_delay,
+              .original_event = original_event_,
+              .output_event_queue = queue,
+          });
+        }
+      };
+
+      if (deferred_output_session_ && front_input_event_) {
+        deferred_output_session_->post(*front_input_event_,
+                                       *output_event_queue,
+                                       post);
+      } else {
+        post(*output_event_queue);
       }
 
       krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
@@ -212,6 +227,8 @@ private:
   std::shared_ptr<std::unordered_set<modifier_flag>> from_mandatory_modifiers_;
   device_id device_id_;
   event_queue::event original_event_;
+  std::optional<event_queue::entry> front_input_event_;
   std::weak_ptr<event_queue::queue> weak_output_event_queue_;
+  std::shared_ptr<const deferred_output_session> deferred_output_session_;
 };
 } // namespace krbn::manipulator::manipulators::mouse_motion_to_scroll

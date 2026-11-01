@@ -44,7 +44,8 @@ public:
   bool manipulate(std::weak_ptr<event_queue::queue> weak_input_event_queue,
                   std::weak_ptr<event_queue::queue> weak_output_event_queue,
                   absolute_time_point now,
-                  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration) {
+                  pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration,
+                  std::shared_ptr<const manipulators::deferred_output_session> pipeline_deferred_output_session = nullptr) {
     if (auto input_event_queue = weak_input_event_queue.lock()) {
       if (auto output_event_queue = weak_output_event_queue.lock()) {
         if (!input_event_queue->empty()) {
@@ -139,11 +140,33 @@ public:
                   should_cancel_to_if_alone = false;
                 }
 
+                std::vector<std::weak_ptr<manipulators::base>> manipulators;
+                manipulators.reserve(manipulators_.size());
+                for (const auto& m : manipulators_) {
+                  manipulators.emplace_back(m.get());
+                }
+
+                auto deferred_output_session = pipeline_deferred_output_session;
+                if (!deferred_output_session) {
+                  deferred_output_session = std::make_shared<manipulators::deferred_output_session>(
+                      [manipulators](const event_queue::entry& event,
+                                     event_queue::queue& queue) {
+                        for (const auto& weak_manipulator : manipulators) {
+                          if (auto manipulator = weak_manipulator.lock()) {
+                            manipulator->post_deferred_modifier_key_up_events(event,
+                                                                              queue,
+                                                                              manipulators::deferred_modifier_key_up_event_scope::all);
+                          }
+                        }
+                      });
+                }
+
                 for (auto&& m : manipulators_) {
                   auto r = m->manipulate(front_input_event,
                                          *input_event_queue,
                                          output_event_queue,
-                                         now);
+                                         now,
+                                         deferred_output_session);
 
                   switch (r) {
                     case manipulate_result::passed:
@@ -175,8 +198,9 @@ public:
               std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
               for (auto&& m : manipulators_) {
-                m->handle_unmanipulated_event(front_input_event,
-                                              *output_event_queue);
+                m->post_deferred_modifier_key_up_events(front_input_event,
+                                                        *output_event_queue,
+                                                        manipulators::deferred_modifier_key_up_event_scope::except_front_input_event);
               }
             }
 
@@ -216,6 +240,19 @@ public:
     std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
     return manipulators_.size();
+  }
+
+  [[nodiscard]] std::vector<std::weak_ptr<manipulators::base>> make_weak_manipulators() const {
+    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+
+    std::vector<std::weak_ptr<manipulators::base>> result;
+    result.reserve(manipulators_.size());
+
+    for (const auto& m : manipulators_) {
+      result.emplace_back(m.get());
+    }
+
+    return result;
   }
 
   [[nodiscard]] bool needs_virtual_hid_pointing() const {

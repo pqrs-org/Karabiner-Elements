@@ -119,7 +119,8 @@ public:
   manipulate_result manipulate(event_queue::entry& front_input_event,
                                const event_queue::queue& input_event_queue,
                                std::shared_ptr<event_queue::queue> output_event_queue,
-                               absolute_time_point now) override {
+                               absolute_time_point now,
+                               std::shared_ptr<const deferred_output_session> deferred_output_session = nullptr) override {
     if (!output_event_queue ||
         validity_ == validity::invalid) {
       windows_.clear();
@@ -179,13 +180,10 @@ public:
     if (cooldown == cooldowns_.end()) {
       auto it = windows_.find(front_input_event.get_device_id());
       if (it == windows_.end()) {
-        const conditions::condition_context context{
-            .device_id = front_input_event.get_device_id(),
-            .state = front_input_event.get_state(),
-        };
-        auto modifiers = from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager());
+        const auto condition_context = manipulator::conditions::make_device_and_state_condition_context(front_input_event);
+        auto modifiers = from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager_for_matching());
         if (!modifiers ||
-            !condition_manager_.is_fulfilled(context, output_event_queue->get_manipulator_environment())) {
+            !condition_manager_.is_fulfilled(condition_context, output_event_queue->get_manipulator_environment())) {
           return manipulate_result::passed;
         }
         auto output_modifiers = output_event_queue->get_modifier_flag_manager().make_modifier_flags();
@@ -197,7 +195,9 @@ public:
         it = windows_.emplace(front_input_event.get_device_id(),
                               pending_window{
                                   .deadline = when_now() + sampling_interval_,
-                                  .context = context,
+                                  .condition_context = condition_context,
+                                  .front_input_event = front_input_event,
+                                  .deferred_output_session = deferred_output_session,
                                   .original_event = front_input_event.get_original_event(),
                                   .output = output_event_queue,
                                   .output_time_stamp = front_input_event.get_event_time_stamp().get_time_stamp() + pqrs::osx::chrono::make_absolute_time_duration(sampling_interval_),
@@ -234,14 +234,16 @@ public:
     if (remaining.is_zero()) {
       front_input_event.set_validity(validity::invalid);
     } else {
-      front_input_event = event_queue::entry(front_input_event.get_device_id(),
-                                             front_input_event.get_event_time_stamp(),
-                                             event_queue::event(remaining),
-                                             front_input_event.get_event_type(),
-                                             front_input_event.get_event_integer_value(),
-                                             front_input_event.get_original_event(),
-                                             event_queue::state::manipulated,
-                                             front_input_event.get_lazy());
+      front_input_event = event_queue::entry({
+          .device_id = front_input_event.get_device_id(),
+          .event_time_stamp = front_input_event.get_event_time_stamp(),
+          .event = event_queue::event(remaining),
+          .event_type = front_input_event.get_event_type(),
+          .event_integer_value = front_input_event.get_event_integer_value(),
+          .original_event = front_input_event.get_original_event(),
+          .state = event_queue::state::manipulated,
+          .lazy = front_input_event.get_lazy(),
+      });
     }
 
     return manipulate_result::manipulated;
@@ -317,7 +319,9 @@ private:
   };
   struct pending_window {
     pqrs::dispatcher::time_point deadline;
-    conditions::condition_context context;
+    conditions::condition_context condition_context;
+    event_queue::entry front_input_event;
+    std::shared_ptr<const deferred_output_session> deferred_output_session;
     event_queue::event original_event;
     std::weak_ptr<event_queue::queue> output;
     absolute_time_point output_time_stamp;
@@ -360,7 +364,7 @@ private:
             std::ranges::sort(expired, {}, &pending_window::deadline);
             for (const auto& window : expired) {
               if (post_window(window) && cooldown_ > std::chrono::milliseconds::zero()) {
-                cooldowns_[window.context.device_id] = when_now() + cooldown_;
+                cooldowns_[window.condition_context.device_id] = when_now() + cooldown_;
               }
             }
 
@@ -398,57 +402,108 @@ private:
       return false;
     }
 
-    event_queue::event_time_stamp time_stamp(window.output_time_stamp);
-    absolute_time_duration delay(0);
-    // Compute temporary changes with the shared modifier-state machinery, then
-    // emit them so both the queue and the virtual device see the captured state.
-    std::vector<modifier_flag_manager::active_modifier_flag> changes;
-    std::vector<modifier_flag_manager::active_modifier_flag> inverse_changes;
-    {
-      modifier_flag_manager::scoped_modifier_flags scoped(output->get_modifier_flag_manager(),
-                                                          window.output_modifiers);
-      changes = scoped.get_scoped_active_modifier_flags();
-      inverse_changes = scoped.get_inverse_active_modifier_flags();
-    }
+    to_event_definitions fulfilled_to_events;
 
-    shared_event_sender::post_active_modifier_flags(changes,
-                                                    time_stamp,
-                                                    delay,
-                                                    window.original_event,
-                                                    *output);
-
-    bool emitted = false;
-
-    // Wheel directions are evaluated independently, horizontal before vertical.
+    // Evaluate output conditions once at the window deadline, before any output
+    // event can change the manipulator environment.
     for (size_t direction = 0; direction < selected.size(); ++direction) {
       if (!selected[direction]) {
         continue;
       }
+
       for (const auto& to : to_[direction]) {
-        if (to->get_condition_manager().is_fulfilled(window.context,
+        if (to->get_condition_manager().is_fulfilled(window.condition_context,
                                                      output->get_manipulator_environment())) {
-          // post_tap leaves delay unchanged when the definition produces no event.
-          auto previous_delay = delay;
-          shared_event_sender::post_tap(*to,
-                                        window.context.device_id,
-                                        time_stamp,
-                                        delay,
-                                        window.original_event,
-                                        *output);
-          emitted |= delay != previous_delay;
+          fulfilled_to_events.push_back(to);
         }
       }
     }
 
-    shared_event_sender::post_active_modifier_flags(inverse_changes,
-                                                    time_stamp,
-                                                    delay,
-                                                    window.original_event,
-                                                    *output);
+    if (fulfilled_to_events.empty()) {
+      return false;
+    }
 
-    output->increase_time_stamp_delay(delay);
-    krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
-    return emitted;
+    const auto releases_deferred_modifiers =
+        std::ranges::any_of(fulfilled_to_events, [](const auto& to) {
+          if (!to->make_modifier_events().empty()) {
+            return true;
+          }
+
+          if (auto event = to->get_event_definition().to_event()) {
+            if (deferred_output_session::releases_deferred_modifiers(*event)) {
+              return true;
+            }
+          }
+
+          return false;
+        });
+
+    auto modifiers_before_release = output->get_modifier_flag_manager().make_modifier_flags();
+    auto post_events = [&](event_queue::queue& queue) {
+      auto output_modifiers = window.output_modifiers;
+      auto modifiers_after_release = queue.get_modifier_flag_manager().make_modifier_flags();
+      for (auto modifier : modifiers_before_release) {
+        if (!modifiers_after_release.contains(modifier)) {
+          output_modifiers.erase(modifier);
+        }
+      }
+
+      event_queue::event_time_stamp time_stamp(window.output_time_stamp);
+      absolute_time_duration delay(0);
+      // Compute temporary changes with the shared modifier-state machinery,
+      // then emit them so both the queue and the virtual device see the
+      // captured state.
+      std::vector<modifier_flag_manager::active_modifier_flag> changes;
+      std::vector<modifier_flag_manager::active_modifier_flag> inverse_changes;
+      {
+        modifier_flag_manager::scoped_modifier_flags scoped(queue.get_modifier_flag_manager(),
+                                                            output_modifiers);
+        changes = scoped.get_scoped_active_modifier_flags();
+        inverse_changes = scoped.get_inverse_active_modifier_flags();
+      }
+
+      shared_event_sender::post_active_modifier_flags(changes,
+                                                      time_stamp,
+                                                      delay,
+                                                      window.original_event,
+                                                      queue);
+
+      bool emitted = false;
+
+      // Wheel directions are evaluated independently, horizontal before
+      // vertical.
+      for (const auto& to : fulfilled_to_events) {
+        // post_tap leaves delay unchanged when the definition produces no
+        // event.
+        auto previous_delay = delay;
+        shared_event_sender::post_tap(*to,
+                                      window.condition_context.device_id,
+                                      time_stamp,
+                                      delay,
+                                      window.original_event,
+                                      queue);
+        emitted |= delay != previous_delay;
+      }
+
+      shared_event_sender::post_active_modifier_flags(inverse_changes,
+                                                      time_stamp,
+                                                      delay,
+                                                      window.original_event,
+                                                      queue);
+
+      queue.increase_time_stamp_delay(delay);
+      krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
+      return emitted;
+    };
+
+    if (window.deferred_output_session) {
+      return window.deferred_output_session->post(releases_deferred_modifiers,
+                                                  window.front_input_event,
+                                                  *output,
+                                                  post_events);
+    }
+
+    return post_events(*output);
   }
 
   source source_ = source::none;

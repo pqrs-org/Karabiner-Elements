@@ -15,42 +15,22 @@ public:
 
   queue() = default;
 
-  void emplace_back_entry(device_id device_id,
-                          const event_time_stamp& event_time_stamp,
-                          const class event& event,
-                          event_type event_type,
-                          std::optional<event_integer_value::value_t> event_integer_value,
-                          const class event& original_event,
-                          state state,
-                          bool lazy = false,
-                          validity validity = validity::valid) {
-    auto t = event_time_stamp;
-    t.set_time_stamp(t.get_time_stamp() + time_stamp_delay_);
+  void emplace_back_entry(entry::parameters parameters) {
+    parameters.event_time_stamp.set_time_stamp(parameters.event_time_stamp.get_time_stamp() + time_stamp_delay_);
 
-    events_.emplace_back(device_id,
-                         t,
-                         event,
-                         event_type,
-                         event_integer_value,
-                         original_event,
-                         state,
-                         lazy,
-                         validity);
+    events_.emplace_back(parameters);
+
+    apply_modifier_state(events_.back());
+
+    const auto& event = parameters.event;
+    auto event_type = parameters.event_type;
+    auto device_id = parameters.device_id;
 
     //
-    // Update modifier_flag_manager, pointing_button_manager
+    // Update pointing_button_manager
     //
 
     if (auto e = event.get_if<momentary_switch_event>()) {
-      if (auto modifier_flag = e->make_modifier_flag()) {
-        auto type = (event_type == event_type::key_down ? modifier_flag_manager::active_modifier_flag::type::increase
-                                                        : modifier_flag_manager::active_modifier_flag::type::decrease);
-        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
-                                                                         *modifier_flag,
-                                                                         device_id);
-        modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
-      }
-
       if (e->pointing_button()) {
         auto type = (event_type == event_type::key_down ? pointing_button_manager::active_pointing_button::type::increase
                                                         : pointing_button_manager::active_pointing_button::type::decrease);
@@ -58,45 +38,6 @@ public:
                                                                                e->get_usage_pair(),
                                                                                device_id);
         pointing_button_manager_.push_back_active_pointing_button(active_pointing_button);
-      }
-
-      // Erase sticky modifiers
-      if (event_type == event_type::key_down &&
-          validity == validity::valid &&
-          !e->modifier_flag()) {
-        modifier_flag_manager_.erase_all_sticky_modifier_flags();
-      }
-
-    } else if (event.get_type() == event::type::sticky_modifier) {
-      if (event_type == event_type::key_down || event_type == event_type::single) {
-        if (auto sticky_modifier = event.get_sticky_modifier()) {
-          auto type = modifier_flag_manager::active_modifier_flag::type::increase_sticky;
-
-          if (sticky_modifier->second == sticky_modifier_type::toggle) {
-            if (modifier_flag_manager_.sticky_size(sticky_modifier->first) > 0) {
-              type = modifier_flag_manager::active_modifier_flag::type::decrease_sticky;
-            }
-          } else {
-            if (sticky_modifier->second != sticky_modifier_type::on) {
-              type = modifier_flag_manager::active_modifier_flag::type::decrease_sticky;
-            }
-          }
-
-          modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
-                                                                           sticky_modifier->first,
-                                                                           device_id);
-          modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
-        }
-      }
-
-    } else if (event.get_type() == event::type::caps_lock_state_changed) {
-      if (auto integer_value = event.get_integer_value()) {
-        auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_led_lock
-                                    : modifier_flag_manager::active_modifier_flag::type::decrease_led_lock);
-        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
-                                                                         modifier_flag::caps_lock,
-                                                                         device_id);
-        modifier_flag_manager_.push_back_active_modifier_flag(active_modifier_flag);
       }
     }
 
@@ -180,15 +121,18 @@ public:
   }
 
   void push_back_entry(const entry& entry) {
-    emplace_back_entry(entry.get_device_id(),
-                       entry.get_event_time_stamp(),
-                       entry.get_event(),
-                       entry.get_event_type(),
-                       entry.get_event_integer_value(),
-                       entry.get_original_event(),
-                       entry.get_state(),
-                       entry.get_lazy(),
-                       entry.get_validity());
+    emplace_back_entry({
+        .device_id = entry.get_device_id(),
+        .event_time_stamp = entry.get_event_time_stamp(),
+        .event = entry.get_event(),
+        .event_type = entry.get_event_type(),
+        .event_integer_value = entry.get_event_integer_value(),
+        .original_event = entry.get_original_event(),
+        .state = entry.get_state(),
+        .lazy = entry.get_lazy(),
+        .validity = entry.get_validity(),
+        .output_only_modifier = entry.get_output_only_modifier(),
+    });
   }
 
   void clear_events() {
@@ -223,12 +167,39 @@ public:
     return const_cast<modifier_flag_manager&>(static_cast<const queue&>(*this).get_modifier_flag_manager());
   }
 
+  [[nodiscard]] const modifier_flag_manager& get_modifier_flag_manager_for_matching() const {
+    return modifier_flag_manager_for_matching_;
+  }
+
+  // Apply the modifier portion of an entry without enqueueing it.
+  //
+  // A deferred key_up event can be posted directly to a downstream queue. In
+  // that case, the queues it skipped must still update their modifier state so
+  // future output does not restore a modifier that has already been released.
+  void apply_modifier_state(const entry& entry) {
+    update_modifier_flag_manager(modifier_flag_manager_,
+                                 entry.get_event(),
+                                 entry.get_event_type(),
+                                 entry.get_device_id(),
+                                 entry.get_validity());
+
+    if (!entry.get_output_only_modifier()) {
+      update_modifier_flag_manager(modifier_flag_manager_for_matching_,
+                                   entry.get_event(),
+                                   entry.get_event_type(),
+                                   entry.get_device_id(),
+                                   entry.get_validity());
+    }
+  }
+
   void erase_all_active_modifier_flags_except_lock_and_sticky(device_id device_id) {
     modifier_flag_manager_.erase_all_active_modifier_flags_except_lock_and_sticky(device_id);
+    modifier_flag_manager_for_matching_.erase_all_active_modifier_flags_except_lock_and_sticky(device_id);
   }
 
   void erase_all_active_modifier_flags(device_id device_id) {
     modifier_flag_manager_.erase_all_active_modifier_flags(device_id);
+    modifier_flag_manager_for_matching_.erase_all_active_modifier_flags(device_id);
   }
 
   [[nodiscard]] const pointing_button_manager& get_pointing_button_manager() const {
@@ -356,8 +327,81 @@ public:
   }
 
 private:
+  static void update_modifier_flag_manager(modifier_flag_manager& modifier_flag_manager,
+                                           const class event& event,
+                                           event_type event_type,
+                                           device_id device_id,
+                                           validity validity) {
+    if (auto e = event.get_if<momentary_switch_event>()) {
+      if (auto modifier_flag = e->make_modifier_flag()) {
+        auto type = (event_type == event_type::key_down ? modifier_flag_manager::active_modifier_flag::type::increase
+                                                        : modifier_flag_manager::active_modifier_flag::type::decrease);
+        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
+                                                                         *modifier_flag,
+                                                                         device_id);
+        modifier_flag_manager.push_back_active_modifier_flag(active_modifier_flag);
+      }
+
+      if (event_type == event_type::key_down &&
+          validity == validity::valid &&
+          !e->modifier_flag()) {
+        modifier_flag_manager.erase_all_sticky_modifier_flags();
+      }
+
+    } else if (event.get_type() == event::type::sticky_modifier) {
+      if (event_type == event_type::key_down || event_type == event_type::single) {
+        if (auto sticky_modifier = event.get_sticky_modifier()) {
+          auto type = modifier_flag_manager::active_modifier_flag::type::increase_sticky;
+
+          if (sticky_modifier->second == sticky_modifier_type::toggle) {
+            if (modifier_flag_manager.sticky_size(sticky_modifier->first) > 0) {
+              type = modifier_flag_manager::active_modifier_flag::type::decrease_sticky;
+            }
+          } else if (sticky_modifier->second != sticky_modifier_type::on) {
+            type = modifier_flag_manager::active_modifier_flag::type::decrease_sticky;
+          }
+
+          modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
+                                                                           sticky_modifier->first,
+                                                                           device_id);
+          modifier_flag_manager.push_back_active_modifier_flag(active_modifier_flag);
+        }
+      }
+
+    } else if (event.get_type() == event::type::caps_lock_state_changed) {
+      if (auto integer_value = event.get_integer_value()) {
+        auto type = (*integer_value ? modifier_flag_manager::active_modifier_flag::type::increase_led_lock
+                                    : modifier_flag_manager::active_modifier_flag::type::decrease_led_lock);
+        modifier_flag_manager::active_modifier_flag active_modifier_flag(type,
+                                                                         modifier_flag::caps_lock,
+                                                                         device_id);
+        modifier_flag_manager.push_back_active_modifier_flag(active_modifier_flag);
+      }
+    }
+  }
+
   std::vector<entry> events_;
+
+  // Tracks the effective modifier state sent to the virtual device.
+  //
+  // This includes generated modifiers that are kept pressed while an output
+  // key is repeating. For example, `1 -> shift+1` keeps shift pressed while 1
+  // is repeating.
   modifier_flag_manager modifier_flag_manager_;
+
+  // Tracks the modifier state used when evaluating `from.modifiers` in
+  // subsequent manipulator rules.
+  //
+  // Generated modifiers that are kept pressed only for repeating output are
+  // excluded from this manager. Otherwise, while `1 -> shift+1` is repeating,
+  // pressing `b` would be evaluated as shift+b even though physical shift is
+  // not pressed.
+  //
+  // Entries marked as `output_only_modifier` update only
+  // `modifier_flag_manager_`; physical modifiers and other modifier events
+  // update both managers.
+  modifier_flag_manager modifier_flag_manager_for_matching_;
+
   pointing_button_manager pointing_button_manager_;
   manipulator::manipulator_environment manipulator_environment_;
   absolute_time_duration time_stamp_delay_{0};

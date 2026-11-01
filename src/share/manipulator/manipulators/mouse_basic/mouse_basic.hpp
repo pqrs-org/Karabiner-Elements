@@ -80,7 +80,8 @@ public:
   manipulate_result manipulate(event_queue::entry& front_input_event,
                                const event_queue::queue& input_event_queue,
                                std::shared_ptr<event_queue::queue> output_event_queue,
-                               absolute_time_point now) override {
+                               absolute_time_point now,
+                               std::shared_ptr<const deferred_output_session> deferred_output_session = nullptr) override {
     if (output_event_queue) {
       //
       // Determine whether to skip
@@ -94,10 +95,7 @@ public:
         return manipulate_result::passed;
       }
 
-      manipulator::conditions::condition_context condition_context{
-          .device_id = front_input_event.get_device_id(),
-          .state = front_input_event.get_state(),
-      };
+      auto condition_context = manipulator::conditions::make_device_and_state_condition_context(front_input_event);
       if (!condition_manager_.is_fulfilled(condition_context,
                                            output_event_queue->get_manipulator_environment())) {
         return manipulate_result::passed;
@@ -172,14 +170,26 @@ public:
             motion.set_horizontal_wheel(0);
           }
 
-          output_event_queue->emplace_back_entry(front_input_event.get_device_id(),
-                                                 front_input_event.get_event_time_stamp(),
-                                                 event_queue::event(motion),
-                                                 front_input_event.get_event_type(),
-                                                 front_input_event.get_event_integer_value(),
-                                                 front_input_event.get_original_event(),
-                                                 event_queue::state::manipulated,
-                                                 front_input_event.get_lazy());
+          auto post_event = [&](event_queue::queue& queue) {
+            queue.emplace_back_entry({
+                .device_id = front_input_event.get_device_id(),
+                .event_time_stamp = front_input_event.get_event_time_stamp(),
+                .event = event_queue::event(motion),
+                .event_type = front_input_event.get_event_type(),
+                .event_integer_value = front_input_event.get_event_integer_value(),
+                .original_event = front_input_event.get_original_event(),
+                .state = event_queue::state::manipulated,
+                .lazy = front_input_event.get_lazy(),
+            });
+          };
+
+          if (deferred_output_session) {
+            deferred_output_session->post(front_input_event,
+                                          *output_event_queue,
+                                          post_event);
+          } else {
+            post_event(*output_event_queue);
+          }
 
           return manipulate_result::manipulated;
         }

@@ -570,13 +570,14 @@ private:
 
     event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
     event_queue::event event(m);
-    auto entry = std::make_shared<event_queue::entry>(device_properties_->get_device_id(),
-                                                      event_time_stamp,
-                                                      event,
-                                                      event_type::single,
-                                                      std::nullopt,
-                                                      event,
-                                                      event_queue::state::original);
+    auto entry = std::make_shared<event_queue::entry>(event_queue::entry::parameters{
+        .device_id = device_properties_->get_device_id(),
+        .event_time_stamp = event_time_stamp,
+        .event = event,
+        .event_type = event_type::single,
+        .original_event = event,
+        .state = event_queue::state::original,
+    });
 
     enqueue_to_dispatcher([this, entry] {
       pointing_motion_arrived(entry);
@@ -595,13 +596,14 @@ private:
 
     event_queue::event_time_stamp event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point());
     event_queue::event event(m);
-    auto entry = std::make_shared<event_queue::entry>(device_properties_->get_device_id(),
-                                                      event_time_stamp,
-                                                      event,
-                                                      event_type::single,
-                                                      std::nullopt,
-                                                      event,
-                                                      event_queue::state::original);
+    auto entry = std::make_shared<event_queue::entry>(event_queue::entry::parameters{
+        .device_id = device_properties_->get_device_id(),
+        .event_time_stamp = event_time_stamp,
+        .event = event,
+        .event_type = event_type::single,
+        .original_event = event,
+        .state = event_queue::state::original,
+    });
 
     enqueue_to_dispatcher([this, entry] {
       pointing_motion_arrived(entry);

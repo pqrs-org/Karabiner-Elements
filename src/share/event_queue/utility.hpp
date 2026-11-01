@@ -54,13 +54,14 @@ static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<de
           pointing_motion_horizontal_wheel ? *pointing_motion_horizontal_wheel : 0);
 
       event_queue::event event(pointing_motion);
-      auto e = std::make_shared<entry>(device_properties->get_device_id(),
-                                       event_time_stamp(*pointing_motion_time_stamp),
-                                       event,
-                                       event_type::single,
-                                       std::nullopt,
-                                       event,
-                                       state::original);
+      auto e = std::make_shared<entry>(entry::parameters{
+          .device_id = device_properties->get_device_id(),
+          .event_time_stamp = event_time_stamp(*pointing_motion_time_stamp),
+          .event = event,
+          .event_type = event_type::single,
+          .original_event = event,
+          .state = state::original,
+      });
       result->push_back(e);
 
       pointing_motion_time_stamp = std::nullopt;
@@ -86,13 +87,15 @@ static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<de
       if (auto usage = v.get_usage()) {
         if (momentary_switch_event::target(*usage_page, *usage)) {
           event_queue::event event(momentary_switch_event(*usage_page, *usage));
-          auto e = std::make_shared<entry>(device_properties->get_device_id(),
-                                           event_time_stamp(v.get_time_stamp()),
-                                           event,
-                                           v.get_integer_value() ? event_type::key_down : event_type::key_up,
-                                           event_integer_value::value_t(v.get_integer_value()),
-                                           event,
-                                           state::original);
+          auto e = std::make_shared<entry>(entry::parameters{
+              .device_id = device_properties->get_device_id(),
+              .event_time_stamp = event_time_stamp(v.get_time_stamp()),
+              .event = event,
+              .event_type = v.get_integer_value() ? event_type::key_down : event_type::key_up,
+              .event_integer_value = event_integer_value::value_t(v.get_integer_value()),
+              .original_event = event,
+              .state = state::original,
+          });
           result->push_back(e);
 
         } else if (v.conforms_to(pqrs::hid::usage_page::generic_desktop,
@@ -136,13 +139,14 @@ static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<de
         } else if (v.conforms_to(pqrs::hid::usage_page::leds,
                                  pqrs::hid::usage::led::caps_lock)) {
           auto event = event_queue::event::make_caps_lock_state_changed_event(v.get_integer_value());
-          auto e = std::make_shared<entry>(device_properties->get_device_id(),
-                                           event_time_stamp(v.get_time_stamp()),
-                                           event,
-                                           event_type::single,
-                                           std::nullopt,
-                                           event,
-                                           state::virtual_event);
+          auto e = std::make_shared<entry>(entry::parameters{
+              .device_id = device_properties->get_device_id(),
+              .event_time_stamp = event_time_stamp(v.get_time_stamp()),
+              .event = event,
+              .event_type = event_type::single,
+              .original_event = event,
+              .state = state::virtual_event,
+          });
           result->push_back(e);
 
         } else if (is_game_pad) {
@@ -153,13 +157,14 @@ static inline not_null_entries_ptr_t make_entries(pqrs::not_null_shared_ptr_t<de
                                                                                                  v.get_integer_value());
             for (const auto& pair : pairs) {
               event_queue::event event(pair.first);
-              auto e = std::make_shared<entry>(device_properties->get_device_id(),
-                                               event_time_stamp(v.get_time_stamp()),
-                                               event,
-                                               pair.second,
-                                               std::nullopt,
-                                               event,
-                                               state::original);
+              auto e = std::make_shared<entry>(entry::parameters{
+                  .device_id = device_properties->get_device_id(),
+                  .event_time_stamp = event_time_stamp(v.get_time_stamp()),
+                  .event = event,
+                  .event_type = pair.second,
+                  .original_event = event,
+                  .state = state::original,
+              });
               result->push_back(e);
             }
           }
@@ -194,13 +199,14 @@ static inline not_null_entries_ptr_t insert_device_keys_and_pointing_buttons_are
 
           if (pressed_keys_manager->empty()) {
             auto event = event::make_device_keys_and_pointing_buttons_are_released_event();
-            auto e = std::make_shared<event_queue::entry>(device_id,
-                                                          entry->get_event_time_stamp(),
-                                                          event,
-                                                          event_type::single,
-                                                          std::nullopt,
-                                                          event,
-                                                          state::virtual_event);
+            auto e = std::make_shared<event_queue::entry>(event_queue::entry::parameters{
+                .device_id = device_id,
+                .event_time_stamp = entry->get_event_time_stamp(),
+                .event = event,
+                .event_type = event_type::single,
+                .original_event = event,
+                .state = state::virtual_event,
+            });
             result->push_back(e);
           }
         }

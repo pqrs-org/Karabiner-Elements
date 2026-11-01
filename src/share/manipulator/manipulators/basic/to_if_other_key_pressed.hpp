@@ -105,7 +105,9 @@ public:
     reset();
   }
 
-  [[nodiscard]] event_sender::to_if_alone_cancellation handle_other_key_pressed(const event_queue::entry& front_input_event) {
+  [[nodiscard]] event_sender::to_if_alone_cancellation handle_other_key_pressed(
+      const event_queue::entry& front_input_event,
+      std::shared_ptr<const manipulators::deferred_output_session> deferred_output_session) {
     if (front_input_event.get_event_type() != event_type::key_down) {
       return event_sender::to_if_alone_cancellation::not_required;
     }
@@ -130,7 +132,7 @@ public:
         }
 
         std::shared_ptr<std::unordered_set<modifier_flag>> other_key_from_mandatory_modifiers;
-        if (auto modifiers = (*other_key_from_event_definition)->get_from_modifiers_definition().test_modifiers(oeq->get_modifier_flag_manager())) {
+        if (auto modifiers = (*other_key_from_event_definition)->get_from_modifiers_definition().test_modifiers(oeq->get_modifier_flag_manager_for_matching())) {
           other_key_from_mandatory_modifiers = modifiers;
         } else {
           continue;
@@ -146,7 +148,7 @@ public:
                 other_key_from_events,
                 *other_key_from_mandatory_modifiers,
                 front_input_event.get_event_time_stamp().get_time_stamp(),
-                oeq->get_modifier_flag_manager().make_modifier_flags());
+                oeq->get_modifier_flag_manager_for_matching().make_modifier_flags());
 
         // ----------------------------------------
         // Replace to_ events
@@ -154,54 +156,66 @@ public:
         if (auto fmoe = from_manipulated_original_event_.lock()) {
           if (from_device_id_) {
             absolute_time_duration time_stamp_delay(0);
+            manipulator::conditions::condition_context condition_context{
+                .device_id = *from_device_id_,
+                .state = front_input_event.get_state(),
+            };
 
-            //
-            // Release from events
-            //
+            result = event_sender::post_output(
+                entry->get_to(),
+                condition_context,
+                *other_key_manipulated_original_event_,
+                deferred_output_session,
+                front_input_event,
+                *oeq,
+                [&](event_queue::queue& queue) {
+                  //
+                  // Release from events
+                  //
 
-            event_sender::post_events_at_key_up(*fmoe,
-                                                front_input_event.get_event_time_stamp(),
-                                                time_stamp_delay,
-                                                *oeq);
+                  event_sender::post_events_at_key_up(*fmoe,
+                                                      front_input_event.get_event_time_stamp(),
+                                                      time_stamp_delay,
+                                                      queue);
 
-            event_sender::post_from_mandatory_modifiers_key_down(*fmoe,
-                                                                 *from_device_id_,
-                                                                 front_input_event.get_event_time_stamp(),
-                                                                 time_stamp_delay,
-                                                                 front_input_event.get_original_event(),
-                                                                 *oeq);
+                  event_sender::post_from_mandatory_modifiers_key_down(*fmoe,
+                                                                       *from_device_id_,
+                                                                       front_input_event.get_event_time_stamp(),
+                                                                       time_stamp_delay,
+                                                                       front_input_event.get_original_event(),
+                                                                       queue);
 
-            //
-            // Press other_key_from_event_definition.to
-            //
+                  //
+                  // Press other_key_from_event_definition.to
+                  //
 
-            event_sender::post_from_mandatory_modifiers_key_up(*other_key_manipulated_original_event_,
-                                                               *from_device_id_,
-                                                               front_input_event.get_event_time_stamp(),
-                                                               time_stamp_delay,
-                                                               front_input_event.get_original_event(),
-                                                               *oeq);
+                  event_sender::post_from_mandatory_modifiers_key_up(*other_key_manipulated_original_event_,
+                                                                     *from_device_id_,
+                                                                     front_input_event.get_event_time_stamp(),
+                                                                     time_stamp_delay,
+                                                                     front_input_event.get_original_event(),
+                                                                     queue);
 
-            result = event_sender::post_events_at_key_down(entry->get_to(),
-                                                           *other_key_manipulated_original_event_,
-                                                           manipulator::conditions::condition_context{
-                                                               .device_id = *from_device_id_,
-                                                               .state = front_input_event.get_state(),
-                                                           },
-                                                           *from_device_id_,
-                                                           front_input_event.get_event_time_stamp(),
-                                                           time_stamp_delay,
-                                                           front_input_event.get_original_event(),
-                                                           *oeq);
+                  auto cancellation = event_sender::post_events_at_key_down(entry->get_to(),
+                                                                            *other_key_manipulated_original_event_,
+                                                                            condition_context,
+                                                                            *from_device_id_,
+                                                                            front_input_event.get_event_time_stamp(),
+                                                                            time_stamp_delay,
+                                                                            front_input_event.get_original_event(),
+                                                                            queue);
 
-            if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
-              event_sender::post_from_mandatory_modifiers_key_down(*other_key_manipulated_original_event_,
-                                                                   *from_device_id_,
-                                                                   front_input_event.get_event_time_stamp(),
-                                                                   time_stamp_delay,
-                                                                   front_input_event.get_original_event(),
-                                                                   *oeq);
-            }
+                  if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
+                    event_sender::post_from_mandatory_modifiers_key_down(*other_key_manipulated_original_event_,
+                                                                         *from_device_id_,
+                                                                         front_input_event.get_event_time_stamp(),
+                                                                         time_stamp_delay,
+                                                                         front_input_event.get_original_event(),
+                                                                         queue);
+                  }
+
+                  return cancellation;
+                });
           }
         }
 

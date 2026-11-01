@@ -62,155 +62,125 @@ int main() {
     //
 
     auto input_event_queue = std::make_shared<krbn::event_queue::queue>();
+    auto t = krbn::absolute_time_point(1);
+
+    auto emplace_back_entry = [&](const krbn::event_queue::event& event,
+                                  krbn::event_type event_type,
+                                  std::optional<krbn::event_integer_value::value_t> event_integer_value,
+                                  krbn::event_queue::state state) {
+      input_event_queue->emplace_back_entry({
+          .device_id = device_id_1,
+          .event_time_stamp = krbn::event_queue::event_time_stamp(t),
+          .event = event,
+          .event_type = event_type,
+          .event_integer_value = event_integer_value,
+          .original_event = event,
+          .state = state,
+      });
+    };
 
     // f1 key_down
-    auto t = krbn::absolute_time_point(1);
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f1,
-                                          krbn::event_type::key_down,
-                                          krbn::event_integer_value::value_t(1),
-                                          f1,
-                                          state_original);
+    emplace_back_entry(f1,
+                       krbn::event_type::key_down,
+                       krbn::event_integer_value::value_t(1),
+                       state_original);
 
     // f1 key_up
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f1,
-                                          krbn::event_type::key_up,
-                                          krbn::event_integer_value::value_t(0),
-                                          f1,
-                                          state_original);
+    emplace_back_entry(f1,
+                       krbn::event_type::key_up,
+                       krbn::event_integer_value::value_t(0),
+                       state_original);
 
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          released_event,
-                                          krbn::event_type::single,
-                                          std::nullopt,
-                                          released_event,
-                                          state_virtual);
+    emplace_back_entry(released_event,
+                       krbn::event_type::single,
+                       std::nullopt,
+                       state_virtual);
 
     // f2 key_down
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f2,
-                                          krbn::event_type::key_down,
-                                          krbn::event_integer_value::value_t(1),
-                                          f2,
-                                          state_original);
+    emplace_back_entry(f2,
+                       krbn::event_type::key_down,
+                       krbn::event_integer_value::value_t(1),
+                       state_original);
 
     // f2 key_up
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f2,
-                                          krbn::event_type::key_up,
-                                          krbn::event_integer_value::value_t(0),
-                                          f2,
-                                          state_original);
+    emplace_back_entry(f2,
+                       krbn::event_type::key_up,
+                       krbn::event_integer_value::value_t(0),
+                       state_original);
 
     // f3 key_down
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f3,
-                                          krbn::event_type::key_down,
-                                          krbn::event_integer_value::value_t(1),
-                                          f3,
-                                          state_original);
+    emplace_back_entry(f3,
+                       krbn::event_type::key_down,
+                       krbn::event_integer_value::value_t(1),
+                       state_original);
 
     // f3 key_up
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f3,
-                                          krbn::event_type::key_up,
-                                          krbn::event_integer_value::value_t(0),
-                                          f3,
-                                          state_original);
+    emplace_back_entry(f3,
+                       krbn::event_type::key_up,
+                       krbn::event_integer_value::value_t(0),
+                       state_original);
 
     // fn key_down
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          fn,
-                                          krbn::event_type::key_down,
-                                          krbn::event_integer_value::value_t(1),
-                                          fn,
-                                          state_original);
+    emplace_back_entry(fn,
+                       krbn::event_type::key_down,
+                       krbn::event_integer_value::value_t(1),
+                       state_original);
 
     // fn+f1 key_down
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f1,
-                                          krbn::event_type::key_down,
-                                          krbn::event_integer_value::value_t(1),
-                                          f1,
-                                          state_original);
+    emplace_back_entry(f1,
+                       krbn::event_type::key_down,
+                       krbn::event_integer_value::value_t(1),
+                       state_original);
 
     // fn+f1 key_up
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f1,
-                                          krbn::event_type::key_up,
-                                          krbn::event_integer_value::value_t(0),
-                                          f1,
-                                          state_original);
+    emplace_back_entry(f1,
+                       krbn::event_type::key_up,
+                       krbn::event_integer_value::value_t(0),
+                       state_original);
 
     // fn+f2 key_down
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f2,
-                                          krbn::event_type::key_down,
-                                          krbn::event_integer_value::value_t(1),
-                                          f2,
-                                          state_original);
+    emplace_back_entry(f2,
+                       krbn::event_type::key_down,
+                       krbn::event_integer_value::value_t(1),
+                       state_original);
 
     // fn+f2 key_up
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f2,
-                                          krbn::event_type::key_up,
-                                          krbn::event_integer_value::value_t(0),
-                                          f2,
-                                          state_original);
+    emplace_back_entry(f2,
+                       krbn::event_type::key_up,
+                       krbn::event_integer_value::value_t(0),
+                       state_original);
 
     // fn+f3 key_down
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f3,
-                                          krbn::event_type::key_down,
-                                          krbn::event_integer_value::value_t(1),
-                                          f3,
-                                          state_original);
+    emplace_back_entry(f3,
+                       krbn::event_type::key_down,
+                       krbn::event_integer_value::value_t(1),
+                       state_original);
 
     // fn+f3 key_up
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          f3,
-                                          krbn::event_type::key_up,
-                                          krbn::event_integer_value::value_t(0),
-                                          f3,
-                                          state_original);
+    emplace_back_entry(f3,
+                       krbn::event_type::key_up,
+                       krbn::event_integer_value::value_t(0),
+                       state_original);
 
     // fn key_up
     t += pqrs::osx::chrono::make_absolute_time_duration(std::chrono::milliseconds(1));
-    input_event_queue->emplace_back_entry(device_id_1,
-                                          krbn::event_queue::event_time_stamp(t),
-                                          fn,
-                                          krbn::event_type::key_up,
-                                          krbn::event_integer_value::value_t(0),
-                                          fn,
-                                          state_original);
+    emplace_back_entry(fn,
+                       krbn::event_type::key_up,
+                       krbn::event_integer_value::value_t(0),
+                       state_original);
 
     //
     // use_fkeys_as_standard_function_keys: false

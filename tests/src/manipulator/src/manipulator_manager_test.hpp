@@ -39,53 +39,56 @@ void run_manipulator_manager_test() {
 
     // ----------------------------------------
 
-    event_queues[2]->emplace_back_entry(krbn::device_id(1),
-                                        krbn::event_queue::event_time_stamp(krbn::absolute_time_point(5000)),
-                                        krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                        krbn::event_type::key_down,
-                                        krbn::event_integer_value::value_t(1),
-                                        krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                        krbn::event_queue::state::original);
+    auto event = krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
+                                                                       pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
+
+    event_queues[2]->emplace_back_entry({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(5000)),
+        .event = event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = event,
+        .state = krbn::event_queue::state::original,
+    });
 
     expect(connector.min_input_event_time_stamp() == krbn::absolute_time_point(5000));
 
     // ----------------------------------------
 
-    event_queues[0]->emplace_back_entry(krbn::device_id(1),
-                                        krbn::event_queue::event_time_stamp(krbn::absolute_time_point(4000)),
-                                        krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                        krbn::event_type::key_down,
-                                        krbn::event_integer_value::value_t(1),
-                                        krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                        krbn::event_queue::state::original);
+    event_queues[0]->emplace_back_entry({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(4000)),
+        .event = event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = event,
+        .state = krbn::event_queue::state::original,
+    });
 
     expect(connector.min_input_event_time_stamp() == krbn::absolute_time_point(4000));
 
     // ----------------------------------------
     // min_input_event_time_stamp uses only the front entry.
 
-    event_queues[3]->emplace_back_entry(krbn::device_id(1),
-                                        krbn::event_queue::event_time_stamp(krbn::absolute_time_point(3000)),
-                                        krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                        krbn::event_type::key_down,
-                                        krbn::event_integer_value::value_t(1),
-                                        krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                        krbn::event_queue::state::original);
-    event_queues[0]->emplace_back_entry(krbn::device_id(1),
-                                        krbn::event_queue::event_time_stamp(krbn::absolute_time_point(2000)),
-                                        krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                        krbn::event_type::key_down,
-                                        krbn::event_integer_value::value_t(1),
-                                        krbn::event_queue::event(krbn::momentary_switch_event(pqrs::hid::usage_page::keyboard_or_keypad,
-                                                                                              pqrs::hid::usage::keyboard_or_keypad::keyboard_a)),
-                                        krbn::event_queue::state::original);
+    event_queues[3]->emplace_back_entry({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(3000)),
+        .event = event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = event,
+        .state = krbn::event_queue::state::original,
+    });
+    event_queues[0]->emplace_back_entry({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(2000)),
+        .event = event,
+        .event_type = krbn::event_type::key_down,
+        .event_integer_value = krbn::event_integer_value::value_t(1),
+        .original_event = event,
+        .state = krbn::event_queue::state::original,
+    });
 
     expect(connector.min_input_event_time_stamp() == krbn::absolute_time_point(3000));
 

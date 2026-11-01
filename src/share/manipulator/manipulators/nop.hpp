@@ -16,7 +16,8 @@ public:
   manipulate_result manipulate(event_queue::entry& front_input_event,
                                const event_queue::queue& input_event_queue,
                                std::shared_ptr<event_queue::queue> output_event_queue,
-                               absolute_time_point now) override {
+                               absolute_time_point now,
+                               std::shared_ptr<const deferred_output_session> deferred_output_session = nullptr) override {
     return manipulate_result::passed;
   }
 

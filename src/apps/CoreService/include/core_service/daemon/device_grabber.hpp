@@ -586,13 +586,14 @@ public:
       auto event = event_queue::event::make_set_variable_event(value);
 
       for (const auto& t : {event_type::key_down, event_type::key_up}) {
-        event_queue::entry entry(device_id(0),
-                                 event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                                 event,
-                                 t,
-                                 std::nullopt,
-                                 event,
-                                 event_queue::state::virtual_event);
+        event_queue::entry entry({
+            .device_id = device_id(0),
+            .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+            .event = event,
+            .event_type = t,
+            .original_event = event,
+            .state = event_queue::state::virtual_event,
+        });
         merged_input_event_queue_->push_back_entry(entry);
       }
 
@@ -603,13 +604,14 @@ public:
   void async_post_frontmost_application_changed_event(const application& application) {
     enqueue_to_dispatcher([this, application] {
       auto event = event_queue::event::make_frontmost_application_changed_event(application);
-      event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                               event,
-                               event_type::single,
-                               std::nullopt,
-                               event,
-                               event_queue::state::virtual_event);
+      event_queue::entry entry({
+          .device_id = device_id(0),
+          .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+          .event = event,
+          .event_type = event_type::single,
+          .original_event = event,
+          .state = event_queue::state::virtual_event,
+      });
 
       merged_input_event_queue_->push_back_entry(entry);
 
@@ -620,13 +622,14 @@ public:
   void async_post_input_source_changed_event(const pqrs::osx::input_source::properties& properties) {
     enqueue_to_dispatcher([this, properties] {
       auto event = event_queue::event::make_input_source_changed_event(properties);
-      event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                               event,
-                               event_type::single,
-                               std::nullopt,
-                               event,
-                               event_queue::state::virtual_event);
+      event_queue::entry entry({
+          .device_id = device_id(0),
+          .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+          .event = event,
+          .event_type = event_type::single,
+          .original_event = event,
+          .state = event_queue::state::virtual_event,
+      });
 
       merged_input_event_queue_->push_back_entry(entry);
 
@@ -638,13 +641,14 @@ public:
     enqueue_to_dispatcher([this] {
       auto event = event_queue::event::make_system_preferences_properties_changed_event(
           system_preferences_properties_);
-      event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                               event,
-                               event_type::single,
-                               std::nullopt,
-                               event,
-                               event_queue::state::virtual_event);
+      event_queue::entry entry({
+          .device_id = device_id(0),
+          .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+          .event = event,
+          .event_type = event_type::single,
+          .original_event = event,
+          .state = event_queue::state::virtual_event,
+      });
 
       merged_input_event_queue_->push_back_entry(entry);
 
@@ -655,13 +659,14 @@ public:
   void async_post_virtual_hid_devices_state_changed_event() {
     enqueue_to_dispatcher([this] {
       auto event = event_queue::event::make_virtual_hid_devices_state_changed_event(virtual_hid_devices_state_);
-      event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                               event,
-                               event_type::single,
-                               std::nullopt,
-                               event,
-                               event_queue::state::virtual_event);
+      event_queue::entry entry({
+          .device_id = device_id(0),
+          .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+          .event = event,
+          .event_type = event_type::single,
+          .original_event = event,
+          .state = event_queue::state::virtual_event,
+      });
 
       merged_input_event_queue_->push_back_entry(entry);
 
@@ -779,13 +784,15 @@ private:
             continue;
           }
 
-          event_queue::entry qe(e->get_device_id(),
-                                e->get_event_time_stamp(),
-                                e->get_event(),
-                                e->get_event_type(),
-                                e->get_event_integer_value(),
-                                e->get_original_event(),
-                                e->get_state());
+          event_queue::entry qe({
+              .device_id = e->get_device_id(),
+              .event_time_stamp = e->get_event_time_stamp(),
+              .event = e->get_event(),
+              .event_type = e->get_event_type(),
+              .event_integer_value = e->get_event_integer_value(),
+              .original_event = e->get_original_event(),
+              .state = e->get_state(),
+          });
 
           merged_input_event_queue_->push_back_entry(qe);
 
@@ -810,13 +817,14 @@ private:
       return;
     }
 
-    event_queue::entry entry(device_id(0),
-                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                             event,
-                             event_type,
-                             std::nullopt,
-                             event,
-                             event_queue::state::original);
+    event_queue::entry entry({
+        .device_id = device_id(0),
+        .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+        .event = event,
+        .event_type = event_type,
+        .original_event = event,
+        .state = event_queue::state::original,
+    });
 
     merged_input_event_queue_->push_back_entry(entry);
 
@@ -825,13 +833,14 @@ private:
 
   void post_device_grabbed_event(pqrs::not_null_shared_ptr_t<device_properties> device_properties) {
     auto event = event_queue::event::make_device_grabbed_event(device_properties);
-    event_queue::entry entry(device_properties->get_device_id(),
-                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                             event,
-                             event_type::single,
-                             std::nullopt,
-                             event,
-                             event_queue::state::virtual_event);
+    event_queue::entry entry({
+        .device_id = device_properties->get_device_id(),
+        .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+        .event = event,
+        .event_type = event_type::single,
+        .original_event = event,
+        .state = event_queue::state::virtual_event,
+    });
 
     merged_input_event_queue_->push_back_entry(entry);
 
@@ -840,13 +849,14 @@ private:
 
   void post_device_ungrabbed_event(device_id device_id) {
     auto event = event_queue::event::make_device_ungrabbed_event();
-    event_queue::entry entry(device_id,
-                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                             event,
-                             event_type::single,
-                             std::nullopt,
-                             event,
-                             event_queue::state::virtual_event);
+    event_queue::entry entry({
+        .device_id = device_id,
+        .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+        .event = event,
+        .event_type = event_type::single,
+        .original_event = event,
+        .state = event_queue::state::virtual_event,
+    });
 
     merged_input_event_queue_->push_back_entry(entry);
 
@@ -855,13 +865,14 @@ private:
 
   void post_device_keys_and_pointing_buttons_are_released_event() {
     auto event = event_queue::event::make_device_keys_and_pointing_buttons_are_released_event();
-    event_queue::entry entry(device_id(0),
-                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                             event,
-                             event_type::single,
-                             std::nullopt,
-                             event,
-                             event_queue::state::virtual_event);
+    event_queue::entry entry({
+        .device_id = device_id(0),
+        .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+        .event = event,
+        .event_type = event_type::single,
+        .original_event = event,
+        .state = event_queue::state::virtual_event,
+    });
 
     merged_input_event_queue_->push_back_entry(entry);
 
@@ -870,13 +881,14 @@ private:
 
   void post_caps_lock_state_changed_event(bool caps_lock_state) {
     auto event = event_queue::event::make_caps_lock_state_changed_event(caps_lock_state);
-    event_queue::entry entry(device_id(0),
-                             event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                             event,
-                             event_type::single,
-                             std::nullopt,
-                             event,
-                             event_queue::state::virtual_event);
+    event_queue::entry entry({
+        .device_id = device_id(0),
+        .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+        .event = event,
+        .event_type = event_type::single,
+        .original_event = event,
+        .state = event_queue::state::virtual_event,
+    });
 
     merged_input_event_queue_->push_back_entry(entry);
 
@@ -1161,13 +1173,14 @@ private:
 
     event_tap_monitor_->pointing_device_event_arrived.connect([this](auto&& event_type, auto&& event) {
       auto e = event_queue::event::make_pointing_device_event_from_event_tap_event();
-      event_queue::entry entry(device_id(0),
-                               event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
-                               e,
-                               event_type,
-                               std::nullopt,
-                               event,
-                               event_queue::state::virtual_event);
+      event_queue::entry entry({
+          .device_id = device_id(0),
+          .event_time_stamp = event_queue::event_time_stamp(pqrs::osx::chrono::mach_absolute_time_point()),
+          .event = e,
+          .event_type = event_type,
+          .original_event = event,
+          .state = event_queue::state::virtual_event,
+      });
 
       merged_input_event_queue_->push_back_entry(entry);
 

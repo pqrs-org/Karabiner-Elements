@@ -2,6 +2,7 @@
 
 #include "../condition_manager.hpp"
 #include "../types.hpp"
+#include "deferred_output_session.hpp"
 #include "event_queue.hpp"
 #include "modifier_flag_manager.hpp"
 
@@ -19,14 +20,16 @@ public:
   virtual void cancel_to_if_alone(const event_queue::entry& front_input_event) {
   }
 
-  virtual void handle_unmanipulated_event(const event_queue::entry& front_input_event,
-                                          event_queue::queue& output_event_queue) {
+  virtual void post_deferred_modifier_key_up_events(const event_queue::entry& front_input_event,
+                                                    event_queue::queue& output_event_queue,
+                                                    deferred_modifier_key_up_event_scope scope) {
   }
 
   virtual manipulate_result manipulate(event_queue::entry& front_input_event,
                                        const event_queue::queue& input_event_queue,
                                        std::shared_ptr<event_queue::queue> output_event_queue,
-                                       absolute_time_point now) = 0;
+                                       absolute_time_point now,
+                                       std::shared_ptr<const deferred_output_session> deferred_output_session = nullptr) = 0;
 
   virtual bool active() const = 0;
 
@@ -62,47 +65,61 @@ public:
     condition_manager_.push_back_condition(condition);
   }
 
-  static void post_lazy_modifier_key_events(const std::unordered_set<modifier_flag>& modifiers,
-                                            event_type event_type,
-                                            device_id device_id,
-                                            const event_queue::event_time_stamp& event_time_stamp,
-                                            absolute_time_duration& time_stamp_delay,
-                                            const event_queue::event& original_event,
-                                            event_queue::queue& output_event_queue) {
-    for (const auto& m : modifiers) {
-      post_lazy_modifier_key_event(momentary_switch_event(m),
-                                   event_type,
-                                   device_id,
-                                   event_time_stamp,
-                                   time_stamp_delay,
-                                   original_event,
-                                   output_event_queue);
+  struct post_lazy_modifier_key_events_parameters final {
+    const std::unordered_set<modifier_flag>& modifiers;
+    krbn::event_type event_type;
+    krbn::device_id device_id;
+    const event_queue::event_time_stamp& event_time_stamp;
+    absolute_time_duration& time_stamp_delay;
+    const event_queue::event& original_event;
+    event_queue::queue& output_event_queue;
+  };
+
+  struct post_lazy_modifier_key_event_parameters final {
+    const krbn::momentary_switch_event& momentary_switch_event;
+    krbn::event_type event_type;
+    krbn::device_id device_id;
+    const event_queue::event_time_stamp& event_time_stamp;
+    absolute_time_duration& time_stamp_delay;
+    const event_queue::event& original_event;
+    event_queue::queue& output_event_queue;
+    bool lazy{true};
+    bool output_only_modifier{false};
+  };
+
+  static void post_lazy_modifier_key_events(const post_lazy_modifier_key_events_parameters& parameters) {
+    for (const auto& m : parameters.modifiers) {
+      post_lazy_modifier_key_event({
+          .momentary_switch_event = momentary_switch_event(m),
+          .event_type = parameters.event_type,
+          .device_id = parameters.device_id,
+          .event_time_stamp = parameters.event_time_stamp,
+          .time_stamp_delay = parameters.time_stamp_delay,
+          .original_event = parameters.original_event,
+          .output_event_queue = parameters.output_event_queue,
+      });
     }
   }
 
-  static void post_lazy_modifier_key_event(const momentary_switch_event& momentary_switch_event,
-                                           event_type event_type,
-                                           device_id device_id,
-                                           const event_queue::event_time_stamp& event_time_stamp,
-                                           absolute_time_duration& time_stamp_delay,
-                                           const event_queue::event& original_event,
-                                           event_queue::queue& output_event_queue,
-                                           bool lazy = true) {
-    if (momentary_switch_event.valid()) {
-      auto t = event_time_stamp;
-      t.set_time_stamp(t.get_time_stamp() + time_stamp_delay++);
+  static void post_lazy_modifier_key_event(const post_lazy_modifier_key_event_parameters& parameters) {
+    if (parameters.momentary_switch_event.valid()) {
+      auto t = parameters.event_time_stamp;
+      t.set_time_stamp(t.get_time_stamp() + parameters.time_stamp_delay++);
 
-      auto pair = make_lazy_modifier_key_event(momentary_switch_event, event_type);
+      auto pair = make_lazy_modifier_key_event(parameters.momentary_switch_event,
+                                               parameters.event_type);
 
-      event_queue::entry entry(device_id,
-                               t,
-                               pair.first,
-                               pair.second,
-                               std::nullopt,
-                               original_event,
-                               event_queue::state::manipulated,
-                               lazy);
-      output_event_queue.push_back_entry(entry);
+      event_queue::entry entry({
+          .device_id = parameters.device_id,
+          .event_time_stamp = t,
+          .event = pair.first,
+          .event_type = pair.second,
+          .original_event = parameters.original_event,
+          .state = event_queue::state::manipulated,
+          .lazy = parameters.lazy,
+          .output_only_modifier = parameters.output_only_modifier,
+      });
+      parameters.output_event_queue.push_back_entry(entry);
     }
   }
 

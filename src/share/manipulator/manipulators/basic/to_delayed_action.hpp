@@ -81,6 +81,7 @@ public:
   void setup(const event_queue::entry& front_input_event,
              std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event,
              std::shared_ptr<event_queue::queue> output_event_queue,
+             std::shared_ptr<const manipulators::deferred_output_session> deferred_output_session,
              std::chrono::milliseconds delay_milliseconds) {
     if (front_input_event.get_event_type() != event_type::key_down) {
       return;
@@ -94,6 +95,7 @@ public:
     front_input_event_ = front_input_event;
     current_manipulated_original_event_ = current_manipulated_original_event;
     output_event_queue_ = output_event_queue;
+    deferred_output_session_ = deferred_output_session;
 
     auto duration = pqrs::osx::chrono::make_absolute_time_duration(delay_milliseconds);
 
@@ -138,52 +140,61 @@ private:
       if (current_manipulated_original_event_) {
         if (auto oeq = output_event_queue_.lock()) {
           absolute_time_duration time_stamp_delay(0);
+          const auto condition_context = manipulator::conditions::make_device_and_state_condition_context(*front_input_event_);
 
-          {
-            event_sender::scoped_from_key_modifier_flags_state_restorer restorer(*current_manipulated_original_event_,
-                                                                                 front_input_event_->get_event_time_stamp(),
-                                                                                 time_stamp_delay,
-                                                                                 front_input_event_->get_original_event(),
-                                                                                 *oeq);
+          event_sender::post_output(
+              events,
+              condition_context,
+              *current_manipulated_original_event_,
+              deferred_output_session_,
+              *front_input_event_,
+              *oeq,
+              [&](event_queue::queue& queue) {
+                event_sender::scoped_from_key_modifier_flags_state_restorer restorer(*current_manipulated_original_event_,
+                                                                                     front_input_event_->get_event_time_stamp(),
+                                                                                     time_stamp_delay,
+                                                                                     front_input_event_->get_original_event(),
+                                                                                     queue);
 
-            //
-            // Send to_delayed_action events
-            //
+                //
+                // Send to_delayed_action events
+                //
 
-            // Release from_mandatory_modifiers
+                // Release from_mandatory_modifiers
 
-            base::post_lazy_modifier_key_events(current_manipulated_original_event_->get_from_mandatory_modifiers(),
-                                                event_type::key_up,
-                                                front_input_event_->get_device_id(),
-                                                front_input_event_->get_event_time_stamp(),
-                                                time_stamp_delay,
-                                                front_input_event_->get_original_event(),
-                                                *oeq);
+                base::post_lazy_modifier_key_events({
+                    .modifiers = current_manipulated_original_event_->get_from_mandatory_modifiers(),
+                    .event_type = event_type::key_up,
+                    .device_id = front_input_event_->get_device_id(),
+                    .event_time_stamp = front_input_event_->get_event_time_stamp(),
+                    .time_stamp_delay = time_stamp_delay,
+                    .original_event = front_input_event_->get_original_event(),
+                    .output_event_queue = queue,
+                });
 
-            // Post events
+                // Post events
 
-            event_sender::post_extra_to_events(events,
-                                               *current_manipulated_original_event_,
-                                               manipulator::conditions::condition_context{
-                                                   .device_id = front_input_event_->get_device_id(),
-                                                   .state = front_input_event_->get_state(),
-                                               },
-                                               front_input_event_->get_device_id(),
-                                               front_input_event_->get_event_time_stamp(),
-                                               time_stamp_delay,
-                                               front_input_event_->get_original_event(),
-                                               *oeq);
+                event_sender::post_extra_to_events(events,
+                                                   *current_manipulated_original_event_,
+                                                   condition_context,
+                                                   front_input_event_->get_device_id(),
+                                                   front_input_event_->get_event_time_stamp(),
+                                                   time_stamp_delay,
+                                                   front_input_event_->get_original_event(),
+                                                   queue);
 
-            // Restore from_mandatory_modifiers
+                // Restore from_mandatory_modifiers
 
-            base::post_lazy_modifier_key_events(current_manipulated_original_event_->get_from_mandatory_modifiers(),
-                                                event_type::key_down,
-                                                front_input_event_->get_device_id(),
-                                                front_input_event_->get_event_time_stamp(),
-                                                time_stamp_delay,
-                                                front_input_event_->get_original_event(),
-                                                *oeq);
-          }
+                base::post_lazy_modifier_key_events({
+                    .modifiers = current_manipulated_original_event_->get_from_mandatory_modifiers(),
+                    .event_type = event_type::key_down,
+                    .device_id = front_input_event_->get_device_id(),
+                    .event_time_stamp = front_input_event_->get_event_time_stamp(),
+                    .time_stamp_delay = time_stamp_delay,
+                    .original_event = front_input_event_->get_original_event(),
+                    .output_event_queue = queue,
+                });
+              });
 
           krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);
         }
@@ -191,6 +202,7 @@ private:
     }
 
     current_manipulated_original_event_ = nullptr;
+    deferred_output_session_ = nullptr;
   }
 
   to_event_definitions to_if_invoked_;
@@ -198,6 +210,7 @@ private:
   std::optional<event_queue::entry> front_input_event_;
   std::shared_ptr<manipulated_original_event::manipulated_original_event> current_manipulated_original_event_;
   std::weak_ptr<event_queue::queue> output_event_queue_;
+  std::shared_ptr<const manipulators::deferred_output_session> deferred_output_session_;
 
   // Construct after potentially throwing members; destruction requires detach.
   pqrs::dispatcher::extra::debounced_task delayed_action_task_{*this};

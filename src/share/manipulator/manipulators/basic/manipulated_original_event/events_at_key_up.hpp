@@ -22,14 +22,16 @@ public:
 
     event_queue::entry make_entry(const event_queue::event_time_stamp& event_time_stamp,
                                   bool force_non_lazy = false) const {
-      return event_queue::entry(device_id_,
-                                event_time_stamp,
-                                event_,
-                                event_type_,
-                                std::nullopt,
-                                original_event_,
-                                event_queue::state::manipulated,
-                                force_non_lazy ? false : lazy_);
+      return event_queue::entry({
+          .device_id = device_id_,
+          .event_time_stamp = event_time_stamp,
+          .event = event_,
+          .event_type = event_type_,
+          .original_event = original_event_,
+          .state = event_queue::state::manipulated,
+          .lazy = force_non_lazy ? false : lazy_,
+          .output_only_modifier = release_when_other_key_is_pressed_,
+      });
     }
 
     [[nodiscard]] bool get_release_when_other_key_is_pressed() const {

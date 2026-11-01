@@ -13,26 +13,32 @@ namespace krbn::event_queue {
 
 class entry final {
 public:
+  struct parameters final {
+    krbn::device_id device_id{0};
+    krbn::event_queue::event_time_stamp event_time_stamp;
+    krbn::event_queue::event event;
+    krbn::event_type event_type{krbn::event_type::key_down};
+    std::optional<event_integer_value::value_t> event_integer_value;
+    krbn::event_queue::event original_event;
+    krbn::event_queue::state state{krbn::event_queue::state::original};
+    bool lazy{false};
+    krbn::validity validity{krbn::validity::valid};
+    bool output_only_modifier{false};
+  };
+
   // Constructors
 
-  entry(device_id device_id,
-        const event_time_stamp& event_time_stamp,
-        const class event& event,
-        event_type event_type,
-        std::optional<event_integer_value::value_t> event_integer_value,
-        const class event& original_event,
-        state state,
-        bool lazy = false,
-        validity validity = validity::valid)
-      : device_id_(device_id),
-        event_time_stamp_(event_time_stamp),
-        validity_(validity),
-        state_(state),
-        lazy_(lazy),
-        event_(event),
-        event_type_(event_type),
-        event_integer_value_(event_integer_value),
-        original_event_(original_event) {
+  explicit entry(const parameters& parameters)
+      : device_id_(parameters.device_id),
+        event_time_stamp_(parameters.event_time_stamp),
+        validity_(parameters.validity),
+        state_(parameters.state),
+        lazy_(parameters.lazy),
+        output_only_modifier_(parameters.output_only_modifier),
+        event_(parameters.event),
+        event_type_(parameters.event_type),
+        event_integer_value_(parameters.event_integer_value),
+        original_event_(parameters.original_event) {
   }
 
   entry& operator=(const entry& other) {
@@ -41,6 +47,7 @@ public:
     validity_ = other.validity_;
     state_ = other.state_;
     lazy_ = other.lazy_;
+    output_only_modifier_ = other.output_only_modifier_;
     event_ = other.event_;
     event_type_ = other.event_type_;
     event_integer_value_ = other.event_integer_value_;
@@ -53,13 +60,7 @@ public:
   }
 
   static entry make_from_json(const nlohmann::json& json) {
-    entry result(device_id(0),
-                 event_time_stamp(absolute_time_point(0)),
-                 event(),
-                 event_type::key_down,
-                 std::nullopt,
-                 event(),
-                 state::original);
+    entry result(parameters{});
 
     if (json.is_object()) {
       if (auto v = pqrs::json::find<uint32_t>(json, "device_id")) {
@@ -80,6 +81,10 @@ public:
 
       if (auto v = pqrs::json::find<bool>(json, "lazy")) {
         result.lazy_ = *v;
+      }
+
+      if (auto v = pqrs::json::find<bool>(json, "output_only_modifier")) {
+        result.output_only_modifier_ = *v;
       }
 
       if (auto v = pqrs::json::find_json(json, "event")) {
@@ -156,6 +161,12 @@ public:
     lazy_ = value;
   }
 
+  [[nodiscard]] bool get_output_only_modifier() const {
+    // We don't have to use mutex since there is no setter.
+
+    return output_only_modifier_;
+  }
+
   [[nodiscard]] const event& get_event() const {
     // We don't have to use mutex since there is not setter.
 
@@ -194,6 +205,9 @@ public:
     if (auto v = get_event_integer_value()) {
       json["event_integer_value"] = get_event_integer_value();
     }
+    if (get_output_only_modifier()) {
+      json["output_only_modifier"] = true;
+    }
     return json;
   }
 
@@ -203,6 +217,7 @@ public:
            get_validity() == other.get_validity() &&
            get_state() == other.get_state() &&
            get_lazy() == other.get_lazy() &&
+           get_output_only_modifier() == other.get_output_only_modifier() &&
            get_event() == other.get_event() &&
            get_event_type() == other.get_event_type() &&
            get_event_integer_value() == other.get_event_integer_value() &&
@@ -231,7 +246,16 @@ private:
   // The state will be kept each above manipulation state.
   state state_;
 
+  // If true, a modifier event updates the logical modifier state without
+  // immediately dispatching it to the virtual device. The state is dispatched
+  // when a following output event needs the current modifiers.
   bool lazy_;
+
+  // True for generated modifiers that remain active only to preserve the
+  // modifiers of a repeating output key. These modifiers are excluded from
+  // subsequent `from.modifiers` matching.
+  bool output_only_modifier_;
+
   event event_;
   event_type event_type_;
 

@@ -34,13 +34,14 @@ int main() {
 
     auto manipulate = [&](krbn::set_caps_lock_led_value value, krbn::event_type event_type) {
       auto e = krbn::event_queue::event::make_set_caps_lock_led_event(value);
-      krbn::event_queue::entry entry(krbn::device_id(1),
-                                     krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
-                                     e,
-                                     event_type,
-                                     std::nullopt,
-                                     e,
-                                     krbn::event_queue::state::original);
+      krbn::event_queue::entry entry({
+          .device_id = krbn::device_id(1),
+          .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
+          .event = e,
+          .event_type = event_type,
+          .original_event = e,
+          .state = krbn::event_queue::state::original,
+      });
 
       manipulator->manipulate(entry,
                               *input_event_queue,

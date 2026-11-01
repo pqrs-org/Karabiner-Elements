@@ -9,6 +9,13 @@ struct condition_context final {
   event_queue::state state;
 };
 
+[[nodiscard]] inline condition_context make_device_and_state_condition_context(const event_queue::entry& entry) {
+  return {
+      .device_id = entry.get_device_id(),
+      .state = entry.get_state(),
+  };
+}
+
 class base {
 protected:
   base() = default;
