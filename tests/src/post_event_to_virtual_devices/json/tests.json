@@ -354,6 +354,30 @@
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_8_result.json"
     },
     {
+        "description": "to_if_alone is not canceled by vk_none",
+        "rules": ["json/rules/to_if_alone.json"],
+        "input_event_queue": "json/test_cases/to_if_alone_vk_none_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_vk_none_result.json"
+    },
+    {
+        "description": "to_if_alone is not canceled by vk_none from an upstream manipulator manager",
+        "rules": ["json/rules/f4_to_vk_none.json", "json/rules/to_if_alone.json"],
+        "input_event_queue": "json/test_cases/to_if_alone_vk_none_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_vk_none_result.json"
+    },
+    {
+        "description": "to_if_alone is canceled by to_if_held_down output",
+        "rules": ["json/rules/to_if_alone_output_cancellation.json"],
+        "input_event_queue": "json/test_cases/to_if_alone_to_if_held_down_output_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_to_if_held_down_output_result.json"
+    },
+    {
+        "description": "to_if_alone is canceled by to_if_other_key_pressed output",
+        "rules": ["json/rules/to_if_alone_output_cancellation.json"],
+        "input_event_queue": "json/test_cases/to_if_alone_to_if_other_key_pressed_output_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/to_if_alone_to_if_other_key_pressed_output_result.json"
+    },
+    {
         "description": "to_after_key_up_1",
         "rules": ["json/rules/to_after_key_up.json"],
         "input_event_queue": "json/test_cases/to_after_key_up_1_input.jsonc",

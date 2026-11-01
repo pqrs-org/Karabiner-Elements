@@ -16,7 +16,7 @@ public:
 
   virtual bool already_manipulated(const event_queue::entry& front_input_event) = 0;
 
-  virtual void handle_input_event(const event_queue::entry& front_input_event) {
+  virtual void cancel_to_if_alone(const event_queue::entry& front_input_event) {
   }
 
   virtual void handle_unmanipulated_event(const event_queue::entry& front_input_event,

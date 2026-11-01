@@ -105,15 +105,17 @@ public:
     reset();
   }
 
-  void handle_other_key_pressed(const event_queue::entry& front_input_event) {
+  [[nodiscard]] event_sender::to_if_alone_cancellation handle_other_key_pressed(const event_queue::entry& front_input_event) {
     if (front_input_event.get_event_type() != event_type::key_down) {
-      return;
+      return event_sender::to_if_alone_cancellation::not_required;
     }
 
     // Skip if already triggered.
     if (other_key_manipulated_original_event_) {
-      return;
+      return event_sender::to_if_alone_cancellation::not_required;
     }
+
+    auto result = event_sender::to_if_alone_cancellation::not_required;
 
     if (auto oeq = output_event_queue_.lock()) {
       for (const auto& entry : entries_) {
@@ -180,17 +182,17 @@ public:
                                                                front_input_event.get_original_event(),
                                                                *oeq);
 
-            event_sender::post_events_at_key_down(entry->get_to(),
-                                                  *other_key_manipulated_original_event_,
-                                                  manipulator::conditions::condition_context{
-                                                      .device_id = *from_device_id_,
-                                                      .state = front_input_event.get_state(),
-                                                  },
-                                                  *from_device_id_,
-                                                  front_input_event.get_event_time_stamp(),
-                                                  time_stamp_delay,
-                                                  front_input_event.get_original_event(),
-                                                  *oeq);
+            result = event_sender::post_events_at_key_down(entry->get_to(),
+                                                           *other_key_manipulated_original_event_,
+                                                           manipulator::conditions::condition_context{
+                                                               .device_id = *from_device_id_,
+                                                               .state = front_input_event.get_state(),
+                                                           },
+                                                           *from_device_id_,
+                                                           front_input_event.get_event_time_stamp(),
+                                                           time_stamp_delay,
+                                                           front_input_event.get_original_event(),
+                                                           *oeq);
 
             if (!event_sender::is_last_to_event_modifier_key_event(entry->get_to())) {
               event_sender::post_from_mandatory_modifiers_key_down(*other_key_manipulated_original_event_,
@@ -206,6 +208,8 @@ public:
         break;
       }
     }
+
+    return result;
   }
 
   [[nodiscard]] bool needs_virtual_hid_pointing() const {

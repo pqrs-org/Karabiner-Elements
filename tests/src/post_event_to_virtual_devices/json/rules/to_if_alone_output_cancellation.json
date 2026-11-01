@@ -1,0 +1,60 @@
+[
+    {
+        "description": "right_control -> left_command (escape)",
+        "from": {
+            "key_code": "right_control",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [{ "key_code": "left_command" }],
+        "to_if_alone": [{ "key_code": "escape" }],
+        "type": "basic"
+    },
+    {
+        "description": "f1 -> f2 if held down",
+        "from": {
+            "key_code": "f1",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to_if_held_down": [{ "key_code": "f2" }],
+        "type": "basic"
+    },
+    {
+        "description": "right_shift -> right_shift, left_command if f3 is pressed",
+        "from": {
+            "key_code": "right_shift",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [{ "key_code": "right_shift" }],
+        "to_if_other_key_pressed": [
+            {
+                "other_keys": [
+                    {
+                        "key_code": "f3",
+                        "modifiers": {
+                            "optional": "any"
+                        }
+                    }
+                ],
+                "to": [{ "key_code": "left_command" }]
+            }
+        ],
+        "type": "basic"
+    },
+    {
+        "description": "f3 -> vk_none",
+        "from": {
+            "key_code": "f3",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [{ "key_code": "vk_none" }],
+        "type": "basic"
+    }
+]

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "event_queue/entry.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -9,10 +10,18 @@ public:
   class core final {
   public:
     nod::signal<void()> input_event_arrived;
+    nod::signal<void(const event_queue::entry&)> to_if_alone_cancellation_requested;
 
     void enqueue_input_event_arrived(pqrs::dispatcher::extra::dispatcher_client& client) {
       client.enqueue_to_dispatcher([this] {
         input_event_arrived();
+      });
+    }
+
+    void enqueue_to_if_alone_cancellation_requested(pqrs::dispatcher::extra::dispatcher_client& client,
+                                                    const event_queue::entry& entry) {
+      client.enqueue_to_dispatcher([this, entry] {
+        to_if_alone_cancellation_requested(entry);
       });
     }
   };

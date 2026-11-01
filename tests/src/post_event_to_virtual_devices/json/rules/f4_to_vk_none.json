@@ -1,0 +1,13 @@
+[
+    {
+        "description": "f4 -> vk_none",
+        "from": {
+            "key_code": "f4",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [{ "key_code": "vk_none" }],
+        "type": "basic"
+    }
+]

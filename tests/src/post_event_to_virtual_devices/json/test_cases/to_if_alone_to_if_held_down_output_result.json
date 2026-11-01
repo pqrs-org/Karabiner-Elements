@@ -1,0 +1,6 @@
+[
+    { "keyboard_input": { "keys": [],                     "modifiers": ["left_command"] }, "time_stamp": 5,    "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [{ "key_code": "f2" }], "modifiers": ["left_command"] }, "time_stamp": 10,   "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                     "modifiers": ["left_command"] }, "time_stamp": 1002, "type": "keyboard_input" },
+    { "keyboard_input": { "keys": [],                     "modifiers": [] },               "time_stamp": 1007, "type": "keyboard_input" }
+]

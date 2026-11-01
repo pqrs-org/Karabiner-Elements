@@ -130,8 +130,13 @@ public:
               if (!skip) {
                 std::lock_guard<std::mutex> lock(manipulators_mutex_);
 
-                for (auto&& m : manipulators_) {
-                  m->handle_input_event(front_input_event);
+                bool should_cancel_to_if_alone = true;
+
+                // Invalid momentary switch events such as `vk_none` may be passed from
+                // an upstream manipulator manager, but they do not produce output.
+                if (auto e = front_input_event.get_event().get_if<momentary_switch_event>();
+                    e && !e->valid()) {
+                  should_cancel_to_if_alone = false;
                 }
 
                 for (auto&& m : manipulators_) {
@@ -146,8 +151,18 @@ public:
                       // Do nothing
                       break;
 
+                    case manipulate_result::manipulated_without_cancelling_to_if_alone:
+                      should_cancel_to_if_alone = false;
+                      break;
+
                     case manipulate_result::needs_wait_until_time_stamp:
                       goto finish;
+                  }
+                }
+
+                if (should_cancel_to_if_alone) {
+                  for (auto&& m : manipulators_) {
+                    m->cancel_to_if_alone(front_input_event);
                   }
                 }
               }

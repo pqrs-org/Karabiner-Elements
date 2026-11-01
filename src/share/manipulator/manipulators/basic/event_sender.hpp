@@ -8,6 +8,15 @@
 
 namespace krbn::manipulator::manipulators::basic::event_sender {
 
+// Describes whether `post_events_at_key_down` produced an effective output
+// that should interrupt a pending `to_if_alone`.
+// `not_required` includes empty or filtered output and invalid events such as `vk_none`.
+// `required` includes valid events and output modifiers.
+enum class to_if_alone_cancellation {
+  not_required,
+  required,
+};
+
 inline to_event_definitions filter_and_replace_events(const to_event_definitions& to_events,
                                                       const conditions::condition_context& condition_context,
                                                       manipulator_environment& manipulator_environment,
@@ -146,17 +155,19 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
                                       output_event_queue);
 }
 
-inline void post_events_at_key_down(const to_event_definitions& to_events,
-                                    manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
-                                    const conditions::condition_context& condition_context,
-                                    device_id device_id,
-                                    const event_queue::event_time_stamp& event_time_stamp,
-                                    absolute_time_duration& time_stamp_delay,
-                                    const event_queue::event& original_event,
-                                    event_queue::queue& output_event_queue) {
+[[nodiscard]] inline to_if_alone_cancellation post_events_at_key_down(const to_event_definitions& to_events,
+                                                           manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
+                                                           const conditions::condition_context& condition_context,
+                                                           device_id device_id,
+                                                           const event_queue::event_time_stamp& event_time_stamp,
+                                                           absolute_time_duration& time_stamp_delay,
+                                                           const event_queue::event& original_event,
+                                                           event_queue::queue& output_event_queue) {
   if (current_manipulated_original_event.get_halted()) {
-    return;
+    return to_if_alone_cancellation::not_required;
   }
+
+  auto result = to_if_alone_cancellation::not_required;
 
   auto filtered_to_events = filter_and_replace_events(to_events,
                                                       condition_context,
@@ -169,6 +180,17 @@ inline void post_events_at_key_down(const to_event_definitions& to_events,
       // to_modifier down, to_key down, to_key up, to_modifier up
 
       auto to_modifier_events = to->make_modifier_events();
+
+      if (!to_modifier_events.empty()) {
+        result = to_if_alone_cancellation::required;
+      } else if (auto e = event->get_if<momentary_switch_event>()) {
+        // Invalid events such as `vk_none` do not require cancelling `to_if_alone`.
+        if (e->valid()) {
+          result = to_if_alone_cancellation::required;
+        }
+      } else {
+        result = to_if_alone_cancellation::required;
+      }
 
       bool is_modifier_key_event = false;
       bool is_repeatable_key_event = false;
@@ -273,6 +295,8 @@ inline void post_events_at_key_down(const to_event_definitions& to_events,
       }
     }
   }
+
+  return result;
 }
 
 inline void post_events_at_key_up(manipulated_original_event::manipulated_original_event& current_manipulated_original_event,

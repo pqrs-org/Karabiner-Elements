@@ -89,17 +89,22 @@ public:
                                                                    front_input_event_->get_original_event(),
                                                                    *oeq);
 
-                event_sender::post_events_at_key_down(to_,
-                                                      *cmoe,
-                                                      manipulator::conditions::condition_context{
-                                                          .device_id = front_input_event_->get_device_id(),
-                                                          .state = front_input_event_->get_state(),
-                                                      },
-                                                      front_input_event_->get_device_id(),
-                                                      front_input_event_->get_event_time_stamp(),
-                                                      time_stamp_delay,
-                                                      front_input_event_->get_original_event(),
-                                                      *oeq);
+                auto cancellation = event_sender::post_events_at_key_down(to_,
+                                                                           *cmoe,
+                                                                           manipulator::conditions::condition_context{
+                                                                               .device_id = front_input_event_->get_device_id(),
+                                                                               .state = front_input_event_->get_state(),
+                                                                           },
+                                                                           front_input_event_->get_device_id(),
+                                                                           front_input_event_->get_event_time_stamp(),
+                                                                           time_stamp_delay,
+                                                                           front_input_event_->get_original_event(),
+                                                                           *oeq);
+
+                if (cancellation == event_sender::to_if_alone_cancellation::required) {
+                  krbn_notification_center::get_instance().enqueue_to_if_alone_cancellation_requested(*this,
+                                                                                                      *front_input_event_);
+                }
 
                 if (!event_sender::is_last_to_event_modifier_key_event(to_)) {
                   event_sender::post_from_mandatory_modifiers_key_down(*cmoe,

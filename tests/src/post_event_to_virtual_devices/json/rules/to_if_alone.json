@@ -15,6 +15,21 @@
         "type": "basic"
     },
     {
+        "description": "f4 -> vk_none (without pressed alone interruption)",
+        "from": {
+            "key_code": "f4",
+            "modifiers": {
+                "optional": ["any"]
+            }
+        },
+        "to": [
+            {
+                "key_code": "vk_none"
+            }
+        ],
+        "type": "basic"
+    },
+    {
         "description": "right_control -> left_command (escape)",
         "from": {
             "key_code": "right_control",

@@ -130,6 +130,8 @@ public:
             }
           }
         });
+
+    connect_to_if_alone_cancellation_requested();
   }
 
   // For simple_modifications
@@ -139,9 +141,11 @@ public:
         from_(from),
         to_(to) {
     dispatcher_client_constructor_guard_.initialize();
+    connect_to_if_alone_cancellation_requested();
   }
 
   ~basic() override {
+    to_if_alone_cancellation_requested_connection_.disconnect();
     detach_from_dispatcher();
   }
 
@@ -170,7 +174,7 @@ public:
     return false;
   }
 
-  void handle_input_event(const event_queue::entry& front_input_event) override {
+  void cancel_to_if_alone(const event_queue::entry& front_input_event) override {
     unset_alone_if_needed(front_input_event.get_device_id(),
                           front_input_event.get_event(),
                           front_input_event.get_event_type(),
@@ -232,7 +236,11 @@ public:
       // ----------------------------------------
 
       if (to_if_other_key_pressed_) {
-        to_if_other_key_pressed_->handle_other_key_pressed(front_input_event);
+        auto cancellation = to_if_other_key_pressed_->handle_other_key_pressed(front_input_event);
+        if (cancellation == event_sender::to_if_alone_cancellation::required) {
+          krbn_notification_center::get_instance().enqueue_to_if_alone_cancellation_requested(*this,
+                                                                                              front_input_event);
+        }
       }
 
       // ----------------------------------------
@@ -504,6 +512,7 @@ public:
           front_input_event.set_validity(validity::invalid);
 
           absolute_time_duration time_stamp_delay(0);
+          auto cancellation = event_sender::to_if_alone_cancellation::not_required;
 
           // Send events
 
@@ -518,17 +527,17 @@ public:
                                                                  front_input_event.get_original_event(),
                                                                  *output_event_queue);
 
-              event_sender::post_events_at_key_down(to_,
-                                                    *current_manipulated_original_event,
-                                                    manipulator::conditions::condition_context{
-                                                        .device_id = front_input_event.get_device_id(),
-                                                        .state = front_input_event.get_state(),
-                                                    },
-                                                    front_input_event.get_device_id(),
-                                                    front_input_event.get_event_time_stamp(),
-                                                    time_stamp_delay,
-                                                    front_input_event.get_original_event(),
-                                                    *output_event_queue);
+              cancellation = event_sender::post_events_at_key_down(to_,
+                                                                    *current_manipulated_original_event,
+                                                                    manipulator::conditions::condition_context{
+                                                                        .device_id = front_input_event.get_device_id(),
+                                                                        .state = front_input_event.get_state(),
+                                                                    },
+                                                                    front_input_event.get_device_id(),
+                                                                    front_input_event.get_event_time_stamp(),
+                                                                    time_stamp_delay,
+                                                                    front_input_event.get_original_event(),
+                                                                    *output_event_queue);
 
               if (!event_sender::is_last_to_event_modifier_key_event(to_)) {
                 event_sender::post_from_mandatory_modifiers_key_down(*current_manipulated_original_event,
@@ -729,6 +738,11 @@ public:
             output_event_queue->increase_time_stamp_delay(time_stamp_delay - absolute_time_duration(1));
           }
 
+          if (front_input_event.get_event_type() == event_type::key_down &&
+              cancellation != event_sender::to_if_alone_cancellation::required) {
+            return manipulate_result::manipulated_without_cancelling_to_if_alone;
+          }
+
           return manipulate_result::manipulated;
         }
       }
@@ -809,6 +823,14 @@ public:
   }
 
 private:
+  void connect_to_if_alone_cancellation_requested() {
+    to_if_alone_cancellation_requested_connection_ =
+        krbn_notification_center::get_instance().to_if_alone_cancellation_requested.connect(
+            [this](const auto& entry) {
+              cancel_to_if_alone(entry);
+            });
+  }
+
   template <typename Predicate>
   [[nodiscard]] bool any_output_definition_matches(const Predicate& predicate) const {
     if (manipulator::any_event_definition_matches(predicate,
@@ -889,5 +911,6 @@ private:
   std::shared_ptr<to_delayed_action> to_delayed_action_;
 
   std::vector<pqrs::not_null_shared_ptr_t<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
+  nod::scoped_connection to_if_alone_cancellation_requested_connection_;
 };
 } // namespace krbn::manipulator::manipulators::basic
