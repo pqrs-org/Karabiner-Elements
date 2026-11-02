@@ -26,6 +26,6 @@ jobs:
       - name: package
         run: make package
       - name: appendix
-        run: ruby scripts/reduce-logs.rb 'make -C appendix'
+        run: /usr/bin/python3 scripts/reduce-logs.py 'make -C appendix'
       - name: tests
-        run: ruby scripts/reduce-logs.rb 'make -C tests'
+        run: /usr/bin/python3 scripts/reduce-logs.py 'make -C tests'
