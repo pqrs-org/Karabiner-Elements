@@ -120,7 +120,7 @@ public:
 
     for (std::size_t current_index = 0; current_index < connections_.size(); ++current_index) {
       struct group final {
-        std::vector<std::weak_ptr<manipulators::base>> manipulators;
+        manipulator_manager::post_deferred_modifier_key_up_events_callback post_deferred_modifier_key_up_events;
         std::vector<std::weak_ptr<event_queue::queue>> skipped_output_queues;
       };
 
@@ -129,7 +129,7 @@ public:
       for (std::size_t owner_index = 0; owner_index <= current_index; ++owner_index) {
         if (auto manager = connections_[owner_index].get_weak_manipulator_manager().lock()) {
           group g{
-              .manipulators = manager->make_weak_manipulators(),
+              .post_deferred_modifier_key_up_events = manager->make_post_deferred_modifier_key_up_events_callback(),
           };
 
           // Deferred events owned by an upstream manager are posted directly
@@ -149,14 +149,8 @@ public:
             for (const auto& group : groups) {
               auto first_new_entry = target_queue.get_entries().size();
 
-              for (const auto& weak_manipulator : group.manipulators) {
-                if (auto manipulator = weak_manipulator.lock()) {
-                  manipulator->post_deferred_modifier_key_up_events(
-                      event,
-                      target_queue,
-                      manipulators::deferred_modifier_key_up_event_scope::all);
-                }
-              }
+              group.post_deferred_modifier_key_up_events(event,
+                                                         target_queue);
 
               const auto& entries = target_queue.get_entries();
               for (std::size_t i = first_new_entry; i < entries.size(); ++i) {

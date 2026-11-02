@@ -209,7 +209,10 @@ private:
       };
 
       if (deferred_output_session_ && front_input_event_) {
-        deferred_output_session_->post(*front_input_event_,
+        // Generated scroll events do not represent an explicit key or button
+        // operation and must not interrupt a repeating key.
+        deferred_output_session_->post(false,
+                                       *front_input_event_,
                                        *output_event_queue,
                                        post);
       } else {

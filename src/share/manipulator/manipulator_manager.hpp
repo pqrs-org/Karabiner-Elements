@@ -4,7 +4,20 @@
 
 namespace krbn::manipulator {
 class manipulator_manager final {
+private:
+  struct manipulator_store final {
+    std::vector<pqrs::not_null_shared_ptr_t<manipulators::base>> manipulators;
+
+    // A deferred output can synchronously ask its own manager to visit the
+    // current manipulators while manipulate already holds this mutex.
+    std::recursive_mutex mutex;
+  };
+
 public:
+  using post_deferred_modifier_key_up_events_callback =
+      std::function<void(const event_queue::entry&,
+                         event_queue::queue&)>;
+
   manipulator_manager(const manipulator_manager&) = delete;
 
   manipulator_manager() = default;
@@ -19,9 +32,9 @@ public:
                                                      parameters);
 
       {
-        std::lock_guard<std::mutex> lock(manipulators_mutex_);
+        std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-        manipulators_.push_back(m);
+        manipulator_store_->manipulators.push_back(m);
       }
 
     } catch (const pqrs::json::unmarshal_error& e) {
@@ -33,9 +46,9 @@ public:
   }
 
   void push_back_manipulator(pqrs::not_null_shared_ptr_t<manipulators::base> ptr) {
-    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-    manipulators_.push_back(ptr);
+    manipulator_store_->manipulators.push_back(ptr);
   }
 
   /**
@@ -57,9 +70,9 @@ public:
               output_event_queue->erase_all_active_pointing_buttons_except_lock(front_input_event.get_device_id());
 
               {
-                std::lock_guard<std::mutex> lock(manipulators_mutex_);
+                std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-                for (auto&& m : manipulators_) {
+                for (auto&& m : manipulator_store_->manipulators) {
                   m->handle_device_keys_and_pointing_buttons_are_released_event(front_input_event,
                                                                                 *output_event_queue);
                 }
@@ -73,9 +86,9 @@ public:
               output_event_queue->erase_all_active_pointing_buttons(front_input_event.get_device_id());
 
               {
-                std::lock_guard<std::mutex> lock(manipulators_mutex_);
+                std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-                for (auto&& m : manipulators_) {
+                for (auto&& m : manipulator_store_->manipulators) {
                   m->handle_device_ungrabbed_event(front_input_event.get_device_id(),
                                                    *output_event_queue,
                                                    front_input_event.get_event_time_stamp().get_time_stamp());
@@ -84,9 +97,9 @@ public:
               break;
 
             case event_queue::event::type::pointing_device_event_from_event_tap: {
-              std::lock_guard<std::mutex> lock(manipulators_mutex_);
+              std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-              for (auto&& m : manipulators_) {
+              for (auto&& m : manipulator_store_->manipulators) {
                 m->handle_pointing_device_event_from_event_tap(front_input_event,
                                                                *output_event_queue);
               }
@@ -117,9 +130,9 @@ public:
               bool skip = false;
 
               if (front_input_event.get_validity() == validity::valid) {
-                std::lock_guard<std::mutex> lock(manipulators_mutex_);
+                std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-                for (auto&& m : manipulators_) {
+                for (auto&& m : manipulator_store_->manipulators) {
                   if (m->already_manipulated(front_input_event)) {
                     front_input_event.set_validity(validity::invalid);
                     skip = true;
@@ -129,7 +142,7 @@ public:
               }
 
               if (!skip) {
-                std::lock_guard<std::mutex> lock(manipulators_mutex_);
+                std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
                 bool should_cancel_to_if_alone = true;
 
@@ -140,28 +153,13 @@ public:
                   should_cancel_to_if_alone = false;
                 }
 
-                std::vector<std::weak_ptr<manipulators::base>> manipulators;
-                manipulators.reserve(manipulators_.size());
-                for (const auto& m : manipulators_) {
-                  manipulators.emplace_back(m.get());
-                }
-
                 auto deferred_output_session = pipeline_deferred_output_session;
                 if (!deferred_output_session) {
                   deferred_output_session = std::make_shared<manipulators::deferred_output_session>(
-                      [manipulators](const event_queue::entry& event,
-                                     event_queue::queue& queue) {
-                        for (const auto& weak_manipulator : manipulators) {
-                          if (auto manipulator = weak_manipulator.lock()) {
-                            manipulator->post_deferred_modifier_key_up_events(event,
-                                                                              queue,
-                                                                              manipulators::deferred_modifier_key_up_event_scope::all);
-                          }
-                        }
-                      });
+                      make_post_deferred_modifier_key_up_events_callback());
                 }
 
-                for (auto&& m : manipulators_) {
+                for (auto&& m : manipulator_store_->manipulators) {
                   auto r = m->manipulate(front_input_event,
                                          *input_event_queue,
                                          output_event_queue,
@@ -184,7 +182,7 @@ public:
                 }
 
                 if (should_cancel_to_if_alone) {
-                  for (auto&& m : manipulators_) {
+                  for (auto&& m : manipulator_store_->manipulators) {
                     m->cancel_to_if_alone(front_input_event);
                   }
                 }
@@ -195,9 +193,9 @@ public:
 
           if (input_event_queue->get_front_event().get_validity() == validity::valid) {
             {
-              std::lock_guard<std::mutex> lock(manipulators_mutex_);
+              std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-              for (auto&& m : manipulators_) {
+              for (auto&& m : manipulator_store_->manipulators) {
                 m->post_deferred_modifier_key_up_events(front_input_event,
                                                         *output_event_queue,
                                                         manipulators::deferred_modifier_key_up_event_scope::except_front_input_event);
@@ -226,9 +224,9 @@ public:
 
   void invalidate_manipulators() {
     {
-      std::lock_guard<std::mutex> lock(manipulators_mutex_);
+      std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-      for (auto&& m : manipulators_) {
+      for (auto&& m : manipulator_store_->manipulators) {
         m->set_validity(validity::invalid);
       }
     }
@@ -237,43 +235,48 @@ public:
   }
 
   [[nodiscard]] size_t get_manipulators_size() {
-    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-    return manipulators_.size();
+    return manipulator_store_->manipulators.size();
   }
 
-  [[nodiscard]] std::vector<std::weak_ptr<manipulators::base>> make_weak_manipulators() const {
-    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+  [[nodiscard]] post_deferred_modifier_key_up_events_callback make_post_deferred_modifier_key_up_events_callback() const {
+    std::weak_ptr<manipulator_store> weak_store = manipulator_store_;
 
-    std::vector<std::weak_ptr<manipulators::base>> result;
-    result.reserve(manipulators_.size());
+    return [weak_store](const event_queue::entry& event,
+                        event_queue::queue& queue) {
+      if (auto store = weak_store.lock()) {
+        std::lock_guard<std::recursive_mutex> lock(store->mutex);
 
-    for (const auto& m : manipulators_) {
-      result.emplace_back(m.get());
-    }
-
-    return result;
+        for (const auto& manipulator : store->manipulators) {
+          manipulator->post_deferred_modifier_key_up_events(
+              event,
+              queue,
+              manipulators::deferred_modifier_key_up_event_scope::all);
+        }
+      }
+    };
   }
 
   [[nodiscard]] bool needs_virtual_hid_pointing() const {
-    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
     // Include invalid manipulators that remain active after a configuration reload because they
     // might still need the virtual pointing device to finish delayed actions or release events.
-    return std::any_of(std::begin(manipulators_),
-                       std::end(manipulators_),
+    return std::any_of(std::begin(manipulator_store_->manipulators),
+                       std::end(manipulator_store_->manipulators),
                        [](auto& m) {
                          return m->needs_virtual_hid_pointing();
                        });
   }
 
   [[nodiscard]] bool uses_caps_lock_led_override() const {
-    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
     // Unlike `needs_virtual_hid_pointing`, only the current configuration may control the LED.
     // Exclude invalid manipulators so that their delayed actions cannot keep an old override active.
-    return std::any_of(std::begin(manipulators_),
-                       std::end(manipulators_),
+    return std::any_of(std::begin(manipulator_store_->manipulators),
+                       std::end(manipulator_store_->manipulators),
                        [](auto& m) {
                          return m->get_validity() == validity::valid &&
                                 m->uses_caps_lock_led_override();
@@ -282,18 +285,18 @@ public:
 
 private:
   void remove_invalid_manipulators() {
-    std::lock_guard<std::mutex> lock(manipulators_mutex_);
+    std::lock_guard<std::recursive_mutex> lock(manipulator_store_->mutex);
 
-    manipulators_.erase(std::remove_if(std::begin(manipulators_),
-                                       std::end(manipulators_),
-                                       [](const auto& it) {
-                                         // Keep active manipulators.
-                                         return it->get_validity() == validity::invalid && !it->active();
-                                       }),
-                        std::end(manipulators_));
+    auto& manipulators = manipulator_store_->manipulators;
+    manipulators.erase(std::remove_if(std::begin(manipulators),
+                                      std::end(manipulators),
+                                      [](const auto& it) {
+                                        // Keep active manipulators.
+                                        return it->get_validity() == validity::invalid && !it->active();
+                                      }),
+                       std::end(manipulators));
   }
 
-  std::vector<pqrs::not_null_shared_ptr_t<manipulators::base>> manipulators_;
-  mutable std::mutex manipulators_mutex_;
+  std::shared_ptr<manipulator_store> manipulator_store_{std::make_shared<manipulator_store>()};
 };
 } // namespace krbn::manipulator

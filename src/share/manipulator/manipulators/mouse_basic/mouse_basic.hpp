@@ -184,7 +184,11 @@ public:
           };
 
           if (deferred_output_session) {
-            deferred_output_session->post(front_input_event,
+            // Pointer motion and wheel events must not interrupt a repeating
+            // key. Physical pointing button events are momentary switch events
+            // and release deferred modifiers through the basic manipulator.
+            deferred_output_session->post(false,
+                                          front_input_event,
                                           *output_event_queue,
                                           post_event);
           } else {

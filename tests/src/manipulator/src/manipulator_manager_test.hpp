@@ -3,6 +3,60 @@
 #include <boost/ut.hpp>
 #include <pqrs/gsl.hpp>
 
+namespace {
+class deferred_modifier_key_up_events_test_manipulator final : public krbn::manipulator::manipulators::base {
+public:
+  explicit deferred_modifier_key_up_events_test_manipulator(std::shared_ptr<std::size_t> count) : count_(count) {
+  }
+
+  bool already_manipulated(const krbn::event_queue::entry&) override {
+    return false;
+  }
+
+  void post_deferred_modifier_key_up_events(const krbn::event_queue::entry&,
+                                            krbn::event_queue::queue&,
+                                            krbn::manipulator::manipulators::deferred_modifier_key_up_event_scope) override {
+    ++*count_;
+  }
+
+  krbn::manipulator::manipulate_result manipulate(krbn::event_queue::entry&,
+                                                  const krbn::event_queue::queue&,
+                                                  std::shared_ptr<krbn::event_queue::queue>,
+                                                  krbn::absolute_time_point,
+                                                  std::shared_ptr<const krbn::manipulator::manipulators::deferred_output_session>) override {
+    return krbn::manipulator::manipulate_result::passed;
+  }
+
+  bool active() const override {
+    return false;
+  }
+
+  bool needs_virtual_hid_pointing() const override {
+    return false;
+  }
+
+  bool uses_caps_lock_led_override() const override {
+    return false;
+  }
+
+  void handle_device_keys_and_pointing_buttons_are_released_event(const krbn::event_queue::entry&,
+                                                                  krbn::event_queue::queue&) override {
+  }
+
+  void handle_device_ungrabbed_event(krbn::device_id,
+                                     const krbn::event_queue::queue&,
+                                     krbn::absolute_time_point) override {
+  }
+
+  void handle_pointing_device_event_from_event_tap(const krbn::event_queue::entry&,
+                                                   krbn::event_queue::queue&) override {
+  }
+
+private:
+  std::shared_ptr<std::size_t> count_;
+};
+} // namespace
+
 void run_manipulator_manager_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
@@ -94,6 +148,42 @@ void run_manipulator_manager_test() {
 
     // ----------------------------------------
     manipulator_managers.clear();
+  };
+
+  "deferred output session callback uses the current manipulators"_test = [] {
+    auto manager = std::make_shared<krbn::manipulator::manipulator_manager>();
+    auto callback = manager->make_post_deferred_modifier_key_up_events_callback();
+    auto count = std::make_shared<std::size_t>(0);
+
+    auto event = krbn::event_queue::event(krbn::momentary_switch_event(
+        pqrs::hid::usage_page::keyboard_or_keypad,
+        pqrs::hid::usage::keyboard_or_keypad::keyboard_a));
+    krbn::event_queue::entry entry({
+        .device_id = krbn::device_id(1),
+        .event_time_stamp = krbn::event_queue::event_time_stamp(krbn::absolute_time_point(0)),
+        .event = event,
+        .event_type = krbn::event_type::key_down,
+        .original_event = event,
+        .state = krbn::event_queue::state::original,
+    });
+    krbn::event_queue::queue queue;
+
+    callback(entry, queue);
+    expect(*count == 0_i);
+
+    manager->push_back_manipulator(
+        std::make_shared<deferred_modifier_key_up_events_test_manipulator>(count));
+
+    callback(entry, queue);
+    expect(*count == 1_i);
+
+    manager->invalidate_manipulators();
+    callback(entry, queue);
+    expect(*count == 1_i);
+
+    manager = nullptr;
+    callback(entry, queue);
+    expect(*count == 1_i);
   };
 
   "needs_virtual_hid_pointing"_test = [] {

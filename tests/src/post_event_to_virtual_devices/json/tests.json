@@ -696,13 +696,19 @@
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_deferred_mouse_motion_and_wheel_to_key_result.json"
     },
     {
-        "description": "release repeat modifiers before mouse_basic output",
+        "description": "preserve repeat modifiers across mouse_basic output",
         "rules": [
             "json/rules/repeat_deferred_outputs.json",
             "json/rules/mouse_basic.jsonc"
         ],
         "input_event_queue": "json/test_cases/repeat_deferred_mouse_basic_input.jsonc",
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_deferred_mouse_basic_result.json"
+    },
+    {
+        "description": "release repeat modifiers before a physical pointing button",
+        "rules": ["json/rules/repeat_deferred_outputs.json"],
+        "input_event_queue": "json/test_cases/repeat_deferred_pointing_button_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_deferred_pointing_button_result.json"
     },
     {
         "description": "hold_down_milliseconds_1",

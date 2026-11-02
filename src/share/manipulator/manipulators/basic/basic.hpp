@@ -192,8 +192,12 @@ public:
       }
 
       auto momentary_switch_event = front_input_event.get_event().get_if<krbn::momentary_switch_event>();
+      // Pointing buttons do not interrupt macOS key repeat, but they are explicit
+      // input operations. Release deferred output-only modifiers before forwarding
+      // the button event so the click does not inherit them.
       if (!momentary_switch_event ||
-          !momentary_switch_event->interrupts_key_repeat()) {
+          (!momentary_switch_event->interrupts_key_repeat() &&
+           !momentary_switch_event->pointing_button())) {
         return;
       }
 

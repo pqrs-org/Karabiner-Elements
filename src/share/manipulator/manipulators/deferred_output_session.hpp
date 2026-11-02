@@ -29,7 +29,8 @@ public:
       return e->valid();
     }
 
-    // Non-key outputs do not interrupt a repeating key.
+    // Pointing motion does not represent an explicit key or button operation,
+    // so it does not interrupt a repeating key.
     return false;
   }
 
