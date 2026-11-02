@@ -7,7 +7,8 @@ inline void post_active_modifier_flags(const std::vector<modifier_flag_manager::
                                        const event_queue::event_time_stamp& event_time_stamp,
                                        absolute_time_duration& time_stamp_delay,
                                        const event_queue::event& original_event,
-                                       event_queue::queue& output_event_queue) {
+                                       event_queue::queue& output_event_queue,
+                                       const std::unordered_set<modifier_flag>* output_only_modifier_flags = nullptr) {
   for (const auto& f : active_modifier_flags) {
     base::post_lazy_modifier_key_event({
         .momentary_switch_event = momentary_switch_event(f.get_modifier_flag()),
@@ -17,6 +18,8 @@ inline void post_active_modifier_flags(const std::vector<modifier_flag_manager::
         .time_stamp_delay = time_stamp_delay,
         .original_event = original_event,
         .output_event_queue = output_event_queue,
+        .output_only_modifier = output_only_modifier_flags &&
+                                output_only_modifier_flags->contains(f.get_modifier_flag()),
     });
   }
 }
@@ -27,9 +30,14 @@ inline void post_tap(const to_event_definition& to,
                      const event_queue::event_time_stamp& event_time_stamp,
                      absolute_time_duration& time_stamp_delay,
                      const event_queue::event& original_event,
-                     event_queue::queue& output_event_queue) {
+                     event_queue::queue& output_event_queue,
+                     bool output_only_modifier = false) {
   if (auto event = to.get_event_definition().to_event()) {
     auto to_modifier_events = to.make_modifier_events();
+    bool output_event_is_output_only_modifier = false;
+    if (auto e = event->get_if<momentary_switch_event>()) {
+      output_event_is_output_only_modifier = output_only_modifier && e->modifier_flag();
+    }
 
     //
     // Post modifier events
@@ -44,6 +52,7 @@ inline void post_tap(const to_event_definition& to,
           .time_stamp_delay = time_stamp_delay,
           .original_event = original_event,
           .output_event_queue = output_event_queue,
+          .output_only_modifier = output_only_modifier,
       });
     }
 
@@ -63,6 +72,7 @@ inline void post_tap(const to_event_definition& to,
           .original_event = original_event,
           .state = event_queue::state::manipulated,
           .lazy = to.get_lazy(),
+          .output_only_modifier = output_event_is_output_only_modifier,
       });
     }
 
@@ -84,6 +94,7 @@ inline void post_tap(const to_event_definition& to,
           .original_event = original_event,
           .state = event_queue::state::manipulated,
           .lazy = to.get_lazy(),
+          .output_only_modifier = output_event_is_output_only_modifier,
       });
     }
 
@@ -100,6 +111,7 @@ inline void post_tap(const to_event_definition& to,
           .time_stamp_delay = time_stamp_delay,
           .original_event = original_event,
           .output_event_queue = output_event_queue,
+          .output_only_modifier = output_only_modifier,
       });
     }
   }

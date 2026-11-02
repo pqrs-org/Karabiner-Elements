@@ -205,8 +205,13 @@ public:
     absolute_time_duration time_stamp_delay(0);
 
     for (auto&& e : manipulated_original_events_) {
+      // Generated events derived from the same physical input are part of the
+      // same output operation. Do not release their output-only modifiers until
+      // an event with a different origin arrives.
       if (!excluded_from_event ||
-          !e->from_event_exists(*excluded_from_event)) {
+          (!e->from_event_exists(*excluded_from_event) &&
+           !e->from_event_origin_exists(front_input_event.get_device_id(),
+                                        front_input_event.get_original_event()))) {
         event_sender::post_events_at_key_up_when_other_key_is_pressed(
             *e,
             front_input_event.get_event_time_stamp(),
@@ -245,6 +250,7 @@ public:
 
       const auto condition_context = manipulator::conditions::make_device_and_state_condition_context(front_input_event);
       const auto modifier_flags_for_matching = output_event_queue->make_modifier_flags_for_matching(front_input_event);
+      const auto output_only_modifier_flags_for_manipulation = output_event_queue->make_output_only_modifier_flags_for_manipulation(front_input_event);
 
       if (to_if_other_key_pressed_) {
         auto cancellation = to_if_other_key_pressed_->handle_other_key_pressed(front_input_event,
@@ -495,7 +501,8 @@ public:
                           from_events,
                           *from_mandatory_modifiers,
                           front_input_event.get_event_time_stamp().get_time_stamp(),
-                          modifier_flags_for_matching);
+                          modifier_flags_for_matching,
+                          output_only_modifier_flags_for_manipulation);
                   manipulated_original_events_.push_back(current_manipulated_original_event);
                 }
               }

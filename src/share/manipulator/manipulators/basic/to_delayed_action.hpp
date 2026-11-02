@@ -162,15 +162,18 @@ private:
 
                 // Release from_mandatory_modifiers
 
-                base::post_lazy_modifier_key_events({
-                    .modifiers = current_manipulated_original_event_->get_from_mandatory_modifiers(),
-                    .event_type = event_type::key_up,
-                    .device_id = front_input_event_->get_device_id(),
-                    .event_time_stamp = front_input_event_->get_event_time_stamp(),
-                    .time_stamp_delay = time_stamp_delay,
-                    .original_event = front_input_event_->get_original_event(),
-                    .output_event_queue = queue,
-                });
+                for (const auto& modifier : current_manipulated_original_event_->get_from_mandatory_modifiers()) {
+                  base::post_lazy_modifier_key_event({
+                      .momentary_switch_event = momentary_switch_event(modifier),
+                      .event_type = event_type::key_up,
+                      .device_id = front_input_event_->get_device_id(),
+                      .event_time_stamp = front_input_event_->get_event_time_stamp(),
+                      .time_stamp_delay = time_stamp_delay,
+                      .original_event = front_input_event_->get_original_event(),
+                      .output_event_queue = queue,
+                      .output_only_modifier = current_manipulated_original_event_->get_output_only_modifier_flags().contains(modifier),
+                  });
+                }
 
                 // Post events
 
@@ -185,15 +188,18 @@ private:
 
                 // Restore from_mandatory_modifiers
 
-                base::post_lazy_modifier_key_events({
-                    .modifiers = current_manipulated_original_event_->get_from_mandatory_modifiers(),
-                    .event_type = event_type::key_down,
-                    .device_id = front_input_event_->get_device_id(),
-                    .event_time_stamp = front_input_event_->get_event_time_stamp(),
-                    .time_stamp_delay = time_stamp_delay,
-                    .original_event = front_input_event_->get_original_event(),
-                    .output_event_queue = queue,
-                });
+                for (const auto& modifier : current_manipulated_original_event_->get_from_mandatory_modifiers()) {
+                  base::post_lazy_modifier_key_event({
+                      .momentary_switch_event = momentary_switch_event(modifier),
+                      .event_type = event_type::key_down,
+                      .device_id = front_input_event_->get_device_id(),
+                      .event_time_stamp = front_input_event_->get_event_time_stamp(),
+                      .time_stamp_delay = time_stamp_delay,
+                      .original_event = front_input_event_->get_original_event(),
+                      .output_event_queue = queue,
+                      .output_only_modifier = current_manipulated_original_event_->get_output_only_modifier_flags().contains(modifier),
+                  });
+                }
               });
 
           krbn_notification_center::get_instance().enqueue_input_event_arrived(*this);

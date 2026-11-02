@@ -6,6 +6,7 @@
 #include "manipulator/condition_expression_manager.hpp"
 #include "modifier_flag_manager.hpp"
 #include "pointing_button_manager.hpp"
+#include <memory>
 #include <string_view>
 
 namespace krbn::event_queue {
@@ -132,7 +133,6 @@ public:
         .lazy = entry.get_lazy(),
         .validity = entry.get_validity(),
         .output_only_modifier = entry.get_output_only_modifier(),
-        .additional_modifiers_for_matching = entry.get_additional_modifiers_for_matching(),
     });
   }
 
@@ -173,13 +173,49 @@ public:
   }
 
   [[nodiscard]] std::unordered_set<modifier_flag> make_modifier_flags_for_matching(const entry& entry) const {
-    // Start with the modifier state shared by subsequent input events, then
-    // add modifiers that apply only to this generated event. Keeping the
-    // latter on the entry prevents output-only modifiers held for macOS key
-    // repeat from leaking into the matching of unrelated physical events.
     auto result = modifier_flag_manager_for_matching_.make_modifier_flags();
-    result.insert(std::begin(entry.get_additional_modifiers_for_matching()),
-                  std::end(entry.get_additional_modifiers_for_matching()));
+
+    auto output_only_modifier_flags = make_output_only_modifier_flags_for_matching(entry);
+    result.insert(std::begin(output_only_modifier_flags),
+                  std::end(output_only_modifier_flags));
+
+    return result;
+  }
+
+  [[nodiscard]] std::unordered_set<modifier_flag> make_output_only_modifier_flags_for_matching(const entry& entry) const {
+    std::unordered_set<modifier_flag> result;
+
+    // Include output-only modifiers only for entries generated from the same
+    // source event. For example, `a -> shift+1` matches a downstream
+    // `shift+1` rule, while a later physical key does not inherit shift.
+    // Tracking this state per queue also reflects intermediate transformations:
+    // if another manager transforms or consumes shift, the original shift is
+    // no longer included when the associated `1` is matched downstream.
+    for (const auto& state : output_only_modifier_states_) {
+      if (state->device_id == entry.get_device_id() &&
+          state->original_event == entry.get_original_event()) {
+        auto modifier_flags = state->modifier_flag_manager.make_modifier_flags();
+        result.insert(std::begin(modifier_flags), std::end(modifier_flags));
+      }
+    }
+
+    return result;
+  }
+
+  [[nodiscard]] std::unordered_set<modifier_flag> make_output_only_modifier_flags_for_manipulation(const entry& entry) const {
+    auto result = make_output_only_modifier_flags_for_matching(entry);
+
+    // The current entry has not been appended to this queue yet. Include its
+    // modifier as provenance for transformations, but not in the modifier set
+    // used to match the entry itself.
+    if (entry.get_output_only_modifier()) {
+      if (auto e = entry.get_event().get_if<momentary_switch_event>()) {
+        if (auto modifier_flag = e->make_modifier_flag()) {
+          result.insert(*modifier_flag);
+        }
+      }
+    }
+
     return result;
   }
 
@@ -201,17 +237,29 @@ public:
                                    entry.get_event_type(),
                                    entry.get_device_id(),
                                    entry.get_validity());
+    } else {
+      update_output_only_modifier_state(entry);
     }
   }
 
   void erase_all_active_modifier_flags_except_lock_and_sticky(device_id device_id) {
     modifier_flag_manager_.erase_all_active_modifier_flags_except_lock_and_sticky(device_id);
     modifier_flag_manager_for_matching_.erase_all_active_modifier_flags_except_lock_and_sticky(device_id);
+
+    for (const auto& state : output_only_modifier_states_) {
+      state->modifier_flag_manager.erase_all_active_modifier_flags_except_lock_and_sticky(device_id);
+    }
+    erase_empty_output_only_modifier_states();
   }
 
   void erase_all_active_modifier_flags(device_id device_id) {
     modifier_flag_manager_.erase_all_active_modifier_flags(device_id);
     modifier_flag_manager_for_matching_.erase_all_active_modifier_flags(device_id);
+
+    for (const auto& state : output_only_modifier_states_) {
+      state->modifier_flag_manager.erase_all_active_modifier_flags(device_id);
+    }
+    erase_empty_output_only_modifier_states();
   }
 
   [[nodiscard]] const pointing_button_manager& get_pointing_button_manager() const {
@@ -339,6 +387,44 @@ public:
   }
 
 private:
+  struct output_only_modifier_state final {
+    krbn::device_id device_id;
+    event original_event;
+    modifier_flag_manager modifier_flag_manager;
+  };
+
+  void update_output_only_modifier_state(const entry& entry) {
+    auto it = std::ranges::find_if(
+        output_only_modifier_states_,
+        [&](const auto& state) {
+          return state->device_id == entry.get_device_id() &&
+                 state->original_event == entry.get_original_event();
+        });
+
+    if (it == std::end(output_only_modifier_states_)) {
+      it = output_only_modifier_states_.insert(
+          it,
+          std::make_unique<output_only_modifier_state>(
+              entry.get_device_id(),
+              entry.get_original_event()));
+    }
+
+    update_modifier_flag_manager((*it)->modifier_flag_manager,
+                                 entry.get_event(),
+                                 entry.get_event_type(),
+                                 entry.get_device_id(),
+                                 entry.get_validity());
+
+    erase_empty_output_only_modifier_states();
+  }
+
+  void erase_empty_output_only_modifier_states() {
+    std::erase_if(output_only_modifier_states_,
+                  [](const auto& state) {
+                    return state->modifier_flag_manager.make_modifier_flags().empty();
+                  });
+  }
+
   static void update_modifier_flag_manager(modifier_flag_manager& modifier_flag_manager,
                                            const class event& event,
                                            event_type event_type,
@@ -413,6 +499,7 @@ private:
   // `modifier_flag_manager_`; physical modifiers and other modifier events
   // update both managers.
   modifier_flag_manager modifier_flag_manager_for_matching_;
+  std::vector<std::unique_ptr<output_only_modifier_state>> output_only_modifier_states_;
 
   pointing_button_manager pointing_button_manager_;
   manipulator::manipulator_environment manipulator_environment_;

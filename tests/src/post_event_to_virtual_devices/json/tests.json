@@ -672,6 +672,47 @@
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_chaining_to_if_held_down_result.json"
     },
     {
+        "description": "do not retain the original generated repeat modifier after transformation",
+        "rules": [
+            "json/rules/repeat_deferred_outputs.json",
+            "json/rules/repeat_modifier_chaining_transform_modifier.json",
+            "json/rules/repeat_modifier_chaining_after_modifier_change.json"
+        ],
+        "input_event_queue": "json/test_cases/repeat_modifier_chaining_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_chaining_transformed_modifier_result.json"
+    },
+    {
+        "description": "remove a consumed generated repeat modifier from downstream matching",
+        "rules": [
+            "json/rules/repeat_deferred_outputs.json",
+            "json/rules/repeat_modifier_chaining_consume_modifier.json",
+            "json/rules/repeat_modifier_chaining_after_modifier_change.json"
+        ],
+        "input_event_queue": "json/test_cases/repeat_modifier_chaining_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_chaining_consumed_modifier_result.json"
+    },
+    {
+        "description": "do not apply a transformed generated repeat modifier to an unrelated physical key",
+        "rules": [
+            "json/rules/repeat_deferred_outputs.json",
+            "json/rules/repeat_modifier_chaining_transform_modifier.json",
+            "json/rules/repeat_modifier_chaining_after_modifier_change.json"
+        ],
+        "input_event_queue": "json/test_cases/repeat_modifier_chaining_transformed_modifier_with_other_key_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_chaining_transformed_modifier_with_other_key_result.json"
+    },
+    {
+        "description": "release a transformed generated repeat modifier before downstream key matching",
+        "rules": [
+            "json/rules/repeat_deferred_outputs.json",
+            "json/rules/repeat_modifier_chaining_transform_modifier.json",
+            "json/rules/repeat_modifier_chaining_after_modifier_change.json",
+            "json/rules/repeat_modifier_chaining_after_key_change.json"
+        ],
+        "input_event_queue": "json/test_cases/repeat_modifier_chaining_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_chaining_after_key_change_result.json"
+    },
+    {
         "description": "interrupt repeat with modifiers by another key",
         "rules": ["json/rules/repeat.json"],
         "input_event_queue": "json/test_cases/repeat_with_modifiers_interrupted_input.jsonc",

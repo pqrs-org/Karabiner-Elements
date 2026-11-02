@@ -1,0 +1,19 @@
+[
+    {
+        "description": "control+b -> f3",
+        "type": "basic",
+        "from": {
+            "key_code": "b",
+            "modifiers": {
+                "mandatory": ["control"]
+            }
+        },
+        "to": [{ "key_code": "f3" }]
+    },
+    {
+        "description": "b -> f4",
+        "type": "basic",
+        "from": { "key_code": "b" },
+        "to": [{ "key_code": "f4" }]
+    }
+]

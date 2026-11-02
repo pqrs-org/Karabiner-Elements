@@ -121,6 +121,7 @@ public:
 
     if (auto oeq = output_event_queue_.lock()) {
       const auto modifier_flags_for_matching = oeq->make_modifier_flags_for_matching(front_input_event);
+      const auto output_only_modifier_flags_for_manipulation = oeq->make_output_only_modifier_flags_for_manipulation(front_input_event);
 
       for (const auto& entry : entries_) {
         auto other_key_from_event_definition = std::ranges::find_if(
@@ -150,7 +151,8 @@ public:
                 other_key_from_events,
                 *other_key_from_mandatory_modifiers,
                 front_input_event.get_event_time_stamp().get_time_stamp(),
-                modifier_flags_for_matching);
+                modifier_flags_for_matching,
+                output_only_modifier_flags_for_manipulation);
 
         // ----------------------------------------
         // Replace to_ events

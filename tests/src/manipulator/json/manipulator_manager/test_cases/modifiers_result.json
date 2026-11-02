@@ -35,7 +35,6 @@
         "output_only_modifier": true, "lazy": true, "original_event": { "momentary_switch_event": { "key_code": "spacebar" }, "type": "momentary_switch_event" }, "state": "manipulated", "validity": 1
     },
     {
-        "additional_modifiers_for_matching": ["fn"],
         "device_id": 1,
         "event": { "momentary_switch_event": { "key_code": "tab" }, "type": "momentary_switch_event" },
         "event_time_stamp": { "input_delay_duration": 0, "time_stamp": 400 },

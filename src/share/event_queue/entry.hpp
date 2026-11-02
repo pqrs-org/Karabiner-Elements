@@ -8,8 +8,6 @@
 #include "types.hpp"
 #include <gsl/gsl>
 #include <pqrs/json.hpp>
-#include <set>
-#include <unordered_set>
 
 namespace krbn::event_queue {
 
@@ -26,7 +24,6 @@ public:
     bool lazy{false};
     krbn::validity validity{krbn::validity::valid};
     bool output_only_modifier{false};
-    std::unordered_set<modifier_flag> additional_modifiers_for_matching;
   };
 
   // Constructors
@@ -38,7 +35,6 @@ public:
         state_(parameters.state),
         lazy_(parameters.lazy),
         output_only_modifier_(parameters.output_only_modifier),
-        additional_modifiers_for_matching_(parameters.additional_modifiers_for_matching),
         event_(parameters.event),
         event_type_(parameters.event_type),
         event_integer_value_(parameters.event_integer_value),
@@ -52,7 +48,6 @@ public:
     state_ = other.state_;
     lazy_ = other.lazy_;
     output_only_modifier_ = other.output_only_modifier_;
-    additional_modifiers_for_matching_ = other.additional_modifiers_for_matching_;
     event_ = other.event_;
     event_type_ = other.event_type_;
     event_integer_value_ = other.event_integer_value_;
@@ -90,10 +85,6 @@ public:
 
       if (auto v = pqrs::json::find<bool>(json, "output_only_modifier")) {
         result.output_only_modifier_ = *v;
-      }
-
-      if (auto v = pqrs::json::find<std::unordered_set<modifier_flag>>(json, "additional_modifiers_for_matching")) {
-        result.additional_modifiers_for_matching_ = *v;
       }
 
       if (auto v = pqrs::json::find_json(json, "event")) {
@@ -176,10 +167,6 @@ public:
     return output_only_modifier_;
   }
 
-  [[nodiscard]] const std::unordered_set<modifier_flag>& get_additional_modifiers_for_matching() const {
-    return additional_modifiers_for_matching_;
-  }
-
   [[nodiscard]] const event& get_event() const {
     // We don't have to use mutex since there is not setter.
 
@@ -221,11 +208,6 @@ public:
     if (get_output_only_modifier()) {
       json["output_only_modifier"] = true;
     }
-    if (!get_additional_modifiers_for_matching().empty()) {
-      json["additional_modifiers_for_matching"] = std::set<modifier_flag>(
-          std::begin(get_additional_modifiers_for_matching()),
-          std::end(get_additional_modifiers_for_matching()));
-    }
     return json;
   }
 
@@ -236,7 +218,6 @@ public:
            get_state() == other.get_state() &&
            get_lazy() == other.get_lazy() &&
            get_output_only_modifier() == other.get_output_only_modifier() &&
-           get_additional_modifiers_for_matching() == other.get_additional_modifiers_for_matching() &&
            get_event() == other.get_event() &&
            get_event_type() == other.get_event_type() &&
            get_event_integer_value() == other.get_event_integer_value() &&
@@ -274,22 +255,6 @@ private:
   // modifiers of a repeating output key. These modifiers are excluded from
   // subsequent `from.modifiers` matching.
   bool output_only_modifier_;
-
-  // Modifiers generated as part of the same output operation as this event.
-  // They participate in downstream matching for this event, even though they
-  // are excluded from matching unrelated subsequent physical input.
-  //
-  // For example, `1 -> shift+1` keeps the generated shift pressed so that
-  // macOS can repeat shift+1. The generated `1` entry stores shift here, which
-  // allows a downstream `shift+1 -> b` rule to match it. Because shift is
-  // attached only to that entry, a physical key pressed afterward is matched
-  // without the generated shift.
-  //
-  // Without this entry-specific state, the generated shift would be excluded
-  // from the modifier state used for matching, so the generated `1` would be
-  // treated as an unmodified key and the downstream `shift+1 -> b` rule would
-  // not match.
-  std::unordered_set<modifier_flag> additional_modifiers_for_matching_;
 
   event event_;
   event_type event_type_;

@@ -13,11 +13,13 @@ public:
   manipulated_original_event(const std::vector<from_event>& from_events,
                              const std::unordered_set<modifier_flag>& from_mandatory_modifiers,
                              absolute_time_point key_down_time_stamp,
-                             std::unordered_set<modifier_flag> key_down_modifier_flags)
+                             std::unordered_set<modifier_flag> key_down_modifier_flags,
+                             std::unordered_set<modifier_flag> output_only_modifier_flags)
       : from_events_(from_events),
         from_mandatory_modifiers_(from_mandatory_modifiers),
         key_down_time_stamp_(key_down_time_stamp),
-        key_down_modifier_flags_(key_down_modifier_flags) {
+        key_down_modifier_flags_(key_down_modifier_flags),
+        output_only_modifier_flags_(output_only_modifier_flags) {
   }
 
   [[nodiscard]] const std::vector<from_event>& get_from_events() const {
@@ -38,6 +40,23 @@ public:
 
   [[nodiscard]] const std::unordered_set<modifier_flag>& get_key_down_modifier_flags() const {
     return key_down_modifier_flags_;
+  }
+
+  [[nodiscard]] const std::unordered_set<modifier_flag>& get_output_only_modifier_flags() const {
+    return output_only_modifier_flags_;
+  }
+
+  [[nodiscard]] bool from_event_is_output_only_modifier() const {
+    return std::ranges::any_of(
+        from_events_,
+        [&](const auto& from_event) {
+          if (auto e = from_event.get_event().template get_if<momentary_switch_event>()) {
+            if (auto modifier_flag = e->make_modifier_flag()) {
+              return output_only_modifier_flags_.contains(*modifier_flag);
+            }
+          }
+          return false;
+        });
   }
 
   [[nodiscard]] bool get_alone() const {
@@ -75,6 +94,16 @@ public:
     return std::ranges::contains(from_events_, from_event);
   }
 
+  [[nodiscard]] bool from_event_origin_exists(device_id device_id,
+                                              const event_queue::event& original_event) const {
+    return std::ranges::any_of(
+        from_events_,
+        [&](const auto& from_event) {
+          return from_event.get_device_id() == device_id &&
+                 from_event.get_original_event() == original_event;
+        });
+  }
+
   void erase_from_event(const from_event& from_event) {
     std::erase(from_events_, from_event);
   }
@@ -99,6 +128,11 @@ private:
   std::unordered_set<modifier_flag> key_up_posted_from_mandatory_modifiers_;
   absolute_time_point key_down_time_stamp_;
   std::unordered_set<modifier_flag> key_down_modifier_flags_;
+
+  // Modifiers that belong only to outputs derived from the same physical
+  // input. Preserve this provenance per modifier when they are transformed by
+  // a downstream manipulator.
+  std::unordered_set<modifier_flag> output_only_modifier_flags_;
   bool alone_{true};
   bool halted_{false};
   events_at_key_up events_at_key_up_;

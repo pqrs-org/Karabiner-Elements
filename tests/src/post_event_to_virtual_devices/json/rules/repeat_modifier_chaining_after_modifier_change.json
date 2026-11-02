@@ -1,0 +1,36 @@
+[
+    {
+        "description": "control+1 -> b",
+        "type": "basic",
+        "from": {
+            "key_code": "1",
+            "modifiers": {
+                "mandatory": ["control"]
+            }
+        },
+        "to": [{ "key_code": "b" }]
+    },
+    {
+        "description": "1 -> c",
+        "type": "basic",
+        "from": { "key_code": "1" },
+        "to": [{ "key_code": "c" }]
+    },
+    {
+        "description": "control+f -> f1",
+        "type": "basic",
+        "from": {
+            "key_code": "f",
+            "modifiers": {
+                "mandatory": ["control"]
+            }
+        },
+        "to": [{ "key_code": "f1" }]
+    },
+    {
+        "description": "f -> f2",
+        "type": "basic",
+        "from": { "key_code": "f" },
+        "to": [{ "key_code": "f2" }]
+    }
+]

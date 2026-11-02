@@ -162,15 +162,18 @@ inline void post_from_mandatory_modifiers_key_up(manipulated_original_event::man
 
   // ----------------------------------------
 
-  base::post_lazy_modifier_key_events({
-      .modifiers = modifiers,
-      .event_type = event_type::key_up,
-      .device_id = device_id,
-      .event_time_stamp = event_time_stamp,
-      .time_stamp_delay = time_stamp_delay,
-      .original_event = original_event,
-      .output_event_queue = output_event_queue,
-  });
+  for (const auto& modifier : modifiers) {
+    base::post_lazy_modifier_key_event({
+        .momentary_switch_event = momentary_switch_event(modifier),
+        .event_type = event_type::key_up,
+        .device_id = device_id,
+        .event_time_stamp = event_time_stamp,
+        .time_stamp_delay = time_stamp_delay,
+        .original_event = original_event,
+        .output_event_queue = output_event_queue,
+        .output_only_modifier = current_manipulated_original_event.get_output_only_modifier_flags().contains(modifier),
+    });
+  }
 }
 
 inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::manipulated_original_event& current_manipulated_original_event,
@@ -197,15 +200,18 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
 
   // ----------------------------------------
 
-  base::post_lazy_modifier_key_events({
-      .modifiers = modifiers,
-      .event_type = event_type::key_down,
-      .device_id = device_id,
-      .event_time_stamp = event_time_stamp,
-      .time_stamp_delay = time_stamp_delay,
-      .original_event = original_event,
-      .output_event_queue = output_event_queue,
-  });
+  for (const auto& modifier : modifiers) {
+    base::post_lazy_modifier_key_event({
+        .momentary_switch_event = momentary_switch_event(modifier),
+        .event_type = event_type::key_down,
+        .device_id = device_id,
+        .event_time_stamp = event_time_stamp,
+        .time_stamp_delay = time_stamp_delay,
+        .original_event = original_event,
+        .output_event_queue = output_event_queue,
+        .output_only_modifier = current_manipulated_original_event.get_output_only_modifier_flags().contains(modifier),
+    });
+  }
 }
 
 [[nodiscard]] inline to_if_alone_cancellation post_events_at_key_down(const to_event_definitions& to_events,
@@ -262,30 +268,21 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
         }
       }
 
-      std::unordered_set<modifier_flag> additional_modifiers_for_matching;
+      bool from_event_is_output_only_modifier = current_manipulated_original_event.from_event_is_output_only_modifier();
+      bool output_only_modifier = from_event_is_output_only_modifier ||
+                                  (it == std::end(filtered_to_events) - 1 &&
+                                   is_repeatable_key_event &&
+                                   to->get_repeat());
+
+      bool output_event_is_output_only_modifier =
+          from_event_is_output_only_modifier &&
+          is_modifier_key_event;
 
       {
         // Unset lazy if event is modifier key event in order to keep modifier keys order.
 
         bool lazy = !is_modifier_key_event || to->get_lazy();
-        bool output_only_modifier = (it == std::end(filtered_to_events) - 1 &&
-                                     is_repeatable_key_event &&
-                                     to->get_repeat());
         for (const auto& e : to_modifier_events) {
-          // An output-only modifier is excluded from the queue's modifier
-          // state for matching so that it does not affect an unrelated next
-          // input event. However, it must still participate in downstream
-          // matching for the output key generated together with it.
-          //
-          // For example, with `a -> shift+1` followed by `shift+1 -> b`, the
-          // generated `1` must be matched with shift, while a subsequently
-          // pressed physical key must not inherit that shift.
-          if (output_only_modifier) {
-            if (auto modifier = e.make_modifier_flag()) {
-              additional_modifiers_for_matching.insert(*modifier);
-            }
-          }
-
           base::post_lazy_modifier_key_event({
               .momentary_switch_event = e,
               .event_type = event_type::key_down,
@@ -314,7 +311,7 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
             .original_event = original_event,
             .state = event_queue::state::manipulated,
             .lazy = to->get_lazy(),
-            .additional_modifiers_for_matching = additional_modifiers_for_matching,
+            .output_only_modifier = output_event_is_output_only_modifier,
         });
 
         if (to->get_halt()) {
@@ -338,13 +335,15 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
             .original_event = original_event,
             .state = event_queue::state::manipulated,
             .lazy = to->get_lazy(),
+            .output_only_modifier = output_event_is_output_only_modifier,
         });
       } else {
         current_manipulated_original_event.get_events_at_key_up().emplace_back_event(device_id,
                                                                                      *event,
                                                                                      event_type::key_up,
                                                                                      original_event,
-                                                                                     to->get_lazy());
+                                                                                     to->get_lazy(),
+                                                                                     output_event_is_output_only_modifier);
       }
 
       {
@@ -359,7 +358,7 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
                                                                                          pair.second,
                                                                                          original_event,
                                                                                          true,
-                                                                                         is_repeatable_key_event && to->get_repeat());
+                                                                                         output_only_modifier);
           } else {
             base::post_lazy_modifier_key_event({
                 .momentary_switch_event = e,
@@ -369,6 +368,7 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
                 .time_stamp_delay = time_stamp_delay,
                 .original_event = original_event,
                 .output_event_queue = output_event_queue,
+                .output_only_modifier = output_only_modifier,
             });
           }
         }
@@ -427,7 +427,8 @@ inline void post_extra_to_events(const to_event_definitions& to_events,
                                                 event_time_stamp,
                                                 time_stamp_delay,
                                                 original_event,
-                                                output_event_queue);
+                                                output_event_queue,
+                                                current_manipulated_original_event.from_event_is_output_only_modifier());
 
     if (to->get_halt() && to->get_event_definition().to_event()) {
       current_manipulated_original_event.set_halted();
@@ -462,7 +463,8 @@ public:
                                                     event_time_stamp_,
                                                     time_stamp_delay_,
                                                     original_event_,
-                                                    output_event_queue_);
+                                                    output_event_queue_,
+                                                    &current_manipulated_original_event_.get_output_only_modifier_flags());
   }
 
   ~scoped_from_key_modifier_flags_state_restorer() {
@@ -474,7 +476,8 @@ public:
                                                     event_time_stamp_,
                                                     time_stamp_delay_,
                                                     original_event_,
-                                                    output_event_queue_);
+                                                    output_event_queue_,
+                                                    &current_manipulated_original_event_.get_output_only_modifier_flags());
   }
 
 private:

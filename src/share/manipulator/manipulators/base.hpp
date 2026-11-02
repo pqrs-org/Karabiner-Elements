@@ -87,6 +87,10 @@ public:
     bool output_only_modifier{false};
   };
 
+  // Post a group of regular modifiers that all share the same handling.
+  // If the group can contain output-only modifiers, call
+  // `post_lazy_modifier_key_event` for each modifier and set
+  // `output_only_modifier` individually instead.
   static void post_lazy_modifier_key_events(const post_lazy_modifier_key_events_parameters& parameters) {
     for (const auto& m : parameters.modifiers) {
       post_lazy_modifier_key_event({
