@@ -252,8 +252,9 @@ private:
   bool lazy_;
 
   // True for generated modifiers that remain active only to preserve the
-  // modifiers of a repeating output key. These modifiers are excluded from
-  // subsequent `from.modifiers` matching.
+  // modifiers of a repeating output key. They participate in downstream
+  // matching for output from the same source event, but are excluded from
+  // matching unrelated subsequent input.
   bool output_only_modifier_;
 
   event event_;
