@@ -19,6 +19,7 @@ def main():
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
+        errors="replace",
     ) as process:
         assert process.stdout is not None
 
