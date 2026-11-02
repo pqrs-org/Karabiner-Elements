@@ -315,6 +315,58 @@
         "error": "`game_pad_stick_horizontal_wheel_formula` must be array of string, or string, but is `null`"
     },
 
+    // hidpp_button
+
+    {
+        "class": "devices",
+        "input": {
+            "hidpp_button": null
+        },
+        "error": "`hidpp_button` error: json must be object, but is `null`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "hidpp_button": { "pointing_button": "button17" }
+        },
+        "error": "`hidpp_button` error: `control_id` is missing in `{\"pointing_button\":\"button17\"}`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "hidpp_button": { "control_id": 196 }
+        },
+        "error": "`hidpp_button` error: `pointing_button` is missing in `{\"control_id\":196}`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "hidpp_button": { "control_id": 0, "pointing_button": "button17" }
+        },
+        "error": "`hidpp_button` error: `control_id` must be an integer between 1 and 65535, but is `0`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "hidpp_button": { "control_id": 196, "pointing_button": "button0" }
+        },
+        "error": "`hidpp_button` error: unknown pointing_button: `\"button0\"`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "hidpp_button": { "control_id": 196, "pointing_button": 17 }
+        },
+        "error": "`hidpp_button` error: `pointing_button` must be string, but is `17`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "hidpp_button": { "control_id": 196, "pointing_button": "button17", "persistent": true }
+        },
+        "error": "`hidpp_button` error: unknown key `persistent` in `{\"control_id\":196,\"persistent\":true,\"pointing_button\":\"button17\"}`"
+    },
+
     // simple_modifications
 
     {

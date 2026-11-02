@@ -2,6 +2,7 @@
 
 #include "../../configuration_json_helper.hpp"
 #include "exprtk_utility.hpp"
+#include "hidpp_button.hpp"
 #include "simple_modifications.hpp"
 #include <functional>
 #include <pqrs/string.hpp>
@@ -269,6 +270,20 @@ cos(radian) * m;
       }
     }
 
+    if (auto it = json.find("hidpp_button");
+        it != std::end(json)) {
+      try {
+        hidpp_button_ = hidpp_button(*it);
+      } catch (const pqrs::json::unmarshal_error& e) {
+        auto message = fmt::format("`hidpp_button` error: {0}", e.what());
+        if (error_handling == error_handling::strict) {
+          throw pqrs::json::unmarshal_error(message);
+        } else {
+          logger::get_logger()->warn(message);
+        }
+      }
+    }
+
     for (const auto& [key, value] : json.items()) {
       if (key == "simple_modifications") {
         try {
@@ -315,6 +330,12 @@ cos(radian) * m;
       j["ignore"] = ignore_;
     } else {
       j.erase("ignore");
+    }
+
+    if (hidpp_button_) {
+      j["hidpp_button"] = hidpp_button_->to_json();
+    } else {
+      j.erase("hidpp_button");
     }
 
     j["identifiers"] = identifiers_;
@@ -374,6 +395,11 @@ cos(radian) * m;
                                      values.manipulate_caps_lock_led);
 
     coordinate_between_properties();
+  }
+
+  // Absent (std::nullopt) means disabled.
+  [[nodiscard]] const std::optional<hidpp_button>& get_hidpp_button() const {
+    return hidpp_button_;
   }
 
   [[nodiscard]] const bool& get_manipulate_caps_lock_led() const {
@@ -748,6 +774,7 @@ private:
   bool mouse_discard_vertical_wheel_;
   bool mouse_discard_horizontal_wheel_;
   bool game_pad_swap_sticks_;
+  std::optional<hidpp_button> hidpp_button_;
 
   double game_pad_xy_stick_deadzone_;
   double game_pad_xy_stick_delta_magnitude_detection_threshold_;

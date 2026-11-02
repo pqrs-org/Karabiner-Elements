@@ -399,4 +399,68 @@ void run_device_test() {
     expect(krbn::core_configuration::details::device::validate_stick_formula("cos(radian) * delta_magnitude"));
     expect(!krbn::core_configuration::details::device::validate_stick_formula("cos("));
   };
+
+  "device.hidpp_button"_test = [] {
+    using krbn::core_configuration::details::device;
+    using krbn::core_configuration::error_handling;
+
+    // Disabled by default
+    {
+      device d(nlohmann::json::object(), error_handling::strict);
+      expect(!d.get_hidpp_button());
+      expect(!d.to_json().contains("hidpp_button"));
+    }
+
+    // Load and save
+    {
+      nlohmann::json json({
+          {"identifiers", {{"vendor_id", 1133}, {"product_id", 45111}, {"is_pointing_device", true}}},
+          {"hidpp_button", {{"control_id", 196}, {"pointing_button", "button17"}}},
+      });
+      device d(json, error_handling::strict);
+      expect(d.get_hidpp_button().has_value());
+      expect(d.get_hidpp_button()->get_control_id() == 196_u);
+      expect(d.get_hidpp_button()->get_pointing_button() == pqrs::hid::usage::button::button_17);
+      expect(json == d.to_json()) << UT_SHOW_LINE;
+
+      expect(*d.get_hidpp_button() == krbn::core_configuration::details::hidpp_button(196, pqrs::hid::usage::button::button_17));
+      expect(*d.get_hidpp_button() != krbn::core_configuration::details::hidpp_button(196, pqrs::hid::usage::button::button_18));
+      expect(*d.get_hidpp_button() != krbn::core_configuration::details::hidpp_button(197, pqrs::hid::usage::button::button_17));
+    }
+
+    // Range
+    {
+      device d(nlohmann::json({{"hidpp_button", {{"control_id", 65535}, {"pointing_button", "button1"}}}}),
+               error_handling::strict);
+      expect(d.get_hidpp_button()->get_control_id() == 65535_u);
+    }
+
+    // Invalid values are not partially applied in loose mode.
+    for (const auto& j : {
+             nlohmann::json(nullptr),
+             nlohmann::json(true),
+             nlohmann::json::object(),
+             nlohmann::json({{"control_id", 196}}),
+             nlohmann::json({{"pointing_button", "button17"}}),
+             nlohmann::json({{"control_id", 0}, {"pointing_button", "button17"}}),
+             nlohmann::json({{"control_id", 65536}, {"pointing_button", "button17"}}),
+             nlohmann::json({{"control_id", -1}, {"pointing_button", "button17"}}),
+             nlohmann::json({{"control_id", 196.5}, {"pointing_button", "button17"}}),
+             nlohmann::json({{"control_id", "196"}, {"pointing_button", "button17"}}),
+             nlohmann::json({{"control_id", 196}, {"pointing_button", 17}}),
+             nlohmann::json({{"control_id", 196}, {"pointing_button", "button0"}}),
+             nlohmann::json({{"control_id", 196}, {"pointing_button", "right_control"}}),
+             nlohmann::json({{"control_id", 196}, {"pointing_button", "button17"}, {"divert", true}}),
+         }) {
+      nlohmann::json json({{"hidpp_button", j}});
+
+      device d(json, error_handling::loose);
+      expect(!d.get_hidpp_button()) << j.dump();
+      expect(!d.to_json().contains("hidpp_button"));
+
+      expect(throws<pqrs::json::unmarshal_error>([&] {
+        device(json, error_handling::strict);
+      })) << j.dump();
+    }
+  };
 }
