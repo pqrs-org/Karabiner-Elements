@@ -3,6 +3,7 @@
 #include "complex_modifications_parameters.hpp"
 #include "duktape_utility.hpp"
 #include "json_utility.hpp"
+#include <optional>
 #include <pqrs/json.hpp>
 
 namespace krbn::core_configuration::details {
@@ -174,15 +175,21 @@ public:
       const std::string& code_string,
       code_type type,
       pqrs::not_null_shared_ptr_t<const core_configuration::details::complex_modifications_parameters> parameters,
-      error_handling error_handling) {
-    return std::make_shared<complex_modifications_rule>(
-        type == code_type::json
-            ? krbn::json_utility::parse_jsonc(code_string)
-            : nlohmann::json::object({
-                  {"eval_js", code_string},
-              }),
-        parameters,
-        error_handling);
+      error_handling error_handling,
+      std::optional<bool> enabled = std::nullopt) {
+    auto json = type == code_type::json
+                    ? krbn::json_utility::parse_jsonc(code_string)
+                    : nlohmann::json::object({
+                          {"eval_js", code_string},
+                      });
+
+    if (enabled) {
+      json["enabled"] = *enabled;
+    }
+
+    return std::make_shared<complex_modifications_rule>(json,
+                                                        parameters,
+                                                        error_handling);
   }
 
   nlohmann::json to_json() const {

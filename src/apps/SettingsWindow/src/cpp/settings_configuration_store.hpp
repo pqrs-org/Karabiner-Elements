@@ -384,10 +384,21 @@ private:
         auto type = (command.at("code_type") == "javascript")
                         ? rule::code_type::javascript
                         : rule::code_type::json;
+
+        std::optional<bool> enabled;
+        if (action == action_type::replace_rule) {
+          const auto& rules = modifications->get_rules();
+          auto index = command.at("index").get<size_t>();
+          if (index < rules.size()) {
+            enabled = rules[index]->get_enabled();
+          }
+        }
+
         auto r = rule::make_from_code(command.at("code"),
                                       type,
                                       modifications->get_parameters(),
-                                      krbn::core_configuration::error_handling::strict);
+                                      krbn::core_configuration::error_handling::strict,
+                                      enabled);
         auto errors = krbn::complex_modifications_utility::lint_rule(*r);
         if (!errors.empty()) {
           throw std::runtime_error(fmt::format("{}",

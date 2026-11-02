@@ -285,6 +285,23 @@ main();
         expect("example"s == rule.get_description());
       }
 
+      // Preserve a disabled state while replacing JavaScript source without
+      // evaluating the new source.
+      {
+        auto parameters = std::make_shared<parameters_t>();
+        auto rule = rule_t::make_from_code("throw new Error('must not execute');",
+                                           rule_t::code_type::javascript,
+                                           parameters,
+                                           krbn::core_configuration::error_handling::strict,
+                                           false);
+        expect(!rule->get_enabled());
+        expect(rule->get_manipulators().empty());
+        expect(nlohmann::json::object({
+                   {"enabled", false},
+                   {"eval_js", "throw new Error('must not execute');"},
+               }) == rule->to_json());
+      }
+
       // Ignore enabled in the evaluated JSON.
       {
         auto js_with_enabled = R"(
