@@ -158,7 +158,7 @@ inline void post_from_mandatory_modifiers_key_up(manipulated_original_event::man
     //
     // We should not post key_up event in this case.
 
-    if (!output_event_queue.get_modifier_flag_manager().is_pressed(m)) {
+    if (!output_event_queue.get_output_modifier_flag_manager().is_pressed(m)) {
       continue;
     }
 
@@ -459,7 +459,7 @@ public:
     {
       // It's not only necessary to change the state of the output_event_queue::modifier_flag_manager, but also to send the key event here.
       // So, once we use scoped_modifier_flags to find out which key events we need to send, and then send them.
-      modifier_flag_manager::scoped_modifier_flags scoped_modifier_flags(output_event_queue_.get_modifier_flag_manager(),
+      modifier_flag_manager::scoped_modifier_flags scoped_modifier_flags(output_event_queue_.get_output_modifier_flag_manager(),
                                                                          current_manipulated_original_event_.get_key_down_modifier_flags());
       scoped_active_modifier_flags = scoped_modifier_flags.get_scoped_active_modifier_flags();
       inverse_active_modifier_flags_ = scoped_modifier_flags.get_inverse_active_modifier_flags();

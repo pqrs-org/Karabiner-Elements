@@ -181,12 +181,12 @@ public:
       auto it = windows_.find(front_input_event.get_device_id());
       if (it == windows_.end()) {
         const auto condition_context = manipulator::conditions::make_device_and_state_condition_context(front_input_event);
-        auto modifiers = from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager_for_matching());
+        auto modifiers = from_modifiers_definition_.test_modifiers(output_event_queue->get_regular_matching_modifier_flag_manager());
         if (!modifiers ||
             !condition_manager_.is_fulfilled(condition_context, output_event_queue->get_manipulator_environment())) {
           return manipulate_result::passed;
         }
-        auto output_modifiers = output_event_queue->get_modifier_flag_manager().make_modifier_flags();
+        auto output_modifiers = output_event_queue->get_output_modifier_flag_manager().make_modifier_flags();
         for (auto flag : *modifiers) {
           output_modifiers.erase(flag);
         }
@@ -438,10 +438,10 @@ private:
           return false;
         });
 
-    auto modifiers_before_release = output->get_modifier_flag_manager().make_modifier_flags();
+    auto modifiers_before_release = output->get_output_modifier_flag_manager().make_modifier_flags();
     auto post_events = [&](event_queue::queue& queue) {
       auto output_modifiers = window.output_modifiers;
-      auto modifiers_after_release = queue.get_modifier_flag_manager().make_modifier_flags();
+      auto modifiers_after_release = queue.get_output_modifier_flag_manager().make_modifier_flags();
       for (auto modifier : modifiers_before_release) {
         if (!modifiers_after_release.contains(modifier)) {
           output_modifiers.erase(modifier);
@@ -456,7 +456,7 @@ private:
       std::vector<modifier_flag_manager::active_modifier_flag> changes;
       std::vector<modifier_flag_manager::active_modifier_flag> inverse_changes;
       {
-        modifier_flag_manager::scoped_modifier_flags scoped(queue.get_modifier_flag_manager(),
+        modifier_flag_manager::scoped_modifier_flags scoped(queue.get_output_modifier_flag_manager(),
                                                             output_modifiers);
         changes = scoped.get_scoped_active_modifier_flags();
         inverse_changes = scoped.get_inverse_active_modifier_flags();

@@ -154,7 +154,7 @@ private:
       return nullptr;
     }
 
-    return from_modifiers_definition_.test_modifiers(output_event_queue->get_modifier_flag_manager_for_matching());
+    return from_modifiers_definition_.test_modifiers(output_event_queue->get_regular_matching_modifier_flag_manager());
   }
 
   void post_events(const pointing_motion& pointing_motion) {

@@ -81,7 +81,7 @@ public:
         // The modifiers.mandatory pushes sticky_modifier to modifier_flag_manager.
         // While modifiers.mandatory controls modifier_flag_manager, key_event_dispatcher_ should not be updated by LED state.
 
-        if (output_event_queue->get_modifier_flag_manager().sticky_size(modifier_flag::caps_lock) == 0) {
+        if (output_event_queue->get_output_modifier_flag_manager().sticky_size(modifier_flag::caps_lock) == 0) {
           if (auto state = front_input_event.get_event().get_integer_value()) {
             if (*state) {
               key_event_dispatcher_.insert_pressed_modifier_flag(modifier_flag::caps_lock);
@@ -130,7 +130,7 @@ public:
 
       if (dispatch_modifier_key_event &&
           dispatch_modifier_key_event_before) {
-        key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
+        key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_output_modifier_flag_manager(),
                                                           queue_,
                                                           front_input_event.get_event_time_stamp().get_time_stamp());
       }
@@ -283,7 +283,7 @@ public:
 
       if (dispatch_modifier_key_event &&
           !dispatch_modifier_key_event_before) {
-        key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_modifier_flag_manager(),
+        key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue->get_output_modifier_flag_manager(),
                                                           queue_,
                                                           front_input_event.get_event_time_stamp().get_time_stamp());
       }
@@ -308,7 +308,7 @@ public:
                                                                   event_queue::queue& output_event_queue) override {
     // modifier flags
 
-    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_output_modifier_flag_manager(),
                                                       queue_,
                                                       front_input_event.get_event_time_stamp().get_time_stamp());
 
@@ -328,7 +328,7 @@ public:
     // (4) Another key is pressed
     //     - We need to send usage::caps_lock at here.
 
-    output_event_queue.get_modifier_flag_manager().erase_caps_lock_sticky_modifier_flags();
+    output_event_queue.get_output_modifier_flag_manager().erase_caps_lock_sticky_modifier_flags();
 
     update_sticky_modifiers_notification_message(output_event_queue);
 
@@ -379,7 +379,7 @@ public:
 
     // Release modifiers
 
-    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+    key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_output_modifier_flag_manager(),
                                                       queue_,
                                                       time_stamp);
 
@@ -412,7 +412,7 @@ public:
         if (!queue_.get_keyboard_repeat_detector().is_repeating() &&
             pressed_buttons_.empty() &&
             !mouse_key_handler_->active()) {
-          key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_modifier_flag_manager(),
+          key_event_dispatcher_.dispatch_modifier_key_event(output_event_queue.get_output_modifier_flag_manager(),
                                                             queue_,
                                                             front_input_event.get_event_time_stamp().get_time_stamp());
         }
@@ -520,7 +520,7 @@ private:
           usage == pqrs::hid::usage::consumer::eject));
 
     if (power_or_eject) {
-      const auto& modifier_flag_manager = output_event_queue.get_modifier_flag_manager();
+      const auto& modifier_flag_manager = output_event_queue.get_output_modifier_flag_manager();
       const auto option_pressed =
           modifier_flag_manager.is_pressed(modifier_flag::left_option) ||
           modifier_flag_manager.is_pressed(modifier_flag::right_option);
@@ -582,7 +582,7 @@ private:
     if (auto notification_message_manager = weak_notification_message_manager_.lock()) {
       auto c = output_event_queue.get_manipulator_environment().get_core_configuration();
       if (c->get_selected_profile().get_virtual_hid_keyboard()->get_indicate_sticky_modifier_keys_state()) {
-        notification_message_manager->async_update_sticky_modifiers_message(output_event_queue.get_modifier_flag_manager());
+        notification_message_manager->async_update_sticky_modifiers_message(output_event_queue.get_output_modifier_flag_manager());
       } else {
         notification_message_manager->async_clear_sticky_modifiers_message();
       }

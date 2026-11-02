@@ -292,11 +292,11 @@ void run_event_queue_test() {
 
       ENQUEUE_EVENT(event_queue, 1, 100, a_event, key_down, a_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
 
       ENQUEUE_EVENT(event_queue, 1, 200, left_shift_event, key_down, left_shift_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == true);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == true);
 
       ENQUEUE_EVENT(event_queue, 1, 300, button2_event, key_down, button2_event);
 
@@ -307,11 +307,11 @@ void run_event_queue_test() {
 
       ENQUEUE_EVENT(event_queue, 1, 400, left_shift_event, key_up, left_shift_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
 
       ENQUEUE_EVENT(event_queue, 1, 500, a_event, key_up, a_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::left_shift) == false);
 
       ENQUEUE_EVENT(event_queue, 1, 600, button2_event, key_up, button2_event);
 
@@ -545,25 +545,25 @@ void run_event_queue_test() {
       // modifier_flag_manager's caps lock state will not be changed by key_down event.
       ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_event, key_down, caps_lock_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
 
       ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, single, caps_lock_state_changed_1_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
 
       // Send twice
 
       ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, single, caps_lock_state_changed_1_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
 
       ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_0_event, single, caps_lock_state_changed_0_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == false);
 
       ENQUEUE_EVENT(event_queue, 1, 100, caps_lock_state_changed_1_event, single, caps_lock_state_changed_1_event);
 
-      expect(event_queue.get_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
+      expect(event_queue.get_output_modifier_flag_manager().is_pressed(krbn::modifier_flag::caps_lock) == true);
     }
   };
 

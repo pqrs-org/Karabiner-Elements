@@ -159,24 +159,20 @@ public:
     return events_;
   }
 
-  [[nodiscard]] const modifier_flag_manager& get_modifier_flag_manager() const {
+  [[nodiscard]] const modifier_flag_manager& get_output_modifier_flag_manager() const {
     return modifier_state_manager_.get_output_state();
   }
 
-  [[nodiscard]] modifier_flag_manager& get_modifier_flag_manager() {
+  [[nodiscard]] modifier_flag_manager& get_output_modifier_flag_manager() {
     return modifier_state_manager_.get_output_state();
   }
 
-  [[nodiscard]] const modifier_flag_manager& get_modifier_flag_manager_for_matching() const {
+  [[nodiscard]] const modifier_flag_manager& get_regular_matching_modifier_flag_manager() const {
     return modifier_state_manager_.get_regular_matching_state();
   }
 
   [[nodiscard]] std::unordered_set<modifier_flag> make_modifier_flags_for_matching(const entry& entry) const {
     return modifier_state_manager_.make_modifier_flags_for_matching(entry);
-  }
-
-  [[nodiscard]] std::unordered_set<modifier_flag> make_output_only_modifier_flags_for_matching(const entry& entry) const {
-    return modifier_state_manager_.make_output_only_modifier_flags_for_matching(entry);
   }
 
   [[nodiscard]] std::unordered_set<modifier_flag> make_output_only_modifier_flags_for_manipulation(const entry& entry) const {
