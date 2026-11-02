@@ -262,6 +262,8 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
         }
       }
 
+      std::unordered_set<modifier_flag> additional_modifiers_for_matching;
+
       {
         // Unset lazy if event is modifier key event in order to keep modifier keys order.
 
@@ -270,6 +272,20 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
                                      is_repeatable_key_event &&
                                      to->get_repeat());
         for (const auto& e : to_modifier_events) {
+          // An output-only modifier is excluded from the queue's modifier
+          // state for matching so that it does not affect an unrelated next
+          // input event. However, it must still participate in downstream
+          // matching for the output key generated together with it.
+          //
+          // For example, with `a -> shift+1` followed by `shift+1 -> b`, the
+          // generated `1` must be matched with shift, while a subsequently
+          // pressed physical key must not inherit that shift.
+          if (output_only_modifier) {
+            if (auto modifier = e.make_modifier_flag()) {
+              additional_modifiers_for_matching.insert(*modifier);
+            }
+          }
+
           base::post_lazy_modifier_key_event({
               .momentary_switch_event = e,
               .event_type = event_type::key_down,
@@ -298,6 +314,7 @@ inline void post_from_mandatory_modifiers_key_down(manipulated_original_event::m
             .original_event = original_event,
             .state = event_queue::state::manipulated,
             .lazy = to->get_lazy(),
+            .additional_modifiers_for_matching = additional_modifiers_for_matching,
         });
 
         if (to->get_halt()) {

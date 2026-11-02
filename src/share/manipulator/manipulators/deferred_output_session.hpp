@@ -17,10 +17,15 @@ enum class deferred_modifier_key_up_event_scope {
 
 class deferred_output_session final {
 public:
-  explicit deferred_output_session(std::function<void(const event_queue::entry&,
-                                                      event_queue::queue&)>
-                                       post_deferred_modifier_key_up_events)
-      : post_deferred_modifier_key_up_events_(std::move(post_deferred_modifier_key_up_events)) {
+  struct callbacks final {
+    std::function<void(const event_queue::entry&,
+                       event_queue::queue&)>
+        post_deferred_modifier_key_up_events;
+    std::function<void(const event_queue::entry&)> cancel_to_if_alone;
+  };
+
+  explicit deferred_output_session(callbacks callbacks)
+      : callbacks_(std::move(callbacks)) {
   }
 
   [[nodiscard]] static bool releases_deferred_modifiers(const event_queue::event& event) {
@@ -56,11 +61,15 @@ public:
                       event_queue::queue& output_event_queue,
                       F&& post_events) const {
     if (releases_deferred_modifiers) {
-      post_deferred_modifier_key_up_events_(front_input_event,
-                                            output_event_queue);
+      callbacks_.post_deferred_modifier_key_up_events(front_input_event,
+                                                      output_event_queue);
     }
 
     return std::forward<F>(post_events)(output_event_queue);
+  }
+
+  void cancel_to_if_alone(const event_queue::entry& front_input_event) const {
+    callbacks_.cancel_to_if_alone(front_input_event);
   }
 
 private:
@@ -77,9 +86,12 @@ private:
   //
   // All manipulators are checked because the manipulator that owns the
   // deferred modifier key_up may not be the one producing the new output.
-  std::function<void(const event_queue::entry&,
-                     event_queue::queue&)>
-      post_deferred_modifier_key_up_events_;
+  //
+  // `cancel_to_if_alone` synchronously notifies the same pipeline when an
+  // output event was actually produced. Synchronous delivery ensures that a
+  // queued source key_up cannot trigger `to_if_alone` before cancellation is
+  // applied.
+  callbacks callbacks_;
 };
 
 } // namespace krbn::manipulator::manipulators

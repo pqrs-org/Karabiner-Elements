@@ -1,0 +1,13 @@
+[
+    {
+        "description": "shift+1 -> f2 after key up",
+        "type": "basic",
+        "from": {
+            "key_code": "1",
+            "modifiers": {
+                "mandatory": ["shift"]
+            }
+        },
+        "to_after_key_up": [{ "key_code": "f2" }]
+    }
+]

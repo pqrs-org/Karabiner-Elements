@@ -1,0 +1,13 @@
+[
+    {
+        "description": "shift+1 -> f3 if held down",
+        "type": "basic",
+        "from": {
+            "key_code": "1",
+            "modifiers": {
+                "mandatory": ["shift"]
+            }
+        },
+        "to_if_held_down": [{ "key_code": "f3" }]
+    }
+]

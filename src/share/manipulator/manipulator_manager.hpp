@@ -14,10 +14,6 @@ private:
   };
 
 public:
-  using post_deferred_modifier_key_up_events_callback =
-      std::function<void(const event_queue::entry&,
-                         event_queue::queue&)>;
-
   manipulator_manager(const manipulator_manager&) = delete;
 
   manipulator_manager() = default;
@@ -156,7 +152,7 @@ public:
                 auto deferred_output_session = pipeline_deferred_output_session;
                 if (!deferred_output_session) {
                   deferred_output_session = std::make_shared<manipulators::deferred_output_session>(
-                      make_post_deferred_modifier_key_up_events_callback());
+                      make_deferred_output_session_callbacks());
                 }
 
                 for (auto&& m : manipulator_store_->manipulators) {
@@ -240,21 +236,30 @@ public:
     return manipulator_store_->manipulators.size();
   }
 
-  [[nodiscard]] post_deferred_modifier_key_up_events_callback make_post_deferred_modifier_key_up_events_callback() const {
+  [[nodiscard]] manipulators::deferred_output_session::callbacks make_deferred_output_session_callbacks() const {
     std::weak_ptr<manipulator_store> weak_store = manipulator_store_;
 
-    return [weak_store](const event_queue::entry& event,
-                        event_queue::queue& queue) {
-      if (auto store = weak_store.lock()) {
-        std::lock_guard<std::recursive_mutex> lock(store->mutex);
+    return {
+        .post_deferred_modifier_key_up_events = [weak_store](const event_queue::entry& event,
+                                                             event_queue::queue& queue) {
+          if (auto store = weak_store.lock()) {
+            std::lock_guard<std::recursive_mutex> lock(store->mutex);
 
-        for (const auto& manipulator : store->manipulators) {
-          manipulator->post_deferred_modifier_key_up_events(
-              event,
-              queue,
-              manipulators::deferred_modifier_key_up_event_scope::all);
-        }
-      }
+            for (const auto& manipulator : store->manipulators) {
+              manipulator->post_deferred_modifier_key_up_events(
+                  event,
+                  queue,
+                  manipulators::deferred_modifier_key_up_event_scope::all);
+            }
+          } },
+        .cancel_to_if_alone = [weak_store](const event_queue::entry& event) {
+          if (auto store = weak_store.lock()) {
+            std::lock_guard<std::recursive_mutex> lock(store->mutex);
+
+            for (const auto& manipulator : store->manipulators) {
+              manipulator->cancel_to_if_alone(event);
+            }
+          } },
     };
   }
 

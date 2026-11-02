@@ -6,7 +6,10 @@
 namespace {
 class deferred_modifier_key_up_events_test_manipulator final : public krbn::manipulator::manipulators::base {
 public:
-  explicit deferred_modifier_key_up_events_test_manipulator(std::shared_ptr<std::size_t> count) : count_(count) {
+  deferred_modifier_key_up_events_test_manipulator(std::shared_ptr<std::size_t> post_count,
+                                                   std::shared_ptr<std::size_t> cancellation_count)
+      : post_count_(post_count),
+        cancellation_count_(cancellation_count) {
   }
 
   bool already_manipulated(const krbn::event_queue::entry&) override {
@@ -16,7 +19,11 @@ public:
   void post_deferred_modifier_key_up_events(const krbn::event_queue::entry&,
                                             krbn::event_queue::queue&,
                                             krbn::manipulator::manipulators::deferred_modifier_key_up_event_scope) override {
-    ++*count_;
+    ++*post_count_;
+  }
+
+  void cancel_to_if_alone(const krbn::event_queue::entry&) override {
+    ++*cancellation_count_;
   }
 
   krbn::manipulator::manipulate_result manipulate(krbn::event_queue::entry&,
@@ -53,7 +60,8 @@ public:
   }
 
 private:
-  std::shared_ptr<std::size_t> count_;
+  std::shared_ptr<std::size_t> post_count_;
+  std::shared_ptr<std::size_t> cancellation_count_;
 };
 } // namespace
 
@@ -152,8 +160,9 @@ void run_manipulator_manager_test() {
 
   "deferred output session callback uses the current manipulators"_test = [] {
     auto manager = std::make_shared<krbn::manipulator::manipulator_manager>();
-    auto callback = manager->make_post_deferred_modifier_key_up_events_callback();
-    auto count = std::make_shared<std::size_t>(0);
+    auto callbacks = manager->make_deferred_output_session_callbacks();
+    auto post_count = std::make_shared<std::size_t>(0);
+    auto cancellation_count = std::make_shared<std::size_t>(0);
 
     auto event = krbn::event_queue::event(krbn::momentary_switch_event(
         pqrs::hid::usage_page::keyboard_or_keypad,
@@ -168,22 +177,31 @@ void run_manipulator_manager_test() {
     });
     krbn::event_queue::queue queue;
 
-    callback(entry, queue);
-    expect(*count == 0_i);
+    callbacks.post_deferred_modifier_key_up_events(entry, queue);
+    callbacks.cancel_to_if_alone(entry);
+    expect(*post_count == 0_i);
+    expect(*cancellation_count == 0_i);
 
     manager->push_back_manipulator(
-        std::make_shared<deferred_modifier_key_up_events_test_manipulator>(count));
+        std::make_shared<deferred_modifier_key_up_events_test_manipulator>(post_count,
+                                                                           cancellation_count));
 
-    callback(entry, queue);
-    expect(*count == 1_i);
+    callbacks.post_deferred_modifier_key_up_events(entry, queue);
+    callbacks.cancel_to_if_alone(entry);
+    expect(*post_count == 1_i);
+    expect(*cancellation_count == 1_i);
 
     manager->invalidate_manipulators();
-    callback(entry, queue);
-    expect(*count == 1_i);
+    callbacks.post_deferred_modifier_key_up_events(entry, queue);
+    callbacks.cancel_to_if_alone(entry);
+    expect(*post_count == 1_i);
+    expect(*cancellation_count == 1_i);
 
     manager = nullptr;
-    callback(entry, queue);
-    expect(*count == 1_i);
+    callbacks.post_deferred_modifier_key_up_events(entry, queue);
+    callbacks.cancel_to_if_alone(entry);
+    expect(*post_count == 1_i);
+    expect(*cancellation_count == 1_i);
   };
 
   "needs_virtual_hid_pointing"_test = [] {

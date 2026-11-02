@@ -130,8 +130,6 @@ public:
             }
           }
         });
-
-    connect_to_if_alone_cancellation_requested();
   }
 
   // For simple_modifications
@@ -141,11 +139,9 @@ public:
         from_(from),
         to_(to) {
     dispatcher_client_constructor_guard_.initialize();
-    connect_to_if_alone_cancellation_requested();
   }
 
   ~basic() override {
-    to_if_alone_cancellation_requested_connection_.disconnect();
     detach_from_dispatcher();
   }
 
@@ -248,14 +244,14 @@ public:
       // ----------------------------------------
 
       const auto condition_context = manipulator::conditions::make_device_and_state_condition_context(front_input_event);
-      const auto& modifier_flag_manager_for_matching = output_event_queue->get_modifier_flag_manager_for_matching();
+      const auto modifier_flags_for_matching = output_event_queue->make_modifier_flags_for_matching(front_input_event);
 
       if (to_if_other_key_pressed_) {
         auto cancellation = to_if_other_key_pressed_->handle_other_key_pressed(front_input_event,
                                                                                deferred_output_session);
-        if (cancellation == event_sender::to_if_alone_cancellation::required) {
-          krbn_notification_center::get_instance().enqueue_to_if_alone_cancellation_requested(*this,
-                                                                                              front_input_event);
+        if (cancellation == event_sender::to_if_alone_cancellation::required &&
+            deferred_output_session) {
+          deferred_output_session->cancel_to_if_alone(front_input_event);
         }
       }
 
@@ -285,7 +281,7 @@ public:
               // Check mandatory_modifiers and conditions
 
               if (is_target) {
-                if (auto modifiers = from_.get_from_modifiers_definition().test_modifiers(modifier_flag_manager_for_matching)) {
+                if (auto modifiers = from_.get_from_modifiers_definition().test_modifiers(modifier_flags_for_matching)) {
                   from_mandatory_modifiers = modifiers;
                 } else {
                   is_target = false;
@@ -499,7 +495,7 @@ public:
                           from_events,
                           *from_mandatory_modifiers,
                           front_input_event.get_event_time_stamp().get_time_stamp(),
-                          modifier_flag_manager_for_matching.make_modifier_flags());
+                          modifier_flags_for_matching);
                   manipulated_original_events_.push_back(current_manipulated_original_event);
                 }
               }
@@ -876,14 +872,6 @@ public:
   }
 
 private:
-  void connect_to_if_alone_cancellation_requested() {
-    to_if_alone_cancellation_requested_connection_ =
-        krbn_notification_center::get_instance().to_if_alone_cancellation_requested.connect(
-            [this](const auto& entry) {
-              cancel_to_if_alone(entry);
-            });
-  }
-
   template <typename Predicate>
   [[nodiscard]] bool any_output_definition_matches(const Predicate& predicate) const {
     if (manipulator::any_event_definition_matches(predicate,
@@ -964,6 +952,5 @@ private:
   std::shared_ptr<to_delayed_action> to_delayed_action_;
 
   std::vector<pqrs::not_null_shared_ptr_t<manipulated_original_event::manipulated_original_event>> manipulated_original_events_;
-  nod::scoped_connection to_if_alone_cancellation_requested_connection_;
 };
 } // namespace krbn::manipulator::manipulators::basic

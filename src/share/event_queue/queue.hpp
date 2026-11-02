@@ -132,6 +132,7 @@ public:
         .lazy = entry.get_lazy(),
         .validity = entry.get_validity(),
         .output_only_modifier = entry.get_output_only_modifier(),
+        .additional_modifiers_for_matching = entry.get_additional_modifiers_for_matching(),
     });
   }
 
@@ -169,6 +170,17 @@ public:
 
   [[nodiscard]] const modifier_flag_manager& get_modifier_flag_manager_for_matching() const {
     return modifier_flag_manager_for_matching_;
+  }
+
+  [[nodiscard]] std::unordered_set<modifier_flag> make_modifier_flags_for_matching(const entry& entry) const {
+    // Start with the modifier state shared by subsequent input events, then
+    // add modifiers that apply only to this generated event. Keeping the
+    // latter on the entry prevents output-only modifiers held for macOS key
+    // repeat from leaking into the matching of unrelated physical events.
+    auto result = modifier_flag_manager_for_matching_.make_modifier_flags();
+    result.insert(std::begin(entry.get_additional_modifiers_for_matching()),
+                  std::end(entry.get_additional_modifiers_for_matching()));
+    return result;
   }
 
   // Apply the modifier portion of an entry without enqueueing it.

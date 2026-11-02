@@ -110,8 +110,9 @@ public:
                                                                                 queue);
 
                       if (cancellation == event_sender::to_if_alone_cancellation::required) {
-                        krbn_notification_center::get_instance().enqueue_to_if_alone_cancellation_requested(*this,
-                                                                                                            *front_input_event_);
+                        if (deferred_output_session_) {
+                          deferred_output_session_->cancel_to_if_alone(*front_input_event_);
+                        }
                       }
 
                       if (!event_sender::is_last_to_event_modifier_key_event(to_)) {

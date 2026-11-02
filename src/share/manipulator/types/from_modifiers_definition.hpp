@@ -87,6 +87,20 @@ public:
     return modifier_flags;
   }
 
+  std::shared_ptr<std::unordered_set<modifier_flag>> test_modifiers(const std::unordered_set<modifier_flag>& modifier_flags) const {
+    modifier_flag_manager manager;
+
+    for (const auto& flag : modifier_flags) {
+      manager.push_back_active_modifier_flag(
+          modifier_flag_manager::active_modifier_flag(
+              modifier_flag_manager::active_modifier_flag::type::increase,
+              flag,
+              device_id(0)));
+    }
+
+    return test_modifiers(manager);
+  }
+
   static std::pair<bool, modifier_flag> test_modifier(const modifier_flag_manager& modifier_flag_manager,
                                                       modifier_definition::modifier modifier) {
     if (modifier == modifier_definition::modifier::any) {

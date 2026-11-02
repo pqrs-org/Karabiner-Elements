@@ -645,6 +645,33 @@
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_matching_result.json"
     },
     {
+        "description": "include generated repeat modifiers when matching the associated output key",
+        "rules": [
+            "json/rules/repeat_deferred_outputs.json",
+            "json/rules/repeat_modifier_chaining.json"
+        ],
+        "input_event_queue": "json/test_cases/repeat_modifier_chaining_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_chaining_result.json"
+    },
+    {
+        "description": "preserve generated repeat modifiers for downstream to_after_key_up",
+        "rules": [
+            "json/rules/repeat_deferred_outputs.json",
+            "json/rules/repeat_modifier_chaining_to_after_key_up.json"
+        ],
+        "input_event_queue": "json/test_cases/repeat_modifier_chaining_to_after_key_up_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_chaining_to_after_key_up_result.json"
+    },
+    {
+        "description": "preserve generated repeat modifiers for downstream to_if_held_down",
+        "rules": [
+            "json/rules/repeat_deferred_outputs.json",
+            "json/rules/repeat_modifier_chaining_to_if_held_down.json"
+        ],
+        "input_event_queue": "json/test_cases/repeat_modifier_chaining_to_if_held_down_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/repeat_modifier_chaining_to_if_held_down_result.json"
+    },
+    {
         "description": "interrupt repeat with modifiers by another key",
         "rules": ["json/rules/repeat.json"],
         "input_event_queue": "json/test_cases/repeat_with_modifiers_interrupted_input.jsonc",

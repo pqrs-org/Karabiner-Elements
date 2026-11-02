@@ -120,6 +120,8 @@ public:
     auto result = event_sender::to_if_alone_cancellation::not_required;
 
     if (auto oeq = output_event_queue_.lock()) {
+      const auto modifier_flags_for_matching = oeq->make_modifier_flags_for_matching(front_input_event);
+
       for (const auto& entry : entries_) {
         auto other_key_from_event_definition = std::ranges::find_if(
             entry->get_other_keys(),
@@ -132,7 +134,7 @@ public:
         }
 
         std::shared_ptr<std::unordered_set<modifier_flag>> other_key_from_mandatory_modifiers;
-        if (auto modifiers = (*other_key_from_event_definition)->get_from_modifiers_definition().test_modifiers(oeq->get_modifier_flag_manager_for_matching())) {
+        if (auto modifiers = (*other_key_from_event_definition)->get_from_modifiers_definition().test_modifiers(modifier_flags_for_matching)) {
           other_key_from_mandatory_modifiers = modifiers;
         } else {
           continue;
@@ -148,7 +150,7 @@ public:
                 other_key_from_events,
                 *other_key_from_mandatory_modifiers,
                 front_input_event.get_event_time_stamp().get_time_stamp(),
-                oeq->get_modifier_flag_manager_for_matching().make_modifier_flags());
+                modifier_flags_for_matching);
 
         // ----------------------------------------
         // Replace to_ events

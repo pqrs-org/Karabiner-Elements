@@ -120,7 +120,7 @@ public:
 
     for (std::size_t current_index = 0; current_index < connections_.size(); ++current_index) {
       struct group final {
-        manipulator_manager::post_deferred_modifier_key_up_events_callback post_deferred_modifier_key_up_events;
+        manipulators::deferred_output_session::callbacks callbacks;
         std::vector<std::weak_ptr<event_queue::queue>> skipped_output_queues;
       };
 
@@ -129,7 +129,7 @@ public:
       for (std::size_t owner_index = 0; owner_index <= current_index; ++owner_index) {
         if (auto manager = connections_[owner_index].get_weak_manipulator_manager().lock()) {
           group g{
-              .post_deferred_modifier_key_up_events = manager->make_post_deferred_modifier_key_up_events_callback(),
+              .callbacks = manager->make_deferred_output_session_callbacks(),
           };
 
           // Deferred events owned by an upstream manager are posted directly
@@ -144,23 +144,28 @@ public:
       }
 
       auto deferred_output_session = std::make_shared<manipulators::deferred_output_session>(
-          [groups](const event_queue::entry& event,
-                   event_queue::queue& target_queue) {
-            for (const auto& group : groups) {
-              auto first_new_entry = target_queue.get_entries().size();
+          manipulators::deferred_output_session::callbacks{
+              .post_deferred_modifier_key_up_events = [groups](const event_queue::entry& event,
+                                                               event_queue::queue& target_queue) {
+                for (const auto& group : groups) {
+                  auto first_new_entry = target_queue.get_entries().size();
 
-              group.post_deferred_modifier_key_up_events(event,
-                                                         target_queue);
+                  group.callbacks.post_deferred_modifier_key_up_events(event,
+                                                                        target_queue);
 
-              const auto& entries = target_queue.get_entries();
-              for (std::size_t i = first_new_entry; i < entries.size(); ++i) {
-                for (const auto& weak_queue : group.skipped_output_queues) {
-                  if (auto queue = weak_queue.lock()) {
-                    queue->apply_modifier_state(entries[i]);
+                  const auto& entries = target_queue.get_entries();
+                  for (std::size_t i = first_new_entry; i < entries.size(); ++i) {
+                    for (const auto& weak_queue : group.skipped_output_queues) {
+                      if (auto queue = weak_queue.lock()) {
+                        queue->apply_modifier_state(entries[i]);
+                      }
+                    }
                   }
-                }
-              }
-            }
+                } },
+              .cancel_to_if_alone = [groups](const event_queue::entry& event) {
+                for (const auto& group : groups) {
+                  group.callbacks.cancel_to_if_alone(event);
+                } },
           });
 
       connections_[current_index].manipulate(now,
