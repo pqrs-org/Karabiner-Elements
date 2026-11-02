@@ -1,0 +1,8 @@
+[
+    {
+        "description": "left_shift -> left_shift",
+        "type": "basic",
+        "from": { "key_code": "left_shift" },
+        "to": [{ "key_code": "left_shift" }]
+    }
+]

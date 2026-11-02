@@ -1,0 +1,44 @@
+[
+    {
+        "device_id": 1,
+        "event": { "type": "set_variable", "set_variable": { "name": "transform_modifier", "value": 1 } },
+        "event_time_stamp": { "time_stamp": 0 },
+        "event_type": "key_down",
+        "lazy": false, "original_event": { "type": "set_variable", "set_variable": { "name": "transform_modifier", "value": 1 } }, "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "a" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 2 },
+        "event_type": "key_down",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "a" }, "type": "momentary_switch_event" }, "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "a" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 4 },
+        "event_type": "key_up",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "a" }, "type": "momentary_switch_event" }, "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": { "type": "set_variable", "set_variable": { "name": "transform_modifier", "value": 0 } },
+        "event_time_stamp": { "time_stamp": 6 },
+        "event_type": "key_down",
+        "lazy": false, "original_event": { "type": "set_variable", "set_variable": { "name": "transform_modifier", "value": 0 } }, "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "left_shift" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 8 },
+        "event_type": "key_down",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "left_shift" }, "type": "momentary_switch_event" }, "validity": true
+    },
+    {
+        "device_id": 1,
+        "event": { "momentary_switch_event": { "key_code": "left_shift" }, "type": "momentary_switch_event" },
+        "event_time_stamp": { "time_stamp": 10 },
+        "event_type": "key_up",
+        "lazy": false, "original_event": { "momentary_switch_event": { "key_code": "left_shift" }, "type": "momentary_switch_event" }, "validity": true
+    }
+]

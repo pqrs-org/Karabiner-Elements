@@ -1,0 +1,15 @@
+[
+    {
+        "description": "left_shift -> left_control while transform_modifier is enabled",
+        "type": "basic",
+        "from": { "key_code": "left_shift" },
+        "to": [{ "key_code": "left_control" }],
+        "conditions": [
+            {
+                "type": "variable_if",
+                "name": "transform_modifier",
+                "value": 1
+            }
+        ]
+    }
+]
