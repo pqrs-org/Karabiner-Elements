@@ -415,8 +415,8 @@ private:
     // Keep the HID++ session when only a mapping changes, so the same controls are not
     // restored and diverted again. A session without a selected control is retained for discovery.
     if (logitech_hidpp_session_controller_) {
-      const auto desired_control_ids = desired ? desired->get_control_ids() : std::vector<uint16_t>{};
-      const auto current_control_ids = logitech_hidpp_button_ ? logitech_hidpp_button_->get_control_ids() : std::vector<uint16_t>{};
+      const auto desired_control_ids = desired ? desired->get_enabled_control_ids() : std::vector<uint16_t>{};
+      const auto current_control_ids = logitech_hidpp_button_ ? logitech_hidpp_button_->get_enabled_control_ids() : std::vector<uint16_t>{};
       if (desired_control_ids == current_control_ids) {
         logitech_hidpp_button_ = desired;
         return;
@@ -435,7 +435,7 @@ private:
 
     logitech_hidpp_session_controller_ = std::make_unique<logitech_hidpp_session_controller>(pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                                                                                              *device_,
-                                                                                             desired ? desired->get_control_ids() : std::vector<uint16_t>{},
+                                                                                             desired ? desired->get_enabled_control_ids() : std::vector<uint16_t>{},
                                                                                              log_prefix);
     logitech_hidpp_session_controller_->divertable_control_ids_changed.connect(
         [this](const auto& control_ids) {
@@ -517,7 +517,7 @@ private:
       logitech_hidpp_button_report_handler_->clear_input_report_handler();
       logitech_hidpp_session_controller_ = nullptr;
       if (logitech_hidpp_button_) {
-        for (auto control_id : logitech_hidpp_button_->get_control_ids()) {
+        for (auto control_id : logitech_hidpp_button_->get_enabled_control_ids()) {
           pressed_keys_manager_->erase(momentary_switch_event(momentary_switch_event_details::logitech_hidpp_button::usage_page,
                                                               pqrs::hid::usage::value_t(control_id)));
         }
@@ -531,7 +531,7 @@ private:
                                         bool pressed,
                                         absolute_time_point time_stamp) {
     if (!logitech_hidpp_button_ ||
-        !logitech_hidpp_button_->contains(control_id)) {
+        !logitech_hidpp_button_->is_enabled(control_id)) {
       return;
     }
 

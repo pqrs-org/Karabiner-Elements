@@ -19,10 +19,12 @@ modifying the device (`"ignore": false`):
         "controls": [
             {
                 "control_id": 82,
+                "enabled": true,
                 "to": [{ "pointing_button": "button4" }]
             },
             {
                 "control_id": 196,
+                "enabled": true,
                 "to": [{ "key_code": "right_control" }]
             }
         ]
@@ -30,16 +32,18 @@ modifying the device (`"ignore": false`):
 }
 ```
 
-Remove a control from `controls` to give that control back to its firmware
-function. Remove `logitech_hidpp_button` when no controls are selected.
+Set `enabled` to `false` to give a control back to its firmware function while
+preserving its `to` mapping. Remove a control from `controls` to discard its
+mapping. Remove `logitech_hidpp_button` to discard all control settings.
 
 ## Configuration
 
-| Field        | Values                                                 |
-| ------------ | ------------------------------------------------------ |
-| `controls`   | Non-empty array of control mappings. Required          |
-| `control_id` | Integer from 1 to 65535 (the HID++ control ID, CID)    |
-| `to`         | Non-empty Simple Modifications-compatible output array |
+| Field        | Values                                                             |
+| ------------ | ------------------------------------------------------------------ |
+| `controls`   | Non-empty array of control mappings. Required                      |
+| `control_id` | Integer from 1 to 65535 (the HID++ control ID, CID)                |
+| `enabled`    | Whether Karabiner-Elements manages the control. Defaults to `true` |
+| `to`         | Non-empty Simple Modifications-compatible output array             |
 
 Other keys are errors. An invalid `logitech_hidpp_button` is not applied.
 Duplicate control IDs are errors. Controls are stored in ascending ID order.
@@ -59,7 +63,8 @@ Only devices that meet all of the following:
 
 For a supported Logitech device, the Devices tab lists the controls that can be
 used. Enable a checkbox and choose its output from the picker. Clearing a
-checkbox returns that control to the device firmware.
+checkbox returns that control to the device firmware without discarding the
+selected output.
 
 `core_service.log` also lists the detected and activated controls:
 
@@ -75,8 +80,10 @@ control keeps its firmware function.
 
 - The controls are diverted temporarily. Nothing is stored in the device, and the
   device resets the diversion when it reconnects.
-- If any selected control is already diverted or remapped, for example by another
-  application, none of the selected controls are taken over.
+- Selecting a control is an explicit request for Karabiner-Elements to manage it.
+  If the control is already temporarily diverted, Karabiner-Elements takes over
+  that diversion and restores it when the session stops. Persistent diversion,
+  raw XY diversion, and remapping to another control are not overridden.
 - The controls are restored when the setting is removed or changed, when the device
   is no longer modified, and when Karabiner-Core-Service stops. Held buttons are
   released at the same time.
@@ -93,4 +100,6 @@ control keeps its firmware function.
   succeeds, presses of the button may still perform its firmware function.
 - If Karabiner-Core-Service stops unexpectedly, controls can stay diverted
   until the device reconnects. Turn the device off and on to restore it.
-- Do not let another application, such as Logi Options+, manage the same controls.
+- Do not configure another application, such as Logi Options+, to manage the same
+  controls at the same time. Karabiner-Elements takes over temporary diversion,
+  but simultaneous management remains unsupported.

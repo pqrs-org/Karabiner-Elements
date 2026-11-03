@@ -167,6 +167,7 @@ struct SettingsConfiguration: Decodable {
     struct LogitechHidppButton: Codable {
       struct Control: Codable {
         var controlId: UInt16
+        var enabled: Bool
         var toJsonString: String
       }
 

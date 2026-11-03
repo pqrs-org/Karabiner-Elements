@@ -418,24 +418,48 @@ void run_device_test() {
           {"logitech_hidpp_button",
            {{"controls",
              {
-                 {{"control_id", 196}, {"to", {{{"key_code", "right_control"}}}}},
-                 {{"control_id", 82}, {"to", {{{"pointing_button", "button4"}}}}},
+                 {
+                     {"control_id", 196},
+                     {"enabled", false},
+                     {"to", {{{"key_code", "right_control"}}}},
+                 },
+                 {
+                     {"control_id", 82},
+                     {"enabled", true},
+                     {"to", {{{"pointing_button", "button4"}}}},
+                 },
              }}}},
       });
       device d(json, error_handling::strict);
       expect(d.get_logitech_hidpp_button().has_value());
-      expect(d.get_logitech_hidpp_button()->get_control_ids() == std::vector<uint16_t>({82, 196}));
+      expect(d.get_logitech_hidpp_button()->get_enabled_control_ids() == std::vector<uint16_t>({82}));
+      expect(d.get_logitech_hidpp_button()->is_enabled(82));
+      expect(!d.get_logitech_hidpp_button()->is_enabled(196));
       std::ranges::reverse(json["logitech_hidpp_button"]["controls"]);
       expect(json == d.to_json()) << UT_SHOW_LINE;
 
       using control = krbn::core_configuration::details::logitech_hidpp_button::control;
       expect(*d.get_logitech_hidpp_button() == krbn::core_configuration::details::logitech_hidpp_button(std::vector<control>{
-                                                   {.control_id = 82, .to = {{{"pointing_button", "button4"}}}},
-                                                   {.control_id = 196, .to = {{{"key_code", "right_control"}}}},
+                                                   {
+                                                       .control_id = 82,
+                                                       .to = {{{"pointing_button", "button4"}}},
+                                                   },
+                                                   {
+                                                       .control_id = 196,
+                                                       .to = {{{"key_code", "right_control"}}},
+                                                       .enabled = false,
+                                                   },
                                                }));
       expect(*d.get_logitech_hidpp_button() != krbn::core_configuration::details::logitech_hidpp_button(std::vector<control>{
-                                                   {.control_id = 82, .to = {{{"pointing_button", "button5"}}}},
-                                                   {.control_id = 196, .to = {{{"key_code", "right_control"}}}},
+                                                   {
+                                                       .control_id = 82,
+                                                       .to = {{{"pointing_button", "button5"}}},
+                                                   },
+                                                   {
+                                                       .control_id = 196,
+                                                       .to = {{{"key_code", "right_control"}}},
+                                                       .enabled = false,
+                                                   },
                                                }));
     }
 
@@ -445,12 +469,18 @@ void run_device_test() {
           {"logitech_hidpp_button",
            {{"controls",
              {
-                 {{"control_id", 1}, {"to", {{{"key_code", "a"}}}}},
-                 {{"control_id", 65535}, {"to", {{{"key_code", "b"}}}}},
+                 {
+                     {"control_id", 1},
+                     {"to", {{{"key_code", "a"}}}},
+                 },
+                 {
+                     {"control_id", 65535},
+                     {"to", {{{"key_code", "b"}}}},
+                 },
              }}}},
       };
       device d(json, error_handling::strict);
-      expect(d.get_logitech_hidpp_button()->get_control_ids() == std::vector<uint16_t>({1, 65535}));
+      expect(d.get_logitech_hidpp_button()->get_enabled_control_ids() == std::vector<uint16_t>({1, 65535}));
     }
 
     // Invalid values are not partially applied in loose mode.
@@ -461,15 +491,71 @@ void run_device_test() {
              nlohmann::json({{"pointing_button", "button17"}}),
              nlohmann::json({{"control_ids", {196}}}),
              nlohmann::json({{"controls", nlohmann::json::array()}}),
-             nlohmann::json({{"controls", {{{"control_id", 0}, {"to", {{{"key_code", "a"}}}}}}}}),
-             nlohmann::json({{"controls", {{{"control_id", 65536}, {"to", {{{"key_code", "a"}}}}}}}}),
-             nlohmann::json({{"controls", {{{"control_id", -1}, {"to", {{{"key_code", "a"}}}}}}}}),
-             nlohmann::json({{"controls", {{{"control_id", 196.5}, {"to", {{{"key_code", "a"}}}}}}}}),
-             nlohmann::json({{"controls", {{{"control_id", "196"}, {"to", {{{"key_code", "a"}}}}}}}}),
-             nlohmann::json({{"controls", {{{"control_id", 196}}}}}),
-             nlohmann::json({{"controls", {{{"control_id", 196}, {"to", nlohmann::json::array()}}}}}),
-             nlohmann::json({{"controls", {{{"control_id", 196}, {"to", {{{"key_code", "a"}}}}}, {{"control_id", 196}, {"to", {{{"key_code", "b"}}}}}}}}),
-             nlohmann::json({{"controls", {{{"control_id", 196}, {"to", {{{"key_code", "a"}}}}, {"persistent", true}}}}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", 0},
+                                                  {"to", {{{"key_code", "a"}}}},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", 65536},
+                                                  {"to", {{{"key_code", "a"}}}},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", -1},
+                                                  {"to", {{{"key_code", "a"}}}},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", 196.5},
+                                                  {"to", {{{"key_code", "a"}}}},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", "196"},
+                                                  {"to", {{{"key_code", "a"}}}},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", 196},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", 196},
+                                                  {"to", nlohmann::json::array()},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", 196},
+                                                  {"enabled", "false"},
+                                                  {"to", {{{"key_code", "a"}}}},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", 196},
+                                                  {"to", {{{"key_code", "a"}}}},
+                                              },
+                                              {
+                                                  {"control_id", 196},
+                                                  {"to", {{{"key_code", "b"}}}},
+                                              },
+                                          }}}),
+             nlohmann::json({{"controls", {
+                                              {
+                                                  {"control_id", 196},
+                                                  {"to", {{{"key_code", "a"}}}},
+                                                  {"persistent", true},
+                                              },
+                                          }}}),
          }) {
       nlohmann::json json({{"logitech_hidpp_button", j}});
 

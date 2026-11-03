@@ -358,13 +358,11 @@ public:
         auto flags = report[6];
         auto remap = static_cast<uint16_t>((report[7] << 8) | report[8]);
 
-        if ((flags & (reporting_flag_diverted |
-                      reporting_flag_persistently_diverted |
+        if ((flags & (reporting_flag_persistently_diverted |
                       reporting_flag_raw_xy_diverted |
                       reporting_flag_force_raw_xy_diverted)) != 0) {
           return refuse(fmt::format("control {0} is already diverted (reporting flags 0x{1:02x}). "
-                                    "Another HID++ client may own it, or an earlier diversion was not restored; "
-                                    "reconnecting the device resets temporary diversion",
+                                    "Karabiner-Elements does not override persistent or raw XY diversion",
                                     make_control_id_string(current_control_id()),
                                     flags));
         }
@@ -372,6 +370,15 @@ public:
           return refuse(fmt::format("control {0} is remapped to {1} by another HID++ client",
                                     make_control_id_string(current_control_id()),
                                     make_control_id_string(remap)));
+        }
+
+        if ((flags & reporting_flag_diverted) != 0) {
+          // Configuring this control is an explicit opt-in to manage it with
+          // Karabiner-Elements. Take responsibility for an existing temporary
+          // diversion, including restoring it when this session stops. This
+          // also recovers a diversion left behind by an earlier session.
+          divert_requested_control_ids_.push_back(current_control_id());
+          return finish_current_control_diversion(true, true);
         }
 
         divert_requested_control_ids_.push_back(current_control_id());
@@ -461,10 +468,15 @@ public:
   }
 
 private:
-  result finish_current_control_diversion(bool acknowledged) {
+  result finish_current_control_diversion(bool acknowledged,
+                                          bool already_diverted = false) {
     pending_request_ = std::nullopt;
 
-    if (acknowledged) {
+    if (already_diverted) {
+      logger::get_logger()->info("{0} activated: control {1} was already temporarily diverted and is now managed by Karabiner-Elements",
+                                 log_prefix_,
+                                 make_control_id_string(current_control_id()));
+    } else if (acknowledged) {
       logger::get_logger()->info("{0} activated: control {1} is diverted (REPROG_CONTROLS_V4 feature index 0x{2:02x})",
                                  log_prefix_,
                                  make_control_id_string(current_control_id()),

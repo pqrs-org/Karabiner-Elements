@@ -14,6 +14,7 @@ namespace krbn::core_configuration::details {
 //     "controls": [
 //         {
 //             "control_id": 82,
+//             "enabled": true,
 //             "to": [{ "key_code": "mission_control" }]
 //         }
 //     ]
@@ -23,6 +24,7 @@ public:
   struct control final {
     uint16_t control_id;
     nlohmann::json to;
+    bool enabled = true;
 
     bool operator==(const control&) const = default;
   };
@@ -44,6 +46,7 @@ public:
 
           std::optional<uint16_t> control_id;
           std::optional<nlohmann::json> to;
+          bool enabled = true;
           for (const auto& [control_key, control_value] : v.items()) {
             if (control_key == "control_id") {
               if (!control_value.is_number_integer() ||
@@ -56,6 +59,9 @@ public:
             } else if (control_key == "to") {
               pqrs::json::requires_array(control_value, "`to`");
               to = control_value;
+            } else if (control_key == "enabled") {
+              pqrs::json::requires_boolean(control_value, "`enabled`");
+              enabled = control_value.get<bool>();
             } else {
               throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`",
                                                             control_key,
@@ -74,6 +80,7 @@ public:
           controls_.push_back({
               .control_id = *control_id,
               .to = std::move(*to),
+              .enabled = enabled,
           });
         }
         controls_found = true;
@@ -98,6 +105,7 @@ public:
     for (const auto& control : controls_) {
       controls.push_back({
           {"control_id", control.control_id},
+          {"enabled", control.enabled},
           {"to", control.to},
       });
     }
@@ -110,18 +118,21 @@ public:
     return controls_;
   }
 
-  [[nodiscard]] std::vector<uint16_t> get_control_ids() const {
+  [[nodiscard]] std::vector<uint16_t> get_enabled_control_ids() const {
     std::vector<uint16_t> result;
     for (const auto& control : controls_) {
-      result.push_back(control.control_id);
+      if (control.enabled) {
+        result.push_back(control.control_id);
+      }
     }
     return result;
   }
 
-  [[nodiscard]] bool contains(uint16_t control_id) const {
+  [[nodiscard]] bool is_enabled(uint16_t control_id) const {
     return std::ranges::any_of(controls_,
                                [control_id](const auto& control) {
-                                 return control.control_id == control_id;
+                                 return control.control_id == control_id &&
+                                        control.enabled;
                                });
   }
 

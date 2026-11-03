@@ -504,15 +504,14 @@ final class Settings: ObservableObject {
     var controls =
       configurationStorage?.selectedProfile.devices[connectedDevice.id]?.logitechHidppButton?
       .controls ?? []
-    if enabled {
-      if !controls.contains(where: { $0.controlId == controlId }) {
-        controls.append(
-          SettingsConfiguration.Device.LogitechHidppButton.Control(
-            controlId: controlId,
-            toJsonString: "[{\"key_code\":\"vk_none\"}]"))
-      }
-    } else {
-      controls.removeAll { $0.controlId == controlId }
+    if let index = controls.firstIndex(where: { $0.controlId == controlId }) {
+      controls[index].enabled = enabled
+    } else if enabled {
+      controls.append(
+        SettingsConfiguration.Device.LogitechHidppButton.Control(
+          controlId: controlId,
+          enabled: true,
+          toJsonString: "[{\"key_code\":\"vk_none\"}]"))
     }
 
     setLogitechHidppButtonControls(
@@ -550,6 +549,7 @@ final class Settings: ObservableObject {
 
       return [
         "control_id": Int(control.controlId),
+        "enabled": control.enabled,
         "to": to,
       ]
     }

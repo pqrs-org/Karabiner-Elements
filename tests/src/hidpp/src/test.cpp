@@ -342,7 +342,7 @@ int main() {
            std::vector<hidpp::long_report>({undivert_request_for(top_button)}));
   };
 
-  "multiple controls restore only this session's diversions"_test = [] {
+  "multiple controls restore new and adopted diversions"_test = [] {
     constexpr uint16_t back_button = 0x0052;
     hidpp::session s(std::vector<uint16_t>{back_button, top_button},
                      1,
@@ -352,11 +352,13 @@ int main() {
     input(s, reporting_reply(back_button, 0x00));
     expect(input(s, divert_reply(back_button, 0x03)).request == get_reporting_request_for(top_button));
 
-    auto refused = input(s, reporting_reply(top_button, 0x01));
-    expect(s.get_state() == hidpp::session::state::refused);
-    expect(refused.request == undivert_request_for(back_button));
-    expect(refused.additional_requests.empty());
-    expect(!s.stop().request) << "restore this session's control only once";
+    expect(!input(s, reporting_reply(top_button, 0x01)).request);
+    expect(s.get_state() == hidpp::session::state::diverted);
+
+    auto stopped = s.stop();
+    expect(stopped.request == undivert_request_for(back_button));
+    expect(stopped.additional_requests ==
+           std::vector<hidpp::long_report>({undivert_request_for(top_button)}));
   };
 
   "multiple controls continue after an unacknowledged diversion"_test = [] {
@@ -441,20 +443,32 @@ int main() {
     expect(!s.stop().request);
   };
 
-  "refused: control is owned by another client"_test = [] {
-    for (uint8_t flags : {0x01, 0x03, 0x04, 0x10, 0x40}) {
+  "an existing temporary diversion is taken over"_test = [] {
+    for (uint8_t flags : {0x01, 0x03}) {
+      auto s = make_session();
+      discover(s);
+      expect(!input(s, reporting_reply(top_button, flags)).request);
+      expect(s.get_state() == hidpp::session::state::diverted) << static_cast<int>(flags);
+      expect(s.stop().request == undivert_request) << "the adopted diversion must be restored";
+    }
+  };
+
+  "refused: persistent and raw XY diversion are not taken over"_test = [] {
+    for (uint8_t flags : {0x04, 0x10, 0x40}) {
       auto s = make_session();
       discover(s);
       expect(!input(s, reporting_reply(top_button, flags)).request);
       expect(s.get_state() == hidpp::session::state::refused) << static_cast<int>(flags);
       expect(s.get_reason().find("already diverted") != std::string::npos);
-      expect(!s.stop().request) << "another client's setting must not be restored";
+      expect(!s.stop().request);
     }
 
+    // A device-level remap is not overwritten, even if the control is also
+    // temporarily diverted.
     {
       auto s = make_session();
       discover(s);
-      expect(!input(s, reporting_reply(top_button, 0x00, 0x0053)).request);
+      expect(!input(s, reporting_reply(top_button, 0x01, 0x0053)).request);
       expect(s.get_state() == hidpp::session::state::refused);
       expect(s.get_reason().find("remapped") != std::string::npos);
     }
@@ -691,7 +705,7 @@ int main() {
     }
   };
 
-  "recovery: control ownership is checked again"_test = [] {
+  "recovery: control reporting is checked again"_test = [] {
     auto recover = [] {
       auto s = make_session();
       s.start();
@@ -709,10 +723,9 @@ int main() {
       auto s = recover();
       expect(s.get_state() == hidpp::session::state::waiting_reporting);
       expect(!input(s, with_software_id(reporting_reply(top_button, 0x01), 2)).request);
-      expect(s.get_state() == hidpp::session::state::refused);
-      expect(s.get_reason().find("already diverted") != std::string::npos);
+      expect(s.get_state() == hidpp::session::state::diverted);
       expect(!s.can_recover_on_physical_activity());
-      expect(!s.stop().request) << "another client's setting must not be restored";
+      expect(s.stop().request == with_software_id(undivert_request, 2));
     }
 
     {
@@ -765,7 +778,8 @@ int main() {
       auto s = make_session();
       discover(s);
       input(s, reporting_reply(top_button, 0x01));
-      expect_no_recovery(s, hidpp::session::state::refused);
+      expect_no_recovery(s, hidpp::session::state::diverted);
+      expect(s.stop().request == undivert_request);
     }
 
     // No reply to the divert request is accepted for compatibility with

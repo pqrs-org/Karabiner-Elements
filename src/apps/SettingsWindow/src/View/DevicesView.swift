@@ -390,8 +390,8 @@ struct DevicesView: View {
     @ObservedObject private var settings = Settings.shared
 
     private let columns = Array(
-      repeating: GridItem(.flexible(minimum: 100.0), spacing: 12.0, alignment: .leading),
-      count: 6)
+      repeating: GridItem(.flexible(minimum: 240.0), spacing: 12.0, alignment: .leading),
+      count: 3)
 
     private var controlIds: [UInt16] {
       var result = Set(connectedDevice.logitechHidppDivertableControlIds)
@@ -422,11 +422,11 @@ struct DevicesView: View {
             ForEach(controlIds, id: \.self) { controlId in
               let configuredControl = control(controlId)
 
-              VStack(alignment: .leading, spacing: 4.0) {
+              HStack(spacing: 8.0) {
                 Toggle(
                   isOn: Binding(
                     get: {
-                      control(controlId) != nil
+                      control(controlId)?.enabled ?? false
                     },
                     set: { enabled in
                       settings.setLogitechHidppButton(
@@ -455,7 +455,7 @@ struct DevicesView: View {
                   showUnsafe: settings.configuration.globalConfiguration.unsafeUi
                     || connectedDevice.isGamePad
                 )
-                .disabled(configuredControl == nil)
+                .disabled(configuredControl?.enabled != true)
               }
               .frame(maxWidth: .infinity, alignment: .leading)
             }

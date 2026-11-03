@@ -242,6 +242,7 @@ private:
         for (const auto& control : logitech_hidpp_button->get_controls()) {
           controls.push_back({
               {"control_id", control.control_id},
+              {"enabled", control.enabled},
               {"to_json_string", control.to.dump()},
           });
         }

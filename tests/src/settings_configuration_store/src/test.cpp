@@ -498,9 +498,25 @@ int main() {
     });
     auto device_snapshot = result.at("snapshot").at("selected_profile").at("devices").at(device);
     expect(device_snapshot.at("logitech_hidpp_button").at("controls") == nlohmann::json({
-                                                                             {{"control_id", 82}, {"to_json_string", R"([{"key_code":"a"}])"}},
-                                                                             {{"control_id", 196}, {"to_json_string", R"([{"key_code":"right_control"}])"}},
+                                                                             {{"control_id", 82}, {"enabled", true}, {"to_json_string", R"([{"key_code":"a"}])"}},
+                                                                             {{"control_id", 196}, {"enabled", true}, {"to_json_string", R"([{"key_code":"right_control"}])"}},
                                                                          }));
+
+    result = execute({
+        {"action", "set_logitech_hidpp_button"},
+        {"device", device},
+        {"controls",
+         {
+             {{"control_id", 82}, {"enabled", false}, {"to", {{{"key_code", "a"}}}}},
+             {{"control_id", 196}, {"enabled", true}, {"to", {{{"key_code", "right_control"}}}}},
+         }},
+    });
+    device_snapshot = result.at("snapshot").at("selected_profile").at("devices").at(device);
+    expect(device_snapshot.at("logitech_hidpp_button").at("controls").at(0) == nlohmann::json({
+                                                                                   {"control_id", 82},
+                                                                                   {"enabled", false},
+                                                                                   {"to_json_string", R"([{"key_code":"a"}])"},
+                                                                               }));
 
     result = execute({
         {"action", "set_logitech_hidpp_button"},

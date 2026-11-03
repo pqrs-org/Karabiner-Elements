@@ -28,6 +28,10 @@ public:
 
       if (const auto& logitech_hidpp_button = device->get_logitech_hidpp_button()) {
         for (const auto& control : logitech_hidpp_button->get_controls()) {
+          if (!control.enabled) {
+            continue;
+          }
+
           try {
             auto from = nlohmann::json::object({
                 {"logitech_hidpp_button", control.control_id},
