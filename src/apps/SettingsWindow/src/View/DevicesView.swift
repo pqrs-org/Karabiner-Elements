@@ -50,21 +50,7 @@ struct DevicesView: View {
                       deviceConfiguration: deviceConfiguration
                     )
                     .padding(.leading, 20.0)
-                    .padding(.top, 8.0)
-
-                    if deviceConfiguration.wrappedValue.modifyEvents
-                      && !connectedDevice.isAppleDevice
-                    {
-                      AppLocalizedLabel(
-                        "settings.devices.vendor_events_hint",
-                        systemImage: "lightbulb"
-                      )
-                      .foregroundColor(Color(NSColor.textColor))
-                      .font(.caption)
-                      .frame(maxWidth: .infinity, alignment: .leading)
-                      .padding(.leading, 20.0)
-                      .padding(.top, 4.0)
-                    }
+                    .padding(.top, 12.0)
                   }
                   .padding(.leading, 62.0)
                   .padding(.top, 20.0)
@@ -379,6 +365,17 @@ struct DevicesView: View {
         DetailedSetting(
           title: "settings.devices.ignore_vendor_events",
           isOn: $deviceConfiguration.ignoreVendorEvents)
+
+        GridRow {
+          AppLocalizedLabel(
+            "settings.devices.vendor_events_hint",
+            systemImage: "lightbulb"
+          )
+          .foregroundColor(Color(NSColor.textColor))
+          .font(.caption)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .gridCellColumns(2)
+        }
       }
     }
   }
@@ -413,10 +410,9 @@ struct DevicesView: View {
       if deviceConfiguration.modifyEvents
         && !controlIds.isEmpty
       {
-        VStack(alignment: .leading, spacing: 6.0) {
-          AppLocalizedText("settings.devices.logitech_hidpp_button_assignments")
-            .font(.callout)
-
+        GroupBox(
+          label: AppLocalizedText("settings.devices.logitech_hidpp_button_assignments")
+        ) {
           LazyVGrid(columns: columns, alignment: .leading, spacing: 6.0) {
             ForEach(controlIds, id: \.self) { controlId in
               let configuredControl = control(controlId)
@@ -459,7 +455,10 @@ struct DevicesView: View {
               .frame(maxWidth: .infinity, alignment: .leading)
             }
           }
+          .padding()
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
     }
   }
