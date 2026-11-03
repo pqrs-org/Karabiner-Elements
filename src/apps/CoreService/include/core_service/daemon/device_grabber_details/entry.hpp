@@ -51,13 +51,11 @@ public:
 
           {
             const auto& identifiers = device_properties_->get_device_identifiers();
-            const auto& transport = device_properties_->get_transport();
             std::vector<uint8_t> report_descriptor;
-            if (!logitech::hidpp::device_support::find_unsupported_device_reason(identifiers, transport)) {
+            if (!logitech::hidpp::device_support::find_unsupported_device_reason(identifiers)) {
               report_descriptor = hid_device_events_monitor::find_report_descriptor(device);
             }
             logitech_hidpp_button_support_ = logitech::hidpp::device_support(identifiers,
-                                                                             transport,
                                                                              report_descriptor);
 
             if (!logitech_hidpp_button_support_.get_unsupported_reason()) {

@@ -53,11 +53,13 @@ Duplicate control IDs are errors. Controls are stored in ascending ID order.
 Only devices that meet all of the following:
 
 - Logitech vendor ID (`0x046d`, 1133).
-- A pointing device.
-- Connected directly over Bluetooth Low Energy.
-  USB, classic Bluetooth, and Logitech receivers (Unifying, Bolt) are not supported.
-- Its report descriptor declares the HID++ long report (report ID `0x11`).
+- Its report descriptor declares HID++ long input and output reports (report ID `0x11`).
 - It supports `REPROG_CONTROLS_V4` (`0x1b04`) and the control can be temporarily diverted.
+
+Direct Bluetooth Low Energy, classic Bluetooth and direct USB connections are
+accepted when they expose the required HID++ reports. Devices behind a Logitech
+receiver (Unifying or Bolt) are not currently supported because addressing them
+requires the receiver-assigned device index.
 
 ## Choosing the values
 

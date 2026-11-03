@@ -29,8 +29,9 @@ using long_report = std::array<uint8_t, 20>;
 
 constexpr uint8_t short_report_id = 0x10;
 constexpr uint8_t long_report_id = 0x11;
-// Directly connected (Bluetooth Low Energy) devices are addressed with 0xff.
-// Receivers use other indices and are not supported.
+// Directly connected devices and receivers are addressed with 0xff.
+// Devices behind a receiver require their receiver-assigned device index and
+// are not handled by this session implementation.
 constexpr uint8_t direct_device_index = 0xff;
 constexpr uint8_t error_feature_index = 0xff;
 constexpr uint16_t reprog_controls_v4_feature_id = 0x1b04;

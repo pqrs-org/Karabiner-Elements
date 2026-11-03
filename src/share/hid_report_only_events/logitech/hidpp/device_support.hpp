@@ -1,8 +1,10 @@
 #pragma once
 
 // Decides whether HID++ button routing may be used for a device.
-// Only Logitech pointing devices connected directly over Bluetooth Low Energy, whose report descriptor declares
-// HID++ long reports, are supported. Receivers and other transports are not supported.
+// HID++ is self-describing, so the static check is deliberately limited to the
+// Logitech vendor id and the reports required by this implementation. Device
+// type, transport and REPROG_CONTROLS_V4 support are determined by probing the
+// device instead of being assumed here.
 
 #include "session.hpp"
 #include "types/device_identifiers.hpp"
@@ -11,7 +13,6 @@
 #include <pqrs/hid.hpp>
 #include <span>
 #include <string>
-#include <string_view>
 
 namespace krbn::logitech::hidpp {
 class device_support final {
@@ -21,9 +22,8 @@ public:
   }
 
   device_support(const device_identifiers& identifiers,
-                 std::string_view transport,
                  std::span<const uint8_t> report_descriptor) {
-    unsupported_reason_ = find_unsupported_device_reason(identifiers, transport);
+    unsupported_reason_ = find_unsupported_device_reason(identifiers);
     if (unsupported_reason_) {
       return;
     }
@@ -44,21 +44,9 @@ public:
   }
 
   // Checks which do not need the report descriptor.
-  [[nodiscard]] static std::optional<std::string> find_unsupported_device_reason(const device_identifiers& identifiers,
-                                                                                 std::string_view transport) {
+  [[nodiscard]] static std::optional<std::string> find_unsupported_device_reason(const device_identifiers& identifiers) {
     if (identifiers.get_vendor_id() != pqrs::hid::vendor_id::value_t(0x046d)) {
       return "only Logitech devices are supported";
-    }
-
-    if (!identifiers.get_is_pointing_device()) {
-      return "only pointing devices are supported";
-    }
-
-    // macOS reports "Bluetooth Low Energy" while IOHIDKeys.h defines "BluetoothLowEnergy".
-    if (transport != "Bluetooth Low Energy" &&
-        transport != "BluetoothLowEnergy") {
-      return fmt::format("transport `{0}` is not supported (only direct Bluetooth Low Energy connections are supported; receivers are not supported)",
-                         transport);
     }
 
     return std::nullopt;

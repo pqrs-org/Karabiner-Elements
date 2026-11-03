@@ -411,7 +411,6 @@ struct DevicesView: View {
 
     var body: some View {
       if deviceConfiguration.modifyEvents
-        && connectedDevice.vendorId == 0x046d
         && !controlIds.isEmpty
       {
         VStack(alignment: .leading, spacing: 6.0) {

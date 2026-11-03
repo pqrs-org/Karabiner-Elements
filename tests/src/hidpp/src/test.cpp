@@ -956,42 +956,43 @@ int main() {
   "device_support"_test = [] {
     auto descriptor = mx_anywhere_3s_descriptor();
 
-    {
-      hidpp::device_support support(logitech_mouse, "Bluetooth Low Energy", descriptor);
-      expect(!support.get_unsupported_reason());
-    }
-
-    expect(!hidpp::device_support(logitech_mouse, "BluetoothLowEnergy", descriptor).get_unsupported_reason());
+    expect(!hidpp::device_support(logitech_mouse, descriptor).get_unsupported_reason());
 
     auto unsupported = [&](const krbn::device_identifiers& identifiers,
-                           std::string_view transport,
                            std::span<const uint8_t> d,
                            std::string_view expected) {
-      hidpp::device_support support(identifiers, transport, d);
+      hidpp::device_support support(identifiers, d);
       expect(support.get_unsupported_reason().has_value());
       if (support.get_unsupported_reason()) {
         expect(support.get_unsupported_reason()->find(expected) != std::string::npos) << *support.get_unsupported_reason();
       }
     };
 
-    unsupported(make_identifiers(0x056e, true), "Bluetooth Low Energy", descriptor, "only Logitech");
-    unsupported(make_identifiers(0x046d, false), "Bluetooth Low Energy", descriptor, "only pointing devices");
-    unsupported(logitech_mouse, "USB", descriptor, "transport `USB`");
-    unsupported(logitech_mouse, "Bluetooth", descriptor, "receivers are not supported");
-    unsupported(logitech_mouse, "Bluetooth Low Energy", {}, "HID++ long reports");
+    unsupported(make_identifiers(0x056e, true), descriptor, "only Logitech");
+
+    // HID++ REPROG_CONTROLS_V4 covers both keyboard keys and mouse buttons,
+    // and HID++ can be transported over BLE, classic Bluetooth or USB.
+    krbn::device_identifiers logitech_keyboard({
+        .vendor_id = pqrs::hid::vendor_id::value_t(0x046d),
+        .product_id = pqrs::hid::product_id::value_t(0xb037),
+        .is_keyboard = true,
+    });
+    expect(!hidpp::device_support(logitech_keyboard, descriptor).get_unsupported_reason());
+
+    unsupported(logitech_mouse, {}, "HID++ long reports");
 
     // Without the HID++ output report.
     {
       auto d = descriptor;
       d.erase(d.end() - 5, d.end() - 1);
-      unsupported(logitech_mouse, "Bluetooth Low Energy", d, "HID++ long reports");
+      unsupported(logitech_mouse, d, "HID++ long reports");
     }
 
     // A HID++ report with another size.
     {
       auto d = descriptor;
       d[d.size() - 15] = 0x06; // Report Count (6)
-      unsupported(logitech_mouse, "Bluetooth Low Energy", d, "HID++ long reports");
+      unsupported(logitech_mouse, d, "HID++ long reports");
     }
 
     expect(hidpp::device_support().get_unsupported_reason().has_value());
