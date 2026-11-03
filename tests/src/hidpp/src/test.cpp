@@ -376,6 +376,8 @@ int main() {
                {.control_id = back_button, .pressed = true},
            }));
 
+    expect(s.handle_request_write_success(s.get_generation(),
+                                          divert_request_for(back_button)));
     expect(s.handle_timeout(s.get_generation()).request == get_reporting_request_for(top_button));
 
     expect(input(s, reporting_reply(top_button, 0x00)).request == divert_request_for(top_button));
@@ -617,6 +619,10 @@ int main() {
       auto s2 = make_session();
       discover(s2);
       input(s2, reporting_reply(top_button, 0x00));
+      auto generation = s2.get_generation();
+      expect(!s2.handle_timeout(generation).request) << "before IOKit write completion";
+      expect(s2.get_state() == hidpp::session::state::waiting_divert);
+      expect(s2.handle_request_write_success(generation, divert_request));
       expect(!s2.handle_timeout(s2.get_generation()).request);
       expect(s2.get_state() == hidpp::session::state::diverted);
       expect(s2.stop().request == undivert_request);
@@ -788,6 +794,7 @@ int main() {
       auto s = make_session();
       discover(s);
       input(s, reporting_reply(top_button, 0x00));
+      expect(s.handle_request_write_success(s.get_generation(), divert_request));
       time_out(s);
       expect(s.get_state() == hidpp::session::state::diverted);
       expect_no_recovery(s, hidpp::session::state::diverted);
@@ -842,6 +849,32 @@ int main() {
       expect(s.get_state() == hidpp::session::state::failed);
       expect(!s.handle_timeout(s.get_generation()).request);
       expect(!s.stop().request) << "nothing was diverted";
+    }
+
+    // A failed setCidReporting write fails immediately instead of being
+    // treated as a successful diversion when the reply timer expires.
+    {
+      auto s = make_session();
+      discover(s);
+      input(s, reporting_reply(top_button, 0x00));
+      auto generation = s.get_generation();
+
+      expect(!s.handle_request_write_failure(generation - 1,
+                                             divert_request,
+                                             "stale"));
+      expect(!s.handle_request_write_failure(generation,
+                                             undivert_request,
+                                             "different request"));
+      expect(s.get_state() == hidpp::session::state::waiting_divert);
+
+      auto result = s.handle_request_write_failure(generation,
+                                                   divert_request,
+                                                   "kIOReturnNotOpen");
+      expect(result.has_value());
+      expect(result->request == undivert_request);
+      expect(s.get_state() == hidpp::session::state::failed);
+      expect(s.get_reason().find("kIOReturnNotOpen") != std::string::npos);
+      expect(!s.handle_timeout(generation).request);
     }
 
     // A restore request is sent once and never retried.

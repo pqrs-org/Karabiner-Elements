@@ -158,7 +158,7 @@ private:
     erase_disconnected_devices,
     set_formula,
     reset_formula,
-    set_logitech_hidpp_button,
+    set_logitech_hidpp_buttons,
   };
 
   [[nodiscard]] static action_type parse_action(std::string_view name) {
@@ -188,7 +188,7 @@ private:
         {"erase_disconnected_devices", action_type::erase_disconnected_devices},
         {"set_formula", action_type::set_formula},
         {"reset_formula", action_type::reset_formula},
-        {"set_logitech_hidpp_button", action_type::set_logitech_hidpp_button},
+        {"set_logitech_hidpp_buttons", action_type::set_logitech_hidpp_buttons},
     };
 
     for (const auto& [command_name, action] : actions) {
@@ -479,19 +479,19 @@ private:
         break;
       }
 
-      case action_type::set_logitech_hidpp_button: {
+      case action_type::set_logitech_hidpp_buttons: {
         const auto identifiers = krbn::json_utility::parse_jsonc(command.at("device").get<std::string>()).get<krbn::device_identifiers>();
         auto device = profile.get_device(identifiers);
-        const auto& controls = command.at("controls");
-        pqrs::json::requires_array(controls, "`controls`");
+        const auto& buttons = command.at("buttons");
+        pqrs::json::requires_array(buttons, "`buttons`");
 
-        if (controls.empty()) {
-          device->set_logitech_hidpp_button(std::nullopt);
+        if (buttons.empty()) {
+          device->set_logitech_hidpp(std::nullopt);
         } else {
-          device->set_logitech_hidpp_button(
-              krbn::core_configuration::details::logitech_hidpp_button(
+          device->set_logitech_hidpp(
+              krbn::core_configuration::details::logitech_hidpp(
                   nlohmann::json::object({
-                      {"controls", controls},
+                      {"buttons", buttons},
                   })));
         }
         break;

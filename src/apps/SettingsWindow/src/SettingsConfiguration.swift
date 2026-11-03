@@ -164,14 +164,14 @@ struct SettingsConfiguration: Decodable {
   }
 
   struct Device: Codable {
-    struct LogitechHidppButton: Codable {
-      struct Control: Codable {
-        var controlId: UInt16
-        var enabled: Bool
-        var toJsonString: String
-      }
+    struct LogitechHidpp: Codable {
+      var buttons: [LogitechHidppButton]
+    }
 
-      var controls: [Control]
+    struct LogitechHidppButton: Codable {
+      var controlId: UInt16
+      var enabled: Bool
+      var toJsonString: String
     }
 
     var ignore: Bool
@@ -205,7 +205,7 @@ struct SettingsConfiguration: Decodable {
     var gamePadStickYFormula: String
     var gamePadStickVerticalWheelFormula: String
     var gamePadStickHorizontalWheelFormula: String
-    var logitechHidppButton: LogitechHidppButton?
+    var logitechHidpp: LogitechHidpp?
     var simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
 

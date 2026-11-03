@@ -315,35 +315,42 @@
         "error": "`game_pad_stick_horizontal_wheel_formula` must be array of string, or string, but is `null`"
     },
 
-    // logitech_hidpp_button
+    // logitech_hidpp
 
     {
         "class": "devices",
         "input": {
-            "logitech_hidpp_button": null
+            "logitech_hidpp": null
         },
-        "error": "`logitech_hidpp_button` error: json must be object, but is `null`"
+        "error": "`logitech_hidpp` error: json must be object, but is `null`"
     },
     {
         "class": "devices",
         "input": {
-            "logitech_hidpp_button": {}
+            "logitech_hidpp": {}
         },
-        "error": "`logitech_hidpp_button` error: `controls` is missing in `{}`"
+        "error": "`logitech_hidpp` error: `buttons` is missing in `{}`"
     },
     {
         "class": "devices",
         "input": {
-            "logitech_hidpp_button": { "controls": [{ "control_id": 0, "to": [{ "key_code": "a" }] }] }
+            "logitech_hidpp": { "buttons": [] }
         },
-        "error": "`logitech_hidpp_button` error: `control_id` must be an integer between 1 and 65535, but is `0`"
+        "error": "`logitech_hidpp` error: `buttons` must not be empty"
     },
     {
         "class": "devices",
         "input": {
-            "logitech_hidpp_button": { "controls": [{ "control_id": 196, "to": [{ "key_code": "a" }], "persistent": true }] }
+            "logitech_hidpp": { "buttons": [{ "control_id": 0, "to": [{ "key_code": "a" }] }] }
         },
-        "error": "`logitech_hidpp_button` error: unknown key `persistent` in `{\"control_id\":196,\"persistent\":true,\"to\":[{\"key_code\":\"a\"}]}`"
+        "error": "`logitech_hidpp` error: `control_id` must be an integer between 1 and 65535, but is `0`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": { "buttons": [{ "control_id": 196, "to": [{ "key_code": "a" }], "persistent": true }] }
+        },
+        "error": "`logitech_hidpp` error: unknown key `persistent` in `{\"control_id\":196,\"persistent\":true,\"to\":[{\"key_code\":\"a\"}]}`"
     },
 
     // simple_modifications

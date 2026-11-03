@@ -501,21 +501,21 @@ final class Settings: ObservableObject {
     enabled: Bool,
     connectedDevice: ConnectedDevice
   ) {
-    var controls =
-      configurationStorage?.selectedProfile.devices[connectedDevice.id]?.logitechHidppButton?
-      .controls ?? []
-    if let index = controls.firstIndex(where: { $0.controlId == controlId }) {
-      controls[index].enabled = enabled
+    var buttons =
+      configurationStorage?.selectedProfile.devices[connectedDevice.id]?.logitechHidpp?.buttons
+      ?? []
+    if let index = buttons.firstIndex(where: { $0.controlId == controlId }) {
+      buttons[index].enabled = enabled
     } else if enabled {
-      controls.append(
-        SettingsConfiguration.Device.LogitechHidppButton.Control(
+      buttons.append(
+        SettingsConfiguration.Device.LogitechHidppButton(
           controlId: controlId,
           enabled: true,
           toJsonString: "[{\"key_code\":\"vk_none\"}]"))
     }
 
-    setLogitechHidppButtonControls(
-      controls,
+    setLogitechHidppButtons(
+      buttons,
       connectedDevice: connectedDevice)
   }
 
@@ -525,46 +525,46 @@ final class Settings: ObservableObject {
     connectedDevice: ConnectedDevice
   ) {
     guard
-      var controls = configurationStorage?.selectedProfile.devices[connectedDevice.id]?
-        .logitechHidppButton?.controls,
-      let index = controls.firstIndex(where: { $0.controlId == controlId })
+      var buttons = configurationStorage?.selectedProfile.devices[connectedDevice.id]?
+        .logitechHidpp?.buttons,
+      let index = buttons.firstIndex(where: { $0.controlId == controlId })
     else { return }
 
-    controls[index].toJsonString = toJsonString
-    setLogitechHidppButtonControls(
-      controls,
+    buttons[index].toJsonString = toJsonString
+    setLogitechHidppButtons(
+      buttons,
       connectedDevice: connectedDevice)
   }
 
-  private func setLogitechHidppButtonControls(
-    _ controls: [SettingsConfiguration.Device.LogitechHidppButton.Control],
+  private func setLogitechHidppButtons(
+    _ buttons: [SettingsConfiguration.Device.LogitechHidppButton],
     connectedDevice: ConnectedDevice
   ) {
-    let sortedControls = controls.sorted { $0.controlId < $1.controlId }
+    let sortedButtons = buttons.sorted { $0.controlId < $1.controlId }
 
-    let commandControls: [[String: Any]] = sortedControls.compactMap { control in
-      guard let data = control.toJsonString.data(using: .utf8),
+    let commandButtons: [[String: Any]] = sortedButtons.compactMap { button in
+      guard let data = button.toJsonString.data(using: .utf8),
         let to = try? JSONSerialization.jsonObject(with: data)
       else { return nil }
 
       return [
-        "control_id": Int(control.controlId),
-        "enabled": control.enabled,
+        "control_id": Int(button.controlId),
+        "enabled": button.enabled,
         "to": to,
       ]
     }
-    guard commandControls.count == sortedControls.count else { return }
+    guard commandButtons.count == sortedButtons.count else { return }
 
-    configurationStorage?.selectedProfile.devices[connectedDevice.id]?.logitechHidppButton =
-      sortedControls.isEmpty
+    configurationStorage?.selectedProfile.devices[connectedDevice.id]?.logitechHidpp =
+      sortedButtons.isEmpty
       ? nil
-      : SettingsConfiguration.Device.LogitechHidppButton(controls: sortedControls)
+      : SettingsConfiguration.Device.LogitechHidpp(buttons: sortedButtons)
 
     performCommand(
-      .setLogitechHidppButton,
+      .setLogitechHidppButtons,
       parameters: [
         "device": connectedDevice.id,
-        "controls": commandControls,
+        "buttons": commandButtons,
       ])
   }
 

@@ -419,6 +419,10 @@ public:
     }
 
     if (state_ == state::waiting_divert) {
+      if (!pending_request_write_succeeded_) {
+        return {};
+      }
+
       // Some devices, including M585/M590, apply setCidReporting but do not
       // echo the request as specified. The synchronous IOKit write has already
       // succeeded, so do not spend three protocol retries on every selected
@@ -440,6 +444,34 @@ public:
     ++attempts_;
     ++generation_;
     return result{.request = pending_request_};
+  }
+
+  // Reports that IOKit accepted the pending request. The caller starts the
+  // protocol reply timer only when this method returns true.
+  bool handle_request_write_success(uint64_t generation,
+                                    const long_report& request) {
+    if (!pending_request_matches(generation, request)) {
+      return false;
+    }
+
+    pending_request_write_succeeded_ = true;
+    return true;
+  }
+
+  // Reports that IOKit could not write the pending request to the device.
+  // A stale result is ignored because the request might already have been
+  // answered, stopped or replaced by a later request.
+  [[nodiscard]] std::optional<result> handle_request_write_failure(
+      uint64_t generation,
+      const long_report& request,
+      const std::string& reason) {
+    if (!pending_request_matches(generation, request)) {
+      return std::nullopt;
+    }
+
+    return fail(fmt::format("failed to send a HID++ request while {0}: {1}",
+                            make_pending_request_description(),
+                            reason));
   }
 
   // Returns requests that restore controls which might be diverted, and releases for pressed controls.
@@ -576,6 +608,7 @@ private:
   result send(state new_state, const long_report& request) {
     state_ = new_state;
     pending_request_ = request;
+    pending_request_write_succeeded_ = false;
     attempts_ = 1;
     ++generation_;
     return result{.request = request};
@@ -584,6 +617,12 @@ private:
   bool same_control_id(std::span<const uint8_t> report) const {
     return current_control_index_ < control_ids_.size() &&
            ((report[4] << 8) | report[5]) == current_control_id();
+  }
+
+  [[nodiscard]] bool pending_request_matches(uint64_t generation,
+                                             const long_report& request) const {
+    return generation == generation_ &&
+           pending_request_ == request;
   }
 
   result handle_notification(std::span<const uint8_t> report) {
@@ -696,6 +735,8 @@ private:
   bool recovery_used_ = false;
   std::vector<uint16_t> pressed_control_ids_;
   std::optional<long_report> pending_request_;
+  // Required before an unacknowledged setCidReporting request can be accepted.
+  bool pending_request_write_succeeded_ = false;
   int attempts_ = 0;
   uint64_t generation_ = 0;
   std::string reason_;

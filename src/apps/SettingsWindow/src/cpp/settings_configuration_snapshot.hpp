@@ -237,17 +237,17 @@ private:
           {"fn_function_keys", make_simple_modifications_json(*device->get_fn_function_keys())},
       };
 
-      if (const auto& logitech_hidpp_button = device->get_logitech_hidpp_button()) {
-        auto controls = nlohmann::json::array();
-        for (const auto& control : logitech_hidpp_button->get_controls()) {
-          controls.push_back({
-              {"control_id", control.control_id},
-              {"enabled", control.enabled},
-              {"to_json_string", control.to.dump()},
+      if (const auto& logitech_hidpp = device->get_logitech_hidpp()) {
+        auto buttons = nlohmann::json::array();
+        for (const auto& button : logitech_hidpp->get_buttons()) {
+          buttons.push_back({
+              {"control_id", button.control_id},
+              {"enabled", button.enabled},
+              {"to_json_string", button.to.dump()},
           });
         }
-        device_json["logitech_hidpp_button"] = {
-            {"controls", std::move(controls)},
+        device_json["logitech_hidpp"] = {
+            {"buttons", std::move(buttons)},
         };
       }
 

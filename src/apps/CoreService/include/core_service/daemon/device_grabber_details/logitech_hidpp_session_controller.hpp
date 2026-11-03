@@ -4,6 +4,7 @@
 #include "logger.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
 #include <atomic>
+#include <memory>
 #include <mutex>
 #include <nod/nod.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
@@ -37,7 +38,8 @@ namespace krbn::core_service::daemon::device_grabber_details {
 // error, a failed diversion, or a second timeout is not recovered, and the controls stay with the firmware until the
 // next activation.
 //
-class logitech_hidpp_session_controller final : public pqrs::dispatcher::extra::dispatcher_client {
+class logitech_hidpp_session_controller final : public pqrs::dispatcher::extra::dispatcher_client,
+                                                public std::enable_shared_from_this<logitech_hidpp_session_controller> {
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
@@ -126,12 +128,7 @@ private:
 
   [[nodiscard]] std::vector<logitech::hidpp::session::result::button_event> handle_result(const logitech::hidpp::session::result& r) {
     if (handle_requests(r)) {
-      auto generation = session_.get_generation();
-      enqueue_to_dispatcher(
-          [this, generation] {
-            static_cast<void>(handle_result(session_.handle_timeout(generation)));
-          },
-          when_now() + logitech::hidpp::reply_timeout);
+      schedule_reply_timeout(session_.get_generation());
     }
 
     if (session_.controls_discovered()) {
@@ -145,23 +142,39 @@ private:
     return r.button_events;
   }
 
-  // Returns true if a request which waits for a reply was sent.
-  bool handle_requests(const logitech::hidpp::session::result& r) const {
-    std::vector<logitech::hidpp::long_report> requests;
-    if (r.request) {
-      requests.push_back(*r.request);
-    }
-    requests.insert(std::end(requests), std::begin(r.additional_requests), std::end(r.additional_requests));
+  // Returns true if a read-only query which waits for a reply was sent.
+  // A setCidReporting timeout is scheduled separately after its synchronous
+  // IOKit write succeeds.
+  bool handle_requests(const logitech::hidpp::session::result& r) {
+    bool query_waits_for_reply = false;
 
-    for (const auto& request : requests) {
+    if (r.request) {
+      if (logitech::hidpp::is_set_reporting_request(*r.request)) {
+        send_synchronously(*r.request,
+                           session_.waiting_reply() ? std::optional<uint64_t>(session_.get_generation()) : std::nullopt);
+      } else {
+        send_query(*r.request);
+        query_waits_for_reply = session_.waiting_reply();
+      }
+    }
+
+    for (const auto& request : r.additional_requests) {
       if (logitech::hidpp::is_set_reporting_request(request)) {
-        send_synchronously(request);
+        send_synchronously(request, std::nullopt);
       } else {
         send_query(request);
       }
     }
 
-    return !requests.empty() && session_.waiting_reply();
+    return query_waits_for_reply;
+  }
+
+  void schedule_reply_timeout(uint64_t generation) {
+    enqueue_to_dispatcher(
+        [this, generation] {
+          static_cast<void>(handle_result(session_.handle_timeout(generation)));
+        },
+        when_now() + logitech::hidpp::reply_timeout);
   }
 
   struct query_context final {
@@ -275,10 +288,12 @@ private:
     });
   }
 
-  void send_synchronously(const logitech::hidpp::long_report& request) const {
+  void send_synchronously(const logitech::hidpp::long_report& request,
+                          std::optional<uint64_t> generation) {
     auto device = device_;
     auto r = request;
     auto log_prefix = log_prefix_;
+    auto weak_self = weak_from_this();
 
     run_loop_thread_->enqueue(^{
       pqrs::osx::iokit_return kr = IOHIDDeviceSetReport(*device,
@@ -286,7 +301,28 @@ private:
                                                         r[0],
                                                         r.data(),
                                                         r.size());
-      if (!kr) {
+
+      if (generation) {
+        if (auto self = weak_self.lock()) {
+          self->enqueue_to_dispatcher([weak_self, generation = *generation, r, kr] {
+            if (auto self = weak_self.lock()) {
+              if (kr) {
+                // Start the protocol reply timeout only after IOKit has accepted
+                // the request. Some devices apply setCidReporting without
+                // returning the HID++ acknowledgement.
+                if (self->session_.handle_request_write_success(generation, r)) {
+                  self->schedule_reply_timeout(generation);
+                }
+              } else if (auto result = self->session_.handle_request_write_failure(
+                             generation,
+                             r,
+                             kr.to_string())) {
+                static_cast<void>(self->handle_result(*result));
+              }
+            }
+          });
+        }
+      } else if (!kr) {
         logger::get_logger()->warn("{0} failed to change the reporting of a control; it may stay diverted until the device reconnects: {1}",
                                    log_prefix,
                                    kr.to_string());

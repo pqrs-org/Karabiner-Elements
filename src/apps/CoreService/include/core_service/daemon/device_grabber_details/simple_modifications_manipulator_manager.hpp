@@ -23,20 +23,20 @@ public:
 
     for (const auto& device : profile.get_devices()) {
       //
-      // Add profile.device.logitech_hidpp_button controls.
+      // Add profile.device.logitech_hidpp entries.
       //
 
-      if (const auto& logitech_hidpp_button = device->get_logitech_hidpp_button()) {
-        for (const auto& control : logitech_hidpp_button->get_controls()) {
-          if (!control.enabled) {
+      if (const auto& logitech_hidpp = device->get_logitech_hidpp()) {
+        for (const auto& button : logitech_hidpp->get_buttons()) {
+          if (!button.enabled) {
             continue;
           }
 
           try {
             auto from = nlohmann::json::object({
-                {"logitech_hidpp_button", control.control_id},
+                {"logitech_hidpp_button", button.control_id},
             });
-            if (auto m = make_manipulator({from.dump(), control.to.dump()})) {
+            if (auto m = make_manipulator({from.dump(), button.to.dump()})) {
               auto c = manipulator::condition_factory::make_device_if_condition(*device);
               m->push_back_condition(c);
               manipulator_manager_->push_back_manipulator(m);

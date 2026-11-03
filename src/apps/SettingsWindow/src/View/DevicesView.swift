@@ -395,16 +395,16 @@ struct DevicesView: View {
 
     private var controlIds: [UInt16] {
       var result = Set(connectedDevice.logitechHidppDivertableControlIds)
-      for control in deviceConfiguration.logitechHidppButton?.controls ?? [] {
+      for control in deviceConfiguration.logitechHidpp?.buttons ?? [] {
         result.insert(control.controlId)
       }
       return result.sorted()
     }
 
     private func control(_ controlId: UInt16)
-      -> SettingsConfiguration.Device.LogitechHidppButton.Control?
+      -> SettingsConfiguration.Device.LogitechHidppButton?
     {
-      deviceConfiguration.logitechHidppButton?.controls.first {
+      deviceConfiguration.logitechHidpp?.buttons.first {
         $0.controlId == controlId
       }
     }

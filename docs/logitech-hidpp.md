@@ -1,6 +1,6 @@
-# Logitech HID++ button
+# Logitech HID++
 
-`logitech_hidpp_button` diverts controls of a Logitech device, such as buttons
+`logitech_hidpp.buttons` diverts controls of a Logitech device, such as buttons
 that normally perform firmware functions, and maps them directly to ordinary
 Karabiner-Elements output events.
 
@@ -15,8 +15,8 @@ modifying the device (`"ignore": false`):
         "vendor_id": 1133
     },
     "ignore": false,
-    "logitech_hidpp_button": {
-        "controls": [
+    "logitech_hidpp": {
+        "buttons": [
             {
                 "control_id": 82,
                 "enabled": true,
@@ -33,19 +33,19 @@ modifying the device (`"ignore": false`):
 ```
 
 Set `enabled` to `false` to give a control back to its firmware function while
-preserving its `to` mapping. Remove a control from `controls` to discard its
-mapping. Remove `logitech_hidpp_button` to discard all control settings.
+preserving its `to` mapping. Remove an entry from `logitech_hidpp.buttons` to
+discard its mapping. Remove `logitech_hidpp` to discard all HID++ settings.
 
 ## Configuration
 
 | Field        | Values                                                             |
 | ------------ | ------------------------------------------------------------------ |
-| `controls`   | Non-empty array of control mappings. Required                      |
 | `control_id` | Integer from 1 to 65535 (the HID++ control ID, CID)                |
 | `enabled`    | Whether Karabiner-Elements manages the control. Defaults to `true` |
 | `to`         | Non-empty Simple Modifications-compatible output array             |
 
-Other keys are errors. An invalid `logitech_hidpp_button` is not applied.
+`logitech_hidpp.buttons` must be a non-empty array. Other keys in each entry are
+errors. An invalid `logitech_hidpp` setting is not applied.
 Duplicate control IDs are errors. Controls are stored in ascending ID order.
 
 ## Supported devices
@@ -73,8 +73,8 @@ selected output.
 ... logitech_hidpp_button: activated: control 196 (0x00c4) is diverted (REPROG_CONTROLS_V4 feature index 0x0a)
 ```
 
-When `logitech_hidpp_button` is not activated, the log shows the reason, and the
-control keeps its firmware function.
+When a button is not activated, the log shows the reason, and the control keeps
+its firmware function.
 
 ## Behavior
 
