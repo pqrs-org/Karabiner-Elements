@@ -391,7 +391,7 @@ struct DevicesView: View {
 
     private let columns = Array(
       repeating: GridItem(.flexible(minimum: 240.0), spacing: 12.0, alignment: .leading),
-      count: 3)
+      count: 2)
 
     private var controlIds: [UInt16] {
       var result = Set(connectedDevice.logitechHidppDivertableControlIds)
@@ -415,7 +415,7 @@ struct DevicesView: View {
         && !controlIds.isEmpty
       {
         VStack(alignment: .leading, spacing: 6.0) {
-          AppLocalizedText("settings.devices.logitech_hidpp_controls")
+          AppLocalizedText("settings.devices.logitech_hidpp_button_assignments")
             .font(.callout)
 
           LazyVGrid(columns: columns, alignment: .leading, spacing: 6.0) {
