@@ -1,8 +1,8 @@
-# HID++ button
+# Logitech HID++ button
 
-`hidpp_button` reports one control of a Logitech device, such as a button that
-normally performs a firmware function, as an ordinary pointing button. The
-pointing button can then be used in any rule.
+`logitech_hidpp_button` reports one control of a Logitech device, such as a
+button that normally performs a firmware function, as an input event. The event
+can then be used in a rule.
 
 Add it to the device entry of the selected profile. Karabiner-Elements must be
 modifying the device (`"ignore": false`):
@@ -15,15 +15,14 @@ modifying the device (`"ignore": false`):
         "vendor_id": 1133
     },
     "ignore": false,
-    "hidpp_button": {
-        "control_id": 196,
-        "pointing_button": "button17"
+    "logitech_hidpp_button": {
+        "control_id": 196
     }
 }
 ```
 
-The control is then reported as `button17` and can be changed by a rule, for
-example to hold `right_control` while it is pressed:
+The control is then reported as `logitech_hidpp_button: 196` and can be changed
+by a rule, for example to hold `right_control` while it is pressed:
 
 ```json
 {
@@ -32,7 +31,7 @@ example to hold `right_control` while it is pressed:
         {
             "type": "basic",
             "from": {
-                "pointing_button": "button17",
+                "logitech_hidpp_button": 196,
                 "modifiers": { "optional": ["any"] }
             },
             "to": [{ "key_code": "right_control" }],
@@ -47,19 +46,19 @@ example to hold `right_control` while it is pressed:
 }
 ```
 
-Remove `hidpp_button` to give the control back to its firmware function.
+Remove `logitech_hidpp_button` to give the control back to its firmware function.
 
 ## Configuration
 
-| Field             | Values                                                        |
-| ----------------- | ------------------------------------------------------------- |
-| `control_id`      | Integer from 1 to 65535 (the HID++ control ID, CID). Required |
-| `pointing_button` | Pointing button name, such as `button17`. Required            |
+| Field        | Values                                                        |
+| ------------ | ------------------------------------------------------------- |
+| `control_id` | Integer from 1 to 65535 (the HID++ control ID, CID). Required |
 
-Other keys are errors. An invalid `hidpp_button` is not applied.
+Other keys are errors. An invalid `logitech_hidpp_button` is not applied.
 One control can be configured per device.
-Use `button1` to `button32` if the button is not changed by a rule, because the
-virtual pointing device reports only those buttons.
+
+`logitech_hidpp_button` is an input-only event. It must be changed to a key or
+pointing button by a rule in order to produce output.
 
 ## Supported devices
 
@@ -74,25 +73,16 @@ Only devices that meet all of the following:
 
 ## Choosing the values
 
-`core_service.log` lists the controls that can be used when `hidpp_button` is
-configured for a supported device:
+`core_service.log` lists the controls that can be used when
+`logitech_hidpp_button` is configured for a supported device:
 
 ```text
-... hidpp_button: divertable controls: 82 (0x0052), 83 (0x0053), 86 (0x0056), 196 (0x00c4), 215 (0x00d7)
-... hidpp_button: activated: control 196 (0x00c4) is diverted (REPROG_CONTROLS_V4 feature index 0x0a)
+... logitech_hidpp_button: divertable controls: 82 (0x0052), 83 (0x0053), 86 (0x0056), 196 (0x00c4), 215 (0x00d7)
+... logitech_hidpp_button: activated: control 196 (0x00c4) is diverted (REPROG_CONTROLS_V4 feature index 0x0a)
 ```
 
-`pointing_button` must be a button which the device does not report by itself.
-Karabiner-Elements cannot tell a physical press from a press of the same button
-reported through `hidpp_button`. For example, the MX Anywhere 3S declares
-`button1` to `button16`, so use `button17` or higher:
-
-```text
-... hidpp_button: not activated: the device can report pointing button 6 itself (declared: button1-button16); choose a pointing_button which the device does not declare
-```
-
-When `hidpp_button` is not activated, the log shows the reason, and the control
-keeps its firmware function.
+When `logitech_hidpp_button` is not activated, the log shows the reason, and the
+control keeps its firmware function.
 
 ## Behavior
 

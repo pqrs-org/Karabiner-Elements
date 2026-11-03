@@ -1,9 +1,9 @@
-#include "hidpp/device_support.hpp"
-#include "hidpp/session.hpp"
+#include "hid_report_only_events/logitech/hidpp/device_support.hpp"
+#include "hid_report_only_events/logitech/hidpp/session.hpp"
 #include <boost/ut.hpp>
 
 namespace {
-namespace hidpp = krbn::hidpp;
+namespace hidpp = krbn::logitech::hidpp;
 
 constexpr uint16_t top_button = 0x00c4;
 
@@ -83,7 +83,7 @@ void make_diverted(hidpp::session& s) {
 }
 
 hidpp::session make_session(uint16_t cid = top_button, uint8_t software_id = 1) {
-  return hidpp::session(cid, software_id, "test hidpp_button:");
+  return hidpp::session(cid, software_id, "test logitech_hidpp_button:");
 }
 
 // Lets every attempt of the pending request time out.
@@ -759,16 +759,6 @@ int main() {
     {
       hidpp::device_support support(logitech_mouse, "Bluetooth Low Energy", descriptor);
       expect(!support.get_unsupported_reason());
-      expect(support.make_input_buttons_string() == "declared: button1-button16");
-      expect(!support.find_pointing_button_conflict(pqrs::hid::usage::button::button_17));
-      expect(!support.find_pointing_button_conflict(pqrs::hid::usage::button::button_32));
-
-      // button6 is declared by the mouse report, so it is refused.
-      auto conflict = support.find_pointing_button_conflict(pqrs::hid::usage::button::button_6);
-      expect(conflict.has_value());
-      expect(conflict->find("button1-button16") != std::string::npos) << *conflict;
-      expect(support.find_pointing_button_conflict(pqrs::hid::usage::button::button_1).has_value());
-      expect(support.find_pointing_button_conflict(pqrs::hid::usage::button::button_16).has_value());
     }
 
     expect(!hidpp::device_support(logitech_mouse, "BluetoothLowEnergy", descriptor).get_unsupported_reason());
@@ -782,7 +772,6 @@ int main() {
       if (support.get_unsupported_reason()) {
         expect(support.get_unsupported_reason()->find(expected) != std::string::npos) << *support.get_unsupported_reason();
       }
-      expect(support.find_pointing_button_conflict(pqrs::hid::usage::button::button_17).has_value());
     };
 
     unsupported(make_identifiers(0x056e, true), "Bluetooth Low Energy", descriptor, "only Logitech");
@@ -806,33 +795,6 @@ int main() {
     }
 
     expect(hidpp::device_support().get_unsupported_reason().has_value());
-  };
-
-  "device_support: explicit button usages"_test = [] {
-    auto d = mx_anywhere_3s_descriptor();
-    // Usage (Button 1), Usage (Button 6) instead of Usage Minimum (1), Usage Maximum (16)
-    d[23] = 0x01;
-    d[22] = 0x09;
-    d[24] = 0x09;
-    d[25] = 0x06;
-
-    hidpp::device_support support(logitech_mouse, "Bluetooth Low Energy", d);
-    expect(!support.get_unsupported_reason());
-    expect(support.make_input_buttons_string() == "declared: button1, button6");
-    expect(support.find_pointing_button_conflict(pqrs::hid::usage::button::button_6).has_value());
-    expect(!support.find_pointing_button_conflict(pqrs::hid::usage::button::button_17));
-  };
-
-  "device_support: button input without usages"_test = [] {
-    auto d = mx_anywhere_3s_descriptor();
-    // Remove Usage Minimum/Maximum of the buttons.
-    d.erase(d.begin() + 22, d.begin() + 26);
-
-    hidpp::device_support support(logitech_mouse, "Bluetooth Low Energy", d);
-    expect(!support.get_unsupported_reason());
-    auto conflict = support.find_pointing_button_conflict(pqrs::hid::usage::button::button_17);
-    expect(conflict.has_value());
-    expect(conflict->find("cannot be determined") != std::string::npos) << *conflict;
   };
 
   return 0;

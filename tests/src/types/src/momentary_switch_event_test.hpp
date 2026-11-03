@@ -150,6 +150,37 @@ void run_momentary_switch_event_test() {
     }
 
     //
+    // logitech_hidpp_button
+    //
+
+    {
+      auto e = nlohmann::json({{"logitech_hidpp_button", 196}})
+                   .get<krbn::momentary_switch_event>();
+      expect(e.valid());
+      expect(!e.modifier_flag());
+      expect(!e.caps_lock());
+      expect(!e.pointing_button());
+      expect(e.logitech_hidpp_button());
+      expect(e.get_usage_pair() ==
+             pqrs::hid::usage_pair(
+                 krbn::momentary_switch_event_details::logitech_hidpp_button::usage_page,
+                 pqrs::hid::usage::value_t(196)));
+      expect(nlohmann::json(e) == nlohmann::json({{"logitech_hidpp_button", 196}}));
+    }
+    for (const auto& value : {
+             nlohmann::json(0),
+             nlohmann::json(65536),
+             nlohmann::json(-1),
+             nlohmann::json(196.5),
+             nlohmann::json("196"),
+         }) {
+      expect(throws<pqrs::json::unmarshal_error>([&] {
+        nlohmann::json({{"logitech_hidpp_button", value}})
+            .get<krbn::momentary_switch_event>();
+      })) << value.dump();
+    }
+
+    //
     // map
     //
 
@@ -487,6 +518,9 @@ void run_momentary_switch_event_test() {
                         .interrupts_key_repeat());
     expect(false == krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
                                                  pqrs::hid::usage::generic_desktop::dpad_up)
+                        .interrupts_key_repeat());
+    expect(false == nlohmann::json({{"logitech_hidpp_button", 196}})
+                        .get<krbn::momentary_switch_event>()
                         .interrupts_key_repeat());
   };
 }

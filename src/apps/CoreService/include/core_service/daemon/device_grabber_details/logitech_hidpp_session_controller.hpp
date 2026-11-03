@@ -1,9 +1,8 @@
 #pragma once
 
-#include "hidpp/session.hpp"
+#include "hid_report_only_events/logitech/hidpp/session.hpp"
 #include "logger.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
-#include <nod/nod.hpp>
 #include <pqrs/cf/run_loop_thread.hpp>
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/chrono.hpp>
@@ -11,7 +10,7 @@
 
 namespace krbn::core_service::daemon::device_grabber_details {
 //
-// Routes one HID++ control of a seized device by using hidpp::session.
+// Routes one HID++ control of a seized device by using logitech::hidpp::session.
 //
 // Threads:
 // - HID++ requests are written in the shared run loop thread, where the device is scheduled, opened and closed.
@@ -20,8 +19,8 @@ namespace krbn::core_service::daemon::device_grabber_details {
 //   Requests which change the reporting of the control (divert and restore) are written synchronously, so that a
 //   restore is written after a preceding divert and before a later IOHIDDeviceClose.
 //   Requests are written only while the control is activated and restored, never per button press.
-// - Input reports are delivered by hid_device_events_monitor, and protocol state and signals run in the shared
-//   dispatcher thread. The dispatcher never waits for a HID++ reply.
+// - Input reports are delivered by hid_device_events_monitor, and protocol state is updated in the shared dispatcher
+//   thread. The dispatcher never waits for a HID++ reply.
 //
 // Failure behavior:
 // If the device rejects a request or does not reply (3 attempts, 2 seconds each; a failed write is not answered),
@@ -34,27 +33,17 @@ namespace krbn::core_service::daemon::device_grabber_details {
 // error, a failed diversion, or a second timeout is not recovered, and the control stays with the firmware until the
 // next activation.
 //
-class hidpp_button_controller final : public pqrs::dispatcher::extra::dispatcher_client {
+class logitech_hidpp_session_controller final : public pqrs::dispatcher::extra::dispatcher_client {
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
 public:
-  //
-  // Signals (invoked from the shared dispatcher thread)
-  //
-
-  nod::signal<void(bool pressed, absolute_time_point time_stamp)> pressed_changed;
-
-  //
-  // Methods
-  //
-
-  hidpp_button_controller(const hidpp_button_controller&) = delete;
+  logitech_hidpp_session_controller(const logitech_hidpp_session_controller&) = delete;
 
   // This method should be called in the shared dispatcher thread.
-  hidpp_button_controller(pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
-                          IOHIDDeviceRef device,
-                          uint16_t control_id,
-                          const std::string& log_prefix)
+  logitech_hidpp_session_controller(pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
+                                IOHIDDeviceRef device,
+                                uint16_t control_id,
+                                const std::string& log_prefix)
       : dispatcher_client(),
         run_loop_thread_(run_loop_thread),
         device_(device),
@@ -66,25 +55,22 @@ public:
   }
 
   // This method should be called in the shared dispatcher thread while the device is still opened.
-  ~hidpp_button_controller() override {
+  ~logitech_hidpp_session_controller() override {
     detach_from_dispatcher([this] {
-      // Do not emit signals while the owner is being destroyed.
-      // A held button is released by the owner (explicit release or device_ungrabbed).
+      // The owner releases a held button before destroying the controller, or
+      // device_ungrabbed releases it after the device has already disappeared.
       handle_requests(session_.stop());
     });
   }
 
   // This method should be called in the shared dispatcher thread.
   void start() {
-    handle_result(session_.start(),
-                  pqrs::osx::chrono::mach_absolute_time_point());
+    static_cast<void>(handle_result(session_.start()));
   }
 
   // This method should be called in the shared dispatcher thread.
-  void handle_input_report(std::span<const uint8_t> report,
-                           absolute_time_point time_stamp) {
-    handle_result(session_.handle_input_report(report),
-                  time_stamp);
+  [[nodiscard]] std::optional<bool> handle_input_report(std::span<const uint8_t> report) {
+    return handle_result(session_.handle_input_report(report));
   }
 
   [[nodiscard]] bool can_recover_on_physical_activity() const {
@@ -103,15 +89,13 @@ public:
                                log_prefix_);
 
     // The returned request is the first discovery request, so start() must not be called.
-    handle_result(session_.restart_after_discovery_timeout(next_software_id()),
-                  pqrs::osx::chrono::mach_absolute_time_point());
+    static_cast<void>(handle_result(session_.restart_after_discovery_timeout(next_software_id())));
   }
 
   // Restores the control and reports a release if the button is held.
   // This method should be called in the shared dispatcher thread while the device is still opened.
-  void stop() {
-    handle_result(session_.stop(),
-                  pqrs::osx::chrono::mach_absolute_time_point());
+  [[nodiscard]] std::optional<bool> stop() {
+    return handle_result(session_.stop());
   }
 
   // Forgets the session without writing to the device or emitting signals.
@@ -129,30 +113,26 @@ private:
     return last;
   }
 
-  void handle_result(const hidpp::session::result& r,
-                     absolute_time_point time_stamp) {
+  [[nodiscard]] std::optional<bool> handle_result(const logitech::hidpp::session::result& r) {
     if (handle_requests(r)) {
       auto generation = session_.get_generation();
       enqueue_to_dispatcher(
           [this, generation] {
-            handle_result(session_.handle_timeout(generation),
-                          pqrs::osx::chrono::mach_absolute_time_point());
+            static_cast<void>(handle_result(session_.handle_timeout(generation)));
           },
-          when_now() + hidpp::reply_timeout);
+          when_now() + logitech::hidpp::reply_timeout);
     }
 
-    if (r.pressed) {
-      pressed_changed(*r.pressed, time_stamp);
-    }
+    return r.pressed;
   }
 
   // Returns true if a request which waits for a reply was sent.
-  bool handle_requests(const hidpp::session::result& r) const {
+  bool handle_requests(const logitech::hidpp::session::result& r) const {
     if (!r.request) {
       return false;
     }
 
-    if (hidpp::is_set_reporting_request(*r.request)) {
+    if (logitech::hidpp::is_set_reporting_request(*r.request)) {
       send_synchronously(*r.request);
     } else {
       send_query(*r.request);
@@ -162,11 +142,11 @@ private:
   }
 
   struct query_context final {
-    hidpp::long_report report;
+    logitech::hidpp::long_report report;
     std::string log_prefix;
   };
 
-  void send_query(const hidpp::long_report& request) const {
+  void send_query(const logitech::hidpp::long_report& request) const {
     auto device = device_;
     auto r = request;
     auto log_prefix = log_prefix_;
@@ -204,7 +184,7 @@ private:
     });
   }
 
-  void send_synchronously(const hidpp::long_report& request) const {
+  void send_synchronously(const logitech::hidpp::long_report& request) const {
     auto device = device_;
     auto r = request;
     auto log_prefix = log_prefix_;
@@ -229,6 +209,6 @@ private:
   pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread_;
   pqrs::cf::cf_ptr<IOHIDDeviceRef> device_;
   std::string log_prefix_;
-  hidpp::session session_;
+  logitech::hidpp::session session_;
 };
 } // namespace krbn::core_service::daemon::device_grabber_details

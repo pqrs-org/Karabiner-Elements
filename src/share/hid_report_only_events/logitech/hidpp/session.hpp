@@ -1,6 +1,6 @@
 #pragma once
 
-// HID++ 2.0 protocol state for routing one control of a Logitech device to a pointing button.
+// HID++ 2.0 protocol state for routing one control of a Logitech device to a logical button event.
 //
 // The control is temporarily diverted with REPROG_CONTROLS_V4 (0x1b04), so that the device reports it in HID++
 // notifications instead of performing its firmware function.
@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-namespace krbn::hidpp {
+namespace krbn::logitech::hidpp {
 using long_report = std::array<uint8_t, 20>;
 
 constexpr uint8_t long_report_id = 0x11;
@@ -503,4 +503,4 @@ private:
   uint64_t generation_ = 0;
   std::string reason_;
 };
-} // namespace krbn::hidpp
+} // namespace krbn::logitech::hidpp

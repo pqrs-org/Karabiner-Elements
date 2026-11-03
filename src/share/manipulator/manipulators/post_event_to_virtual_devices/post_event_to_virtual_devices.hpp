@@ -144,6 +144,11 @@ public:
       switch (front_input_event.get_event().get_type()) {
         case event_queue::event::type::momentary_switch_event:
           if (auto e = front_input_event.get_event().get_if<momentary_switch_event>()) {
+            // logitech_hidpp_button is an input-only logical event and has no virtual HID representation.
+            if (e->logitech_hidpp_button()) {
+              break;
+            }
+
             if (e->valid()) {
               if (e->pointing_button()) {
                 post_pointing_input_report(front_input_event,
@@ -467,7 +472,7 @@ public:
           auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
 
           for (const auto& e : pressed_keys) {
-            if (!e.valid() || e.pointing_button()) {
+            if (!e.valid() || e.pointing_button() || e.logitech_hidpp_button()) {
               continue;
             }
 

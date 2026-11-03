@@ -2,7 +2,7 @@
 
 #include "../../configuration_json_helper.hpp"
 #include "exprtk_utility.hpp"
-#include "hidpp_button.hpp"
+#include "logitech_hidpp_button.hpp"
 #include "simple_modifications.hpp"
 #include <functional>
 #include <pqrs/string.hpp>
@@ -270,12 +270,12 @@ cos(radian) * m;
       }
     }
 
-    if (auto it = json.find("hidpp_button");
+    if (auto it = json.find("logitech_hidpp_button");
         it != std::end(json)) {
       try {
-        hidpp_button_ = hidpp_button(*it);
+        logitech_hidpp_button_ = logitech_hidpp_button(*it);
       } catch (const pqrs::json::unmarshal_error& e) {
-        auto message = fmt::format("`hidpp_button` error: {0}", e.what());
+        auto message = fmt::format("`logitech_hidpp_button` error: {0}", e.what());
         if (error_handling == error_handling::strict) {
           throw pqrs::json::unmarshal_error(message);
         } else {
@@ -332,10 +332,10 @@ cos(radian) * m;
       j.erase("ignore");
     }
 
-    if (hidpp_button_) {
-      j["hidpp_button"] = hidpp_button_->to_json();
+    if (logitech_hidpp_button_) {
+      j["logitech_hidpp_button"] = logitech_hidpp_button_->to_json();
     } else {
-      j.erase("hidpp_button");
+      j.erase("logitech_hidpp_button");
     }
 
     j["identifiers"] = identifiers_;
@@ -398,8 +398,8 @@ cos(radian) * m;
   }
 
   // Absent (std::nullopt) means disabled.
-  [[nodiscard]] const std::optional<hidpp_button>& get_hidpp_button() const {
-    return hidpp_button_;
+  [[nodiscard]] const std::optional<logitech_hidpp_button>& get_logitech_hidpp_button() const {
+    return logitech_hidpp_button_;
   }
 
   [[nodiscard]] const bool& get_manipulate_caps_lock_led() const {
@@ -774,7 +774,7 @@ private:
   bool mouse_discard_vertical_wheel_;
   bool mouse_discard_horizontal_wheel_;
   bool game_pad_swap_sticks_;
-  std::optional<hidpp_button> hidpp_button_;
+  std::optional<logitech_hidpp_button> logitech_hidpp_button_;
 
   double game_pad_xy_stick_deadzone_;
   double game_pad_xy_stick_delta_magnitude_detection_threshold_;

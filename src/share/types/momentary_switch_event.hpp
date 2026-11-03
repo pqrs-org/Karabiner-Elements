@@ -4,6 +4,7 @@
 #include "momentary_switch_event_details/apple_vendor_top_case_key_code.hpp"
 #include "momentary_switch_event_details/consumer_key_code.hpp"
 #include "momentary_switch_event_details/generic_desktop.hpp"
+#include "momentary_switch_event_details/logitech_hidpp_button.hpp"
 #include "momentary_switch_event_details/key_code.hpp"
 #include "momentary_switch_event_details/pointing_button.hpp"
 #include <nlohmann/json.hpp>
@@ -22,7 +23,8 @@ public:
            momentary_switch_event_details::apple_vendor_keyboard_key_code::target(usage_page, usage) ||
            momentary_switch_event_details::apple_vendor_top_case_key_code::target(usage_page, usage) ||
            momentary_switch_event_details::pointing_button::target(usage_page, usage) ||
-           momentary_switch_event_details::generic_desktop::target(usage_page, usage);
+           momentary_switch_event_details::generic_desktop::target(usage_page, usage) ||
+           momentary_switch_event_details::logitech_hidpp_button::target(usage_page, usage);
   }
 
   momentary_switch_event() = default;
@@ -148,6 +150,12 @@ public:
     return usage_pair_.get_usage_page() == pqrs::hid::usage_page::button;
   }
 
+  [[nodiscard]] bool logitech_hidpp_button() const {
+    return momentary_switch_event_details::logitech_hidpp_button::target(
+        usage_pair_.get_usage_page(),
+        usage_pair_.get_usage());
+  }
+
   // Return true if this event interrupts the current key repeat.
   // - true: Letter keys
   // - true: Number keys
@@ -156,12 +164,14 @@ public:
   // - true: Arrow keys
   // - false: Modifier keys
   // - false: Pointing Buttons
+  // - false: Logitech HID++ buttons
   // - false: D-pad
   [[nodiscard]] bool interrupts_key_repeat() const {
     if (!valid() ||
         modifier_flag() ||
         caps_lock() ||
         pointing_button() ||
+        logitech_hidpp_button() ||
         usage_pair_.get_usage_page() == pqrs::hid::usage_page::generic_desktop) {
       return false;
     }
@@ -197,6 +207,9 @@ inline void to_json(nlohmann::json& json, const momentary_switch_event& value) {
   } else if (momentary_switch_event_details::generic_desktop::target(usage_page, usage)) {
     json["generic_desktop"] = momentary_switch_event_details::generic_desktop::make_name(usage);
 
+  } else if (momentary_switch_event_details::logitech_hidpp_button::target(usage_page, usage)) {
+    json["logitech_hidpp_button"] = type_safe::get(usage);
+
   } else {
     json = "unsupported";
   }
@@ -223,6 +236,9 @@ inline void from_json(const nlohmann::json& json, momentary_switch_event& value)
 
     } else if (k == "generic_desktop") {
       value.set_usage_pair(momentary_switch_event_details::generic_desktop::make_usage_pair(k, v));
+
+    } else if (k == "logitech_hidpp_button") {
+      value.set_usage_pair(momentary_switch_event_details::logitech_hidpp_button::make_usage_pair(k, v));
 
     } else {
       throw pqrs::json::unmarshal_error(fmt::format("unknown key: `{0}`", k));

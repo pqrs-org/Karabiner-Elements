@@ -1,4 +1,5 @@
 #include "hid_report_only_events/elecom/trackball.hpp"
+#include "hid_report_only_events/logitech/hidpp/button.hpp"
 #include <boost/ut.hpp>
 
 namespace {
@@ -264,6 +265,41 @@ int main() {
     expect(handler.handle(1, report(0x20), time_stamp).size() == 1_u);
     handler.reset();
     expect(handler.handle(1, report(0x20), time_stamp).size() == 1_u);
+  };
+
+  "HID++ logical button"_test = [] {
+    krbn::hid_report_only_events::logitech::hidpp::button::handler handler;
+    handler.set_input_report_handler(
+        [](auto) -> std::optional<bool> {
+          return true;
+        },
+        196);
+
+    krbn::logitech::hidpp::long_report report{};
+    report[0] = krbn::logitech::hidpp::long_report_id;
+    report[1] = krbn::logitech::hidpp::direct_device_index;
+
+    expect(handler.should_accept_report(krbn::logitech::hidpp::long_report_id, report));
+    expect(!handler.should_accept_report(0, report));
+
+    auto values = handler.handle(krbn::logitech::hidpp::long_report_id,
+                                 report,
+                                 time_stamp);
+    expect(values == std::vector<pqrs::osx::iokit_hid_value>{
+                         pqrs::osx::iokit_hid_value(
+                             time_stamp,
+                             1,
+                             krbn::momentary_switch_event_details::logitech_hidpp_button::usage_page,
+                             pqrs::hid::usage::value_t(196),
+                             1,
+                             0),
+                     });
+
+    handler.clear_input_report_handler();
+    expect(handler.handle(krbn::logitech::hidpp::long_report_id,
+                          report,
+                          time_stamp)
+               .empty());
   };
 
   return 0;

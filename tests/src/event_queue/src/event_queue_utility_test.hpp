@@ -185,6 +185,42 @@ void run_event_queue_utility_test() {
     }
   };
 
+  "utility::make_queue logitech_hidpp_button"_test = [] {
+    std::vector<pqrs::osx::iokit_hid_value> hid_values;
+
+    for (const auto& [time_stamp, integer_value] : {
+             std::pair<uint64_t, int64_t>(1000, 1),
+             std::pair<uint64_t, int64_t>(2000, 0),
+         }) {
+      hid_values.emplace_back(
+          krbn::absolute_time_point(time_stamp),
+          integer_value,
+          krbn::momentary_switch_event_details::logitech_hidpp_button::usage_page,
+          pqrs::hid::usage::value_t(196),
+          std::nullopt, // logical_max
+          std::nullopt  // logical_min
+      );
+    }
+
+    auto device_properties = krbn::device_properties::make_device_properties(
+        krbn::device_id(1),
+        nullptr);
+    auto entries = krbn::event_queue::utility::make_entries(device_properties,
+                                                            hid_values,
+                                                            {});
+    assert(entries->size() == 2);
+
+    for (std::size_t i = 0; i < entries->size(); ++i) {
+      const auto& entry = *((*entries)[i]);
+      auto event = entry.get_event().get_if<krbn::momentary_switch_event>();
+      expect(event != nullptr);
+      expect(event && event->logitech_hidpp_button());
+      expect(event && type_safe::get(event->get_usage_pair().get_usage()) == 196);
+      expect(entry.get_event_type() == (i == 0 ? krbn::event_type::key_down :
+                                                krbn::event_type::key_up));
+    }
+  };
+
   "utility::make_queue pointing_motion_xy_multiplier, pointing_motion_wheels_multiplier"_test = [] {
     std::vector<pqrs::osx::iokit_hid_value> hid_values;
 
