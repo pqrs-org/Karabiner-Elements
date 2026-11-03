@@ -329,21 +329,21 @@
         "input": {
             "logitech_hidpp_button": {}
         },
-        "error": "`logitech_hidpp_button` error: `control_id` is missing in `{}`"
+        "error": "`logitech_hidpp_button` error: `controls` is missing in `{}`"
     },
     {
         "class": "devices",
         "input": {
-            "logitech_hidpp_button": { "control_id": 0 }
+            "logitech_hidpp_button": { "controls": [{ "control_id": 0, "to": [{ "key_code": "a" }] }] }
         },
         "error": "`logitech_hidpp_button` error: `control_id` must be an integer between 1 and 65535, but is `0`"
     },
     {
         "class": "devices",
         "input": {
-            "logitech_hidpp_button": { "control_id": 196, "persistent": true }
+            "logitech_hidpp_button": { "controls": [{ "control_id": 196, "to": [{ "key_code": "a" }], "persistent": true }] }
         },
-        "error": "`logitech_hidpp_button` error: unknown key `persistent` in `{\"control_id\":196,\"persistent\":true}`"
+        "error": "`logitech_hidpp_button` error: unknown key `persistent` in `{\"control_id\":196,\"persistent\":true,\"to\":[{\"key_code\":\"a\"}]}`"
     },
 
     // simple_modifications

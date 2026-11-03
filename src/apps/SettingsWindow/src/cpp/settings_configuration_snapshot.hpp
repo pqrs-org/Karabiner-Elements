@@ -201,7 +201,7 @@ private:
                                                                       *device_properties);
       }
 
-      json[i.to_normalized_json().dump()] = {
+      nlohmann::json device_json = {
           {"ignore", ignore},
           {"manipulate_caps_lock_led", device->get_manipulate_caps_lock_led()},
           {"swap_grave_accent_and_non_us_backslash", device->get_swap_grave_accent_and_non_us_backslash()},
@@ -236,6 +236,21 @@ private:
           {"simple_modifications", make_simple_modifications_json(*device->get_simple_modifications())},
           {"fn_function_keys", make_simple_modifications_json(*device->get_fn_function_keys())},
       };
+
+      if (const auto& logitech_hidpp_button = device->get_logitech_hidpp_button()) {
+        auto controls = nlohmann::json::array();
+        for (const auto& control : logitech_hidpp_button->get_controls()) {
+          controls.push_back({
+              {"control_id", control.control_id},
+              {"to_json_string", control.to.dump()},
+          });
+        }
+        device_json["logitech_hidpp_button"] = {
+            {"controls", std::move(controls)},
+        };
+      }
+
+      json[i.to_normalized_json().dump()] = std::move(device_json);
     }
 
     return json;

@@ -270,10 +270,11 @@ int main() {
   "HID++ logical button"_test = [] {
     krbn::hid_report_only_events::logitech::hidpp::button::handler handler;
     handler.set_input_report_handler(
-        [](auto) -> std::optional<bool> {
-          return true;
-        },
-        196);
+        [](auto) {
+          return std::vector<krbn::logitech::hidpp::session::result::button_event>{
+              {.control_id = 196, .pressed = true},
+          };
+        });
 
     krbn::logitech::hidpp::long_report report{};
     report[0] = krbn::logitech::hidpp::long_report_id;
@@ -281,6 +282,11 @@ int main() {
 
     expect(handler.should_accept_report(krbn::logitech::hidpp::long_report_id, report));
     expect(!handler.should_accept_report(0, report));
+
+    krbn::logitech::hidpp::short_report short_report{};
+    short_report[0] = krbn::logitech::hidpp::short_report_id;
+    short_report[1] = krbn::logitech::hidpp::direct_device_index;
+    expect(handler.should_accept_report(krbn::logitech::hidpp::short_report_id, short_report));
 
     auto values = handler.handle(krbn::logitech::hidpp::long_report_id,
                                  report,
@@ -294,6 +300,18 @@ int main() {
                              1,
                              0),
                      });
+
+    size_t discovery_reports = 0;
+    handler.set_input_report_handler(
+        [&](auto) {
+          ++discovery_reports;
+          return std::vector<krbn::logitech::hidpp::session::result::button_event>{};
+        });
+    expect(handler.handle(krbn::logitech::hidpp::long_report_id,
+                          report,
+                          time_stamp)
+               .empty());
+    expect(discovery_reports == 1_u);
 
     handler.clear_input_report_handler();
     expect(handler.handle(krbn::logitech::hidpp::long_report_id,

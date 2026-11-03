@@ -303,6 +303,10 @@ public:
                                    event_queue_entries);
               });
 
+              entry->logitech_hidpp_divertable_control_ids_changed.connect([this] {
+                connected_devices_changed();
+              });
+
               entry->get_hid_device_events_monitor()->started.connect([this, device_id] {
                 if (auto it = entries_.find(device_id);
                     it != entries_.end()) {
@@ -363,6 +367,7 @@ public:
                                            it->second->get_device_name());
                 logger_unique_filter_.reset();
 
+                it->second->handle_device_terminated();
                 entries_.erase(it);
                 connected_devices_changed();
               }

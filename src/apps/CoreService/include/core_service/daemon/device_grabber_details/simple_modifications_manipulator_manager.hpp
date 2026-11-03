@@ -23,6 +23,29 @@ public:
 
     for (const auto& device : profile.get_devices()) {
       //
+      // Add profile.device.logitech_hidpp_button controls.
+      //
+
+      if (const auto& logitech_hidpp_button = device->get_logitech_hidpp_button()) {
+        for (const auto& control : logitech_hidpp_button->get_controls()) {
+          try {
+            auto from = nlohmann::json::object({
+                {"logitech_hidpp_button", control.control_id},
+            });
+            if (auto m = make_manipulator({from.dump(), control.to.dump()})) {
+              auto c = manipulator::condition_factory::make_device_if_condition(*device);
+              m->push_back_condition(c);
+              manipulator_manager_->push_back_manipulator(m);
+            }
+          } catch (const pqrs::json::unmarshal_error& e) {
+            logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+          } catch (const std::exception& e) {
+            logger::get_logger()->error(e.what());
+          }
+        }
+      }
+
+      //
       // Add profile.device.simple_modifications
       //
 

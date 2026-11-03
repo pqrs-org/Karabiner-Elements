@@ -216,8 +216,8 @@ void run_event_queue_utility_test() {
       expect(event != nullptr);
       expect(event && event->logitech_hidpp_button());
       expect(event && type_safe::get(event->get_usage_pair().get_usage()) == 196);
-      expect(entry.get_event_type() == (i == 0 ? krbn::event_type::key_down :
-                                                krbn::event_type::key_up));
+      expect(entry.get_event_type() == (i == 0 ? krbn::event_type::key_down
+                                               : krbn::event_type::key_up));
     }
   };
 

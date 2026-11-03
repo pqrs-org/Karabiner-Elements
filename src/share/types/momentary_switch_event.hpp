@@ -4,8 +4,8 @@
 #include "momentary_switch_event_details/apple_vendor_top_case_key_code.hpp"
 #include "momentary_switch_event_details/consumer_key_code.hpp"
 #include "momentary_switch_event_details/generic_desktop.hpp"
-#include "momentary_switch_event_details/logitech_hidpp_button.hpp"
 #include "momentary_switch_event_details/key_code.hpp"
+#include "momentary_switch_event_details/logitech_hidpp_button.hpp"
 #include "momentary_switch_event_details/pointing_button.hpp"
 #include <nlohmann/json.hpp>
 #include <ostream>

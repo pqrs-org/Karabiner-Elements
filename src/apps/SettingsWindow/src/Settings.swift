@@ -496,6 +496,78 @@ final class Settings: ObservableObject {
     performCommand(.eraseDisconnectedDevices)
   }
 
+  func setLogitechHidppButton(
+    controlId: UInt16,
+    enabled: Bool,
+    connectedDevice: ConnectedDevice
+  ) {
+    var controls =
+      configurationStorage?.selectedProfile.devices[connectedDevice.id]?.logitechHidppButton?
+      .controls ?? []
+    if enabled {
+      if !controls.contains(where: { $0.controlId == controlId }) {
+        controls.append(
+          SettingsConfiguration.Device.LogitechHidppButton.Control(
+            controlId: controlId,
+            toJsonString: "[{\"key_code\":\"vk_none\"}]"))
+      }
+    } else {
+      controls.removeAll { $0.controlId == controlId }
+    }
+
+    setLogitechHidppButtonControls(
+      controls,
+      connectedDevice: connectedDevice)
+  }
+
+  func setLogitechHidppButtonTo(
+    controlId: UInt16,
+    toJsonString: String,
+    connectedDevice: ConnectedDevice
+  ) {
+    guard
+      var controls = configurationStorage?.selectedProfile.devices[connectedDevice.id]?
+        .logitechHidppButton?.controls,
+      let index = controls.firstIndex(where: { $0.controlId == controlId })
+    else { return }
+
+    controls[index].toJsonString = toJsonString
+    setLogitechHidppButtonControls(
+      controls,
+      connectedDevice: connectedDevice)
+  }
+
+  private func setLogitechHidppButtonControls(
+    _ controls: [SettingsConfiguration.Device.LogitechHidppButton.Control],
+    connectedDevice: ConnectedDevice
+  ) {
+    let sortedControls = controls.sorted { $0.controlId < $1.controlId }
+
+    let commandControls: [[String: Any]] = sortedControls.compactMap { control in
+      guard let data = control.toJsonString.data(using: .utf8),
+        let to = try? JSONSerialization.jsonObject(with: data)
+      else { return nil }
+
+      return [
+        "control_id": Int(control.controlId),
+        "to": to,
+      ]
+    }
+    guard commandControls.count == sortedControls.count else { return }
+
+    configurationStorage?.selectedProfile.devices[connectedDevice.id]?.logitechHidppButton =
+      sortedControls.isEmpty
+      ? nil
+      : SettingsConfiguration.Device.LogitechHidppButton(controls: sortedControls)
+
+    performCommand(
+      .setLogitechHidppButton,
+      parameters: [
+        "device": connectedDevice.id,
+        "controls": commandControls,
+      ])
+  }
+
   //
   // Profiles
   //

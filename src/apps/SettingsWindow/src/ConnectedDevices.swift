@@ -36,6 +36,7 @@ private struct ConnectedDevicePayload: Decodable {
   let isBuiltInPointingDevice: Bool?
   let isBuiltInTouchBar: Bool?
   let isApple: Bool?
+  let logitechHidppDivertableControlIds: [UInt16]?
 }
 
 @MainActor
@@ -87,7 +88,8 @@ final class ConnectedDevices: ObservableObject {
           isConsumer: payload.deviceIdentifiers.isConsumer ?? false,
           isVirtualDevice: payload.deviceIdentifiers.isVirtualDevice ?? false,
           isBuiltInKeyboard: payload.isBuiltInKeyboard ?? false,
-          isAppleDevice: payload.isApple ?? false
+          isAppleDevice: payload.isApple ?? false,
+          logitechHidppDivertableControlIds: payload.logitechHidppDivertableControlIds ?? []
         )
       }
 

@@ -1,8 +1,9 @@
 #pragma once
 
-// HID++ 2.0 protocol state for routing one control of a Logitech device to a logical button event.
+// HID++ 2.0 protocol state for discovering controls and optionally routing
+// controls of a Logitech device to logical button events.
 //
-// The control is temporarily diverted with REPROG_CONTROLS_V4 (0x1b04), so that the device reports it in HID++
+// Controls are temporarily diverted with REPROG_CONTROLS_V4 (0x1b04), so that the device reports them in HID++
 // notifications instead of performing its firmware function.
 // Only fixed discovery, reporting-state queries, temporary diversion and its restoration are sent.
 // Persistent diversion and remapping are never requested.
@@ -13,16 +14,20 @@
 #include "logger.hpp"
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <chrono>
 #include <cstdint>
 #include <optional>
 #include <span>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace krbn::logitech::hidpp {
+using short_report = std::array<uint8_t, 7>;
 using long_report = std::array<uint8_t, 20>;
 
+constexpr uint8_t short_report_id = 0x10;
 constexpr uint8_t long_report_id = 0x11;
 // Directly connected (Bluetooth Low Energy) devices are addressed with 0xff.
 // Receivers use other indices and are not supported.
@@ -52,6 +57,22 @@ constexpr uint8_t reporting_flag_force_raw_xy_diverted = 0x40;
          report[1] == direct_device_index;
 }
 
+// Returns whether a raw input report is a HID++ short report from a directly connected device.
+// Diverted button notifications can use this format even when requests and replies use long reports.
+[[nodiscard]] inline bool is_short_report(uint32_t report_id,
+                                          std::span<const uint8_t> report) noexcept {
+  return report_id == short_report_id &&
+         report.size() == std::tuple_size_v<short_report> &&
+         report[0] == short_report_id &&
+         report[1] == direct_device_index;
+}
+
+[[nodiscard]] inline bool is_hidpp_report(uint32_t report_id,
+                                          std::span<const uint8_t> report) noexcept {
+  return is_short_report(report_id, report) ||
+         is_long_report(report_id, report);
+}
+
 // Returns whether a request is REPROG_CONTROLS_V4 setCidReporting, which changes the reporting of a control.
 // All other requests are read-only queries.
 [[nodiscard]] inline bool is_set_reporting_request(const long_report& request) noexcept {
@@ -78,12 +99,13 @@ public:
     waiting_feature_index,
     waiting_control_count,
     waiting_control_info,
+    discovered,
     waiting_reporting,
     waiting_divert,
     diverted,
-    // The control was not diverted and nothing has to be restored.
+    // No control remains diverted and nothing has to be restored.
     refused,
-    // A request failed or was not answered. A divert request that might have been applied was undone.
+    // A request failed or was not answered. Divert requests that might have been applied were undone.
     failed,
     stopped,
   };
@@ -91,17 +113,36 @@ public:
   struct result final {
     // A HID++ output report to send.
     std::optional<long_report> request;
-    // A control state change to report.
+    // Additional requests used when multiple controls must be restored at once.
+    std::vector<long_report> additional_requests;
+    struct button_event final {
+      uint16_t control_id;
+      bool pressed;
+
+      bool operator==(const button_event&) const = default;
+    };
+    std::vector<button_event> button_events;
+    // Kept as a convenience for single-control callers and tests.
     std::optional<bool> pressed;
   };
 
   // software_id (1-15) is put into requests so that replies to another session are ignored.
-  session(uint16_t control_id,
+  session(std::optional<uint16_t> control_id,
           uint8_t software_id,
           const std::string& log_prefix)
-      : control_id_(control_id),
+      : session(control_id ? std::vector<uint16_t>{*control_id} : std::vector<uint16_t>{},
+                software_id,
+                log_prefix) {
+  }
+
+  session(std::vector<uint16_t> control_ids,
+          uint8_t software_id,
+          const std::string& log_prefix)
+      : control_ids_(std::move(control_ids)),
         software_id_(normalize_software_id(software_id)),
         log_prefix_(log_prefix) {
+    std::ranges::sort(control_ids_);
+    control_ids_.erase(std::unique(std::begin(control_ids_), std::end(control_ids_)), std::end(control_ids_));
   }
 
   [[nodiscard]] state get_state() const {
@@ -109,7 +150,7 @@ public:
   }
 
   [[nodiscard]] bool get_pressed() const {
-    return pressed_;
+    return !pressed_control_ids_.empty();
   }
 
   [[nodiscard]] uint64_t get_generation() const {
@@ -124,7 +165,23 @@ public:
     return controls_;
   }
 
-  // The reason why the control was refused or failed.
+  [[nodiscard]] bool controls_discovered() const {
+    return controls_discovered_;
+  }
+
+  [[nodiscard]] std::vector<uint16_t> get_divertable_control_ids() const {
+    std::vector<uint16_t> result;
+
+    for (const auto& control : controls_) {
+      if (control.divertable()) {
+        result.push_back(control.control_id);
+      }
+    }
+
+    return result;
+  }
+
+  // The reason why the controls were refused or the session failed.
   [[nodiscard]] const std::string& get_reason() const {
     return reason_;
   }
@@ -165,6 +222,10 @@ public:
     feature_index_ = 0;
     control_count_ = 0;
     controls_.clear();
+    controls_discovered_ = false;
+    current_control_index_ = 0;
+    divert_requested_control_ids_.clear();
+    pressed_control_ids_.clear();
     pending_request_ = std::nullopt;
     reason_.clear();
 
@@ -172,7 +233,13 @@ public:
   }
 
   result handle_input_report(std::span<const uint8_t> report) {
-    if (!is_long_report(long_report_id, report)) {
+    long_report normalized_report{};
+
+    if (is_short_report(short_report_id, report) ||
+        is_long_report(long_report_id, report)) {
+      std::ranges::copy(report, normalized_report.begin());
+      report = normalized_report;
+    } else {
       return {};
     }
 
@@ -252,23 +319,34 @@ public:
                                    log_prefix_,
                                    make_divertable_controls_string());
 
-        auto it = std::ranges::find_if(controls_, [this](const auto& c) {
-          return c.control_id == control_id_;
-        });
-        if (it == std::end(controls_)) {
-          return refuse(fmt::format("control {0} does not exist (divertable controls: {1})",
-                                    make_control_id_string(control_id_),
-                                    make_divertable_controls_string()));
-        }
-        if (!it->divertable()) {
-          return refuse(fmt::format("control {0} cannot be temporarily diverted (flags 0x{1:04x}, divertable controls: {2})",
-                                    make_control_id_string(control_id_),
-                                    it->flags,
-                                    make_divertable_controls_string()));
+        controls_discovered_ = true;
+
+        if (control_ids_.empty()) {
+          state_ = state::discovered;
+          pending_request_ = std::nullopt;
+          return {};
         }
 
+        for (auto control_id : control_ids_) {
+          auto it = std::ranges::find_if(controls_, [control_id](const auto& c) {
+            return c.control_id == control_id;
+          });
+          if (it == std::end(controls_)) {
+            return refuse(fmt::format("control {0} does not exist (divertable controls: {1})",
+                                      make_control_id_string(control_id),
+                                      make_divertable_controls_string()));
+          }
+          if (!it->divertable()) {
+            return refuse(fmt::format("control {0} cannot be temporarily diverted (flags 0x{1:04x}, divertable controls: {2})",
+                                      make_control_id_string(control_id),
+                                      it->flags,
+                                      make_divertable_controls_string()));
+          }
+        }
+
+        current_control_index_ = 0;
         return send(state::waiting_reporting,
-                    make_request(feature_index_, 2, {static_cast<uint8_t>(control_id_ >> 8), static_cast<uint8_t>(control_id_ & 0xff)}));
+                    make_get_reporting_request(current_control_id()));
       }
 
       case state::waiting_reporting: {
@@ -287,18 +365,18 @@ public:
           return refuse(fmt::format("control {0} is already diverted (reporting flags 0x{1:02x}). "
                                     "Another HID++ client may own it, or an earlier diversion was not restored; "
                                     "reconnecting the device resets temporary diversion",
-                                    make_control_id_string(control_id_),
+                                    make_control_id_string(current_control_id()),
                                     flags));
         }
-        if (remap != 0 && remap != control_id_) {
+        if (remap != 0 && remap != current_control_id()) {
           return refuse(fmt::format("control {0} is remapped to {1} by another HID++ client",
-                                    make_control_id_string(control_id_),
+                                    make_control_id_string(current_control_id()),
                                     make_control_id_string(remap)));
         }
 
-        divert_requested_ = true;
+        divert_requested_control_ids_.push_back(current_control_id());
         return send(state::waiting_divert,
-                    make_set_reporting_request(reporting_flag_diverted | reporting_flag_diverted_valid));
+                    make_set_reporting_request(current_control_id(), reporting_flag_diverted | reporting_flag_diverted_valid));
       }
 
       case state::waiting_divert: {
@@ -307,22 +385,16 @@ public:
           return {};
         }
 
-        pending_request_ = std::nullopt;
-
         if ((report[6] & reporting_flag_diverted) == 0) {
           return fail(fmt::format("the device did not divert control {0}",
-                                  make_control_id_string(control_id_)));
+                                  make_control_id_string(current_control_id())));
         }
 
-        state_ = state::diverted;
-        logger::get_logger()->info("{0} activated: control {1} is diverted (REPROG_CONTROLS_V4 feature index 0x{2:02x})",
-                                   log_prefix_,
-                                   make_control_id_string(control_id_),
-                                   feature_index_);
-        return {};
+        return finish_current_control_diversion(true);
       }
 
       case state::initial:
+      case state::discovered:
       case state::diverted:
       case state::refused:
       case state::failed:
@@ -339,12 +411,23 @@ public:
       return {};
     }
 
+    if (state_ == state::waiting_divert) {
+      // Some devices, including M585/M590, apply setCidReporting but do not
+      // echo the request as specified. The synchronous IOKit write has already
+      // succeeded, so do not spend three protocol retries on every selected
+      // control. Retain it as a temporary diversion and make sure stop() later
+      // sends the matching restore request.
+      return finish_current_control_diversion(false);
+    }
+
     if (attempts_ >= max_attempts) {
-      return fail(fmt::format("no HID++ reply after {0} attempts", attempts_),
+      return fail(fmt::format("no HID++ reply after {0} attempts while {1}",
+                              attempts_,
+                              make_pending_request_description()),
                   state_ == state::waiting_feature_index ||
                       state_ == state::waiting_control_count ||
                       state_ == state::waiting_control_info ||
-                      state_ == state::waiting_reporting);
+                      (state_ == state::waiting_reporting && divert_requested_control_ids_.empty()));
     }
 
     ++attempts_;
@@ -352,7 +435,7 @@ public:
     return result{.request = pending_request_};
   }
 
-  // Returns the request that restores the control if it might be diverted, and a release if it is pressed.
+  // Returns requests that restore controls which might be diverted, and releases for pressed controls.
   result stop() {
     result r;
 
@@ -360,15 +443,14 @@ public:
       return r;
     }
 
-    if (divert_requested_) {
-      divert_requested_ = false;
-      r.request = make_set_reporting_request(reporting_flag_diverted_valid);
+    append_restore_requests(r);
+    for (auto control_id : pressed_control_ids_) {
+      r.button_events.push_back({.control_id = control_id, .pressed = false});
     }
-
-    if (pressed_) {
-      pressed_ = false;
+    if (r.button_events.size() == 1) {
       r.pressed = false;
     }
+    pressed_control_ids_.clear();
 
     state_ = state::stopped;
     discovery_timed_out_ = false;
@@ -379,6 +461,67 @@ public:
   }
 
 private:
+  result finish_current_control_diversion(bool acknowledged) {
+    pending_request_ = std::nullopt;
+
+    if (acknowledged) {
+      logger::get_logger()->info("{0} activated: control {1} is diverted (REPROG_CONTROLS_V4 feature index 0x{2:02x})",
+                                 log_prefix_,
+                                 make_control_id_string(current_control_id()),
+                                 feature_index_);
+    } else {
+      logger::get_logger()->info("{0} activated without acknowledgement: control {1} is assumed to be diverted",
+                                 log_prefix_,
+                                 make_control_id_string(current_control_id()));
+    }
+
+    ++current_control_index_;
+    if (current_control_index_ < control_ids_.size()) {
+      return send(state::waiting_reporting,
+                  make_get_reporting_request(current_control_id()));
+    }
+
+    state_ = state::diverted;
+    return {};
+  }
+
+  [[nodiscard]] std::string make_pending_request_description() const {
+    switch (state_) {
+      case state::waiting_feature_index:
+        return "looking up REPROG_CONTROLS_V4";
+
+      case state::waiting_control_count:
+        return "getting the control count";
+
+      case state::waiting_control_info:
+        return fmt::format("getting information for control index {0}", controls_.size());
+
+      case state::waiting_reporting:
+        if (current_control_index_ < control_ids_.size()) {
+          return fmt::format("getting the reporting state of control {0}",
+                             make_control_id_string(current_control_id()));
+        }
+        break;
+
+      case state::waiting_divert:
+        if (current_control_index_ < control_ids_.size()) {
+          return fmt::format("diverting control {0}",
+                             make_control_id_string(current_control_id()));
+        }
+        break;
+
+      case state::initial:
+      case state::discovered:
+      case state::diverted:
+      case state::refused:
+      case state::failed:
+      case state::stopped:
+        break;
+    }
+
+    return "waiting for a request";
+  }
+
   static uint8_t normalize_software_id(uint8_t software_id) {
     return static_cast<uint8_t>(software_id & 0x0f) != 0 ? static_cast<uint8_t>(software_id & 0x0f) : 1;
   }
@@ -400,12 +543,19 @@ private:
     return r;
   }
 
+  long_report make_get_reporting_request(uint16_t control_id) const {
+    return make_request(feature_index_,
+                        2,
+                        {static_cast<uint8_t>(control_id >> 8),
+                         static_cast<uint8_t>(control_id & 0xff)});
+  }
+
   // setCidReporting(cid, flags, remap = 0 (unchanged))
-  long_report make_set_reporting_request(uint8_t flags) const {
+  long_report make_set_reporting_request(uint16_t control_id, uint8_t flags) const {
     return make_request(feature_index_,
                         3,
-                        {static_cast<uint8_t>(control_id_ >> 8),
-                         static_cast<uint8_t>(control_id_ & 0xff),
+                        {static_cast<uint8_t>(control_id >> 8),
+                         static_cast<uint8_t>(control_id & 0xff),
                          flags,
                          0x00,
                          0x00});
@@ -420,30 +570,47 @@ private:
   }
 
   bool same_control_id(std::span<const uint8_t> report) const {
-    return ((report[4] << 8) | report[5]) == control_id_;
+    return current_control_index_ < control_ids_.size() &&
+           ((report[4] << 8) | report[5]) == current_control_id();
   }
 
   result handle_notification(std::span<const uint8_t> report) {
     // REPROG_CONTROLS_V4 divertedButtonsEvent: up to four pressed control ids (big endian).
-    if (state_ != state::diverted ||
+    if ((state_ != state::waiting_reporting &&
+         state_ != state::waiting_divert &&
+         state_ != state::diverted) ||
         report[2] != feature_index_ ||
         (report[3] >> 4) != 0) {
       return {};
     }
 
-    bool pressed = false;
+    std::vector<uint16_t> new_pressed_control_ids;
     for (size_t i = 4; i <= 10; i += 2) {
-      if (((report[i] << 8) | report[i + 1]) == control_id_) {
-        pressed = true;
+      auto control_id = static_cast<uint16_t>((report[i] << 8) | report[i + 1]);
+      // Accept controls whose setCidReporting request has already been sent,
+      // even while later selected controls are still being configured.
+      if (std::ranges::find(divert_requested_control_ids_, control_id) != std::end(divert_requested_control_ids_)) {
+        new_pressed_control_ids.push_back(control_id);
+      }
+    }
+    std::ranges::sort(new_pressed_control_ids);
+    new_pressed_control_ids.erase(std::unique(std::begin(new_pressed_control_ids), std::end(new_pressed_control_ids)),
+                                  std::end(new_pressed_control_ids));
+
+    result r;
+    for (auto control_id : control_ids_) {
+      auto was_pressed = std::ranges::find(pressed_control_ids_, control_id) != std::end(pressed_control_ids_);
+      auto pressed = std::ranges::find(new_pressed_control_ids, control_id) != std::end(new_pressed_control_ids);
+      if (was_pressed != pressed) {
+        r.button_events.push_back({.control_id = control_id, .pressed = pressed});
       }
     }
 
-    if (pressed == pressed_) {
-      return {};
+    pressed_control_ids_ = std::move(new_pressed_control_ids);
+    if (r.button_events.size() == 1) {
+      r.pressed = r.button_events.front().pressed;
     }
-
-    pressed_ = pressed;
-    return result{.pressed = pressed};
+    return r;
   }
 
   std::string make_divertable_controls_string() const {
@@ -466,11 +633,13 @@ private:
 
     logger::get_logger()->warn("{0} not activated: {1}", log_prefix_, reason);
 
-    return {};
+    result r;
+    append_restore_requests(r);
+    return r;
   }
 
-  // Undo a divert request that the device might have applied, so the control keeps its firmware function.
-  // discovery_timed_out is decided by the caller because divert_requested_ is cleared here.
+  // Undo divert requests that the device might have applied, so the controls keep their firmware functions.
+  // discovery_timed_out is decided by the caller before diverted controls are cleared here.
   result fail(const std::string& reason, bool discovery_timed_out = false) {
     state_ = state::failed;
     discovery_timed_out_ = discovery_timed_out;
@@ -480,24 +649,40 @@ private:
     logger::get_logger()->warn("{0} not activated: {1}", log_prefix_, reason);
 
     result r;
-    if (divert_requested_) {
-      divert_requested_ = false;
-      r.request = make_set_reporting_request(reporting_flag_diverted_valid);
-    }
+    append_restore_requests(r);
     return r;
   }
 
-  uint16_t control_id_;
+  [[nodiscard]] uint16_t current_control_id() const {
+    assert(current_control_index_ < control_ids_.size());
+    return control_ids_[current_control_index_];
+  }
+
+  void append_restore_requests(result& r) {
+    for (auto control_id : divert_requested_control_ids_) {
+      auto request = make_set_reporting_request(control_id, reporting_flag_diverted_valid);
+      if (!r.request) {
+        r.request = request;
+      } else {
+        r.additional_requests.push_back(request);
+      }
+    }
+    divert_requested_control_ids_.clear();
+  }
+
+  std::vector<uint16_t> control_ids_;
   uint8_t software_id_;
   std::string log_prefix_;
   state state_ = state::initial;
   uint8_t feature_index_ = 0;
   uint8_t control_count_ = 0;
   std::vector<control> controls_;
-  bool divert_requested_ = false;
+  bool controls_discovered_ = false;
+  size_t current_control_index_ = 0;
+  std::vector<uint16_t> divert_requested_control_ids_;
   bool discovery_timed_out_ = false;
   bool recovery_used_ = false;
-  bool pressed_ = false;
+  std::vector<uint16_t> pressed_control_ids_;
   std::optional<long_report> pending_request_;
   int attempts_ = 0;
   uint64_t generation_ = 0;

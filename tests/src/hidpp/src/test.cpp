@@ -16,7 +16,20 @@ hidpp::long_report make_report(std::initializer_list<uint8_t> bytes) {
   return r;
 }
 
+hidpp::short_report make_short_report(std::initializer_list<uint8_t> bytes) {
+  hidpp::short_report r{};
+  size_t i = 0;
+  for (auto b : bytes) {
+    r[i++] = b;
+  }
+  return r;
+}
+
 hidpp::session::result input(hidpp::session& s, const hidpp::long_report& r) {
+  return s.handle_input_report(r);
+}
+
+hidpp::session::result input(hidpp::session& s, const hidpp::short_report& r) {
   return s.handle_input_report(r);
 }
 
@@ -56,11 +69,38 @@ hidpp::long_report notification(std::initializer_list<uint16_t> cids) {
   return r;
 }
 
+hidpp::short_report short_notification(std::optional<uint16_t> cid) {
+  auto r = make_short_report({0x10, 0xff, 0x0a, 0x00});
+  if (cid) {
+    r[4] = *cid >> 8;
+    r[5] = *cid & 0xff;
+  }
+  return r;
+}
+
 const auto get_feature_request = make_report({0x11, 0xff, 0x00, 0x01, 0x1b, 0x04});
 const auto get_count_request = make_report({0x11, 0xff, 0x0a, 0x01});
-const auto get_reporting_request = make_report({0x11, 0xff, 0x0a, 0x21, 0x00, 0xc4});
-const auto divert_request = make_report({0x11, 0xff, 0x0a, 0x31, 0x00, 0xc4, 0x03, 0x00, 0x00});
-const auto undivert_request = make_report({0x11, 0xff, 0x0a, 0x31, 0x00, 0xc4, 0x02, 0x00, 0x00});
+
+hidpp::long_report get_reporting_request_for(uint16_t cid) {
+  return make_report({0x11, 0xff, 0x0a, 0x21,
+                      static_cast<uint8_t>(cid >> 8), static_cast<uint8_t>(cid & 0xff)});
+}
+
+hidpp::long_report divert_request_for(uint16_t cid) {
+  return make_report({0x11, 0xff, 0x0a, 0x31,
+                      static_cast<uint8_t>(cid >> 8), static_cast<uint8_t>(cid & 0xff),
+                      0x03, 0x00, 0x00});
+}
+
+hidpp::long_report undivert_request_for(uint16_t cid) {
+  return make_report({0x11, 0xff, 0x0a, 0x31,
+                      static_cast<uint8_t>(cid >> 8), static_cast<uint8_t>(cid & 0xff),
+                      0x02, 0x00, 0x00});
+}
+
+const auto get_reporting_request = get_reporting_request_for(top_button);
+const auto divert_request = divert_request_for(top_button);
+const auto undivert_request = undivert_request_for(top_button);
 
 hidpp::long_report get_control_info_request(uint8_t index) {
   return make_report({0x11, 0xff, 0x0a, 0x11, index});
@@ -151,11 +191,18 @@ int main() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 
-  "is_long_report"_test = [] {
+  "HID++ report formats"_test = [] {
     auto r = notification({top_button});
     expect(hidpp::is_long_report(0x11, r));
+    expect(hidpp::is_hidpp_report(0x11, r));
     expect(!hidpp::is_long_report(0x10, r));
     expect(!hidpp::is_long_report(0x11, std::span<const uint8_t>(r).first(19)));
+
+    auto short_r = short_notification(top_button);
+    expect(hidpp::is_short_report(0x10, short_r));
+    expect(hidpp::is_hidpp_report(0x10, short_r));
+    expect(!hidpp::is_short_report(0x11, short_r));
+    expect(!hidpp::is_short_report(0x10, std::span<const uint8_t>(short_r).first(6)));
 
     auto receiver = r;
     receiver[1] = 0x01;
@@ -210,6 +257,19 @@ int main() {
     expect(!s.waiting_reply());
   };
 
+  "discovery without diversion"_test = [] {
+    hidpp::session s(std::nullopt, 1, "test logitech_hidpp_button:");
+
+    discover(s);
+
+    expect(s.get_state() == hidpp::session::state::discovered);
+    expect(s.controls_discovered());
+    expect(s.get_divertable_control_ids() ==
+           std::vector<uint16_t>({0x0052, 0x0053, 0x0056, 0x00c4, 0x00d7}));
+    expect(!s.waiting_reply());
+    expect(!s.stop().request) << "nothing to restore";
+  };
+
   "routing"_test = [] {
     auto s = make_session();
     make_diverted(s);
@@ -225,6 +285,15 @@ int main() {
     expect(input(s, notification({0x0052, 0x0053, 0x0056, top_button})).pressed == std::optional<bool>(true));
   };
 
+  "routing short reports"_test = [] {
+    auto s = make_session();
+    make_diverted(s);
+
+    expect(input(s, short_notification(top_button)).pressed == std::optional<bool>(true));
+    expect(!input(s, short_notification(top_button)).pressed) << "duplicate";
+    expect(input(s, short_notification(std::nullopt)).pressed == std::optional<bool>(false));
+  };
+
   "routing another control"_test = [] {
     auto s = make_session(0x0053);
     discover(s);
@@ -234,6 +303,91 @@ int main() {
 
     expect(!input(s, notification({top_button})).pressed);
     expect(input(s, notification({0x0053})).pressed == std::optional<bool>(true));
+  };
+
+  "multiple controls"_test = [] {
+    constexpr uint16_t back_button = 0x0052;
+    hidpp::session s(std::vector<uint16_t>{top_button, back_button, top_button},
+                     1,
+                     "test logitech_hidpp_button:");
+
+    discover(s);
+    expect(s.get_state() == hidpp::session::state::waiting_reporting);
+    expect(input(s, reporting_reply(back_button, 0x00)).request == divert_request_for(back_button));
+    expect(input(s, divert_reply(back_button, 0x03)).request == get_reporting_request_for(top_button));
+    expect(input(s, reporting_reply(top_button, 0x00)).request == divert_request_for(top_button));
+    expect(!input(s, divert_reply(top_button, 0x03)).request);
+    expect(s.get_state() == hidpp::session::state::diverted);
+
+    auto pressed = input(s, notification({top_button, back_button}));
+    expect(pressed.button_events ==
+           std::vector<hidpp::session::result::button_event>({
+               {.control_id = back_button, .pressed = true},
+               {.control_id = top_button, .pressed = true},
+           }));
+
+    auto released_back = input(s, notification({top_button}));
+    expect(released_back.button_events ==
+           std::vector<hidpp::session::result::button_event>({
+               {.control_id = back_button, .pressed = false},
+           }));
+
+    auto stopped = s.stop();
+    expect(stopped.button_events ==
+           std::vector<hidpp::session::result::button_event>({
+               {.control_id = top_button, .pressed = false},
+           }));
+    expect(stopped.request == undivert_request_for(back_button));
+    expect(stopped.additional_requests ==
+           std::vector<hidpp::long_report>({undivert_request_for(top_button)}));
+  };
+
+  "multiple controls restore only this session's diversions"_test = [] {
+    constexpr uint16_t back_button = 0x0052;
+    hidpp::session s(std::vector<uint16_t>{back_button, top_button},
+                     1,
+                     "test logitech_hidpp_button:");
+
+    discover(s);
+    input(s, reporting_reply(back_button, 0x00));
+    expect(input(s, divert_reply(back_button, 0x03)).request == get_reporting_request_for(top_button));
+
+    auto refused = input(s, reporting_reply(top_button, 0x01));
+    expect(s.get_state() == hidpp::session::state::refused);
+    expect(refused.request == undivert_request_for(back_button));
+    expect(refused.additional_requests.empty());
+    expect(!s.stop().request) << "restore this session's control only once";
+  };
+
+  "multiple controls continue after an unacknowledged diversion"_test = [] {
+    constexpr uint16_t back_button = 0x0052;
+    hidpp::session s(std::vector<uint16_t>{back_button, top_button},
+                     1,
+                     "test logitech_hidpp_button:");
+
+    discover(s);
+    input(s, reporting_reply(back_button, 0x00));
+
+    auto pressed_while_configuring = input(s, notification({back_button}));
+    expect(pressed_while_configuring.button_events ==
+           std::vector<hidpp::session::result::button_event>({
+               {.control_id = back_button, .pressed = true},
+           }));
+
+    expect(s.handle_timeout(s.get_generation()).request == get_reporting_request_for(top_button));
+
+    expect(input(s, reporting_reply(top_button, 0x00)).request == divert_request_for(top_button));
+    input(s, divert_reply(top_button, 0x03));
+    expect(s.get_state() == hidpp::session::state::diverted);
+
+    auto stopped = s.stop();
+    expect(stopped.button_events ==
+           std::vector<hidpp::session::result::button_event>({
+               {.control_id = back_button, .pressed = false},
+           }));
+    expect(stopped.request == undivert_request_for(back_button));
+    expect(stopped.additional_requests ==
+           std::vector<hidpp::long_report>({undivert_request_for(top_button)}));
   };
 
   "notifications are ignored unless diverted"_test = [] {
@@ -449,11 +603,9 @@ int main() {
       auto s2 = make_session();
       discover(s2);
       input(s2, reporting_reply(top_button, 0x00));
-      for (int i = 1; i < hidpp::max_attempts; ++i) {
-        expect(s2.handle_timeout(s2.get_generation()).request == divert_request);
-      }
-      expect(s2.handle_timeout(s2.get_generation()).request == undivert_request);
-      expect(s2.get_state() == hidpp::session::state::failed);
+      expect(!s2.handle_timeout(s2.get_generation()).request);
+      expect(s2.get_state() == hidpp::session::state::diverted);
+      expect(s2.stop().request == undivert_request);
     }
   };
 
@@ -616,15 +768,16 @@ int main() {
       expect_no_recovery(s, hidpp::session::state::refused);
     }
 
-    // No reply to the divert request.
+    // No reply to the divert request is accepted for compatibility with
+    // devices which apply setCidReporting without echoing it.
     {
       auto s = make_session();
       discover(s);
       input(s, reporting_reply(top_button, 0x00));
       time_out(s);
-      expect(s.get_state() == hidpp::session::state::failed);
-      expect_no_recovery(s, hidpp::session::state::failed);
-      expect(!s.stop().request) << "undo once";
+      expect(s.get_state() == hidpp::session::state::diverted);
+      expect_no_recovery(s, hidpp::session::state::diverted);
+      expect(s.stop().request == undivert_request);
     }
 
     // The device did not divert.

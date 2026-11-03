@@ -402,6 +402,10 @@ cos(radian) * m;
     return logitech_hidpp_button_;
   }
 
+  void set_logitech_hidpp_button(const std::optional<logitech_hidpp_button>& value) {
+    logitech_hidpp_button_ = value;
+  }
+
   [[nodiscard]] const bool& get_manipulate_caps_lock_led() const {
     return manipulate_caps_lock_led_;
   }

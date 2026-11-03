@@ -99,6 +99,8 @@ public:
                   parameters);
 
           device_events_monitor_->started.connect([this] {
+            started_ = true;
+
             if (input_report_handler_) {
               // The vendor monitor enqueues started before any input_report_arrived
               // signal from the newly opened device.
@@ -109,6 +111,7 @@ public:
           });
 
           device_events_monitor_->stopped.connect([this] {
+            started_ = false;
             stopped();
           });
 
@@ -165,6 +168,11 @@ public:
 
   [[nodiscard]] bool seized() const {
     return device_events_monitor_->seized();
+  }
+
+  // This method should be called in the shared dispatcher thread.
+  [[nodiscard]] bool is_started() const {
+    return started_;
   }
 
   // Publishes values produced outside the raw report handler through values_arrived,
@@ -228,5 +236,6 @@ private:
   // handle and reset access handler state from the shared dispatcher thread.
   std::shared_ptr<hid_report_only_events::report_handler> input_report_handler_;
   pqrs::osx::chrono::absolute_time_point last_time_stamp_{0};
+  bool started_{false};
 };
 } // namespace krbn

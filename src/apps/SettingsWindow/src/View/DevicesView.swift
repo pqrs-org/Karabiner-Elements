@@ -45,6 +45,13 @@ struct DevicesView: View {
                     .padding(.leading, 20.0)
                     .padding(.top, 8.0)
 
+                    LogitechHidppSettings(
+                      connectedDevice: connectedDevice,
+                      deviceConfiguration: deviceConfiguration
+                    )
+                    .padding(.leading, 20.0)
+                    .padding(.top, 8.0)
+
                     if deviceConfiguration.wrappedValue.modifyEvents
                       && !connectedDevice.isAppleDevice
                     {
@@ -372,6 +379,88 @@ struct DevicesView: View {
         DetailedSetting(
           title: "settings.devices.ignore_vendor_events",
           isOn: $deviceConfiguration.ignoreVendorEvents)
+      }
+    }
+  }
+
+  struct LogitechHidppSettings: View {
+    let connectedDevice: ConnectedDevice
+    @Binding var deviceConfiguration: SettingsConfiguration.Device
+
+    @ObservedObject private var settings = Settings.shared
+
+    private let columns = Array(
+      repeating: GridItem(.flexible(minimum: 100.0), spacing: 12.0, alignment: .leading),
+      count: 6)
+
+    private var controlIds: [UInt16] {
+      var result = Set(connectedDevice.logitechHidppDivertableControlIds)
+      for control in deviceConfiguration.logitechHidppButton?.controls ?? [] {
+        result.insert(control.controlId)
+      }
+      return result.sorted()
+    }
+
+    private func control(_ controlId: UInt16)
+      -> SettingsConfiguration.Device.LogitechHidppButton.Control?
+    {
+      deviceConfiguration.logitechHidppButton?.controls.first {
+        $0.controlId == controlId
+      }
+    }
+
+    var body: some View {
+      if deviceConfiguration.modifyEvents
+        && connectedDevice.vendorId == 0x046d
+        && !controlIds.isEmpty
+      {
+        VStack(alignment: .leading, spacing: 6.0) {
+          AppLocalizedText("settings.devices.logitech_hidpp_controls")
+            .font(.callout)
+
+          LazyVGrid(columns: columns, alignment: .leading, spacing: 6.0) {
+            ForEach(controlIds, id: \.self) { controlId in
+              let configuredControl = control(controlId)
+
+              VStack(alignment: .leading, spacing: 4.0) {
+                Toggle(
+                  isOn: Binding(
+                    get: {
+                      control(controlId) != nil
+                    },
+                    set: { enabled in
+                      settings.setLogitechHidppButton(
+                        controlId: controlId,
+                        enabled: enabled,
+                        connectedDevice: connectedDevice)
+                    })
+                ) {
+                  Text("\(controlId) (\(String(format: "0x%04x", controlId)))")
+                    .font(.callout)
+                    .monospacedDigit()
+                }
+                .toggleStyle(.checkbox)
+                .fixedSize(horizontal: true, vertical: false)
+
+                SimpleModificationPickerView(
+                  categories: SimpleModificationDefinitions.shared.toCategories,
+                  label: SimpleModificationDefinitions.shared.toCategories.findLabel(
+                    jsonString: configuredControl?.toJsonString ?? "[]"),
+                  action: { json in
+                    settings.setLogitechHidppButtonTo(
+                      controlId: controlId,
+                      toJsonString: json,
+                      connectedDevice: connectedDevice)
+                  },
+                  showUnsafe: settings.configuration.globalConfiguration.unsafeUi
+                    || connectedDevice.isGamePad
+                )
+                .disabled(configuredControl == nil)
+              }
+              .frame(maxWidth: .infinity, alignment: .leading)
+            }
+          }
+        }
       }
     }
   }
