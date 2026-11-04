@@ -349,14 +349,6 @@ public:
     return is_apple_;
   }
 
-  [[nodiscard]] const std::vector<uint16_t>& get_logitech_hidpp_divertable_control_ids() const {
-    return logitech_hidpp_divertable_control_ids_;
-  }
-
-  void set_logitech_hidpp_divertable_control_ids(const std::vector<uint16_t>& value) {
-    logitech_hidpp_divertable_control_ids_ = value;
-  }
-
   [[nodiscard]] bool compare(const device_properties& other) const {
     // product
     {
@@ -432,6 +424,14 @@ public:
            product_ == other.product_ &&
            serial_number_ == other.serial_number_ &&
            transport_ == other.transport_;
+  }
+
+  [[nodiscard]] const std::vector<uint16_t>& get_logitech_hidpp_divertable_control_ids() const {
+    return logitech_hidpp_divertable_control_ids_;
+  }
+
+  void set_logitech_hidpp_divertable_control_ids(const std::vector<uint16_t>& value) {
+    logitech_hidpp_divertable_control_ids_ = value;
   }
 
 private:

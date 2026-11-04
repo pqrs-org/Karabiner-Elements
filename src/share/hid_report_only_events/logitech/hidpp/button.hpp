@@ -15,6 +15,23 @@
 #include <vector>
 
 namespace krbn::hid_report_only_events::logitech::hidpp::button {
+inline std::vector<pqrs::osx::iokit_hid_value> make_hid_values(
+    const std::vector<krbn::logitech::hidpp::session::result::button_event>& events,
+    pqrs::osx::chrono::absolute_time_point time_stamp) {
+  std::vector<pqrs::osx::iokit_hid_value> result;
+
+  for (const auto& event : events) {
+    result.emplace_back(time_stamp,
+                        event.pressed ? 1 : 0,
+                        momentary_switch_event_details::logitech_hidpp_button::usage_page,
+                        pqrs::hid::usage::value_t(event.control_id),
+                        1,
+                        0);
+  }
+
+  return result;
+}
+
 class handler final : public krbn::hid_report_only_events::report_handler {
 public:
   using input_report_handler =
@@ -43,20 +60,12 @@ public:
       uint32_t report_id,
       std::span<const uint8_t> report,
       pqrs::osx::chrono::absolute_time_point time_stamp) override {
-    std::vector<pqrs::osx::iokit_hid_value> result;
-
     if (input_report_handler_) {
-      for (const auto& event : input_report_handler_(report)) {
-        result.emplace_back(time_stamp,
-                            event.pressed ? 1 : 0,
-                            momentary_switch_event_details::logitech_hidpp_button::usage_page,
-                            pqrs::hid::usage::value_t(event.control_id),
-                            1,
-                            0);
-      }
+      return make_hid_values(input_report_handler_(report),
+                             time_stamp);
     }
 
-    return result;
+    return {};
   }
 
   // The HID++ session lifecycle is controlled explicitly by the owner.

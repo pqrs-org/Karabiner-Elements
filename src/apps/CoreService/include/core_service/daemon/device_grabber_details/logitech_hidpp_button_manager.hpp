@@ -15,8 +15,8 @@ class logitech_hidpp_button_manager final : public pqrs::dispatcher::extra::disp
 
 public:
   nod::signal<void(const std::vector<uint16_t>&)> divertable_control_ids_changed;
-  nod::signal<void(uint16_t, bool)> button_event_generated;
   nod::signal<void(uint16_t)> control_abandoned;
+  nod::signal<void(pqrs::not_null_shared_ptr_t<std::vector<pqrs::osx::iokit_hid_value>>)> hid_values_generated;
 
   logitech_hidpp_button_manager(const logitech_hidpp_button_manager&) = delete;
 
@@ -93,13 +93,22 @@ public:
     }
 
     if (session_controller_) {
+      std::vector<logitech::hidpp::session::result::button_event> button_events;
       for (const auto& event : session_controller_->stop()) {
         if (applied_configuration_ &&
             applied_configuration_->is_enabled(event.control_id)) {
-          button_event_generated(event.control_id,
-                                 event.pressed);
+          button_events.push_back(event);
         }
       }
+
+      if (!button_events.empty()) {
+        auto values = hid_report_only_events::logitech::hidpp::button::make_hid_values(
+            button_events,
+            pqrs::osx::chrono::mach_absolute_time_point());
+        hid_values_generated(std::make_shared<std::vector<pqrs::osx::iokit_hid_value>>(
+            std::move(values)));
+      }
+
       report_handler_->clear_input_report_handler();
       session_controller_ = nullptr;
     }

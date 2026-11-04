@@ -270,20 +270,6 @@ cos(radian) * m;
       }
     }
 
-    if (auto it = json.find("logitech_hidpp");
-        it != std::end(json)) {
-      try {
-        logitech_hidpp_ = logitech_hidpp(*it);
-      } catch (const pqrs::json::unmarshal_error& e) {
-        auto message = fmt::format("`logitech_hidpp` error: {0}", e.what());
-        if (error_handling == error_handling::strict) {
-          throw pqrs::json::unmarshal_error(message);
-        } else {
-          logger::get_logger()->warn(message);
-        }
-      }
-    }
-
     for (const auto& [key, value] : json.items()) {
       if (key == "simple_modifications") {
         try {
@@ -297,6 +283,20 @@ cos(radian) * m;
           fn_function_keys_->update(value);
         } catch (const pqrs::json::unmarshal_error& e) {
           throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+        }
+      }
+    }
+
+    if (auto it = json.find("logitech_hidpp");
+        it != std::end(json)) {
+      try {
+        logitech_hidpp_ = logitech_hidpp(*it);
+      } catch (const pqrs::json::unmarshal_error& e) {
+        auto message = fmt::format("`logitech_hidpp` error: {0}", e.what());
+        if (error_handling == error_handling::strict) {
+          throw pqrs::json::unmarshal_error(message);
+        } else {
+          logger::get_logger()->warn(message);
         }
       }
     }
@@ -332,12 +332,6 @@ cos(radian) * m;
       j.erase("ignore");
     }
 
-    if (logitech_hidpp_) {
-      j["logitech_hidpp"] = logitech_hidpp_->to_json();
-    } else {
-      j.erase("logitech_hidpp");
-    }
-
     j["identifiers"] = identifiers_;
 
     {
@@ -356,6 +350,12 @@ cos(radian) * m;
       } else {
         j.erase("fn_function_keys");
       }
+    }
+
+    if (logitech_hidpp_) {
+      j["logitech_hidpp"] = logitech_hidpp_->to_json();
+    } else {
+      j.erase("logitech_hidpp");
     }
 
     //
@@ -395,15 +395,6 @@ cos(radian) * m;
                                      values.manipulate_caps_lock_led);
 
     coordinate_between_properties();
-  }
-
-  // Absent (std::nullopt) means disabled.
-  [[nodiscard]] const std::optional<logitech_hidpp>& get_logitech_hidpp() const {
-    return logitech_hidpp_;
-  }
-
-  void set_logitech_hidpp(const std::optional<logitech_hidpp>& value) {
-    logitech_hidpp_ = value;
   }
 
   [[nodiscard]] const bool& get_manipulate_caps_lock_led() const {
@@ -707,6 +698,15 @@ cos(radian) * m;
     return helper_values_.find_default_value(value);
   }
 
+  // Absent (std::nullopt) means disabled.
+  [[nodiscard]] const std::optional<logitech_hidpp>& get_logitech_hidpp() const {
+    return logitech_hidpp_;
+  }
+
+  void set_logitech_hidpp(const std::optional<logitech_hidpp>& value) {
+    logitech_hidpp_ = value;
+  }
+
 private:
   [[nodiscard]] static device_identifiers make_device_identifiers(const nlohmann::json& json) {
     if (auto it = json.find("identifiers");
@@ -778,7 +778,6 @@ private:
   bool mouse_discard_vertical_wheel_;
   bool mouse_discard_horizontal_wheel_;
   bool game_pad_swap_sticks_;
-  std::optional<logitech_hidpp> logitech_hidpp_;
 
   double game_pad_xy_stick_deadzone_;
   double game_pad_xy_stick_delta_magnitude_detection_threshold_;
@@ -797,6 +796,7 @@ private:
   pqrs::not_null_shared_ptr_t<simple_modifications> simple_modifications_;
   pqrs::not_null_shared_ptr_t<simple_modifications> fn_function_keys_;
   configuration_json_helper::helper_values helper_values_;
+  std::optional<logitech_hidpp> logitech_hidpp_;
 };
 
 inline void to_json(nlohmann::json& json, const device& device) {

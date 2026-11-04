@@ -150,12 +150,6 @@ public:
     return usage_pair_.get_usage_page() == pqrs::hid::usage_page::button;
   }
 
-  [[nodiscard]] bool logitech_hidpp_button() const {
-    return momentary_switch_event_details::logitech_hidpp_button::target(
-        usage_pair_.get_usage_page(),
-        usage_pair_.get_usage());
-  }
-
   // Return true if this event interrupts the current key repeat.
   // - true: Letter keys
   // - true: Number keys
@@ -180,6 +174,12 @@ public:
   }
 
   auto operator<=>(const momentary_switch_event&) const = default;
+
+  [[nodiscard]] bool logitech_hidpp_button() const {
+    return momentary_switch_event_details::logitech_hidpp_button::target(
+        usage_pair_.get_usage_page(),
+        usage_pair_.get_usage());
+  }
 
 private:
   pqrs::hid::usage_pair usage_pair_;
