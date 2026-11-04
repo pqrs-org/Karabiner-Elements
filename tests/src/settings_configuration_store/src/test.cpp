@@ -492,15 +492,29 @@ int main() {
         {"device", device},
         {"buttons",
          {
-             {{"control_id", 82}, {"to", {{{"key_code", "a"}}}}},
-             {{"control_id", 196}, {"to", {{{"key_code", "right_control"}}}}},
+             {
+                 {"control_id", 82},
+                 {"to", {{{"key_code", "a"}}}},
+             },
+             {
+                 {"control_id", 196},
+                 {"to", {{{"key_code", "right_control"}}}},
+             },
          }},
     });
     expect(!result.contains("error")) << result.dump();
     auto device_snapshot = result.at("snapshot").at("selected_profile").at("devices").at(device);
     expect(device_snapshot.at("logitech_hidpp").at("buttons") == nlohmann::json({
-                                                                     {{"control_id", 82}, {"enabled", true}, {"to_json_string", R"([{"key_code":"a"}])"}},
-                                                                     {{"control_id", 196}, {"enabled", true}, {"to_json_string", R"([{"key_code":"right_control"}])"}},
+                                                                     {
+                                                                         {"control_id", 82},
+                                                                         {"enabled", true},
+                                                                         {"to_json_string", R"([{"key_code":"a"}])"},
+                                                                     },
+                                                                     {
+                                                                         {"control_id", 196},
+                                                                         {"enabled", true},
+                                                                         {"to_json_string", R"([{"key_code":"right_control"}])"},
+                                                                     },
                                                                  }));
 
     result = execute({
@@ -508,8 +522,16 @@ int main() {
         {"device", device},
         {"buttons",
          {
-             {{"control_id", 82}, {"enabled", false}, {"to", {{{"key_code", "a"}}}}},
-             {{"control_id", 196}, {"enabled", true}, {"to", {{{"key_code", "right_control"}}}}},
+             {
+                 {"control_id", 82},
+                 {"enabled", false},
+                 {"to", {{{"key_code", "a"}}}},
+             },
+             {
+                 {"control_id", 196},
+                 {"enabled", true},
+                 {"to", {{{"key_code", "right_control"}}}},
+             },
          }},
     });
     device_snapshot = result.at("snapshot").at("selected_profile").at("devices").at(device);
@@ -522,7 +544,11 @@ int main() {
     result = execute({
         {"action", "set_logitech_hidpp_buttons"},
         {"device", device},
-        {"buttons", {{{"control_id", 0}, {"to", {{{"key_code", "a"}}}}}}},
+        {"buttons",
+         {{
+             {"control_id", 0},
+             {"to", {{{"key_code", "a"}}}},
+         }}},
     });
     expect(result.contains("error"));
     expect(result.at("snapshot").at("selected_profile").at("devices").at(device).at("logitech_hidpp") == device_snapshot.at("logitech_hidpp"));

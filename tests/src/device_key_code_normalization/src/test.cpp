@@ -101,8 +101,15 @@ int main() {
     using krbn::core_service::daemon::device_grabber_details::logitech_hidpp_configuration_utility::make_validated_enabled_control_ids;
 
     auto valid = krbn::core_configuration::details::logitech_hidpp(std::vector<button>{
-        {.control_id = 82, .to = {{{"key_code", "a"}}}},
-        {.control_id = 196, .to = {{{"pointing_button", "button4"}}}, .enabled = false},
+        {
+            .control_id = 82,
+            .to = {{{"key_code", "a"}}},
+        },
+        {
+            .control_id = 196,
+            .to = {{{"pointing_button", "button4"}}},
+            .enabled = false,
+        },
     });
     expect(make_validated_enabled_control_ids(valid) == std::vector<uint16_t>{82});
 
@@ -112,7 +119,10 @@ int main() {
              nlohmann::json::array({{{"unknown", true}}}),
          }) {
       auto invalid = krbn::core_configuration::details::logitech_hidpp(std::vector<button>{
-          {.control_id = 82, .to = to},
+          {
+              .control_id = 82,
+              .to = to,
+          },
       });
       expect(throws([&] {
         static_cast<void>(make_validated_enabled_control_ids(invalid));

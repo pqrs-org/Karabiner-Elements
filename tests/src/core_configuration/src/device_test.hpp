@@ -492,19 +492,75 @@ void run_device_test() {
              nlohmann::json({{"pointing_button", "button17"}}),
              nlohmann::json({{"buttons", nlohmann::json::array()}, {"persistent", true}}),
              nlohmann::json({{"buttons", nlohmann::json::array()}}),
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 0}, {"to", {{{"key_code", "a"}}}}}})}}),
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 65536}, {"to", {{{"key_code", "a"}}}}}})}}),
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", -1}, {"to", {{{"key_code", "a"}}}}}})}}),
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196.5}, {"to", {{{"key_code", "a"}}}}}})}}),
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", "196"}, {"to", {{{"key_code", "a"}}}}}})}}),
+             nlohmann::json({{"buttons",
+                              nlohmann::json::array({
+                                  {
+                                      {"control_id", 0},
+                                      {"to", {{{"key_code", "a"}}}},
+                                  },
+                              })}}),
+             nlohmann::json({{"buttons",
+                              nlohmann::json::array({
+                                  {
+                                      {"control_id", 65536},
+                                      {"to", {{{"key_code", "a"}}}},
+                                  },
+                              })}}),
+             nlohmann::json({{"buttons",
+                              nlohmann::json::array({
+                                  {
+                                      {"control_id", -1},
+                                      {"to", {{{"key_code", "a"}}}},
+                                  },
+                              })}}),
+             nlohmann::json({{"buttons",
+                              nlohmann::json::array({
+                                  {
+                                      {"control_id", 196.5},
+                                      {"to", {{{"key_code", "a"}}}},
+                                  },
+                              })}}),
+             nlohmann::json({{"buttons",
+                              nlohmann::json::array({
+                                  {
+                                      {"control_id", "196"},
+                                      {"to", {{{"key_code", "a"}}}},
+                                  },
+                              })}}),
              nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}}})}}),
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}, {"to", nlohmann::json::array()}}})}}),
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}, {"enabled", "false"}, {"to", {{{"key_code", "a"}}}}}})}}),
+             nlohmann::json({{"buttons",
+                              nlohmann::json::array({
+                                  {
+                                      {"control_id", 196},
+                                      {"to", nlohmann::json::array()},
+                                  },
+                              })}}),
+             nlohmann::json({{"buttons",
+                              nlohmann::json::array({
+                                  {
+                                      {"control_id", 196},
+                                      {"enabled", "false"},
+                                      {"to", {{{"key_code", "a"}}}},
+                                  },
+                              })}}),
              nlohmann::json({{"buttons", nlohmann::json::array({
-                                             {{"control_id", 196}, {"to", {{{"key_code", "a"}}}}},
-                                             {{"control_id", 196}, {"to", {{{"key_code", "b"}}}}},
+                                             {
+                                                 {"control_id", 196},
+                                                 {"to", {{{"key_code", "a"}}}},
+                                             },
+                                             {
+                                                 {"control_id", 196},
+                                                 {"to", {{{"key_code", "b"}}}},
+                                             },
                                          })}}),
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}, {"to", {{{"key_code", "a"}}}}, {"persistent", true}}})}}),
+             nlohmann::json({{"buttons",
+                              nlohmann::json::array({
+                                  {
+                                      {"control_id", 196},
+                                      {"to", {{{"key_code", "a"}}}},
+                                      {"persistent", true},
+                                  },
+                              })}}),
          }) {
       nlohmann::json json({{"logitech_hidpp", j}});
 
