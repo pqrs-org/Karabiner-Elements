@@ -210,9 +210,9 @@ struct SettingsConfiguration: Decodable {
     var gamePadStickYFormula: String
     var gamePadStickVerticalWheelFormula: String
     var gamePadStickHorizontalWheelFormula: String
-    var logitechHidpp: LogitechHidpp?
     var simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
+    var logitechHidpp: LogitechHidpp?
 
     var modifyEvents: Bool {
       get { !ignore }
