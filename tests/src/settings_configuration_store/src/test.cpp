@@ -487,6 +487,7 @@ int main() {
     });
     initialized.get_future().get();
 
+    // Add buttons and expose them in the settings snapshot.
     auto result = execute({
         {"action", "set_logitech_hidpp_buttons"},
         {"device", device},
@@ -517,6 +518,7 @@ int main() {
                                                                      },
                                                                  }));
 
+    // Update enabled while preserving the button mappings.
     result = execute({
         {"action", "set_logitech_hidpp_buttons"},
         {"device", device},
@@ -541,6 +543,7 @@ int main() {
                                                                            {"to_json_string", R"([{"key_code":"a"}])"},
                                                                        }));
 
+    // Reject an invalid control_id without changing the current setting.
     result = execute({
         {"action", "set_logitech_hidpp_buttons"},
         {"device", device},
@@ -553,6 +556,7 @@ int main() {
     expect(result.contains("error"));
     expect(result.at("snapshot").at("selected_profile").at("devices").at(device).at("logitech_hidpp") == device_snapshot.at("logitech_hidpp"));
 
+    // Reject a non-array buttons value without changing the current setting.
     result = execute({
         {"action", "set_logitech_hidpp_buttons"},
         {"device", device},
@@ -561,6 +565,7 @@ int main() {
     expect(result.contains("error"));
     expect(result.at("snapshot").at("selected_profile").at("devices").at(device).at("logitech_hidpp") == device_snapshot.at("logitech_hidpp"));
 
+    // An empty buttons array removes the logitech_hidpp setting.
     result = execute({
         {"action", "set_logitech_hidpp_buttons"},
         {"device", device},
