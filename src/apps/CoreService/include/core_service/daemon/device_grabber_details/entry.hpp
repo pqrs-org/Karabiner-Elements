@@ -7,10 +7,8 @@
 #include "game_pad_stick_converter.hpp"
 #include "hid_device_events_monitor.hpp"
 #include "hid_keyboard_caps_lock_led_state_manager.hpp"
-#include "hid_report_only_events/logitech/hidpp/button.hpp"
-#include "hid_report_only_events/logitech/hidpp/device_support.hpp"
 #include "iokit_utility.hpp"
-#include "logitech_hidpp_session_controller.hpp"
+#include "logitech_hidpp_button_manager.hpp"
 #include "pressed_keys_manager.hpp"
 #include "run_loop_thread_utility.hpp"
 #include "types.hpp"
@@ -49,20 +47,33 @@ public:
         [&] {
           caps_lock_led_state_manager_ = std::make_shared<krbn::hid_keyboard_caps_lock_led_state_manager>(device);
 
-          {
-            const auto& identifiers = device_properties_->get_device_identifiers();
-            std::vector<uint8_t> report_descriptor;
-            if (!logitech::hidpp::device_support::find_unsupported_device_reason(identifiers)) {
-              report_descriptor = hid_device_events_monitor::find_report_descriptor(device);
-            }
-            logitech_hidpp_button_support_ = logitech::hidpp::device_support(identifiers,
-                                                                             report_descriptor);
+          device_name_ = iokit_utility::make_device_name_for_log(device_id,
+                                                                 device);
+          device_short_name_ = iokit_utility::make_device_name(device);
 
-            if (!logitech_hidpp_button_support_.get_unsupported_reason()) {
-              logitech_hidpp_button_report_handler_ =
-                  std::make_shared<hid_report_only_events::logitech::hidpp::button::handler>();
-            }
-          }
+          logitech_hidpp_button_manager_ = std::make_unique<logitech_hidpp_button_manager>(
+              pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
+              device,
+              device_properties_->get_device_identifiers(),
+              fmt::format("{0} logitech_hidpp_button:", device_name_));
+          logitech_hidpp_button_manager_->divertable_control_ids_changed.connect(
+              [this](const auto& control_ids) {
+                if (device_properties_->get_logitech_hidpp_divertable_control_ids() != control_ids) {
+                  device_properties_->set_logitech_hidpp_divertable_control_ids(control_ids);
+                  logitech_hidpp_divertable_control_ids_changed();
+                }
+              });
+          logitech_hidpp_button_manager_->button_event_generated.connect(
+              [this](auto control_id, auto pressed) {
+                post_logitech_hidpp_button_value(control_id,
+                                                 pressed,
+                                                 pqrs::osx::chrono::mach_absolute_time_point());
+              });
+          logitech_hidpp_button_manager_->control_abandoned.connect(
+              [this](auto control_id) {
+                pressed_keys_manager_->erase(momentary_switch_event(momentary_switch_event_details::logitech_hidpp_button::usage_page,
+                                                                    pqrs::hid::usage::value_t(control_id)));
+              });
 
           hid_device_events_monitor_ = std::make_shared<hid_device_events_monitor>(
               pqrs::dispatcher::extra::get_shared_dispatcher(),
@@ -73,7 +84,7 @@ public:
                   .enable_input_report_handler = true,
                   // Observe HID++ reports for every supported device, so logitech_hidpp_button can be enabled
                   // by a configuration change without reopening the device.
-                  .input_report_handler = logitech_hidpp_button_report_handler_,
+                  .input_report_handler = logitech_hidpp_button_manager_->get_report_handler(),
               });
           hid_device_events_monitor_->started.connect([this] {
             control_caps_lock_led_state_manager();
@@ -205,20 +216,13 @@ public:
               game_pad_stick_converter_->convert(hid_values);
             }
           });
-
-          device_name_ = iokit_utility::make_device_name_for_log(device_id,
-                                                                 device);
-          device_short_name_ = iokit_utility::make_device_name(device);
         });
   }
 
   ~entry() {
     detach_from_dispatcher([this] {
       // Restore the control before hid_device_events_monitor_ closes the device.
-      if (logitech_hidpp_button_report_handler_) {
-        logitech_hidpp_button_report_handler_->clear_input_report_handler();
-      }
-      logitech_hidpp_session_controller_ = nullptr;
+      logitech_hidpp_button_manager_ = nullptr;
       hid_device_events_monitor_ = nullptr;
       game_pad_stick_converter_ = nullptr;
       caps_lock_led_state_manager_ = nullptr;
@@ -409,44 +413,8 @@ private:
       desired = d->get_logitech_hidpp();
     }
 
-    // The output mapping is handled by the Simple Modifications manipulator manager.
-    // Keep the HID++ session when only a mapping changes, so the same controls are not
-    // restored and diverted again. A session without a selected control is retained for discovery.
-    if (logitech_hidpp_session_controller_) {
-      const auto desired_control_ids = desired ? desired->get_enabled_control_ids() : std::vector<uint16_t>{};
-      const auto current_control_ids = applied_logitech_hidpp_ ? applied_logitech_hidpp_->get_enabled_control_ids() : std::vector<uint16_t>{};
-      if (desired_control_ids == current_control_ids) {
-        applied_logitech_hidpp_ = desired;
-        return;
-      }
-    }
-
-    stop_logitech_hidpp_button();
-
-    if (!device_ || !logitech_hidpp_button_report_handler_) {
-      return;
-    }
-
-    applied_logitech_hidpp_ = desired;
-
-    auto log_prefix = fmt::format("{0} logitech_hidpp_button:", device_name_);
-
-    logitech_hidpp_session_controller_ = std::make_shared<logitech_hidpp_session_controller>(pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
-                                                                                             *device_,
-                                                                                             desired ? desired->get_enabled_control_ids() : std::vector<uint16_t>{},
-                                                                                             log_prefix);
-    logitech_hidpp_session_controller_->divertable_control_ids_changed.connect(
-        [this](const auto& control_ids) {
-          if (device_properties_->get_logitech_hidpp_divertable_control_ids() != control_ids) {
-            device_properties_->set_logitech_hidpp_divertable_control_ids(control_ids);
-            logitech_hidpp_divertable_control_ids_changed();
-          }
-        });
-    logitech_hidpp_button_report_handler_->set_input_report_handler(
-        [controller = logitech_hidpp_session_controller_.get()](auto report) {
-          return controller->handle_input_report(report);
-        });
-    logitech_hidpp_session_controller_->start();
+    logitech_hidpp_button_manager_->update(desired,
+                                           seized());
   }
 
   // Lets the controller retry after a discovery timeout when the device moves or scrolls again.
@@ -454,8 +422,7 @@ private:
   // logitech_hidpp_session_controller must not trigger another discovery attempt.
   // This method should be called in the shared dispatcher thread.
   void notify_logitech_hidpp_button_of_physical_activity(const std::vector<pqrs::osx::iokit_hid_value>& values) {
-    if (!logitech_hidpp_session_controller_ ||
-        !logitech_hidpp_session_controller_->can_recover_on_physical_activity() ||
+    if (!logitech_hidpp_button_manager_->can_recover_on_physical_activity() ||
         !seized() ||
         disabled_ ||
         !needs_to_seize_device()) {
@@ -478,61 +445,28 @@ private:
     // Ignore a pending configuration change which the controller has not applied yet.
     auto d = core_configuration_->get_selected_profile().get_device(device_properties_->get_device_identifiers());
     auto desired = seized() ? d->get_logitech_hidpp() : std::nullopt;
-    if (desired != applied_logitech_hidpp_) {
+    if (!logitech_hidpp_button_manager_->configuration_is_applied(desired)) {
       return;
     }
 
-    logitech_hidpp_session_controller_->handle_physical_activity();
+    logitech_hidpp_button_manager_->handle_physical_activity();
   }
 
   // Releases held buttons and restores the controls.
   // This method should be called in the shared dispatcher thread while the device is still opened.
   void stop_logitech_hidpp_button() {
-    if (!seized()) {
-      // Do not write to a closed device.
-      abandon_logitech_hidpp_button();
-      return;
-    }
-
-    if (logitech_hidpp_session_controller_) {
-      for (const auto& event : logitech_hidpp_session_controller_->stop()) {
-        post_logitech_hidpp_button_value(event.control_id,
-                                         event.pressed,
-                                         pqrs::osx::chrono::mach_absolute_time_point());
-      }
-      logitech_hidpp_button_report_handler_->clear_input_report_handler();
-      logitech_hidpp_session_controller_ = nullptr;
-    }
-
-    applied_logitech_hidpp_ = std::nullopt;
+    logitech_hidpp_button_manager_->stop(seized());
   }
 
   // Forgets the session without writing to the device.
   // This method should be called in the shared dispatcher thread after the device has been closed.
   void abandon_logitech_hidpp_button() {
-    if (logitech_hidpp_session_controller_) {
-      logitech_hidpp_session_controller_->abandon();
-      logitech_hidpp_button_report_handler_->clear_input_report_handler();
-      logitech_hidpp_session_controller_ = nullptr;
-      if (applied_logitech_hidpp_) {
-        for (auto control_id : applied_logitech_hidpp_->get_enabled_control_ids()) {
-          pressed_keys_manager_->erase(momentary_switch_event(momentary_switch_event_details::logitech_hidpp_button::usage_page,
-                                                              pqrs::hid::usage::value_t(control_id)));
-        }
-      }
-    }
-
-    applied_logitech_hidpp_ = std::nullopt;
+    logitech_hidpp_button_manager_->abandon();
   }
 
   void post_logitech_hidpp_button_value(uint16_t control_id,
                                         bool pressed,
                                         absolute_time_point time_stamp) {
-    if (!applied_logitech_hidpp_ ||
-        !applied_logitech_hidpp_->is_enabled(control_id)) {
-      return;
-    }
-
     auto values = std::make_shared<std::vector<pqrs::osx::iokit_hid_value>>();
     values->emplace_back(time_stamp,
                          pressed ? 1 : 0,
@@ -569,11 +503,7 @@ private:
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<hid_device_events_monitor> hid_device_events_monitor_;
   std::unique_ptr<game_pad_stick_converter> game_pad_stick_converter_;
-  logitech::hidpp::device_support logitech_hidpp_button_support_;
-  std::shared_ptr<hid_report_only_events::logitech::hidpp::button::handler> logitech_hidpp_button_report_handler_;
-  // The applied `logitech_hidpp` setting while the device is seized, including a refused one.
-  std::optional<core_configuration::details::logitech_hidpp> applied_logitech_hidpp_;
-  std::shared_ptr<logitech_hidpp_session_controller> logitech_hidpp_session_controller_;
+  std::unique_ptr<logitech_hidpp_button_manager> logitech_hidpp_button_manager_;
   std::string device_name_;
   std::string device_short_name_;
 

@@ -440,27 +440,27 @@ void run_device_test() {
 
       using button = krbn::core_configuration::details::logitech_hidpp::button;
       expect(*d.get_logitech_hidpp() == krbn::core_configuration::details::logitech_hidpp(std::vector<button>{
-                                                   {
-                                                       .control_id = 82,
-                                                       .to = {{{"pointing_button", "button4"}}},
-                                                   },
-                                                   {
-                                                       .control_id = 196,
-                                                       .to = {{{"key_code", "right_control"}}},
-                                                       .enabled = false,
-                                                   },
-                                               }));
+                                            {
+                                                .control_id = 82,
+                                                .to = {{{"pointing_button", "button4"}}},
+                                            },
+                                            {
+                                                .control_id = 196,
+                                                .to = {{{"key_code", "right_control"}}},
+                                                .enabled = false,
+                                            },
+                                        }));
       expect(*d.get_logitech_hidpp() != krbn::core_configuration::details::logitech_hidpp(std::vector<button>{
-                                                   {
-                                                       .control_id = 82,
-                                                       .to = {{{"pointing_button", "button5"}}},
-                                                   },
-                                                   {
-                                                       .control_id = 196,
-                                                       .to = {{{"key_code", "right_control"}}},
-                                                       .enabled = false,
-                                                   },
-                                               }));
+                                            {
+                                                .control_id = 82,
+                                                .to = {{{"pointing_button", "button5"}}},
+                                            },
+                                            {
+                                                .control_id = 196,
+                                                .to = {{{"key_code", "right_control"}}},
+                                                .enabled = false,
+                                            },
+                                        }));
     }
 
     // Range
@@ -501,9 +501,9 @@ void run_device_test() {
              nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}, {"to", nlohmann::json::array()}}})}}),
              nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}, {"enabled", "false"}, {"to", {{{"key_code", "a"}}}}}})}}),
              nlohmann::json({{"buttons", nlohmann::json::array({
-                                                    {{"control_id", 196}, {"to", {{{"key_code", "a"}}}}},
-                                                    {{"control_id", 196}, {"to", {{{"key_code", "b"}}}}},
-                                                })}}),
+                                             {{"control_id", 196}, {"to", {{{"key_code", "a"}}}}},
+                                             {{"control_id", 196}, {"to", {{{"key_code", "b"}}}}},
+                                         })}}),
              nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}, {"to", {{{"key_code", "a"}}}}, {"persistent", true}}})}}),
          }) {
       nlohmann::json json({{"logitech_hidpp", j}});

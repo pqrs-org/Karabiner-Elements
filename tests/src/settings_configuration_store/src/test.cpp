@@ -499,9 +499,9 @@ int main() {
     expect(!result.contains("error")) << result.dump();
     auto device_snapshot = result.at("snapshot").at("selected_profile").at("devices").at(device);
     expect(device_snapshot.at("logitech_hidpp").at("buttons") == nlohmann::json({
-                                                                    {{"control_id", 82}, {"enabled", true}, {"to_json_string", R"([{"key_code":"a"}])"}},
-                                                                    {{"control_id", 196}, {"enabled", true}, {"to_json_string", R"([{"key_code":"right_control"}])"}},
-                                                                }));
+                                                                     {{"control_id", 82}, {"enabled", true}, {"to_json_string", R"([{"key_code":"a"}])"}},
+                                                                     {{"control_id", 196}, {"enabled", true}, {"to_json_string", R"([{"key_code":"right_control"}])"}},
+                                                                 }));
 
     result = execute({
         {"action", "set_logitech_hidpp_buttons"},
