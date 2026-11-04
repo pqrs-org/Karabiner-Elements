@@ -511,7 +511,7 @@ final class Settings: ObservableObject {
         SettingsConfiguration.Device.LogitechHidppButton(
           controlId: controlId,
           enabled: true,
-          toJsonString: "[{\"key_code\":\"vk_none\"}]"))
+          toJsonString: SettingsConfiguration.Device.LogitechHidppButton.defaultToJsonString))
     }
 
     setLogitechHidppButtons(

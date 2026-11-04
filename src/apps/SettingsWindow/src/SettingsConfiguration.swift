@@ -169,6 +169,11 @@ struct SettingsConfiguration: Decodable {
     }
 
     struct LogitechHidppButton: Codable {
+      static let defaultToJsonString = CanonicalJSON.string(
+        fromJSONObject: [
+          ["apple_vendor_keyboard_key_code": "mission_control"]
+        ])!
+
       var controlId: UInt16
       var enabled: Bool
       var toJsonString: String
