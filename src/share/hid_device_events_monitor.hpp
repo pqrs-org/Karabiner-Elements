@@ -28,6 +28,9 @@ public:
 
   nod::signal<void()> started;
   nod::signal<void()> stopped;
+  // Input reported by physical HID elements through IOHIDQueue.
+  // Values recovered from raw reports or posted by a caller do not emit this signal.
+  nod::signal<void()> physical_input_values_arrived;
   nod::signal<void(pqrs::not_null_shared_ptr_t<std::vector<pqrs::osx::iokit_hid_value>>)> values_arrived;
   nod::signal<void(const std::string&, pqrs::osx::iokit_return)> error_occurred;
 
@@ -121,6 +124,10 @@ public:
 
             for (const auto& value : *values) {
               hid_values->emplace_back(*value);
+            }
+
+            if (!hid_values->empty()) {
+              physical_input_values_arrived();
             }
 
             input_values_arrived(hid_values);
