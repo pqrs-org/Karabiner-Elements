@@ -1,13 +1,11 @@
 #pragma once
 
+#include "types/internal_usage_page.hpp"
 #include <cstdint>
-#include <pqrs/hid.hpp>
 #include <pqrs/json.hpp>
 
 namespace krbn::momentary_switch_event_details::logitech_hidpp_button {
-// This negative value is an internal logical usage page. It cannot collide
-// with a usage page received from a physical HID report.
-constexpr pqrs::hid::usage_page::value_t usage_page(-1);
+constexpr auto usage_page = internal_usage_page::logitech_hidpp_button;
 
 inline bool target(pqrs::hid::usage_page::value_t candidate_usage_page,
                    pqrs::hid::usage::value_t usage) {

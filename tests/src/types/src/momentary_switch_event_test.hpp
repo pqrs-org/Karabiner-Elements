@@ -163,7 +163,7 @@ void run_momentary_switch_event_test() {
       expect(e.logitech_hidpp_button());
       expect(e.get_usage_pair() ==
              pqrs::hid::usage_pair(
-                 krbn::momentary_switch_event_details::logitech_hidpp_button::usage_page,
+                 krbn::internal_usage_page::logitech_hidpp_button,
                  pqrs::hid::usage::value_t(196)));
       expect(nlohmann::json(e) == nlohmann::json({{"logitech_hidpp_button", 196}}));
     }
