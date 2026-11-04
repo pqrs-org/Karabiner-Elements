@@ -484,13 +484,7 @@ public:
     }
 
     append_restore_requests(r);
-    for (auto control_id : pressed_control_ids_) {
-      r.button_events.push_back({.control_id = control_id, .pressed = false});
-    }
-    if (r.button_events.size() == 1) {
-      r.pressed = false;
-    }
-    pressed_control_ids_.clear();
+    append_release_events(r);
 
     state_ = state::stopped;
     discovery_timed_out_ = false;
@@ -687,6 +681,7 @@ private:
 
     result r;
     append_restore_requests(r);
+    append_release_events(r);
     return r;
   }
 
@@ -702,6 +697,7 @@ private:
 
     result r;
     append_restore_requests(r);
+    append_release_events(r);
     return r;
   }
 
@@ -720,6 +716,16 @@ private:
       }
     }
     divert_requested_control_ids_.clear();
+  }
+
+  void append_release_events(result& r) {
+    for (auto control_id : pressed_control_ids_) {
+      r.button_events.push_back({.control_id = control_id, .pressed = false});
+    }
+    if (r.button_events.size() == 1) {
+      r.pressed = false;
+    }
+    pressed_control_ids_.clear();
   }
 
   std::vector<uint16_t> control_ids_;

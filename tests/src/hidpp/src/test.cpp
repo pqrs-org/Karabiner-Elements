@@ -394,6 +394,53 @@ int main() {
            std::vector<hidpp::long_report>({undivert_request_for(top_button)}));
   };
 
+  "multiple controls release a held control when later configuration fails"_test = [] {
+    constexpr uint16_t back_button = 0x0052;
+
+    auto make_pressed_while_configuring = [] {
+      hidpp::session s(std::vector<uint16_t>{back_button, top_button},
+                       1,
+                       "test logitech_hidpp_button:");
+      discover(s);
+      input(s, reporting_reply(back_button, 0x00));
+      input(s, divert_reply(back_button, 0x03));
+      auto pressed = input(s, notification({back_button}));
+      expect(pressed.button_events ==
+             std::vector<hidpp::session::result::button_event>({
+                 {.control_id = back_button, .pressed = true},
+             }));
+      return s;
+    };
+
+    // Refusing a remapped later control restores and releases an earlier control.
+    {
+      auto s = make_pressed_while_configuring();
+      auto refused = input(s, reporting_reply(top_button, 0x00, 0x0053));
+      expect(s.get_state() == hidpp::session::state::refused);
+      expect(refused.request == undivert_request_for(back_button));
+      expect(refused.button_events ==
+             std::vector<hidpp::session::result::button_event>({
+                 {.control_id = back_button, .pressed = false},
+             }));
+      expect(refused.pressed == std::optional<bool>(false));
+      expect(s.stop().button_events.empty()) << "release once";
+    }
+
+    // A HID++ error while configuring a later control does the same.
+    {
+      auto s = make_pressed_while_configuring();
+      auto failed = input(s, make_report({0x11, 0xff, 0xff, 0x0a, 0x21, 0x02}));
+      expect(s.get_state() == hidpp::session::state::failed);
+      expect(failed.request == undivert_request_for(back_button));
+      expect(failed.button_events ==
+             std::vector<hidpp::session::result::button_event>({
+                 {.control_id = back_button, .pressed = false},
+             }));
+      expect(failed.pressed == std::optional<bool>(false));
+      expect(s.stop().button_events.empty()) << "release once";
+    }
+  };
+
   "notifications are ignored unless diverted"_test = [] {
     auto s = make_session();
     expect(!input(s, notification({top_button})).pressed);
