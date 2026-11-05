@@ -506,11 +506,11 @@ void run_momentary_switch_event_test() {
     expect(nlohmann::json(event) == nlohmann::json({{"logitech_hidpp_button", 196}}));
 
     for (const auto& value : {
-             nlohmann::json(0),
-             nlohmann::json(65536),
-             nlohmann::json(-1),
-             nlohmann::json(196.5),
-             nlohmann::json("196"),
+             nlohmann::json(0),     // Below the minimum control ID of 1.
+             nlohmann::json(65536), // Above the maximum control ID of 65535.
+             nlohmann::json(-1),    // Negative control IDs are not allowed.
+             nlohmann::json(196.5), // A control ID must be an integer.
+             nlohmann::json("196"), // A control ID must be a number, not a string.
          }) {
       expect(throws<pqrs::json::unmarshal_error>([&] {
         nlohmann::json({{"logitech_hidpp_button", value}})
