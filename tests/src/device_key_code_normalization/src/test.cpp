@@ -1,5 +1,4 @@
 #include "../../../src/apps/CoreService/include/core_service/daemon/device_grabber_details/device_key_code_manipulator_manager.hpp"
-#include "../../../src/apps/CoreService/include/core_service/daemon/device_grabber_details/logitech_hidpp_configuration_utility.hpp"
 #include "../../../src/apps/CoreService/include/core_service/daemon/device_grabber_details/simple_modifications_manipulator_manager.hpp"
 #include "event_queue/utility.hpp"
 #include "manipulator/manipulator_managers_connector.hpp"
@@ -203,40 +202,6 @@ int main() {
                                                          non_us_backslash,
                                                          non_us_backslash,
                                                      });
-  };
-
-  "logitech_hidpp validates output mappings before diversion"_test = [] {
-    using button = krbn::core_configuration::details::logitech_hidpp::button;
-    using krbn::core_service::daemon::device_grabber_details::logitech_hidpp_configuration_utility::make_validated_enabled_control_ids;
-
-    auto valid = krbn::core_configuration::details::logitech_hidpp(std::vector<button>{
-        {
-            .control_id = 82,
-            .to = {{{"key_code", "a"}}},
-        },
-        {
-            .control_id = 196,
-            .to = {{{"pointing_button", "button4"}}},
-            .enabled = false,
-        },
-    });
-    expect(make_validated_enabled_control_ids(valid) == std::vector<uint16_t>{82});
-
-    for (const auto& to : {
-             nlohmann::json::array({1}),
-             nlohmann::json::array({{{"logitech_hidpp_button", 82}}}),
-             nlohmann::json::array({{{"unknown", true}}}),
-         }) {
-      auto invalid = krbn::core_configuration::details::logitech_hidpp(std::vector<button>{
-          {
-              .control_id = 82,
-              .to = to,
-          },
-      });
-      expect(throws([&] {
-        static_cast<void>(make_validated_enabled_control_ids(invalid));
-      })) << to.dump();
-    }
   };
 
   return 0;

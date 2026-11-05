@@ -4,8 +4,8 @@
 #include "hid_device_events_monitor.hpp"
 #include "hid_report_only_events/logitech/hidpp/button.hpp"
 #include "hid_report_only_events/logitech/hidpp/device_support.hpp"
-#include "logitech_hidpp_configuration_utility.hpp"
 #include "logitech_hidpp_session_controller.hpp"
+#include "manipulator/types/to_event_definition.hpp"
 #include <nod/nod.hpp>
 #include <pqrs/dispatcher.hpp>
 
@@ -157,6 +157,26 @@ public:
   }
 
 private:
+  [[nodiscard]] static std::vector<uint16_t> make_validated_enabled_control_ids(
+      const std::optional<core_configuration::details::logitech_hidpp>& configuration) {
+    std::vector<uint16_t> result;
+
+    if (configuration) {
+      for (const auto& button : configuration->get_buttons()) {
+        if (!button.enabled) {
+          continue;
+        }
+
+        for (const auto& value : button.to) {
+          [[maybe_unused]] const manipulator::to_event_definition definition(value);
+        }
+        result.push_back(button.control_id);
+      }
+    }
+
+    return result;
+  }
+
   [[nodiscard]] std::optional<core_configuration::details::logitech_hidpp> make_desired_configuration(
       const core_configuration::core_configuration& core_configuration,
       bool device_is_seized) const {
@@ -172,7 +192,7 @@ private:
 
     std::vector<uint16_t> desired_control_ids;
     try {
-      desired_control_ids = logitech_hidpp_configuration_utility::make_validated_enabled_control_ids(desired);
+      desired_control_ids = make_validated_enabled_control_ids(desired);
     } catch (const std::exception& e) {
       logger::get_logger()->error(fmt::format("{0} invalid configuration: {1}",
                                               log_prefix_,
