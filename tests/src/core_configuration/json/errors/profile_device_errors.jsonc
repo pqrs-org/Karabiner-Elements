@@ -315,6 +315,26 @@
         "error": "`game_pad_stick_horizontal_wheel_formula` must be array of string, or string, but is `null`"
     },
 
+    // simple_modifications
+
+    {
+        "class": "devices",
+        "input": {
+            "simple_modifications": null
+        },
+        "error": "`simple_modifications` error: json must be array or object, but is `null`"
+    },
+
+    // fn_function_keys
+
+    {
+        "class": "devices",
+        "input": {
+            "fn_function_keys": null
+        },
+        "error": "`fn_function_keys` error: json must be array or object, but is `null`"
+    },
+
     // logitech_hidpp
 
     {
@@ -342,6 +362,16 @@
         "class": "devices",
         "input": {
             "logitech_hidpp": {
+                "buttons": [],
+                "unknown": true
+            }
+        },
+        "error": "`logitech_hidpp` error: unknown key `unknown` in `{\"buttons\":[],\"unknown\":true}`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": {
                 "buttons": [
                     {
                         "control_id": 0,
@@ -358,6 +388,66 @@
             "logitech_hidpp": {
                 "buttons": [
                     {
+                        "control_id": 196
+                    }
+                ]
+            }
+        },
+        "error": "`logitech_hidpp` error: `to` is missing in `{\"control_id\":196}`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": {
+                "buttons": [
+                    {
+                        "control_id": 196,
+                        "to": []
+                    }
+                ]
+            }
+        },
+        "error": "`logitech_hidpp` error: `to` of `control_id` 196 must not be empty"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": {
+                "buttons": [
+                    {
+                        "control_id": 196,
+                        "enabled": "false",
+                        "to": [{ "key_code": "a" }]
+                    }
+                ]
+            }
+        },
+        "error": "`logitech_hidpp` error: `enabled` must be boolean, but is `\"false\"`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": {
+                "buttons": [
+                    {
+                        "control_id": 196,
+                        "to": [{ "key_code": "a" }]
+                    },
+                    {
+                        "control_id": 196,
+                        "to": [{ "key_code": "b" }]
+                    }
+                ]
+            }
+        },
+        "error": "`logitech_hidpp` error: `control_id` 196 is duplicated"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": {
+                "buttons": [
+                    {
                         "control_id": 196,
                         "to": [{ "key_code": "a" }],
                         "unknown": true
@@ -366,25 +456,5 @@
             }
         },
         "error": "`logitech_hidpp` error: unknown key `unknown` in `{\"control_id\":196,\"to\":[{\"key_code\":\"a\"}],\"unknown\":true}`"
-    },
-
-    // simple_modifications
-
-    {
-        "class": "devices",
-        "input": {
-            "simple_modifications": null
-        },
-        "error": "`simple_modifications` error: json must be array or object, but is `null`"
-    },
-
-    // fn_function_keys
-
-    {
-        "class": "devices",
-        "input": {
-            "fn_function_keys": null
-        },
-        "error": "`fn_function_keys` error: json must be array or object, but is `null`"
     }
 ]

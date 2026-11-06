@@ -472,69 +472,24 @@ void run_device_test() {
       expect(d.get_logitech_hidpp()->get_enabled_control_ids() == std::vector<uint16_t>({1, 65535}));
     }
 
-    // Invalid values are not partially applied in loose mode.
-    for (const auto& j : {
-             // Unknown top-level keys are rejected.
-             nlohmann::json({{"buttons", nlohmann::json::array()}, {"unknown", true}}),
-             // `buttons` must not be empty.
-             nlohmann::json({{"buttons", nlohmann::json::array()}}),
-             // A control ID must be between 1 and 65535.
-             nlohmann::json({{"buttons",
-                              nlohmann::json::array({
-                                  {
-                                      {"control_id", 0},
-                                      {"to", {{{"key_code", "a"}}}},
-                                  },
-                              })}}),
-             // `to` is required.
-             nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}}})}}),
-             // `to` must not be empty.
-             nlohmann::json({{"buttons",
-                              nlohmann::json::array({
-                                  {
-                                      {"control_id", 196},
-                                      {"to", nlohmann::json::array()},
-                                  },
-                              })}}),
-             // `enabled` must be a boolean.
-             nlohmann::json({{"buttons",
-                              nlohmann::json::array({
-                                  {
-                                      {"control_id", 196},
-                                      {"enabled", "false"},
-                                      {"to", {{{"key_code", "a"}}}},
-                                  },
-                              })}}),
-             // Control IDs must not be duplicated.
-             nlohmann::json({{"buttons", nlohmann::json::array({
-                                             {
-                                                 {"control_id", 196},
-                                                 {"to", {{{"key_code", "a"}}}},
-                                             },
-                                             {
-                                                 {"control_id", 196},
-                                                 {"to", {{{"key_code", "b"}}}},
-                                             },
-                                         })}}),
-             // Unknown button keys are rejected.
-             nlohmann::json({{"buttons",
-                              nlohmann::json::array({
-                                  {
-                                      {"control_id", 196},
-                                      {"to", {{{"key_code", "a"}}}},
-                                      {"unknown", true},
-                                  },
-                              })}}),
-         }) {
-      nlohmann::json json({{"logitech_hidpp", j}});
-
+    // A valid button before an invalid one is not partially applied in loose mode.
+    {
+      nlohmann::json json({
+          {"logitech_hidpp",
+           {{"buttons",
+             {
+                 {
+                     {"control_id", 82},
+                     {"to", {{{"key_code", "a"}}}},
+                 },
+                 {
+                     {"control_id", 196},
+                 },
+             }}}},
+      });
       device d(json, error_handling::loose);
-      expect(!d.get_logitech_hidpp()) << j.dump();
+      expect(!d.get_logitech_hidpp());
       expect(!d.to_json().contains("logitech_hidpp"));
-
-      expect(throws<pqrs::json::unmarshal_error>([&] {
-        device(json, error_handling::strict);
-      })) << j.dump();
     }
   };
 }
