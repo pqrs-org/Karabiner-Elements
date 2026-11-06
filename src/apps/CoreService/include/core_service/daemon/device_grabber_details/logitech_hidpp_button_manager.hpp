@@ -1,9 +1,7 @@
 #pragma once
 
 #include "core_configuration/core_configuration.hpp"
-#include "hid_device_events_monitor.hpp"
 #include "hid_report_only_events/logitech/hidpp/button.hpp"
-#include "hid_report_only_events/logitech/hidpp/device_support.hpp"
 #include "logitech_hidpp_session_controller.hpp"
 #include "manipulator/types/to_event_definition.hpp"
 #include <nod/nod.hpp>
@@ -23,38 +21,29 @@ public:
   logitech_hidpp_button_manager(pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
                                 IOHIDDeviceRef device,
                                 const device_identifiers& identifiers,
+                                bool device_is_supported,
                                 const std::string& log_prefix)
       : dispatcher_client(pqrs::dispatcher::extra::get_shared_dispatcher()),
         run_loop_thread_(run_loop_thread),
         device_(device),
         identifiers_(identifiers),
+        device_is_supported_(device_is_supported),
         log_prefix_(log_prefix) {
-    dispatcher_client_constructor_guard_.initialize(
-        [&] {
-          std::vector<uint8_t> report_descriptor;
-          if (!logitech::hidpp::device_support::find_unsupported_device_reason(identifiers)) {
-            report_descriptor = hid_device_events_monitor::find_report_descriptor(device);
-          }
-
-          device_support_ = logitech::hidpp::device_support(identifiers,
-                                                            report_descriptor);
-          if (!device_support_.get_unsupported_reason()) {
-            report_handler_ = std::make_shared<hid_report_only_events::logitech::hidpp::button::handler>();
-          }
-        });
+    dispatcher_client_constructor_guard_.initialize([] {});
   }
 
   ~logitech_hidpp_button_manager() override {
     detach_from_dispatcher([this] {
-      if (report_handler_) {
-        report_handler_->clear_input_report_handler();
-      }
       session_controller_ = nullptr;
     });
   }
 
-  [[nodiscard]] std::shared_ptr<hid_report_only_events::logitech::hidpp::button::handler> get_report_handler() const {
-    return report_handler_;
+  [[nodiscard]] std::vector<logitech::hidpp::session::result::button_event> handle_input_report(
+      std::span<const uint8_t> report) {
+    if (session_controller_) {
+      return session_controller_->handle_input_report(report);
+    }
+    return {};
   }
 
   // Applies the desired setting. A session without a selected control is retained for discovery.
@@ -109,7 +98,6 @@ public:
             std::move(values)));
       }
 
-      report_handler_->clear_input_report_handler();
       session_controller_ = nullptr;
     }
 
@@ -124,7 +112,6 @@ public:
 
     if (session_controller_) {
       session_controller_->abandon();
-      report_handler_->clear_input_report_handler();
       session_controller_ = nullptr;
 
       if (applied_configuration_) {
@@ -211,7 +198,7 @@ private:
 
     stop(device_is_seized);
 
-    if (!report_handler_) {
+    if (!device_is_supported_) {
       return;
     }
 
@@ -227,23 +214,14 @@ private:
           divertable_control_ids_changed(control_ids);
         });
 
-    report_handler_->set_input_report_handler(
-        [weak_controller = std::weak_ptr(session_controller_)](auto report) {
-          if (auto controller = weak_controller.lock()) {
-            return controller->handle_input_report(report);
-          }
-          return std::vector<logitech::hidpp::session::result::button_event>{};
-        });
-
     session_controller_->start();
   }
 
   pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread_;
   pqrs::cf::cf_ptr<IOHIDDeviceRef> device_;
   device_identifiers identifiers_;
+  bool device_is_supported_;
   std::string log_prefix_;
-  logitech::hidpp::device_support device_support_;
-  std::shared_ptr<hid_report_only_events::logitech::hidpp::button::handler> report_handler_;
   std::optional<core_configuration::details::logitech_hidpp> applied_configuration_;
   std::vector<uint16_t> applied_control_ids_;
   std::shared_ptr<logitech_hidpp_session_controller> session_controller_;

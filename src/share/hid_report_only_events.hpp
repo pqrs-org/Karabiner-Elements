@@ -1,6 +1,8 @@
 #pragma once
 
 #include "hid_report_only_events/elecom/trackball.hpp"
+#include "hid_report_only_events/logitech/hidpp/button.hpp"
+#include "hid_report_only_events/logitech/hidpp/device_support.hpp"
 #include "hid_report_only_events/report_handler.hpp"
 #include "types/device_identifiers.hpp"
 #include <memory>
@@ -17,6 +19,10 @@ namespace krbn::hid_report_only_events {
     return true;
   }
 
+  if (krbn::logitech::hidpp::is_target_device(identifiers)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -30,6 +36,12 @@ namespace krbn::hid_report_only_events {
             report_descriptor)) {
       return handler;
     }
+  }
+
+  auto support = krbn::logitech::hidpp::device_support(identifiers,
+                                                       report_descriptor);
+  if (!support.get_unsupported_reason()) {
+    return std::make_shared<logitech::hidpp::button::handler>();
   }
 
   return nullptr;

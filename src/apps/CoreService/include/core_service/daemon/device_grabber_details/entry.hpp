@@ -51,18 +51,20 @@ public:
                                                                  device);
           device_short_name_ = iokit_utility::make_device_name(device);
 
-          initialize_logitech_hidpp_button_manager(device);
+          auto input_report_handler = hid_device_events_monitor::make_input_report_handler(
+              device,
+              device_properties_->get_device_identifiers());
+          initialize_logitech_hidpp_button_manager(device,
+                                                   input_report_handler);
 
           hid_device_events_monitor_ = std::make_shared<hid_device_events_monitor>(
               pqrs::dispatcher::extra::get_shared_dispatcher(),
               pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
               device,
-              *device_properties_,
               hid_device_events_monitor::configuration{
-                  .enable_input_report_handler = true,
                   // Observe HID++ reports for every supported device, so logitech_hidpp_button can be enabled
                   // by a configuration change without reopening the device.
-                  .input_report_handler = logitech_hidpp_button_manager_->get_report_handler(),
+                  .input_report_handler = input_report_handler,
               });
           hid_device_events_monitor_->started.connect([this] {
             control_caps_lock_led_state_manager();
@@ -401,12 +403,28 @@ private:
     }
   }
 
-  void initialize_logitech_hidpp_button_manager(IOHIDDeviceRef device) {
-    logitech_hidpp_button_manager_ = std::make_unique<logitech_hidpp_button_manager>(
+  void initialize_logitech_hidpp_button_manager(
+      IOHIDDeviceRef device,
+      const std::shared_ptr<hid_report_only_events::report_handler>& input_report_handler) {
+    auto report_handler = std::dynamic_pointer_cast<hid_report_only_events::logitech::hidpp::button::handler>(
+        input_report_handler);
+
+    logitech_hidpp_button_manager_ = std::make_shared<logitech_hidpp_button_manager>(
         pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
         device,
         device_properties_->get_device_identifiers(),
+        report_handler != nullptr,
         fmt::format("{0} logitech_hidpp_button:", device_name_));
+
+    if (report_handler) {
+      report_handler->set_input_report_handler(
+          [weak_manager = std::weak_ptr(logitech_hidpp_button_manager_)](auto report) {
+            if (auto manager = weak_manager.lock()) {
+              return manager->handle_input_report(report);
+            }
+            return std::vector<logitech::hidpp::session::result::button_event>{};
+          });
+    }
 
     logitech_hidpp_button_manager_->divertable_control_ids_changed.connect(
         [this](const auto& control_ids) {
@@ -468,7 +486,7 @@ private:
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<hid_device_events_monitor> hid_device_events_monitor_;
   std::unique_ptr<game_pad_stick_converter> game_pad_stick_converter_;
-  std::unique_ptr<logitech_hidpp_button_manager> logitech_hidpp_button_manager_;
+  std::shared_ptr<logitech_hidpp_button_manager> logitech_hidpp_button_manager_;
   std::string device_name_;
   std::string device_short_name_;
 

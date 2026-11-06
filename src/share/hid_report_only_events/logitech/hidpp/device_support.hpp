@@ -15,6 +15,11 @@
 #include <string>
 
 namespace krbn::logitech::hidpp {
+[[nodiscard]] inline bool is_target_device(
+    const device_identifiers& identifiers) noexcept {
+  return identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x046d);
+}
+
 class device_support final {
 public:
   device_support()
@@ -45,7 +50,7 @@ public:
 
   // Checks which do not need the report descriptor.
   [[nodiscard]] static std::optional<std::string> find_unsupported_device_reason(const device_identifiers& identifiers) {
-    if (identifiers.get_vendor_id() != pqrs::hid::vendor_id::value_t(0x046d)) {
+    if (!is_target_device(identifiers)) {
       return "only Logitech devices are supported";
     }
 

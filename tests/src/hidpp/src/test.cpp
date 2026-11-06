@@ -1003,6 +1003,9 @@ int main() {
   "device_support"_test = [] {
     auto descriptor = mx_anywhere_3s_descriptor();
 
+    expect(hidpp::is_target_device(logitech_mouse));
+    expect(!hidpp::is_target_device(make_identifiers(0x056e, true)));
+
     expect(!hidpp::device_support(logitech_mouse, descriptor).get_unsupported_reason());
 
     auto unsupported = [&](const krbn::device_identifiers& identifiers,
