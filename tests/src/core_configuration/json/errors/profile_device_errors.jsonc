@@ -350,7 +350,7 @@
                 ]
             }
         },
-        "error": "`logitech_hidpp` error: `control_id` must be an integer between 1 and 65535, but is `0`"
+        "error": "`logitech_hidpp` error: `logitech_hidpp_button` must be an integer between 1 and 65535, but is `0`"
     },
     {
         "class": "devices",

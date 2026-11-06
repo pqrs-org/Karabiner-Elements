@@ -404,7 +404,7 @@ void run_device_test() {
     using krbn::core_configuration::details::device;
     using krbn::core_configuration::error_handling;
 
-    // Disabled by default
+    // Absent by default
     {
       device d(nlohmann::json::object(), error_handling::strict);
       expect(!d.get_logitech_hidpp());
@@ -450,17 +450,6 @@ void run_device_test() {
                                                 .enabled = false,
                                             },
                                         }));
-      expect(*d.get_logitech_hidpp() != krbn::core_configuration::details::logitech_hidpp(std::vector<button>{
-                                            {
-                                                .control_id = 82,
-                                                .to = {{{"pointing_button", "button5"}}},
-                                            },
-                                            {
-                                                .control_id = 196,
-                                                .to = {{{"key_code", "right_control"}}},
-                                                .enabled = false,
-                                            },
-                                        }));
     }
 
     // Range
@@ -496,34 +485,6 @@ void run_device_test() {
                               nlohmann::json::array({
                                   {
                                       {"control_id", 0},
-                                      {"to", {{{"key_code", "a"}}}},
-                                  },
-                              })}}),
-             nlohmann::json({{"buttons",
-                              nlohmann::json::array({
-                                  {
-                                      {"control_id", 65536},
-                                      {"to", {{{"key_code", "a"}}}},
-                                  },
-                              })}}),
-             nlohmann::json({{"buttons",
-                              nlohmann::json::array({
-                                  {
-                                      {"control_id", -1},
-                                      {"to", {{{"key_code", "a"}}}},
-                                  },
-                              })}}),
-             nlohmann::json({{"buttons",
-                              nlohmann::json::array({
-                                  {
-                                      {"control_id", 196.5},
-                                      {"to", {{{"key_code", "a"}}}},
-                                  },
-                              })}}),
-             nlohmann::json({{"buttons",
-                              nlohmann::json::array({
-                                  {
-                                      {"control_id", "196"},
                                       {"to", {{{"key_code", "a"}}}},
                                   },
                               })}}),

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types/momentary_switch_event.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <optional>
@@ -60,13 +61,10 @@ public:
       bool enabled = true;
       for (const auto& [key, value] : v.items()) {
         if (key == "control_id") {
-          if (!value.is_number_integer() ||
-              value.get<int64_t>() < 1 ||
-              value.get<int64_t>() > 0xffff) {
-            throw pqrs::json::unmarshal_error(fmt::format("`control_id` must be an integer between 1 and 65535, but is `{0}`",
-                                                          pqrs::json::dump_for_error_message(value)));
-          }
-          control_id = static_cast<uint16_t>(value.get<int64_t>());
+          const auto event = nlohmann::json({{"logitech_hidpp_button", value}})
+                                 .get<momentary_switch_event>();
+          control_id = static_cast<uint16_t>(
+              type_safe::get(event.get_usage_pair().get_usage()));
         } else if (key == "to") {
           pqrs::json::requires_array(value, "`to`");
           to = value;
