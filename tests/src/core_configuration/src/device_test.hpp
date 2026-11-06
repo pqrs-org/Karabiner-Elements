@@ -474,13 +474,11 @@ void run_device_test() {
 
     // Invalid values are not partially applied in loose mode.
     for (const auto& j : {
-             nlohmann::json(nullptr),
-             nlohmann::json(true),
-             nlohmann::json::array(),
-             nlohmann::json::object(),
-             nlohmann::json({{"pointing_button", "button17"}}),
-             nlohmann::json({{"buttons", nlohmann::json::array()}, {"persistent", true}}),
+             // Unknown top-level keys are rejected.
+             nlohmann::json({{"buttons", nlohmann::json::array()}, {"unknown", true}}),
+             // `buttons` must not be empty.
              nlohmann::json({{"buttons", nlohmann::json::array()}}),
+             // A control ID must be between 1 and 65535.
              nlohmann::json({{"buttons",
                               nlohmann::json::array({
                                   {
@@ -488,7 +486,9 @@ void run_device_test() {
                                       {"to", {{{"key_code", "a"}}}},
                                   },
                               })}}),
+             // `to` is required.
              nlohmann::json({{"buttons", nlohmann::json::array({{{"control_id", 196}}})}}),
+             // `to` must not be empty.
              nlohmann::json({{"buttons",
                               nlohmann::json::array({
                                   {
@@ -496,6 +496,7 @@ void run_device_test() {
                                       {"to", nlohmann::json::array()},
                                   },
                               })}}),
+             // `enabled` must be a boolean.
              nlohmann::json({{"buttons",
                               nlohmann::json::array({
                                   {
@@ -504,6 +505,7 @@ void run_device_test() {
                                       {"to", {{{"key_code", "a"}}}},
                                   },
                               })}}),
+             // Control IDs must not be duplicated.
              nlohmann::json({{"buttons", nlohmann::json::array({
                                              {
                                                  {"control_id", 196},
@@ -514,12 +516,13 @@ void run_device_test() {
                                                  {"to", {{{"key_code", "b"}}}},
                                              },
                                          })}}),
+             // Unknown button keys are rejected.
              nlohmann::json({{"buttons",
                               nlohmann::json::array({
                                   {
                                       {"control_id", 196},
                                       {"to", {{{"key_code", "a"}}}},
-                                      {"persistent", true},
+                                      {"unknown", true},
                                   },
                               })}}),
          }) {

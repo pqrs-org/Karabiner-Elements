@@ -360,12 +360,12 @@
                     {
                         "control_id": 196,
                         "to": [{ "key_code": "a" }],
-                        "persistent": true
+                        "unknown": true
                     }
                 ]
             }
         },
-        "error": "`logitech_hidpp` error: unknown key `persistent` in `{\"control_id\":196,\"persistent\":true,\"to\":[{\"key_code\":\"a\"}]}`"
+        "error": "`logitech_hidpp` error: unknown key `unknown` in `{\"control_id\":196,\"to\":[{\"key_code\":\"a\"}],\"unknown\":true}`"
     },
 
     // simple_modifications
