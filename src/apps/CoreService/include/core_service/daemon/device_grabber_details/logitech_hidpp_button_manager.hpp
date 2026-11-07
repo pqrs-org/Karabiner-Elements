@@ -21,13 +21,11 @@ public:
   logitech_hidpp_button_manager(pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
                                 IOHIDDeviceRef device,
                                 const device_identifiers& identifiers,
-                                bool device_is_supported,
                                 const std::string& log_prefix)
       : dispatcher_client(pqrs::dispatcher::extra::get_shared_dispatcher()),
         run_loop_thread_(run_loop_thread),
         device_(device),
         identifiers_(identifiers),
-        device_is_supported_(device_is_supported),
         log_prefix_(log_prefix) {
     dispatcher_client_constructor_guard_.initialize([] {});
   }
@@ -198,10 +196,6 @@ private:
 
     stop(device_is_seized);
 
-    if (!device_is_supported_) {
-      return;
-    }
-
     applied_configuration_ = desired;
     applied_control_ids_ = desired_control_ids;
 
@@ -220,7 +214,6 @@ private:
   pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread_;
   pqrs::cf::cf_ptr<IOHIDDeviceRef> device_;
   device_identifiers identifiers_;
-  bool device_is_supported_;
   std::string log_prefix_;
   std::optional<core_configuration::details::logitech_hidpp> applied_configuration_;
   std::vector<uint16_t> applied_control_ids_;
