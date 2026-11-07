@@ -121,6 +121,33 @@ void run_connected_devices_test() {
     }
   };
 
+  "connected device capabilities"_test = [] {
+    krbn::connected_device_capabilities capabilities;
+    capabilities.set_logitech_hidpp_divertable_control_ids({82, 196});
+
+    krbn::connected_devices connected_devices;
+    connected_devices.push_back_device(
+        std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+            .device_id = krbn::device_id(1),
+            .vendor_id = pqrs::hid::vendor_id::value_t(0x046d),
+            .product_id = pqrs::hid::product_id::value_t(0xb037),
+            .is_pointing_device = true,
+        }),
+        capabilities);
+
+    auto json = nlohmann::json(connected_devices);
+    expect(json.at(0).at("connected_device_capabilities") == nlohmann::json({
+                                                                      {"logitech_hidpp",
+                                                                       {
+                                                                           {"divertable_control_ids", {82, 196}},
+                                                                       }},
+                                                                  }));
+
+    auto restored = json.get<krbn::connected_devices>();
+    expect(restored.get_capabilities(0).get_logitech_hidpp_divertable_control_ids() ==
+           std::vector<uint16_t>{82, 196});
+  };
+
   "connected_devices ill-formed name"_test = [] {
     const char ill_formed_name[] = {
         't',

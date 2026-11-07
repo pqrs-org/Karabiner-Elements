@@ -691,7 +691,8 @@ public:
     enqueue_to_dispatcher([this, function] {
       connected_devices connected_devices;
       for (const auto& entry : entries_ | std::views::values) {
-        connected_devices.push_back_device(entry->get_device_properties());
+        connected_devices.push_back_device(entry->get_device_properties(),
+                                           entry->get_connected_device_capabilities());
       }
 
       function(nlohmann::json(connected_devices));

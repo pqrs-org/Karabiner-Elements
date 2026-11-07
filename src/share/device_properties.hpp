@@ -23,7 +23,6 @@ public:
     bool is_pointing_device = false;
     bool is_game_pad = false;
     bool is_consumer = false;
-    std::vector<uint16_t> logitech_hidpp_divertable_control_ids;
   };
 
   device_properties(initialization_parameters parameters)
@@ -32,8 +31,7 @@ public:
         manufacturer_(parameters.manufacturer),
         product_(parameters.product),
         serial_number_(parameters.serial_number),
-        transport_(parameters.transport),
-        logitech_hidpp_divertable_control_ids_(parameters.logitech_hidpp_divertable_control_ids) {
+        transport_(parameters.transport) {
     device_identifiers_ = device_identifiers({
         .vendor_id = parameters.vendor_id,
         .product_id = parameters.product_id,
@@ -253,9 +251,6 @@ public:
         pqrs::json::requires_string(v, "`" + k + "`");
         parameters.transport = v.get<std::string>();
 
-      } else if (k == "logitech_hidpp_divertable_control_ids") {
-        parameters.logitech_hidpp_divertable_control_ids = v.get<std::vector<uint16_t>>();
-
       } else {
         // Allow unknown key
       }
@@ -298,10 +293,6 @@ public:
     if (is_apple_) {
       json["is_apple"] = is_apple_;
     }
-    if (!logitech_hidpp_divertable_control_ids_.empty()) {
-      json["logitech_hidpp_divertable_control_ids"] = logitech_hidpp_divertable_control_ids_;
-    }
-
     return json;
   }
 
@@ -426,14 +417,6 @@ public:
            transport_ == other.transport_;
   }
 
-  [[nodiscard]] const std::vector<uint16_t>& get_logitech_hidpp_divertable_control_ids() const {
-    return logitech_hidpp_divertable_control_ids_;
-  }
-
-  void set_logitech_hidpp_divertable_control_ids(const std::vector<uint16_t>& value) {
-    logitech_hidpp_divertable_control_ids_ = value;
-  }
-
 private:
   device_id device_id_;
   device_identifiers device_identifiers_;
@@ -446,7 +429,6 @@ private:
   bool is_built_in_pointing_device_{false};
   bool is_built_in_touch_bar_{false};
   bool is_apple_{false};
-  std::vector<uint16_t> logitech_hidpp_divertable_control_ids_;
 };
 
 inline void to_json(nlohmann::json& json, const device_properties& device_properties) {

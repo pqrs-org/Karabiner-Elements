@@ -1,5 +1,6 @@
 #pragma once
 
+#include "connected_device_capabilities.hpp"
 #include "core_configuration/core_configuration.hpp"
 #include "device_properties.hpp"
 #include "device_utility.hpp"
@@ -228,6 +229,10 @@ public:
     return device_properties_;
   }
 
+  [[nodiscard]] const connected_device_capabilities& get_connected_device_capabilities() const {
+    return connected_device_capabilities_;
+  }
+
   [[nodiscard]] pqrs::not_null_shared_ptr_t<pressed_keys_manager> get_pressed_keys_manager() const {
     return pressed_keys_manager_;
   }
@@ -428,8 +433,8 @@ private:
 
     logitech_hidpp_button_manager_->divertable_control_ids_changed.connect(
         [this](const auto& control_ids) {
-          if (device_properties_->get_logitech_hidpp_divertable_control_ids() != control_ids) {
-            device_properties_->set_logitech_hidpp_divertable_control_ids(control_ids);
+          if (connected_device_capabilities_.get_logitech_hidpp_divertable_control_ids() != control_ids) {
+            connected_device_capabilities_.set_logitech_hidpp_divertable_control_ids(control_ids);
             logitech_hidpp_divertable_control_ids_changed();
           }
         });
@@ -482,6 +487,7 @@ private:
   pqrs::cf::cf_ptr<IOHIDDeviceRef> device_;
   pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration_;
   pqrs::not_null_shared_ptr_t<device_properties> device_properties_;
+  connected_device_capabilities connected_device_capabilities_;
   pqrs::not_null_shared_ptr_t<pressed_keys_manager> pressed_keys_manager_;
   std::shared_ptr<hid_keyboard_caps_lock_led_state_manager> caps_lock_led_state_manager_;
   std::shared_ptr<hid_device_events_monitor> hid_device_events_monitor_;

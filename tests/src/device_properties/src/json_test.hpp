@@ -25,7 +25,6 @@ void run_json_test() {
   "product": "p",
   "serial_number": "s",
   "transport": "t"
-  ,"logitech_hidpp_divertable_control_ids": [82, 196]
 }
 
 )"_json;
@@ -43,9 +42,6 @@ void run_json_test() {
       expect(true == device_properties->get_device_identifiers().get_is_keyboard());
       expect(true == device_properties->get_device_identifiers().get_is_pointing_device());
       expect(true == device_properties->get_device_identifiers().get_is_game_pad());
-      expect(std::vector<uint16_t>({82, 196}) ==
-             device_properties->get_logitech_hidpp_divertable_control_ids());
-
       expect(json == device_properties->to_json());
     }
 
