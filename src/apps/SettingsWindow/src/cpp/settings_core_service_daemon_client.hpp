@@ -83,7 +83,7 @@ public:
             const auto& devices = connected_devices.get_devices();
             for (std::size_t i = 0; i < devices.size(); ++i) {
               connected_devices_json[i]["device_identifiers_json_string"] =
-                  devices[i]->get_device_identifiers().to_normalized_json().dump();
+                  devices[i].properties->get_device_identifiers().to_normalized_json().dump();
             }
 
             auto json_dump = krbn::json_utility::dump(connected_devices_json);

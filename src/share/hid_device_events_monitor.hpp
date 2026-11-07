@@ -1,7 +1,7 @@
 #pragma once
 
-#include "device_properties.hpp"
 #include "hid_report_only_events.hpp"
+#include "types/device_identifiers.hpp"
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -16,8 +16,8 @@
 #include <vector>
 
 namespace krbn {
-// Publishes the values exposed by IOHIDQueue and, when enabled, events recovered
-// directly from raw input reports through one chronologically consistent stream.
+// Publishes the values exposed by IOHIDQueue and, when a handler is supplied,
+// events recovered directly from raw input reports through one chronologically consistent stream.
 class hid_device_events_monitor final : public pqrs::dispatcher::extra::dispatcher_client {
   pqrs::dispatcher::extra::dispatcher_client_constructor_exception_guard dispatcher_client_constructor_guard_{*this};
 
@@ -28,6 +28,9 @@ public:
 
   nod::signal<void()> started;
   nod::signal<void()> stopped;
+  // Input reported by physical HID elements through IOHIDQueue.
+  // Values recovered from raw reports or posted by a caller do not emit this signal.
+  nod::signal<void()> physical_input_values_arrived;
   nod::signal<void(pqrs::not_null_shared_ptr_t<std::vector<pqrs::osx::iokit_hid_value>>)> values_arrived;
   nod::signal<void(const std::string&, pqrs::osx::iokit_return)> error_occurred;
 
@@ -36,7 +39,7 @@ public:
   //
 
   struct configuration final {
-    bool enable_input_report_handler = true;
+    std::shared_ptr<hid_report_only_events::report_handler> input_report_handler;
     std::function<void(uint32_t, std::span<const uint8_t>)> input_report_observer;
   };
 
@@ -46,30 +49,18 @@ public:
       std::weak_ptr<pqrs::dispatcher::dispatcher> weak_dispatcher,
       pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread,
       IOHIDDeviceRef device,
-      const device_properties& device_properties,
       configuration configuration)
       : dispatcher_client(weak_dispatcher) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
           pqrs::osx::iokit_hid_device_events_monitor::parameters parameters;
 
-          const auto& identifiers = device_properties.get_device_identifiers();
-          if (configuration.enable_input_report_handler &&
-              hid_report_only_events::is_target_device(identifiers)) {
-            // Reading and parsing the descriptor is unnecessary for all other devices.
-            auto report_descriptor = find_report_descriptor(device);
-
-            input_report_handler_ =
-                hid_report_only_events::make_report_handler(
-                    identifiers,
-                    report_descriptor);
-
-            if (input_report_handler_) {
-              parameters.input_report_filter_started =
-                  [handler = input_report_handler_] {
-                    handler->reset_filter_state();
-                  };
-            }
+          input_report_handler_ = std::move(configuration.input_report_handler);
+          if (input_report_handler_) {
+            parameters.input_report_filter_started =
+                [handler = input_report_handler_] {
+                  handler->reset_filter_state();
+                };
           }
 
           if (configuration.input_report_observer || input_report_handler_) {
@@ -94,6 +85,8 @@ public:
                   parameters);
 
           device_events_monitor_->started.connect([this] {
+            started_ = true;
+
             if (input_report_handler_) {
               // The vendor monitor enqueues started before any input_report_arrived
               // signal from the newly opened device.
@@ -104,6 +97,7 @@ public:
           });
 
           device_events_monitor_->stopped.connect([this] {
+            started_ = false;
             stopped();
           });
 
@@ -113,6 +107,10 @@ public:
 
             for (const auto& value : *values) {
               hid_values->emplace_back(*value);
+            }
+
+            if (!hid_values->empty()) {
+              physical_input_values_arrived();
             }
 
             input_values_arrived(hid_values);
@@ -162,11 +160,17 @@ public:
     return device_events_monitor_->seized();
   }
 
-private:
-  void input_values_arrived(
+  // This method should be called in the shared dispatcher thread.
+  [[nodiscard]] bool is_started() const {
+    return started_;
+  }
+
+  // Publishes values produced outside the raw report handler through values_arrived,
+  // with the same time stamp normalization as other values.
+  // This method should be called in the shared dispatcher thread.
+  void post_input_values(
       pqrs::not_null_shared_ptr_t<std::vector<pqrs::osx::iokit_hid_value>> hid_values) {
-    normalize_time_stamps(*hid_values);
-    values_arrived(hid_values);
+    input_values_arrived(hid_values);
   }
 
   [[nodiscard]] static std::vector<uint8_t> find_report_descriptor(IOHIDDeviceRef device) {
@@ -184,6 +188,25 @@ private:
     }
 
     return result;
+  }
+
+  [[nodiscard]] static std::shared_ptr<hid_report_only_events::report_handler> make_input_report_handler(
+      IOHIDDeviceRef device,
+      const device_identifiers& identifiers) {
+    if (!hid_report_only_events::is_target_device(identifiers)) {
+      return nullptr;
+    }
+
+    return hid_report_only_events::make_report_handler(
+        identifiers,
+        find_report_descriptor(device));
+  }
+
+private:
+  void input_values_arrived(
+      pqrs::not_null_shared_ptr_t<std::vector<pqrs::osx::iokit_hid_value>> hid_values) {
+    normalize_time_stamps(*hid_values);
+    values_arrived(hid_values);
   }
 
   void normalize_time_stamps(
@@ -215,5 +238,6 @@ private:
   // handle and reset access handler state from the shared dispatcher thread.
   std::shared_ptr<hid_report_only_events::report_handler> input_report_handler_;
   pqrs::osx::chrono::absolute_time_point last_time_stamp_{0};
+  bool started_{false};
 };
 } // namespace krbn

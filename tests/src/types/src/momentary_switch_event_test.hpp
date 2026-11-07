@@ -343,7 +343,7 @@ void run_momentary_switch_event_test() {
 
     try {
       nlohmann::json json;
-      [[maybe_unused]] auto event = krbn::momentary_switch_event(json);
+      static_cast<void>(krbn::momentary_switch_event(json));
       expect(false);
     } catch (pqrs::json::unmarshal_error& ex) {
       expect(std::string("json must be object, but is `null`") == ex.what());
@@ -353,7 +353,7 @@ void run_momentary_switch_event_test() {
 
     try {
       auto json = nlohmann::json::object({{"key_code", "unknown_value"}});
-      [[maybe_unused]] auto event = krbn::momentary_switch_event(json);
+      static_cast<void>(krbn::momentary_switch_event(json));
       expect(false);
     } catch (pqrs::json::unmarshal_error& ex) {
       expect(std::string("unknown key_code: `\"unknown_value\"`") == ex.what());
@@ -488,5 +488,34 @@ void run_momentary_switch_event_test() {
     expect(false == krbn::momentary_switch_event(pqrs::hid::usage_page::generic_desktop,
                                                  pqrs::hid::usage::generic_desktop::dpad_up)
                         .interrupts_key_repeat());
+  };
+
+  "momentary_switch_event logitech_hidpp_button"_test = [] {
+    auto event = nlohmann::json({{"logitech_hidpp_button", 196}})
+                     .get<krbn::momentary_switch_event>();
+    expect(event.valid());
+    expect(!event.modifier_flag());
+    expect(!event.caps_lock());
+    expect(!event.pointing_button());
+    expect(event.logitech_hidpp_button());
+    expect(!event.interrupts_key_repeat());
+    expect(event.get_usage_pair() ==
+           pqrs::hid::usage_pair(
+               krbn::internal_usage_page::logitech_hidpp_button,
+               pqrs::hid::usage::value_t(196)));
+    expect(nlohmann::json(event) == nlohmann::json({{"logitech_hidpp_button", 196}}));
+
+    for (const auto& value : {
+             nlohmann::json(0),     // Below the minimum control ID of 1.
+             nlohmann::json(65536), // Above the maximum control ID of 65535.
+             nlohmann::json(-1),    // Negative control IDs are not allowed.
+             nlohmann::json(196.5), // A control ID must be an integer.
+             nlohmann::json("196"), // A control ID must be a number, not a string.
+         }) {
+      expect(throws<pqrs::json::unmarshal_error>([&] {
+        nlohmann::json({{"logitech_hidpp_button", value}})
+            .get<krbn::momentary_switch_event>();
+      })) << value.dump();
+    }
   };
 }

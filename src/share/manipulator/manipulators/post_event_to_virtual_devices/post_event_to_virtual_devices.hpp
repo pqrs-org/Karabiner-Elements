@@ -144,6 +144,11 @@ public:
       switch (front_input_event.get_event().get_type()) {
         case event_queue::event::type::momentary_switch_event:
           if (auto e = front_input_event.get_event().get_if<momentary_switch_event>()) {
+            // logitech_hidpp_button is an input-only logical event and has no virtual HID representation.
+            if (e->logitech_hidpp_button()) {
+              break;
+            }
+
             if (e->valid()) {
               if (e->pointing_button()) {
                 post_pointing_input_report(front_input_event,
@@ -456,6 +461,11 @@ public:
     virtual_hid_keyboard_pressed_keys_manager_->clear();
   }
 
+  // When the CGEventTap fallback is enabled, Secure Event Input prevents
+  // CGEventTap from receiving keyboard events. If Secure Event Input begins
+  // while a key is held, its key_up may therefore be lost and the corresponding
+  // virtual HID key can remain pressed. Since we cannot know which key_up events
+  // will be lost, release every key currently tracked as pressed.
   void async_release_virtual_hid_keyboard_pressed_keys(std::weak_ptr<pqrs::karabiner::driverkit::virtual_hid_device_service::client> weak_virtual_hid_device_service_client) {
     auto pressed_keys = virtual_hid_keyboard_pressed_keys_manager_->make_entries_and_clear();
     if (pressed_keys.empty()) {
@@ -467,7 +477,22 @@ public:
           auto time_stamp = pqrs::osx::chrono::mach_absolute_time_point();
 
           for (const auto& e : pressed_keys) {
-            if (!e.valid() || e.pointing_button()) {
+            if (!e.valid()) {
+              continue;
+            }
+
+            // Secure Event Input does not prevent CGEventTap from receiving
+            // pointing events, so pointing button-up events are not lost and
+            // must not be synthesized here as virtual HID keyboard key events.
+            if (e.pointing_button()) {
+              continue;
+            }
+
+            // Logitech HID++ buttons are input-only logical events with no
+            // virtual HID representation, so they should never be registered
+            // in virtual_hid_keyboard_pressed_keys_manager_. Exclude them
+            // defensively in case one reaches the manager unexpectedly.
+            if (e.logitech_hidpp_button()) {
               continue;
             }
 

@@ -1,5 +1,13 @@
 import Foundation
 
+struct ConnectedDeviceCapabilities: Decodable {
+  struct LogitechHidpp: Decodable {
+    let divertableControlIds: [UInt16]
+  }
+
+  let logitechHidpp: LogitechHidpp?
+}
+
 @MainActor
 class ConnectedDevice: Identifiable, Equatable, Hashable {
   nonisolated let id: String
@@ -17,6 +25,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
   let isVirtualDevice: Bool
   let isBuiltInKeyboard: Bool
   let isAppleDevice: Bool
+  let capabilities: ConnectedDeviceCapabilities
 
   func localizedProductName(_ localized: AppLocalizationContext.Lookup) -> String {
     guard productName.isEmpty else { return productName }
@@ -45,7 +54,8 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
       isConsumer: false,
       isVirtualDevice: false,
       isBuiltInKeyboard: false,
-      isAppleDevice: false
+      isAppleDevice: false,
+      capabilities: ConnectedDeviceCapabilities(logitechHidpp: nil)
     )
   }
 
@@ -64,7 +74,8 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
     isConsumer: Bool,
     isVirtualDevice: Bool,
     isBuiltInKeyboard: Bool,
-    isAppleDevice: Bool
+    isAppleDevice: Bool,
+    capabilities: ConnectedDeviceCapabilities
   ) {
     self.id = id
     self.index = index
@@ -81,6 +92,7 @@ class ConnectedDevice: Identifiable, Equatable, Hashable {
     self.isVirtualDevice = isVirtualDevice
     self.isBuiltInKeyboard = isBuiltInKeyboard
     self.isAppleDevice = isAppleDevice
+    self.capabilities = capabilities
   }
 
   nonisolated public static func == (lhs: ConnectedDevice, rhs: ConnectedDevice) -> Bool {

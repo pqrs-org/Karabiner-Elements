@@ -21,14 +21,14 @@ public:
   void remember_connected_devices(const krbn::connected_devices& connected_devices) {
     std::lock_guard<std::mutex> lock(mutex_);
     for (const auto& device : connected_devices.get_devices()) {
-      const auto& identifiers = device->get_device_identifiers();
+      const auto& identifiers = device.properties->get_device_identifiers();
       auto it = std::ranges::find_if(
           device_properties_,
           [&](const auto& p) {
             return p->get_device_identifiers() == identifiers;
           });
       if (it == std::end(device_properties_)) {
-        device_properties_.push_back(device);
+        device_properties_.push_back(device.properties);
       }
     }
   }

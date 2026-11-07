@@ -399,4 +399,196 @@ void run_device_test() {
     expect(krbn::core_configuration::details::device::validate_stick_formula("cos(radian) * delta_magnitude"));
     expect(!krbn::core_configuration::details::device::validate_stick_formula("cos("));
   };
+
+  "device ignores invalid modifications in loose mode"_test = [] {
+    using krbn::core_configuration::details::device;
+    using krbn::core_configuration::error_handling;
+
+    for (const auto& key : {
+             "simple_modifications",
+             "fn_function_keys",
+         }) {
+      device d(nlohmann::json({{key, nullptr}}),
+               error_handling::loose);
+      expect(!d.to_json().contains(key));
+    }
+  };
+
+  "device.logitech_hidpp"_test = [] {
+    using krbn::core_configuration::details::device;
+    using krbn::core_configuration::error_handling;
+
+    // Absent by default
+    {
+      device d(nlohmann::json::object(), error_handling::strict);
+      expect(!d.get_logitech_hidpp());
+      expect(!d.to_json().contains("logitech_hidpp"));
+    }
+
+    // Empty settings are accepted and omitted from the normalized JSON.
+    for (const auto& logitech_hidpp : {
+             nlohmann::json::object(),
+             nlohmann::json({{"buttons", nlohmann::json::array()}}),
+         }) {
+      device d(nlohmann::json({{"logitech_hidpp", logitech_hidpp}}),
+               error_handling::strict);
+      expect(d.get_logitech_hidpp().has_value());
+      expect(d.get_logitech_hidpp()->get_buttons().empty());
+      expect(!d.to_json().contains("logitech_hidpp"));
+    }
+
+    // Unknown keys are ignored for forward compatibility.
+    {
+      nlohmann::json json({
+          {"logitech_hidpp",
+           {
+               {"buttons",
+                {
+                    {
+                        {"control_id", 196},
+                        {"to", {{{"key_code", "a"}}}},
+                        {"unknown", true},
+                    },
+                }},
+               {"unknown", true},
+           }},
+      });
+      device d(json, error_handling::strict);
+      expect(d.get_logitech_hidpp()->is_enabled(196));
+      expect(!d.to_json().at("logitech_hidpp").contains("unknown"));
+      expect(!d.to_json().at("logitech_hidpp").at("buttons").at(0).contains("unknown"));
+    }
+
+    // Load and save
+    {
+      nlohmann::json json({
+          {"identifiers", {{"vendor_id", 1133}, {"product_id", 45111}, {"is_pointing_device", true}}},
+          {"logitech_hidpp",
+           {{"buttons",
+             {
+                 {
+                     {"control_id", 196},
+                     {"enabled", false},
+                     {"to", {{{"key_code", "right_control"}}}},
+                 },
+                 {
+                     {"control_id", 82},
+                     {"enabled", true},
+                     {"to", {{{"pointing_button", "button4"}}}},
+                 },
+             }}}},
+      });
+      device d(json, error_handling::strict);
+      expect(d.get_logitech_hidpp().has_value());
+      expect(d.get_logitech_hidpp()->get_enabled_control_ids() == std::vector<uint16_t>({82}));
+      expect(d.get_logitech_hidpp()->is_enabled(82));
+      expect(!d.get_logitech_hidpp()->is_enabled(196));
+      std::ranges::reverse(json["logitech_hidpp"]["buttons"]);
+      expect(json == d.to_json()) << UT_SHOW_LINE;
+
+      using button = krbn::core_configuration::details::logitech_hidpp::button;
+      expect(*d.get_logitech_hidpp() == krbn::core_configuration::details::logitech_hidpp(std::vector<button>{
+                                            {
+                                                .control_id = 82,
+                                                .to = {{{"pointing_button", "button4"}}},
+                                            },
+                                            {
+                                                .control_id = 196,
+                                                .to = {{{"key_code", "right_control"}}},
+                                                .enabled = false,
+                                            },
+                                        }));
+    }
+
+    // Range
+    {
+      nlohmann::json json = {
+          {"logitech_hidpp",
+           {{"buttons",
+             {
+                 {
+                     {"control_id", 1},
+                     {"to", {{{"key_code", "a"}}}},
+                 },
+                 {
+                     {"control_id", 65535},
+                     {"to", {{{"key_code", "b"}}}},
+                 },
+             }}}},
+      };
+      device d(json, error_handling::strict);
+      expect(d.get_logitech_hidpp()->get_enabled_control_ids() == std::vector<uint16_t>({1, 65535}));
+    }
+
+    // An empty `to` diverts and discards the button input.
+    {
+      nlohmann::json json = {
+          {"logitech_hidpp",
+           {{"buttons",
+             {
+                 {
+                     {"control_id", 196},
+                     {"to", nlohmann::json::array()},
+                 },
+             }}}},
+      };
+      device d(json, error_handling::strict);
+      expect(d.get_logitech_hidpp()->is_enabled(196));
+      expect(d.to_json().at("logitech_hidpp") == nlohmann::json({
+                                                     {"buttons",
+                                                      {
+                                                          {
+                                                              {"control_id", 196},
+                                                              {"enabled", true},
+                                                              {"to", nlohmann::json::array()},
+                                                          },
+                                                      }},
+                                                 }));
+    }
+
+    // The first entry wins if control IDs are duplicated.
+    {
+      nlohmann::json json = {
+          {"logitech_hidpp",
+           {{"buttons",
+             {
+                 {
+                     {"control_id", 196},
+                     {"enabled", false},
+                     {"to", {{{"key_code", "a"}}}},
+                 },
+                 {
+                     {"control_id", 196},
+                     {"enabled", true},
+                     {"to", {{{"key_code", "b"}}}},
+                 },
+             }}}},
+      };
+      device d(json, error_handling::strict);
+      const auto& buttons = d.get_logitech_hidpp()->get_buttons();
+      expect(buttons.size() == 1);
+      expect(buttons[0].to == nlohmann::json({{{"key_code", "a"}}}));
+      expect(!buttons[0].enabled);
+    }
+
+    // A valid button before an invalid one is not partially applied in loose mode.
+    {
+      nlohmann::json json({
+          {"logitech_hidpp",
+           {{"buttons",
+             {
+                 {
+                     {"control_id", 82},
+                     {"to", {{{"key_code", "a"}}}},
+                 },
+                 {
+                     {"control_id", 196},
+                 },
+             }}}},
+      });
+      device d(json, error_handling::loose);
+      expect(!d.get_logitech_hidpp());
+      expect(!d.to_json().contains("logitech_hidpp"));
+    }
+  };
 }

@@ -5,6 +5,7 @@
 // have to be recovered from the raw input report.
 
 #include "hid_report_only_events/report_handler.hpp"
+#include "types/device_identifiers.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -62,26 +63,27 @@ namespace details {
 } // namespace details
 
 [[nodiscard]] inline bool is_target_device(
-    pqrs::hid::vendor_id::value_t vendor_id,
-    pqrs::hid::product_id::value_t product_id) noexcept {
-  return vendor_id == pqrs::hid::vendor_id::value_t(0x056e) &&    // Elecom Co., Ltd.
-         (product_id == pqrs::hid::product_id::value_t(0x00fe) || // M-DT1URBK or M-DT2URBK DEFT TrackBall
-          product_id == pqrs::hid::product_id::value_t(0x010c) || // M-HT1URBK HUGE Optical TrackBall
-          product_id == pqrs::hid::product_id::value_t(0x010d) || // M-HT1DRBK HUGE Wireless Optical TrackBall
-          product_id == pqrs::hid::product_id::value_t(0x011c) || // M-HT1DRBK HUGE Wireless Optical TrackBall (new)
-          product_id == pqrs::hid::product_id::value_t(0x01aa) || // M-HT1MRBK HUGE PLUS TrackBall
-          product_id == pqrs::hid::product_id::value_t(0x01ab) || // M-HT1MRBK HUGE PLUS TrackBall
-          product_id == pqrs::hid::product_id::value_t(0x01ac));  // M-HT1MRBK HUGE PLUS TrackBall
+    const device_identifiers& identifiers) noexcept {
+  auto product_id = identifiers.get_product_id();
+
+  return identifiers.get_is_pointing_device() &&
+         identifiers.get_vendor_id() == pqrs::hid::vendor_id::value_t(0x056e) && // Elecom Co., Ltd.
+         (product_id == pqrs::hid::product_id::value_t(0x00fe) ||                // M-DT1URBK or M-DT2URBK DEFT TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x010c) ||                // M-HT1URBK HUGE Optical TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x010d) ||                // M-HT1DRBK HUGE Wireless Optical TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x011c) ||                // M-HT1DRBK HUGE Wireless Optical TrackBall (new)
+          product_id == pqrs::hid::product_id::value_t(0x01aa) ||                // M-HT1MRBK HUGE PLUS TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x01ab) ||                // M-HT1MRBK HUGE PLUS TrackBall
+          product_id == pqrs::hid::product_id::value_t(0x01ac));                 // M-HT1MRBK HUGE PLUS TrackBall
 }
 
 // Return the raw-report layout only when both the device id and the descriptor's
 // semantic structure match the known quirk. A changed descriptor must fall back to
 // macOS rather than risk emitting duplicate or incorrectly numbered buttons.
 [[nodiscard]] inline std::optional<configuration> find_configuration(
-    pqrs::hid::vendor_id::value_t vendor_id,
-    pqrs::hid::product_id::value_t product_id,
+    const device_identifiers& identifiers,
     std::span<const uint8_t> report_descriptor) {
-  if (!is_target_device(vendor_id, product_id)) {
+  if (!is_target_device(identifiers)) {
     return std::nullopt;
   }
 
@@ -236,11 +238,9 @@ private:
 
 [[nodiscard]] inline std::shared_ptr<krbn::hid_report_only_events::report_handler>
 make_report_handler(
-    pqrs::hid::vendor_id::value_t vendor_id,
-    pqrs::hid::product_id::value_t product_id,
+    const device_identifiers& identifiers,
     std::span<const uint8_t> report_descriptor) {
-  if (auto configuration = find_configuration(vendor_id,
-                                              product_id,
+  if (auto configuration = find_configuration(identifiers,
                                               report_descriptor)) {
     return std::make_shared<handler>(*configuration);
   }

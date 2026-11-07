@@ -2,6 +2,7 @@
 
 #include "../../configuration_json_helper.hpp"
 #include "exprtk_utility.hpp"
+#include "logitech_hidpp.hpp"
 #include "simple_modifications.hpp"
 #include <functional>
 #include <pqrs/string.hpp>
@@ -270,18 +271,23 @@ cos(radian) * m;
     }
 
     for (const auto& [key, value] : json.items()) {
-      if (key == "simple_modifications") {
-        try {
+      try {
+        if (key == "simple_modifications") {
           simple_modifications_->update(value);
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+
+        } else if (key == "fn_function_keys") {
+          fn_function_keys_->update(value);
+
+        } else if (key == "logitech_hidpp") {
+          logitech_hidpp_ = logitech_hidpp(value);
         }
 
-      } else if (key == "fn_function_keys") {
-        try {
-          fn_function_keys_->update(value);
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
+      } catch (const pqrs::json::unmarshal_error& e) {
+        auto message = fmt::format("`{0}` error: {1}", key, e.what());
+        if (error_handling == error_handling::strict) {
+          throw pqrs::json::unmarshal_error(message);
+        } else {
+          logger::get_logger()->warn(message);
         }
       }
     }
@@ -322,7 +328,7 @@ cos(radian) * m;
     {
       auto jj = simple_modifications_->to_json(nlohmann::json::array());
       if (!jj.empty()) {
-        j["simple_modifications"] = jj;
+        j["simple_modifications"] = std::move(jj);
       } else {
         j.erase("simple_modifications");
       }
@@ -331,10 +337,21 @@ cos(radian) * m;
     {
       auto jj = fn_function_keys_->to_json(make_default_fn_function_keys_json());
       if (!jj.empty()) {
-        j["fn_function_keys"] = jj;
+        j["fn_function_keys"] = std::move(jj);
       } else {
         j.erase("fn_function_keys");
       }
+    }
+
+    if (logitech_hidpp_) {
+      auto jj = logitech_hidpp_->to_json();
+      if (!jj.empty()) {
+        j["logitech_hidpp"] = std::move(jj);
+      } else {
+        j.erase("logitech_hidpp");
+      }
+    } else {
+      j.erase("logitech_hidpp");
     }
 
     //
@@ -677,6 +694,15 @@ cos(radian) * m;
     return helper_values_.find_default_value(value);
   }
 
+  // Absent (std::nullopt) means disabled.
+  [[nodiscard]] const std::optional<logitech_hidpp>& get_logitech_hidpp() const {
+    return logitech_hidpp_;
+  }
+
+  void set_logitech_hidpp(const std::optional<logitech_hidpp>& value) {
+    logitech_hidpp_ = value;
+  }
+
 private:
   [[nodiscard]] static device_identifiers make_device_identifiers(const nlohmann::json& json) {
     if (auto it = json.find("identifiers");
@@ -766,6 +792,7 @@ private:
   pqrs::not_null_shared_ptr_t<simple_modifications> simple_modifications_;
   pqrs::not_null_shared_ptr_t<simple_modifications> fn_function_keys_;
   configuration_json_helper::helper_values helper_values_;
+  std::optional<logitech_hidpp> logitech_hidpp_;
 };
 
 inline void to_json(nlohmann::json& json, const device& device) {

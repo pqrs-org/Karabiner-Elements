@@ -42,7 +42,6 @@ void run_json_test() {
       expect(true == device_properties->get_device_identifiers().get_is_keyboard());
       expect(true == device_properties->get_device_identifiers().get_is_pointing_device());
       expect(true == device_properties->get_device_identifiers().get_is_game_pad());
-
       expect(json == device_properties->to_json());
     }
 
@@ -69,7 +68,6 @@ void run_json_test() {
 
       auto device_properties = krbn::device_properties::make_device_properties(json);
       expect("d" == device_properties->get_device_identifiers().get_device_address());
-
       expect(json == device_properties->to_json());
     }
   };

@@ -308,4 +308,23 @@ void run_event_definition_test() {
       expect(krbn::manipulator_environment_variable_set_variable::type::unset == pair->get_type());
     }
   };
+
+  "event_definition logitech_hidpp_button"_test = [] {
+    krbn::manipulator::event_definition event_definition;
+    auto json = nlohmann::json::object({{"logitech_hidpp_button", 196}});
+
+    expect(event_definition.handle_json("logitech_hidpp_button",
+                                        json.at("logitech_hidpp_button"),
+                                        json));
+    auto event = event_definition.get_if<krbn::momentary_switch_event>();
+    expect(event != nullptr);
+    expect(event && event->logitech_hidpp_button());
+    expect(event && type_safe::get(event->get_usage_pair().get_usage()) == 196);
+
+    // logitech_hidpp_button is an input-only event.
+    expect(throws<pqrs::json::unmarshal_error>([] {
+      krbn::manipulator::to_event_definition(
+          nlohmann::json({{"logitech_hidpp_button", 196}}));
+    }));
+  };
 }

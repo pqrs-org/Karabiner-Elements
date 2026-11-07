@@ -1260,6 +1260,12 @@
         "expected_post_event_to_virtual_devices_queue": "json/test_cases/mouse_motion_and_wheel_to_key_cooldown_xy_result.json"
     },
     {
+        "description": "logitech_hidpp_button is remapped as a logical input event and is not posted directly",
+        "rules": ["json/rules/logitech_hidpp_button.json"],
+        "input_event_queue": "json/test_cases/logitech_hidpp_button_input.jsonc",
+        "expected_post_event_to_virtual_devices_queue": "json/test_cases/logitech_hidpp_button_result.json"
+    },
+    {
         "description": "Cooldown: shared wheel suppression preserves pointer motion and rechecks modifiers afterward",
         "rules": ["json/rules/mouse_motion_and_wheel_to_key_cooldown.jsonc"],
         "input_event_queue": "json/test_cases/mouse_motion_and_wheel_to_key_cooldown_wheels_input.jsonc",

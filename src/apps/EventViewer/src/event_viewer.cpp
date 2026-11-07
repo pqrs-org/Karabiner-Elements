@@ -94,14 +94,12 @@ public:
                 pqrs::dispatcher::extra::get_shared_dispatcher(),
                 pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
                 *device_ptr,
-                *device_properties,
                 krbn::hid_device_events_monitor::configuration{
                     // Some devices, such as ELECOM trackballs, produce additional input
                     // values through the input report handler. Capture Raw Input Events
-                    // should observe only values delivered by IOHIDQueue, so disable the
-                    // handler here. Raw Input Records remains available through
+                    // should observe only values delivered by IOHIDQueue, so no handler
+                    // is supplied here. Raw Input Records remains available through
                     // input_report_observer.
-                    .enable_input_report_handler = false,
                     .input_report_observer = [device_id](auto report_id, auto report) {
                       if (hid_input_report_capture_device_id.load() != type_safe::get(device_id)) {
                         return;

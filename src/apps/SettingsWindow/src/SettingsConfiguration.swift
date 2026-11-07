@@ -198,6 +198,23 @@ struct SettingsConfiguration: Decodable {
     var simpleModifications: [SimpleModification]
     let fnFunctionKeys: [SimpleModification]
 
+    struct LogitechHidpp: Codable {
+      var buttons: [LogitechHidppButton]
+    }
+
+    struct LogitechHidppButton: Codable {
+      static let defaultToJsonString = CanonicalJSON.string(
+        fromJSONObject: [
+          ["apple_vendor_keyboard_key_code": "mission_control"]
+        ])!
+
+      var controlId: UInt16
+      var enabled: Bool
+      var toJsonString: String
+    }
+
+    var logitechHidpp: LogitechHidpp?
+
     var modifyEvents: Bool {
       get { !ignore }
       set { ignore = !newValue }

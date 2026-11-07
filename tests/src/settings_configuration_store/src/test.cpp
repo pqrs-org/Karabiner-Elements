@@ -458,6 +458,123 @@ int main() {
     store.stop();
   };
 
+  "set_logitech_hidpp_buttons"_test = [] {
+    settings_configuration_store store({
+        .updated = [](const auto&) {},
+        .save = [](auto&) {},
+    });
+    const krbn::device_identifiers identifiers({
+        .vendor_id = pqrs::hid::vendor_id::value_t(0x046d),
+        .product_id = pqrs::hid::product_id::value_t(0xb037),
+        .is_pointing_device = true,
+    });
+    const auto device = identifiers.to_normalized_json().dump();
+
+    auto execute = [&](const nlohmann::json& command) {
+      std::promise<nlohmann::json> completed;
+      auto result = completed.get_future();
+      store.async_execute(command,
+                          [&](const auto& value) {
+                            completed.set_value(value);
+                          });
+      return result.get();
+    };
+
+    std::promise<void> initialized;
+    store.enqueue_to_dispatcher([&] {
+      store.update(std::make_shared<krbn::core_configuration::core_configuration>());
+      initialized.set_value();
+    });
+    initialized.get_future().get();
+
+    // Add buttons and expose them in the settings snapshot.
+    auto result = execute({
+        {"action", "set_logitech_hidpp_buttons"},
+        {"device", device},
+        {"buttons",
+         {
+             {
+                 {"control_id", 82},
+                 {"to", {{{"key_code", "a"}}}},
+             },
+             {
+                 {"control_id", 196},
+                 {"to", {{{"key_code", "right_control"}}}},
+             },
+         }},
+    });
+    expect(!result.contains("error")) << result.dump();
+    auto device_snapshot = result.at("snapshot").at("selected_profile").at("devices").at(device);
+    expect(device_snapshot.at("logitech_hidpp").at("buttons") == nlohmann::json({
+                                                                     {
+                                                                         {"control_id", 82},
+                                                                         {"enabled", true},
+                                                                         {"to_json_string", R"([{"key_code":"a"}])"},
+                                                                     },
+                                                                     {
+                                                                         {"control_id", 196},
+                                                                         {"enabled", true},
+                                                                         {"to_json_string", R"([{"key_code":"right_control"}])"},
+                                                                     },
+                                                                 }));
+
+    // Update enabled while preserving the button mappings.
+    result = execute({
+        {"action", "set_logitech_hidpp_buttons"},
+        {"device", device},
+        {"buttons",
+         {
+             {
+                 {"control_id", 82},
+                 {"enabled", false},
+                 {"to", {{{"key_code", "a"}}}},
+             },
+             {
+                 {"control_id", 196},
+                 {"enabled", true},
+                 {"to", {{{"key_code", "right_control"}}}},
+             },
+         }},
+    });
+    device_snapshot = result.at("snapshot").at("selected_profile").at("devices").at(device);
+    expect(device_snapshot.at("logitech_hidpp").at("buttons").at(0) == nlohmann::json({
+                                                                           {"control_id", 82},
+                                                                           {"enabled", false},
+                                                                           {"to_json_string", R"([{"key_code":"a"}])"},
+                                                                       }));
+
+    // Reject an invalid control_id without changing the current setting.
+    result = execute({
+        {"action", "set_logitech_hidpp_buttons"},
+        {"device", device},
+        {"buttons",
+         {{
+             {"control_id", 0},
+             {"to", {{{"key_code", "a"}}}},
+         }}},
+    });
+    expect(result.contains("error"));
+    expect(result.at("snapshot").at("selected_profile").at("devices").at(device).at("logitech_hidpp") == device_snapshot.at("logitech_hidpp"));
+
+    // Reject a non-array buttons value without changing the current setting.
+    result = execute({
+        {"action", "set_logitech_hidpp_buttons"},
+        {"device", device},
+        {"buttons", ""},
+    });
+    expect(result.contains("error"));
+    expect(result.at("snapshot").at("selected_profile").at("devices").at(device).at("logitech_hidpp") == device_snapshot.at("logitech_hidpp"));
+
+    // An empty buttons array removes the logitech_hidpp setting.
+    result = execute({
+        {"action", "set_logitech_hidpp_buttons"},
+        {"device", device},
+        {"buttons", nlohmann::json::array()},
+    });
+    expect(!result.at("snapshot").at("selected_profile").at("devices").at(device).contains("logitech_hidpp"));
+    store.stop();
+  };
+
   std::filesystem::remove_all(temporary_directory);
   return 0;
 }
