@@ -1,6 +1,7 @@
 #include "event_viewer.hpp"
 #include "console_user_server_client.hpp"
 #include "core_service_daemon_client.hpp"
+#include "device_properties.hpp"
 #include "dispatcher_utility.hpp"
 #include "environment_variable_utility.hpp"
 #include "hat_switch_convert.hpp"
@@ -88,8 +89,8 @@ public:
             }
 
             auto device_id = krbn::make_device_id(registry_entry_id);
-            auto device_properties = krbn::device_properties::make_device_properties(device_id,
-                                                                                     *device_ptr);
+            auto properties = krbn::device_properties::make_device_properties(device_id,
+                                                                               *device_ptr);
             auto monitor = std::make_shared<krbn::hid_device_events_monitor>(
                 pqrs::dispatcher::extra::get_shared_dispatcher(),
                 pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),
@@ -129,7 +130,7 @@ public:
               }
             });
 
-            const auto& device_identifiers = device_properties->get_device_identifiers();
+            const auto& device_identifiers = properties->get_device_identifiers();
             auto is_virtual_keyboard = device_identifiers.get_is_virtual_device() &&
                                        device_identifiers.get_is_keyboard();
             monitor->values_arrived.connect([this, device_id, is_virtual_keyboard](auto&& values) {
