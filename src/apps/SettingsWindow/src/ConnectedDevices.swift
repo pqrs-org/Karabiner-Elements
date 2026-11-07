@@ -24,14 +24,6 @@ private struct ConnectedDevicePayload: Decodable {
     let deviceAddress: String?
   }
 
-  struct ConnectedDeviceCapabilities: Decodable {
-    struct LogitechHidpp: Decodable {
-      let divertableControlIds: [UInt16]
-    }
-
-    let logitechHidpp: LogitechHidpp?
-  }
-
   let deviceId: UInt64
   let deviceIdentifiers: DeviceIdentifiers
   let deviceIdentifiersJsonString: String
@@ -97,8 +89,8 @@ final class ConnectedDevices: ObservableObject {
           isVirtualDevice: payload.deviceIdentifiers.isVirtualDevice ?? false,
           isBuiltInKeyboard: payload.isBuiltInKeyboard ?? false,
           isAppleDevice: payload.isApple ?? false,
-          logitechHidppDivertableControlIds: payload.connectedDeviceCapabilities?.logitechHidpp?
-            .divertableControlIds ?? []
+          capabilities: payload.connectedDeviceCapabilities
+            ?? ConnectedDeviceCapabilities(logitechHidpp: nil)
         )
       }
 

@@ -391,7 +391,8 @@ struct DevicesView: View {
       count: 2)
 
     private var controlIds: [UInt16] {
-      var result = Set(connectedDevice.logitechHidppDivertableControlIds)
+      var result = Set(
+        connectedDevice.capabilities.logitechHidpp?.divertableControlIds ?? [])
       for control in deviceConfiguration.logitechHidpp?.buttons ?? [] {
         result.insert(control.controlId)
       }
