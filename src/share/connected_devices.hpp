@@ -1,7 +1,6 @@
 #pragma once
 
-#include "connected_device_capabilities.hpp"
-#include "device_properties.hpp"
+#include "connected_device.hpp"
 #include "json_utility.hpp"
 #include "logger.hpp"
 #include "types.hpp"
@@ -14,54 +13,50 @@
 namespace krbn {
 class connected_devices final {
 public:
-  [[nodiscard]] const std::vector<pqrs::not_null_shared_ptr_t<device_properties>>& get_devices() const {
+  [[nodiscard]] const std::vector<connected_device>& get_devices() const {
     return devices_;
   }
 
-  [[nodiscard]] const connected_device_capabilities& get_capabilities(size_t index) const {
-    return capabilities_.at(index);
-  }
-
-  [[nodiscard]] std::shared_ptr<device_properties> find_device(const device_identifiers& identifiers) const {
+  [[nodiscard]] const connected_device* find_device(const device_identifiers& identifiers) const {
     auto it = std::find_if(std::begin(devices_),
                            std::end(devices_),
                            [&](const auto& d) {
-                             return d->get_device_identifiers() == identifiers;
+                             return d.properties->get_device_identifiers() == identifiers;
                            });
     if (it != std::end(devices_)) {
-      return *it;
+      return &*it;
     }
 
     return nullptr;
   }
 
   void push_back_device(
-      pqrs::not_null_shared_ptr_t<device_properties> device,
+      pqrs::not_null_shared_ptr_t<device_properties> properties,
       const connected_device_capabilities& capabilities = connected_device_capabilities()) {
-    if (find_device(device->get_device_identifiers())) {
+    if (find_device(properties->get_device_identifiers())) {
       return;
     }
 
+    auto device = connected_device{
+        .properties = properties,
+        .capabilities = capabilities,
+    };
     auto position = std::lower_bound(
         devices_.begin(),
         devices_.end(),
         device,
         [](const auto& a, const auto& b) {
-          return a->compare(*b);
+          return a.properties->compare(*b.properties);
         });
-    auto index = static_cast<size_t>(std::distance(devices_.begin(), position));
-    devices_.insert(position, device);
-    capabilities_.insert(capabilities_.begin() + index, capabilities);
+    devices_.insert(position, std::move(device));
   }
 
   void clear() {
     devices_.clear();
-    capabilities_.clear();
   }
 
 private:
-  std::vector<pqrs::not_null_shared_ptr_t<device_properties>> devices_;
-  std::vector<connected_device_capabilities> capabilities_;
+  std::vector<connected_device> devices_;
 };
 
 inline void from_json(const nlohmann::json& json, connected_devices& value) {
@@ -82,11 +77,10 @@ inline void from_json(const nlohmann::json& json, connected_devices& value) {
 inline void to_json(nlohmann::json& json, const connected_devices& value) {
   json = nlohmann::json::array();
 
-  for (size_t i = 0; i < value.get_devices().size(); ++i) {
-    nlohmann::json device_json = *value.get_devices()[i];
-    const auto& capabilities = value.get_capabilities(i);
-    if (!capabilities.empty()) {
-      device_json["connected_device_capabilities"] = capabilities.to_json();
+  for (const auto& device : value.get_devices()) {
+    nlohmann::json device_json = *device.properties;
+    if (!device.capabilities.empty()) {
+      device_json["connected_device_capabilities"] = device.capabilities.to_json();
     }
     json.push_back(std::move(device_json));
   }

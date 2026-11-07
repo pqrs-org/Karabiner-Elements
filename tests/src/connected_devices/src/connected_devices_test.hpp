@@ -96,17 +96,17 @@ void run_connected_devices_test() {
       }));
 
       expect(connected_devices.get_devices().size() == 6);
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[1]->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-      expect(connected_devices.get_devices()[1]->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5679));
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[2]->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(2345));
-      expect(connected_devices.get_devices()[2]->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(6789));
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[4]->get_device_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[5]->get_device_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[1].properties->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      expect(connected_devices.get_devices()[1].properties->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5679));
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[2].properties->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(2345));
+      expect(connected_devices.get_devices()[2].properties->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(6789));
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[4].properties->get_device_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[5].properties->get_device_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
 
       std::ifstream ifs("json/connected_devices.json");
 
@@ -144,7 +144,7 @@ void run_connected_devices_test() {
                                                                   }));
 
     auto restored = json.get<krbn::connected_devices>();
-    expect(restored.get_capabilities(0).get_logitech_hidpp_divertable_control_ids() ==
+    expect(restored.get_devices()[0].capabilities.get_logitech_hidpp_divertable_control_ids() ==
            std::vector<uint16_t>{82, 196});
   };
 
