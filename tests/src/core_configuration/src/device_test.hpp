@@ -437,7 +437,7 @@ void run_device_test() {
       expect(!d.to_json().contains("logitech_hidpp"));
     }
 
-    // Unknown keys are ignored for forward compatibility.
+    // Unknown keys are ignored semantically and preserved for forward compatibility.
     {
       nlohmann::json json({
           {"logitech_hidpp",
@@ -455,8 +455,8 @@ void run_device_test() {
       });
       device d(json, error_handling::strict);
       expect(d.get_logitech_hidpp()->is_enabled(196));
-      expect(!d.to_json().at("logitech_hidpp").contains("unknown"));
-      expect(!d.to_json().at("logitech_hidpp").at("buttons").at(0).contains("unknown"));
+      expect(d.to_json().at("logitech_hidpp").at("unknown") == true);
+      expect(d.to_json().at("logitech_hidpp").at("buttons").at(0).at("unknown") == true);
     }
 
     // Load and save

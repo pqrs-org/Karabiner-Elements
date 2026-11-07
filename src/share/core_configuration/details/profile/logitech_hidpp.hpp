@@ -26,15 +26,20 @@ public:
     uint16_t control_id;
     nlohmann::json to;
     bool enabled{true};
+    nlohmann::json source_json{nlohmann::json::object()};
 
-    bool operator==(const button&) const = default;
+    bool operator==(const button& other) const {
+      return control_id == other.control_id &&
+             to == other.to &&
+             enabled == other.enabled;
+    }
   };
 
   explicit logitech_hidpp(std::vector<button> buttons)
       : buttons_(normalize(std::move(buttons))) {
   }
 
-  explicit logitech_hidpp(const nlohmann::json& json) {
+  explicit logitech_hidpp(const nlohmann::json& json) : source_json_(json) {
     pqrs::json::requires_object(json, "json");
 
     const auto it = json.find("buttons");
@@ -76,6 +81,7 @@ public:
             .control_id = *control_id,
             .to = std::move(*to),
             .enabled = enabled,
+            .source_json = v,
         });
       }
     }
@@ -84,21 +90,23 @@ public:
   }
 
   [[nodiscard]] nlohmann::json to_json() const {
+    auto json = source_json_;
+
     if (buttons_.empty()) {
-      return nlohmann::json::object();
+      json.erase("buttons");
+      return json;
     }
 
     auto buttons = nlohmann::json::array();
     for (const auto& button : buttons_) {
-      buttons.push_back({
-          {"control_id", button.control_id},
-          {"enabled", button.enabled},
-          {"to", button.to},
-      });
+      auto value = button.source_json;
+      value["control_id"] = button.control_id;
+      value["enabled"] = button.enabled;
+      value["to"] = button.to;
+      buttons.push_back(std::move(value));
     }
-    return nlohmann::json::object({
-        {"buttons", std::move(buttons)},
-    });
+    json["buttons"] = std::move(buttons);
+    return json;
   }
 
   [[nodiscard]] const std::vector<button>& get_buttons() const {
@@ -123,7 +131,9 @@ public:
                                });
   }
 
-  bool operator==(const logitech_hidpp&) const = default;
+  bool operator==(const logitech_hidpp& other) const {
+    return buttons_ == other.buttons_;
+  }
 
 private:
   [[nodiscard]] static std::vector<button> normalize(std::vector<button> value) {
@@ -141,5 +151,6 @@ private:
   }
 
   std::vector<button> buttons_;
+  nlohmann::json source_json_{nlohmann::json::object()};
 };
 } // namespace krbn::core_configuration::details

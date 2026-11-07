@@ -42,11 +42,14 @@ discard its mapping. Remove `logitech_hidpp` to discard all HID++ settings.
 | ------------ | ------------------------------------------------------------------ |
 | `control_id` | Integer from 1 to 65535 (the HID++ control ID, CID)                |
 | `enabled`    | Whether Karabiner-Elements manages the control. Defaults to `true` |
-| `to`         | Non-empty Simple Modifications-compatible output array             |
+| `to`         | Simple Modifications-compatible output array                       |
 
-`logitech_hidpp.buttons` must be a non-empty array. Other keys in each entry are
-errors. An invalid `logitech_hidpp` setting is not applied.
-Duplicate control IDs are errors. Controls are stored in ascending ID order.
+`logitech_hidpp.buttons` may be absent or empty. An empty `to` array diverts the
+control and discards its input without generating an output event. Unknown keys
+are ignored and preserved when the configuration is saved, so settings added by
+a newer version are not lost after a downgrade. An invalid known field is not
+applied. For duplicate control IDs, the first entry is used. Controls are stored
+in ascending ID order.
 
 ## Supported devices
 

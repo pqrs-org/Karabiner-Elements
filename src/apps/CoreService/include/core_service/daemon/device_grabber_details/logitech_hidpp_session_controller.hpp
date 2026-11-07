@@ -4,6 +4,7 @@
 #include "logger.hpp"
 #include <IOKit/hid/IOHIDDevice.h>
 #include <atomic>
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <nod/nod.hpp>
@@ -186,28 +187,41 @@ private:
     std::shared_ptr<std::atomic<bool>> queries_enabled;
   };
 
-  static query_context* register_query_context(IOHIDDeviceRef device,
-                                               const logitech::hidpp::long_report& report,
-                                               const std::string& log_prefix,
-                                               const std::shared_ptr<std::atomic<bool>>& queries_enabled) {
+  // Use an opaque monotonically increasing id rather than the query_context address.
+  // A late callback after abandon() must not match a newly allocated context which reused that address.
+  using query_context_id = uintptr_t;
+
+  struct registered_query_context final {
+    query_context_id id;
+    query_context* context;
+  };
+
+  static registered_query_context register_query_context(IOHIDDeviceRef device,
+                                                          const logitech::hidpp::long_report& report,
+                                                          const std::string& log_prefix,
+                                                          const std::shared_ptr<std::atomic<bool>>& queries_enabled) {
     auto context = std::make_unique<query_context>(query_context{
         .device = device,
         .report = report,
         .log_prefix = log_prefix,
         .queries_enabled = queries_enabled,
     });
-    auto result = context.get();
 
     std::lock_guard lock(query_contexts_mutex());
-    query_contexts().emplace(result, std::move(context));
+    auto id = next_query_context_id();
+    auto result = registered_query_context{
+        .id = id,
+        .context = context.get(),
+    };
+    query_contexts().emplace(id, std::move(context));
 
     return result;
   }
 
-  [[nodiscard]] static std::unique_ptr<query_context> take_query_context(query_context* context) {
+  [[nodiscard]] static std::unique_ptr<query_context> take_query_context(query_context_id id) {
     std::lock_guard lock(query_contexts_mutex());
 
-    auto it = query_contexts().find(context);
+    auto it = query_contexts().find(id);
     if (it == std::end(query_contexts())) {
       return nullptr;
     }
@@ -226,8 +240,19 @@ private:
                   });
   }
 
-  [[nodiscard]] static std::unordered_map<query_context*, std::unique_ptr<query_context>>& query_contexts() {
-    static std::unordered_map<query_context*, std::unique_ptr<query_context>> value;
+  // This method is called only while query_contexts_mutex is locked.
+  [[nodiscard]] static query_context_id next_query_context_id() {
+    static query_context_id value{0};
+
+    do {
+      ++value;
+    } while (value == 0 || query_contexts().contains(value));
+
+    return value;
+  }
+
+  [[nodiscard]] static std::unordered_map<query_context_id, std::unique_ptr<query_context>>& query_contexts() {
+    static std::unordered_map<query_context_id, std::unique_ptr<query_context>> value;
     return value;
   }
 
@@ -249,16 +274,16 @@ private:
 
       // Keep the report buffer alive until the callback. If device removal suppresses
       // the callback, abandon() clears contexts after the device has been closed.
-      auto context = register_query_context(*device, r, log_prefix, queries_enabled);
+      auto registered_context = register_query_context(*device, r, log_prefix, queries_enabled);
       pqrs::osx::iokit_return kr = IOHIDDeviceSetReportWithCallback(
           *device,
           kIOHIDReportTypeOutput,
-          context->report[0],
-          context->report.data(),
-          context->report.size(),
+          registered_context.context->report[0],
+          registered_context.context->report.data(),
+          registered_context.context->report.size(),
           query_timeout,
           [](void* context, IOReturn result, void* sender, IOHIDReportType type, uint32_t report_id, uint8_t* report, CFIndex report_length) {
-            auto c = take_query_context(static_cast<query_context*>(context));
+            auto c = take_query_context(reinterpret_cast<query_context_id>(context));
             if (!c) {
               return;
             }
@@ -277,10 +302,10 @@ private:
                                          r.to_string());
             }
           },
-          context);
+          reinterpret_cast<void*>(registered_context.id));
       if (!kr) {
         // The callback is not invoked when the request is not submitted.
-        static_cast<void>(take_query_context(context));
+        static_cast<void>(take_query_context(registered_context.id));
         if (queries_enabled->load()) {
           logger::get_logger()->warn("{0} failed to send a HID++ request: {1}",
                                      log_prefix,
