@@ -90,7 +90,7 @@ public:
 
             auto device_id = krbn::make_device_id(registry_entry_id);
             auto properties = krbn::device_properties::make_device_properties(device_id,
-                                                                               *device_ptr);
+                                                                              *device_ptr);
             auto monitor = std::make_shared<krbn::hid_device_events_monitor>(
                 pqrs::dispatcher::extra::get_shared_dispatcher(),
                 pqrs::cf::run_loop_thread::extra::get_shared_run_loop_thread(),

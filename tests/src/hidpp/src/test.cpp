@@ -129,7 +129,7 @@ hidpp::session make_session(uint16_t cid = top_button, uint8_t software_id = 1) 
 // Lets every attempt of the pending request time out.
 void time_out(hidpp::session& s) {
   for (int i = 0; i < hidpp::max_attempts; ++i) {
-    s.handle_timeout(s.get_generation());
+    s.handle_timeout(s.get_request_generation());
   }
 }
 
@@ -227,7 +227,7 @@ int main() {
     auto s = make_session();
 
     expect(s.start().request == get_feature_request);
-    expect(s.get_state() == hidpp::session::state::waiting_feature_index);
+    expect(s.get_state() == hidpp::session::state::waiting_reprog_controls_v4_feature_index);
     expect(!s.start().request) << "start twice";
 
     expect(input(s, feature_index_reply).request == get_count_request);
@@ -376,9 +376,9 @@ int main() {
                {.control_id = back_button, .pressed = true},
            }));
 
-    expect(s.handle_request_write_success(s.get_generation(),
+    expect(s.handle_request_write_success(s.get_request_generation(),
                                           divert_request_for(back_button)));
-    expect(s.handle_timeout(s.get_generation()).request == get_reporting_request_for(top_button));
+    expect(s.handle_timeout(s.get_request_generation()).request == get_reporting_request_for(top_button));
 
     expect(input(s, reporting_reply(top_button, 0x00)).request == divert_request_for(top_button));
     input(s, divert_reply(top_button, 0x03));
@@ -478,9 +478,9 @@ int main() {
     auto s = make_session(0x00c5);
     discover(s);
     expect(s.get_state() == hidpp::session::state::refused);
-    expect(s.get_reason().find("197 (0x00c5) does not exist") != std::string::npos);
-    expect(s.get_reason().find("82 (0x0052), 83 (0x0053), 86 (0x0056), 196 (0x00c4), 215 (0x00d7)") != std::string::npos)
-        << s.get_reason();
+    expect(s.get_not_activated_reason().find("197 (0x00c5) does not exist") != std::string::npos);
+    expect(s.get_not_activated_reason().find("82 (0x0052), 83 (0x0053), 86 (0x0056), 196 (0x00c4), 215 (0x00d7)") != std::string::npos)
+        << s.get_not_activated_reason();
     expect(!s.stop().request);
   };
 
@@ -488,7 +488,7 @@ int main() {
     auto s = make_session(0x0050);
     discover(s);
     expect(s.get_state() == hidpp::session::state::refused);
-    expect(s.get_reason().find("cannot be temporarily diverted") != std::string::npos);
+    expect(s.get_not_activated_reason().find("cannot be temporarily diverted") != std::string::npos);
     expect(!s.stop().request);
   };
 
@@ -508,7 +508,7 @@ int main() {
       discover(s);
       expect(!input(s, reporting_reply(top_button, flags)).request);
       expect(s.get_state() == hidpp::session::state::refused) << static_cast<int>(flags);
-      expect(s.get_reason().find("already diverted") != std::string::npos);
+      expect(s.get_not_activated_reason().find("already diverted") != std::string::npos);
       expect(!s.stop().request);
     }
 
@@ -519,7 +519,7 @@ int main() {
       discover(s);
       expect(!input(s, reporting_reply(top_button, 0x01, 0x0053)).request);
       expect(s.get_state() == hidpp::session::state::refused);
-      expect(s.get_reason().find("remapped") != std::string::npos);
+      expect(s.get_not_activated_reason().find("remapped") != std::string::npos);
     }
 
     // A remap to itself is not a remap.
@@ -537,7 +537,7 @@ int main() {
     auto ignored = [&](std::span<const uint8_t> r) {
       auto result = s.handle_input_report(r);
       expect(!result.request && !result.pressed);
-      expect(s.get_state() == hidpp::session::state::waiting_feature_index);
+      expect(s.get_state() == hidpp::session::state::waiting_reprog_controls_v4_feature_index);
     };
 
     ignored(std::span<const uint8_t>(feature_index_reply).first(19));
@@ -636,7 +636,7 @@ int main() {
   "timeouts"_test = [] {
     auto s = make_session();
     s.start();
-    auto generation = s.get_generation();
+    auto generation = s.get_request_generation();
 
     expect(!s.handle_timeout(generation - 1).request) << "stale";
 
@@ -644,7 +644,7 @@ int main() {
       auto r = s.handle_timeout(generation);
       expect(r.request == get_feature_request);
       expect(!s.handle_timeout(generation).request) << "stale after retry";
-      generation = s.get_generation();
+      generation = s.get_request_generation();
     }
 
     auto r = s.handle_timeout(generation);
@@ -655,7 +655,7 @@ int main() {
     {
       auto s2 = make_session();
       s2.start();
-      auto g = s2.get_generation();
+      auto g = s2.get_request_generation();
       input(s2, feature_index_reply);
       expect(!s2.handle_timeout(g).request);
       expect(s2.get_state() == hidpp::session::state::waiting_control_count);
@@ -666,11 +666,11 @@ int main() {
       auto s2 = make_session();
       discover(s2);
       input(s2, reporting_reply(top_button, 0x00));
-      auto generation = s2.get_generation();
+      auto generation = s2.get_request_generation();
       expect(!s2.handle_timeout(generation).request) << "before IOKit write completion";
       expect(s2.get_state() == hidpp::session::state::waiting_divert);
       expect(s2.handle_request_write_success(generation, divert_request));
-      expect(!s2.handle_timeout(s2.get_generation()).request);
+      expect(!s2.handle_timeout(s2.get_request_generation()).request);
       expect(s2.get_state() == hidpp::session::state::diverted);
       expect(s2.stop().request == undivert_request);
     }
@@ -680,14 +680,14 @@ int main() {
     for (const auto& phase : discovery_phases) {
       auto s = make_session();
       phase.enter(s);
-      auto old_generation = s.get_generation();
+      auto old_generation = s.get_request_generation();
       auto old_state = s.get_state();
 
       // Activity while waiting changes nothing.
       expect(!s.can_recover_on_physical_activity());
       expect(!s.restart_after_discovery_timeout(2).request);
       expect(s.get_state() == old_state);
-      expect(s.get_generation() == old_generation);
+      expect(s.get_request_generation() == old_generation);
       expect(s.waiting_reply());
 
       time_out(s);
@@ -697,31 +697,31 @@ int main() {
 
       // Nothing is sent without activity.
       expect(!s.waiting_reply());
-      expect(!s.handle_timeout(s.get_generation()).request);
+      expect(!s.handle_timeout(s.get_request_generation()).request);
       expect(!input(s, feature_index_reply).request);
       expect(s.can_recover_on_physical_activity());
 
-      auto failed_generation = s.get_generation();
+      auto failed_generation = s.get_request_generation();
       auto r = s.restart_after_discovery_timeout(2);
       expect(r.request == with_software_id(get_feature_request, 2));
       expect(!r.pressed);
-      expect(s.get_state() == hidpp::session::state::waiting_feature_index);
+      expect(s.get_state() == hidpp::session::state::waiting_reprog_controls_v4_feature_index);
       expect(s.waiting_reply());
       expect(s.get_controls().empty());
-      expect(s.get_reason().empty());
-      expect(s.get_generation() > failed_generation) << "the generation is never reset";
+      expect(s.get_not_activated_reason().empty());
+      expect(s.get_request_generation() > failed_generation) << "the generation is never reset";
       expect(!s.can_recover_on_physical_activity());
 
       // Repeated activity does not restart again.
-      auto restarted_generation = s.get_generation();
+      auto restarted_generation = s.get_request_generation();
       expect(!s.restart_after_discovery_timeout(3).request);
-      expect(s.get_generation() == restarted_generation);
+      expect(s.get_request_generation() == restarted_generation);
 
       // Timers of the failed attempt and replies to its software id are ignored.
       expect(!s.handle_timeout(old_generation).request);
       expect(!s.handle_timeout(failed_generation).request);
       expect(!input(s, feature_index_reply).request);
-      expect(s.get_state() == hidpp::session::state::waiting_feature_index);
+      expect(s.get_state() == hidpp::session::state::waiting_reprog_controls_v4_feature_index);
 
       // The second failure is final.
       {
@@ -785,7 +785,7 @@ int main() {
       auto s = recover();
       expect(!input(s, with_software_id(reporting_reply(top_button, 0x00, 0x0053), 2)).request);
       expect(s.get_state() == hidpp::session::state::refused);
-      expect(s.get_reason().find("remapped") != std::string::npos);
+      expect(s.get_not_activated_reason().find("remapped") != std::string::npos);
       expect(!s.restart_after_discovery_timeout(3).request);
       expect(!s.stop().request);
     }
@@ -793,11 +793,11 @@ int main() {
 
   "recovery: only discovery timeouts"_test = [] {
     auto expect_no_recovery = [](hidpp::session& s, hidpp::session::state expected) {
-      auto generation = s.get_generation();
+      auto generation = s.get_request_generation();
       expect(!s.can_recover_on_physical_activity());
       expect(!s.restart_after_discovery_timeout(2).request);
       expect(s.get_state() == expected);
-      expect(s.get_generation() == generation);
+      expect(s.get_request_generation() == generation);
     };
 
     // Not started.
@@ -841,7 +841,7 @@ int main() {
       auto s = make_session();
       discover(s);
       input(s, reporting_reply(top_button, 0x00));
-      expect(s.handle_request_write_success(s.get_generation(), divert_request));
+      expect(s.handle_request_write_success(s.get_request_generation(), divert_request));
       time_out(s);
       expect(s.get_state() == hidpp::session::state::diverted);
       expect_no_recovery(s, hidpp::session::state::diverted);
@@ -890,11 +890,11 @@ int main() {
       s.start();
       input(s, feature_index_reply);
       for (int i = 1; i < hidpp::max_attempts; ++i) {
-        expect(s.handle_timeout(s.get_generation()).request == get_count_request);
+        expect(s.handle_timeout(s.get_request_generation()).request == get_count_request);
       }
-      expect(!s.handle_timeout(s.get_generation()).request);
+      expect(!s.handle_timeout(s.get_request_generation()).request);
       expect(s.get_state() == hidpp::session::state::failed);
-      expect(!s.handle_timeout(s.get_generation()).request);
+      expect(!s.handle_timeout(s.get_request_generation()).request);
       expect(!s.stop().request) << "nothing was diverted";
     }
 
@@ -904,7 +904,7 @@ int main() {
       auto s = make_session();
       discover(s);
       input(s, reporting_reply(top_button, 0x00));
-      auto generation = s.get_generation();
+      auto generation = s.get_request_generation();
 
       expect(!s.handle_request_write_failure(generation - 1,
                                              divert_request,
@@ -920,7 +920,7 @@ int main() {
       expect(result.has_value());
       expect(result->request == undivert_request);
       expect(s.get_state() == hidpp::session::state::failed);
-      expect(s.get_reason().find("kIOReturnNotOpen") != std::string::npos);
+      expect(s.get_not_activated_reason().find("kIOReturnNotOpen") != std::string::npos);
       expect(!s.handle_timeout(generation).request);
     }
 
@@ -928,11 +928,11 @@ int main() {
     {
       auto s = make_session();
       make_diverted(s);
-      auto generation = s.get_generation();
+      auto generation = s.get_request_generation();
       expect(s.stop().request == undivert_request);
       expect(!s.waiting_reply());
       expect(!s.handle_timeout(generation).request);
-      expect(!s.handle_timeout(s.get_generation()).request);
+      expect(!s.handle_timeout(s.get_request_generation()).request);
       expect(!s.stop().request);
     }
   };
@@ -977,7 +977,7 @@ int main() {
       auto s = make_session();
       discover(s);
       input(s, reporting_reply(top_button, 0x00));
-      auto generation = s.get_generation();
+      auto generation = s.get_request_generation();
       expect(s.stop().request == undivert_request);
       expect(!s.handle_timeout(generation).request) << "stale timer";
       expect(!input(s, divert_reply(top_button, 0x03)).request) << "late reply";
@@ -992,7 +992,7 @@ int main() {
 
     // Replies with software id 1 are ignored.
     expect(!input(s, feature_index_reply).request);
-    expect(s.get_state() == hidpp::session::state::waiting_feature_index);
+    expect(s.get_state() == hidpp::session::state::waiting_reprog_controls_v4_feature_index);
     expect(!input(s, divert_reply(top_button, 0x02)).request);
 
     auto own = feature_index_reply;

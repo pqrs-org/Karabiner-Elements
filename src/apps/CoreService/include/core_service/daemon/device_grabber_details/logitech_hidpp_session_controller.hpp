@@ -128,7 +128,7 @@ private:
 
   [[nodiscard]] std::vector<logitech::hidpp::session::result::button_event> handle_result(const logitech::hidpp::session::result& r) {
     if (handle_requests(r)) {
-      schedule_reply_timeout(session_.get_generation());
+      schedule_reply_timeout(session_.get_request_generation());
     }
 
     if (session_.controls_discovered()) {
@@ -152,7 +152,7 @@ private:
       if (logitech::hidpp::is_set_reporting_request(*r.request)) {
         send_synchronously(*r.request,
                            session_.waiting_reply()
-                               ? std::optional<uint64_t>(session_.get_generation())
+                               ? std::optional<uint64_t>(session_.get_request_generation())
                                : std::nullopt);
       } else {
         send_query(*r.request);
@@ -171,10 +171,10 @@ private:
     return query_waits_for_reply;
   }
 
-  void schedule_reply_timeout(uint64_t generation) {
+  void schedule_reply_timeout(uint64_t request_generation) {
     enqueue_to_dispatcher(
-        [this, generation] {
-          static_cast<void>(handle_result(session_.handle_timeout(generation)));
+        [this, request_generation] {
+          static_cast<void>(handle_result(session_.handle_timeout(request_generation)));
         },
         when_now() + logitech::hidpp::reply_timeout);
   }
@@ -291,7 +291,7 @@ private:
   }
 
   void send_synchronously(const logitech::hidpp::long_report& request,
-                          std::optional<uint64_t> generation) {
+                          std::optional<uint64_t> request_generation) {
     auto device = device_;
     auto r = request;
     auto log_prefix = log_prefix_;
@@ -304,19 +304,19 @@ private:
                                                         r.data(),
                                                         r.size());
 
-      if (generation) {
+      if (request_generation) {
         if (auto self = weak_self.lock()) {
-          self->enqueue_to_dispatcher([weak_self, generation = *generation, r, kr] {
+          self->enqueue_to_dispatcher([weak_self, request_generation = *request_generation, r, kr] {
             if (auto self = weak_self.lock()) {
               if (kr) {
                 // Start the protocol reply timeout only after IOKit has accepted
                 // the request. Some devices apply setCidReporting without
                 // returning the HID++ acknowledgement.
-                if (self->session_.handle_request_write_success(generation, r)) {
-                  self->schedule_reply_timeout(generation);
+                if (self->session_.handle_request_write_success(request_generation, r)) {
+                  self->schedule_reply_timeout(request_generation);
                 }
               } else if (auto result = self->session_.handle_request_write_failure(
-                             generation,
+                             request_generation,
                              r,
                              kr.to_string())) {
                 static_cast<void>(self->handle_result(*result));
