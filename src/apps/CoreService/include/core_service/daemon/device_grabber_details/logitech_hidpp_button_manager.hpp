@@ -56,6 +56,9 @@ public:
   // Applies the desired setting after the device has finished settling.
   void async_update(pqrs::not_null_shared_ptr_t<const core_configuration::core_configuration> core_configuration,
                     bool device_is_seized) {
+    // A Bluetooth device may reject an output report with kIOReturnNotOpen immediately
+    // after IOHIDDeviceOpen succeeds. Give the device time to become writable before
+    // starting the HID++ session.
     update_task_.debounce_after(
         [this, core_configuration, device_is_seized] {
           update(core_configuration,
@@ -88,6 +91,8 @@ public:
         }
       }
 
+      // Emit logical key_up events for controls which are still held, so their
+      // mapped output keys are not left pressed when the HID++ session stops.
       if (!button_events.empty()) {
         auto values = hid_report_only_events::logitech::hidpp::button::make_hid_values(
             button_events,
@@ -142,8 +147,8 @@ public:
   }
 
 private:
-  [[nodiscard]] static std::vector<uint16_t> make_validated_enabled_control_ids(
-      const std::optional<core_configuration::details::logitech_hidpp>& configuration) {
+  [[nodiscard]] std::vector<uint16_t> make_validated_enabled_control_ids(
+      const std::optional<core_configuration::details::logitech_hidpp>& configuration) const {
     std::vector<uint16_t> result;
 
     if (configuration) {
@@ -152,10 +157,19 @@ private:
           continue;
         }
 
-        for (const auto& value : button.to) {
-          [[maybe_unused]] const manipulator::to_event_definition definition(value);
+        // Validate every `to` entry before diverting the control, so an invalid
+        // output mapping does not suppress the physical button input.
+        try {
+          for (const auto& value : button.to) {
+            [[maybe_unused]] const manipulator::to_event_definition definition(value);
+          }
+          result.push_back(button.control_id);
+        } catch (const std::exception& e) {
+          logger::get_logger()->error(fmt::format("{0} ignoring invalid mapping for control_id {1}: {2}",
+                                                  log_prefix_,
+                                                  button.control_id,
+                                                  e.what()));
         }
-        result.push_back(button.control_id);
       }
     }
 
@@ -175,14 +189,7 @@ private:
              bool device_is_seized) {
     update_task_.cancel();
 
-    std::vector<uint16_t> desired_control_ids;
-    try {
-      desired_control_ids = make_validated_enabled_control_ids(desired);
-    } catch (const std::exception& e) {
-      logger::get_logger()->error(fmt::format("{0} invalid configuration: {1}",
-                                              log_prefix_,
-                                              e.what()));
-    }
+    auto desired_control_ids = make_validated_enabled_control_ids(desired);
 
     // The output mapping is handled by the Simple Modifications manipulator manager.
     // Keep the HID++ session when only a mapping changes, so the same controls are not
