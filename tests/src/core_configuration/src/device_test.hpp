@@ -411,6 +411,17 @@ void run_device_test() {
       expect(!d.to_json().contains("logitech_hidpp"));
     }
 
+    // An empty buttons array is preserved as an explicitly empty setting.
+    {
+      nlohmann::json json({
+          {"logitech_hidpp", {{"buttons", nlohmann::json::array()}}},
+      });
+      device d(json, error_handling::strict);
+      expect(d.get_logitech_hidpp().has_value());
+      expect(d.get_logitech_hidpp()->get_buttons().empty());
+      expect(d.to_json().at("logitech_hidpp") == json.at("logitech_hidpp"));
+    }
+
     // Load and save
     {
       nlohmann::json json({
@@ -470,6 +481,57 @@ void run_device_test() {
       };
       device d(json, error_handling::strict);
       expect(d.get_logitech_hidpp()->get_enabled_control_ids() == std::vector<uint16_t>({1, 65535}));
+    }
+
+    // An empty `to` diverts and discards the button input.
+    {
+      nlohmann::json json = {
+          {"logitech_hidpp",
+           {{"buttons",
+             {
+                 {
+                     {"control_id", 196},
+                     {"to", nlohmann::json::array()},
+                 },
+             }}}},
+      };
+      device d(json, error_handling::strict);
+      expect(d.get_logitech_hidpp()->is_enabled(196));
+      expect(d.to_json().at("logitech_hidpp") == nlohmann::json({
+                                                     {"buttons",
+                                                      {
+                                                          {
+                                                              {"control_id", 196},
+                                                              {"enabled", true},
+                                                              {"to", nlohmann::json::array()},
+                                                          },
+                                                      }},
+                                                 }));
+    }
+
+    // The first entry wins if control IDs are duplicated.
+    {
+      nlohmann::json json = {
+          {"logitech_hidpp",
+           {{"buttons",
+             {
+                 {
+                     {"control_id", 196},
+                     {"enabled", false},
+                     {"to", {{{"key_code", "a"}}}},
+                 },
+                 {
+                     {"control_id", 196},
+                     {"enabled", true},
+                     {"to", {{{"key_code", "b"}}}},
+                 },
+             }}}},
+      };
+      device d(json, error_handling::strict);
+      const auto& buttons = d.get_logitech_hidpp()->get_buttons();
+      expect(buttons.size() == 1);
+      expect(buttons[0].to == nlohmann::json({{{"key_code", "a"}}}));
+      expect(!buttons[0].enabled);
     }
 
     // A valid button before an invalid one is not partially applied in loose mode.

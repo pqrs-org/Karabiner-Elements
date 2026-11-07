@@ -32,7 +32,6 @@ public:
 
   explicit logitech_hidpp(std::vector<button> buttons)
       : buttons_(normalize(std::move(buttons))) {
-    validate_buttons();
   }
 
   explicit logitech_hidpp(const nlohmann::json& json) {
@@ -94,7 +93,6 @@ public:
     }
 
     buttons_ = normalize(std::move(buttons_));
-    validate_buttons();
   }
 
   [[nodiscard]] nlohmann::json to_json() const {
@@ -137,25 +135,17 @@ public:
 
 private:
   [[nodiscard]] static std::vector<button> normalize(std::vector<button> value) {
-    std::ranges::sort(value, {}, &button::control_id);
-    return value;
-  }
-
-  void validate_buttons() const {
-    if (buttons_.empty()) {
-      throw pqrs::json::unmarshal_error("`buttons` must not be empty");
-    }
-
-    std::optional<uint16_t> previous_control_id;
-    for (const auto& button : buttons_) {
-      if (previous_control_id == button.control_id) {
-        throw pqrs::json::unmarshal_error(fmt::format("`control_id` {0} is duplicated", button.control_id));
+    std::vector<button> result;
+    for (auto&& button : value) {
+      if (std::ranges::none_of(result,
+                               [&](const auto& existing) {
+                                 return existing.control_id == button.control_id;
+                               })) {
+        result.push_back(std::move(button));
       }
-      if (button.to.empty()) {
-        throw pqrs::json::unmarshal_error(fmt::format("`to` of `control_id` {0} must not be empty", button.control_id));
-      }
-      previous_control_id = button.control_id;
     }
+    std::ranges::sort(result, {}, &button::control_id);
+    return result;
   }
 
   std::vector<button> buttons_;
