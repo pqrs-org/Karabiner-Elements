@@ -17,23 +17,18 @@ public:
     return devices_;
   }
 
-  [[nodiscard]] const connected_device* find_device(const device_identifiers& identifiers) const {
-    auto it = std::find_if(std::begin(devices_),
-                           std::end(devices_),
-                           [&](const auto& d) {
-                             return d.properties->get_device_identifiers() == identifiers;
-                           });
-    if (it != std::end(devices_)) {
-      return &*it;
-    }
-
-    return nullptr;
+  [[nodiscard]] bool contains(const device_identifiers& identifiers) const {
+    return std::any_of(std::begin(devices_),
+                       std::end(devices_),
+                       [&](const auto& device) {
+                         return device.properties->get_device_identifiers() == identifiers;
+                       });
   }
 
   void push_back_device(
       pqrs::not_null_shared_ptr_t<device_properties> properties,
       const connected_device_capabilities& capabilities = connected_device_capabilities()) {
-    if (find_device(properties->get_device_identifiers())) {
+    if (contains(properties->get_device_identifiers())) {
       return;
     }
 
