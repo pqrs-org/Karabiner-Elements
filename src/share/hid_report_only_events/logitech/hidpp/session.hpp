@@ -731,21 +731,21 @@ private:
   std::vector<uint16_t> control_ids_;
   uint8_t software_id_;
   std::string log_prefix_;
-  state state_ = state::initial;
-  uint8_t feature_index_ = 0;
-  uint8_t control_count_ = 0;
+  state state_{state::initial};
+  uint8_t feature_index_{0};
+  uint8_t control_count_{0};
   std::vector<control> controls_;
-  bool controls_discovered_ = false;
-  size_t current_control_index_ = 0;
+  bool controls_discovered_{false};
+  size_t current_control_index_{0};
   std::vector<uint16_t> divert_requested_control_ids_;
-  bool discovery_timed_out_ = false;
-  bool recovery_used_ = false;
+  bool discovery_timed_out_{false};
+  bool recovery_used_{false};
   std::vector<uint16_t> pressed_control_ids_;
   std::optional<long_report> pending_request_;
   // Required before an unacknowledged setCidReporting request can be accepted.
-  bool pending_request_write_succeeded_ = false;
-  int attempts_ = 0;
-  uint64_t generation_ = 0;
+  bool pending_request_write_succeeded_{false};
+  int attempts_{0};
+  uint64_t generation_{0};
   std::string reason_;
 };
 } // namespace krbn::logitech::hidpp

@@ -338,7 +338,7 @@ private:
   pqrs::not_null_shared_ptr_t<pqrs::cf::run_loop_thread> run_loop_thread_;
   pqrs::cf::cf_ptr<IOHIDDeviceRef> device_;
   std::string log_prefix_;
-  std::shared_ptr<std::atomic<bool>> queries_enabled_ = std::make_shared<std::atomic<bool>>(true);
+  std::shared_ptr<std::atomic<bool>> queries_enabled_{std::make_shared<std::atomic<bool>>(true)};
   logitech::hidpp::session session_;
   std::vector<uint16_t> published_divertable_control_ids_;
 };

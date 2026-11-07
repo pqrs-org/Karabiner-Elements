@@ -25,7 +25,7 @@ public:
   struct button final {
     uint16_t control_id;
     nlohmann::json to;
-    bool enabled = true;
+    bool enabled{true};
 
     bool operator==(const button&) const = default;
   };
