@@ -337,7 +337,7 @@ cos(radian) * m;
     {
       auto jj = simple_modifications_->to_json(nlohmann::json::array());
       if (!jj.empty()) {
-        j["simple_modifications"] = jj;
+        j["simple_modifications"] = std::move(jj);
       } else {
         j.erase("simple_modifications");
       }
@@ -346,7 +346,7 @@ cos(radian) * m;
     {
       auto jj = fn_function_keys_->to_json(make_default_fn_function_keys_json());
       if (!jj.empty()) {
-        j["fn_function_keys"] = jj;
+        j["fn_function_keys"] = std::move(jj);
       } else {
         j.erase("fn_function_keys");
       }
