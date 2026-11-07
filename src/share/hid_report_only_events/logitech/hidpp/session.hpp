@@ -550,9 +550,9 @@ private:
                                   make_control_id_string(current_control_id()),
                                   reprog_controls_v4_feature_index_);
     } else {
-      logger::get_logger()->warn("{0} activated without acknowledgement: control {1} is assumed to be diverted",
-                                 log_prefix_,
-                                 make_control_id_string(current_control_id()));
+      logger::get_logger()->debug("{0} activated without acknowledgement: control {1} is assumed to be diverted",
+                                  log_prefix_,
+                                  make_control_id_string(current_control_id()));
     }
 
     ++current_control_index_;
