@@ -400,6 +400,20 @@ void run_device_test() {
     expect(!krbn::core_configuration::details::device::validate_stick_formula("cos("));
   };
 
+  "device ignores invalid modifications in loose mode"_test = [] {
+    using krbn::core_configuration::details::device;
+    using krbn::core_configuration::error_handling;
+
+    for (const auto& key : {
+             "simple_modifications",
+             "fn_function_keys",
+         }) {
+      device d(nlohmann::json({{key, nullptr}}),
+               error_handling::loose);
+      expect(!d.to_json().contains(key));
+    }
+  };
+
   "device.logitech_hidpp"_test = [] {
     using krbn::core_configuration::details::device;
     using krbn::core_configuration::error_handling;

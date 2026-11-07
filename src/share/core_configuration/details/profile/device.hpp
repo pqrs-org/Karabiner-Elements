@@ -271,28 +271,19 @@ cos(radian) * m;
     }
 
     for (const auto& [key, value] : json.items()) {
-      if (key == "simple_modifications") {
-        try {
-          simple_modifications_->update(value);
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
-
-      } else if (key == "fn_function_keys") {
-        try {
-          fn_function_keys_->update(value);
-        } catch (const pqrs::json::unmarshal_error& e) {
-          throw pqrs::json::unmarshal_error(fmt::format("`{0}` error: {1}", key, e.what()));
-        }
-      }
-    }
-
-    if (auto it = json.find("logitech_hidpp");
-        it != std::end(json)) {
       try {
-        logitech_hidpp_ = logitech_hidpp(*it);
+        if (key == "simple_modifications") {
+          simple_modifications_->update(value);
+
+        } else if (key == "fn_function_keys") {
+          fn_function_keys_->update(value);
+
+        } else if (key == "logitech_hidpp") {
+          logitech_hidpp_ = logitech_hidpp(value);
+        }
+
       } catch (const pqrs::json::unmarshal_error& e) {
-        auto message = fmt::format("`logitech_hidpp` error: {0}", e.what());
+        auto message = fmt::format("`{0}` error: {1}", key, e.what());
         if (error_handling == error_handling::strict) {
           throw pqrs::json::unmarshal_error(message);
         } else {
