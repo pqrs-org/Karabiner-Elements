@@ -280,7 +280,6 @@ public:
     if (!transport_.empty()) {
       json["transport"] = transport_;
     }
-
     if (is_built_in_keyboard_) {
       json["is_built_in_keyboard"] = is_built_in_keyboard_;
     }
@@ -293,6 +292,7 @@ public:
     if (is_apple_) {
       json["is_apple"] = is_apple_;
     }
+
     return json;
   }
 
