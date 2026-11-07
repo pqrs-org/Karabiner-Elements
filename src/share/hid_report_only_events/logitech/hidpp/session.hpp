@@ -364,14 +364,14 @@ public:
           });
           if (it == std::end(discovered_controls_)) {
             return refuse_requiring_user_action(fmt::format("control {0} does not exist (divertable controls: {1})",
-                                                             make_control_id_string(control_id),
-                                                             make_divertable_controls_string()));
+                                                            make_control_id_string(control_id),
+                                                            make_divertable_controls_string()));
           }
           if (!it->divertable()) {
             return refuse_requiring_user_action(fmt::format("control {0} cannot be temporarily diverted (flags 0x{1:04x}, divertable controls: {2})",
-                                                             make_control_id_string(control_id),
-                                                             it->flags,
-                                                             make_divertable_controls_string()));
+                                                            make_control_id_string(control_id),
+                                                            it->flags,
+                                                            make_divertable_controls_string()));
           }
         }
 
@@ -396,14 +396,14 @@ public:
                       reporting_flag_raw_xy_diverted |
                       reporting_flag_force_raw_xy_diverted)) != 0) {
           return refuse_requiring_user_action(fmt::format("control {0} is already diverted (reporting flags 0x{1:02x}). "
-                                                           "Karabiner-Elements does not override persistent or raw XY diversion",
-                                                           make_control_id_string(current_control_id()),
-                                                           flags));
+                                                          "Karabiner-Elements does not override persistent or raw XY diversion",
+                                                          make_control_id_string(current_control_id()),
+                                                          flags));
         }
         if (remap != 0 && remap != current_control_id()) {
           return refuse_requiring_user_action(fmt::format("control {0} is remapped to {1} by another HID++ client",
-                                                           make_control_id_string(current_control_id()),
-                                                           make_control_id_string(remap)));
+                                                          make_control_id_string(current_control_id()),
+                                                          make_control_id_string(remap)));
         }
 
         if ((flags & reporting_flag_diverted) != 0) {
