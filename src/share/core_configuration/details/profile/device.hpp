@@ -287,7 +287,7 @@ cos(radian) * m;
         if (error_handling == error_handling::strict) {
           throw pqrs::json::unmarshal_error(message);
         } else {
-          logger::get_logger()->warn(message);
+          logger::get_logger()->error(message);
         }
       }
     }

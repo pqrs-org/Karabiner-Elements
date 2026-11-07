@@ -95,7 +95,7 @@ public:
       return;
     }
 
-    logger::get_logger()->info("{0} restarting discovery once because the device reported motion after a discovery timeout",
+    logger::get_logger()->info("{0} retrying HID++ discovery after a timeout",
                                log_prefix_);
 
     // The returned request is the first discovery request, so start() must not be called.
@@ -325,9 +325,9 @@ private:
           });
         }
       } else if (!kr) {
-        logger::get_logger()->warn("{0} failed to change the reporting of a control; it may stay diverted until the device reconnects: {1}",
-                                   log_prefix,
-                                   kr.to_string());
+        logger::get_logger()->error("{0} failed to restore the reporting of a control; reconnect the device to ensure its firmware function is restored: {1}",
+                                    log_prefix,
+                                    kr.to_string());
       }
     });
   }

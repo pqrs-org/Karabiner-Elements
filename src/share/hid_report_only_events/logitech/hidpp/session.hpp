@@ -343,9 +343,9 @@ public:
                       make_request(reprog_controls_v4_feature_index_, 1, {static_cast<uint8_t>(discovered_controls_.size())}));
         }
 
-        logger::get_logger()->info("{0} divertable controls: {1}",
-                                   log_prefix_,
-                                   make_divertable_controls_string());
+        logger::get_logger()->debug("{0} divertable controls: {1}",
+                                    log_prefix_,
+                                    make_divertable_controls_string());
 
         controls_discovered_ = true;
 
@@ -363,15 +363,15 @@ public:
             return c.control_id == control_id;
           });
           if (it == std::end(discovered_controls_)) {
-            return refuse(fmt::format("control {0} does not exist (divertable controls: {1})",
-                                      make_control_id_string(control_id),
-                                      make_divertable_controls_string()));
+            return refuse_requiring_user_action(fmt::format("control {0} does not exist (divertable controls: {1})",
+                                                             make_control_id_string(control_id),
+                                                             make_divertable_controls_string()));
           }
           if (!it->divertable()) {
-            return refuse(fmt::format("control {0} cannot be temporarily diverted (flags 0x{1:04x}, divertable controls: {2})",
-                                      make_control_id_string(control_id),
-                                      it->flags,
-                                      make_divertable_controls_string()));
+            return refuse_requiring_user_action(fmt::format("control {0} cannot be temporarily diverted (flags 0x{1:04x}, divertable controls: {2})",
+                                                             make_control_id_string(control_id),
+                                                             it->flags,
+                                                             make_divertable_controls_string()));
           }
         }
 
@@ -395,15 +395,15 @@ public:
         if ((flags & (reporting_flag_persistently_diverted |
                       reporting_flag_raw_xy_diverted |
                       reporting_flag_force_raw_xy_diverted)) != 0) {
-          return refuse(fmt::format("control {0} is already diverted (reporting flags 0x{1:02x}). "
-                                    "Karabiner-Elements does not override persistent or raw XY diversion",
-                                    make_control_id_string(current_control_id()),
-                                    flags));
+          return refuse_requiring_user_action(fmt::format("control {0} is already diverted (reporting flags 0x{1:02x}). "
+                                                           "Karabiner-Elements does not override persistent or raw XY diversion",
+                                                           make_control_id_string(current_control_id()),
+                                                           flags));
         }
         if (remap != 0 && remap != current_control_id()) {
-          return refuse(fmt::format("control {0} is remapped to {1} by another HID++ client",
-                                    make_control_id_string(current_control_id()),
-                                    make_control_id_string(remap)));
+          return refuse_requiring_user_action(fmt::format("control {0} is remapped to {1} by another HID++ client",
+                                                           make_control_id_string(current_control_id()),
+                                                           make_control_id_string(remap)));
         }
 
         if ((flags & reporting_flag_diverted) != 0) {
@@ -541,16 +541,16 @@ private:
     pending_request_ = std::nullopt;
 
     if (already_diverted) {
-      logger::get_logger()->info("{0} activated: control {1} was already temporarily diverted and is now managed by Karabiner-Elements",
-                                 log_prefix_,
-                                 make_control_id_string(current_control_id()));
+      logger::get_logger()->debug("{0} activated: control {1} was already temporarily diverted and is now managed by Karabiner-Elements",
+                                  log_prefix_,
+                                  make_control_id_string(current_control_id()));
     } else if (acknowledged) {
-      logger::get_logger()->info("{0} activated: control {1} is diverted (REPROG_CONTROLS_V4 feature index 0x{2:02x})",
-                                 log_prefix_,
-                                 make_control_id_string(current_control_id()),
-                                 reprog_controls_v4_feature_index_);
+      logger::get_logger()->debug("{0} activated: control {1} is diverted (REPROG_CONTROLS_V4 feature index 0x{2:02x})",
+                                  log_prefix_,
+                                  make_control_id_string(current_control_id()),
+                                  reprog_controls_v4_feature_index_);
     } else {
-      logger::get_logger()->info("{0} activated without acknowledgement: control {1} is assumed to be diverted",
+      logger::get_logger()->warn("{0} activated without acknowledgement: control {1} is assumed to be diverted",
                                  log_prefix_,
                                  make_control_id_string(current_control_id()));
     }
@@ -717,11 +717,24 @@ private:
   }
 
   result refuse(const std::string& reason) {
+    return finish_refusal(reason, false);
+  }
+
+  result refuse_requiring_user_action(const std::string& reason) {
+    return finish_refusal(reason, true);
+  }
+
+  result finish_refusal(const std::string& reason,
+                        bool user_action_required) {
     state_ = state::refused;
     pending_request_ = std::nullopt;
     not_activated_reason_ = reason;
 
-    logger::get_logger()->warn("{0} not activated: {1}", log_prefix_, reason);
+    if (user_action_required) {
+      logger::get_logger()->error("{0} not activated: {1}", log_prefix_, reason);
+    } else {
+      logger::get_logger()->warn("{0} not activated: {1}", log_prefix_, reason);
+    }
 
     result r;
     append_restore_requests(r);
