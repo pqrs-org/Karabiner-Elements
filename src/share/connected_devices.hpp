@@ -74,10 +74,12 @@ inline void to_json(nlohmann::json& json, const connected_devices& value) {
 
   for (const auto& device : value.get_devices()) {
     nlohmann::json device_json = *device.properties;
+
     auto capabilities_json = device.capabilities.to_json();
     if (!capabilities_json.empty()) {
       device_json["connected_device_capabilities"] = std::move(capabilities_json);
     }
+
     json.push_back(std::move(device_json));
   }
 }
