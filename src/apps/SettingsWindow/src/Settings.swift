@@ -496,7 +496,7 @@ final class Settings: ObservableObject {
     performCommand(.eraseDisconnectedDevices)
   }
 
-  func setLogitechHidppButton(
+  func setLogitechHidppButtonEnabled(
     controlId: UInt16,
     enabled: Bool,
     connectedDevice: ConnectedDevice

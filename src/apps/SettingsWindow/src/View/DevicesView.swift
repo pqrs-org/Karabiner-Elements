@@ -424,7 +424,7 @@ struct DevicesView: View {
                       control(controlId)?.enabled ?? false
                     },
                     set: { enabled in
-                      settings.setLogitechHidppButton(
+                      settings.setLogitechHidppButtonEnabled(
                         controlId: controlId,
                         enabled: enabled,
                         connectedDevice: connectedDevice)
