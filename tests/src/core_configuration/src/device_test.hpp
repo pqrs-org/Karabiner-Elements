@@ -411,15 +411,38 @@ void run_device_test() {
       expect(!d.to_json().contains("logitech_hidpp"));
     }
 
-    // An empty buttons array is preserved as an explicitly empty setting.
-    {
-      nlohmann::json json({
-          {"logitech_hidpp", {{"buttons", nlohmann::json::array()}}},
-      });
-      device d(json, error_handling::strict);
+    // Empty settings are accepted and omitted from the normalized JSON.
+    for (const auto& logitech_hidpp : {
+             nlohmann::json::object(),
+             nlohmann::json({{"buttons", nlohmann::json::array()}}),
+         }) {
+      device d(nlohmann::json({{"logitech_hidpp", logitech_hidpp}}),
+               error_handling::strict);
       expect(d.get_logitech_hidpp().has_value());
       expect(d.get_logitech_hidpp()->get_buttons().empty());
-      expect(d.to_json().at("logitech_hidpp") == json.at("logitech_hidpp"));
+      expect(!d.to_json().contains("logitech_hidpp"));
+    }
+
+    // Unknown keys are ignored for forward compatibility.
+    {
+      nlohmann::json json({
+          {"logitech_hidpp",
+           {
+               {"buttons",
+                {
+                    {
+                        {"control_id", 196},
+                        {"to", {{{"key_code", "a"}}}},
+                        {"unknown", true},
+                    },
+                }},
+               {"unknown", true},
+           }},
+      });
+      device d(json, error_handling::strict);
+      expect(d.get_logitech_hidpp()->is_enabled(196));
+      expect(!d.to_json().at("logitech_hidpp").contains("unknown"));
+      expect(!d.to_json().at("logitech_hidpp").at("buttons").at(0).contains("unknown"));
     }
 
     // Load and save

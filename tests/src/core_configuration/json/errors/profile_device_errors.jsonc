@@ -347,23 +347,6 @@
     {
         "class": "devices",
         "input": {
-            "logitech_hidpp": {}
-        },
-        "error": "`logitech_hidpp` error: `buttons` is missing in `{}`"
-    },
-    {
-        "class": "devices",
-        "input": {
-            "logitech_hidpp": {
-                "buttons": [],
-                "unknown": true
-            }
-        },
-        "error": "`logitech_hidpp` error: unknown key `unknown` in `{\"buttons\":[],\"unknown\":true}`"
-    },
-    {
-        "class": "devices",
-        "input": {
             "logitech_hidpp": {
                 "buttons": [
                     {
@@ -402,20 +385,5 @@
             }
         },
         "error": "`logitech_hidpp` error: `enabled` must be boolean, but is `\"false\"`"
-    },
-    {
-        "class": "devices",
-        "input": {
-            "logitech_hidpp": {
-                "buttons": [
-                    {
-                        "control_id": 196,
-                        "to": [{ "key_code": "a" }],
-                        "unknown": true
-                    }
-                ]
-            }
-        },
-        "error": "`logitech_hidpp` error: unknown key `unknown` in `{\"control_id\":196,\"to\":[{\"key_code\":\"a\"}],\"unknown\":true}`"
     }
 ]

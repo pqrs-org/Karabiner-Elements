@@ -38,64 +38,56 @@ public:
     pqrs::json::requires_object(json, "json");
 
     const auto it = json.find("buttons");
-    if (it == std::end(json)) {
-      throw pqrs::json::unmarshal_error(fmt::format("`buttons` is missing in `{0}`",
-                                                    pqrs::json::dump_for_error_message(json)));
-    }
-    pqrs::json::requires_array(*it, "`buttons`");
-
-    for (const auto& item : json.items()) {
-      if (item.key() != "buttons") {
-        throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`",
-                                                      item.key(),
-                                                      pqrs::json::dump_for_error_message(json)));
-      }
+    if (it != std::end(json)) {
+      pqrs::json::requires_array(*it, "`buttons`");
     }
 
-    for (const auto& v : *it) {
-      pqrs::json::requires_object(v, "values in `buttons`");
+    if (it != std::end(json)) {
+      for (const auto& v : *it) {
+        pqrs::json::requires_object(v, "values in `buttons`");
 
-      std::optional<uint16_t> control_id;
-      std::optional<nlohmann::json> to;
-      bool enabled = true;
-      for (const auto& [key, value] : v.items()) {
-        if (key == "control_id") {
-          const auto event = nlohmann::json({{"logitech_hidpp_button", value}})
-                                 .get<momentary_switch_event>();
-          control_id = static_cast<uint16_t>(
-              type_safe::get(event.get_usage_pair().get_usage()));
-        } else if (key == "to") {
-          pqrs::json::requires_array(value, "`to`");
-          to = value;
-        } else if (key == "enabled") {
-          pqrs::json::requires_boolean(value, "`enabled`");
-          enabled = value.get<bool>();
-        } else {
-          throw pqrs::json::unmarshal_error(fmt::format("unknown key `{0}` in `{1}`",
-                                                        key,
+        std::optional<uint16_t> control_id;
+        std::optional<nlohmann::json> to;
+        bool enabled = true;
+        for (const auto& [key, value] : v.items()) {
+          if (key == "control_id") {
+            const auto event = nlohmann::json({{"logitech_hidpp_button", value}})
+                                   .get<momentary_switch_event>();
+            control_id = static_cast<uint16_t>(
+                type_safe::get(event.get_usage_pair().get_usage()));
+          } else if (key == "to") {
+            pqrs::json::requires_array(value, "`to`");
+            to = value;
+          } else if (key == "enabled") {
+            pqrs::json::requires_boolean(value, "`enabled`");
+            enabled = value.get<bool>();
+          }
+        }
+
+        if (!control_id) {
+          throw pqrs::json::unmarshal_error(fmt::format("`control_id` is missing in `{0}`",
                                                         pqrs::json::dump_for_error_message(v)));
         }
+        if (!to) {
+          throw pqrs::json::unmarshal_error(fmt::format("`to` is missing in `{0}`",
+                                                        pqrs::json::dump_for_error_message(v)));
+        }
+        buttons_.push_back({
+            .control_id = *control_id,
+            .to = std::move(*to),
+            .enabled = enabled,
+        });
       }
-
-      if (!control_id) {
-        throw pqrs::json::unmarshal_error(fmt::format("`control_id` is missing in `{0}`",
-                                                      pqrs::json::dump_for_error_message(v)));
-      }
-      if (!to) {
-        throw pqrs::json::unmarshal_error(fmt::format("`to` is missing in `{0}`",
-                                                      pqrs::json::dump_for_error_message(v)));
-      }
-      buttons_.push_back({
-          .control_id = *control_id,
-          .to = std::move(*to),
-          .enabled = enabled,
-      });
     }
 
     buttons_ = normalize(std::move(buttons_));
   }
 
   [[nodiscard]] nlohmann::json to_json() const {
+    if (buttons_.empty()) {
+      return nlohmann::json::object();
+    }
+
     auto buttons = nlohmann::json::array();
     for (const auto& button : buttons_) {
       buttons.push_back({

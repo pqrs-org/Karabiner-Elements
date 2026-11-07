@@ -353,7 +353,12 @@ cos(radian) * m;
     }
 
     if (logitech_hidpp_) {
-      j["logitech_hidpp"] = logitech_hidpp_->to_json();
+      auto jj = logitech_hidpp_->to_json();
+      if (!jj.empty()) {
+        j["logitech_hidpp"] = std::move(jj);
+      } else {
+        j.erase("logitech_hidpp");
+      }
     } else {
       j.erase("logitech_hidpp");
     }
