@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/pqrs-org/Karabiner-Elements/workflows/Karabiner-Elements%20CI/badge.svg)](https://github.com/pqrs-org/Karabiner-Elements/actions)
+[![Build Status](https://github.com/pqrs-org/Karabiner-Elements/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pqrs-org/Karabiner-Elements/actions/workflows/ci.yml?query=branch%3Amain)
 [![License](https://img.shields.io/badge/license-Public%20Domain-blue.svg)](https://github.com/pqrs-org/Karabiner-Elements/blob/main/LICENSE.md)
 
 # Karabiner-Elements
