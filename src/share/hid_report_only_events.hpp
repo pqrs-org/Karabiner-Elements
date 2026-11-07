@@ -13,9 +13,7 @@ namespace krbn::hid_report_only_events {
 // independent of individual vendors and device families.
 [[nodiscard]] inline bool is_target_device(
     const device_identifiers& identifiers) noexcept {
-  if (identifiers.get_is_pointing_device() &&
-      elecom::trackball::is_target_device(identifiers.get_vendor_id(),
-                                          identifiers.get_product_id())) {
+  if (elecom::trackball::is_target_device(identifiers)) {
     return true;
   }
 
@@ -29,13 +27,10 @@ namespace krbn::hid_report_only_events {
 [[nodiscard]] inline std::shared_ptr<report_handler> make_report_handler(
     const device_identifiers& identifiers,
     std::span<const uint8_t> report_descriptor) {
-  if (identifiers.get_is_pointing_device()) {
-    if (auto handler = elecom::trackball::make_report_handler(
-            identifiers.get_vendor_id(),
-            identifiers.get_product_id(),
-            report_descriptor)) {
-      return handler;
-    }
+  if (auto handler = elecom::trackball::make_report_handler(
+          identifiers,
+          report_descriptor)) {
+    return handler;
   }
 
   auto support = krbn::logitech::hidpp::device_support(identifiers,
