@@ -98,11 +98,12 @@ its firmware function.
 - If only the discovery before the diversion times out (the device did not answer
   while Karabiner-Elements looked up the feature, the controls, or the reporting
   state), it is retried once for the same device when the device next reports
-  pointer movement or scrolling. Pressing the button does not retry it. A refusal,
-  an error reply, a failed diversion, or a second timeout is not retried, and the
-  controls stay with the firmware until the device is grabbed again. This is
-  not guaranteed to fix a device that stays unresponsive, and until the retry
-  succeeds, presses of the button may still perform its firmware function.
+  physical input through its ordinary HID elements. Logical HID++ button reports
+  do not trigger the retry. A refusal, an error reply, a failed diversion, or a
+  second timeout is not retried, and the controls stay with the firmware until
+  the device is grabbed again. This is not guaranteed to fix a device that stays
+  unresponsive, and until the retry succeeds, presses of the button may still
+  perform its firmware function.
 - If Karabiner-Core-Service stops unexpectedly, controls can stay diverted
   until the device reconnects. Turn the device off and on to restore it.
 - Do not configure another application, such as Logi Options+, to manage the same
