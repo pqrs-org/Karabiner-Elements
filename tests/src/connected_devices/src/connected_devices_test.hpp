@@ -137,11 +137,11 @@ void run_connected_devices_test() {
 
     auto json = nlohmann::json(connected_devices);
     expect(json.at(0).at("connected_device_capabilities") == nlohmann::json({
-                                                                      {"logitech_hidpp",
-                                                                       {
-                                                                           {"divertable_control_ids", {82, 196}},
-                                                                       }},
-                                                                  }));
+                                                                 {"logitech_hidpp",
+                                                                  {
+                                                                      {"divertable_control_ids", {82, 196}},
+                                                                  }},
+                                                             }));
 
     auto restored = json.get<krbn::connected_devices>();
     expect(restored.get_devices()[0].capabilities.get_logitech_hidpp_divertable_control_ids() ==

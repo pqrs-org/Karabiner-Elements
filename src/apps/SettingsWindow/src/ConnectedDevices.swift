@@ -97,7 +97,8 @@ final class ConnectedDevices: ObservableObject {
           isVirtualDevice: payload.deviceIdentifiers.isVirtualDevice ?? false,
           isBuiltInKeyboard: payload.isBuiltInKeyboard ?? false,
           isAppleDevice: payload.isApple ?? false,
-          logitechHidppDivertableControlIds: payload.connectedDeviceCapabilities?.logitechHidpp?.divertableControlIds ?? []
+          logitechHidppDivertableControlIds: payload.connectedDeviceCapabilities?.logitechHidpp?
+            .divertableControlIds ?? []
         )
       }
 

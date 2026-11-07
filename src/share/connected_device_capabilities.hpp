@@ -15,10 +15,6 @@ public:
     logitech_hidpp_divertable_control_ids_ = value;
   }
 
-  [[nodiscard]] bool empty() const {
-    return logitech_hidpp_divertable_control_ids_.empty();
-  }
-
   [[nodiscard]] nlohmann::json to_json() const {
     nlohmann::json json = nlohmann::json::object();
 
