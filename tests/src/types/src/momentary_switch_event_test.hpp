@@ -343,7 +343,7 @@ void run_momentary_switch_event_test() {
 
     try {
       nlohmann::json json;
-      [[maybe_unused]] auto event = krbn::momentary_switch_event(json);
+      static_cast<void>(krbn::momentary_switch_event(json));
       expect(false);
     } catch (pqrs::json::unmarshal_error& ex) {
       expect(std::string("json must be object, but is `null`") == ex.what());
@@ -353,7 +353,7 @@ void run_momentary_switch_event_test() {
 
     try {
       auto json = nlohmann::json::object({{"key_code", "unknown_value"}});
-      [[maybe_unused]] auto event = krbn::momentary_switch_event(json);
+      static_cast<void>(krbn::momentary_switch_event(json));
       expect(false);
     } catch (pqrs::json::unmarshal_error& ex) {
       expect(std::string("unknown key_code: `\"unknown_value\"`") == ex.what());

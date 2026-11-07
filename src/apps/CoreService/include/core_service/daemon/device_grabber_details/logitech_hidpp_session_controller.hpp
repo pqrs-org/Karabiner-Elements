@@ -17,15 +17,15 @@ namespace krbn::core_service::daemon::device_grabber_details {
 //
 // Routes HID++ controls of a seized device by using logitech::hidpp::session.
 //
-// Threads:
-// - HID++ requests are written in the shared run loop thread, where the device is scheduled, opened and closed.
-//   The run loop thread also handles input of all devices, so read-only discovery queries are written with
-//   IOHIDDeviceSetReportWithCallback and a short timeout instead of blocking it.
+// Thread responsibilities:
+// - The shared run loop thread handles the IOKit device lifecycle and writes HID++ requests.
+//   It also handles input from all devices, so read-only discovery queries use
+//   IOHIDDeviceSetReportWithCallback and a short timeout instead of blocking the thread.
 //   Requests which change the reporting of controls (divert and restore) are written synchronously, so that a
 //   restore is written after a preceding divert and before a later IOHIDDeviceClose.
 //   Requests are written only while controls are activated and restored, never per button press.
-// - Input reports are delivered by hid_device_events_monitor, and protocol state is updated in the shared dispatcher
-//   thread. The dispatcher never waits for a HID++ reply.
+// - The shared dispatcher thread receives input reports from hid_device_events_monitor and updates the HID++
+//   protocol state. It never waits for a HID++ reply.
 //
 // Failure behavior:
 // If the device rejects a request or does not reply (3 attempts, 2 seconds each; a failed write is not answered),
@@ -151,7 +151,9 @@ private:
     if (r.request) {
       if (logitech::hidpp::is_set_reporting_request(*r.request)) {
         send_synchronously(*r.request,
-                           session_.waiting_reply() ? std::optional<uint64_t>(session_.get_generation()) : std::nullopt);
+                           session_.waiting_reply()
+                               ? std::optional<uint64_t>(session_.get_generation())
+                               : std::nullopt);
       } else {
         send_query(*r.request);
         query_waits_for_reply = session_.waiting_reply();

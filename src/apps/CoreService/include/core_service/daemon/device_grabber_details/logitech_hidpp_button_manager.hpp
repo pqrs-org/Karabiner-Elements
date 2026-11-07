@@ -161,7 +161,7 @@ private:
         // output mapping does not suppress the physical button input.
         try {
           for (const auto& value : button.to) {
-            [[maybe_unused]] const manipulator::to_event_definition definition(value);
+            static_cast<void>(manipulator::to_event_definition(value));
           }
           result.push_back(button.control_id);
         } catch (const std::exception& e) {
