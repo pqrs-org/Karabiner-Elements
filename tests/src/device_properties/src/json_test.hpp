@@ -68,7 +68,6 @@ void run_json_test() {
 
       auto device_properties = krbn::device_properties::make_device_properties(json);
       expect("d" == device_properties->get_device_identifiers().get_device_address());
-
       expect(json == device_properties->to_json());
     }
   };
