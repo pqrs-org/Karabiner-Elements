@@ -22,11 +22,12 @@ inline std::vector<pqrs::osx::iokit_hid_value> make_hid_values(
 
   for (const auto& event : events) {
     result.emplace_back(time_stamp,
-                        event.pressed ? 1 : 0,
+                        event.pressed ? 1 : 0, // integer_value
                         momentary_switch_event_details::logitech_hidpp_button::usage_page,
                         pqrs::hid::usage::value_t(event.control_id),
-                        1,
-                        0);
+                        1, // logical_max
+                        0  // logical_min
+    );
   }
 
   return result;
