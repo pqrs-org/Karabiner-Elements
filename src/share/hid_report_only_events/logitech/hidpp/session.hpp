@@ -211,6 +211,13 @@ public:
            !recovery_used_;
   }
 
+  // A terminal session must be replaced even when the requested controls have not changed.
+  [[nodiscard]] bool can_reuse_for_configuration_update() const {
+    return state_ != state::refused &&
+           state_ != state::failed &&
+           state_ != state::stopped;
+  }
+
   // ROOT.getFeature(REPROG_CONTROLS_V4)
   result start() {
     if (state_ != state::initial) {

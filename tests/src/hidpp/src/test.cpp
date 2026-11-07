@@ -676,6 +676,37 @@ int main() {
     }
   };
 
+  "reuse for configuration updates"_test = [] {
+    {
+      auto s = make_session();
+      expect(s.can_reuse_for_configuration_update());
+      discover(s);
+      input(s, reporting_reply(top_button, 0x00));
+      input(s, divert_reply(top_button, 0x03));
+      expect(s.can_reuse_for_configuration_update());
+    }
+
+    {
+      auto s = make_session();
+      discover(s);
+      input(s, reporting_reply(top_button, 0x00, 0x0053));
+      expect(!s.can_reuse_for_configuration_update()) << "refused";
+    }
+
+    {
+      auto s = make_session();
+      s.start();
+      time_out(s);
+      expect(!s.can_reuse_for_configuration_update()) << "failed";
+    }
+
+    {
+      auto s = make_session();
+      s.stop();
+      expect(!s.can_reuse_for_configuration_update()) << "stopped";
+    }
+  };
+
   "recovery after a discovery timeout"_test = [] {
     for (const auto& phase : discovery_phases) {
       auto s = make_session();

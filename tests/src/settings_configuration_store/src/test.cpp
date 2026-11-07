@@ -459,14 +459,18 @@ int main() {
   };
 
   "set_logitech_hidpp_buttons"_test = [] {
-    settings_configuration_store store({
-        .updated = [](const auto&) {},
-        .save = [](auto&) {},
-    });
     const krbn::device_identifiers identifiers({
         .vendor_id = pqrs::hid::vendor_id::value_t(0x046d),
         .product_id = pqrs::hid::product_id::value_t(0xb037),
         .is_pointing_device = true,
+    });
+    std::optional<nlohmann::json> saved_logitech_hidpp;
+    settings_configuration_store store({
+        .updated = [](const auto&) {},
+        .save = [&](auto& configuration) {
+          const auto& value = configuration.get_selected_profile().get_device(identifiers)->get_logitech_hidpp();
+          saved_logitech_hidpp = value ? std::optional(value->to_json()) : std::nullopt;
+        },
     });
     const auto device = identifiers.to_normalized_json().dump();
 
@@ -482,7 +486,20 @@ int main() {
 
     std::promise<void> initialized;
     store.enqueue_to_dispatcher([&] {
-      store.update(std::make_shared<krbn::core_configuration::core_configuration>());
+      auto configuration = std::make_shared<krbn::core_configuration::core_configuration>();
+      configuration->get_selected_profile().get_device(identifiers)->set_logitech_hidpp(
+          krbn::core_configuration::details::logitech_hidpp({
+              {"buttons",
+               {
+                   {
+                       {"control_id", 82},
+                       {"to", {{{"key_code", "x"}}}},
+                       {"future_button_key", true},
+                   },
+               }},
+              {"future_top_level_key", true},
+          }));
+      store.update(configuration);
       initialized.set_value();
     });
     initialized.get_future().get();
@@ -517,6 +534,12 @@ int main() {
                                                                          {"to_json_string", R"([{"key_code":"right_control"}])"},
                                                                      },
                                                                  }));
+
+    // Editing known fields keeps keys written by a newer Karabiner-Elements version.
+    result = execute({{"action", "sync_save"}});
+    expect(saved_logitech_hidpp.has_value());
+    expect(saved_logitech_hidpp->at("future_top_level_key") == true);
+    expect(saved_logitech_hidpp->at("buttons").at(0).at("future_button_key") == true);
 
     // Update enabled while preserving the button mappings.
     result = execute({

@@ -223,9 +223,10 @@ public:
       game_pad_stick_converter_->set_core_configuration(core_configuration);
     }
 
-    if (logitech_hidpp_button_manager_) {
-      logitech_hidpp_button_manager_->update(core_configuration_,
-                                             seized());
+    if (logitech_hidpp_button_manager_ &&
+        hid_device_events_monitor_->is_started()) {
+      logitech_hidpp_button_manager_->async_update(core_configuration_,
+                                                   seized());
     }
   }
 

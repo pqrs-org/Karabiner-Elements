@@ -131,6 +131,22 @@ public:
                                });
   }
 
+  // Replaces the known button settings while retaining unknown JSON keys loaded
+  // from a newer version for forward-compatible editing and saving.
+  [[nodiscard]] logitech_hidpp with_buttons(std::vector<button> buttons) const {
+    logitech_hidpp result(std::move(buttons));
+    result.source_json_ = source_json_;
+
+    for (auto& button : result.buttons_) {
+      if (auto it = std::ranges::find(buttons_, button.control_id, &button::control_id);
+          it != std::end(buttons_)) {
+        button.source_json = it->source_json;
+      }
+    }
+
+    return result;
+  }
+
   bool operator==(const logitech_hidpp& other) const {
     return buttons_ == other.buttons_;
   }

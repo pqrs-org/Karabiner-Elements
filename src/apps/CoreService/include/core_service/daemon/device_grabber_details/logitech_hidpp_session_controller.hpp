@@ -35,9 +35,9 @@ namespace krbn::core_service::daemon::device_grabber_details {
 // disconnects, the device itself resets temporary diversion when it reconnects.
 // Exception: if only the discovery before the diversion (feature, control count, control info or reporting state)
 // timed out, the session allows one automatic recovery for the same device. It restarts the discovery when
-// handle_physical_activity is called, which the owner does when the device reports motion again. A refusal, a HID++
-// error, a failed diversion, or a second timeout is not recovered, and the controls stay with the firmware until the
-// next activation.
+// handle_physical_activity is called, which the owner does when the device reports physical input again. A refusal,
+// a HID++ error, a failed diversion, or a second timeout is not recovered, and the controls stay with the firmware
+// until the next activation.
 //
 class logitech_hidpp_session_controller final : public pqrs::dispatcher::extra::dispatcher_client,
                                                 public std::enable_shared_from_this<logitech_hidpp_session_controller> {
@@ -88,8 +88,12 @@ public:
     return session_.can_recover_on_physical_activity();
   }
 
+  [[nodiscard]] bool can_reuse_for_configuration_update() const {
+    return session_.can_reuse_for_configuration_update();
+  }
+
   // Restarts the discovery once if the session timed out before the diversion and has not recovered yet.
-  // The owner calls this method when the device reports physical motion.
+  // The owner calls this method when the device reports physical input.
   // This method should be called in the shared dispatcher thread while the device is still opened.
   void handle_physical_activity() {
     if (!can_recover_on_physical_activity()) {

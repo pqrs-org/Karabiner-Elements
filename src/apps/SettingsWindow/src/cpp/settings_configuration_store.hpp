@@ -488,11 +488,14 @@ private:
         if (buttons.empty()) {
           device->set_logitech_hidpp(std::nullopt);
         } else {
-          device->set_logitech_hidpp(
-              krbn::core_configuration::details::logitech_hidpp(
-                  nlohmann::json::object({
-                      {"buttons", buttons},
-                  })));
+          auto updated = krbn::core_configuration::details::logitech_hidpp(
+              nlohmann::json::object({
+                  {"buttons", buttons},
+              }));
+          if (const auto& current = device->get_logitech_hidpp()) {
+            updated = current->with_buttons(updated.get_buttons());
+          }
+          device->set_logitech_hidpp(std::move(updated));
         }
         break;
       }

@@ -192,13 +192,14 @@ private:
     auto desired_control_ids = make_validated_enabled_control_ids(desired);
 
     // The output mapping is handled by the Simple Modifications manipulator manager.
-    // Keep the HID++ session when only a mapping changes, so the same controls are not
-    // restored and diverted again.
-    if (session_controller_) {
-      if (desired_control_ids == applied_control_ids_) {
-        applied_configuration_ = desired;
-        return;
-      }
+    // Keep a live HID++ session when only a mapping changes, so the same controls are not
+    // restored and diverted again. Replace a terminal session so a configuration update
+    // can retry activation even when the requested controls have not changed.
+    if (session_controller_ &&
+        session_controller_->can_reuse_for_configuration_update() &&
+        desired_control_ids == applied_control_ids_) {
+      applied_configuration_ = desired;
+      return;
     }
 
     stop(device_is_seized);
