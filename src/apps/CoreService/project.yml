@@ -32,6 +32,11 @@ targets:
       - path: src
       - path: ../../../vendor/vendor/src/pqrs/osx/accessibility
       - path: ../../../vendor/vendor/src/pqrs/osx/application
+      - path: ../../../vendor/vendor/src/pqrs/osx/autorelease_pool/PQRSOSXAutoreleasePoolImpl.m
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - -fno-objc-arc
       - path: ../../../vendor/vendor/src/pqrs/osx/cg_event
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
@@ -44,3 +49,4 @@ targets:
     dependencies:
       - sdk: Carbon.framework
       - sdk: AppKit.framework
+      - sdk: Foundation.framework

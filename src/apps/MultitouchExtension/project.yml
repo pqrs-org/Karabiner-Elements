@@ -33,6 +33,11 @@ targets:
       - path: ../share/swift/Views
       - path: ../share/swift/ApplicationTermination.swift
       - path: ../share/swift/Concurrency/PeriodicTimer.swift
+      - path: ../../../vendor/vendor/src/pqrs/osx/autorelease_pool/PQRSOSXAutoreleasePoolImpl.m
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - -fno-objc-arc
       - path: Resources
         excludes:
           - .gitignore
@@ -41,5 +46,6 @@ targets:
       - framework: /System/Library/PrivateFrameworks/MultitouchSupport.framework
       - package: SettingsAccess
       - sdk: CoreFoundation.framework
+      - sdk: Foundation.framework
       - sdk: IOKit.framework
       - sdk: Security.framework

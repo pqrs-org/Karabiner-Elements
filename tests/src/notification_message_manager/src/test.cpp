@@ -1,6 +1,7 @@
 #include "../../../src/share/notification_message_manager.hpp"
 #include <boost/ut.hpp>
 #include <pqrs/gsl.hpp>
+#include <pqrs/osx/autorelease_pool.hpp>
 #include <pqrs/thread_wait.hpp>
 
 namespace {
@@ -42,7 +43,8 @@ public:
 
 private:
   pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> time_source_ = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::dispatcher> dispatcher_ = std::make_shared<pqrs::dispatcher::dispatcher>(time_source_.get());
+  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::dispatcher> dispatcher_ = std::make_shared<pqrs::dispatcher::dispatcher>(time_source_.get(),
+                                                                                                                          pqrs::osx::autorelease_pool::execute_with_autorelease_pool);
   krbn::notification_message_manager manager_;
 };
 

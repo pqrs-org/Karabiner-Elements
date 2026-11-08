@@ -1,6 +1,7 @@
 #include "../../../../src/apps/ConsoleUserServer/include/console_user_server/settings_window_guidance_manager.hpp"
 #include <boost/ut.hpp>
 #include <pqrs/gsl.hpp>
+#include <pqrs/osx/autorelease_pool.hpp>
 #include <pqrs/thread_wait.hpp>
 
 namespace {
@@ -60,7 +61,8 @@ struct manager_test_context final {
   }
 
   pqrs::not_null_shared_ptr_t<pqrs::dispatcher::pseudo_time_source> time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::dispatcher> dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source.get());
+  pqrs::not_null_shared_ptr_t<pqrs::dispatcher::dispatcher> dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source.get(),
+                                                                                                                         pqrs::osx::autorelease_pool::execute_with_autorelease_pool);
   krbn::settings_window_guidance_context current_context;
   krbn::console_user_server::settings_window_guidance_manager manager;
 };

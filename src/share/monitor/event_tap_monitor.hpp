@@ -21,6 +21,7 @@
 #include <pqrs/dispatcher.hpp>
 #include <pqrs/osx/cg_event_tap.hpp>
 #include <pqrs/osx/chrono.hpp>
+#include <pqrs/osx/autorelease_pool.hpp>
 #include <unordered_map>
 
 namespace krbn {
@@ -45,7 +46,9 @@ public:
         keyboard_suppression_(keyboard_suppression) {
     dispatcher_client_constructor_guard_.initialize(
         [&] {
-          cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>(pqrs::cf::run_loop_thread::failure_policy::exit);
+          cf_run_loop_thread_ = std::make_unique<pqrs::cf::run_loop_thread>(
+              pqrs::cf::run_loop_thread::failure_policy::exit,
+              pqrs::osx::autorelease_pool::execute_with_autorelease_pool);
         });
   }
 

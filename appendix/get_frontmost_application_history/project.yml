@@ -22,7 +22,13 @@ targets:
     deploymentTarget: 13.0
     sources:
       - path: main.cpp
+      - path: ../../vendor/vendor/src/pqrs/osx/autorelease_pool/PQRSOSXAutoreleasePoolImpl.m
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - -fno-objc-arc
     dependencies:
       - sdk: CoreFoundation.framework
+      - sdk: Foundation.framework
       - sdk: IOKit.framework
       - sdk: Security.framework

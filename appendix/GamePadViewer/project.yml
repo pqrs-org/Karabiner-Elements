@@ -31,6 +31,11 @@ targets:
       - path: ../../src/apps/share/swift/Views/OpenSystemSettingsButton.swift
       - path: ../../src/apps/share/swift/Views/SheetCloseButton.swift
       - path: ../../src/apps/share/swift/ApplicationTermination.swift
+      - path: ../../vendor/vendor/src/pqrs/osx/autorelease_pool/PQRSOSXAutoreleasePoolImpl.m
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - -fno-objc-arc
       - path: Resources
         excludes:
           - .gitignore
@@ -38,4 +43,5 @@ targets:
           - '*.plist.in'
       - path: ../../src/apps/share/Resources/app.icns
     dependencies:
+      - sdk: Foundation.framework
       - sdk: IOKit.framework

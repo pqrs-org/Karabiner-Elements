@@ -13,6 +13,29 @@ add_compile_options(-O2)
 add_compile_options(-fsanitize=address)
 add_link_options(-fsanitize=address)
 
+function(enable_pqrs_osx_autorelease_pool target)
+  set(autorelease_pool_impl
+    ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../vendor/vendor/src/pqrs/osx/autorelease_pool/PQRSOSXAutoreleasePoolImpl.m
+  )
+
+  set_source_files_properties(
+    ${autorelease_pool_impl}
+    PROPERTIES
+    COMPILE_OPTIONS -fno-objc-arc
+  )
+
+  target_sources(
+    ${target}
+    PRIVATE
+    ${autorelease_pool_impl}
+  )
+
+  target_link_libraries(
+    ${target}
+    "-framework Foundation"
+  )
+endfunction()
+
 #
 # duktape
 #

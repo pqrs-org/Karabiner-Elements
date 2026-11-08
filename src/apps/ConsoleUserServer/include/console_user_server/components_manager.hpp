@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <optional>
 #include <pqrs/dispatcher.hpp>
+#include <pqrs/osx/autorelease_pool.hpp>
 #include <pqrs/osx/input_source_monitor.hpp>
 #include <pqrs/osx/session.hpp>
 #include <pqrs/osx/system_preferences_monitor.hpp>
@@ -39,7 +40,9 @@ public:
                                                                        geteuid(),
                                                                        core_configuration::error_handling::loose)),
         settings_window_guidance_manager_dispatcher_time_source_(std::make_shared<pqrs::dispatcher::hardware_time_source>()),
-        settings_window_guidance_manager_dispatcher_(std::make_shared<pqrs::dispatcher::dispatcher>(settings_window_guidance_manager_dispatcher_time_source_)),
+        settings_window_guidance_manager_dispatcher_(std::make_shared<pqrs::dispatcher::dispatcher>(
+            settings_window_guidance_manager_dispatcher_time_source_,
+            pqrs::osx::autorelease_pool::execute_with_autorelease_pool)),
         settings_window_guidance_manager_(std::make_shared<settings_window_guidance_manager>(settings_window_guidance_manager_dispatcher_,
                                                                                              settings_window_guidance_manager::make_default_guidance_context_maker())),
         software_function_handler_(std::make_shared<software_function_handler>()),

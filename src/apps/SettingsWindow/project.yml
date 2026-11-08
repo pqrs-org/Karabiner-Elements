@@ -40,6 +40,11 @@ targets:
       - path: src
       - path: ../localization/swift
       - path: ../share/swift
+      - path: ../../../vendor/vendor/src/pqrs/osx/autorelease_pool/PQRSOSXAutoreleasePoolImpl.m
+        compilerFlags:
+          - -Wall
+          - -Werror
+          - -fno-objc-arc
       - path: ../../../vendor/vendor/src/pqrs/osx/process_info
       - path: ../../../vendor/vendor/src/pqrs/osx/workspace
       - path: Resources
@@ -50,4 +55,5 @@ targets:
       - path: ../share/Resources/app.icns
     dependencies:
       - package: CodeEditor
+      - sdk: Foundation.framework
       - sdk: libc++.tbd

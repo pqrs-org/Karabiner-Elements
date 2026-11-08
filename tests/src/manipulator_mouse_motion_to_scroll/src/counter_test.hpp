@@ -3,6 +3,7 @@
 #include <boost/ut.hpp>
 #include <iostream>
 #include <pqrs/gsl.hpp>
+#include <pqrs/osx/autorelease_pool.hpp>
 
 namespace mouse_motion_to_scroll = krbn::manipulator::manipulators::mouse_motion_to_scroll;
 
@@ -94,7 +95,8 @@ void run_counter_test() {
         std::cout << input_file_path << std::endl;
 
         auto time_source = std::make_shared<pqrs::dispatcher::pseudo_time_source>();
-        auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source);
+        auto dispatcher = std::make_shared<pqrs::dispatcher::dispatcher>(time_source,
+                                                                          pqrs::osx::autorelease_pool::execute_with_autorelease_pool);
 
         {
           auto parameters = std::make_shared<krbn::core_configuration::details::complex_modifications_parameters>(input_json.at("parameters"),
