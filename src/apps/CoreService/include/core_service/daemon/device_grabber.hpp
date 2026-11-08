@@ -303,6 +303,12 @@ public:
                                    event_queue_entries);
               });
 
+              // Notify observers again because HID++ control discovery finishes after
+              // the device's initial connected_devices notification.
+              entry->logitech_hidpp_divertable_control_ids_changed.connect([this] {
+                connected_devices_changed();
+              });
+
               entry->get_hid_device_events_monitor()->started.connect([this, device_id] {
                 if (auto it = entries_.find(device_id);
                     it != entries_.end()) {
@@ -363,6 +369,7 @@ public:
                                            it->second->get_device_name());
                 logger_unique_filter_.reset();
 
+                it->second->handle_device_terminated();
                 entries_.erase(it);
                 connected_devices_changed();
               }
@@ -684,7 +691,8 @@ public:
     enqueue_to_dispatcher([this, function] {
       connected_devices connected_devices;
       for (const auto& entry : entries_ | std::views::values) {
-        connected_devices.push_back_device(entry->get_device_properties());
+        connected_devices.push_back_device(entry->get_device_properties(),
+                                           entry->get_connected_device_capabilities());
       }
 
       function(nlohmann::json(connected_devices));

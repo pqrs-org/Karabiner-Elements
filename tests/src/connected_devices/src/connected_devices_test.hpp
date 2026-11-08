@@ -96,17 +96,17 @@ void run_connected_devices_test() {
       }));
 
       expect(connected_devices.get_devices().size() == 6);
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[1]->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
-      expect(connected_devices.get_devices()[1]->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5679));
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[2]->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(2345));
-      expect(connected_devices.get_devices()[2]->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(6789));
-      expect(connected_devices.get_devices()[0]->get_device_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[4]->get_device_identifiers().get_device_address() == "");
-      expect(connected_devices.get_devices()[5]->get_device_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5678));
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[1].properties->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(1234));
+      expect(connected_devices.get_devices()[1].properties->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(5679));
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[2].properties->get_device_identifiers().get_vendor_id() == pqrs::hid::vendor_id::value_t(2345));
+      expect(connected_devices.get_devices()[2].properties->get_device_identifiers().get_product_id() == pqrs::hid::product_id::value_t(6789));
+      expect(connected_devices.get_devices()[0].properties->get_device_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[4].properties->get_device_identifiers().get_device_address() == "");
+      expect(connected_devices.get_devices()[5].properties->get_device_identifiers().get_device_address() == "ec-ba-73-21-e6-f5");
 
       std::ifstream ifs("json/connected_devices.json");
 
@@ -119,6 +119,33 @@ void run_connected_devices_test() {
 
       expect(expected.get_devices().size() == 6);
     }
+  };
+
+  "connected device capabilities"_test = [] {
+    krbn::connected_device_capabilities capabilities;
+    capabilities.set_logitech_hidpp_divertable_control_ids({82, 196});
+
+    krbn::connected_devices connected_devices;
+    connected_devices.push_back_device(
+        std::make_shared<krbn::device_properties>(krbn::device_properties::initialization_parameters{
+            .device_id = krbn::device_id(1),
+            .vendor_id = pqrs::hid::vendor_id::value_t(0x046d),
+            .product_id = pqrs::hid::product_id::value_t(0xb037),
+            .is_pointing_device = true,
+        }),
+        capabilities);
+
+    auto json = nlohmann::json(connected_devices);
+    expect(json.at(0).at("connected_device_capabilities") == nlohmann::json({
+                                                                 {"logitech_hidpp",
+                                                                  {
+                                                                      {"divertable_control_ids", {82, 196}},
+                                                                  }},
+                                                             }));
+
+    auto restored = json.get<krbn::connected_devices>();
+    expect(restored.get_devices()[0].capabilities.get_logitech_hidpp_divertable_control_ids() ==
+           std::vector<uint16_t>{82, 196});
   };
 
   "connected_devices ill-formed name"_test = [] {

@@ -80,10 +80,20 @@ std::vector<uint8_t> deft_descriptor() {
   // clang-format on
 }
 
+krbn::device_identifiers make_identifiers(
+    uint16_t vendor_id,
+    uint16_t product_id,
+    bool is_pointing_device = true) {
+  return krbn::device_identifiers({
+      .vendor_id = pqrs::hid::vendor_id::value_t(vendor_id),
+      .product_id = pqrs::hid::product_id::value_t(product_id),
+      .is_pointing_device = is_pointing_device,
+  });
+}
+
 std::optional<elecom_trackball::configuration> huge_plus_configuration() {
   return elecom_trackball::find_configuration(
-      pqrs::hid::vendor_id::value_t(0x056e),
-      pqrs::hid::product_id::value_t(0x01aa),
+      make_identifiers(0x056e, 0x01aa),
       huge_plus_descriptor());
 }
 
@@ -106,7 +116,7 @@ pqrs::osx::iokit_hid_value button_value(uint32_t button, bool pressed) {
 }
 } // namespace
 
-int main() {
+void run_elecom_trackball_test() {
   using namespace boost::ut;
   using namespace boost::ut::literals;
 
@@ -121,16 +131,15 @@ int main() {
              pqrs::hid::product_id::value_t(0x01ac),
          }) {
       expect(elecom_trackball::is_target_device(
-          pqrs::hid::vendor_id::value_t(0x056e),
-          product_id));
+          make_identifiers(0x056e, type_safe::get(product_id))));
     }
 
     expect(!elecom_trackball::is_target_device(
-        pqrs::hid::vendor_id::value_t(0x056e),
-        pqrs::hid::product_id::value_t(0x0001)));
+        make_identifiers(0x056e, 0x0001)));
     expect(!elecom_trackball::is_target_device(
-        pqrs::hid::vendor_id::value_t(0x05ac),
-        pqrs::hid::product_id::value_t(0x01aa)));
+        make_identifiers(0x05ac, 0x01aa)));
+    expect(!elecom_trackball::is_target_device(
+        make_identifiers(0x056e, 0x01aa, false)));
   };
 
   "find HUGE PLUS configuration from its descriptor"_test = [] {
@@ -144,8 +153,7 @@ int main() {
 
   "find DEFT configuration from its descriptor"_test = [] {
     auto configuration = elecom_trackball::find_configuration(
-        pqrs::hid::vendor_id::value_t(0x056e),
-        pqrs::hid::product_id::value_t(0x00fe),
+        make_identifiers(0x056e, 0x00fe),
         deft_descriptor());
     expect(configuration != std::nullopt);
     expect(configuration->report_id == 1_u);
@@ -161,20 +169,20 @@ int main() {
              pqrs::hid::product_id::value_t(0x01ac),
          }) {
       expect(elecom_trackball::find_configuration(
-                 pqrs::hid::vendor_id::value_t(0x056e),
-                 product_id,
+                 make_identifiers(0x056e, type_safe::get(product_id)),
                  huge_plus_descriptor()) != std::nullopt);
     }
   };
 
   "reject unknown device"_test = [] {
     expect(elecom_trackball::find_configuration(
-               pqrs::hid::vendor_id::value_t(0x056e),
-               pqrs::hid::product_id::value_t(0x0001),
+               make_identifiers(0x056e, 0x0001),
                huge_plus_descriptor()) == std::nullopt);
     expect(elecom_trackball::find_configuration(
-               pqrs::hid::vendor_id::value_t(0x05ac),
-               pqrs::hid::product_id::value_t(0x01aa),
+               make_identifiers(0x05ac, 0x01aa),
+               huge_plus_descriptor()) == std::nullopt);
+    expect(elecom_trackball::find_configuration(
+               make_identifiers(0x056e, 0x01aa, false),
                huge_plus_descriptor()) == std::nullopt);
   };
 
@@ -182,15 +190,13 @@ int main() {
     auto descriptor = huge_plus_descriptor();
     descriptor[17] = 0x08; // Firmware now declares all eight buttons.
     expect(elecom_trackball::find_configuration(
-               pqrs::hid::vendor_id::value_t(0x056e),
-               pqrs::hid::product_id::value_t(0x01aa),
+               make_identifiers(0x056e, 0x01aa),
                descriptor) == std::nullopt);
 
     descriptor = huge_plus_descriptor();
     descriptor.resize(33);
     expect(elecom_trackball::find_configuration(
-               pqrs::hid::vendor_id::value_t(0x056e),
-               pqrs::hid::product_id::value_t(0x01aa),
+               make_identifiers(0x056e, 0x01aa),
                descriptor) == std::nullopt);
   };
 
@@ -202,8 +208,7 @@ int main() {
     descriptor[29] = 0x0b;
 
     auto configuration = elecom_trackball::find_configuration(
-        pqrs::hid::vendor_id::value_t(0x056e),
-        pqrs::hid::product_id::value_t(0x01aa),
+        make_identifiers(0x056e, 0x01aa),
         descriptor);
     expect(configuration != std::nullopt);
     expect(configuration->buttons_bit_offset == 13_u);
@@ -265,6 +270,4 @@ int main() {
     handler.reset();
     expect(handler.handle(1, report(0x20), time_stamp).size() == 1_u);
   };
-
-  return 0;
 }

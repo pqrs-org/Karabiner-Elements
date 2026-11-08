@@ -25,6 +25,7 @@ enum ConfigurationAction: String, Sendable {
   case eraseDisconnectedDevices = "erase_disconnected_devices"
   case setFormula = "set_formula"
   case resetFormula = "reset_formula"
+  case setLogitechHidppButtons = "set_logitech_hidpp_buttons"
 
   var blocksEditing: Bool {
     switch self {
@@ -33,6 +34,8 @@ enum ConfigurationAction: String, Sendable {
       return true
     case .reloadAssets, .eraseAsset, .snapshot, .syncSave, .patch, .renameProfile, .replaceSimple,
       .replaceFn, .replaceRule, .enableRule, .setFormula, .resetFormula:
+      return false
+    case .setLogitechHidppButtons:
       return false
     }
   }

@@ -83,6 +83,11 @@ public:
       case event_definition::type::any:
         throw pqrs::json::unmarshal_error(fmt::format("event type is invalid: `{0}`", pqrs::json::dump_for_error_message(json)));
     }
+
+    if (auto event = event_definition_.get_if<momentary_switch_event>();
+        event && event->logitech_hidpp_button()) {
+      throw pqrs::json::unmarshal_error("`logitech_hidpp_button` is available only in `from`");
+    }
   }
 
   ~to_event_definition() {

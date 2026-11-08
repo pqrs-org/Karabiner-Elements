@@ -110,7 +110,8 @@ public:
         key == "apple_vendor_keyboard_key_code" ||
         key == "apple_vendor_top_case_key_code" ||
         key == "generic_desktop" ||
-        key == "pointing_button") {
+        key == "pointing_button" ||
+        key == "logitech_hidpp_button") {
       check_type(json);
 
       try {

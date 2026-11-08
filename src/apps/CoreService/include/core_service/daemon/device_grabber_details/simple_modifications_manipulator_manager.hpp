@@ -102,6 +102,33 @@ public:
           }
         }
       }
+
+      //
+      // Add profile.device.logitech_hidpp entries.
+      //
+
+      if (const auto& logitech_hidpp = device->get_logitech_hidpp()) {
+        for (const auto& button : logitech_hidpp->get_buttons()) {
+          if (!button.enabled) {
+            continue;
+          }
+
+          try {
+            auto from = nlohmann::json::object({
+                {"logitech_hidpp_button", button.control_id},
+            });
+            if (auto m = make_manipulator({from.dump(), button.to.dump()})) {
+              auto c = manipulator::condition_factory::make_device_if_condition(*device);
+              m->push_back_condition(c);
+              manipulator_manager_->push_back_manipulator(m);
+            }
+          } catch (const pqrs::json::unmarshal_error& e) {
+            logger::get_logger()->error(fmt::format("karabiner.json error: {0}", e.what()));
+          } catch (const std::exception& e) {
+            logger::get_logger()->error(e.what());
+          }
+        }
+      }
     }
 
     for (const auto& pair : profile.get_simple_modifications()->get_pairs()) {

@@ -333,5 +333,57 @@
             "fn_function_keys": null
         },
         "error": "`fn_function_keys` error: json must be array or object, but is `null`"
+    },
+
+    // logitech_hidpp
+
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": null
+        },
+        "error": "`logitech_hidpp` error: json must be object, but is `null`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": {
+                "buttons": [
+                    {
+                        "control_id": 0,
+                        "to": [{ "key_code": "a" }]
+                    }
+                ]
+            }
+        },
+        "error": "`logitech_hidpp` error: `logitech_hidpp_button` must be an integer between 1 and 65535, but is `0`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": {
+                "buttons": [
+                    {
+                        "control_id": 196
+                    }
+                ]
+            }
+        },
+        "error": "`logitech_hidpp` error: `to` is missing in `{\"control_id\":196}`"
+    },
+    {
+        "class": "devices",
+        "input": {
+            "logitech_hidpp": {
+                "buttons": [
+                    {
+                        "control_id": 196,
+                        "enabled": "false",
+                        "to": [{ "key_code": "a" }]
+                    }
+                ]
+            }
+        },
+        "error": "`logitech_hidpp` error: `enabled` must be boolean, but is `\"false\"`"
     }
 ]

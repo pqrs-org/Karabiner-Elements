@@ -1,0 +1,11 @@
+[
+    {
+        "description": "logitech_hidpp_button 196 -> right_control",
+        "type": "basic",
+        "from": {
+            "logitech_hidpp_button": 196,
+            "modifiers": { "optional": ["any"] }
+        },
+        "to": [{ "key_code": "right_control" }]
+    }
+]

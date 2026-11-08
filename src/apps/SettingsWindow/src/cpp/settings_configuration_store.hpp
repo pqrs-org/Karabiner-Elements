@@ -158,6 +158,7 @@ private:
     erase_disconnected_devices,
     set_formula,
     reset_formula,
+    set_logitech_hidpp_buttons,
   };
 
   [[nodiscard]] static action_type parse_action(std::string_view name) {
@@ -187,6 +188,7 @@ private:
         {"erase_disconnected_devices", action_type::erase_disconnected_devices},
         {"set_formula", action_type::set_formula},
         {"reset_formula", action_type::reset_formula},
+        {"set_logitech_hidpp_buttons", action_type::set_logitech_hidpp_buttons},
     };
 
     for (const auto& [command_name, action] : actions) {
@@ -473,6 +475,27 @@ private:
               &device_type::set_game_pad_stick_horizontal_wheel_formula);
         } else {
           throw std::runtime_error("Unknown formula");
+        }
+        break;
+      }
+
+      case action_type::set_logitech_hidpp_buttons: {
+        const auto identifiers = krbn::json_utility::parse_jsonc(command.at("device").get<std::string>()).get<krbn::device_identifiers>();
+        auto device = profile.get_device(identifiers);
+        const auto& buttons = command.at("buttons");
+        pqrs::json::requires_array(buttons, "`buttons`");
+
+        if (buttons.empty()) {
+          device->set_logitech_hidpp(std::nullopt);
+        } else {
+          auto updated = krbn::core_configuration::details::logitech_hidpp(
+              nlohmann::json::object({
+                  {"buttons", buttons},
+              }));
+          if (const auto& current = device->get_logitech_hidpp()) {
+            updated = current->with_buttons(updated.get_buttons());
+          }
+          device->set_logitech_hidpp(std::move(updated));
         }
         break;
       }
